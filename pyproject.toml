@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "itou_c4_api"
+version = "0.1.0"
+description = "API du marché de l'Inclusion"
+authors = ["pmontens <pieterjan@montens.net>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Django = "^3.2.1"
+djangorestframework = "^3.12.4"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,92 @@
+# Environment variables
+envs/dev.env
+envs/prod.env
+envs/secrets.env
+envs/staging.env
+
+# Config
+config/settings/dev.py
+docker-compose-prod.yml
+docker-compose-staging.yml
+docker/prod/
+docker/staging/
+
+# Project specific
+
+# Debian
+.bash_history
+.python_history
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+/.local/
+
+# Mac Os
+.DS_Store
+
+# C extensions
+*.so
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+
+# dotenv
+.env
+
+# virtualenv
+.venv
+venv/
+ENV/
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+
+# IPython
+.ipython
+
+# Code quality
+.pylint.d
+*.isorted
+
+# Editors
+.tm_properties
+/.vscode/
+
+# Jetbrains / Pycharm
+*.iml
+.idea
+
+# Clever Cloud
+.clever.json
