@@ -13,6 +13,8 @@ Pour une partie des structures, certaines donnéés peuvent manquer : leur meill
 - Nom
 - Enseigne
 - Siret
+- Naf
+- Site Web
 - Adresse
 - Localisation
 - Date de création
