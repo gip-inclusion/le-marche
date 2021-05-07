@@ -1,133 +1,508 @@
-# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#   * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
-#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
-#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
+# Generated table models from the cocorico database
+# /!\ DO NOT make them managed by django : Management is done by Doctrine, the symfony ORM
+# This API is only a mere client to these data, a coy reader.
+
 from django.db import models
 
 
-class AuthGroup(models.Model):
-    name = models.CharField(unique=True, max_length=150)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_group'
-
-
-class AuthGroupPermissions(models.Model):
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_group_permissions'
-        unique_together = (('group', 'permission'),)
-
-
-class AuthPermission(models.Model):
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
-    codename = models.CharField(max_length=100)
+class Directory(models.Model):
+    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255)
+    siret = models.CharField(max_length=14, blank=True, null=True)
+    email = models.CharField(max_length=255, blank=True, null=True)
+    kind = models.CharField(max_length=255)
+    website = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=255, blank=True, null=True)
+    post_code = models.CharField(max_length=255, blank=True, null=True)
+    department = models.CharField(max_length=255, blank=True, null=True)
+    region = models.CharField(max_length=255, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
+    latitude = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
+    phone = models.CharField(max_length=255, blank=True, null=True)
+    presta_type = models.CharField(max_length=255, blank=True, null=True)
+    sector = models.TextField(blank=True, null=True)
+    naf = models.CharField(max_length=5, blank=True, null=True)
+    is_active = models.IntegerField(blank=True, null=True)
+    brand = models.CharField(max_length=255, blank=True, null=True)
+    createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)  # Field name made lowercase.
+    updatedat = models.DateTimeField(db_column='updatedAt', blank=True, null=True)  # Field name made lowercase.
+    c1_id = models.IntegerField(blank=True, null=True)
+    c4_id = models.IntegerField(blank=True, null=True)
+    is_delisted = models.IntegerField(blank=True, null=True)
+    c1_source = models.CharField(max_length=255, blank=True, null=True)
+    last_sync_date = models.DateTimeField(blank=True, null=True)
+    nature = models.CharField(max_length=255, blank=True, null=True)
+    siret_is_valid = models.IntegerField(blank=True, null=True)
+    ig_employees = models.CharField(max_length=255, blank=True, null=True)
+    ig_ca = models.IntegerField(blank=True, null=True)
+    ig_date_constitution = models.DateTimeField(blank=True, null=True)
+    admin_email = models.CharField(max_length=255, blank=True, null=True)
+    admin_name = models.CharField(max_length=255, blank=True, null=True)
+    geo_range = models.IntegerField(blank=True, null=True)
+    pol_range = models.IntegerField(blank=True, null=True)
+    description = models.TextField()
 
     class Meta:
         managed = False
-        db_table = 'auth_permission'
-        unique_together = (('content_type', 'codename'),)
+        db_table = 'directory'
 
 
-class AuthUser(models.Model):
-    password = models.CharField(max_length=128)
-    last_login = models.DateTimeField(blank=True, null=True)
-    is_superuser = models.BooleanField()
-    username = models.CharField(unique=True, max_length=150)
-    last_name = models.CharField(max_length=150)
-    email = models.CharField(max_length=254)
-    is_staff = models.BooleanField()
-    is_active = models.BooleanField()
-    date_joined = models.DateTimeField()
-    first_name = models.CharField(max_length=150)
+
+class DirectoryClientImage(models.Model):
+    id = models.IntegerField(primary_key=True)
+    directory = models.ForeignKey(Directory, models.DO_NOTHING)
+    name = models.CharField(max_length=255)
+    position = models.SmallIntegerField()
 
     class Meta:
         managed = False
-        db_table = 'auth_user'
+        db_table = 'directory_client_image'
 
 
-class AuthUserGroups(models.Model):
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
+class DirectoryImage(models.Model):
+    id = models.IntegerField(primary_key=True)
+    directory = models.ForeignKey(Directory, models.DO_NOTHING)
+    name = models.CharField(max_length=255)
+    position = models.SmallIntegerField()
 
     class Meta:
         managed = False
-        db_table = 'auth_user_groups'
+        db_table = 'directory_image'
+
+
+class DirectoryListingCategory(models.Model):
+    id = models.IntegerField(primary_key=True)
+    directory = models.ForeignKey(Directory, models.DO_NOTHING)
+    listing_category = models.ForeignKey('ListingCategory', models.DO_NOTHING)
+    source = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'directory_listing_category'
+
+
+class ListingCategory(models.Model):
+    id = models.IntegerField(primary_key=True)
+    parent = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
+    lft = models.IntegerField()
+    lvl = models.IntegerField()
+    rgt = models.IntegerField()
+    root = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'listing_category'
+
+
+class ListingCategoryTranslation(models.Model):
+    id = models.IntegerField(primary_key=True)
+    translatable = models.ForeignKey(ListingCategory, models.DO_NOTHING, blank=True, null=True)
+    name = models.CharField(max_length=100)
+    locale = models.CharField(max_length=255)
+    slug = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'listing_category_translation'
+        unique_together = (('translatable', 'locale'),)
+
+
+
+class DirectoryCategory(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'directory_category'
+
+
+class DirectoryUser(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'directory_user'
+        unique_together = (('directory', 'user'),)
+
+class Booking(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'booking'
+
+
+class BookingBankWire(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'booking_bank_wire'
+
+
+class BookingPayinRefund(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'booking_payin_refund'
+
+
+class BookingUserAddress(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'booking_user_address'
+
+
+class Contact(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'contact'
+
+
+
+class Footer(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'footer'
+
+
+class FooterTranslation(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'footer_translation'
+        unique_together = (('translatable', 'locale'),)
+
+
+class GeoArea(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'geo_area'
+
+
+class GeoAreaTranslation(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'geo_area_translation'
+        unique_together = (('translatable', 'locale'),)
+
+
+class GeoCity(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'geo_city'
+
+
+class GeoCityTranslation(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'geo_city_translation'
+        unique_together = (('translatable', 'locale'),)
+
+
+class GeoCoordinate(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'geo_coordinate'
+
+
+class GeoCountry(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'geo_country'
+
+
+class GeoCountryTranslation(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'geo_country_translation'
+        unique_together = (('translatable', 'locale'),)
+
+
+class GeoDepartment(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'geo_department'
+
+
+class GeoDepartmentTranslation(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'geo_department_translation'
+        unique_together = (('translatable', 'locale'),)
+
+
+class GeoGeocoding(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'geo_geocoding'
+
+
+class Group(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'group'
+
+
+class LexikCurrency(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'lexik_currency'
+
+
+class Listing(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'listing'
+
+
+class ListingCharacteristic(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'listing_characteristic'
+
+
+class ListingCharacteristicGroup(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'listing_characteristic_group'
+
+
+class ListingCharacteristicGroupTranslation(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'listing_characteristic_group_translation'
+        unique_together = (('translatable', 'locale'),)
+
+
+class ListingCharacteristicTranslation(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'listing_characteristic_translation'
+        unique_together = (('translatable', 'locale'),)
+
+
+class ListingCharacteristicType(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'listing_characteristic_type'
+
+
+class ListingCharacteristicValue(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'listing_characteristic_value'
+
+
+class ListingCharacteristicValueTranslation(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'listing_characteristic_value_translation'
+        unique_together = (('translatable', 'locale'),)
+
+
+class ListingClientImage(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'listing_client_image'
+
+
+class ListingDiscount(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'listing_discount'
+        unique_together = (('listing', 'from_quantity'),)
+
+
+class ListingImage(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'listing_image'
+
+
+class ListingListingCategory(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'listing_listing_category'
+
+
+class ListingListingCharacteristic(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'listing_listing_characteristic'
+
+
+class ListingLocation(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'listing_location'
+
+
+class ListingTranslation(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'listing_translation'
+        unique_together = (('translatable', 'locale'),)
+
+
+class Message(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'message'
+
+
+class MessageMetadata(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'message_metadata'
+
+
+class MessageThread(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'message_thread'
+
+
+class MessageThreadMetadata(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'message_thread_metadata'
+
+
+class Page(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'page'
+
+
+class PageTranslation(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'page_translation'
+        unique_together = (('translatable', 'locale'),)
+
+
+class Parameter(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'parameter'
+
+
+class ParameterAudit(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'parameter_audit'
+        unique_together = (('id', 'rev'),)
+
+
+class Quote(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'quote'
+
+
+class QuoteUserAddress(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'quote_user_address'
+
+
+class Review(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'review'
+
+
+class Revisions(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'revisions'
+
+
+class User(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'user'
+
+
+class UserAddress(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'user_address'
+
+
+class UserFacebook(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'user_facebook'
+
+
+class UserGroup(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = 'user_group'
         unique_together = (('user', 'group'),)
 
 
-class AuthUserUserPermissions(models.Model):
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
+class UserImage(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'auth_user_user_permissions'
-        unique_together = (('user', 'permission'),)
+        db_table = 'user_image'
 
 
-class C4DirectorySiae(models.Model):
-    name = models.CharField(max_length=255)
-    brand = models.CharField(max_length=255)
-    kind = models.CharField(max_length=6)
-    siret = models.CharField(max_length=14)
-    naf = models.CharField(max_length=5)
-    address = models.TextField()
-    website = models.CharField(max_length=200)
-    created_at = models.DateTimeField()
+class UserLanguage(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'c4_directory_siae'
+        db_table = 'user_language'
 
 
-class DjangoAdminLog(models.Model):
-    action_time = models.DateTimeField()
-    object_id = models.TextField(blank=True, null=True)
-    object_repr = models.CharField(max_length=200)
-    change_message = models.TextField()
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    action_flag = models.PositiveSmallIntegerField()
+class UserTranslation(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'django_admin_log'
-
-
-class DjangoContentType(models.Model):
-    app_label = models.CharField(max_length=100)
-    model = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
-        db_table = 'django_content_type'
-        unique_together = (('app_label', 'model'),)
-
-
-class DjangoMigrations(models.Model):
-    app = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-    applied = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_migrations'
-
-
-class DjangoSession(models.Model):
-    session_key = models.CharField(primary_key=True, max_length=40)
-    session_data = models.TextField()
-    expire_date = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_session'
+        db_table = 'user_translation'
+        unique_together = (('translatable', 'locale'),)

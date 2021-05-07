@@ -30,6 +30,29 @@ Structure de l'API :
 - `/search`
 - ...
 
+## Installation
+Pâquets nécessaires à l'installation et l'exécution de l'API:
+- Poetry
+- python3-dev, default-libmysqlclient-dev
+
+L'environnement se configure en copian `env.default.sh`
+
+Installation et exécution:
+```bash
+> Installation environnement python
+$ poetry install
+
+> Configuration environnement
+$ . env.local.sh
+
+> Exécution 
+$ poetry run python manage.py runserver
+$ poetry run python manage.py [COMMANDES]
+
+> Avec surcharge `PYTHONPATH` (à résoudre)
+$ env PYTHONPATH=./itou_c4_api:./itou_c4_api/c4_directory poetry run python manage.py [COMMANDES]
+```
+
 ### Ressources : 
 - https://www.django-rest-framework.org/topics/rest-hypermedia-hateoas/
 - https://realpython.com/django-rest-framework-quick-start/

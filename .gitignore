@@ -1,3 +1,7 @@
+# API dev files
+*.sqlite3
+env.local.sh
+
 # Environment variables
 envs/dev.env
 envs/prod.env
