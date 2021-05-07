@@ -4,7 +4,7 @@ from c4_directory.models import Siae
 class SiaeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Siae
-        fields = ['name', 'brand', 'website', 'created_at']
+        fields = ['name', 'brand', 'website', 'createdat']
 
 # class SiaeSerializer(serializers.Serializer):
 # 

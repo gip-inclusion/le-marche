@@ -79,6 +79,7 @@ class DirectoryListingCategory(models.Model):
     class Meta:
         managed = False
         db_table = 'directory_listing_category'
+        unique_together = (('directory', 'listing_category'),)
 
 
 class ListingCategory(models.Model):
@@ -104,7 +105,6 @@ class ListingCategoryTranslation(models.Model):
     class Meta:
         managed = False
         db_table = 'listing_category_translation'
-        unique_together = (('translatable', 'locale'),)
 
 
 
@@ -120,7 +120,6 @@ class DirectoryUser(models.Model):
     class Meta:
         managed = False
         db_table = 'directory_user'
-        unique_together = (('directory', 'user'),)
 
 class Booking(models.Model):
 
@@ -170,7 +169,6 @@ class FooterTranslation(models.Model):
     class Meta:
         managed = False
         db_table = 'footer_translation'
-        unique_together = (('translatable', 'locale'),)
 
 
 class GeoArea(models.Model):
@@ -185,7 +183,6 @@ class GeoAreaTranslation(models.Model):
     class Meta:
         managed = False
         db_table = 'geo_area_translation'
-        unique_together = (('translatable', 'locale'),)
 
 
 class GeoCity(models.Model):
@@ -200,7 +197,6 @@ class GeoCityTranslation(models.Model):
     class Meta:
         managed = False
         db_table = 'geo_city_translation'
-        unique_together = (('translatable', 'locale'),)
 
 
 class GeoCoordinate(models.Model):
@@ -222,7 +218,6 @@ class GeoCountryTranslation(models.Model):
     class Meta:
         managed = False
         db_table = 'geo_country_translation'
-        unique_together = (('translatable', 'locale'),)
 
 
 class GeoDepartment(models.Model):
@@ -237,7 +232,6 @@ class GeoDepartmentTranslation(models.Model):
     class Meta:
         managed = False
         db_table = 'geo_department_translation'
-        unique_together = (('translatable', 'locale'),)
 
 
 class GeoGeocoding(models.Model):
@@ -287,7 +281,6 @@ class ListingCharacteristicGroupTranslation(models.Model):
     class Meta:
         managed = False
         db_table = 'listing_characteristic_group_translation'
-        unique_together = (('translatable', 'locale'),)
 
 
 class ListingCharacteristicTranslation(models.Model):
@@ -295,7 +288,6 @@ class ListingCharacteristicTranslation(models.Model):
     class Meta:
         managed = False
         db_table = 'listing_characteristic_translation'
-        unique_together = (('translatable', 'locale'),)
 
 
 class ListingCharacteristicType(models.Model):
@@ -317,7 +309,6 @@ class ListingCharacteristicValueTranslation(models.Model):
     class Meta:
         managed = False
         db_table = 'listing_characteristic_value_translation'
-        unique_together = (('translatable', 'locale'),)
 
 
 class ListingClientImage(models.Model):
@@ -332,7 +323,6 @@ class ListingDiscount(models.Model):
     class Meta:
         managed = False
         db_table = 'listing_discount'
-        unique_together = (('listing', 'from_quantity'),)
 
 
 class ListingImage(models.Model):
@@ -368,7 +358,6 @@ class ListingTranslation(models.Model):
     class Meta:
         managed = False
         db_table = 'listing_translation'
-        unique_together = (('translatable', 'locale'),)
 
 
 class Message(models.Model):
@@ -411,7 +400,6 @@ class PageTranslation(models.Model):
     class Meta:
         managed = False
         db_table = 'page_translation'
-        unique_together = (('translatable', 'locale'),)
 
 
 class Parameter(models.Model):
@@ -426,7 +414,6 @@ class ParameterAudit(models.Model):
     class Meta:
         managed = False
         db_table = 'parameter_audit'
-        unique_together = (('id', 'rev'),)
 
 
 class Quote(models.Model):
@@ -483,7 +470,6 @@ class UserGroup(models.Model):
     class Meta:
         managed = False
         db_table = 'user_group'
-        unique_together = (('user', 'group'),)
 
 
 class UserImage(models.Model):
@@ -505,4 +491,3 @@ class UserTranslation(models.Model):
     class Meta:
         managed = False
         db_table = 'user_translation'
-        unique_together = (('translatable', 'locale'),)

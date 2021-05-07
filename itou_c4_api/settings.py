@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import routers
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -40,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'itou_c4_api',
-    'c4_directory.apps.C4DirectoryConfig'
+    'c4_directory.apps.C4DirectoryConfig',
+    'cocorico.apps.CocoricoConfig'
 ]
 
 MIDDLEWARE = [
@@ -92,6 +94,8 @@ DATABASES = {
         'PORT': int(os.environ['MYSQL_PORT'])
     }
 }
+
+DATABASE_ROUTERS = ['routers.CocoRouter']
 
 
 # Password validation
