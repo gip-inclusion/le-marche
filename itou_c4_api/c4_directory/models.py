@@ -43,7 +43,7 @@ class Siae(models.Model):
     naf = models.CharField(verbose_name="Naf", max_length=5, validators=[validate_naf], blank=True)
     address = models.TextField(verbose_name="Adresse")
     website = models.URLField(verbose_name="Site web", blank=True)
-    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    createdat = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
 
     class Meta:
         ordering = ['name']
