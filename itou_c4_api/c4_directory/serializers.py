@@ -2,9 +2,31 @@ from rest_framework import serializers
 from c4_directory.models import Siae
 
 class SiaeSerializer(serializers.ModelSerializer):
+    raisonSociale = serializers.CharField(source='name')
+    enseigne = serializers.CharField(source='brand')
+    type = serializers.CharField(source='kind')
+    telephone = serializers.CharField(source='phone')
+    siteWeb = serializers.CharField(source='website')
+    ville = serializers.CharField(source='city')
+    departement = serializers.CharField(source='department')
+    codePostal = serializers.CharField(source='post_code')
+
     class Meta:
         model = Siae
-        fields = ['name', 'brand', 'website', 'createdat']
+        fields = [
+                'raisonSociale',
+                'enseigne',
+                'siret',
+                'type',
+                'email',
+                'telephone',
+                'siteWeb',
+                'ville',
+                'departement',
+                'region',
+                'codePostal',
+                'createdat'
+        ]
 
 # class SiaeSerializer(serializers.Serializer):
 # 

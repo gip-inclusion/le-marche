@@ -43,6 +43,12 @@ class Siae(models.Model):
     naf = models.CharField(verbose_name="Naf", max_length=5, validators=[validate_naf], blank=True)
     address = models.TextField(verbose_name="Adresse")
     website = models.URLField(verbose_name="Site web", blank=True)
+    email = models.CharField(max_length=255, blank=True, null=True)
+    phone = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=255, blank=True, null=True)
+    department = models.CharField(max_length=255, blank=True, null=True)
+    region = models.CharField(max_length=255, blank=True, null=True)
+    post_code = models.CharField(max_length=255, blank=True, null=True)
     createdat = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
 
     class Meta:
