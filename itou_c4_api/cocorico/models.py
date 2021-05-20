@@ -73,7 +73,7 @@ class DirectoryImage(models.Model):
 class DirectoryListingCategory(models.Model):
     id = models.IntegerField(primary_key=True)
     directory = models.ForeignKey(Directory, models.DO_NOTHING)
-    listing_category = models.ForeignKey('ListingCategory', models.DO_NOTHING)
+    listing_category = models.ForeignKey('Sector', models.DO_NOTHING)
     source = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
@@ -82,7 +82,8 @@ class DirectoryListingCategory(models.Model):
         unique_together = (('directory', 'listing_category'),)
 
 
-class ListingCategory(models.Model):
+#class ListingCategory(models.Model):
+class Sector(models.Model):
     id = models.IntegerField(primary_key=True)
     parent = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
     lft = models.IntegerField()
@@ -95,9 +96,10 @@ class ListingCategory(models.Model):
         db_table = 'listing_category'
 
 
-class ListingCategoryTranslation(models.Model):
+#class ListingCategoryTranslation(models.Model):
+class SectorString(models.Model):
     id = models.IntegerField(primary_key=True)
-    translatable = models.ForeignKey(ListingCategory, models.DO_NOTHING, blank=True, null=True)
+    translatable = models.ForeignKey(Sector, models.DO_NOTHING, blank=True, null=True)
     name = models.CharField(max_length=100)
     locale = models.CharField(max_length=255)
     slug = models.CharField(max_length=255, blank=True, null=True)

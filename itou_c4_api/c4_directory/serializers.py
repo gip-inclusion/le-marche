@@ -1,5 +1,8 @@
 from rest_framework import serializers
-from c4_directory.models import Siae
+from c4_directory.models import (
+    Siae,
+    Sector,
+)
 
 class SiaeSerializer(serializers.ModelSerializer):
     raisonSociale = serializers.CharField(source='name')
@@ -27,6 +30,12 @@ class SiaeSerializer(serializers.ModelSerializer):
                 'codePostal',
                 'createdat'
         ]
+
+class SectorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Sector
+
 
 # class SiaeSerializer(serializers.Serializer):
 # 
