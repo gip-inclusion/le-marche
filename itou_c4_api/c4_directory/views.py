@@ -7,6 +7,7 @@ from c4_directory.models import Siae
 from c4_directory.serializers import  (
     SiaeSerializer,
     SectorSerializer,
+    SectorStringSerializer,
 )
 from cocorico.models import (
     Directory,
@@ -17,6 +18,9 @@ from cocorico.models import (
 @csrf_exempt
 @api_view(['GET'])
 def siae_list(request):
+    """
+    Liste des structures inclusives reprises dans le marché de l'inclusion.
+    """
     if request.method == 'GET':
         siaes = Directory.objects.all()
         serializer = SiaeSerializer(siaes, many=True)
@@ -26,6 +30,9 @@ def siae_list(request):
 @csrf_exempt
 @api_view(['GET'])
 def siae_detail(request, key):
+    """
+    Détail d'une structure
+    """
     try:
         siae = Directory.objects.get(pk=key)
         serializer = SiaeSerializer(siae, many=False)
@@ -37,8 +44,12 @@ def siae_detail(request, key):
 @csrf_exempt
 @api_view(['GET'])
 def sector_list(request):
+    """
+    Liste hiérarchisée des secteurs d'activité des structures.
+    """
     if request.method == 'GET':
-        #sectors = ListingCategory.select_related('ListingCategoryTranslation').objects.all()
-        sectors = Sector.objects.all()
-        serializer = SectorSerializer(sectors, many=True)
+        #sectors = Sector.objects.select_related('SectorString').all()
+        sectors = SectorString.objects.select_related('translatable').all()
+        #sectors = Sector.objects.all()
+        serializer = SectorStringSerializer(sectors, many=True)
         return Response(serializer.data)

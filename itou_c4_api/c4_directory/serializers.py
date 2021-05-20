@@ -2,6 +2,7 @@ from rest_framework import serializers
 from c4_directory.models import (
     Siae,
     Sector,
+    SectorString,
 )
 
 class SiaeSerializer(serializers.ModelSerializer):
@@ -17,18 +18,18 @@ class SiaeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Siae
         fields = [
-                'raisonSociale',
-                'enseigne',
-                'siret',
-                'type',
-                'email',
-                'telephone',
-                'siteWeb',
-                'ville',
-                'departement',
-                'region',
-                'codePostal',
-                'createdat'
+            'raisonSociale',
+            'enseigne',
+            'siret',
+            'type',
+            'email',
+            'telephone',
+            'siteWeb',
+            'ville',
+            'departement',
+            'region',
+            'codePostal',
+            'createdat',
         ]
 
 class SectorSerializer(serializers.ModelSerializer):
@@ -38,6 +39,19 @@ class SectorSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'parent',
+        ]
+
+class SectorStringSerializer(serializers.ModelSerializer):
+    hierarchie = SectorSerializer(many=False, read_only=True, source='translatable')
+
+    nom = serializers.CharField(source='name')
+
+    class Meta:
+        model = SectorString
+        fields = [
+            'nom',
+            'slug',
+            'hierarchie',
         ]
 
 
