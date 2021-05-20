@@ -5,6 +5,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 urlpatterns = [
     path('siaes/', views.siae_list),
     path('siae/<int:key>/', views.siae_detail),
+    path('secteurs/', views.sector_list),
     # YOUR PATTERNS
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     # Optional UI:

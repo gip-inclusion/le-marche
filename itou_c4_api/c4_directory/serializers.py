@@ -35,6 +35,10 @@ class SectorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sector
+        fields = [
+            'id',
+            'parent',
+        ]
 
 
 # class SiaeSerializer(serializers.Serializer):
