@@ -4,11 +4,14 @@ from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from c4_directory.models import Siae
-from c4_directory.serializers import SiaeSerializer
+from c4_directory.serializers import  (
+    SiaeSerializer,
+    SectorSerializer,
+)
 from cocorico.models import (
-        Directory,
-        Sector,
-        SectorString
+    Directory,
+    Sector,
+    SectorString
 )
 
 @csrf_exempt
@@ -37,4 +40,5 @@ def sector_list(request):
     if request.method == 'GET':
         #sectors = ListingCategory.select_related('ListingCategoryTranslation').objects.all()
         sectors = Sector.objects.all()
-        return ''
+        serializer = SectorSerializer(sectors, many=True)
+        return Response(serializer.data)
