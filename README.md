@@ -56,3 +56,4 @@ $ env PYTHONPATH=./itou_c4_api:./itou_c4_api/c4_directory poetry run python mana
 ### Ressources : 
 - https://www.django-rest-framework.org/topics/rest-hypermedia-hateoas/
 - https://realpython.com/django-rest-framework-quick-start/
+- https://www.django-rest-framework.org/tutorial/5-relationships-and-hyperlinked-apis/
