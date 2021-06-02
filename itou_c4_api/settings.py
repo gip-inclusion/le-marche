@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'itou_c4_api',
     'c4_directory.apps.C4DirectoryConfig',
+    'users.apps.UsersConfig',
     'cocorico.apps.CocoricoConfig'
 ]
 

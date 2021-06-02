@@ -53,6 +53,9 @@ class Siae(models.Model):
 
     class Meta:
         ordering = ['name']
+        permissions = [
+            ("access_api", "Can acces the API"),
+        ]
 
 
 class Sector(models.Model):

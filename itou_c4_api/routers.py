@@ -15,9 +15,20 @@ class CocoRouter(object):
         return 'default'
 
     def allow_relation(self, obj1, obj2, **hints):
-        # Don't allow, ever
+        # Allow if same DB
+        if obj1._state.db == obj2._state.db:
+            return True
         return False
 
     def allow_syncdb(self, db, model):
-        # Don't allow, ever
-        return False
+        # Disallow sync on cocorico database
+        no_sync_dbs = ['structures']
+        no_sync_apps = ['cocorico']
+
+        if db in no_sync_dbs:
+            return False
+
+        if model._meta.app_label in no_sync_apps:
+            return False
+
+        return True
