@@ -32,6 +32,26 @@ class SiaeSerializer(serializers.ModelSerializer):
             'createdat',
         ]
 
+class SiaeLightSerializer(serializers.ModelSerializer):
+    raisonSociale = serializers.CharField(source='name')
+    enseigne = serializers.CharField(source='brand')
+    ville = serializers.CharField(source='city')
+    departement = serializers.CharField(source='department')
+    codePostal = serializers.CharField(source='post_code')
+
+    class Meta:
+        model = Siae
+        fields = [
+            'raisonSociale',
+            'enseigne',
+            'siret',
+            'ville',
+            'departement',
+            'region',
+            'codePostal',
+            'createdat',
+        ]
+
 class SectorSerializer(serializers.ModelSerializer):
 
     class Meta:

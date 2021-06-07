@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from c4_directory.models import Siae
 from c4_directory.serializers import  (
     SiaeSerializer,
+    SiaeLightSerializer,
     SectorSerializer,
     SectorStringSerializer,
 )
@@ -17,25 +18,31 @@ from cocorico.models import (
 
 @csrf_exempt
 @api_view(['GET'])
-def siae_list(request):
+def siae_list(request, token=None):
     """
     Liste des structures inclusives reprises dans le marché de l'inclusion.
     """
     if request.method == 'GET':
         siaes = Directory.objects.all()
-        serializer = SiaeSerializer(siaes, many=True)
+        if not token:
+            serializer = SiaeLightSerializer(siaes[:10], many=True)
+        else:
+            serializer = SiaeSerializer(siaes, many=True)
         # return JsonResponse(serializer.data, safe=False)
         return Response(serializer.data)
 
 @csrf_exempt
 @api_view(['GET'])
-def siae_detail(request, key):
+def siae_detail(request, key, token=None):
     """
     Détail d'une structure
     """
     try:
         siae = Directory.objects.get(pk=key)
-        serializer = SiaeSerializer(siae, many=False)
+        if not token:
+            serializer = SiaeLightSerializer(siae, many=False)
+        else:
+            serializer = SiaeSerializer(siae, many=False)
         return Response(serializer.data)
     except Siae.DoesNotExist:
         return HttpResponse(status=404)
