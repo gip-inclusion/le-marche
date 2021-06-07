@@ -14,7 +14,7 @@ class User(AbstractUser):
     """
     email = models.EmailField(_('email address'), unique=True)
 
-    api_key = models.BooleanField(verbose_name="Clé API", default=False)
+    api_key = models.CharField(max_length=128, verbose_name="Clé API", default=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

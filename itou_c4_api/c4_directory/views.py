@@ -15,6 +15,9 @@ from cocorico.models import (
     Sector,
     SectorString
 )
+from users.models import (
+    User,
+)
 
 @csrf_exempt
 @api_view(['GET'])
@@ -27,6 +30,13 @@ def siae_list(request, token=None):
         if not token:
             serializer = SiaeLightSerializer(siaes[:10], many=True)
         else:
+
+            try:
+                user = User.objects.get(api_key=token)
+                assert user.has_perm('c4_directory.access_api')
+            except User.DoesNotExist:
+                return HttpResponse('503: Not Allowed', status=503)
+
             serializer = SiaeSerializer(siaes, many=True)
         # return JsonResponse(serializer.data, safe=False)
         return Response(serializer.data)
@@ -42,6 +52,12 @@ def siae_detail(request, key, token=None):
         if not token:
             serializer = SiaeLightSerializer(siae, many=False)
         else:
+            try:
+                user = User.objects.get(api_key=token)
+                assert user.has_perm('c4_directory.access_api')
+            except User.DoesNotExist:
+                return HttpResponse('503: Not Allowed', status=503)
+
             serializer = SiaeSerializer(siae, many=False)
         return Response(serializer.data)
     except Siae.DoesNotExist:
