@@ -41,5 +41,5 @@ COPY . /app
 RUN poetry config virtualenvs.create false && \
     poetry install $(test $ENV == "prod" && echo "--no-dev") --no-interaction --no-ansi
 
-CMD ["bash"]
-# CMD ["itou_c4_api/runner.sh"]
+# CMD ["bash"]
+CMD ["itou_c4_api/runner.sh"]
