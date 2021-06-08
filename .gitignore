@@ -1,6 +1,7 @@
 # API dev files
 *.sqlite3
 env.local.sh
+start_docker.sh
 
 # Environment variables
 envs/dev.env
