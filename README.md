@@ -31,6 +31,7 @@ Structure de l'API :
 - ...
 
 ## Installation
+
 Pâquets nécessaires à l'installation et l'exécution de l'API:
 - Poetry
 - python3-dev, default-libmysqlclient-dev
