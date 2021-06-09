@@ -33,6 +33,9 @@ ALLOWED_HOSTS = [
     os.environ.get('CURRENT_HOST'),
 ]
 
+# Static Files
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_URL = "/static/"
 
 # Application definition
 
