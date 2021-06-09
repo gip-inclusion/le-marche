@@ -22,6 +22,9 @@ apt-get -y install --no-install-recommends \
     vim-tiny \
     default-mysql-client \
     default-libmysqlclient-dev \
+    binutils \
+    libproj-dev \
+    gdal-bin \
     gcc
 
 # Delete cached files we don't need anymore:

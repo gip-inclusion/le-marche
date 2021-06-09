@@ -30,7 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    os.environ['CURRENT_HOST'],
+    os.environ.get('CURRENT_HOST'),
 ]
 
 
@@ -87,21 +87,27 @@ WSGI_APPLICATION = 'itou_c4_api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# Compatible with clevercloud add-ons, but still portable (and fails if none found)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'HOST': os.environ.get('POSTGRESQL_ADDON_HOST', os.environ['PG_HOST']),
+        'PORT': os.environ.get('POSTGRESQL_ADDON_PORT', os.environ['PG_PORT']),
+        'NAME': os.environ.get('POSTGRESQL_ADDON_DB', os.environ['PG_NAME']),
+        'USER': os.environ.get('POSTGRESQL_ADDON_USER', os.environ['PG_USER']),
+        'PASSWORD': os.environ.get('POSTGRESQL_ADDON_PASSWORD', os.environ['PG_PASSWORD']),
     },
     'structures' : {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ['MYSQL_DB'],
-        'USER': os.environ['MYSQL_USER'],
-        'PASSWORD': os.environ['MYSQL_PASSWORD'],
-        'HOST': os.environ['MYSQL_HOST'],
-        'PORT': int(os.environ['MYSQL_PORT'])
+        'NAME': os.environ.get('MYSQL_ADDON_DB', os.environ['MYSQL_DB']),
+        'USER': os.environ.get('MYSQL_ADDON_USER', os.environ['MYSQL_USER']),
+        'PASSWORD': os.environ.get('MYSQL_ADDON_PASSWORD', os.environ['MYSQL_PASSWORD']),
+        'HOST': os.environ.get('MYSQL_ADDON_HOST', os.environ['MYSQL_HOST']),
+        'PORT': os.environ.get('MYSQL_ADDON_PORT', os.environ['MYSQL_PORT']),
     }
 }
 
+# Needed as long as Cocorico database used as data source
 DATABASE_ROUTERS = ['routers.CocoRouter']
 
 
