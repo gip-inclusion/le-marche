@@ -91,19 +91,19 @@ WSGI_APPLICATION = 'itou_c4_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'HOST': os.environ.get('POSTGRESQL_ADDON_HOST', os.environ['PG_HOST']),
-        'PORT': os.environ.get('POSTGRESQL_ADDON_PORT', os.environ['PG_PORT']),
-        'NAME': os.environ.get('POSTGRESQL_ADDON_DB', os.environ['PG_NAME']),
-        'USER': os.environ.get('POSTGRESQL_ADDON_USER', os.environ['PG_USER']),
-        'PASSWORD': os.environ.get('POSTGRESQL_ADDON_PASSWORD', os.environ['PG_PASSWORD']),
+        'HOST': os.environ.get('POSTGRESQL_ADDON_HOST', os.environ.get('PG_HOST')),
+        'PORT': os.environ.get('POSTGRESQL_ADDON_PORT', os.environ.get('PG_PORT')),
+        'NAME': os.environ.get('POSTGRESQL_ADDON_DB', os.environ.get('PG_NAME')),
+        'USER': os.environ.get('POSTGRESQL_ADDON_USER', os.environ.get('PG_USER')),
+        'PASSWORD': os.environ.get('POSTGRESQL_ADDON_PASSWORD', os.environ.get('PG_PASSWORD')),
     },
     'structures' : {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('MYSQL_ADDON_DB', os.environ['MYSQL_DB']),
-        'USER': os.environ.get('MYSQL_ADDON_USER', os.environ['MYSQL_USER']),
-        'PASSWORD': os.environ.get('MYSQL_ADDON_PASSWORD', os.environ['MYSQL_PASSWORD']),
-        'HOST': os.environ.get('MYSQL_ADDON_HOST', os.environ['MYSQL_HOST']),
-        'PORT': os.environ.get('MYSQL_ADDON_PORT', os.environ['MYSQL_PORT']),
+        'NAME': os.environ.get('MYSQL_ADDON_DB', os.environ.get('MYSQL_DB')),
+        'USER': os.environ.get('MYSQL_ADDON_USER', os.environ.get('MYSQL_USER')),
+        'PASSWORD': os.environ.get('MYSQL_ADDON_PASSWORD', os.environ.get('MYSQL_PASSWORD')),
+        'HOST': os.environ.get('MYSQL_ADDON_HOST', os.environ.get('MYSQL_HOST')),
+        'PORT': os.environ.get('MYSQL_ADDON_PORT', os.environ.get('MYSQL_PORT')),
     }
 }
 
