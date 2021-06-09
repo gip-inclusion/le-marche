@@ -14,10 +14,6 @@ class Migration(migrations.Migration):
             name='user',
             options={},
         ),
-        migrations.AlterUniqueTogether(
-            name='user',
-            unique_together={('email',)},
-        ),
         migrations.RemoveField(
             model_name='user',
             name='username',
