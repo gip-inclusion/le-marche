@@ -115,7 +115,7 @@ class SiaeHyperSerializer(serializers.HyperlinkedModelSerializer):
     codePostal = serializers.CharField(source='post_code')
 
     target = serializers.HyperlinkedIdentityField(
-        view_name="siae",
+        view_name="siae-detail",
         lookup_field='siret',
         lookup_url_kwarg='key'
     )
@@ -135,7 +135,7 @@ class SiaeHyperSerializer(serializers.HyperlinkedModelSerializer):
             'region',
             'codePostal',
             'createdat',
-            'target'
+            'target',
             # 'url',
         ]
         # extra_kwargs = {
