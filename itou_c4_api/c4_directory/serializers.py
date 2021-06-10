@@ -4,6 +4,8 @@ from c4_directory.models import (
     Sector,
     SectorString,
 )
+from django.urls import reverse
+from c4_directory import views
 
 class SiaeSerializer(serializers.ModelSerializer):
     raisonSociale = serializers.CharField(source='name')
@@ -14,6 +16,10 @@ class SiaeSerializer(serializers.ModelSerializer):
     ville = serializers.CharField(source='city')
     departement = serializers.CharField(source='department')
     codePostal = serializers.CharField(source='post_code')
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, obj):
+        return f"/siae/{obj.pk}"
 
     class Meta:
         model = Siae
@@ -30,7 +36,50 @@ class SiaeSerializer(serializers.ModelSerializer):
             'region',
             'codePostal',
             'createdat',
+            'url',
         ]
+
+class SiaeHyperSerializer(serializers.HyperlinkedModelSerializer):
+    # Tested this, but unclear error messaging
+    # did not allow it to work, yet.
+    raisonSociale = serializers.CharField(source='name')
+    enseigne = serializers.CharField(source='brand')
+    type = serializers.CharField(source='kind')
+    telephone = serializers.CharField(source='phone')
+    siteWeb = serializers.CharField(source='website')
+    ville = serializers.CharField(source='city')
+    departement = serializers.CharField(source='department')
+    codePostal = serializers.CharField(source='post_code')
+
+    target = serializers.HyperlinkedIdentityField(
+        view_name="siae",
+        lookup_field='siret',
+        lookup_url_kwarg='key'
+    )
+
+    class Meta:
+        model = Siae
+        fields = [
+            'raisonSociale',
+            'enseigne',
+            'siret',
+            'type',
+            'email',
+            'telephone',
+            'siteWeb',
+            'ville',
+            'departement',
+            'region',
+            'codePostal',
+            'createdat',
+            'target'
+            # 'url',
+        ]
+        # extra_kwargs = {
+        #     'url': {'view_name': 'siae-detail', 'lookup_field': 'siret'},
+        # }
+
+
 
 class SiaeLightSerializer(serializers.ModelSerializer):
     raisonSociale = serializers.CharField(source='name')
@@ -38,6 +87,7 @@ class SiaeLightSerializer(serializers.ModelSerializer):
     ville = serializers.CharField(source='city')
     departement = serializers.CharField(source='department')
     codePostal = serializers.CharField(source='post_code')
+    url = serializers.SerializerMethodField()
 
     class Meta:
         model = Siae
@@ -50,7 +100,11 @@ class SiaeLightSerializer(serializers.ModelSerializer):
             'region',
             'codePostal',
             'createdat',
+            'url',
         ]
+
+    def get_url(self, obj):
+        return f"/siae/{obj.pk}"
 
 class SectorSerializer(serializers.ModelSerializer):
 
