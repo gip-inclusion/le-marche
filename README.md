@@ -90,7 +90,13 @@ $ poetry run poe export
 Si l'environnement est neuf ou n'est plus à jour, appliquez les migrations nécessaires
 
 ```bash
+# Avec manage.py
+$ poetry run python manage.py makemigrations
 $ poetry run python manage.py migrate
+# Avec poe, dans le shell poetry
+$ poetry shell
+$ poe makemigrations
+$ poe migrate
 ```
 
 ## Développement
@@ -126,6 +132,8 @@ un sous-répertoire par app django.
 - https://www.django-rest-framework.org/tutorial/5-relationships-and-hyperlinked-apis/
 - https://github.com/wsvincent/awesome-django
 - https://dev.to/sherlockcodes/pytest-with-django-rest-framework-from-zero-to-hero-8c4
+- https://hannylicious.com/blog/testing-django/
+- https://flowfx.de/blog/populate-your-django-test-database-with-pytest-fixtures/
 
 ## Contenu de l'API du marché de l'inclusion
 ### Le projet aujourd'hui

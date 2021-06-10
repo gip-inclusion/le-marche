@@ -25,6 +25,7 @@ flake8 = "^3.9.2"
 poethepoet = "^0.10.0"
 black = "^21.5b2"
 pytest-django = "^4.4.0"
+factory-boy = "^3.2.0"
 
 [tool.poetry.scripts]
 
@@ -64,12 +65,12 @@ exclude = '''
 '''
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "itou_c4_api.settings"
+DJANGO_SETTINGS_MODULE = "itou_c4_api.pytest_settings"
 # testpaths = [
 #     "tests",
 #     "integration",
 # ]
-# addopts = "-vv -x --lf --cov"
+# addopts = "--nomigrations --self-containted-html --junitxml=./tests/results/junit.xml"
 
 [tool.poe.tasks]
 export = { shell = "poetry export -f requirements.txt --output requirements.txt"}
@@ -77,3 +78,5 @@ flake8 = { shell = "pflake8 itou_c4_api"}
 isort = { shell = "isort ./itou_c4_api/*.py"}
 black = { shell = "black itou_c4_api"}
 clean = ["isort", "black"]
+migrate = { shell = "./manage.py migrate"}
+makemigrations = { shell = "./manage.py makemigrations"}

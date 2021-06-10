@@ -3,6 +3,7 @@
 # This API is only a mere client to these data, a coy reader.
 
 from django.db import models
+from django.conf import settings
 
 
 # class ListingCategory(models.Model):
@@ -15,7 +16,8 @@ class Sector(models.Model):
     root = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        # managed = False
+        managed = getattr(settings, 'UNDER_TEST', False)
         db_table = "listing_category"
 
 
@@ -28,7 +30,8 @@ class SectorString(models.Model):
     slug = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
-        managed = False
+        # managed = False
+        managed = getattr(settings, 'UNDER_TEST', False)
         db_table = "listing_category_translation"
 
 
@@ -71,7 +74,8 @@ class Directory(models.Model):
     sectors = models.ManyToManyField(Sector, through="DirectorySector")
 
     class Meta:
-        managed = False
+        # managed = False
+        managed = getattr(settings, 'UNDER_TEST', False)
         db_table = "directory"
 
 
@@ -83,7 +87,8 @@ class DirectorySector(models.Model):
     sector = models.ForeignKey(Sector, models.DO_NOTHING, db_column="listing_category_id")
 
     class Meta:
-        managed = False
+        # managed = False
+        managed = getattr(settings, 'UNDER_TEST', False)
         db_table = "directory_listing_category"
         unique_together = (("directory", "sector"),)
 
