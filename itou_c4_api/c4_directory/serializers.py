@@ -1,12 +1,9 @@
-from rest_framework import serializers
-from c4_directory.models import (
-    Siae,
-    Sector,
-    SectorString,
-)
-from django.urls import reverse
 from c4_directory import views
+from c4_directory.models import Sector, SectorString, Siae
+from django.urls import reverse
 from hashids import Hashids
+from rest_framework import serializers
+
 
 hasher = Hashids(alphabet='1234567890ABCDEF', min_length=5)
 
