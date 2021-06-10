@@ -1,12 +1,18 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
 from c4_directory import views
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
+# Basic idea is to use hyperlinkedmodelserializer and viewsets
+# But unclear documentation and confusing error messages did
+# not allow it to work, yet.
+# router = routers.DefaultRouter()
+# router.register(r'hypersiaes', views.SiaesViewSet)
+
 urlpatterns = [
+    # path('', include(router.urls)),
     path('siaes/', views.siae_list),
-    path('siaes/<token>', views.siae_list),
-    path('siae/<int:key>', views.siae_detail),
-    path('siae/<int:key>/<token>', views.siae_detail),
+    path('siae/<int:key>', views.siae_detail, name='siae-detail'),
     path('secteurs/', views.sector_list),
     # YOUR PATTERNS
     path('schema/', SpectacularAPIView.as_view(), name='schema'),

@@ -3,9 +3,11 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
+from rest_framework import viewsets
 from c4_directory.models import Siae
 from c4_directory.serializers import  (
     SiaeSerializer,
+    SiaeHyperSerializer,
     SiaeLightSerializer,
     SectorSerializer,
     SectorStringSerializer,
@@ -19,6 +21,10 @@ from users.models import (
     User,
 )
 
+class SiaesViewSet(viewsets.ModelViewSet):
+    queryset = Directory.objects.all()
+    serializer_class = SiaeHyperSerializer
+
 @csrf_exempt
 @api_view(['GET'])
 def siae_list(request, token=None):
@@ -27,6 +33,7 @@ def siae_list(request, token=None):
     """
     if request.method == 'GET':
         siaes = Directory.objects.all()
+        token = request.GET.get('token', None)
         if not token:
             serializer = SiaeLightSerializer(siaes[:10], many=True)
         else:
@@ -37,18 +44,19 @@ def siae_list(request, token=None):
             except User.DoesNotExist:
                 return HttpResponse('503: Not Allowed', status=503)
 
-            serializer = SiaeSerializer(siaes, many=True)
+            serializer = SiaeLightSerializer(siaes, many=True)
         # return JsonResponse(serializer.data, safe=False)
         return Response(serializer.data)
 
 @csrf_exempt
 @api_view(['GET'])
-def siae_detail(request, key, token=None):
+def siae_detail(request, key):
     """
     Détail d'une structure
     """
     try:
         siae = Directory.objects.get(pk=key)
+        token = request.GET.get('token', None)
         if not token:
             serializer = SiaeLightSerializer(siae, many=False)
         else:
