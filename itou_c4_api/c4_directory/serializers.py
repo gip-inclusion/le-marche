@@ -6,6 +6,9 @@ from c4_directory.models import (
 )
 from django.urls import reverse
 from c4_directory import views
+from hashids import Hashids
+
+hasher = Hashids(alphabet='1234567890ABCDEF', min_length=5)
 
 class SiaeSerializer(serializers.ModelSerializer):
     raisonSociale = serializers.CharField(source='name')
@@ -106,7 +109,10 @@ class SiaeLightSerializer(serializers.ModelSerializer):
     def get_url(self, obj):
         return f"/siae/{obj.pk}"
 
+
 class SectorSerializer(serializers.ModelSerializer):
+    id = serializers.SerializerMethodField()
+    parent = serializers.SerializerMethodField()
 
     class Meta:
         model = Sector
@@ -114,6 +120,14 @@ class SectorSerializer(serializers.ModelSerializer):
             'id',
             'parent',
         ]
+
+    def get_id(self, obj):
+        return hasher.encode(obj.id)
+
+    def get_parent(self, obj):
+        if obj.parent is None:
+            return None
+        return hasher.encode(obj.parent.id)
 
 class SectorStringSerializer(serializers.ModelSerializer):
     hierarchie = SectorSerializer(many=False, read_only=True, source='translatable')
