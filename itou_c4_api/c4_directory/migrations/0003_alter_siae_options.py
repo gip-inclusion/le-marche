@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('c4_directory', '0002_auto_20210602_0928'),
+        ("c4_directory", "0002_auto_20210602_0928"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='siae',
-            options={'ordering': ['name']},
+            name="siae",
+            options={"ordering": ["name"]},
         ),
     ]

@@ -9,25 +9,57 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Siae',
+            name="Siae",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, verbose_name='Nom')),
-                ('brand', models.CharField(blank=True, max_length=255, verbose_name='Enseigne')),
-                ('kind', models.CharField(choices=[('EI', "Entreprise d'insertion"), ('AI', 'Association intermédiaire'), ('ACI', "Atelier chantier d'insertion"), ('ETTI', "Entreprise de travail temporaire d'insertion"), ('EITI', "Entreprise d'insertion par le travail indépendant"), ('GEIQ', "Groupement d'employeurs pour l'insertion et la qualification"), ('EA', 'Entreprise adaptée'), ('EATT', 'Entreprise adaptée de travail temporaire')], default='EI', max_length=6, verbose_name='Type')),
-                ('siret', models.CharField(db_index=True, max_length=14, validators=[c4_directory.models.validate_siret], verbose_name='Siret')),
-                ('naf', models.CharField(blank=True, max_length=5, validators=[c4_directory.models.validate_naf], verbose_name='Naf')),
-                ('address', models.TextField(verbose_name='Adresse')),
-                ('website', models.URLField(blank=True, verbose_name='Site web')),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Date de création')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=255, verbose_name="Nom")),
+                ("brand", models.CharField(blank=True, max_length=255, verbose_name="Enseigne")),
+                (
+                    "kind",
+                    models.CharField(
+                        choices=[
+                            ("EI", "Entreprise d'insertion"),
+                            ("AI", "Association intermédiaire"),
+                            ("ACI", "Atelier chantier d'insertion"),
+                            ("ETTI", "Entreprise de travail temporaire d'insertion"),
+                            ("EITI", "Entreprise d'insertion par le travail indépendant"),
+                            ("GEIQ", "Groupement d'employeurs pour l'insertion et la qualification"),
+                            ("EA", "Entreprise adaptée"),
+                            ("EATT", "Entreprise adaptée de travail temporaire"),
+                        ],
+                        default="EI",
+                        max_length=6,
+                        verbose_name="Type",
+                    ),
+                ),
+                (
+                    "siret",
+                    models.CharField(
+                        db_index=True,
+                        max_length=14,
+                        validators=[c4_directory.models.validate_siret],
+                        verbose_name="Siret",
+                    ),
+                ),
+                (
+                    "naf",
+                    models.CharField(
+                        blank=True, max_length=5, validators=[c4_directory.models.validate_naf], verbose_name="Naf"
+                    ),
+                ),
+                ("address", models.TextField(verbose_name="Adresse")),
+                ("website", models.URLField(blank=True, verbose_name="Site web")),
+                (
+                    "created_at",
+                    models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date de création"),
+                ),
             ],
             options={
-                'ordering': ['name'],
+                "ordering": ["name"],
             },
         ),
     ]
