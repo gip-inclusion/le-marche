@@ -6,13 +6,13 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 # Basic idea is to use hyperlinkedmodelserializer and viewsets
 # But unclear documentation and confusing error messages did
 # not allow it to work, yet.
-# router = routers.DefaultRouter()
-# router.register(r'hypersiaes', views.SiaesViewSet)
+router = routers.DefaultRouter()
+router.register(r'hypersiaes', views.SiaesViewSet)
 
 urlpatterns = [
-    # path('', include(router.urls)),
-    path('siaes/', views.siae_list),
-    path('siae/<int:key>', views.siae_detail, name='siae-detail'),
+    path('api/', include(router.urls)),
+    # path('siaes/', views.siae_list),
+    # path('siae/<int:key>', views.siae_detail, name='siae-detail'),
     path('secteurs/', views.sector_list),
     path('secteur/<str:key>', views.sector_detail),
     # YOUR PATTERNS

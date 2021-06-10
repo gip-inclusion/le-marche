@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '[KEY]'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -90,23 +90,24 @@ WSGI_APPLICATION = 'itou_c4_api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# Compatible with clevercloud add-ons, but still portable (and fails if none found)
+# Compatible with clevercloud add-ons
+# Standard dict access to force fail if not provided
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'HOST': os.environ.get('POSTGRESQL_ADDON_HOST', os.environ.get('PG_HOST')),
-        'PORT': os.environ.get('POSTGRESQL_ADDON_PORT', os.environ.get('PG_PORT')),
-        'NAME': os.environ.get('POSTGRESQL_ADDON_DB', os.environ.get('PG_NAME')),
-        'USER': os.environ.get('POSTGRESQL_ADDON_USER', os.environ.get('PG_USER')),
-        'PASSWORD': os.environ.get('POSTGRESQL_ADDON_PASSWORD', os.environ.get('PG_PASSWORD')),
+        'HOST': os.environ['POSTGRESQL_ADDON_HOST'],
+        'PORT': os.environ['POSTGRESQL_ADDON_PORT'],
+        'NAME': os.environ['POSTGRESQL_ADDON_DB'],
+        'USER': os.environ['POSTGRESQL_ADDON_USER'],
+        'PASSWORD': os.environ['POSTGRESQL_ADDON_PASSWORD'],
     },
     'structures' : {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('MYSQL_ADDON_DB', os.environ.get('MYSQL_DB')),
-        'USER': os.environ.get('MYSQL_ADDON_USER', os.environ.get('MYSQL_USER')),
-        'PASSWORD': os.environ.get('MYSQL_ADDON_PASSWORD', os.environ.get('MYSQL_PASSWORD')),
-        'HOST': os.environ.get('MYSQL_ADDON_HOST', os.environ.get('MYSQL_HOST')),
-        'PORT': os.environ.get('MYSQL_ADDON_PORT', os.environ.get('MYSQL_PORT')),
+        'NAME': os.environ['MYSQL_ADDON_DB'],
+        'USER': os.environ['MYSQL_ADDON_USER'],
+        'PASSWORD': os.environ['MYSQL_ADDON_PASSWORD'],
+        'HOST': os.environ['MYSQL_ADDON_HOST'],
+        'PORT': os.environ['MYSQL_ADDON_PORT'],
     }
 }
 
