@@ -10,6 +10,64 @@ from hashids import Hashids
 
 hasher = Hashids(alphabet='1234567890ABCDEF', min_length=5)
 
+class SectorSerializer(serializers.ModelSerializer):
+    id = serializers.SerializerMethodField()
+    parent = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Sector
+        fields = [
+            'id',
+            'parent',
+        ]
+
+    def get_id(self, obj):
+        return hasher.encode(obj.id)
+
+    def get_parent(self, obj):
+        if obj.parent is None:
+            return None
+        return hasher.encode(obj.parent.id)
+
+
+class SectorStringSerializer(serializers.ModelSerializer):
+    hierarchie = SectorSerializer(many=False, read_only=True, source='translatable')
+
+    nom = serializers.CharField(source='name')
+    url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = SectorString
+        fields = [
+            'nom',
+            'slug',
+            'url',
+            'hierarchie',
+        ]
+
+    def get_url(self, obj):
+        key =  hasher.encode(obj.id)
+        return f"/secteur/{key}"
+
+class SectorSimpleSerializer(serializers.ModelSerializer):
+    id = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Sector
+        fields = [
+            'id',
+            'url',
+        ]
+
+    def get_id(self, obj):
+        return hasher.encode(obj.id)
+
+    def get_url(self, obj):
+        key =  hasher.encode(obj.id)
+        return f"/secteur/{key}"
+
+
 class SiaeSerializer(serializers.ModelSerializer):
     raisonSociale = serializers.CharField(source='name')
     enseigne = serializers.CharField(source='brand')
@@ -20,6 +78,7 @@ class SiaeSerializer(serializers.ModelSerializer):
     departement = serializers.CharField(source='department')
     codePostal = serializers.CharField(source='post_code')
     url = serializers.SerializerMethodField()
+    sectors = SectorSimpleSerializer(many=True, read_only=True)
 
     def get_url(self, obj):
         return f"/siae/{obj.pk}"
@@ -40,6 +99,7 @@ class SiaeSerializer(serializers.ModelSerializer):
             'codePostal',
             'createdat',
             'url',
+            'sectors',
         ]
 
 class SiaeHyperSerializer(serializers.HyperlinkedModelSerializer):
@@ -108,39 +168,6 @@ class SiaeLightSerializer(serializers.ModelSerializer):
 
     def get_url(self, obj):
         return f"/siae/{obj.pk}"
-
-
-class SectorSerializer(serializers.ModelSerializer):
-    id = serializers.SerializerMethodField()
-    parent = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Sector
-        fields = [
-            'id',
-            'parent',
-        ]
-
-    def get_id(self, obj):
-        return hasher.encode(obj.id)
-
-    def get_parent(self, obj):
-        if obj.parent is None:
-            return None
-        return hasher.encode(obj.parent.id)
-
-class SectorStringSerializer(serializers.ModelSerializer):
-    hierarchie = SectorSerializer(many=False, read_only=True, source='translatable')
-
-    nom = serializers.CharField(source='name')
-
-    class Meta:
-        model = SectorString
-        fields = [
-            'nom',
-            'slug',
-            'hierarchie',
-        ]
 
 
 # class SiaeSerializer(serializers.Serializer):

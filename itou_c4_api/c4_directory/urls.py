@@ -14,6 +14,7 @@ urlpatterns = [
     path('siaes/', views.siae_list),
     path('siae/<int:key>', views.siae_detail, name='siae-detail'),
     path('secteurs/', views.sector_list),
+    path('secteur/<str:key>', views.sector_detail),
     # YOUR PATTERNS
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     # Optional UI:
