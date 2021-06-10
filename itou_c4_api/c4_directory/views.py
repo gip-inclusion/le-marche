@@ -14,12 +14,16 @@ from c4_directory.serializers import  (
 )
 from cocorico.models import (
     Directory,
+    DirectorySector,
     Sector,
     SectorString
 )
 from users.models import (
     User,
 )
+from hashids import Hashids
+
+hasher = Hashids(alphabet='1234567890ABCDEF', min_length=5)
 
 class SiaesViewSet(viewsets.ModelViewSet):
     queryset = Directory.objects.all()
@@ -56,6 +60,7 @@ def siae_detail(request, key):
     """
     try:
         siae = Directory.objects.get(pk=key)
+        # siae = DirectorySector.objects.all().select_related('Directory').select_related('Sector')
         token = request.GET.get('token', None)
         if not token:
             serializer = SiaeLightSerializer(siae, many=False)
@@ -83,4 +88,19 @@ def sector_list(request):
         sectors = SectorString.objects.filter(translatable__gte=10).select_related('translatable').all()
         #sectors = Sector.objects.all()
         serializer = SectorStringSerializer(sectors, many=True)
+        return Response(serializer.data)
+
+
+@csrf_exempt
+@api_view(['GET'])
+def sector_detail(request, key):
+    """
+    Détail secteur d'activité
+    """
+    if request.method == 'GET':
+        #sectors = Sector.objects.select_related('SectorString').all()
+        ckey = hasher.decode(key)[0]
+        sector = SectorString.objects.select_related('translatable').get(translatable=ckey)
+        #sector = SectorString.objects.filter(translatable=ckey).select_related('translatable').all()
+        serializer = SectorStringSerializer(sector, many=False)
         return Response(serializer.data)

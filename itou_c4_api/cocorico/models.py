@@ -4,84 +4,6 @@
 
 from django.db import models
 
-
-class Directory(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=255)
-    siret = models.CharField(max_length=14, blank=True, null=True)
-    email = models.CharField(max_length=255, blank=True, null=True)
-    kind = models.CharField(max_length=255)
-    website = models.CharField(max_length=255, blank=True, null=True)
-    city = models.CharField(max_length=255, blank=True, null=True)
-    post_code = models.CharField(max_length=255, blank=True, null=True)
-    department = models.CharField(max_length=255, blank=True, null=True)
-    region = models.CharField(max_length=255, blank=True, null=True)
-    longitude = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
-    latitude = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
-    phone = models.CharField(max_length=255, blank=True, null=True)
-    presta_type = models.CharField(max_length=255, blank=True, null=True)
-    sector = models.TextField(blank=True, null=True)
-    naf = models.CharField(max_length=5, blank=True, null=True)
-    is_active = models.IntegerField(blank=True, null=True)
-    brand = models.CharField(max_length=255, blank=True, null=True)
-    createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)  # Field name made lowercase.
-    updatedat = models.DateTimeField(db_column='updatedAt', blank=True, null=True)  # Field name made lowercase.
-    c1_id = models.IntegerField(blank=True, null=True)
-    c4_id = models.IntegerField(blank=True, null=True)
-    is_delisted = models.IntegerField(blank=True, null=True)
-    c1_source = models.CharField(max_length=255, blank=True, null=True)
-    last_sync_date = models.DateTimeField(blank=True, null=True)
-    nature = models.CharField(max_length=255, blank=True, null=True)
-    siret_is_valid = models.IntegerField(blank=True, null=True)
-    ig_employees = models.CharField(max_length=255, blank=True, null=True)
-    ig_ca = models.IntegerField(blank=True, null=True)
-    ig_date_constitution = models.DateTimeField(blank=True, null=True)
-    admin_email = models.CharField(max_length=255, blank=True, null=True)
-    admin_name = models.CharField(max_length=255, blank=True, null=True)
-    geo_range = models.IntegerField(blank=True, null=True)
-    pol_range = models.IntegerField(blank=True, null=True)
-    description = models.TextField()
-
-    class Meta:
-        managed = False
-        db_table = 'directory'
-
-
-
-class DirectoryClientImage(models.Model):
-    id = models.IntegerField(primary_key=True)
-    directory = models.ForeignKey(Directory, models.DO_NOTHING)
-    name = models.CharField(max_length=255)
-    position = models.SmallIntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'directory_client_image'
-
-
-class DirectoryImage(models.Model):
-    id = models.IntegerField(primary_key=True)
-    directory = models.ForeignKey(Directory, models.DO_NOTHING)
-    name = models.CharField(max_length=255)
-    position = models.SmallIntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'directory_image'
-
-
-class DirectoryListingCategory(models.Model):
-    id = models.IntegerField(primary_key=True)
-    directory = models.ForeignKey(Directory, models.DO_NOTHING)
-    listing_category = models.ForeignKey('Sector', models.DO_NOTHING)
-    source = models.CharField(max_length=255, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'directory_listing_category'
-        unique_together = (('directory', 'listing_category'),)
-
-
 #class ListingCategory(models.Model):
 class Sector(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -109,6 +31,95 @@ class SectorString(models.Model):
         db_table = 'listing_category_translation'
 
 
+
+class Directory(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=255)
+    siret = models.CharField(max_length=14, blank=True, null=True)
+    email = models.CharField(max_length=255, blank=True, null=True)
+    kind = models.CharField(max_length=255)
+    website = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=255, blank=True, null=True)
+    post_code = models.CharField(max_length=255, blank=True, null=True)
+    department = models.CharField(max_length=255, blank=True, null=True)
+    region = models.CharField(max_length=255, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
+    latitude = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
+    phone = models.CharField(max_length=255, blank=True, null=True)
+    presta_type = models.CharField(max_length=255, blank=True, null=True)
+    # sector = models.TextField(blank=True, null=True)
+    naf = models.CharField(max_length=5, blank=True, null=True)
+    is_active = models.IntegerField(blank=True, null=True)
+    brand = models.CharField(max_length=255, blank=True, null=True)
+    createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)  # Field name made lowercase.
+    updatedat = models.DateTimeField(db_column='updatedAt', blank=True, null=True)  # Field name made lowercase.
+    c1_id = models.IntegerField(blank=True, null=True)
+    c4_id = models.IntegerField(blank=True, null=True)
+    is_delisted = models.IntegerField(blank=True, null=True)
+    c1_source = models.CharField(max_length=255, blank=True, null=True)
+    last_sync_date = models.DateTimeField(blank=True, null=True)
+    nature = models.CharField(max_length=255, blank=True, null=True)
+    siret_is_valid = models.IntegerField(blank=True, null=True)
+    ig_employees = models.CharField(max_length=255, blank=True, null=True)
+    ig_ca = models.IntegerField(blank=True, null=True)
+    ig_date_constitution = models.DateTimeField(blank=True, null=True)
+    admin_email = models.CharField(max_length=255, blank=True, null=True)
+    admin_name = models.CharField(max_length=255, blank=True, null=True)
+    geo_range = models.IntegerField(blank=True, null=True)
+    pol_range = models.IntegerField(blank=True, null=True)
+    description = models.TextField()
+    sectors = models.ManyToManyField(Sector, through="DirectorySector")
+
+    class Meta:
+        managed = False
+        db_table = 'directory'
+
+
+class DirectorySector(models.Model):
+    # id = models.IntegerField(primary_key=True)
+
+    source = models.CharField(max_length=255, blank=True, null=True)
+    directory = models.ForeignKey(Directory, models.DO_NOTHING, db_column='directory_id')
+    sector = models.ForeignKey(Sector, models.DO_NOTHING, db_column='listing_category_id')
+
+    class Meta:
+        managed = False
+        db_table = 'directory_listing_category'
+        unique_together = (('directory', 'sector'),)
+
+
+
+class DirectoryClientImage(models.Model):
+    id = models.IntegerField(primary_key=True)
+    directory = models.ForeignKey(Directory, models.DO_NOTHING)
+    name = models.CharField(max_length=255)
+    position = models.SmallIntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'directory_client_image'
+
+
+class DirectoryImage(models.Model):
+    id = models.IntegerField(primary_key=True)
+    directory = models.ForeignKey(Directory, models.DO_NOTHING)
+    name = models.CharField(max_length=255)
+    position = models.SmallIntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'directory_image'
+
+# class DirectoryListingCategory(models.Model):
+#     id = models.IntegerField(primary_key=True)
+#     directory = models.ForeignKey(Directory, models.DO_NOTHING)
+#     listing_category = models.ForeignKey('Sector', models.DO_NOTHING)
+#     source = models.CharField(max_length=255, blank=True, null=True)
+# 
+#     class Meta:
+#         managed = False
+#         db_table = 'directory_listing_category'
+#         unique_together = (('directory', 'listing_category'),)
 
 class DirectoryCategory(models.Model):
 
