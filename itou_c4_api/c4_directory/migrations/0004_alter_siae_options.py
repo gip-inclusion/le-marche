@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('c4_directory', '0003_alter_siae_options'),
+        ("c4_directory", "0003_alter_siae_options"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='siae',
-            options={'ordering': ['name'], 'permissions': [('access_api', 'Can acces the API')]},
+            name="siae",
+            options={"ordering": ["name"], "permissions": [("access_api", "Can acces the API")]},
         ),
     ]

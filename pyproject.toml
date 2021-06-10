@@ -56,5 +56,5 @@ include = '\.pyi?$'
 export = { shell = "poetry export -f requirements.txt --output requirements.txt"}
 flake8 = { shell = "pflake8 itou_c4_api"}
 isort = { shell = "isort ./itou_c4_api/*.py"}
-black = { shell = "black --check itou_c4_api"}
+black = { shell = "black itou_c4_api"}
 clean = ["flake8", "isort", "black"]

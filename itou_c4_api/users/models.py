@@ -12,13 +12,14 @@ class User(AbstractUser):
     """
     C4 Custom User Model
     """
+
     username = None
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_("email address"), unique=True)
 
-    api_key = models.CharField(max_length=128, verbose_name="Clé API", unique=True, default='')
+    api_key = models.CharField(max_length=128, verbose_name="Clé API", unique=True, default="")
 
-    USERNAME_FIELD = 'email'
-    EMAIL_FIELD = 'email'
+    USERNAME_FIELD = "email"
+    EMAIL_FIELD = "email"
     REQUIRED_FIELDS = []
 
     ACCOUNT_USER_MODEL_USERNAME_FIELD = None
@@ -29,4 +30,3 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
-

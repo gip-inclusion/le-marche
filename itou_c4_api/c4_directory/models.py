@@ -9,23 +9,25 @@ def validate_siret(siret):
     if not siret.isdigit() or len(siret) != 14:
         raise ValidationError("Le numéro SIRET doit être composé de 14 chiffres.")
 
+
 def validate_naf(naf):
     if len(naf) != 5 or not naf[:4].isdigit() or not naf[4].isalpha():
         raise ValidationError("Le code NAF doit être composé de de 4 chiffres et d'une lettre.")
-## End of temporary code
 
+
+## End of temporary code
 
 
 class Sector(models.Model):
     id = models.IntegerField(primary_key=True)
-    parent = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
+    parent = models.ForeignKey("self", models.DO_NOTHING, blank=True, null=True)
     lft = models.IntegerField()
     lvl = models.IntegerField()
     rgt = models.IntegerField()
     root = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        ordering = ['id']
+        ordering = ["id"]
 
 
 class SectorString(models.Model):
@@ -36,7 +38,7 @@ class SectorString(models.Model):
     slug = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
-        ordering = ['id']
+        ordering = ["id"]
 
 
 class Siae(models.Model):
@@ -78,18 +80,17 @@ class Siae(models.Model):
     sectors = models.ManyToManyField(Sector)
 
     class Meta:
-        ordering = ['name']
+        ordering = ["name"]
         permissions = [
             ("access_api", "Can acces the API"),
         ]
+
 
 # class SiaeSector(models.Model):
 #     id = models.IntegerField(primary_key=True)
 #     directory = models.ForeignKey(Directory, models.DO_NOTHING)
 #     listing_category = models.ForeignKey('Sector', models.DO_NOTHING)
 #     source = models.CharField(max_length=255, blank=True, null=True)
-# 
+#
 #     class Meta:
 #         ordering = ['id']
-
-

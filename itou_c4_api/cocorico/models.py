@@ -5,10 +5,10 @@
 from django.db import models
 
 
-#class ListingCategory(models.Model):
+# class ListingCategory(models.Model):
 class Sector(models.Model):
     id = models.IntegerField(primary_key=True)
-    parent = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
+    parent = models.ForeignKey("self", models.DO_NOTHING, blank=True, null=True)
     lft = models.IntegerField()
     lvl = models.IntegerField()
     rgt = models.IntegerField()
@@ -16,10 +16,10 @@ class Sector(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'listing_category'
+        db_table = "listing_category"
 
 
-#class ListingCategoryTranslation(models.Model):
+# class ListingCategoryTranslation(models.Model):
 class SectorString(models.Model):
     id = models.IntegerField(primary_key=True)
     translatable = models.ForeignKey(Sector, models.DO_NOTHING, blank=True, null=True)
@@ -29,8 +29,7 @@ class SectorString(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'listing_category_translation'
-
+        db_table = "listing_category_translation"
 
 
 class Directory(models.Model):
@@ -52,8 +51,8 @@ class Directory(models.Model):
     naf = models.CharField(max_length=5, blank=True, null=True)
     is_active = models.IntegerField(blank=True, null=True)
     brand = models.CharField(max_length=255, blank=True, null=True)
-    createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)  # Field name made lowercase.
-    updatedat = models.DateTimeField(db_column='updatedAt', blank=True, null=True)  # Field name made lowercase.
+    createdat = models.DateTimeField(db_column="createdAt", blank=True, null=True)  # Field name made lowercase.
+    updatedat = models.DateTimeField(db_column="updatedAt", blank=True, null=True)  # Field name made lowercase.
     c1_id = models.IntegerField(blank=True, null=True)
     c4_id = models.IntegerField(blank=True, null=True)
     is_delisted = models.IntegerField(blank=True, null=True)
@@ -73,21 +72,20 @@ class Directory(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'directory'
+        db_table = "directory"
 
 
 class DirectorySector(models.Model):
     # id = models.IntegerField(primary_key=True)
 
     source = models.CharField(max_length=255, blank=True, null=True)
-    directory = models.ForeignKey(Directory, models.DO_NOTHING, db_column='directory_id')
-    sector = models.ForeignKey(Sector, models.DO_NOTHING, db_column='listing_category_id')
+    directory = models.ForeignKey(Directory, models.DO_NOTHING, db_column="directory_id")
+    sector = models.ForeignKey(Sector, models.DO_NOTHING, db_column="listing_category_id")
 
     class Meta:
         managed = False
-        db_table = 'directory_listing_category'
-        unique_together = (('directory', 'sector'),)
-
+        db_table = "directory_listing_category"
+        unique_together = (("directory", "sector"),)
 
 
 class DirectoryClientImage(models.Model):
@@ -98,7 +96,7 @@ class DirectoryClientImage(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'directory_client_image'
+        db_table = "directory_client_image"
 
 
 class DirectoryImage(models.Model):
@@ -109,399 +107,346 @@ class DirectoryImage(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'directory_image'
+        db_table = "directory_image"
+
 
 # class DirectoryListingCategory(models.Model):
 #     id = models.IntegerField(primary_key=True)
 #     directory = models.ForeignKey(Directory, models.DO_NOTHING)
 #     listing_category = models.ForeignKey('Sector', models.DO_NOTHING)
 #     source = models.CharField(max_length=255, blank=True, null=True)
-# 
+#
 #     class Meta:
 #         managed = False
 #         db_table = 'directory_listing_category'
 #         unique_together = (('directory', 'listing_category'),)
 
-class DirectoryCategory(models.Model):
 
+class DirectoryCategory(models.Model):
     class Meta:
         managed = False
-        db_table = 'directory_category'
+        db_table = "directory_category"
 
 
 class DirectoryUser(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'directory_user'
+        db_table = "directory_user"
+
 
 class Booking(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'booking'
+        db_table = "booking"
 
 
 class BookingBankWire(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'booking_bank_wire'
+        db_table = "booking_bank_wire"
 
 
 class BookingPayinRefund(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'booking_payin_refund'
+        db_table = "booking_payin_refund"
 
 
 class BookingUserAddress(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'booking_user_address'
+        db_table = "booking_user_address"
 
 
 class Contact(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'contact'
-
+        db_table = "contact"
 
 
 class Footer(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'footer'
+        db_table = "footer"
 
 
 class FooterTranslation(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'footer_translation'
+        db_table = "footer_translation"
 
 
 class GeoArea(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'geo_area'
+        db_table = "geo_area"
 
 
 class GeoAreaTranslation(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'geo_area_translation'
+        db_table = "geo_area_translation"
 
 
 class GeoCity(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'geo_city'
+        db_table = "geo_city"
 
 
 class GeoCityTranslation(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'geo_city_translation'
+        db_table = "geo_city_translation"
 
 
 class GeoCoordinate(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'geo_coordinate'
+        db_table = "geo_coordinate"
 
 
 class GeoCountry(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'geo_country'
+        db_table = "geo_country"
 
 
 class GeoCountryTranslation(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'geo_country_translation'
+        db_table = "geo_country_translation"
 
 
 class GeoDepartment(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'geo_department'
+        db_table = "geo_department"
 
 
 class GeoDepartmentTranslation(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'geo_department_translation'
+        db_table = "geo_department_translation"
 
 
 class GeoGeocoding(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'geo_geocoding'
+        db_table = "geo_geocoding"
 
 
 class Group(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'group'
+        db_table = "group"
 
 
 class LexikCurrency(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'lexik_currency'
+        db_table = "lexik_currency"
 
 
 class Listing(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'listing'
+        db_table = "listing"
 
 
 class ListingCharacteristic(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'listing_characteristic'
+        db_table = "listing_characteristic"
 
 
 class ListingCharacteristicGroup(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'listing_characteristic_group'
+        db_table = "listing_characteristic_group"
 
 
 class ListingCharacteristicGroupTranslation(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'listing_characteristic_group_translation'
+        db_table = "listing_characteristic_group_translation"
 
 
 class ListingCharacteristicTranslation(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'listing_characteristic_translation'
+        db_table = "listing_characteristic_translation"
 
 
 class ListingCharacteristicType(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'listing_characteristic_type'
+        db_table = "listing_characteristic_type"
 
 
 class ListingCharacteristicValue(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'listing_characteristic_value'
+        db_table = "listing_characteristic_value"
 
 
 class ListingCharacteristicValueTranslation(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'listing_characteristic_value_translation'
+        db_table = "listing_characteristic_value_translation"
 
 
 class ListingClientImage(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'listing_client_image'
+        db_table = "listing_client_image"
 
 
 class ListingDiscount(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'listing_discount'
+        db_table = "listing_discount"
 
 
 class ListingImage(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'listing_image'
+        db_table = "listing_image"
 
 
 class ListingListingCategory(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'listing_listing_category'
+        db_table = "listing_listing_category"
 
 
 class ListingListingCharacteristic(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'listing_listing_characteristic'
+        db_table = "listing_listing_characteristic"
 
 
 class ListingLocation(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'listing_location'
+        db_table = "listing_location"
 
 
 class ListingTranslation(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'listing_translation'
+        db_table = "listing_translation"
 
 
 class Message(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'message'
+        db_table = "message"
 
 
 class MessageMetadata(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'message_metadata'
+        db_table = "message_metadata"
 
 
 class MessageThread(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'message_thread'
+        db_table = "message_thread"
 
 
 class MessageThreadMetadata(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'message_thread_metadata'
+        db_table = "message_thread_metadata"
 
 
 class Page(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'page'
+        db_table = "page"
 
 
 class PageTranslation(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'page_translation'
+        db_table = "page_translation"
 
 
 class Parameter(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'parameter'
+        db_table = "parameter"
 
 
 class ParameterAudit(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'parameter_audit'
+        db_table = "parameter_audit"
 
 
 class Quote(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'quote'
+        db_table = "quote"
 
 
 class QuoteUserAddress(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'quote_user_address'
+        db_table = "quote_user_address"
 
 
 class Review(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'review'
+        db_table = "review"
 
 
 class Revisions(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'revisions'
+        db_table = "revisions"
 
 
 class User(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'user'
+        db_table = "user"
 
 
 class UserAddress(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'user_address'
+        db_table = "user_address"
 
 
 class UserFacebook(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'user_facebook'
+        db_table = "user_facebook"
 
 
 class UserGroup(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'user_group'
+        db_table = "user_group"
 
 
 class UserImage(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'user_image'
+        db_table = "user_image"
 
 
 class UserLanguage(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'user_language'
+        db_table = "user_language"
 
 
 class UserTranslation(models.Model):
-
     class Meta:
         managed = False
-        db_table = 'user_translation'
+        db_table = "user_translation"
