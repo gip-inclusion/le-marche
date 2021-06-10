@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from users.managers import UserManager
+from itou_c4_api.users.managers import UserManager
 
 
 #

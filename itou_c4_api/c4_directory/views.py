@@ -1,12 +1,12 @@
-from c4_directory.models import Siae
-from c4_directory.serializers import (
+from itou_c4_api.c4_directory.models import Siae
+from itou_c4_api.c4_directory.serializers import (
     SectorSerializer,
     SectorStringSerializer,
     SiaeHyperSerializer,
     SiaeLightSerializer,
     SiaeSerializer,
 )
-from cocorico.models import Directory, DirectorySector, Sector, SectorString
+from itou_c4_api.cocorico.models import Directory, DirectorySector, Sector, SectorString
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -15,7 +15,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
-from users.models import User
+from itou_c4_api.users.models import User
 
 
 hasher = Hashids(alphabet="1234567890ABCDEF", min_length=5)

@@ -3,6 +3,10 @@ name = "itou_c4_api"
 version = "0.1.0"
 description = "API du marché de l'Inclusion"
 authors = ["pmontens <pieterjan@montens.net>"]
+packages = [
+    {include = "itou_c4_api"},
+    {include = "itou_c4_api/**"},
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"

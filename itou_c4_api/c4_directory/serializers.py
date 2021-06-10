@@ -1,5 +1,5 @@
-from c4_directory import views
-from c4_directory.models import Sector, SectorString, Siae
+from itou_c4_api.c4_directory import views
+from itou_c4_api.c4_directory.models import Sector, SectorString, Siae
 from django.urls import reverse
 from hashids import Hashids
 from rest_framework import serializers
