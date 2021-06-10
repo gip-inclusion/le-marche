@@ -1,4 +1,4 @@
-from c4_directory import views
+from itou_c4_api.c4_directory import views
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework import routers

@@ -13,8 +13,6 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 
-import itou_c4_api.routers as routers
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -52,9 +50,12 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "itou_c4_api",
-    "c4_directory.apps.C4DirectoryConfig",
-    "users.apps.UsersConfig",
-    "cocorico.apps.CocoricoConfig",
+    "itou_c4_api.c4_directory",
+    "itou_c4_api.users",
+    "itou_c4_api.cocorico",
+    # "c4_directory.apps.C4DirectoryConfig",
+    # "users.apps.UsersConfig",
+    # "cocorico.apps.CocoricoConfig",
 ]
 
 MIDDLEWARE = [
@@ -114,7 +115,7 @@ DATABASES = {
 }
 
 # Needed as long as Cocorico database used as data source
-DATABASE_ROUTERS = ["routers.CocoRouter"]
+DATABASE_ROUTERS = ["itou_c4_api.routers.CocoRouter"]
 
 
 # Password validation
