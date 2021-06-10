@@ -10,11 +10,11 @@ export MYSQL_ADDON_PASSWORD=""
 export MYSQL_ADDON_DB=""
 
 # PostGreSQL Config
-export PG_HOST="localhost"
-export PG_PORT=5432
-export PG_USER=""
-export PG_PASSWORD=""
-export PG_NAME=""
+export POSTGRESQL_ADDON_HOST="localhost"
+export POSTGRESQL_ADDON_PORT=5432
+export POSTGRESQL_ADDON_USER=""
+export POSTGRESQL_ADDON_PASSWORD=""
+export POSTGRESQL_ADDON_DB=""
 
 # Django Settings
 export SECRET_KEY=""

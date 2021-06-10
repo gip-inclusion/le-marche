@@ -41,6 +41,38 @@ $ poetry run python manage.py [COMMANDES]
 $ env PYTHONPATH=./itou_c4_api:./itou_c4_api/c4_directory poetry run python manage.py [COMMANDES]
 ```
 
+### Docker
+Exemple de script docker:
+(attention, il s'agit du script de déploiement production)
+```bash
+docker build -t "c4_api" -f ./Dockerfile . \
+    --build-arg ENV=DEV \
+&& docker run --rm -it \
+    -p 8000:8000 \
+    -e MYSQL_DB="[DB]" \
+    -e MYSQL_HOST="[HOST]" \
+    -e MYSQL_USER="[USER]" \
+    -e MYSQL_PASSWORD="[PASSWORD]" \
+    -e MYSQL_PORT="[PORT]" \
+    -e PG_NAME="[NAME]" \
+    -e PG_HOST="[HOST]" \
+    -e PG_USER="[USER]" \
+    -e PG_PASSWORD="[PASSWORD]" \
+    -e PG_PORT="[PORT]" \
+    --name c4_api \
+    c4_api
+```
+
+## Utilisation
+L'api propose plusieurs endpoints et interfaces de documentation.
+
+- Documentation Swaggger/OpenAPI : [/docs](http://localhost:8000/docs)
+- Documentation ReDoc : [/redoc](http://localhost:8000/redoc)
+- Schema OpenApi3 : [/redoc](http://localhost:8000/schema)
+
+Tant que faire se peut, la documentation des endpoints se fait dans le code, en visant une bonne lisibilité
+de la documentation autogénérée.
+
 ### Dépendances et environnement
 Tant que faire ce peut, le projet centralise ses dépendances dans le fichier [pyproject.toml](pyproject.toml).
 Poetry utilise le fichier `poetry.lock`, et génère également un fichier `requirements.txt`.
@@ -69,33 +101,44 @@ et un [versionnage sémantique](CHANGELOG.md).
 Le projet utilise flake8, isort et black pour assurer la standardisation des écritures.
 Poetry est configuré pour en faciliter l'utilisation.
 
+```bash
+# Exécuter isort, flake8 ou black
+$ poetry run poe black
+$ poetry run poe isort
+$ poetry run poe flake8
+# Exécuter formattage automatique
+$ poetry run poe clean
+```
 
+### Testing
+PyTest est utilisé pour ce projet. Les tests se trouvent dans le répertoire [tests](tests),
+un sous-répertoire par app django.
 
-## Données disponibles par structure
-Pour une partie des structures, certaines donnéés peuvent manquer : leur meilleure qualification est un effort continu et soutenu.
+### TODO List
+- Dockerfile pour développement
+- Logging
+- Monitoring
+- Tracking
 
-- Nom
-- Enseigne
-- Siret
-- Naf
-- Site Web
-- Adresse
-- Localisation
-- Date de création
-- Nombre de salariés
-- Types de prestation
-- Type de la structure
-- Secteurs d'activité
-
-## Notes
-Structure de l'API :
-
-- `/list`
-- `/search`
-- ...
-
-## Installation
-### Ressources : 
+### Ressources et inspirations
 - https://www.django-rest-framework.org/topics/rest-hypermedia-hateoas/
 - https://realpython.com/django-rest-framework-quick-start/
 - https://www.django-rest-framework.org/tutorial/5-relationships-and-hyperlinked-apis/
+- https://github.com/wsvincent/awesome-django
+- https://dev.to/sherlockcodes/pytest-with-django-rest-framework-from-zero-to-hero-8c4
+
+## Contenu de l'API du marché de l'inclusion
+### Le projet aujourd'hui
+- API du marché de l'inclusion, qui offre :
+    - La liste des SIAE, leur données et secteurs d'activité
+    - La liste hierarchisée des secteurs d'activité
+
+### Le projet demain
+En plus de l'API :
+- Interface de consultation
+- Moteur de recherche des structures
+- Partenaires, consortiums, réseaux, ...
+- Gestion des utilisateurs, des structures, ...
+- Intégration de référentiels externes
+- Pages d'info, thématiques, filières, ...
+- Et bien d'autres choses ! 🛸

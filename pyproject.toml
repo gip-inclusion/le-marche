@@ -20,6 +20,7 @@ pyproject-flake8 = "^0.0.1-alpha.2"
 flake8 = "^3.9.2"
 poethepoet = "^0.10.0"
 black = "^21.5b2"
+pytest-django = "^4.4.0"
 
 [tool.poetry.scripts]
 
@@ -51,10 +52,24 @@ skip="migrations"
 line-length = 119
 target-version = ['py38', 'py39']
 include = '\.pyi?$'
+exclude = '''
+/(
+  | migrations
+)/
+
+'''
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "itou_c4_api.settings"
+# testpaths = [
+#     "tests",
+#     "integration",
+# ]
+# addopts = "-vv -x --lf --cov"
 
 [tool.poe.tasks]
 export = { shell = "poetry export -f requirements.txt --output requirements.txt"}
 flake8 = { shell = "pflake8 itou_c4_api"}
 isort = { shell = "isort ./itou_c4_api/*.py"}
 black = { shell = "black itou_c4_api"}
-clean = ["flake8", "isort", "black"]
+clean = ["isort", "black"]
