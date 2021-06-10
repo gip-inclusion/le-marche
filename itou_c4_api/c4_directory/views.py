@@ -80,7 +80,7 @@ def sector_list(request):
     """
     if request.method == 'GET':
         #sectors = Sector.objects.select_related('SectorString').all()
-        sectors = SectorString.objects.select_related('translatable').all()
+        sectors = SectorString.objects.filter(translatable__gte=10).select_related('translatable').all()
         #sectors = Sector.objects.all()
         serializer = SectorStringSerializer(sectors, many=True)
         return Response(serializer.data)

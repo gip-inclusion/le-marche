@@ -68,6 +68,17 @@ PyYAML = ">=5.1"
 uritemplate = ">=2.0.0"
 
 [[package]]
+name = "hashids"
+version = "1.3.1"
+description = "Implements the hashids algorithm in python. For more information, visit http://hashids.org/"
+category = "main"
+optional = false
+python-versions = ">=2.7"
+
+[package.extras]
+test = ["pytest (>=2.1.0)"]
+
+[[package]]
 name = "inflection"
 version = "0.5.1"
 description = "A port of Ruby on Rails inflector to Python"
@@ -159,7 +170,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "5b467c99c995c1f6d9b5c9170934d7b2dab72fc90ffc19a379279764037b1959"
+content-hash = "ee8c3162f143cc82e7cc044a01386263bba10bc1a8f73e7d1e6f378ded4ea12a"
 
 [metadata.files]
 asgiref = [
@@ -181,6 +192,10 @@ djangorestframework = [
 drf-spectacular = [
     {file = "drf-spectacular-0.15.1.tar.gz", hash = "sha256:ae754d3be0ef059f96c128d664855478ff8a9dca2fc57ee51ed74cb82028e3d7"},
     {file = "drf_spectacular-0.15.1-py2.py3-none-any.whl", hash = "sha256:24a907774bc3fffcbb381b8c4cd5992494d7faaa5ad2b7ccaf345db18b46faf4"},
+]
+hashids = [
+    {file = "hashids-1.3.1-py2.py3-none-any.whl", hash = "sha256:8bddd1acba501bfc9306e7e5a99a1667f4f2cacdc20cbd70bcc5ddfa5147c94c"},
+    {file = "hashids-1.3.1.tar.gz", hash = "sha256:6c3dc775e65efc2ce2c157a65acb776d634cb814598f406469abef00ae3f635c"},
 ]
 inflection = [
     {file = "inflection-0.5.1-py2.py3-none-any.whl", hash = "sha256:f38b2b640938a4f35ade69ac3d053042959b62a0f1076a5bbaa1b9526605a8a2"},
