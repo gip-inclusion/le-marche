@@ -1,7 +1,8 @@
-from django.urls import path, include
-from rest_framework import routers
 from c4_directory import views
+from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+from rest_framework import routers
+
 
 # Basic idea is to use hyperlinkedmodelserializer and viewsets
 # But unclear documentation and confusing error messages did

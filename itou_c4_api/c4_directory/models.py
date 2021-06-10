@@ -1,9 +1,10 @@
-from django.db import models
-from django.utils import timezone
-
 ## Temporary code
 ## FIXME : move elsewhere
 from django.core.exceptions import ValidationError
+from django.db import models
+from django.utils import timezone
+
+
 def validate_siret(siret):
     if not siret.isdigit() or len(siret) != 14:
         raise ValidationError("Le numéro SIRET doit être composé de 14 chiffres.")
