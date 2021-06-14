@@ -10,7 +10,7 @@ from itou_c4_api.cocorico.models import Directory, DirectorySector, Sector, Sect
 from django.http import HttpResponse
 from django.http import Http404
 from hashids import Hashids
-from rest_framework import generics
+from rest_framework import generics, mixins
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from itou_c4_api.users.models import User
@@ -87,7 +87,8 @@ class SiaeDetail(APIView):
         return Response(serializer.data)
 
 
-class SectorList(generics.ListCreateAPIView):
+class SectorList(mixins.ListModelMixin,
+                 generics.GenericAPIView):
     queryset = SectorString.objects.filter(translatable__gte=10).select_related("translatable").all()
     serializer_class = SectorStringSerializer
 
