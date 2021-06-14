@@ -1,40 +1,43 @@
-from itou_c4_api.c4_directory.models import Siae
+# from itou_c4_api.c4_directory.models import Siae
 from itou_c4_api.c4_directory.serializers import (
-    SectorSerializer,
+    # SectorSerializer,
     SectorStringSerializer,
-    SiaeHyperSerializer,
+    # SiaeHyperSerializer,
     SiaeLightSerializer,
     SiaeSerializer,
 )
 from itou_c4_api.cocorico.models import Directory, DirectorySector, Sector, SectorString
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+from django.http import Http404
 from hashids import Hashids
-from rest_framework import viewsets
-from rest_framework.decorators import api_view
-from rest_framework.parsers import JSONParser
+from rest_framework import generics
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from itou_c4_api.users.models import User
 
 
 hasher = Hashids(alphabet="1234567890ABCDEF", min_length=5)
 
+"""
+Inspiration for class-based views :
+    https://www.django-rest-framework.org/tutorial/3-class-based-views/
+"""
 
-class SiaesViewSet(viewsets.ModelViewSet):
-    queryset = Directory.objects.all()
-    serializer_class = SiaeHyperSerializer
 
-    def list(self, request):
-        """
-        Liste des structures inclusives reprises dans le marché de l'inclusion.
-        """
+#  FIXME:Given the peculiar user-token access, it's not possible
+# to use generic class-based views at this moment.
+class SiaeList(APIView):
+    """
+    Lister les SIAES
+    """
+
+    def get(self, request, format=None):
         if request.method == "GET":
             siaes = Directory.objects.all()
             token = request.GET.get("token", None)
             if not token:
                 # serializer = SiaeLightSerializer(siaes[:10], many=True)
-                serializer = SiaeHyperSerializer(
+                serializer = SiaeLightSerializer(
                     siaes[:10],
                     many=True,
                     context={"request": request},
@@ -51,67 +54,25 @@ class SiaesViewSet(viewsets.ModelViewSet):
             # return JsonResponse(serializer.data, safe=False)
             return Response(serializer.data)
 
-    def retrieve(self, request, pk=None):
+
+# FIXME: Given the peculiar user-token access, it's not possible
+# to use generic class-based views at this moment.
+class SiaeDetail(APIView):
+    """
+    Lecture des SIAES
+    """
+
+    def get_object(self, pk):
+        try:
+            return Directory.objects.get(pk=pk)
+        except Directory.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
         """
         Détail d'une structure
         """
-        try:
-            queryset = Directory.objects.filter()
-            # siae = DirectorySector.objects.all().select_related('Directory').select_related('Sector')
-            token = request.GET.get("token", None)
-            if not token:
-                # serializer = SiaeLightSerializer(siae, many=False)
-                siae = get_object_or_404(queryset, pk=pk)
-                serializer = SiaeHyperSerializer(
-                    queryset,
-                    context={"request": request},
-                )
-            else:
-                try:
-                    user = User.objects.get(api_key=token)
-                    assert user.has_perm("c4_directory.access_api")
-                except User.DoesNotExist:
-                    return HttpResponse("503: Not Allowed", status=503)
-
-                serializer = SiaeSerializer(siae, many=False)
-            return Response(serializer.data)
-        except Siae.DoesNotExist:
-            return HttpResponse(status=404)
-
-
-# @csrf_exempt
-# @api_view(['GET'])
-# def siae_list(request, token=None):
-#     """
-#     Liste des structures inclusives reprises dans le marché de l'inclusion.
-#     """
-#     if request.method == 'GET':
-#         siaes = Directory.objects.all()
-#         token = request.GET.get('token', None)
-#         if not token:
-#             serializer = SiaeLightSerializer(siaes[:10], many=True)
-#         else:
-#
-#             try:
-#                 user = User.objects.get(api_key=token)
-#                 assert user.has_perm('c4_directory.access_api')
-#             except User.DoesNotExist:
-#                 return HttpResponse('503: Not Allowed', status=503)
-#
-#             serializer = SiaeLightSerializer(siaes, many=True)
-#         # return JsonResponse(serializer.data, safe=False)
-#         return Response(serializer.data)
-
-
-@csrf_exempt
-@api_view(["GET"])
-def siae_detail(request, key):
-    """
-    Détail d'une structure
-    """
-    try:
-        siae = Directory.objects.get(pk=key)
-        # siae = DirectorySector.objects.all().select_related('Directory').select_related('Sector')
+        siae = self.get_object(pk)
         token = request.GET.get("token", None)
         if not token:
             serializer = SiaeLightSerializer(siae, many=False)
@@ -124,34 +85,24 @@ def siae_detail(request, key):
 
             serializer = SiaeSerializer(siae, many=False)
         return Response(serializer.data)
-    except Siae.DoesNotExist:
-        return HttpResponse(status=404)
 
 
-@csrf_exempt
-@api_view(["GET"])
-def sector_list(request):
-    """
-    Liste hiérarchisée des secteurs d'activité des structures.
-    """
-    if request.method == "GET":
-        # sectors = Sector.objects.select_related('SectorString').all()
-        sectors = SectorString.objects.filter(translatable__gte=10).select_related("translatable").all()
-        # sectors = Sector.objects.all()
-        serializer = SectorStringSerializer(sectors, many=True)
-        return Response(serializer.data)
+class SectorList(generics.ListCreateAPIView):
+    queryset = SectorString.objects.filter(translatable__gte=10).select_related("translatable").all()
+    serializer_class = SectorStringSerializer
 
 
-@csrf_exempt
-@api_view(["GET"])
-def sector_detail(request, key):
-    """
-    Détail secteur d'activité
-    """
-    if request.method == "GET":
-        # sectors = Sector.objects.select_related('SectorString').all()
-        ckey = hasher.decode(key)[0]
-        sector = SectorString.objects.select_related("translatable").get(translatable=ckey)
-        # sector = SectorString.objects.filter(translatable=ckey).select_related('translatable').all()
+# FIXME: Refactor hashid usage to allow a simpler view
+class SectorDetail(APIView):
+
+    def get_object(self, pk):
+        try:
+            return SectorString.objects.select_related("translatable").get(translatable=pk)
+        except SectorString.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        ckey = hasher.decode(pk)[0]
+        sector = self.get_object(ckey)
         serializer = SectorStringSerializer(sector, many=False)
         return Response(serializer.data)
