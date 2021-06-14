@@ -94,7 +94,6 @@ class SectorList(generics.ListCreateAPIView):
 
 # FIXME: Refactor hashid usage to allow a simpler view
 class SectorDetail(APIView):
-
     def get_object(self, pk):
         try:
             return SectorString.objects.select_related("translatable").get(translatable=pk)
