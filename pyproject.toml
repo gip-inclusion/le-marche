@@ -4,8 +4,6 @@ version = "0.1.0"
 description = "API du marché de l'Inclusion"
 authors = ["pmontens <pieterjan@montens.net>"]
 packages = [
-    {include = "itou_c4_api"},
-    {include = "itou_c4_api/**"},
 ]
 
 [tool.poetry.dependencies]
@@ -78,5 +76,6 @@ flake8 = { shell = "pflake8 itou_c4_api"}
 isort = { shell = "isort ./itou_c4_api/*.py"}
 black = { shell = "black itou_c4_api"}
 clean = ["isort", "black"]
+runserver = { shell = "./manage.py runserver"}
 migrate = { shell = "./manage.py migrate"}
 makemigrations = { shell = "./manage.py makemigrations"}
