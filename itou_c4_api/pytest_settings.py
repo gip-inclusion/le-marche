@@ -1,5 +1,7 @@
-from itou_c4_api.settings import *
 from django.test.runner import DiscoverRunner
+
+from itou_c4_api.settings import *
+
 
 UNDER_TEST = True
 
@@ -21,19 +23,13 @@ class UnManagedModelTestRunner(DiscoverRunner):
     def setup_test_environment(self, *args, **kwargs):
         from django.apps import apps
 
-        self.unmanaged_models = [
-            m for m in apps.get_models() if not m._meta.managed
-        ]
+        self.unmanaged_models = [m for m in apps.get_models() if not m._meta.managed]
         for m in self.unmanaged_models:
             m._meta.managed = True
-        super(UnManagedModelTestRunner, self).setup_test_environment(
-            *args, **kwargs
-        )
+        super(UnManagedModelTestRunner, self).setup_test_environment(*args, **kwargs)
 
     def teardown_test_environment(self, *args, **kwargs):
-        super(UnManagedModelTestRunner, self).teardown_test_environment(
-            *args, **kwargs
-        )
+        super(UnManagedModelTestRunner, self).teardown_test_environment(*args, **kwargs)
         # reset unmanaged models
         for m in self.unmanaged_models:
             m._meta.managed = False
@@ -57,7 +53,7 @@ DATABASES = {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": os.path.join(BASE_DIR, "itou_c4_api.sqlite3"),
         },
-    }
+    },
 }
 AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
 

@@ -17,7 +17,7 @@ class Sector(models.Model):
 
     class Meta:
         # managed = False
-        managed = getattr(settings, 'UNDER_TEST', False)
+        managed = getattr(settings, "UNDER_TEST", False)
         db_table = "listing_category"
 
 
@@ -31,7 +31,7 @@ class SectorString(models.Model):
 
     class Meta:
         # managed = False
-        managed = getattr(settings, 'UNDER_TEST', False)
+        managed = getattr(settings, "UNDER_TEST", False)
         db_table = "listing_category_translation"
 
 
@@ -75,7 +75,7 @@ class Directory(models.Model):
 
     class Meta:
         # managed = False
-        managed = getattr(settings, 'UNDER_TEST', False)
+        managed = getattr(settings, "UNDER_TEST", False)
         db_table = "directory"
 
 
@@ -88,7 +88,7 @@ class DirectorySector(models.Model):
 
     class Meta:
         # managed = False
-        managed = getattr(settings, 'UNDER_TEST', False)
+        managed = getattr(settings, "UNDER_TEST", False)
         db_table = "directory_listing_category"
         unique_together = (("directory", "sector"),)
 
