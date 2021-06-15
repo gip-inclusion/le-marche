@@ -1,4 +1,4 @@
-from lemarche.api import views
+from lemarche.api.siaes import views
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView

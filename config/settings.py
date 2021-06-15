@@ -40,7 +40,7 @@ STATIC_URL = "/static/"
 # Application definition
 
 AUTH_USER_MODEL = "users.User"
-INSTALLED_APPS = [
+DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -49,14 +49,20 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "drf_spectacular",
-    "lemarche",
-    "lemarche.api",
-    "lemarche.users",
-    "lemarche.cocorico",
-    # "api.apps.C4DirectoryConfig",
-    # "users.apps.UsersConfig",
-    # "cocorico.apps.CocoricoConfig",
 ]
+
+THIRD_PARTY_APPS = [
+]
+
+LOCAL_APPS = [
+    # Core
+    "lemarche.cocorico",
+    "lemarche.users",
+    # Api
+    "lemarche.api",
+]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -68,7 +74,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "lemarche.urls"
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
@@ -87,7 +93,7 @@ TEMPLATES = [
 ]
 
 
-WSGI_APPLICATION = "lemarche.wsgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Database
@@ -115,7 +121,7 @@ DATABASES = {
 }
 
 # Needed as long as Cocorico database used as data source
-DATABASE_ROUTERS = ["lemarche.routers.CocoRouter"]
+DATABASE_ROUTERS = ["config.routers.CocoRouter"]
 
 
 # Password validation

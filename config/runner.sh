@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 # Getting static files for Admin panel hosting!
 # ./manage.py collectstatic --noinput
-export PYTHONPATH=$PYTHONPATH:./lemarche
+export PYTHONPATH=$PYTHONPATH:./lemarche:./config
 ./manage.py collectstatic --noinput
 uwsgi --plugins http,python \
       --http "${HOST}:${PORT}" \
