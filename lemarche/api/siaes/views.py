@@ -7,13 +7,13 @@ from lemarche.api.siaes.serializers import (
     SiaeSerializer,
 )
 from lemarche.cocorico.models import Directory, DirectorySector, Sector, SectorString
+from lemarche.users.models import User
 from django.http import HttpResponse
 from django.http import Http404
 from hashids import Hashids
 from rest_framework import generics, mixins
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from lemarche.users.models import User
 
 
 hasher = Hashids(alphabet="1234567890ABCDEF", min_length=5)
@@ -87,9 +87,17 @@ class SiaeDetail(APIView):
         return Response(serializer.data)
 
 
+def hashid2pk(func):
+    def _wrapper(*args, **kwargs):
+        if 'pk' in kwargs.keys():
+            kwargs['pk'] = hasher.decode(kwargs['pk'])[0]
+        return func(*args, **kwargs)
+    return _wrapper
+
+
 class SectorList(mixins.ListModelMixin,
                  generics.GenericAPIView):
-    queryset = SectorString.objects.filter(translatable__gte=10).select_related("translatable").all()
+    queryset = SectorString.objects.get_all_active_sectors()
     serializer_class = SectorStringSerializer
 
     def get(self, request, *args, **kwargs):
@@ -100,7 +108,7 @@ class SectorList(mixins.ListModelMixin,
 class SectorDetail(APIView):
     def get_object(self, pk):
         try:
-            return SectorString.objects.select_related("translatable").get(translatable=pk)
+            return SectorString.objects.get_sector(pk=pk)
         except SectorString.DoesNotExist:
             raise Http404
 

@@ -28,6 +28,7 @@ RUN ./install-packages.sh
 # Multistage build : BUILD
 FROM base as builder
 
+# Default arguments
 ARG ENV="dev"
 ARG MYSQL_ADDON_DB="database" \
     MYSQL_ADDON_HOST="localhost"\
