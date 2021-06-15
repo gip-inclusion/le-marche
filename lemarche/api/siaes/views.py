@@ -1,5 +1,5 @@
 # from lemarche.api.models import Siae
-from lemarche.api.serializers import (
+from lemarche.api.siaes.serializers import (
     # SectorSerializer,
     SectorStringSerializer,
     # SiaeHyperSerializer,
