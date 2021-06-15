@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('c4_directory', '0004_alter_siae_options'),
+        ('api', '0004_alter_siae_options'),
     ]
 
     operations = [
         migrations.AddField(
             model_name='siae',
             name='sectors',
-            field=models.ManyToManyField(to='c4_directory.Sector'),
+            field=models.ManyToManyField(to='api.Sector'),
         ),
     ]

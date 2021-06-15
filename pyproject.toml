@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "itou_c4_api"
+name = "lemarche"
 version = "0.1.0"
 description = "API du marché de l'Inclusion"
 authors = ["pmontens <pieterjan@montens.net>"]
@@ -44,7 +44,7 @@ combine_as_imports = true
 ensure_newline_before_comments = true
 force_grid_wrap = 0
 include_trailing_comma = true
-known_first_party = "itou_c4_api"
+known_first_party = "lemarche"
 lines_after_imports = 2
 line_length = 119
 multi_line_output = 3
@@ -63,7 +63,7 @@ exclude = '''
 '''
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "itou_c4_api.pytest_settings"
+DJANGO_SETTINGS_MODULE = "lemarche.pytest_settings"
 # testpaths = [
 #     "tests",
 #     "integration",
@@ -72,10 +72,11 @@ DJANGO_SETTINGS_MODULE = "itou_c4_api.pytest_settings"
 
 [tool.poe.tasks]
 export = { shell = "poetry export -f requirements.txt --output requirements.txt"}
-flake8 = { shell = "pflake8 itou_c4_api"}
-isort = { shell = "isort ./itou_c4_api/*.py"}
-black = { shell = "black itou_c4_api"}
-clean = ["isort", "black"]
+flake8 = { shell = "pflake8 lemarche"}
+isort = { shell = "isort ./lemarche/*.py"}
+black = { shell = "black lemarche"}
+clean_code = ["isort", "black"]
+clean = { shell = "rm -r __pycache__/" }
 runserver = { shell = "./manage.py runserver"}
 migrate = { shell = "./manage.py migrate"}
 makemigrations = { shell = "./manage.py makemigrations"}

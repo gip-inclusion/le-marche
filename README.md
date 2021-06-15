@@ -38,7 +38,7 @@ $ poetry run python manage.py runserver
 $ poetry run python manage.py [COMMANDES]
 
 > Avec surcharge `PYTHONPATH` (à résoudre)
-$ env PYTHONPATH=./itou_c4_api:./itou_c4_api/c4_directory poetry run python manage.py [COMMANDES]
+$ env PYTHONPATH=./lemarche:./lemarche/c4_directory poetry run python manage.py [COMMANDES]
 ```
 
 ### Docker

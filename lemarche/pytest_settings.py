@@ -1,6 +1,6 @@
 from django.test.runner import DiscoverRunner
 
-from itou_c4_api.settings import *
+from lemarche.settings import *
 
 
 UNDER_TEST = True
@@ -40,18 +40,18 @@ class UnManagedModelTestRunner(DiscoverRunner):
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "itou_c4_api.sqlite3"),
+        "NAME": os.path.join(BASE_DIR, "lemarche.sqlite3"),
         "TEST": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(BASE_DIR, "itou_c4_api.sqlite3"),
+            "NAME": os.path.join(BASE_DIR, "lemarche.sqlite3"),
         },
     },
     "structures": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "itou_c4_api.sqlite3"),
+        "NAME": os.path.join(BASE_DIR, "lemarche.sqlite3"),
         "TEST": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(BASE_DIR, "itou_c4_api.sqlite3"),
+            "NAME": os.path.join(BASE_DIR, "lemarche.sqlite3"),
         },
     },
 }
@@ -61,11 +61,11 @@ AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
 # to the remote host conflict with our overridden db settings.
 # Set DATABASE_ROUTERS to an empty list to return to the defaults
 # during the test run.
-DATABASE_ROUTERS = ["itou_c4_api.routers.CocoRouter"]
+DATABASE_ROUTERS = ["lemarche.routers.CocoRouter"]
 
 # Skip the migrations by setting "MIGRATION_MODULES"
 # to the DisableMigrations class defined above
 MIGRATION_MODULES = DisableMigrations()
 
 # Set Django's test runner to the custom class defined above
-TEST_RUNNER = "itou_c4_api.pytest_settings.UnManagedModelTestRunner"
+TEST_RUNNER = "lemarche.pytest_settings.UnManagedModelTestRunner"

@@ -1,14 +1,15 @@
-from itou_c4_api.c4_directory import views
-from itou_c4_api.c4_directory.models import Sector, SectorString, Siae
-from django.urls import reverse
+from lemarche.api.models import Sector, SectorString, Siae
 from hashids import Hashids
 from rest_framework import serializers
 
 
+# TODO: implement hashid as shared object
 hasher = Hashids(alphabet="1234567890ABCDEF", min_length=5)
 
 
 class SectorSerializer(serializers.ModelSerializer):
+    # TODO : Use hyperlinkedmodelserializer
+    # FIXME : Code repetition
     id = serializers.SerializerMethodField()
     parent = serializers.SerializerMethodField()
 
@@ -29,6 +30,8 @@ class SectorSerializer(serializers.ModelSerializer):
 
 
 class SectorStringSerializer(serializers.ModelSerializer):
+    # TODO : Use hyperlinkedmodelserializer
+    # FIXME : Code repetition
     hierarchie = SectorSerializer(many=False, read_only=True, source="translatable")
 
     nom = serializers.CharField(source="name")
@@ -49,6 +52,8 @@ class SectorStringSerializer(serializers.ModelSerializer):
 
 
 class SectorSimpleSerializer(serializers.ModelSerializer):
+    # TODO : Use hyperlinkedmodelserializer
+    # FIXME : Code repetition
     id = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
 
@@ -64,10 +69,12 @@ class SectorSimpleSerializer(serializers.ModelSerializer):
 
     def get_url(self, obj):
         key = hasher.encode(obj.id)
-        return f"/secteur/{key}"
+        return f"/secteurs/{key}"
 
 
 class SiaeSerializer(serializers.ModelSerializer):
+    # TODO : Use hyperlinkedmodelserializer
+    # FIXME : Code repetition
     raisonSociale = serializers.CharField(source="name")
     enseigne = serializers.CharField(source="brand")
     type = serializers.CharField(source="kind")
@@ -80,7 +87,7 @@ class SiaeSerializer(serializers.ModelSerializer):
     sectors = SectorSimpleSerializer(many=True, read_only=True)
 
     def get_url(self, obj):
-        return f"/siae/{obj.pk}"
+        return f"/siaes/{obj.pk}"
 
     class Meta:
         model = Siae
@@ -102,9 +109,39 @@ class SiaeSerializer(serializers.ModelSerializer):
         ]
 
 
+class SiaeLightSerializer(serializers.ModelSerializer):
+    # TODO : Use hyperlinkedmodelserializer
+    # FIXME : Code repetition
+    raisonSociale = serializers.CharField(source="name")
+    enseigne = serializers.CharField(source="brand")
+    ville = serializers.CharField(source="city")
+    departement = serializers.CharField(source="department")
+    codePostal = serializers.CharField(source="post_code")
+    url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Siae
+        fields = [
+            "raisonSociale",
+            "enseigne",
+            "siret",
+            "ville",
+            "departement",
+            "region",
+            "codePostal",
+            "createdat",
+            "url",
+        ]
+
+    def get_url(self, obj):
+        return f"/siae/{obj.pk}"
+
+
 class SiaeHyperSerializer(serializers.HyperlinkedModelSerializer):
-    # Tested this, but unclear error messaging
-    # did not allow it to work, yet.
+    # Tested this, bur error messages are very confusing.
+    # Should replace all manually generated URLS, so
+    # I keep it here as a reminder
+
     raisonSociale = serializers.CharField(source="name")
     enseigne = serializers.CharField(source="brand")
     type = serializers.CharField(source="kind")
@@ -139,59 +176,3 @@ class SiaeHyperSerializer(serializers.HyperlinkedModelSerializer):
         # extra_kwargs = {
         #     'url': {'view_name': 'siae-detail', 'lookup_field': 'siret'},
         # }
-
-
-class SiaeLightSerializer(serializers.ModelSerializer):
-    raisonSociale = serializers.CharField(source="name")
-    enseigne = serializers.CharField(source="brand")
-    ville = serializers.CharField(source="city")
-    departement = serializers.CharField(source="department")
-    codePostal = serializers.CharField(source="post_code")
-    url = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Siae
-        fields = [
-            "raisonSociale",
-            "enseigne",
-            "siret",
-            "ville",
-            "departement",
-            "region",
-            "codePostal",
-            "createdat",
-            "url",
-        ]
-
-    def get_url(self, obj):
-        return f"/siae/{obj.pk}"
-
-
-# class SiaeSerializer(serializers.Serializer):
-#
-#     name = serializers.CharField(verbose_name="Nom", max_length=255)
-#     brand = serializers.CharField(verbose_name="Enseigne", max_length=255, blank=True)
-#     # kind = serializers.CharField(verbose_name="Type", max_length=6, choices=KIND_CHOICES, default=KIND_EI)
-#     # siret = serializers.CharField(verbose_name="Siret", max_length=14, validators=[validate_siret], db_index=True)
-#     # naf = serializers.CharField(verbose_name="Naf", max_length=5, validators=[validate_naf], blank=True)
-#     # address = serializers.CharField(verbose_name="Adresse")
-#     website = serializers.URLField(verbose_name="Site web", blank=True)
-#     created_at = serializers.DateTimeField(verbose_name="Date de création", default=timezone.now)
-#
-#     def create(self, validated_data):
-#         """
-#         Create and return a new `Siae` instance, given the validated data.
-#         """
-#         return Siae.objects.create(**validated_data)
-#
-#     def update(self, instance, validated_data):
-#         """
-#         Update and return an existing `Snippet` instance, given the validated data.
-#         """
-#         instance.title = validated_data.get('title', instance.title)
-#         instance.code = validated_data.get('code', instance.code)
-#         instance.linenos = validated_data.get('linenos', instance.linenos)
-#         instance.language = validated_data.get('language', instance.language)
-#         instance.style = validated_data.get('style', instance.style)
-#         instance.save()
-#         return instance

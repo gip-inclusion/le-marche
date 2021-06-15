@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("c4_directory", "0001_initial"),
+        ("api", "0001_initial"),
     ]
 
     operations = [
@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 (
                     "parent",
                     models.ForeignKey(
-                        blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to="c4_directory.sector"
+                        blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to="api.sector"
                     ),
                 ),
             ],
@@ -79,7 +79,7 @@ class Migration(migrations.Migration):
                 (
                     "translatable",
                     models.ForeignKey(
-                        blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to="c4_directory.sector"
+                        blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to="api.sector"
                     ),
                 ),
             ],

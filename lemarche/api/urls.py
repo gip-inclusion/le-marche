@@ -1,5 +1,5 @@
-from itou_c4_api.c4_directory import views
-from django.urls import include, path
+from lemarche.api import views
+from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 

@@ -1,5 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from itou_c4_api.users.models import User
+from lemarche.users.models import User
 
 
 class UserCreationForm(UserCreationForm):

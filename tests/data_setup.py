@@ -1,6 +1,6 @@
-from itou_c4_api.cocorico import models as app_models
+from lemarche.cocorico import models as app_models
 
-import itou_c4_api.cocorico.factories as f
+import lemarche.cocorico.factories as f
 import factory
 
 

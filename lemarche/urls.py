@@ -1,4 +1,4 @@
-"""itou_c4_api URL Configuration
+"""lemarche URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.2/topics/http/urls/
@@ -19,6 +19,6 @@ from django.contrib import admin
 from django.urls import include, path
 
 
-urlpatterns = [path("admin/", admin.site.urls), path("", include("itou_c4_api.c4_directory.urls"))] + static(
+urlpatterns = [path("admin/", admin.site.urls), path("", include("lemarche.api.urls"))] + static(
     settings.STATIC_URL, document_root=settings.STATIC_ROOT
 )

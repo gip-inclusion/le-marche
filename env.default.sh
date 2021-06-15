@@ -1,5 +1,5 @@
 # Clevercloud provides "ADDON" environment variables.
-# If you wish to change these, update itou_c4_api/settings.py
+# If you wish to change these, update lemarche/settings.py
 # to reflect the changes
 
 # Mysql Config
