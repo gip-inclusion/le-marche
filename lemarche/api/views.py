@@ -1,19 +1,19 @@
-# from itou_c4_api.c4_directory.models import Siae
-from itou_c4_api.c4_directory.serializers import (
+# from lemarche.api.models import Siae
+from lemarche.api.serializers import (
     # SectorSerializer,
     SectorStringSerializer,
     # SiaeHyperSerializer,
     SiaeLightSerializer,
     SiaeSerializer,
 )
-from itou_c4_api.cocorico.models import Directory, DirectorySector, Sector, SectorString
+from lemarche.cocorico.models import Directory, DirectorySector, Sector, SectorString
 from django.http import HttpResponse
 from django.http import Http404
 from hashids import Hashids
 from rest_framework import generics, mixins
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from itou_c4_api.users.models import User
+from lemarche.users.models import User
 
 
 hasher = Hashids(alphabet="1234567890ABCDEF", min_length=5)
@@ -46,7 +46,7 @@ class SiaeList(APIView):
 
                 try:
                     user = User.objects.get(api_key=token)
-                    assert user.has_perm("c4_directory.access_api")
+                    assert user.has_perm("api.access_api")
                 except User.DoesNotExist:
                     return HttpResponse("503: Not Allowed", status=503)
 
@@ -79,7 +79,7 @@ class SiaeDetail(APIView):
         else:
             try:
                 user = User.objects.get(api_key=token)
-                assert user.has_perm("c4_directory.access_api")
+                assert user.has_perm("api.access_api")
             except User.DoesNotExist:
                 return HttpResponse("503: Not Allowed", status=503)
 
