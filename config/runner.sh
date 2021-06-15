@@ -5,7 +5,7 @@ export PYTHONPATH=$PYTHONPATH:./lemarche:./config
 ./manage.py collectstatic --noinput
 uwsgi --plugins http,python \
       --http "${HOST}:${PORT}" \
-      --module lemarche.wsgi \
+      --module config.wsgi \
       --master \
       --processes 4 \
       --threads 2
