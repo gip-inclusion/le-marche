@@ -92,6 +92,9 @@ class SectorList(mixins.ListModelMixin,
     queryset = SectorString.objects.filter(translatable__gte=10).select_related("translatable").all()
     serializer_class = SectorStringSerializer
 
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
 
 # FIXME: Refactor hashid usage to allow a simpler view
 class SectorDetail(APIView):
