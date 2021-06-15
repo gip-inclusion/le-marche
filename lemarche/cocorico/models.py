@@ -6,6 +6,20 @@ from django.db import models
 from django.conf import settings
 
 
+# QuerySets, allowing for easier future migration to managed
+# database (just rewrite query)
+class SectorQuerySet(models.QuerySet):
+
+    START_IDS_AT = 10
+
+    def get_all_active_sectors(self):
+        return self.filter(translatable__gte=self.START_IDS_AT).select_related("translatable").all()
+
+    def get_sector(self, pk):
+        return SectorString.objects.select_related("translatable").get(translatable=pk)
+
+
+
 # class ListingCategory(models.Model):
 class Sector(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -17,7 +31,7 @@ class Sector(models.Model):
 
     class Meta:
         # managed = False
-        managed = getattr(settings, "UNDER_TEST", False)
+        managed = getattr(settings, "MANAGE_COCORICO_DATABASE", False)
         db_table = "listing_category"
 
 
@@ -29,9 +43,11 @@ class SectorString(models.Model):
     locale = models.CharField(max_length=255)
     slug = models.CharField(max_length=255, blank=True, null=True)
 
+    objects = models.Manager.from_queryset(SectorQuerySet)()
+
     class Meta:
         # managed = False
-        managed = getattr(settings, "UNDER_TEST", False)
+        managed = getattr(settings, "MANAGE_COCORICO_DATABASE", False)
         db_table = "listing_category_translation"
 
 
@@ -75,7 +91,7 @@ class Directory(models.Model):
 
     class Meta:
         # managed = False
-        managed = getattr(settings, "UNDER_TEST", False)
+        managed = getattr(settings, "MANAGE_COCORICO_DATABASE", False)
         db_table = "directory"
 
 
@@ -88,7 +104,7 @@ class DirectorySector(models.Model):
 
     class Meta:
         # managed = False
-        managed = getattr(settings, "UNDER_TEST", False)
+        managed = getattr(settings, "MANAGE_COCORICO_DATABASE", False)
         db_table = "directory_listing_category"
         unique_together = (("directory", "sector"),)
 
