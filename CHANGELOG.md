@@ -9,6 +9,9 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 
 ## CONTENTS
 
+### [0.3] - (2021-06)
+- Ajout intergiciel de tracking utilisateur
+
 ### [0.2] - (2021-06)
 - Réorganisation du code (structure fichiers, config, ...)
 - Utilisation de model.querysets pour les requêtes
