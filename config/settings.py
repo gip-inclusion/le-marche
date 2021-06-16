@@ -33,6 +33,10 @@ ALLOWED_HOSTS = [
     os.environ.get("CURRENT_HOST"),
 ]
 
+# Bitoubi Specific Settings
+TRACKER_HOST = os.environ.get('TRACKER_HOST', 'http://localhost')
+BITOUBI_ENV = os.environ.get('ENV', 'dev')
+
 # Static Files
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = "/static/"
@@ -58,6 +62,7 @@ LOCAL_APPS = [
     # Core
     "lemarche.cocorico",
     "lemarche.users",
+    "lemarche.tracker",
     # Api
     "lemarche.api",
 ]
@@ -72,6 +77,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # BITOUBI Middlewares
+    "lemarche.tracker.middlewares.TokenVisitMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
