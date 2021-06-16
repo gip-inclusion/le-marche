@@ -29,10 +29,12 @@ def decode_hashed_pk(func):
     """
     Small decorator to dynamically decode a hashed pk
     """
+
     def _wrapper(*args, **kwargs):
-        if 'pk' in kwargs.keys():
-            kwargs['pk'] = hasher.decode(kwargs['pk'])[0]
+        if "pk" in kwargs.keys():
+            kwargs["pk"] = hasher.decode(kwargs["pk"])[0]
         return func(*args, **kwargs)
+
     return _wrapper
 
 
@@ -112,8 +114,7 @@ class SiaeDetail(APIView):
         return Response(serializer.data)
 
 
-class SectorList(mixins.ListModelMixin,
-                 generics.GenericAPIView):
+class SectorList(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = SectorString.objects.get_all_active_sectors()
     serializer_class = SectorStringSerializer
 
@@ -121,7 +122,7 @@ class SectorList(mixins.ListModelMixin,
         return self.list(request, *args, **kwargs)
 
     def get_serializer_context(self):
-        context = {'hashed_pk': True}
+        context = {"hashed_pk": True}
         return context
 
 
@@ -135,5 +136,5 @@ class SectorDetail(APIView):
     @decode_hashed_pk
     def get(self, request, pk, format=None):
         sector = self.get_object(pk)
-        serializer = SectorStringSerializer(sector, many=False, context={'hashed_pk': True})
+        serializer = SectorStringSerializer(sector, many=False, context={"hashed_pk": True})
         return Response(serializer.data)
