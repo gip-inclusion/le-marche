@@ -84,7 +84,7 @@ class SiaeSerializer(serializers.ModelSerializer):
     departement = serializers.CharField(source="department")
     codePostal = serializers.CharField(source="post_code")
     url = serializers.SerializerMethodField()
-    secteurs = SectorSimpleSerializer(many=True, read_only=True)
+    sectors = SectorSimpleSerializer(many=True, read_only=True)
 
     class Meta:
         model = Siae
@@ -102,7 +102,7 @@ class SiaeSerializer(serializers.ModelSerializer):
             "codePostal",
             "createdat",
             "url",
-            "secteurs",
+            "sectors",
         ]
 
     def get_url(self, obj):
