@@ -8,7 +8,6 @@ hasher = Hashids(alphabet="1234567890ABCDEF", min_length=5)
 
 
 class SectorSerializer(serializers.ModelSerializer):
-    # TODO : Use hyperlinkedmodelserializer
     id = serializers.SerializerMethodField()
     parent = serializers.SerializerMethodField()
 
@@ -20,7 +19,6 @@ class SectorSerializer(serializers.ModelSerializer):
         ]
 
     def get_id(self, obj):
-        # Hash ID if asked by context
         must_hash_id = self.context.get('hashed_pk', False)
         if must_hash_id:
             return hasher.encode(obj.id)
@@ -46,6 +44,7 @@ class SectorSimpleSerializer(SectorSerializer):
         ]
 
     def get_url(self, obj):
+        # Writing URL by hand is a hack, use hyperlinkedmodelserializer for greater good
         must_hash_id = self.context.get('hashed_pk', False)
         key = hasher.encode(obj.id) if must_hash_id else obj.id
         return f"/secteurs/{key}"
@@ -68,7 +67,7 @@ class SectorStringSerializer(serializers.ModelSerializer):
         ]
 
     def get_url(self, obj):
-        # Hash ID if asked by context
+        # Writing URL by hand is a hack, use hyperlinkedmodelserializer for greater good
         must_hash_id = self.context.get('hashed_pk', False)
         key = hasher.encode(obj.translatable.id) if must_hash_id else obj.translatable.id
         return f"/secteurs/{key}"
@@ -85,7 +84,7 @@ class SiaeSerializer(serializers.ModelSerializer):
     departement = serializers.CharField(source="department")
     codePostal = serializers.CharField(source="post_code")
     url = serializers.SerializerMethodField()
-    sectors = SectorSimpleSerializer(many=True, read_only=True)
+    secteurs = SectorSimpleSerializer(many=True, read_only=True)
 
     class Meta:
         model = Siae
@@ -103,11 +102,11 @@ class SiaeSerializer(serializers.ModelSerializer):
             "codePostal",
             "createdat",
             "url",
-            "sectors",
+            "secteurs",
         ]
 
     def get_url(self, obj):
-        # Hash ID if asked by context
+        # Writing URL by hand is a hack, use hyperlinkedmodelserializer for greater good
         must_hash_id = self.context.get('hashed_pk', False)
         key = hasher.encode(obj.pk) if must_hash_id else obj.pk
         return f"/siaes/{key}"
