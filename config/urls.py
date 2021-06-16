@@ -19,6 +19,8 @@ from django.contrib import admin
 from django.urls import include, path
 
 
-urlpatterns = [path("admin/", admin.site.urls), path("", include("lemarche.api.urls"))] + static(
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("", include("lemarche.api.siaes.urls"))] + static(
     settings.STATIC_URL, document_root=settings.STATIC_ROOT
 )

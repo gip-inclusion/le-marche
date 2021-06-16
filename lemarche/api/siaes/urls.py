@@ -1,4 +1,4 @@
-from lemarche.api import views
+from lemarche.api.siaes import views
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
@@ -10,7 +10,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 
 urlpatterns = [
     path("siaes/", views.SiaeList.as_view()),
-    path("siaes/<int:pk>/", views.SiaeDetail.as_view()),
+    path("siaes/<str:pk>/", views.SiaeDetail.as_view()),
     # path("api/", include(router.urls)),
     # path('siaes/', views.siae_list),
     # path('siae/<int:key>', views.siae_detail, name='siae-detail'),

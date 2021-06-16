@@ -17,7 +17,6 @@ def validate_naf(naf):
 
 ## End of temporary code
 
-
 class Sector(models.Model):
     id = models.IntegerField(primary_key=True)
     parent = models.ForeignKey("self", models.DO_NOTHING, blank=True, null=True)
