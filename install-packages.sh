@@ -1,4 +1,6 @@
 #!/bin/bash
+# Why ?
+# https://pythonspeed.com/articles/system-packages-docker/
 
 # Bash "strict mode", to help catch problems and bugs in the shell
 # script. Every bash script you write should include this. See

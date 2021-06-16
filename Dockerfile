@@ -7,11 +7,17 @@ ENV ENV=PROD \
   HOST=0.0.0.0 \
   PORT=8000
 
-ENV MYSQL_DB=${MYSQL_DB} \
-    MYSQL_HOST=${MYSQL_HOST} \
-    MYSQL_PORT=${MYSQL_PORT} \
-    MYSQL_USER=${MYSQL_USER} \
-    MYSQL_PASSWORD=${MYSQL_PASSWORD} \
+ENV MYSQL_ADDON_DB=${MYSQL_ADDON_DB} \
+    MYSQL_ADDON_HOST=${MYSQL_ADDON_HOST} \
+    MYSQL_ADDON_PORT=${MYSQL_ADDON_PORT} \
+    MYSQL_ADDON_USER=${MYSQL_ADDON_USER} \
+    MYSQL_ADDON_PASSWORD=${MYSQL_ADDON_PASSWORD} \
+    POSTGRESQL_ADDON_DB=${POSTGRESQL_ADDON_DB} \
+    POSTGRESQL_ADDON_HOST=${POSTGRESQL_ADDON_HOST} \
+    POSTGRESQL_ADDON_PORT=${POSTGRESQL_ADDON_PORT} \
+    POSTGRESQL_ADDON_USER=${POSTGRESQL_ADDON_USER} \
+    POSTGRESQL_ADDON_PASSWORD=${POSTGRESQL_ADDON_PASSWORD} \
+    SECRET_KEY=${SECRET_KEY} \
     PYTHONPATH=${PYTHONPATH}:/app/lemarche
 
 WORKDIR /app
@@ -22,12 +28,18 @@ RUN ./install-packages.sh
 # Multistage build : BUILD
 FROM base as builder
 
+# Default arguments
 ARG ENV="dev"
-ARG MYSQL_DB="database" \
-    MYSQL_HOST="localhost"\
-    MYSQL_USER="root" \
-    MYSQL_PORT="3306" \
-    MYSQL_PASSWORD="[SECRET]"
+ARG MYSQL_ADDON_DB="database" \
+    MYSQL_ADDON_HOST="localhost"\
+    MYSQL_ADDON_USER="root" \
+    MYSQL_ADDON_PORT="3306" \
+    MYSQL_ADDON_PASSWORD="[SECRET]" \
+    POSTGRESQL_ADDON_DB="database" \
+    POSTGRESQL_ADDON_HOST="localhost"\
+    POSTGRESQL_ADDON_USER="root" \
+    POSTGRESQL_ADDON_PORT="5431" \
+    POSTGRESQL_ADDON_PASSWORD="[SECRET]"
 
 ENV PIP_NO_CACHE_DIR=off \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
@@ -47,9 +59,11 @@ RUN poetry config virtualenvs.create false && \
     poetry install $(test $ENV == "prod" && echo "--no-dev") --no-interaction --no-ansi
 
 # CMD ["bash"]
-CMD ["lemarche/runner.sh"]
+CMD ["config/runner.sh"]
 
 # # Multistage build : RUN
+# TODO: Make multisage deployment work
+#
 # FROM base as final
 # 
 # # CMD ["bash"]

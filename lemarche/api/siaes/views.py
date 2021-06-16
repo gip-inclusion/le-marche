@@ -1,5 +1,5 @@
 # from lemarche.api.models import Siae
-from lemarche.api.serializers import (
+from lemarche.api.siaes.serializers import (
     # SectorSerializer,
     SectorStringSerializer,
     # SiaeHyperSerializer,
@@ -7,13 +7,13 @@ from lemarche.api.serializers import (
     SiaeSerializer,
 )
 from lemarche.cocorico.models import Directory, DirectorySector, Sector, SectorString
+from lemarche.users.models import User
 from django.http import HttpResponse
 from django.http import Http404
 from hashids import Hashids
 from rest_framework import generics, mixins
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from lemarche.users.models import User
 
 
 hasher = Hashids(alphabet="1234567890ABCDEF", min_length=5)
@@ -22,6 +22,18 @@ hasher = Hashids(alphabet="1234567890ABCDEF", min_length=5)
 Inspiration for class-based views :
     https://www.django-rest-framework.org/tutorial/3-class-based-views/
 """
+
+
+# TODO: create common shared lib for reusable components
+def decode_hashed_pk(func):
+    """
+    Small decorator to dynamically decode a hashed pk
+    """
+    def _wrapper(*args, **kwargs):
+        if 'pk' in kwargs.keys():
+            kwargs['pk'] = hasher.decode(kwargs['pk'])[0]
+        return func(*args, **kwargs)
+    return _wrapper
 
 
 #  FIXME:Given the peculiar user-token access, it's not possible
@@ -40,7 +52,7 @@ class SiaeList(APIView):
                 serializer = SiaeLightSerializer(
                     siaes[:10],
                     many=True,
-                    context={"request": request},
+                    context={"hashed_pk": True},
                 )
             else:
 
@@ -50,7 +62,11 @@ class SiaeList(APIView):
                 except User.DoesNotExist:
                     return HttpResponse("503: Not Allowed", status=503)
 
-                serializer = SiaeLightSerializer(siaes, many=True)
+                serializer = SiaeLightSerializer(
+                    siaes,
+                    many=True,
+                    context={"hashed_pk": True},
+                )
             # return JsonResponse(serializer.data, safe=False)
             return Response(serializer.data)
 
@@ -68,6 +84,7 @@ class SiaeDetail(APIView):
         except Directory.DoesNotExist:
             raise Http404
 
+    @decode_hashed_pk
     def get(self, request, pk, format=None):
         """
         Détail d'une structure
@@ -75,7 +92,11 @@ class SiaeDetail(APIView):
         siae = self.get_object(pk)
         token = request.GET.get("token", None)
         if not token:
-            serializer = SiaeLightSerializer(siae, many=False)
+            serializer = SiaeLightSerializer(
+                siae,
+                many=False,
+                context={"hashed_pk": True},
+            )
         else:
             try:
                 user = User.objects.get(api_key=token)
@@ -83,29 +104,36 @@ class SiaeDetail(APIView):
             except User.DoesNotExist:
                 return HttpResponse("503: Not Allowed", status=503)
 
-            serializer = SiaeSerializer(siae, many=False)
+            serializer = SiaeSerializer(
+                siae,
+                many=False,
+                context={"hashed_pk": True},
+            )
         return Response(serializer.data)
 
 
 class SectorList(mixins.ListModelMixin,
                  generics.GenericAPIView):
-    queryset = SectorString.objects.filter(translatable__gte=10).select_related("translatable").all()
+    queryset = SectorString.objects.get_all_active_sectors()
     serializer_class = SectorStringSerializer
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
 
+    def get_serializer_context(self):
+        context = {'hashed_pk': True}
+        return context
 
-# FIXME: Refactor hashid usage to allow a simpler view
+
 class SectorDetail(APIView):
     def get_object(self, pk):
         try:
-            return SectorString.objects.select_related("translatable").get(translatable=pk)
+            return SectorString.objects.get_sector(pk=pk)
         except SectorString.DoesNotExist:
             raise Http404
 
+    @decode_hashed_pk
     def get(self, request, pk, format=None):
-        ckey = hasher.decode(pk)[0]
-        sector = self.get_object(ckey)
-        serializer = SectorStringSerializer(sector, many=False)
+        sector = self.get_object(pk)
+        serializer = SectorStringSerializer(sector, many=False, context={'hashed_pk': True})
         return Response(serializer.data)

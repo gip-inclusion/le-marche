@@ -8,8 +8,6 @@ hasher = Hashids(alphabet="1234567890ABCDEF", min_length=5)
 
 
 class SectorSerializer(serializers.ModelSerializer):
-    # TODO : Use hyperlinkedmodelserializer
-    # FIXME : Code repetition
     id = serializers.SerializerMethodField()
     parent = serializers.SerializerMethodField()
 
@@ -21,17 +19,39 @@ class SectorSerializer(serializers.ModelSerializer):
         ]
 
     def get_id(self, obj):
-        return hasher.encode(obj.id)
+        must_hash_id = self.context.get('hashed_pk', False)
+        if must_hash_id:
+            return hasher.encode(obj.id)
+
+        return obj.id
 
     def get_parent(self, obj):
         if obj.parent is None:
             return None
-        return hasher.encode(obj.parent.id)
+
+        must_hash_id = self.context.get('hashed_pk', False)
+        return hasher.encode(obj.parent.id) if must_hash_id else obj.parent.id
+
+
+class SectorSimpleSerializer(SectorSerializer):
+    url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Sector
+        fields = [
+            "id",
+            "url",
+        ]
+
+    def get_url(self, obj):
+        # Writing URL by hand is a hack, use hyperlinkedmodelserializer for greater good
+        must_hash_id = self.context.get('hashed_pk', False)
+        key = hasher.encode(obj.id) if must_hash_id else obj.id
+        return f"/secteurs/{key}"
 
 
 class SectorStringSerializer(serializers.ModelSerializer):
     # TODO : Use hyperlinkedmodelserializer
-    # FIXME : Code repetition
     hierarchie = SectorSerializer(many=False, read_only=True, source="translatable")
 
     nom = serializers.CharField(source="name")
@@ -47,34 +67,14 @@ class SectorStringSerializer(serializers.ModelSerializer):
         ]
 
     def get_url(self, obj):
-        key = hasher.encode(obj.id)
-        return f"/secteur/{key}"
-
-
-class SectorSimpleSerializer(serializers.ModelSerializer):
-    # TODO : Use hyperlinkedmodelserializer
-    # FIXME : Code repetition
-    id = serializers.SerializerMethodField()
-    url = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Sector
-        fields = [
-            "id",
-            "url",
-        ]
-
-    def get_id(self, obj):
-        return hasher.encode(obj.id)
-
-    def get_url(self, obj):
-        key = hasher.encode(obj.id)
+        # Writing URL by hand is a hack, use hyperlinkedmodelserializer for greater good
+        must_hash_id = self.context.get('hashed_pk', False)
+        key = hasher.encode(obj.translatable.id) if must_hash_id else obj.translatable.id
         return f"/secteurs/{key}"
 
 
 class SiaeSerializer(serializers.ModelSerializer):
     # TODO : Use hyperlinkedmodelserializer
-    # FIXME : Code repetition
     raisonSociale = serializers.CharField(source="name")
     enseigne = serializers.CharField(source="brand")
     type = serializers.CharField(source="kind")
@@ -85,9 +85,6 @@ class SiaeSerializer(serializers.ModelSerializer):
     codePostal = serializers.CharField(source="post_code")
     url = serializers.SerializerMethodField()
     sectors = SectorSimpleSerializer(many=True, read_only=True)
-
-    def get_url(self, obj):
-        return f"/siaes/{obj.pk}"
 
     class Meta:
         model = Siae
@@ -108,16 +105,17 @@ class SiaeSerializer(serializers.ModelSerializer):
             "sectors",
         ]
 
+    def get_url(self, obj):
+        # Writing URL by hand is a hack, use hyperlinkedmodelserializer for greater good
+        must_hash_id = self.context.get('hashed_pk', False)
+        key = hasher.encode(obj.pk) if must_hash_id else obj.pk
+        return f"/siaes/{key}"
 
-class SiaeLightSerializer(serializers.ModelSerializer):
+
+
+
+class SiaeLightSerializer(SiaeSerializer):
     # TODO : Use hyperlinkedmodelserializer
-    # FIXME : Code repetition
-    raisonSociale = serializers.CharField(source="name")
-    enseigne = serializers.CharField(source="brand")
-    ville = serializers.CharField(source="city")
-    departement = serializers.CharField(source="department")
-    codePostal = serializers.CharField(source="post_code")
-    url = serializers.SerializerMethodField()
 
     class Meta:
         model = Siae
@@ -132,9 +130,6 @@ class SiaeLightSerializer(serializers.ModelSerializer):
             "createdat",
             "url",
         ]
-
-    def get_url(self, obj):
-        return f"/siae/{obj.pk}"
 
 
 class SiaeHyperSerializer(serializers.HyperlinkedModelSerializer):

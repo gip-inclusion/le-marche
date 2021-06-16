@@ -1,9 +1,15 @@
 from django.test.runner import DiscoverRunner
+import os
+from pathlib import Path
+from config.settings import *
 
-from lemarche.settings import *
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Set cocorico models as managed to allow
+# testing them
 
-UNDER_TEST = True
+MANAGE_COCORICO_DATABASE = True
 
 
 class DisableMigrations(object):
@@ -16,6 +22,7 @@ class DisableMigrations(object):
 
 class UnManagedModelTestRunner(DiscoverRunner):
     """
+
     Test runner that automatically makes all unmanaged models in your Django
     project managed for the duration of the test run.
     """
