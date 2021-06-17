@@ -29,7 +29,7 @@ def track(page: str, action: str, *, meta: dict = {}, session_id: str = None, cl
     if not session_id:
         # Tracker requires a session_id
         token = meta.get("token")
-        session_id = f"{token.ljust(8,'0')}-1111-2222-3333-444444444444"
+        session_id = f"{token.ljust(8,'0')}-1111-2222-AAAA-444444444444"
 
     set_payload = {
         "timestamp": datetime.now().isoformat(),
