@@ -57,10 +57,11 @@ RUN pip install uwsgi
 
 #     apt-get install build-essential -y
 COPY poetry.lock pyproject.toml /app/
-COPY . .
 
 RUN poetry config virtualenvs.create false && \
     poetry install $(test $ENV == "prod" && echo "--no-dev") --no-interaction --no-ansi
+
+COPY . .
 
 # CMD ["bash"]
 CMD ["config/runner.sh"]

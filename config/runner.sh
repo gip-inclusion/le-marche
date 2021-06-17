@@ -3,6 +3,8 @@
 # ./manage.py collectstatic --noinput
 export PYTHONPATH=$PYTHONPATH:./lemarche:./config
 ./manage.py collectstatic --noinput
+# Do ? Don't ? No guts, no glory ?
+# ./manage.py migrate
 uwsgi --plugins http,python \
       --http "${HOST}:${PORT}" \
       --module config.wsgi \
