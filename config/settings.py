@@ -188,3 +188,33 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "0.1.0",
     # OTHER SETTINGS
 }
+
+# Logging.
+# https://docs.djangoproject.com/en/dev/topics/logging
+# ----------------------------------------------------
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"},
+        "null": {"class": "logging.NullHandler"},
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+        },
+        # Silence `Invalid HTTP_HOST header` errors.
+        # This should be done at the HTTP server level when possible.
+        # https://docs.djangoproject.com/en/3.0/topics/logging/#django-security
+        "django.security.DisallowedHost": {
+            "handlers": ["null"],
+            "propagate": False,
+        },
+        "lemarche": {
+            "handlers": ["console"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "DEBUG"),
+        },
+    },
+}

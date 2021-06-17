@@ -9,6 +9,10 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 
 ## CONTENTS
 
+### [0.4] - (2021-06)
+- Logging amélioré
+- Page d'accueil primitive
+
 ### [0.3.1] - (2021-06)
 - Correction de la publication des fichiers statiques quand le déboguage de django est désactivé
 
