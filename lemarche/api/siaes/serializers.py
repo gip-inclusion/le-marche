@@ -19,7 +19,7 @@ class SectorSerializer(serializers.ModelSerializer):
         ]
 
     def get_id(self, obj):
-        must_hash_id = self.context.get('hashed_pk', False)
+        must_hash_id = self.context.get("hashed_pk", False)
         if must_hash_id:
             return hasher.encode(obj.id)
 
@@ -29,7 +29,7 @@ class SectorSerializer(serializers.ModelSerializer):
         if obj.parent is None:
             return None
 
-        must_hash_id = self.context.get('hashed_pk', False)
+        must_hash_id = self.context.get("hashed_pk", False)
         return hasher.encode(obj.parent.id) if must_hash_id else obj.parent.id
 
 
@@ -45,7 +45,7 @@ class SectorSimpleSerializer(SectorSerializer):
 
     def get_url(self, obj):
         # Writing URL by hand is a hack, use hyperlinkedmodelserializer for greater good
-        must_hash_id = self.context.get('hashed_pk', False)
+        must_hash_id = self.context.get("hashed_pk", False)
         key = hasher.encode(obj.id) if must_hash_id else obj.id
         return f"/secteurs/{key}"
 
@@ -68,7 +68,7 @@ class SectorStringSerializer(serializers.ModelSerializer):
 
     def get_url(self, obj):
         # Writing URL by hand is a hack, use hyperlinkedmodelserializer for greater good
-        must_hash_id = self.context.get('hashed_pk', False)
+        must_hash_id = self.context.get("hashed_pk", False)
         key = hasher.encode(obj.translatable.id) if must_hash_id else obj.translatable.id
         return f"/secteurs/{key}"
 
@@ -107,11 +107,9 @@ class SiaeSerializer(serializers.ModelSerializer):
 
     def get_url(self, obj):
         # Writing URL by hand is a hack, use hyperlinkedmodelserializer for greater good
-        must_hash_id = self.context.get('hashed_pk', False)
+        must_hash_id = self.context.get("hashed_pk", False)
         key = hasher.encode(obj.pk) if must_hash_id else obj.pk
         return f"/siaes/{key}"
-
-
 
 
 class SiaeLightSerializer(SiaeSerializer):
