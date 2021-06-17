@@ -38,8 +38,9 @@ TRACKER_HOST = os.environ.get('TRACKER_HOST', 'http://localhost')
 BITOUBI_ENV = os.environ.get('ENV', 'dev')
 
 # Static Files
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Application definition
 
@@ -77,6 +78,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Third-party Middlewares
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     # BITOUBI Middlewares
     "lemarche.tracker.middlewares.TokenVisitMiddleware",
 ]
