@@ -8,6 +8,10 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 VERSION = 1
+IGNORE_FILTER = [
+    'favicon',
+    'static',
+]
 DEFAULT_PAYLOAD = {
     "_v": VERSION,
     "timestamp": None,
@@ -58,7 +62,8 @@ class TokenVisitMiddleware:
         token = request.GET.get("token", "0")
         page = request.path
 
-        if page not in ["/favicon.ico"]:
+        # We make sure no "filtered" keyword is in the path before tracking
+        if all([s not in page for s in IGNORE_FILTER]):
             track(page, "load", meta={"token": token})
 
         response = self.get_response(request)
