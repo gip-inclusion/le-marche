@@ -13,11 +13,10 @@ class SectorQuerySet(models.QuerySet):
     START_IDS_AT = 10
 
     def get_all_active_sectors(self):
-        return self.filter(translatable__gte=self.START_IDS_AT, locale='fr').select_related("translatable").all()
+        return self.filter(translatable__gte=self.START_IDS_AT, locale="fr").select_related("translatable").all()
 
     def get_sector(self, pk):
-        return SectorString.objects.select_related("translatable").get(translatable=pk, locale='fr')
-
+        return SectorString.objects.select_related("translatable").get(translatable=pk, locale="fr")
 
 
 # class ListingCategory(models.Model):
