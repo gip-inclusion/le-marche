@@ -1,4 +1,11 @@
-FROM python:3.9-slim-buster as base
+# ----------------------------------------------------
+# Base-image
+# ----------------------------------------------------
+FROM python:3.9-slim-buster as common-base
+# Django directions: https://blog.ploetzli.ch/2020/efficient-multi-stage-build-django-docker/
+# Pip on docker : https://pythonspeed.com/articles/multi-stage-docker-python/
+# https://blog.mikesir87.io/2018/07/leveraging-multi-stage-builds-single-dockerfile-dev-prod/
+# https://pythonspeed.com/articles/base-image-python-docker-images/
 
 ENV ENV=PROD \
   PYTHONFAULTHANDLER=1 \
@@ -20,14 +27,6 @@ ENV MYSQL_ADDON_DB=${MYSQL_ADDON_DB} \
     SECRET_KEY=${SECRET_KEY} \
     PYTHONPATH=${PYTHONPATH}:/app/lemarche \
     DEBUG=${DEBUG}
-
-WORKDIR /app
-
-COPY install-packages.sh .
-RUN ./install-packages.sh
-
-# Multistage build : BUILD
-FROM base as builder
 
 # Default arguments
 ARG ENV="dev"
@@ -51,25 +50,53 @@ ENV PIP_NO_CACHE_DIR=off \
   NODE_VERSION=14 \
   TRACKER_HOST=${TRACKER_HOST}
 
-# Install python environment
+WORKDIR /app
+
+COPY install-packages.sh .
+RUN ./install-packages.sh
+
+# ----------------------------------------------------
+# Install dependencies
+# ----------------------------------------------------
+FROM common-base AS dependencies
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
 RUN pip install "poetry==$POETRY_VERSION"
-RUN pip install uwsgi
+RUN pip install uwsgi 
 
 #     apt-get install build-essential -y
 COPY poetry.lock pyproject.toml /app/
 
 RUN poetry config virtualenvs.create false && \
+    poetry config virtualenvs.path /opt/venv && \
     poetry install $(test $ENV == "prod" && echo "--no-dev") --no-interaction --no-ansi
 
+
+# ----------------------------------------------------
+# Build project
+# ----------------------------------------------------
+FROM common-base AS app-run
+COPY --from=dependencies /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 COPY . .
 
-# CMD ["bash"]
+# ----------------------------------------------------
+# Run Dev
+# ----------------------------------------------------
+FROM app-run AS dev
+CMD ["bash"]
+
+# ----------------------------------------------------
+# Run Dev
+# ----------------------------------------------------
+FROM app-run AS prod
 CMD ["config/runner.sh"]
 
-# # Multistage build : RUN
-# TODO: Make multisage deployment work
-#
-# FROM base as final
-# 
-# # CMD ["bash"]
-# CMD ["lemarche/runner.sh"]
+# # For some _real_ performance :
+# FROM python:3.9-alpine as prod
+# COPY --from=dependencies /opt/venv /opt/venv
+# ENV PATH="/opt/venv/bin:$PATH"
+# COPY . .
+# RUN apk add python3-dev build-base linux-headers pcre-dev
+# RUN pip install uwsgi
