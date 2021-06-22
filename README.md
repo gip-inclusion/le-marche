@@ -116,12 +116,15 @@ Le projet utilise flake8, isort et black pour assurer la standardisation des éc
 Poetry est configuré pour en faciliter l'utilisation.
 
 ```bash
-# Exécuter isort, flake8 ou black
+# Exécuter isort, flake8 ou black, avec poetry
 $ poetry run poe black
 $ poetry run poe isort
 $ poetry run poe flake8
 # Exécuter formattage automatique
-$ poetry run poe clean
+$ poetry run poe clean_code
+
+# Exécuter formattage automatique dans le docker
+$ poe clean_code
 ```
 
 ### Testing
