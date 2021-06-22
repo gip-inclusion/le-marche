@@ -7,48 +7,20 @@ FROM python:3.9-slim-buster as common-base
 # https://blog.mikesir87.io/2018/07/leveraging-multi-stage-builds-single-dockerfile-dev-prod/
 # https://pythonspeed.com/articles/base-image-python-docker-images/
 
-ENV ENV=PROD \
-  PYTHONFAULTHANDLER=1 \
-  PYTHONUNBUFFERED=1 \
-  PYTHONHASHSEED=random \
-  HOST=0.0.0.0 \
-  PORT=8000
+# Default environment: Dev
+ARG ENV=dev
 
-ENV MYSQL_ADDON_DB=${MYSQL_ADDON_DB} \
-    MYSQL_ADDON_HOST=${MYSQL_ADDON_HOST} \
-    MYSQL_ADDON_PORT=${MYSQL_ADDON_PORT} \
-    MYSQL_ADDON_USER=${MYSQL_ADDON_USER} \
-    MYSQL_ADDON_PASSWORD=${MYSQL_ADDON_PASSWORD} \
-    POSTGRESQL_ADDON_DB=${POSTGRESQL_ADDON_DB} \
-    POSTGRESQL_ADDON_HOST=${POSTGRESQL_ADDON_HOST} \
-    POSTGRESQL_ADDON_PORT=${POSTGRESQL_ADDON_PORT} \
-    POSTGRESQL_ADDON_USER=${POSTGRESQL_ADDON_USER} \
-    POSTGRESQL_ADDON_PASSWORD=${POSTGRESQL_ADDON_PASSWORD} \
-    SECRET_KEY=${SECRET_KEY} \
-    PYTHONPATH=${PYTHONPATH}:/app/lemarche \
-    DEBUG=${DEBUG}
+ENV PYTHONFAULTHANDLER=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONHASHSEED=random \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    PIP_DEFAULT_TIMEOUT=100 \
+    POETRY_VERSION=1.1.1 \
+    NODE_VERSION=14
 
-# Default arguments
-ARG ENV="dev"
-ARG MYSQL_ADDON_DB="database" \
-    MYSQL_ADDON_HOST="localhost"\
-    MYSQL_ADDON_USER="root" \
-    MYSQL_ADDON_PORT="3306" \
-    MYSQL_ADDON_PASSWORD="[SECRET]" \
-    POSTGRESQL_ADDON_DB="database" \
-    POSTGRESQL_ADDON_HOST="localhost"\
-    POSTGRESQL_ADDON_USER="root" \
-    POSTGRESQL_ADDON_PORT="5431" \
-    POSTGRESQL_ADDON_PASSWORD="[SECRET]" \
-    TRACKER_HOST="http://localhost" \
-    DEBUG="False"
-
-ENV PIP_NO_CACHE_DIR=off \
-  PIP_DISABLE_PIP_VERSION_CHECK=on \
-  PIP_DEFAULT_TIMEOUT=100 \
-  POETRY_VERSION=1.1.1 \
-  NODE_VERSION=14 \
-  TRACKER_HOST=${TRACKER_HOST}
+ENV HOST=0.0.0.0 \
+    PORT=8000
 
 WORKDIR /app
 
@@ -78,19 +50,32 @@ RUN poetry config virtualenvs.create false && \
 # ----------------------------------------------------
 FROM common-base AS app-run
 COPY --from=dependencies /opt/venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-COPY . .
+ENV PATH="/opt/venv/bin:$PATH" \
+    VIRTUALENV="/opt/venv" \
+    PYTHONPATH="$PYTHONPATH:/app/lemarche:/app/config"
+COPY ./lemarche ./lemarche
+COPY ./config ./config
+COPY ./manage.py ./manage.py
+COPY ./pyproject.toml ./pyproject.toml
 
 # ----------------------------------------------------
 # Run Dev
 # ----------------------------------------------------
 FROM app-run AS dev
+ENV DJANGO_SETTINGS_MODULE="config.settings.dev" \
+    ENV="dev" \
+    DEBUG="True"
+
 CMD ["bash"]
 
 # ----------------------------------------------------
 # Run Dev
 # ----------------------------------------------------
 FROM app-run AS prod
+ENV DJANGO_SETTINGS_MODULE="config.settings.prod" \
+    ENV="prod" \
+    DEBUG="False"
+
 CMD ["config/runner.sh"]
 
 # # For some _real_ performance :

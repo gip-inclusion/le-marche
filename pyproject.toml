@@ -79,6 +79,6 @@ isort = { shell = "isort ./lemarche/*.py"}
 black = { shell = "black lemarche"}
 clean_code = ["isort", "black"]
 clean = { shell = "rm -r __pycache__/" }
-runserver = { shell = "./manage.py runserver"}
-migrate = { shell = "./manage.py migrate"}
-makemigrations = { shell = "./manage.py makemigrations"}
+runserver = { shell = "python3 ./manage.py runserver"}
+migrate = { shell = "python3 ./manage.py migrate"}
+makemigrations = { shell = "python3 ./manage.py makemigrations"}
