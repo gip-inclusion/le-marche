@@ -9,8 +9,8 @@ logger.setLevel(logging.DEBUG)
 
 VERSION = 1
 IGNORE_FILTER = [
-    'favicon',
-    'static',
+    "favicon",
+    "static",
 ]
 DEFAULT_PAYLOAD = {
     "_v": VERSION,
@@ -49,7 +49,7 @@ def track(page: str, action: str, *, meta: dict = {}, session_id: str = None, cl
     try:
         r = httpx.post(f"{settings.TRACKER_HOST}/track", json=payload)
         r.raise_for_status()
-        logger.info('Tracker sentt')
+        logger.info("Tracker sentt")
     except httpx.HTTPError as e:
         logger.exception(e)
         logger.warning("Failed to submit tracker")
