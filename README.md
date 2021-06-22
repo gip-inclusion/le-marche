@@ -42,29 +42,37 @@ $ env PYTHONPATH=./lemarche:./lemarche/c4_directory poetry run python manage.py 
 ```
 
 ### Docker
-Exemple de script docker:
-(attention, il s'agit du script de déploiement production)
+L'API utilise un dockerfile multistage, permettant de fonctionner en "Dev" et "Prod" avec le même [Dockerfile](./Dockerfile).
+
+#### Configuration docker
+
+- Copier le fichier `env.default.sh` vers `env.docker.local`
+- Supprimer les `export`
+- Supprimer les guillements
+- Completer les données
+
+Format final de `env.docker.local` (exemple):
+```
+PG_HOST=localhost
+PG_PORT=5432
+PG_USER=db_user
+```
+
+#### Lancement
+Le script [start_docker.sh](./start_docker.sh) permet de lancer les environnements en local, en mode **dev** ou **prod** :
+
 ```bash
-docker build -t "c4_api" -f ./Dockerfile . \
-    --build-arg ENV=DEV \
-&& docker run --rm -it \
-    -p 8000:8000 \
-    -e MYSQL_DB="[DB]" \
-    -e MYSQL_HOST="[HOST]" \
-    -e MYSQL_USER="[USER]" \
-    -e MYSQL_PASSWORD="[PASSWORD]" \
-    -e MYSQL_PORT="[PORT]" \
-    -e PG_NAME="[NAME]" \
-    -e PG_HOST="[HOST]" \
-    -e PG_USER="[USER]" \
-    -e PG_PASSWORD="[PASSWORD]" \
-    -e PG_PORT="[PORT]" \
-    --name c4_api \
-    c4_api
+ > ./start_docker.sh -h
+
+-p|--prod    run full docker (Prod config)
+-d|--dev     run dev docker (Dev config and local mounts)
+
+# Pour lancer l'environnement de développement
+> ./start_docker.sh --dev
 ```
 
 ## Utilisation
-L'api propose plusieurs endpoints et interfaces de documentation.
+Une fois lancé, l'api propose plusieurs endpoints et interfaces de documentation (liens vers environnement local) :
 
 - Documentation Swaggger/OpenAPI : [/docs](http://localhost:8000/docs)
 - Documentation ReDoc : [/redoc](http://localhost:8000/redoc)
@@ -93,7 +101,7 @@ Si l'environnement est neuf ou n'est plus à jour, appliquez les migrations néc
 # Avec manage.py
 $ poetry run python manage.py makemigrations
 $ poetry run python manage.py migrate
-# Avec poe, dans le shell poetry
+# Avec poe, dans le shell poetry (ou directement dans le docker - poe, pas poetry)
 $ poetry shell
 $ poe makemigrations
 $ poe migrate
