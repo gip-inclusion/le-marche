@@ -9,9 +9,10 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 
 ## CONTENTS
 
-### [0.4] - (2021-06)
+### [0.4] - (2021-07)
 - Logging amélioré
 - Page d'accueil primitive
+- Ajout donnée QPV
 - Environnement Docker optimisé
 
 ### [0.3.1] - (2021-06)
