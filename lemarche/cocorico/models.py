@@ -87,6 +87,7 @@ class Directory(models.Model):
     pol_range = models.IntegerField(blank=True, null=True)
     description = models.TextField()
     sectors = models.ManyToManyField(Sector, through="DirectorySector")
+    is_qpv = models.BooleanField(blank=False, null=False, default=False)
 
     class Meta:
         # managed = False
