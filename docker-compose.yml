@@ -18,8 +18,7 @@ services:
         context: .
         target: dev
         dockerfile: ./Dockerfile
-    command: ./config/dev/runner.sh
-    # command: ./config/dev/runner.sh
+    command: ./config/dev/entrypoint.sh
     volumes:
       - ./lemarche:/app/lemarche
       - ./config:/app/config
