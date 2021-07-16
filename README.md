@@ -83,8 +83,20 @@ Le script [start_docker.sh](./start_docker.sh) permet de lancer les environnemen
 Après création du fichier `env.docker.local`, 
 
 ```bash
+ # Démarrage
  > docker-compose up
+ # Se connecter au containeur django
+ > docker exec -it bitoubi_django /bin/bash
+
+ # Re-création de l'environnement (en cas de modification)
+ > docker-compose down
+ > docker-compose build --no-cache
+ > docker-compose up --force-recreate    
 ```
+
+**Attention bug**
+> La création initiale ne fonctionne pas, il faut lancer une première fois, puis quitter avant de relancer une seconde fois.
+
 
 ## Utilisation
 Une fois lancé, l'api propose plusieurs endpoints et interfaces de documentation (liens vers environnement local) :

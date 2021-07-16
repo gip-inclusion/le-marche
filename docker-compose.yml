@@ -6,8 +6,11 @@ services:
     image: postgis/postgis:12-master
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./config/dev/postgres/psql_init.sh:/docker-entrypoint-initdb.d/postgres-init.sh
     env_file:
       - env.docker.local
+    ports:
+      - "6543:5432"
 
   bitoubi:
     container_name: bitoubi_django
@@ -15,7 +18,8 @@ services:
         context: .
         target: dev
         dockerfile: ./Dockerfile
-    command: python manage.py runserver 0.0.0.0:8000
+    command: ./config/dev/runner.sh
+    # command: ./config/dev/runner.sh
     volumes:
       - ./lemarche:/app/lemarche
       - ./config:/app/config
@@ -24,7 +28,7 @@ services:
     env_file:
       - env.docker.local
     ports:
-      - "8000:8000"
+      - "8880:8000"
     depends_on:
       - postgres
 
