@@ -9,6 +9,11 @@ Publication de la liste de toutes les structures d'insertion et entreprises adap
 
 ## Installation
 Étapes d'une installation en local à des fins de développement.
+L'environnement fourni permet de fonctionner de 3 manières différentes:
+
+1. Poetry (et Postgres existant)
+2. Dockerfile (et Postgres existant)
+3. docker-compose (installe tout l'environnement nécessaire)
 
 ### Configuration
 Les variables d'environnement sont listées dans le fichier [env.default.sh](env.default.sh).
@@ -44,6 +49,8 @@ $ env PYTHONPATH=./lemarche:./lemarche/c4_directory poetry run python manage.py 
 ### Docker
 L'API utilise un dockerfile multistage, permettant de fonctionner en "Dev" et "Prod" avec le même [Dockerfile](./Dockerfile).
 
+Pour l'environnement de développement, un `docker-compose` est fourni (voir ci-dessous)
+
 #### Configuration docker
 
 - Copier le fichier `env.default.sh` vers `env.docker.local`
@@ -58,7 +65,7 @@ PG_PORT=5432
 PG_USER=db_user
 ```
 
-#### Lancement
+#### Lancement Dockerfile
 Le script [start_docker.sh](./start_docker.sh) permet de lancer les environnements en local, en mode **dev** ou **prod** :
 
 ```bash
@@ -69,6 +76,14 @@ Le script [start_docker.sh](./start_docker.sh) permet de lancer les environnemen
 
 # Pour lancer l'environnement de développement
 > ./start_docker.sh --dev
+```
+
+#### Lancement docker-compose
+
+Après création du fichier `env.docker.local`, 
+
+```bash
+ > docker-compose up
 ```
 
 ## Utilisation

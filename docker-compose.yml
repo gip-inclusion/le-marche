@@ -1,0 +1,32 @@
+version: "3.9"
+   
+services:
+  postgres:
+    container_name: bitoubi_postgres
+    image: postgis/postgis:12-master
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - env.docker.local
+
+  bitoubi:
+    container_name: bitoubi_django
+    build:
+        context: .
+        target: dev
+        dockerfile: ./Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./lemarche:/app/lemarche
+      - ./config:/app/config
+    environment:
+        - DEBUG=true
+    env_file:
+      - env.docker.local
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
