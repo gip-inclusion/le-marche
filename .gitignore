@@ -3,6 +3,7 @@ core
 *.sqlite3
 env.local.sh
 start_docker.sh
+env.docker.local
 
 # Environment variables
 envs/dev.env

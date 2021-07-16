@@ -18,3 +18,4 @@ export POSTGRESQL_ADDON_DB=""
 
 # Django Settings
 export SECRET_KEY=""
+export TRACKER_HOST=""

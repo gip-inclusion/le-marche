@@ -27,6 +27,7 @@ apt-get -y install --no-install-recommends \
     binutils \
     libproj-dev \
     gdal-bin \
+    iputils-ping \
     gcc
 
 # Delete cached files we don't need anymore:

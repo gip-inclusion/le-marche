@@ -85,6 +85,8 @@ class SiaeSerializer(serializers.ModelSerializer):
     codePostal = serializers.CharField(source="post_code")
     url = serializers.SerializerMethodField()
     sectors = SectorSimpleSerializer(many=True, read_only=True)
+    # zoneQPV = serializers.BooleanField(source="is_qpv", default=False)
+    zoneQPV = serializers.SerializerMethodField()
 
     class Meta:
         model = Siae
@@ -103,6 +105,7 @@ class SiaeSerializer(serializers.ModelSerializer):
             "createdat",
             "url",
             "sectors",
+            "zoneQPV",
         ]
 
     def get_url(self, obj):
@@ -110,6 +113,10 @@ class SiaeSerializer(serializers.ModelSerializer):
         must_hash_id = self.context.get("hashed_pk", False)
         key = hasher.encode(obj.pk) if must_hash_id else obj.pk
         return f"/siaes/{key}"
+
+    def get_zoneQPV(self, obj):
+        # Impossible to make the Boolean field serializer return false if value is null.
+        return obj.is_qpv == 1
 
 
 class SiaeLightSerializer(SiaeSerializer):

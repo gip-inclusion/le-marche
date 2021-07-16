@@ -15,7 +15,7 @@ from pathlib import Path
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -27,11 +27,7 @@ SECRET_KEY = os.environ["SECRET_KEY"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', "False") in ("true", "True", "1", "t")
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    os.environ.get("CURRENT_HOST"),
-]
+ALLOWED_HOSTS = []
 
 # Bitoubi Specific Settings
 TRACKER_HOST = os.environ.get('TRACKER_HOST', 'http://localhost')
