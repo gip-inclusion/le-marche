@@ -10,6 +10,7 @@ from lemarche.cocorico.models import Directory, DirectorySector, Sector, SectorS
 from lemarche.users.models import User
 from django.http import HttpResponse
 from django.http import Http404
+from django_filters.rest_framework import DjangoFilterBackend
 from hashids import Hashids
 from rest_framework import generics, mixins
 from rest_framework.views import APIView
@@ -42,17 +43,26 @@ def decode_hashed_pk(func):
 # to use generic class-based views at this moment.
 class SiaeList(APIView):
     """
-    Lister les SIAES
+    Liste exhaustive des SIAE (structures de l'insertion par l'activité économique)
     """
+
+    queryset = Directory.objects.all()
+    serializer_class = SiaeSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['kind', 'department']
 
     def get(self, request, format=None):
         if request.method == "GET":
-            siaes = Directory.objects.all()
+            queryset = Directory.objects.all()
+
+            for backend in list(self.filter_backends):
+                queryset = backend().filter_queryset(self.request, queryset, self)
+
             token = request.GET.get("token", None)
             if not token:
-                # serializer = SiaeLightSerializer(siaes[:10], many=True)
+                # serializer = SiaeLightSerializer(queryset[:10], many=True)
                 serializer = SiaeLightSerializer(
-                    siaes[:10],
+                    queryset[:10],
                     many=True,
                     context={"hashed_pk": True},
                 )
@@ -64,8 +74,8 @@ class SiaeList(APIView):
                 except User.DoesNotExist:
                     return HttpResponse("503: Not Allowed", status=503)
 
-                serializer = SiaeLightSerializer(
-                    siaes,
+                serializer = SiaeSerializer(
+                    queryset,
                     many=True,
                     context={"hashed_pk": True},
                 )
@@ -79,6 +89,7 @@ class SiaeDetail(APIView):
     """
     Lecture des SIAES
     """
+    serializer_class = SiaeSerializer
 
     def get_object(self, pk):
         try:

@@ -1,6 +1,7 @@
 # API dev files
 core
 *.sqlite3
+*.local
 env.local.sh
 start_docker.sh
 env.docker.local
