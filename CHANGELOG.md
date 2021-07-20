@@ -9,6 +9,14 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 
 ## CONTENTS
 
+### [0.5] - (2021-07)
+- Écriture des vues simplifiée (ModelViewSet et Mixins)
+- Filtres sur certains champs
+- Wording et endpoint
+- Documentation revue
+- Accès SIAE par siret
+- Ajout pagination sur liste SIAE
+
 ### [0.4] - (2021-07)
 - Logging amélioré
 - Page d'accueil primitive
