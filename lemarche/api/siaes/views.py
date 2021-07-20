@@ -49,9 +49,7 @@ def decode_hashed_pk(func):
     return _wrapper
 
 
-class Siae(mixins.ListModelMixin,
-           mixins.RetrieveModelMixin,
-           viewsets.GenericViewSet):
+class Siae(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     Données d'une structure d'insertion par l'activité économique (SIAE).
     """
@@ -74,11 +72,7 @@ class Siae(mixins.ListModelMixin,
 
     @extend_schema(
         parameters=[
-            OpenApiParameter(
-                name='token',
-                description='Token Utilisateur',
-                required=False,
-                type=str),
+            OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
         ]
     )
     def list(self, request, format=None):
@@ -113,11 +107,7 @@ class Siae(mixins.ListModelMixin,
 
     @extend_schema(
         parameters=[
-            OpenApiParameter(
-                name='token',
-                description='Token Utilisateur',
-                required=False,
-                type=str),
+            OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
         ],
         responses=SiaeSerializer,
     )
@@ -148,14 +138,9 @@ class Siae(mixins.ListModelMixin,
             )
         return Response(serializer.data)
 
-
     @extend_schema(
         parameters=[
-            OpenApiParameter(
-                name='token',
-                description='Token Utilisateur',
-                required=False,
-                type=str),
+            OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
         ],
         responses=SiaeSerializer,
     )
@@ -186,9 +171,7 @@ class Siae(mixins.ListModelMixin,
         return Response(serializer.data)
 
 
-class Sectors(mixins.ListModelMixin,
-              mixins.RetrieveModelMixin,
-              viewsets.GenericViewSet):
+class Sectors(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     queryset = SectorString.objects.get_all_active_sectors()
     serializer_class = SectorStringSerializer

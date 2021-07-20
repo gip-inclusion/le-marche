@@ -181,7 +181,6 @@ class SiaeListAnonSerializer(SiaeSerializer):
         ]
 
 
-
 class SiaeHyperSerializer(serializers.HyperlinkedModelSerializer):
     # Tested this, bur error messages are very confusing.
     # Should replace all manually generated URLS, so
