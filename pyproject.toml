@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "lemarche"
-version = "0.1.0"
+version = "0.5"
 description = "API du marché de l'Inclusion"
 authors = ["pmontens <pieterjan@montens.net>"]
 packages = [

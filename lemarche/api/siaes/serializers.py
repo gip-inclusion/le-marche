@@ -108,11 +108,12 @@ class SiaeSerializer(serializers.ModelSerializer):
             "departement",
             "region",
             "codePostal",
+            "zoneQPV",
             "createdat",
+            "updatedat",
             "url",
             "siretUrl",
             "sectors",
-            "zoneQPV",
         ]
 
     @extend_schema_field(OpenApiTypes.STR)
@@ -163,6 +164,7 @@ class SiaeListSerializer(SiaeSerializer):
             "type",
             "departement",
             "createdat",
+            "updatedat",
             "url",
         ]
 

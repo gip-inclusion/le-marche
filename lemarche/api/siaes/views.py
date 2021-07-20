@@ -159,11 +159,11 @@ class Siae(mixins.ListModelMixin,
         ],
         responses=SiaeSerializer,
     )
-    def retrieve_by_siret(self, request, pk=None, format=None):
+    def retrieve_by_siret(self, request, siret=None, format=None):
         """
         Détail d'une structure
         """
-        queryset = self.get_object_by_siret(siret=pk)
+        queryset = self.get_object_by_siret(siret=siret)
         token = request.GET.get("token", None)
         if not token:
             serializer = SiaeAnonSerializer(

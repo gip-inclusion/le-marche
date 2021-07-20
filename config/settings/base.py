@@ -42,6 +42,12 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 # Application definition
 
 AUTH_USER_MODEL = "users.User"
+
+PRIORITY_APPS = [
+    # Force whitenoise to serve assets in debug mode
+    "whitenoise.runserver_nostatic"
+]
+
 DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -50,6 +56,7 @@ DJANGO_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_filters",
+    "bootstrap4",
     "rest_framework",
     "drf_spectacular",
 ]
@@ -66,7 +73,7 @@ LOCAL_APPS = [
     "lemarche.api",
 ]
 
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -192,6 +199,18 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Une initiative de la Plateforme de l'inclusion",
     "VERSION": "0.1.0",
     "CONTACT": "lemarche@inclusion.beta.gouv.fr",
+}
+
+# django-bootstrap4.
+# https://django-bootstrap4.readthedocs.io/en/latest/settings.html
+# ------------------------------------------------------------------------------
+
+BOOTSTRAP4 = {
+    "required_css_class": "form-group-required",
+    # Remove the default `.is-valid` class that Bootstrap will style in green
+    # otherwise empty required fields will be marked as valid. This might be
+    # a bug in django-bootstrap4, it should be investigated.
+    "success_css_class": "",
 }
 
 # Logging.

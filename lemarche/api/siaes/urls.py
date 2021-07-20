@@ -12,7 +12,7 @@ urlpatterns = [
     # path("siaes/", views.SiaeList.as_view()),
     # path("siaes/<str:pk>/", views.SiaeDetail.as_view()),
     path("siae/id/<str:pk>/", views.Siae.as_view({'get': 'retrieve_by_id'})),
-    path("siae/siret/<str:pk>/", views.Siae.as_view({'get': 'retrieve_by_siret'})),
+    path("siae/siret/<str:siret>/", views.Siae.as_view({'get': 'retrieve_by_siret'})),
     path("siae/", views.Siae.as_view({'get': 'list'})),
 
     path("secteurs/", views.Sectors.as_view({'get': 'list'})),
