@@ -14,8 +14,9 @@ import os
 from pathlib import Path
 
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+# Build paths inside the project like this: ROOT_DIR / 'subdir'.
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+APPS_DIR = os.path.abspath(os.path.join(ROOT_DIR, "lemarche"))
 
 
 # Quick-start development settings - unsuitable for production
@@ -35,7 +36,7 @@ BITOUBI_ENV = os.environ.get('ENV', 'dev')
 
 # Static Files
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_ROOT = os.path.join(ROOT_DIR, "staticfiles")
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Application definition
@@ -86,7 +87,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(APPS_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

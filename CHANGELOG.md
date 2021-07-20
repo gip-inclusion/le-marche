@@ -14,7 +14,7 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 - Filtres sur certains champs
 - Wording et endpoint
 - Documentation revue
-- Accès SIAE par siret
+- Accès SIAE par identifiant et siret
 - Ajout pagination sur liste SIAE
 
 ### [0.4] - (2021-07)
