@@ -23,6 +23,7 @@ class SiaeFilter(django_filters.FilterSet):
     """
 
     type = django_filters.MultipleChoiceFilter(field_name="kind", label="Type(s) de structure", choices=TYPE_CHOICES)
+    updatedat = django_filters.IsoDateTimeFromToRangeFilter(label="Date de dernière mise à jour")
 
     # NOTE: Not all departements are pure numbers
     departement = django_filters.CharFilter(
@@ -32,4 +33,4 @@ class SiaeFilter(django_filters.FilterSet):
 
     class Meta:
         model = Directory
-        fields = ["type", "departement"]
+        fields = ["type", "departement", "updatedat"]

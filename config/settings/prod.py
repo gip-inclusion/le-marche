@@ -1,7 +1,7 @@
 from .base import *  # noqa
 import os
 
-LOADED_SETTINGS = "dev"
+LOADED_SETTINGS = "prod"
 
 ALLOWED_HOSTS = [
     os.environ.get("CURRENT_HOST"),
