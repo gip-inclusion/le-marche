@@ -49,30 +49,27 @@ def decode_hashed_pk(func):
     return _wrapper
 
 
-class Siae(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class Siae(mixins.ListModelMixin,
+           mixins.RetrieveModelMixin,
+           viewsets.GenericViewSet):
     """
     Données d'une structure d'insertion par l'activité économique (SIAE).
     """
 
+    # ModelViewSet needs 'queryset' to be set otherwise the router won't be
+    # able to derive the model Basename. To avoid loading data on object
+    # initialisation we load an empty queryset.
     queryset = Directory.objects.all()
     serializer_class = SiaeListSerializer
     filter_class = SiaeFilter
 
-    def get_object_by_id(self, pk):
-        try:
-            return Directory.objects.get(pk=pk)
-        except Directory.DoesNotExist:
-            raise Http404
-
-    def get_object_by_siret(self, siret):
-        try:
-            return Directory.objects.get(siret=siret)
-        except Directory.DoesNotExist:
-            raise Http404
-
     @extend_schema(
         parameters=[
-            OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
+            OpenApiParameter(
+                name='token',
+                description='Token Utilisateur',
+                required=False,
+                type=str),
         ]
     )
     def list(self, request, format=None):
@@ -80,6 +77,7 @@ class Siae(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericVie
         Liste exhaustive des structures d'insertion par l'activité économique (SIAE).
         """
         if request.method == "GET":
+
             queryset = self.filter_queryset(self.get_queryset())
             page = self.paginate_queryset(queryset)
 
@@ -107,7 +105,11 @@ class Siae(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericVie
 
     @extend_schema(
         parameters=[
-            OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
+            OpenApiParameter(
+                name='token',
+                description='Token Utilisateur',
+                required=False,
+                type=str),
         ],
         responses=SiaeSerializer,
     )
@@ -116,31 +118,17 @@ class Siae(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericVie
         """
         Détail d'une structure
         """
-        queryset = self.get_object_by_id(pk=pk)
-        token = request.GET.get("token", None)
-        if not token:
-            serializer = SiaeAnonSerializer(
-                queryset,
-                many=False,
-                context={"hashed_pk": True},
-            )
-        else:
-            try:
-                user = User.objects.get(api_key=token)
-                assert user.has_perm("api.access_api")
-            except User.DoesNotExist:
-                return HttpResponse("503: Not Allowed", status=503)
+        queryset = get_object_or_404(self.get_queryset(), pk=pk)
+        return self._retrieve_return(request, queryset, format)
 
-            serializer = SiaeSerializer(
-                queryset,
-                many=False,
-                context={"hashed_pk": True},
-            )
-        return Response(serializer.data)
 
     @extend_schema(
         parameters=[
-            OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
+            OpenApiParameter(
+                name='token',
+                description='Token Utilisateur',
+                required=False,
+                type=str),
         ],
         responses=SiaeSerializer,
     )
@@ -148,7 +136,10 @@ class Siae(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericVie
         """
         Détail d'une structure
         """
-        queryset = self.get_object_by_siret(siret=siret)
+        queryset = get_object_or_404(self.get_queryset(), siret=siret)
+        return self._retrieve_return(request, queryset, format)
+
+    def _retrieve_return(self, request, queryset, format):
         token = request.GET.get("token", None)
         if not token:
             serializer = SiaeAnonSerializer(
@@ -171,7 +162,9 @@ class Siae(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericVie
         return Response(serializer.data)
 
 
-class Sectors(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class Sectors(mixins.ListModelMixin,
+              mixins.RetrieveModelMixin,
+              viewsets.GenericViewSet):
 
     queryset = SectorString.objects.get_all_active_sectors()
     serializer_class = SectorStringSerializer
