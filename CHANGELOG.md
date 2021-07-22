@@ -18,6 +18,7 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 - Ajout pagination sur liste SIAE
 - Ajout date de mise à jour liste SIAE
 - Nouvelle page d'accueil
+- Recherche par plage de date de mise à jour
 
 ### [0.4] - (2021-07)
 - Logging amélioré
