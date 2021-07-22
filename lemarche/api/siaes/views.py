@@ -21,6 +21,7 @@ from hashids import Hashids
 from rest_framework import generics, mixins, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.exceptions import APIException
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
 
@@ -35,7 +36,17 @@ Generic viewset:
 """
 
 
+# ################################################################## FUNCTIONS
+# ############################################################################
 # TODO: create common shared lib for reusable components
+
+# Custom Service Exceptions
+class Unauthorized(APIException):
+    status_code = 401
+    default_detail = 'Unauthorized'
+    default_code = 'unauthorized'
+
+
 def decode_hashed_pk(func):
     """
     Small decorator to dynamically decode a hashed pk
@@ -47,6 +58,23 @@ def decode_hashed_pk(func):
         return func(*args, **kwargs)
 
     return _wrapper
+
+
+def ensure_user_permission(token):
+    """
+    User token functionnality is temporary, and only used
+    to trace API usage and support : once a proper
+    auth protocol is implemented it is to be replaced
+    """
+    try:
+        user = User.objects.get(api_key=token)
+        assert user.has_perm("api.access_api")
+    except (User.DoesNotExist, AssertionError):
+        raise Unauthorized
+
+
+# ###################################################################### VIEWS
+# ############################################################################
 
 
 class Siae(mixins.ListModelMixin,
@@ -89,12 +117,7 @@ class Siae(mixins.ListModelMixin,
                     context={"hashed_pk": True},
                 )
             else:
-                try:
-                    user = User.objects.get(api_key=token)
-                    assert user.has_perm("api.access_api")
-                except User.DoesNotExist:
-                    return HttpResponse("503: Not Allowed", status=503)
-
+                ensure_user_permission(token)
                 serializer = SiaeListSerializer(
                     page,
                     many=True,
@@ -120,7 +143,6 @@ class Siae(mixins.ListModelMixin,
         """
         queryset = get_object_or_404(self.get_queryset(), pk=pk)
         return self._retrieve_return(request, queryset, format)
-
 
     @extend_schema(
         parameters=[
@@ -148,17 +170,13 @@ class Siae(mixins.ListModelMixin,
                 context={"hashed_pk": True},
             )
         else:
-            try:
-                user = User.objects.get(api_key=token)
-                assert user.has_perm("api.access_api")
-            except User.DoesNotExist:
-                return HttpResponse("503: Not Allowed", status=503)
-
+            ensure_user_permission(token)
             serializer = SiaeSerializer(
                 queryset,
                 many=False,
                 context={"hashed_pk": True},
             )
+
         return Response(serializer.data)
 
 
@@ -181,6 +199,7 @@ class Sectors(mixins.ListModelMixin,
 
     @decode_hashed_pk
     def retrieve(self, request, pk=None, format=None):
+        # We override this method to provide the hashed/unhashed PK retrieval
         queryset = self.get_object(pk=pk)
         serializer = SectorStringSerializer(queryset, many=False, context={"hashed_pk": True})
         return Response(serializer.data)
