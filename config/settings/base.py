@@ -14,8 +14,9 @@ import os
 from pathlib import Path
 
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+# Build paths inside the project like this: ROOT_DIR / 'subdir'.
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+APPS_DIR = os.path.abspath(os.path.join(ROOT_DIR, "lemarche"))
 
 
 # Quick-start development settings - unsuitable for production
@@ -35,12 +36,18 @@ BITOUBI_ENV = os.environ.get('ENV', 'dev')
 
 # Static Files
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_ROOT = os.path.join(ROOT_DIR, "staticfiles")
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Application definition
 
 AUTH_USER_MODEL = "users.User"
+
+PRIORITY_APPS = [
+    # Force whitenoise to serve assets in debug mode
+    "whitenoise.runserver_nostatic"
+]
+
 DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -48,6 +55,8 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_filters",
+    "bootstrap4",
     "rest_framework",
     "drf_spectacular",
 ]
@@ -64,7 +73,7 @@ LOCAL_APPS = [
     "lemarche.api",
 ]
 
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -85,7 +94,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(APPS_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -176,6 +185,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REST_FRAMEWORK = {
     # YOUR SETTINGS
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100,
 }
 
 # Spectacular settings.
@@ -186,6 +199,18 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Une initiative de la Plateforme de l'inclusion",
     "VERSION": "0.1.0",
     "CONTACT": "lemarche@inclusion.beta.gouv.fr",
+}
+
+# django-bootstrap4.
+# https://django-bootstrap4.readthedocs.io/en/latest/settings.html
+# ------------------------------------------------------------------------------
+
+BOOTSTRAP4 = {
+    "required_css_class": "form-group-required",
+    # Remove the default `.is-valid` class that Bootstrap will style in green
+    # otherwise empty required fields will be marked as valid. This might be
+    # a bug in django-bootstrap4, it should be investigated.
+    "success_css_class": "",
 }
 
 # Logging.
