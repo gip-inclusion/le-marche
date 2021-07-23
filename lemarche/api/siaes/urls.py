@@ -9,14 +9,14 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 # not allow it to work, yet.
 
 urlpatterns = [
-    path("siaes/", views.SiaeList.as_view()),
-    path("siaes/<str:pk>/", views.SiaeDetail.as_view()),
-    # path("api/", include(router.urls)),
-    # path('siaes/', views.siae_list),
-    # path('siae/<int:key>', views.siae_detail, name='siae-detail'),
-    path("secteurs/", views.SectorList.as_view()),
-    path("secteurs/<str:pk>", views.SectorDetail.as_view()),
-    # YOUR PATTERNS
+    # path("siaes/", views.SiaeList.as_view()),
+    # path("siaes/<str:pk>/", views.SiaeDetail.as_view()),
+    path("siae/id/<str:pk>/", views.Siae.as_view({"get": "retrieve_by_id"})),
+    path("siae/siret/<str:siret>/", views.Siae.as_view({"get": "retrieve_by_siret"})),
+    path("siae/", views.Siae.as_view({"get": "list"})),
+    path("secteurs/", views.Sectors.as_view({"get": "list"})),
+    path("secteurs/<str:pk>", views.Sectors.as_view({"get": "retrieve"})),
+    # Schema
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     # Optional UI:
     path("docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="OpenAPI"),

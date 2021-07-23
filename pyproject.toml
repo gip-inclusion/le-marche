@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "lemarche"
-version = "0.1.0"
+version = "0.5"
 description = "API du marché de l'Inclusion"
 authors = ["pmontens <pieterjan@montens.net>"]
 packages = [
@@ -17,6 +17,8 @@ hashids = "^1.3.1"
 flake8 = "^3.9.2"
 httpx = "^0.18.1"
 whitenoise = "^5.2.0"
+django-filter = "^2.4.0"
+django-bootstrap4 = "^3.0.1"
 
 [tool.poetry.dev-dependencies]
 isort = "^5.8.0"

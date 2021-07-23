@@ -7,7 +7,7 @@ docker_dev() {
         --build-arg ENV=DEV \
     && docker run --rm -it \
         -p 8000:8000 \
-        --env-file=env.docker.local \
+        --env-file=env.docker_dev.local \
         -e DEBUG="true" \
         --name c4_api \
         -v `pwd`/lemarche:/app/lemarche \
@@ -19,10 +19,10 @@ docker_prod() {
     docker build \
         --target prod \
         -t "c4_api" -f ./Dockerfile . \
-        --build-arg ENV=DEV \
+        --build-arg ENV=PROD \
     && docker run --rm -it \
         -p 8000:8000 \
-        --env-file=env.docker.local \
+        --env-file=env.docker_prod.local \
         -e DEBUG="false" \
         --name c4_api \
         c4_api
