@@ -9,16 +9,25 @@ Publication de la liste de toutes les structures d'insertion et entreprises adap
 
 ## Installation
 Étapes d'une installation en local à des fins de développement.
+L'environnement fourni permet de fonctionner de 3 manières différentes:
+
+1. Poetry (et Postgres existant)
+2. Dockerfile (et Postgres existant)
+3. docker-compose (installe tout l'environnement nécessaire)
 
 ### Configuration
 Les variables d'environnement sont listées dans le fichier [env.default.sh](env.default.sh).
 
-Pour un déploiement local hors docker, renommez le fichier en `env.local.sh` et apportez-y les modifications nécessaires.
+Pour un déploiement local **hors docker**, renommez le fichier en `env.local.sh` et apportez-y les modifications nécessaires.
 ```bash
 $ cp env.default.sh env.local.sh
 # Préparation de l'environnement local
 $ . env.local.sh
 ```
+
+Pour un déploiement local **sous docker**, renommez le fichier `env.docker_default.local` en `env.docker.local` et apportez-y les modifications nécessaires (bien que la plupart des paramètres devraient fonctionner _hors de la boîte_).
+
+> :information_source: **Accès données MySQL** : L'api lit les données de la BD du marché [itou-cocorico](https://github.com/betagouv/itou-cocorico/). Pour pouvoir fonctionner pleinement en local, cela signifie que le marché doit tourner également en local (le fichier de configuration [env.docker_default.local](./env.docker_default.local) est d'ailleurs prévu à cet effet).
 
 ### Poetry
 Paquets nécessaires à l'installation et l'exécution de l'API:
@@ -44,21 +53,34 @@ $ env PYTHONPATH=./lemarche:./lemarche/c4_directory poetry run python manage.py 
 ### Docker
 L'API utilise un dockerfile multistage, permettant de fonctionner en "Dev" et "Prod" avec le même [Dockerfile](./Dockerfile).
 
+Pour l'environnement de développement, un `docker-compose` est fourni (voir ci-dessous).
+
+Pour la configuration django, vérifiez le fichier (config/settings/dev.py)[./config/settings/dev.py].
+
 #### Configuration docker
 
-- Copier le fichier `env.default.sh` vers `env.docker.local`
-- Supprimer les `export`
-- Supprimer les guillements
-- Completer les données
+Pour un déploiement local **sous docker**, renommez le fichier `env.docker_default.local` en `env.docker.local` et apportez-y les modifications nécessaires (bien que la plupart des paramètres devraient fonctionner _hors de la boîte_).
 
-Format final de `env.docker.local` (exemple):
-```
-PG_HOST=localhost
-PG_PORT=5432
-PG_USER=db_user
+> :information_source: pour accéder à l'environnemnt depuis une autre machine, pensez à définir la variable d'environnemnt `CURRENT_HOST` dans le fichier d'environnement
+
+
+#### Lancement docker-compose
+
+Après création du fichier `env.docker.local`, 
+
+```bash
+ # Démarrage
+ > docker-compose up
+ # Se connecter au containeur django
+ > docker exec -it bitoubi_django /bin/bash
+
+ # Re-création de l'environnement (en cas de modification)
+ > docker-compose down
+ > docker-compose build --no-cache
+ > docker-compose up --force-recreate    
 ```
 
-#### Lancement
+#### Lancement Dockerfile
 Le script [start_docker.sh](./start_docker.sh) permet de lancer les environnements en local, en mode **dev** ou **prod** :
 
 ```bash

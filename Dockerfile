@@ -93,9 +93,9 @@ ENV DJANGO_SETTINGS_MODULE="config.settings.prod" \
     ENV="prod" \
     DEBUG="False"
 
-CMD ["config/runner.sh"]
+CMD ["config/entrypoint.sh"]
 
-# # For some _real_ performance :
+# # For some _real_ performance, at cost of ease of use:
 # FROM python:3.9-alpine as prod
 # COPY --from=dependencies /opt/venv /opt/venv
 # ENV PATH="/opt/venv/bin:$PATH"

@@ -24,6 +24,7 @@ apt-get -y install --no-install-recommends \
     vim-tiny \
     default-mysql-client \
     default-libmysqlclient-dev \
+    postgresql-client \
     binutils \
     libproj-dev \
     gdal-bin \
