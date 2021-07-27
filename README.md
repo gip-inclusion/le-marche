@@ -18,12 +18,16 @@ L'environnement fourni permet de fonctionner de 3 manières différentes:
 ### Configuration
 Les variables d'environnement sont listées dans le fichier [env.default.sh](env.default.sh).
 
-Pour un déploiement local hors docker, renommez le fichier en `env.local.sh` et apportez-y les modifications nécessaires.
+Pour un déploiement local **hors docker**, renommez le fichier en `env.local.sh` et apportez-y les modifications nécessaires.
 ```bash
 $ cp env.default.sh env.local.sh
 # Préparation de l'environnement local
 $ . env.local.sh
 ```
+
+Pour un déploiement local **sous docker**, renommez le fichier `env.docker_default.local` en `env.docker.local` et apportez-y les modifications nécessaires (bien que la plupart des paramètres devraient fonctionner _hors de la boîte_).
+
+> :information_source: **Accès données MySQL** : L'api lit les données de la BD du marché [itou-cocorico](https://github.com/betagouv/itou-cocorico/). Pour pouvoir fonctionner pleinement en local, cela signifie que le marché doit tourner également en local (le fichier de configuration [env.docker_default.local](./env.docker_default.local) est d'ailleurs prévu à cet effet).
 
 ### Poetry
 Paquets nécessaires à l'installation et l'exécution de l'API:
@@ -53,30 +57,8 @@ Pour l'environnement de développement, un `docker-compose` est fourni (voir ci-
 
 #### Configuration docker
 
-- Copier le fichier `env.default.sh` vers `env.docker.local`
-- Supprimer les `export`
-- Supprimer les guillements
-- Completer les données
+Pour un déploiement local **sous docker**, renommez le fichier `env.docker_default.local` en `env.docker.local` et apportez-y les modifications nécessaires (bien que la plupart des paramètres devraient fonctionner _hors de la boîte_).
 
-Format final de `env.docker.local` (exemple):
-```
-PG_HOST=localhost
-PG_PORT=5432
-PG_USER=db_user
-```
-
-#### Lancement Dockerfile
-Le script [start_docker.sh](./start_docker.sh) permet de lancer les environnements en local, en mode **dev** ou **prod** :
-
-```bash
- > ./start_docker.sh -h
-
--p|--prod    run full docker (Prod config)
--d|--dev     run dev docker (Dev config and local mounts)
-
-# Pour lancer l'environnement de développement
-> ./start_docker.sh --dev
-```
 
 #### Lancement docker-compose
 
@@ -95,8 +77,20 @@ Après création du fichier `env.docker.local`,
 ```
 
 **Attention bug**
-> La création initiale ne fonctionne pas, il faut lancer une première fois, puis quitter avant de relancer une seconde fois.
+> :warning: La création initiale ne fonctionne pas, il faut lancer une première fois, puis quitter avant de relancer une seconde fois.
 
+#### Lancement Dockerfile
+Le script [start_docker.sh](./start_docker.sh) permet de lancer les environnements en local, en mode **dev** ou **prod** :
+
+```bash
+ > ./start_docker.sh -h
+
+-p|--prod    run full docker (Prod config)
+-d|--dev     run dev docker (Dev config and local mounts)
+
+# Pour lancer l'environnement de développement
+> ./start_docker.sh --dev
+```
 
 ## Utilisation
 Une fois lancé, l'api propose plusieurs endpoints et interfaces de documentation (liens vers environnement local) :
