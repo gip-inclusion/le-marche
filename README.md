@@ -53,11 +53,15 @@ $ env PYTHONPATH=./lemarche:./lemarche/c4_directory poetry run python manage.py 
 ### Docker
 L'API utilise un dockerfile multistage, permettant de fonctionner en "Dev" et "Prod" avec le même [Dockerfile](./Dockerfile).
 
-Pour l'environnement de développement, un `docker-compose` est fourni (voir ci-dessous)
+Pour l'environnement de développement, un `docker-compose` est fourni (voir ci-dessous).
+
+Pour la configuration django, vérifiez le fichier (config/settings/dev.py)[./config/settings/dev.py].
 
 #### Configuration docker
 
 Pour un déploiement local **sous docker**, renommez le fichier `env.docker_default.local` en `env.docker.local` et apportez-y les modifications nécessaires (bien que la plupart des paramètres devraient fonctionner _hors de la boîte_).
+
+> :information_source: pour accéder à l'environnemnt depuis une autre machine, pensez à définir la variable d'environnemnt `CURRENT_HOST` dans le fichier d'environnement
 
 
 #### Lancement docker-compose
@@ -75,9 +79,6 @@ Après création du fichier `env.docker.local`,
  > docker-compose build --no-cache
  > docker-compose up --force-recreate    
 ```
-
-**Attention bug**
-> :warning: La création initiale ne fonctionne pas, il faut lancer une première fois, puis quitter avant de relancer une seconde fois.
 
 #### Lancement Dockerfile
 Le script [start_docker.sh](./start_docker.sh) permet de lancer les environnements en local, en mode **dev** ou **prod** :

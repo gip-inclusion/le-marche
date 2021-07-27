@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # Getting static files for Admin panel hosting!
 set -e
+echo ""
+echo "================================================"
+echo "= Bitoubi Api Dev docker-compose               ="
+echo "================================================"
+echo ""
 
 while ! pg_isready -h $POSTGRESQL_ADDON_HOST -p $POSTGRESQL_ADDON_PORT; do
     >&2 echo "Postgres is unavailable - sleeping"
