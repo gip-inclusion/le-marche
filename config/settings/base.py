@@ -36,7 +36,7 @@ BITOUBI_ENV = os.environ.get('ENV', 'dev')
 
 # Static Files
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(ROOT_DIR, "staticfiles")
+STATIC_ROOT = os.path.join(ROOT_DIR, "static")
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Application definition
