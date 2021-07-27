@@ -77,8 +77,9 @@ class Siae(models.Model):
     region = models.CharField(max_length=255, blank=True, null=True)
     post_code = models.CharField(max_length=255, blank=True, null=True)
     createdat = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
-    sectors = models.ManyToManyField(Sector)
+    updatedat = models.DateTimeField(verbose_name="Date de mise à jour", default=timezone.now)
     is_qpv = models.BooleanField(verbose_name="Zone QPV", blank=False, null=False, default=False)
+    sectors = models.ManyToManyField(Sector)
 
     class Meta:
         ordering = ["name"]
