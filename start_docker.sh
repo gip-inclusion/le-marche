@@ -16,6 +16,10 @@ docker_dev() {
         c4_api
 }
 
+docker_compose() {
+    docker-compose up --force-recreate
+}
+
 docker_prod() {
     docker build \
         --target prod \
@@ -46,6 +50,11 @@ while [ "$1" != "" ]; do
         -d | --dev )
             echo "Running dev docker"
             docker_dev
+            exit
+            ;;
+        -c | --compose )
+            echo "Running dev docker-compose"
+            docker_compose
             exit
             ;;
         * )
