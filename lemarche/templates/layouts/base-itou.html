@@ -14,9 +14,17 @@
 
     <meta name="theme-color" content="#ffffff">
 
-    {% bootstrap_css %}
+
     {% bootstrap_javascript jquery='full' %}
+
+    {% bootstrap_css %}
+
     <link rel="stylesheet" href="{% static 'itou/stylesheets/app.css' %}" type="text/css">
+
+    {% load compress %}
+    {% compress css %}
+      <link rel="stylesheet" href="{% static 'css/itou_c4.scss' %}" type="text/x-scss">
+    {% endcompress %}
 
     {% comment "migrate first" %}
     {% include '@CocoricoCore/Frontend/Common/js/_google_analytics_js.html.twig' only %}
@@ -27,6 +35,7 @@
 
     {% include '@CocoricoCore/Frontend/Common/_cookie_consent_js.html.twig' only %}
     {% endcomment %}
+
 
 </head>
 
@@ -50,7 +59,9 @@
   </div>
 
   {% block scripts %}
-  <script src="{% static "itou/javascripts/app.css" %}"></script>
+  {% compress js %}
+    <script src="{% static "itou/javascripts/app.js" %}"></script>
+  {% endcompress %}
     <script>
       //Global Javascript variables
       {% comment "migration fix" %}

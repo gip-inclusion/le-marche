@@ -11,33 +11,60 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
-from pathlib import Path
+# from pathlib import Path
+import environ
 
+# https://django-environ.readthedocs.io/en/latest/
+env = environ.Env(DEBUG=(bool, False))
 
 # Build paths inside the project like this: ROOT_DIR / 'subdir'.
-ROOT_DIR = Path(__file__).resolve().parent.parent.parent
-APPS_DIR = os.path.abspath(os.path.join(ROOT_DIR, "lemarche"))
+ROOT_DIR = environ.Path(__file__) - 3  # (ROOT/config/settings/base.py - 3 = ROOT
+APPS_DIR = ROOT_DIR.path('lemarche')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ["SECRET_KEY"]
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', "False") in ("true", "True", "1", "t")
+DEBUG = env.bool('DEBUG', False)
 
 ALLOWED_HOSTS = []
 
 # Bitoubi Specific Settings
-TRACKER_HOST = os.environ.get('TRACKER_HOST', 'http://localhost')
-BITOUBI_ENV = os.environ.get('ENV', 'dev')
+TRACKER_HOST = env.str('TRACKER_HOST', 'http://localhost')
+BITOUBI_ENV = env.str('ENV', 'dev')
 
 # Static Files
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(ROOT_DIR, "static")
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STATIC_SOURCE_ROOT = str(ROOT_DIR.path("static"))
+STATIC_ROOT = str(ROOT_DIR.path("staticfiles"))
+STATICFILES_DIRS = [str(ROOT_DIR.path("static"))]
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    'compressor.finders.CompressorFinder',
+]
+
+#STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
+
+COMPRESS_PRECOMPILERS = [
+        ("text/x-scss", "django_libsass.SassCompiler"),
+]
+# COMPRESS_CACHEABLE_PRECOMPILERS = (("text/x-scss", "django_libsass.SassCompiler"),)
+
+COMPRESS_ENABLED = env.bool("COMPRESS_ENABLED", default=True)
+COMPRESS_STORAGE = "compressor.storage.GzipCompressorFileStorage"
+COMPRESS_URL = STATIC_URL
+
+COMPRESS_ENABLED = True
+COMPRESS_OFFLINE = True
+LIBSASS_OUTPUT_STYLE = 'compressed'
 
 # Application definition
 
@@ -56,9 +83,11 @@ DJANGO_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_filters",
+    "crispy_forms",
     "bootstrap4",
     "rest_framework",
     "drf_spectacular",
+    "compressor",
 ]
 
 THIRD_PARTY_APPS = [
@@ -94,7 +123,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(APPS_DIR, "templates")],
+        "DIRS": [str(APPS_DIR.path("templates"))],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -119,19 +148,19 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.contrib.gis.db.backends.postgis",
-        "HOST": os.environ["POSTGRESQL_ADDON_HOST"],
-        "PORT": os.environ["POSTGRESQL_ADDON_PORT"],
-        "NAME": os.environ["POSTGRESQL_ADDON_DB"],
-        "USER": os.environ["POSTGRESQL_ADDON_USER"],
-        "PASSWORD": os.environ["POSTGRESQL_ADDON_PASSWORD"],
+        "HOST": env.str("POSTGRESQL_ADDON_HOST"),
+        "PORT": env.str("POSTGRESQL_ADDON_PORT"),
+        "NAME": env.str("POSTGRESQL_ADDON_DB"),
+        "USER": env.str("POSTGRESQL_ADDON_USER"),
+        "PASSWORD": env.str("POSTGRESQL_ADDON_PASSWORD"),
     },
     "structures": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ["MYSQL_ADDON_DB"],
-        "USER": os.environ["MYSQL_ADDON_USER"],
-        "PASSWORD": os.environ["MYSQL_ADDON_PASSWORD"],
-        "HOST": os.environ["MYSQL_ADDON_HOST"],
-        "PORT": os.environ["MYSQL_ADDON_PORT"],
+        "NAME": env.str("MYSQL_ADDON_DB"),
+        "USER": env.str("MYSQL_ADDON_USER"),
+        "PASSWORD": env.str("MYSQL_ADDON_PASSWORD"),
+        "HOST": env.str("MYSQL_ADDON_HOST"),
+        "PORT": env.str("MYSQL_ADDON_PORT"),
     },
 }
 

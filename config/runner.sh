@@ -3,6 +3,11 @@
 # ./manage.py collectstatic --noinput
 export PYTHONPATH=$PYTHONPATH:./lemarche:./config
 ./manage.py collectstatic --noinput
+
+# Include compiled sources
+./manage.py compress --force
+./manage.py collectstatic --noinput
+
 ./manage.py compilemessages
 ./manage.py migrate
 uwsgi --plugins http,python \
