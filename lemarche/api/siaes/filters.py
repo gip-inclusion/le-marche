@@ -1,6 +1,7 @@
 import django_filters
-from lemarche.api.models import Siae
+
 from lemarche.cocorico.models import Directory
+
 
 TYPE_CHOICES = (
     ("EI", "EI"),
