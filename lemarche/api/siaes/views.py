@@ -76,7 +76,7 @@ def ensure_user_permission(token):
 # ############################################################################
 
 
-class Siae(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     Données d'une structure d'insertion par l'activité économique (SIAE).
     """
@@ -165,7 +165,7 @@ class Siae(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericVie
         return Response(serializer.data)
 
 
-class Sectors(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class SectorViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     queryset = SectorString.objects.get_all_active_sectors()
     serializer_class = SectorStringSerializer
