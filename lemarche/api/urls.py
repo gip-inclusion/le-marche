@@ -1,10 +1,10 @@
 from django.urls import path
 
 from rest_framework import routers
-from rest_framework.urlpatterns import format_suffix_patterns
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
-from lemarche.api.siaes.views import SiaeViewSet, SectorViewSet
+from lemarche.api.siaes.views import SiaeViewSet
+from lemarche.api.sectors.views import SectorViewSet
 
 
 router = routers.DefaultRouter()
