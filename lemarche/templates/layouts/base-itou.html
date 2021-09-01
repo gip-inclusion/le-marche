@@ -41,21 +41,21 @@
 
 <body id="top" class="loading {% block theme %}{% endblock %}">
   <!-- allow a user to go to the main content of the page -->
-  <noscript>Javascript must be enabled for the correct page display</noscript>
+  <noscript>Javascript doit être activé pour pouvoir assurer l'affichage correct de la page </noscript>
   
   {% comment "migrate first" %}
   {% include '@CocoricoCore/Frontend/Common/js/_google_tag_manager_js.html.twig' only %}
   {% endcomment %}
   
   <div class="sr-only">
-      <a tabindex="1" href="#main">skip to content</a>
+      <a tabindex="1" href="#main">aller au contenu</a>
   </div>
   
   {% block layout %}{% endblock %}
   
   <!-- allow a user to go to the top of the page -->
   <div class="sr-only">
-      <a href="#header">back to top</a>
+      <a href="#header">retour au début de la page</a>
   </div>
 
   {% block scripts %}

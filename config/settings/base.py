@@ -10,15 +10,21 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-import os
-# from pathlib import Path
 import environ
 
+# django-environ eases the application of twelve-factor methodology :
+# it makes it easier and less error-prone to integrate
+# environment variables into Django application settings.
+#
+# https://www.12factor.net/
 # https://django-environ.readthedocs.io/en/latest/
+#
+# "env" is the object that wil contain the defined environment, along some
+# default settings
 env = environ.Env(DEBUG=(bool, False))
 
 # Build paths inside the project like this: ROOT_DIR / 'subdir'.
-ROOT_DIR = environ.Path(__file__) - 3  # (ROOT/config/settings/base.py - 3 = ROOT
+ROOT_DIR = environ.Path(__file__) - 3  # (ROOT/config/settings/base.py - 3 = ROOT )
 APPS_DIR = ROOT_DIR.path('lemarche')
 
 
@@ -41,14 +47,13 @@ BITOUBI_ENV = env.str('ENV', 'dev')
 STATIC_URL = "/static/"
 STATIC_SOURCE_ROOT = str(ROOT_DIR.path("static"))
 STATIC_ROOT = str(ROOT_DIR.path("staticfiles"))
-STATICFILES_DIRS = [str(ROOT_DIR.path("static"))]
+STATICFILES_DIRS = [STATIC_SOURCE_ROOT]
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
     'compressor.finders.CompressorFinder',
 ]
 
-#STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
@@ -56,7 +61,6 @@ STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
 COMPRESS_PRECOMPILERS = [
         ("text/x-scss", "django_libsass.SassCompiler"),
 ]
-# COMPRESS_CACHEABLE_PRECOMPILERS = (("text/x-scss", "django_libsass.SassCompiler"),)
 
 COMPRESS_ENABLED = env.bool("COMPRESS_ENABLED", default=True)
 COMPRESS_STORAGE = "compressor.storage.GzipCompressorFileStorage"
@@ -144,7 +148,6 @@ WSGI_APPLICATION = "config.wsgi.application"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 # Compatible with clevercloud add-ons
-# Standard dict access to force fail if not provided
 DATABASES = {
     "default": {
         "ENGINE": "django.contrib.gis.db.backends.postgis",
@@ -255,7 +258,7 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "level": env.str("DJANGO_LOG_LEVEL", "INFO"),
         },
         # Silence `Invalid HTTP_HOST header` errors.
         # This should be done at the HTTP server level when possible.
@@ -266,7 +269,7 @@ LOGGING = {
         },
         "lemarche": {
             "handlers": ["console"],
-            "level": os.getenv("DJANGO_LOG_LEVEL", "DEBUG"),
+            "level": env.str("DJANGO_LOG_LEVEL", "DEBUG"),
         },
     },
 }
