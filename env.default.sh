@@ -11,11 +11,12 @@ export MYSQL_ADDON_DB=""
 
 # PostGreSQL Config
 export POSTGRESQL_ADDON_HOST="localhost"
-export POSTGRESQL_ADDON_PORT=5432
+export POSTGRESQL_ADDON_PORT="5432"
 export POSTGRESQL_ADDON_USER=""
 export POSTGRESQL_ADDON_PASSWORD=""
 export POSTGRESQL_ADDON_DB=""
 
 # Django Settings
 export SECRET_KEY=""
+export DJANGO_SETTINGS_MODULE="config.settings.dev"
 export TRACKER_HOST=""
