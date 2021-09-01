@@ -1,6 +1,8 @@
 [![Generic badge](https://img.shields.io/badge/ITOU-Oh_Oui-lightgreen.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/État-En_Construction-yellow.svg)](https://shields.io/)
+
 # Itou - le marché de l'inclusion - API
+
 API du marché de l'inclusion
 
 Publication de la liste de toutes les structures d'insertion et entreprises adaptées de France.
@@ -8,6 +10,7 @@ Publication de la liste de toutes les structures d'insertion et entreprises adap
 **Ce dépôt est en cours de construction.**
 
 ## Installation
+
 Étapes d'une installation en local à des fins de développement.
 L'environnement fourni permet de fonctionner de 3 manières différentes:
 
@@ -16,13 +19,14 @@ L'environnement fourni permet de fonctionner de 3 manières différentes:
 3. docker-compose (installe tout l'environnement nécessaire)
 
 ### Configuration
+
 Les variables d'environnement sont listées dans le fichier [env.default.sh](env.default.sh).
 
 Pour un déploiement local **hors docker**, renommez le fichier en `env.local.sh` et apportez-y les modifications nécessaires.
 ```bash
 $ cp env.default.sh env.local.sh
 # Préparation de l'environnement local
-$ . env.local.sh
+$ source ./env.local.sh
 ```
 
 Pour un déploiement local **sous docker**, renommez le fichier `env.docker_default.local` en `env.docker.local` et apportez-y les modifications nécessaires (bien que la plupart des paramètres devraient fonctionner _hors de la boîte_).
@@ -30,17 +34,19 @@ Pour un déploiement local **sous docker**, renommez le fichier `env.docker_defa
 > :information_source: **Accès données MySQL** : L'api lit les données de la BD du marché [itou-cocorico](https://github.com/betagouv/itou-cocorico/). Pour pouvoir fonctionner pleinement en local, cela signifie que le marché doit tourner également en local (le fichier de configuration [env.docker_default.local](./env.docker_default.local) est d'ailleurs prévu à cet effet).
 
 ### Poetry
-Paquets nécessaires à l'installation et l'exécution de l'API:
-- Poetry
-- python3-dev, default-libmysqlclient-dev
 
-Installation et exécution:
+Prérequis :
+- packets python à installer : poetry, python3.9, python3.9-dev, default-libmysqlclient-dev
+- initialiser une db Postgres pour pour itou-marche-api (ne pas oublier l'extension PostGIS)
+- avoir une db MariaDB qui tourne (voir itou-cocorico)
+
+Installation et exécution :
 ```bash
 > Installation environnement python
 $ poetry install
 
 > Configuration environnement
-$ . env.local.sh
+$ source ./env.local.sh
 
 > Exécution 
 $ poetry run python manage.py runserver
@@ -48,25 +54,27 @@ $ poetry run python manage.py [COMMANDES]
 
 > Avec surcharge `PYTHONPATH` (à résoudre)
 $ env PYTHONPATH=./lemarche:./lemarche/c4_directory poetry run python manage.py [COMMANDES]
+
+> Avoir le MariaDB de itou-cocorico qui tourne
 ```
 
 ### Docker
+
 L'API utilise un dockerfile multistage, permettant de fonctionner en "Dev" et "Prod" avec le même [Dockerfile](./Dockerfile).
 
 Pour l'environnement de développement, un `docker-compose` est fourni (voir ci-dessous).
 
 Pour la configuration django, vérifiez le fichier (config/settings/dev.py)[./config/settings/dev.py].
 
-#### Configuration docker
+#### Configuration Docker
 
-Pour un déploiement local **sous docker**, renommez le fichier `env.docker_default.local` en `env.docker.local` et apportez-y les modifications nécessaires (bien que la plupart des paramètres devraient fonctionner _hors de la boîte_).
+Pour un déploiement local **sous Docker**, renommez le fichier `env.docker_default.local` en `env.docker.local` et apportez-y les modifications nécessaires (bien que la plupart des paramètres devraient fonctionner _hors de la boîte_).
 
 > :information_source: pour accéder à l'environnemnt depuis une autre machine, pensez à définir la variable d'environnemnt `CURRENT_HOST` dans le fichier d'environnement
 
-
 #### Lancement docker-compose
 
-Après création du fichier `env.docker.local`, 
+Après création du fichier `env.docker.local`,
 
 ```bash
  # Démarrage
@@ -81,6 +89,7 @@ Après création du fichier `env.docker.local`,
 ```
 
 #### Lancement Dockerfile
+
 Le script [start_docker.sh](./start_docker.sh) permet de lancer les environnements en local, en mode **dev** ou **prod** :
 
 ```bash
@@ -94,6 +103,7 @@ Le script [start_docker.sh](./start_docker.sh) permet de lancer les environnemen
 ```
 
 ## Utilisation
+
 Une fois lancé, l'api propose plusieurs endpoints et interfaces de documentation (liens vers environnement local) :
 
 - Documentation Swaggger/OpenAPI : [/docs](http://localhost:8000/docs)
@@ -104,6 +114,7 @@ Tant que faire se peut, la documentation des endpoints se fait dans le code, en 
 de la documentation autogénérée.
 
 ### Dépendances et environnement
+
 Tant que faire ce peut, le projet centralise ses dépendances dans le fichier [pyproject.toml](pyproject.toml).
 Poetry utilise le fichier `poetry.lock`, et génère également un fichier `requirements.txt`.
 
@@ -117,6 +128,7 @@ $ poetry run poe export
 ```
 
 ### Migrations
+
 Si l'environnement est neuf ou n'est plus à jour, appliquez les migrations nécessaires
 
 ```bash
@@ -130,10 +142,11 @@ $ poe migrate
 ```
 
 ## Développement
-Le repo suit le workflow [par branche de fonctionnalité](https://www.atlassian.com/fr/git/tutorials/comparing-workflows/feature-branch-workflow), 
-et un [versionnage sémantique](CHANGELOG.md).
+
+Le repo suit le workflow [par branche de fonctionnalité](https://www.atlassian.com/fr/git/tutorials/comparing-workflows/feature-branch-workflow), et un [versionnage sémantique](CHANGELOG.md).
 
 ### Qualité du code
+
 Le projet utilise flake8, isort et black pour assurer la standardisation des écritures.
 Poetry est configuré pour en faciliter l'utilisation.
 
@@ -150,16 +163,19 @@ $ poe clean_code
 ```
 
 ### Testing
+
 PyTest est utilisé pour ce projet. Les tests se trouvent dans le répertoire [tests](tests),
 un sous-répertoire par app django.
 
 ### TODO List
+
 - Dockerfile pour développement
 - Logging
 - Monitoring
 - Tracking
 
 ### Ressources et inspirations
+
 - https://www.django-rest-framework.org/topics/rest-hypermedia-hateoas/
 - https://realpython.com/django-rest-framework-quick-start/
 - https://www.django-rest-framework.org/tutorial/5-relationships-and-hyperlinked-apis/
@@ -169,12 +185,15 @@ un sous-répertoire par app django.
 - https://flowfx.de/blog/populate-your-django-test-database-with-pytest-fixtures/
 
 ## Contenu de l'API du marché de l'inclusion
+
 ### Le projet aujourd'hui
+
 - API du marché de l'inclusion, qui offre :
     - La liste des SIAE, leur données et secteurs d'activité
     - La liste hierarchisée des secteurs d'activité
 
 ### Le projet demain
+
 En plus de l'API :
 - Interface de consultation
 - Moteur de recherche des structures
