@@ -1,5 +1,5 @@
 # Migrer twig vers django
-Le moteur de template twig est très similaire à celui de django (ainsi qu'a jinja).
+Le moteur de template Twig est très similaire à celui de Django (ainsi qu'à Jinja).
 
 ### Remarques
 - L'organisation des fichiers et répertoires est repris de itou-cocorico
