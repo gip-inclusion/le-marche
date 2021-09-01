@@ -11,7 +11,7 @@ Le moteur de template Twig est très similaire à celui de Django (ainsi qu'à J
 
 ### Des petites choses qui changent
 - les commentaires twig style `{# HELLO WORLD ! #}` ne fonctionnent pas sous django
-- la racine des fichiers change, la ou twig utilise le nom des apps `{% include '@MonApp' %}`, django utilise le répertoire depuis la racine de `templates`
+- la racine des fichiers change, là où Twig utilise le nom des apps `{% include '@MonApp' %}`, Django utilise le répertoire depuis la racine de `templates`
 - extension de fichiers : twig utilise `.html.twig`, django simplement `.html`
 - les opérateurs conditionnels (if, for, ...) peuvent varier, à voir au cas par cas
 
