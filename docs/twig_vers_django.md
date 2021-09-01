@@ -33,4 +33,4 @@ Django : `<link rel="stylesheet" href="{% static "css/itou.css" %}" type="text/c
 
 ### Scripts
 Twig : `{% block javascripts %}`
-Djang : `{% block scripts %}`
+Django : `{% block scripts %}`
