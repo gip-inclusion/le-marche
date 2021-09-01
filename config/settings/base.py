@@ -41,7 +41,7 @@ BITOUBI_ENV = env.str('ENV', 'dev')
 STATIC_URL = "/static/"
 STATIC_SOURCE_ROOT = str(ROOT_DIR.path("static"))
 STATIC_ROOT = str(ROOT_DIR.path("staticfiles"))
-STATICFILES_DIRS = [str(ROOT_DIR.path("static"))]
+STATICFILES_DIRS = [STATIC_SOURCE_ROOT]
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
