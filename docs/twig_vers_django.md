@@ -5,7 +5,7 @@ Le moteur de template Twig est très similaire à celui de Django (ainsi qu'à J
 - L'organisation des fichiers et répertoires est repris de itou-cocorico
 
 ### Ce qui est identique
-- les blocks `{%block machin %}{% endblock %}`
+- les blocs `{% block machin %}{% endblock %}`
 - les include (même les mots-clés genre `only`)
 - l'intégration des variables `{{ une_variable }}`
 
