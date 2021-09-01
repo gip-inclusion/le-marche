@@ -1,17 +1,17 @@
 # Migrer twig vers django
-Le moteur de template twig est très similaire à celui de django (ainsi qu'a jinja).
+Le moteur de template Twig est très similaire à celui de Django (ainsi qu'à Jinja).
 
 ### Remarques
 - L'organisation des fichiers et répertoires est repris de itou-cocorico
 
 ### Ce qui est identique
-- les blocks `{%block machin %}{% endblock %}`
+- les blocs `{% block machin %}{% endblock %}`
 - les include (même les mots-clés genre `only`)
 - l'intégration des variables `{{ une_variable }}`
 
 ### Des petites choses qui changent
-- les commentaires twig style `{# HELLO WORLD ! #}` ne fonctionnent pas sous django
-- la racine des fichiers change, la ou twig utilise le nom des apps `{% include '@MonApp' %}`, django utilise le répertoire depuis la racine de `templates`
+- les commentaires _Twig style_ `{# HELLO WORLD ! #}` ne fonctionnent pas sous Django
+- la racine des fichiers change, là où Twig utilise le nom des apps `{% include '@MonApp' %}`, Django utilise le répertoire depuis la racine de `templates`
 - extension de fichiers : twig utilise `.html.twig`, django simplement `.html`
 - les opérateurs conditionnels (if, for, ...) peuvent varier, à voir au cas par cas
 
@@ -33,4 +33,4 @@ Django : `<link rel="stylesheet" href="{% static "css/itou.css" %}" type="text/c
 
 ### Scripts
 Twig : `{% block javascripts %}`
-Djang : `{% block scripts %}`
+Django : `{% block scripts %}`
