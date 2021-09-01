@@ -148,6 +148,8 @@ WSGI_APPLICATION = "config.wsgi.application"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 # Compatible with clevercloud add-ons
+# TODO: Use django-environ DSN parsing functionality
+# Something like env.db("POSTGRESQL_ADDON_URI")
 DATABASES = {
     "default": {
         "ENGINE": "django.contrib.gis.db.backends.postgis",
