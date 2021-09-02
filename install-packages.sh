@@ -29,6 +29,7 @@ apt-get -y install --no-install-recommends \
     libproj-dev \
     gdal-bin \
     iputils-ping \
+    libsass1 \
     gcc
 
 # Delete cached files we don't need anymore:

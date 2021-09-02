@@ -12,6 +12,7 @@ docker_dev() {
         --name c4_api \
         -v `pwd`/lemarche:/app/lemarche \
         -v `pwd`/config:/app/config \
+        -v `pwd`/static:/app/static \
         c4_api
 }
 
