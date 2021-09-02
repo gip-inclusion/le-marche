@@ -12,6 +12,9 @@ class SectorGroup(models.Model):
         verbose_name = "Groupe de secteurs d'activité"
         verbose_name_plural = "Groupes de secteurs d'activité"
 
+    def __str__(self):
+        return self.name
+
 
 class Sector(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
@@ -28,3 +31,6 @@ class Sector(models.Model):
     class Meta:
         verbose_name = "Secteur d'activité"
         verbose_name_plural = "Secteurs d'activité"
+
+    def __str__(self):
+        return self.name
