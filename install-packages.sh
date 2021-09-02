@@ -30,6 +30,7 @@ apt-get -y install --no-install-recommends \
     gdal-bin \
     iputils-ping \
     libsass1 \
+    gettext \
     gcc
 
 # Delete cached files we don't need anymore:
