@@ -1,12 +1,20 @@
 from django.contrib import admin
 
-from lemarche.siaes.models import Siae
+from lemarche.siaes.models import SiaeNetwork, Siae
+
+
+@admin.register(SiaeNetwork)
+class SiaeNetworkAdmin(admin.ModelAdmin):
+    list_display = ["id", "name", "brand", "created_at"]
+    search_fields = ["id", "name", "brand"]
+
+    readonly_fields = ["created_at", "updated_at"]
 
 
 @admin.register(Siae)
 class SiaeAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siret", "kind", "createdat"]
-    list_filter = ["kind"]
+    list_filter = ["kind", "networks"]
     search_fields = ["id", "name"]
 
     readonly_fields = Siae.READONLY_FIELDS + ["createdat", "updatedat"]
