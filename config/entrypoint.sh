@@ -6,7 +6,7 @@ export PYTHONPATH=$PYTHONPATH:./lemarche:./config
 
 # Include compiled sources
 ./manage.py compress --force
-# ./manage.py collectstatic --noinput
+./manage.py collectstatic --noinput
 
 ./manage.py migrate
 uwsgi --plugins http,python \

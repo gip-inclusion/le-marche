@@ -35,7 +35,7 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 RUN pip install "poetry==$POETRY_VERSION"
-RUN pip install uwsgi 
+RUN pip install -I uwsgi 
 
 #     apt-get install build-essential -y
 COPY poetry.lock pyproject.toml /app/
@@ -92,10 +92,9 @@ CMD ["bash"]
 FROM app-run AS prod
 ENV DJANGO_SETTINGS_MODULE="config.settings.prod" \
     ENV="prod" \
-    DEBUG="True"
+    DEBUG="False"
 
-CMD ["bash"]
-# CMD ["config/entrypoint.sh"]
+CMD ["config/entrypoint.sh"]
 
 # # For some _real_ performance, at cost of ease of use:
 # FROM python:3.9-alpine as prod
