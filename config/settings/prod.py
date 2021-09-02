@@ -1,11 +1,17 @@
 from .base import *  # noqa
 import os
+import environ
+env = environ.Env()
 
 LOADED_SETTINGS = "prod"
 
 ALLOWED_HOSTS = [
-    os.environ.get("CURRENT_HOST"),
+    env.str("CURRENT_HOST"),
 ]
+
+COMPRESS_STORAGE = "compressor.storage.GzipCompressorFileStorage"  # Instead of pre-set "storages.backends.s3boto3.S3Boto3Storage"
+COMPRESS_ROOT = STATIC_ROOT  # noqa
+COMPRESS_OFFLINE = True  # Needed to run compress offline
 
 AUTH_PASSWORD_VALIDATORS = [
     {

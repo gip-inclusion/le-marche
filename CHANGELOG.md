@@ -9,6 +9,14 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 
 ## CONTENTS
 
+### [0.6] - (2021-07)
+- Intégration bootstrap
+- Ajout flux de traitement SCSS/SASS
+- Intégration theme ITOU
+- Composants layout : base, header, footer, layout
+- Première page & assets graphiques : c'est quoi l'inclusion
+- Compression par défaut des assets CSS & JS
+
 ### [0.5] - (2021-07)
 - Écriture des vues simplifiée (ModelViewSet et Mixins)
 - Filtres sur certains champs
