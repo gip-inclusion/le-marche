@@ -9,6 +9,9 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 
 ## CONTENTS
 
+### [0.7] - (2021-08)
+- Correctifs docker pour déploiement prod
+
 ### [0.6] - (2021-07)
 - Intégration bootstrap
 - Ajout flux de traitement SCSS/SASS
