@@ -29,7 +29,10 @@ apt-get -y install --no-install-recommends \
     libproj-dev \
     gdal-bin \
     iputils-ping \
+    libpcre3 \
+    libpcre3-dev \
     libsass1 \
+    gettext \
     gcc
 
 # Delete cached files we don't need anymore:

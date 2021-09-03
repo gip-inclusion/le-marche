@@ -16,7 +16,6 @@
 
     {# Use this to get the value of the CSRF token in JavaScript. #}
     <meta name="csrf-token" content="{{ csrf_token }}">
-    <link rel="shortcut icon" href="{% static "favicon.ico" %}" type="image/ico">
     {% bootstrap_css %}
     {% bootstrap_javascript jquery='full' %}
     {% block extra_head %}{% endblock %}

@@ -35,7 +35,7 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 RUN pip install "poetry==$POETRY_VERSION"
-RUN pip install uwsgi 
+RUN pip install -I uwsgi 
 
 #     apt-get install build-essential -y
 COPY poetry.lock pyproject.toml /app/
@@ -54,6 +54,7 @@ ENV PATH="/opt/venv/bin:$PATH" \
     VIRTUALENV="/opt/venv" \
     PYTHONPATH="$PYTHONPATH:/app/lemarche:/app/config"
 COPY ./lemarche ./lemarche
+COPY ./static ./static
 COPY ./config ./config
 COPY ./manage.py ./manage.py
 COPY ./pyproject.toml ./pyproject.toml
