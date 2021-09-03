@@ -10,17 +10,18 @@ from lemarche.siaes.models import Siae, SiaeNetwork
 from lemarche.sectors.models import Sector, SectorGroup
 
 
-C4_DSN = "<INSERT-MYSQL-DB-URL-HERE>"
+C4_DSN = "<MYSQL-URL>"
 
 DIRECTORY_EXTRA_KEYS = [
     "latitude", "longitude", "geo_range", "pol_range",
-    "presta_type",
+    # "presta_type",
     "sector",  # string 'list' with ' - ' seperator. map to Sector
 ]
 
 DIRECTORY_BOOLEAN_FIELDS = [field.name for field in Siae._meta.fields if type(field) == BooleanField]
-
 DIRECTORY_DATE_FIELDS = [field.name for field in Siae._meta.fields if type(field) == DateTimeField]
+NETWORK_DATE_FIELDS = [field.name for field in SiaeNetwork._meta.fields if type(field) == DateTimeField]
+SECTOR_DATE_FIELDS = [field.name for field in Sector._meta.fields if type(field) == DateTimeField]
 
 
 def dsn2params(dsn):
@@ -48,6 +49,29 @@ def cleanup_date_field_names(elem):
             elem["updated_at"] = elem["updatedAt"]
         elem.pop("updatedAt")
 
+def make_aware_dates(elem, date_keys):
+    for key in date_keys:
+            if key in elem:
+                if elem[key]:
+                    elem[key] = timezone.make_aware(elem[key])
+
+def map_presta_type(input_value_byte):
+    if input_value_byte:
+        input_value_string = input_value_byte.decode()
+        presta_type_mapping = {
+            None: None,
+            "0": [],
+            "2": [Siae.PRESTA_DISP],
+            "4": [Siae.PRESTA_PREST],
+            "6": [Siae.PRESTA_DISP, Siae.PRESTA_PREST],
+            "8": [Siae.PRESTA_BUILD],
+            "10": [Siae.PRESTA_DISP, Siae.PRESTA_BUILD],
+            "12": [Siae.PRESTA_PREST, Siae.PRESTA_BUILD],
+            "14": [Siae.PRESTA_DISP, Siae.PRESTA_PREST, Siae.PRESTA_BUILD]
+        }
+        return presta_type_mapping[input_value_string]
+    return None
+
 
 class Command(BaseCommand):
     """
@@ -61,9 +85,10 @@ class Command(BaseCommand):
 
         try:
             with connMy.cursor(pymysql.cursors.DictCursor) as cur:
-                # self.migrate_network(cur)
+                self.migrate_network(cur)
                 # self.migrate_sector(cur)
                 self.migrate_directory(cur)
+                self.migrate_directory_network(cur)
         except Exception as e:
             # logger.exception(e)
             print(e)
@@ -77,7 +102,10 @@ class Command(BaseCommand):
         """
         cur.execute("SELECT * FROM listing_category")  # listing_category_translation
         resp = cur.fetchall()
-        print(resp)
+
+        # s = set([elem["name"] for elem in resp])
+        # print(s)
+
 
     def migrate_network(self, cur):
         """
@@ -87,52 +115,73 @@ class Command(BaseCommand):
 
         cur.execute("SELECT * FROM network")
         resp = cur.fetchall()
-        print(resp)
 
-        s = set([elem["siret"] for elem in resp])
-        print(s)
+        # s = set([elem["siret"] for elem in resp])
+        # print(s)
 
         for elem in resp:
-            [elem.pop(key) for key in ["accronym", "siret"]]
+            # cleanup dates
             cleanup_date_field_names(elem)
+            make_aware_dates(elem, NETWORK_DATE_FIELDS)
+            
+            # remove useless keys
+            [elem.pop(key) for key in ["accronym", "siret"]]
+            
             SiaeNetwork.objects.create(**elem)
-    
+
+
     def migrate_directory(self, cur):
         """
         """
         Siae.objects.all().delete()
 
         cur.execute("SELECT * FROM directory")
-        # resp = cur.fetchall()
+        resp = cur.fetchall()
         # print(len(resp))
         
         # s = set([elem["c4_id"] for elem in resp])
         # print(s)
 
-        # for elem in resp:
-        #     if elem["sector"]:
-        #         print(elem["c4_id"], elem["sector"])
-        
-        elem = cur.fetchone()
-        print(elem)
+        # elem = cur.fetchone()
+        # print(elem)
 
-        # cleanup boolean fields
-        for key in DIRECTORY_BOOLEAN_FIELDS:
-            if key in elem:
-                elem[key] = integer_to_boolean(elem[key])
-        
-        # cleanup dates
-        cleanup_date_field_names(elem)
-        for key in DIRECTORY_DATE_FIELDS:
-            if key in elem:
-                print(key, elem[key])
-                if elem[key]:
-                    elem[key] = timezone.make_aware(elem[key])
-        
-        # remove useless keys
-        [elem.pop(key) for key in DIRECTORY_EXTRA_KEYS]
-        
-        # create object
-        first = Siae.objects.create(**elem)
-        print(first)
+        for elem in resp:
+            # cleanup boolean fields
+            for key in DIRECTORY_BOOLEAN_FIELDS:
+                if key in elem:
+                    elem[key] = integer_to_boolean(elem[key])
+            
+            # cleanup dates
+            cleanup_date_field_names(elem)
+            make_aware_dates(elem, DIRECTORY_DATE_FIELDS)
+                    
+            
+            # cleanup presta_type
+            if "presta_type" in elem:
+                elem["presta_type"] = map_presta_type(elem["presta_type"])
+            
+            # remove useless keys
+            [elem.pop(key) for key in DIRECTORY_EXTRA_KEYS]
+            
+            # create object
+            try:
+                first = Siae.objects.create(**elem)
+                # print(first.__dict__)
+            except Exception as e:
+                print(e)
 
+
+    def migrate_directory_network(self, cur):
+        """
+        elem exemple: {'directory_id': 270, 'network_id': 8}
+        """
+        Siae.networks.through.objects.all().delete()
+
+        cur.execute("SELECT * FROM directory_network")
+        resp = cur.fetchall()
+        print(len(resp))
+        print(resp[0])
+
+        for elem in resp:
+            siae = Siae.objects.get(pk=elem["directory_id"])
+            siae.networks.add(elem["network_id"])
