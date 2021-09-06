@@ -1,4 +1,3 @@
-from hashids import Hashids
 from rest_framework.exceptions import APIException
 
 from lemarche.users.models import User
@@ -22,19 +21,3 @@ def ensure_user_permission(token):
         assert user.has_perm("api.access_api")
     except (User.DoesNotExist, AssertionError):
         raise Unauthorized
-
-
-hasher = Hashids(alphabet="1234567890ABCDEF", min_length=5)
-
-
-def decode_hashed_pk(func):
-    """
-    Small decorator to dynamically decode a hashed pk
-    """
-
-    def _wrapper(*args, **kwargs):
-        if "pk" in kwargs.keys():
-            kwargs["pk"] = hasher.decode(kwargs["pk"])[0]
-        return func(*args, **kwargs)
-
-    return _wrapper
