@@ -1,21 +1,23 @@
+import io
 import re
 import pymysql
 
 from django.conf import settings
 from django.utils import timezone
+from django.core.management import call_command
 from django.core.management.base import BaseCommand
+from django.db import connection, IntegrityError
 from django.db.models.fields import BooleanField, DateTimeField
 
 from lemarche.siaes.models import Siae, SiaeNetwork
 from lemarche.sectors.models import Sector, SectorGroup
 
 
-C4_DSN = "<MYSQL-URL>"
+C4_DSN = "<MARIADB-SQL-URL>"
 
 DIRECTORY_EXTRA_KEYS = [
     "latitude", "longitude", "geo_range", "pol_range",
-    # "presta_type",
-    "sector",  # string 'list' with ' - ' seperator. map to Sector
+    "sector",  # string 'list' with ' - ' seperator. We can map to Sector. But we use instead the 'directory_category' table.
 ]
 
 DIRECTORY_BOOLEAN_FIELDS = [field.name for field in Siae._meta.fields if type(field) == BooleanField]
@@ -72,9 +74,32 @@ def map_presta_type(input_value_byte):
         return presta_type_mapping[input_value_string]
     return None
 
+def reset_app_sql_sequences(app_name):
+    """
+    To reset the id indexes of a given app (will impact *all* of the apps' tables)
+    https://docs.djangoproject.com/en/3.1/ref/django-admin/#sqlsequencereset
+    https://stackoverflow.com/a/44113124
+    """
+    print(f"Resetting SQL sequences for {app_name}...")
+    output = io.StringIO()
+    call_command('sqlsequencereset', app_name, stdout=output, no_color=True)
+    sql = output.getvalue()
+    with connection.cursor() as cursor:
+        cursor.execute(sql)
+    output.close()
+    print("Done !")
+
 
 class Command(BaseCommand):
     """
+    Migrate from Symphony/MariaDB to Django/PostgreSQL
+
+    directory --> Siae
+    network --> SiaeNetwork
+    directory_network --> M2M between Siae & SiaeNetwork
+    listing_category & listing_category_translation --> Sector
+    directory_category --> M2M between Siae & Sector
+
     Usage: poetry run python manage.py migrate_data_to_django
     """
 
@@ -85,10 +110,11 @@ class Command(BaseCommand):
 
         try:
             with connMy.cursor(pymysql.cursors.DictCursor) as cur:
-                self.migrate_network(cur)
-                # self.migrate_sector(cur)
-                self.migrate_directory(cur)
-                self.migrate_directory_network(cur)
+                self.migrate_siae(cur)
+                # self.migrate_siaenetwork(cur)
+                # self.migrate_siae_siaenetwork(cur)
+                self.migrate_sector(cur)
+                self.migrate_siae_sector(cur)
         except Exception as e:
             # logger.exception(e)
             print(e)
@@ -97,20 +123,12 @@ class Command(BaseCommand):
             connMy.close()
 
 
-    def migrate_sector(cur):
-        """
-        """
-        cur.execute("SELECT * FROM listing_category")  # listing_category_translation
-        resp = cur.fetchall()
-
-        # s = set([elem["name"] for elem in resp])
-        # print(s)
-
-
-    def migrate_network(self, cur):
+    def migrate_siaenetwork(self, cur):
         """
         - fields 'accronym' and 'siret' are always empty
         """
+        print("Migrating SiaeNetwork...")
+
         SiaeNetwork.objects.all().delete()
 
         cur.execute("SELECT * FROM network")
@@ -129,10 +147,14 @@ class Command(BaseCommand):
             
             SiaeNetwork.objects.create(**elem)
 
+        print(f"Created {SiaeNetwork.objects.count()} siae networks !")
 
-    def migrate_directory(self, cur):
+
+    def migrate_siae(self, cur):
         """
         """
+        print("Migrating Siae...")
+
         Siae.objects.all().delete()
 
         cur.execute("SELECT * FROM directory")
@@ -154,8 +176,7 @@ class Command(BaseCommand):
             # cleanup dates
             cleanup_date_field_names(elem)
             make_aware_dates(elem, DIRECTORY_DATE_FIELDS)
-                    
-            
+
             # cleanup presta_type
             if "presta_type" in elem:
                 elem["presta_type"] = map_presta_type(elem["presta_type"])
@@ -170,18 +191,93 @@ class Command(BaseCommand):
             except Exception as e:
                 print(e)
 
+        print(f"Created {Siae.objects.count()} siaes !")
 
-    def migrate_directory_network(self, cur):
+
+    def migrate_siae_siaenetwork(self, cur):
         """
         elem exemple: {'directory_id': 270, 'network_id': 8}
         """
+        print("Migrating M2M between Siae & SiaeNetwork...")
+
         Siae.networks.through.objects.all().delete()
 
         cur.execute("SELECT * FROM directory_network")
         resp = cur.fetchall()
-        print(len(resp))
-        print(resp[0])
+        # print(len(resp))
+        # print(resp[0])
 
         for elem in resp:
             siae = Siae.objects.get(pk=elem["directory_id"])
             siae.networks.add(elem["network_id"])
+
+        print(f"Created {Siae.networks.through.objects.count()} M2M objects !")
+
+
+    def migrate_sector(self, cur):
+        """
+        """
+        print("Migrating Sector & SectorGroup...")
+
+        Sector.objects.all().delete()
+        SectorGroup.objects.all().delete()
+        reset_app_sql_sequences("sectors")
+
+        cur.execute("SELECT * FROM listing_category")
+        resp = cur.fetchall()
+
+        # first we recreate the hierarchy Sector Group > Sector Children
+        sector_group_list = []
+        for elem in resp:
+            if not elem["parent_id"]:
+                # this is a group elem, create it if it doesn't exist yet
+                sector_group_index = next((index for (index, s) in enumerate(sector_group_list) if s["id"] == elem["id"]), None)
+                if sector_group_index is None:
+                    sector_group_list.append({ "id": elem["id"], "children": [] })
+            else:
+                # this is a child elem
+                sector_group_index = next((index for (index, s) in enumerate(sector_group_list) if s["id"] == elem["parent_id"]), None)
+                if sector_group_index is None:
+                    sector_group_list.append({ "id": elem["parent_id"], "children": [] })
+                    sector_group_index = len(sector_group_list) - 1
+                sector_group_list[sector_group_index]["children"].append(elem["id"])
+        
+        # print(sector_group_list)
+
+        cur.execute("SELECT * FROM listing_category_translation")
+        resp = cur.fetchall()
+
+        # then we loop on the hierarchy to create the SectorGroup & Sector objects
+        for sector_group_dict in sector_group_list:
+            elem_data = next(s for (index, s) in enumerate(resp) if ((s["translatable_id"] == sector_group_dict["id"]) and (s["locale"] == "fr")))
+            sector_group = SectorGroup.objects.create(pk=sector_group_dict["id"], name=elem_data["name"], slug=elem_data["slug"])
+            for sector_id in sector_group_dict["children"]:
+                elem_data = next(s for (index, s) in enumerate(resp) if ((s["translatable_id"] == sector_id) and (s["locale"] == "fr")))
+                try:
+                    Sector.objects.create(pk=sector_id, name=elem_data["name"], slug=elem_data["slug"], group=sector_group)
+                except IntegrityError:  # sometimes the slugs are duplicated (e.g. "autre")
+                    slug_fix = f"{elem_data['slug']}-{sector_group_dict['id']}"
+                    Sector.objects.create(pk=sector_id, name=elem_data["name"], slug=slug_fix, group=sector_group)
+
+        print(f"Created {SectorGroup.objects.count()} sector groups !")
+        print(f"Created {Sector.objects.count()} sectors !")
+
+
+    def migrate_siae_sector(self, cur):
+        """
+        elem exemple: {'category_id': 270, 'listing_category_id': 8}
+        """
+        print("Migrating M2M between Siae & Sector...")
+
+        Siae.sectors.through.objects.all().delete()
+
+        cur.execute("SELECT * FROM directory_category")
+        resp = cur.fetchall()
+        # print(len(resp))
+        # print(resp[0])
+
+        for elem in resp:
+            siae = Siae.objects.get(pk=elem["directory_id"])
+            siae.sectors.add(elem["listing_category_id"])
+
+        print(f"Created {Siae.sectors.through.objects.count()} M2M objects !")
