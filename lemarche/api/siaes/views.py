@@ -1,19 +1,10 @@
-from django.http import HttpResponse
-from django.http import Http404
 from django.shortcuts import get_object_or_404
 
-from django_filters.rest_framework import DjangoFilterBackend
-from hashids import Hashids
-from rest_framework import generics, mixins, viewsets
-from rest_framework.views import APIView
+from rest_framework import mixins, viewsets
 from rest_framework.response import Response
-from rest_framework.exceptions import APIException
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
-from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 from lemarche.api.siaes.serializers import (
-    # SectorSerializer,
-    SectorStringSerializer,
     # SiaeHyperSerializer,
     SiaeSerializer,
     SiaeAnonSerializer,
@@ -21,62 +12,11 @@ from lemarche.api.siaes.serializers import (
     SiaeListAnonSerializer,
 )
 from lemarche.api.siaes.filters import SiaeFilter
-from lemarche.cocorico.models import Directory, DirectorySector, Sector, SectorString
-from lemarche.users.models import User
+from lemarche.api.utils import ensure_user_permission, decode_hashed_pk
+from lemarche.cocorico.models import Directory
 
 
-hasher = Hashids(alphabet="1234567890ABCDEF", min_length=5)
-
-"""
-Inspiration for class-based views :
-    https://www.django-rest-framework.org/tutorial/3-class-based-views/
-Generic viewset:
-    https://www.django-rest-framework.org/api-guide/viewsets/#genericviewset
-"""
-
-
-# ################################################################## FUNCTIONS
-# ############################################################################
-# TODO: create common shared lib for reusable components
-
-# Custom Service Exceptions
-class Unauthorized(APIException):
-    status_code = 401
-    default_detail = "Unauthorized"
-    default_code = "unauthorized"
-
-
-def decode_hashed_pk(func):
-    """
-    Small decorator to dynamically decode a hashed pk
-    """
-
-    def _wrapper(*args, **kwargs):
-        if "pk" in kwargs.keys():
-            kwargs["pk"] = hasher.decode(kwargs["pk"])[0]
-        return func(*args, **kwargs)
-
-    return _wrapper
-
-
-def ensure_user_permission(token):
-    """
-    User token functionnality is temporary, and only used
-    to trace API usage and support : once a proper
-    auth protocol is implemented it is to be replaced
-    """
-    try:
-        user = User.objects.get(api_key=token)
-        assert user.has_perm("api.access_api")
-    except (User.DoesNotExist, AssertionError):
-        raise Unauthorized
-
-
-# ###################################################################### VIEWS
-# ############################################################################
-
-
-class Siae(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     Données d'une structure d'insertion par l'activité économique (SIAE).
     """
@@ -162,27 +102,4 @@ class Siae(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericVie
                 context={"hashed_pk": True},
             )
 
-        return Response(serializer.data)
-
-
-class Sectors(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-
-    queryset = SectorString.objects.get_all_active_sectors()
-    serializer_class = SectorStringSerializer
-
-    def get_serializer_context(self):
-        context = {"hashed_pk": True}
-        return context
-
-    def get_object(self, pk):
-        try:
-            return SectorString.objects.get_sector(pk=pk)
-        except SectorString.DoesNotExist:
-            raise Http404
-
-    @decode_hashed_pk
-    def retrieve(self, request, pk=None, format=None):
-        # We override this method to provide the hashed/unhashed PK retrieval
-        queryset = self.get_object(pk=pk)
-        serializer = SectorStringSerializer(queryset, many=False, context={"hashed_pk": True})
         return Response(serializer.data)
