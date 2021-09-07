@@ -1,4 +1,16 @@
-# from lemarche.api.models import Siae
+from django.http import HttpResponse
+from django.http import Http404
+from django.shortcuts import get_object_or_404
+
+from django_filters.rest_framework import DjangoFilterBackend
+from hashids import Hashids
+from rest_framework import generics, mixins, viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.exceptions import APIException
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
+from drf_spectacular.types import OpenApiTypes
+
 from lemarche.api.siaes.serializers import (
     # SectorSerializer,
     SectorStringSerializer,
@@ -8,22 +20,9 @@ from lemarche.api.siaes.serializers import (
     SiaeListSerializer,
     SiaeListAnonSerializer,
 )
-from lemarche.api.siaes.filters import (
-    SiaeFilter,
-)
+from lemarche.api.siaes.filters import SiaeFilter
 from lemarche.cocorico.models import Directory, DirectorySector, Sector, SectorString
 from lemarche.users.models import User
-from django.http import HttpResponse
-from django.http import Http404
-from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
-from hashids import Hashids
-from rest_framework import generics, mixins, viewsets
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.exceptions import APIException
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
-from drf_spectacular.types import OpenApiTypes
 
 
 hasher = Hashids(alphabet="1234567890ABCDEF", min_length=5)
@@ -43,8 +42,8 @@ Generic viewset:
 # Custom Service Exceptions
 class Unauthorized(APIException):
     status_code = 401
-    default_detail = 'Unauthorized'
-    default_code = 'unauthorized'
+    default_detail = "Unauthorized"
+    default_code = "unauthorized"
 
 
 def decode_hashed_pk(func):
@@ -77,9 +76,7 @@ def ensure_user_permission(token):
 # ############################################################################
 
 
-class Siae(mixins.ListModelMixin,
-           mixins.RetrieveModelMixin,
-           viewsets.GenericViewSet):
+class Siae(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     Données d'une structure d'insertion par l'activité économique (SIAE).
     """
@@ -93,11 +90,7 @@ class Siae(mixins.ListModelMixin,
 
     @extend_schema(
         parameters=[
-            OpenApiParameter(
-                name='token',
-                description='Token Utilisateur',
-                required=False,
-                type=str),
+            OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
         ]
     )
     def list(self, request, format=None):
@@ -128,11 +121,7 @@ class Siae(mixins.ListModelMixin,
 
     @extend_schema(
         parameters=[
-            OpenApiParameter(
-                name='token',
-                description='Token Utilisateur',
-                required=False,
-                type=str),
+            OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
         ],
         responses=SiaeSerializer,
     )
@@ -146,11 +135,7 @@ class Siae(mixins.ListModelMixin,
 
     @extend_schema(
         parameters=[
-            OpenApiParameter(
-                name='token',
-                description='Token Utilisateur',
-                required=False,
-                type=str),
+            OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
         ],
         responses=SiaeSerializer,
     )
@@ -180,9 +165,7 @@ class Siae(mixins.ListModelMixin,
         return Response(serializer.data)
 
 
-class Sectors(mixins.ListModelMixin,
-              mixins.RetrieveModelMixin,
-              viewsets.GenericViewSet):
+class Sectors(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     queryset = SectorString.objects.get_all_active_sectors()
     serializer_class = SectorStringSerializer

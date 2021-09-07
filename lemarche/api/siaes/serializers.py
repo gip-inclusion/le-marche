@@ -1,7 +1,9 @@
-from lemarche.api.models import Sector, SectorString, Siae
 from hashids import Hashids
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field, OpenApiTypes
+
+from lemarche.siaes.models import Siae
+from lemarche.api.models import Sector, SectorString
 
 
 # TODO: implement hashid as shared object

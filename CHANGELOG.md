@@ -11,6 +11,7 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 
 ### [0.7] - (2021-08)
 - Correctifs docker pour déploiement prod
+- Bouge le modèle Siae dans sa propre app
 
 ### [0.6] - (2021-07)
 - Intégration bootstrap

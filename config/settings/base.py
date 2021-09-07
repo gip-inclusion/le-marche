@@ -101,6 +101,7 @@ LOCAL_APPS = [
     # Core
     "lemarche.cocorico",
     "lemarche.users",
+    "lemarche.siaes",
     "lemarche.tracker",
     # Api
     "lemarche.api",
