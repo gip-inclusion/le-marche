@@ -106,9 +106,9 @@ Le script [start_docker.sh](./start_docker.sh) permet de lancer les environnemen
 
 Une fois lancé, l'api propose plusieurs endpoints et interfaces de documentation (liens vers environnement local) :
 
-- Documentation Swaggger/OpenAPI : [/docs](http://localhost:8000/docs)
-- Documentation ReDoc : [/redoc](http://localhost:8000/redoc)
-- Schema OpenApi3 : [/redoc](http://localhost:8000/schema)
+- Documentation Swaggger/OpenAPI : [/docs](http://localhost:8000/api/docs)
+- Documentation ReDoc : [/redoc](http://localhost:8000/api/redoc)
+- Schema OpenApi3 : [/redoc](http://localhost:8000/api/schema)
 
 Tant que faire se peut, la documentation des endpoints se fait dans le code, en visant une bonne lisibilité
 de la documentation autogénérée.
