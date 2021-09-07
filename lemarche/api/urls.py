@@ -9,7 +9,7 @@ from lemarche.api.sectors.views import SectorViewSet
 
 router = routers.DefaultRouter()
 
-router.register(r'siaes', SiaeViewSet, basename='siaes')
+router.register(r'siae', SiaeViewSet, basename='siae')
 router.register(r'sectors', SectorViewSet, basename='sectors')
 
 
