@@ -41,14 +41,14 @@ class Migration(migrations.Migration):
                     models.CharField(
                         db_index=True,
                         max_length=14,
-                        validators=[lemarche.api.models.validate_siret],
+                        validators=[lemarche.siaes.models.validate_siret],
                         verbose_name="Siret",
                     ),
                 ),
                 (
                     "naf",
                     models.CharField(
-                        blank=True, max_length=5, validators=[lemarche.api.models.validate_naf], verbose_name="Naf"
+                        blank=True, max_length=5, validators=[lemarche.siaes.models.validate_naf], verbose_name="Naf"
                     ),
                 ),
                 ("address", models.TextField(verbose_name="Adresse")),
