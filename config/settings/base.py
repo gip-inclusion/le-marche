@@ -103,6 +103,7 @@ LOCAL_APPS = [
     "lemarche.users",
     "lemarche.siaes",
     "lemarche.sectors",
+    "lemarche.networks",
     "lemarche.tracker",
     # Api
     "lemarche.api",
