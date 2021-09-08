@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('siaes', '0005_siaenetwork'),
+        ('siaes', '0004_siaenetwork'),
     ]
 
     operations = [
