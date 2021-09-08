@@ -9,6 +9,7 @@ class SiaeAdmin(admin.ModelAdmin):
     list_filter = ["kind", "networks"]
     search_fields = ["id", "name"]
 
+    autocomplete_fields = ["sectors", "networks"]
     readonly_fields = Siae.READONLY_FIELDS + ["createdat", "updatedat"]
 
     fieldsets = [
@@ -42,6 +43,8 @@ class SiaeAdmin(admin.ModelAdmin):
         ("Autres", {
             "fields": (
                 "description",
+                "sectors",
+                "networks",
             )
         })
     ]
