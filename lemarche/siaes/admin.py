@@ -6,7 +6,7 @@ from lemarche.siaes.models import Siae
 @admin.register(Siae)
 class SiaeAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siret", "kind", "createdat"]
-    list_filter = ["kind"]
+    list_filter = ["kind", "networks"]
     search_fields = ["id", "name"]
 
     readonly_fields = Siae.READONLY_FIELDS + ["createdat", "updatedat"]

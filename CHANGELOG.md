@@ -13,6 +13,7 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 - Correctifs docker pour déploiement prod
 - Bouge le modèle Siae dans sa propre app. Ajoute des champs manquants
 - Recrée les modèle Sector & SectorGroup dans leur propre app
+- Recrée le modèle Network dans sa propre app
 - API : réorganisation du code atour du modèle Siae
 - API : préfixe les urls avec /api
 - Admin : premiers interfaces pour les modèles Siae et Sector

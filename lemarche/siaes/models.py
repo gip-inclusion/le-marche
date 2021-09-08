@@ -113,6 +113,11 @@ class Siae(models.Model):
     admin_email = models.EmailField(max_length=255, blank=True, null=True)
 
     sectors = models.ManyToManyField(Sector)
+    networks = models.ManyToManyField(
+        "networks.Network",
+        verbose_name='Réseaux',
+        related_name='siaes',
+        blank=True)
 
     is_qpv = models.BooleanField(verbose_name="Zone QPV", blank=False, null=False, default=False)
     qpv_name = models.CharField(max_length=255, blank=True, null=True)
@@ -139,3 +144,6 @@ class Siae(models.Model):
         permissions = [
             ("access_api", "Can access the API"),
         ]
+
+    def __str__(self):
+        return self.name
