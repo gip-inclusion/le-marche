@@ -11,8 +11,11 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 
 ### [0.7] - (2021-08)
 - Correctifs docker pour déploiement prod
-- Bouge le modèle Siae dans sa propre app
+- Bouge le modèle Siae dans sa propre app. Ajoute des champs manquants
+- Recrée les modèle Sector & SectorGroup dans leur propre app
 - API : réorganisation du code atour du modèle Siae
+- API : préfixe les urls avec /api
+- Admin : premiers interfaces pour les modèles Siae et Sector
 
 ### [0.6] - (2021-07)
 - Intégration bootstrap
