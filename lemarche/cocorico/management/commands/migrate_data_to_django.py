@@ -3,17 +3,17 @@ import re
 import pymysql
 
 from django.conf import settings
-from django.utils import timezone
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db import connection, IntegrityError
 from django.db.models.fields import BooleanField, DateTimeField
+from django.utils import timezone
+from django.utils.text import slugify
 
-from lemarche.siaes.models import Siae, SiaeNetwork
-from lemarche.sectors.models import Sector, SectorGroup
+from lemarche.siaes.models import Siae
+from lemarche.networks.models import Network
+from lemarche.sectors.models import SectorGroup, Sector
 
-
-C4_DSN = "<MARIADB-SQL-URL>"
 
 DIRECTORY_EXTRA_KEYS = [
     "latitude", "longitude", "geo_range", "pol_range",
@@ -22,7 +22,7 @@ DIRECTORY_EXTRA_KEYS = [
 
 DIRECTORY_BOOLEAN_FIELDS = [field.name for field in Siae._meta.fields if type(field) == BooleanField]
 DIRECTORY_DATE_FIELDS = [field.name for field in Siae._meta.fields if type(field) == DateTimeField]
-NETWORK_DATE_FIELDS = [field.name for field in SiaeNetwork._meta.fields if type(field) == DateTimeField]
+NETWORK_DATE_FIELDS = [field.name for field in Network._meta.fields if type(field) == DateTimeField]
 SECTOR_DATE_FIELDS = [field.name for field in Sector._meta.fields if type(field) == DateTimeField]
 
 
@@ -95,24 +95,23 @@ class Command(BaseCommand):
     Migrate from Symphony/MariaDB to Django/PostgreSQL
 
     directory --> Siae
-    network --> SiaeNetwork
-    directory_network --> M2M between Siae & SiaeNetwork
+    network --> Network
+    directory_network --> M2M between Siae & Network
     listing_category & listing_category_translation --> Sector
-    directory_category --> M2M between Siae & Sector
+    directory_listing_category --> M2M between Siae & Sector
 
     Usage: poetry run python manage.py migrate_data_to_django
     """
-
     def handle(self, *args, **options):
 
-        mysql_params = dsn2params(C4_DSN)
+        mysql_params = dsn2params(settings.MYSQL_ADDON_DIRECT_URI)
         connMy = pymysql.connect(**mysql_params)
 
         try:
             with connMy.cursor(pymysql.cursors.DictCursor) as cur:
                 self.migrate_siae(cur)
-                # self.migrate_siaenetwork(cur)
-                # self.migrate_siae_siaenetwork(cur)
+                self.migrate_network(cur)
+                self.migrate_siae_network(cur)
                 self.migrate_sector(cur)
                 self.migrate_siae_sector(cur)
         except Exception as e:
@@ -123,13 +122,61 @@ class Command(BaseCommand):
             connMy.close()
 
 
-    def migrate_siaenetwork(self, cur):
+    def migrate_siae(self, cur):
         """
+        Migrate Siae data
+        """
+        print("Migrating Siae...")
+
+        Siae.objects.all().delete()
+
+        cur.execute("SELECT * FROM directory")
+        resp = cur.fetchall()
+        # print(len(resp))
+        
+        # s = set([elem["pol_range"] for elem in resp])
+        # print(s)
+
+        # elem = cur.fetchone()
+        # print(elem)
+
+        for elem in resp:
+            # cleanup boolean fields
+            for key in DIRECTORY_BOOLEAN_FIELDS:
+                if key in elem:
+                    elem[key] = integer_to_boolean(elem[key])
+
+            # cleanup dates
+            cleanup_date_field_names(elem)
+            make_aware_dates(elem, DIRECTORY_DATE_FIELDS)
+
+            # cleanup presta_type
+            if "presta_type" in elem:
+                elem["presta_type"] = map_presta_type(elem["presta_type"])
+
+            # remove useless keys
+            [elem.pop(key) for key in DIRECTORY_EXTRA_KEYS]
+
+            # create object
+            try:
+                first = Siae.objects.create(**elem)
+                # print(first.__dict__)
+            except Exception as e:
+                print(e)
+
+        print(f"Created {Siae.objects.count()} siaes !")
+
+
+    def migrate_network(self, cur):
+        """
+        Migrate Network data
+
+        Notes:
         - fields 'accronym' and 'siret' are always empty
         """
-        print("Migrating SiaeNetwork...")
+        print("Migrating Network...")
 
-        SiaeNetwork.objects.all().delete()
+        Network.objects.all().delete()
 
         cur.execute("SELECT * FROM network")
         resp = cur.fetchall()
@@ -144,61 +191,23 @@ class Command(BaseCommand):
             
             # remove useless keys
             [elem.pop(key) for key in ["accronym", "siret"]]
+
+            # add new keys
+            elem["slug"] = slugify(elem["name"])
             
-            SiaeNetwork.objects.create(**elem)
+            Network.objects.create(**elem)
 
-        print(f"Created {SiaeNetwork.objects.count()} siae networks !")
+        print(f"Created {Network.objects.count()} siae networks !")
 
 
-    def migrate_siae(self, cur):
+    def migrate_siae_network(self, cur):
         """
+        Migrate M2M data between Siae & Network
+
+        Notes:
+        - elem exemple: {'directory_id': 270, 'network_id': 8}
         """
-        print("Migrating Siae...")
-
-        Siae.objects.all().delete()
-
-        cur.execute("SELECT * FROM directory")
-        resp = cur.fetchall()
-        # print(len(resp))
-        
-        # s = set([elem["c4_id"] for elem in resp])
-        # print(s)
-
-        # elem = cur.fetchone()
-        # print(elem)
-
-        for elem in resp:
-            # cleanup boolean fields
-            for key in DIRECTORY_BOOLEAN_FIELDS:
-                if key in elem:
-                    elem[key] = integer_to_boolean(elem[key])
-            
-            # cleanup dates
-            cleanup_date_field_names(elem)
-            make_aware_dates(elem, DIRECTORY_DATE_FIELDS)
-
-            # cleanup presta_type
-            if "presta_type" in elem:
-                elem["presta_type"] = map_presta_type(elem["presta_type"])
-            
-            # remove useless keys
-            [elem.pop(key) for key in DIRECTORY_EXTRA_KEYS]
-            
-            # create object
-            try:
-                first = Siae.objects.create(**elem)
-                # print(first.__dict__)
-            except Exception as e:
-                print(e)
-
-        print(f"Created {Siae.objects.count()} siaes !")
-
-
-    def migrate_siae_siaenetwork(self, cur):
-        """
-        elem exemple: {'directory_id': 270, 'network_id': 8}
-        """
-        print("Migrating M2M between Siae & SiaeNetwork...")
+        print("Migrating M2M between Siae & Network...")
 
         Siae.networks.through.objects.all().delete()
 
@@ -216,6 +225,11 @@ class Command(BaseCommand):
 
     def migrate_sector(self, cur):
         """
+        Migrate Sector & SectorGroup data
+
+        Notes:
+        - the current implementation in Symphony is overly complex
+        - we simplify it with a simple parent/child hierarchy
         """
         print("Migrating Sector & SectorGroup...")
 
@@ -265,19 +279,28 @@ class Command(BaseCommand):
 
     def migrate_siae_sector(self, cur):
         """
-        elem exemple: {'category_id': 270, 'listing_category_id': 8}
+        Migrate M2M data between Siae & Sector
+
+        Notes:
+        - elem exemple: {'category_id': 270, 'listing_category_id': 8}
         """
         print("Migrating M2M between Siae & Sector...")
 
         Siae.sectors.through.objects.all().delete()
 
-        cur.execute("SELECT * FROM directory_category")
+        cur.execute("SELECT * FROM directory_listing_category")
         resp = cur.fetchall()
         # print(len(resp))
         # print(resp[0])
 
+        # Sometimes Siaes are linked to a SectorGroup instead of a Sector.
+        # We ignore these cases
         for elem in resp:
-            siae = Siae.objects.get(pk=elem["directory_id"])
-            siae.sectors.add(elem["listing_category_id"])
+            try:
+                siae = Siae.objects.get(pk=elem["directory_id"])
+                siae.sectors.add(elem["listing_category_id"])
+            except:
+                # print(elem)
+                pass
 
         print(f"Created {Siae.sectors.through.objects.count()} M2M objects !")

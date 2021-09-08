@@ -8,6 +8,7 @@ export MYSQL_ADDON_PORT="3306"
 export MYSQL_ADDON_USER=""
 export MYSQL_ADDON_PASSWORD=""
 export MYSQL_ADDON_DB=""
+export MYSQL_ADDON_DIRECT_URI = ""  # for the migration script
 
 # PostGreSQL Config
 export POSTGRESQL_ADDON_HOST="localhost"

@@ -2,28 +2,8 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.postgres.fields import ArrayField
 
-<<<<<<< HEAD
 from lemarche.siaes.constants import DEPARTMENTS, REGIONS
 from lemarche.siaes.validators import validate_post_code, validate_siret, validate_naf
-=======
-from lemarche.siaes.validators import validate_siret, validate_naf
-from lemarche.sectors.models import Sector
-
-
-class SiaeNetwork(models.Model):
-    name = models.CharField(verbose_name="Nom", max_length=255)
-    brand = models.CharField(verbose_name="Enseigne", max_length=255, blank=True)
-    website = models.URLField(verbose_name="Site web", blank=True)
-    created_at = models.DateTimeField("Date de création", default=timezone.now)
-    updated_at = models.DateTimeField("Date de modification", auto_now=True)
-
-    class Meta:
-        verbose_name = "Réseau"
-        verbose_name_plural = "Réseaux"
-
-    def __str__(self):
-        return self.name
->>>>>>> eb1ab07... Update M2M between Siae & Sectors
 
 
 class Siae(models.Model):
