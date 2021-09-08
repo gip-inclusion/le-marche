@@ -1,4 +1,11 @@
+# https://github.com/betagouv/itou/blob/master/itou/utils/validators.py
+
 from django.core.exceptions import ValidationError
+
+
+def validate_post_code(post_code):
+    if not post_code.isdigit() or len(post_code) != 5:
+        raise ValidationError("Le code postal doit être composé de 5 chiffres.")
 
 
 def validate_siret(siret):
