@@ -4,7 +4,6 @@ from django.contrib.postgres.fields import ArrayField
 
 from lemarche.siaes.constants import DEPARTMENTS, REGIONS
 from lemarche.siaes.validators import validate_post_code, validate_siret, validate_naf
-from lemarche.api.models import Sector
 
 
 class Siae(models.Model):
@@ -112,11 +111,15 @@ class Siae(models.Model):
     admin_name = models.CharField(max_length=255, blank=True, null=True)
     admin_email = models.EmailField(max_length=255, blank=True, null=True)
 
-    sectors = models.ManyToManyField(Sector)
+    sectors = models.ManyToManyField(
+        "sectors.Sector",
+        verbose_name="Secteurs d'activité",
+        related_name="siaes",
+        blank=True)
     networks = models.ManyToManyField(
         "networks.Network",
-        verbose_name='Réseaux',
-        related_name='siaes',
+        verbose_name="Réseaux",
+        related_name="siaes",
         blank=True)
 
     is_qpv = models.BooleanField(verbose_name="Zone QPV", blank=False, null=False, default=False)
