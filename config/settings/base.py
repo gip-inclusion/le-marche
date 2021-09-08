@@ -86,15 +86,15 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+]
+
+THIRD_PARTY_APPS = [
     "django_filters",
     "crispy_forms",
     "bootstrap4",
     "rest_framework",
     "drf_spectacular",
     "compressor",
-]
-
-THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
