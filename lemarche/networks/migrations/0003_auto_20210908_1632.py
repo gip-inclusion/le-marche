@@ -5,10 +5,6 @@ from django.utils.text import slugify
 
 
 def slugify_name(apps, schema_editor):
-    '''
-    We can't import the Post model directly as it may be a newer
-    version than this migration expects. We use the historical version.
-    '''
     Network = apps.get_model('networks', 'Network')
     for network in Network.objects.all():
         network.slug = slugify(network.name)
