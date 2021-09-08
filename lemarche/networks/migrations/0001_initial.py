@@ -6,13 +6,11 @@ import django.utils.timezone
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('siaes', '0003_siae_add_missing_fields_update_others'),
-    ]
+    initial = True
 
     operations = [
         migrations.CreateModel(
-            name='SiaeNetwork',
+            name='Network',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255, verbose_name='Nom')),
