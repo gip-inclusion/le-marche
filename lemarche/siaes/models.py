@@ -195,7 +195,8 @@ class SiaeLabel(models.Model):
 
 
 class SiaeClientReference(models.Model):
-    # name, description ?
+    name = models.CharField(verbose_name="Nom", max_length=255, blank=True, null=True)
+    description = models.TextField(verbose_name="Description", blank=True)
     image_name = models.CharField(verbose_name="Nom de l'image", max_length=255)
     order = models.PositiveIntegerField(verbose_name="Ordre", blank=False, default=1)
 
@@ -213,4 +214,4 @@ class SiaeClientReference(models.Model):
         verbose_name_plural = "Références clients"
 
     def __str__(self):
-        return self.image_name
+        return self.name

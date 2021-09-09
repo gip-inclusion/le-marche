@@ -112,8 +112,8 @@ class SiaeLabelAdmin(admin.ModelAdmin):
 
 @admin.register(SiaeClientReference)
 class SiaeClientReferenceAdmin(admin.ModelAdmin):
-    list_display = ["id", "image_name", "siae_with_link", "created_at"]
-    search_fields = ["id", "image_name"]
+    list_display = ["id", "name", "siae_with_link", "created_at"]
+    search_fields = ["id", "name"]
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["image_name", "created_at", "updated_at"]

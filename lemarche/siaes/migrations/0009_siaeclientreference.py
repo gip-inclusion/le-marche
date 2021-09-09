@@ -16,6 +16,8 @@ class Migration(migrations.Migration):
             name='SiaeClientReference',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(blank=True, max_length=255, null=True, verbose_name="Nom")),
+                ('description', models.TextField(blank=True, verbose_name="Description")),
                 ('image_name', models.CharField(max_length=255, verbose_name="Nom de l'image")),
                 ('order', models.PositiveIntegerField(default=1, verbose_name='Ordre')),
                 ('created_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Date de création')),

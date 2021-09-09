@@ -11,7 +11,7 @@ from django.db.models.fields import BooleanField, DateTimeField
 from django.utils import timezone
 from django.utils.text import slugify
 
-from lemarche.siaes.models import Siae, SiaeOffer, SiaeLabel
+from lemarche.siaes.models import Siae, SiaeOffer, SiaeLabel, SiaeClientReference
 from lemarche.networks.models import Network
 from lemarche.sectors.models import SectorGroup, Sector
 
@@ -34,6 +34,10 @@ def dsn2params(dsn):
     d = m.groupdict()
     d['port'] = int(d['port'])
     return d
+
+def rename_field(elem, field_name_before, field_name_after):
+    elem[field_name_after] = elem[field_name_before]
+    elem.pop(field_name_before)
 
 def integer_to_boolean(input_value):
     if input_value in [1]:
@@ -101,6 +105,9 @@ class Command(BaseCommand):
     directory_network --> M2M between Siae & Network
     listing_category & listing_category_translation --> Sector
     directory_listing_category --> M2M between Siae & Sector
+    directory_label --> SiaeLabel ("Labels & certifications") + OneToMany between Siae & Label
+    directory_offer --> SiaeOffer ("Prestations proposées") + OneToMany between Siae & Offer
+    directory_client_image --> SiaeClientReference ("Références clients") + OneToMany between Siae & SiaeClientReference
 
     Usage: poetry run python manage.py migrate_data_to_django
     """
@@ -118,6 +125,7 @@ class Command(BaseCommand):
                 self.migrate_siae_sector(cur)
                 self.migrate_siae_offer(cur)
                 self.migrate_siae_label(cur)
+                self.migrate_siae_client_reference(cur)
         except Exception as e:
             # logger.exception(e)
             print(e)
@@ -335,11 +343,8 @@ class Command(BaseCommand):
             cleanup_date_field_names(elem)
             make_aware_dates(elem)
 
-            # cleanup relation
-            elem["siae_id"] = elem["directory_id"]
-
-            # remove useless keys
-            [elem.pop(key) for key in ["directory_id"]]
+            # rename fields
+            rename_field(elem, "directory_id", "siae_id")
 
             # create object
             SiaeOffer.objects.create(**elem)
@@ -349,6 +354,7 @@ class Command(BaseCommand):
 
     def migrate_siae_label(self, cur):
         """
+        Migrate SiaeLabel data
         """
         print("Migrating SiaeLabel...")
 
@@ -370,13 +376,46 @@ class Command(BaseCommand):
             cleanup_date_field_names(elem)
             make_aware_dates(elem)
 
-            # cleanup relation
-            elem["siae_id"] = elem["directory_id"]
-
-            # remove useless keys
-            [elem.pop(key) for key in ["directory_id"]]
+            # rename fields
+            rename_field(elem, "directory_id", "siae_id")
 
             # create object
             SiaeLabel.objects.create(**elem)
 
         print(f"Created {SiaeLabel.objects.count()} labels !")
+
+
+    def migrate_siae_client_reference(self, cur):
+        """
+        Migrate SiaeClientReference data
+        """
+        print("Migrating SiaeClientReference...")
+
+        SiaeClientReference.objects.all().delete()
+
+        cur.execute("SELECT * FROM directory_client_image")
+        resp = cur.fetchall()
+        # print(len(resp))
+        # print(resp[0])
+
+        # l = [elem["position"] for elem in resp]
+        # print(Counter(l))
+
+        # elem = cur.fetchone()
+        # print(elem)
+
+        for elem in resp:
+            # cleanup dates
+            cleanup_date_field_names(elem)
+            make_aware_dates(elem)
+
+            # rename fields
+            rename_field(elem, "name", "image_name")
+            rename_field(elem, "description", "name")
+            rename_field(elem, "position", "order")
+            rename_field(elem, "directory_id", "siae_id")
+
+            # create object
+            SiaeClientReference.objects.create(**elem)
+
+        print(f"Created {SiaeClientReference.objects.count()} client references !")
