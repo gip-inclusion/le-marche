@@ -4,6 +4,7 @@ from django.utils import timezone
 
 class Network(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
+    slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
     brand = models.CharField(verbose_name="Enseigne", max_length=255, blank=True)
     website = models.URLField(verbose_name="Site web", blank=True)
     created_at = models.DateTimeField("Date de création", default=timezone.now)

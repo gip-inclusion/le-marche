@@ -8,4 +8,5 @@ class NetworkAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "brand", "created_at"]
     search_fields = ["id", "name", "brand"]
 
+    prepopulated_fields = {"slug": ("name",)}
     readonly_fields = ["created_at", "updated_at"]
