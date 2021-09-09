@@ -11,6 +11,7 @@ class SectorGroupAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "nb_sectors", "created_at"]
     search_fields = ["id", "name"]
 
+    prepopulated_fields = {"slug": ("name",)}
     readonly_fields = ["created_at", "updated_at"]
 
     def get_queryset(self, request):
@@ -31,4 +32,5 @@ class SectorAdmin(admin.ModelAdmin):
     list_filter = ["group"]
     search_fields = ["id", "name"]
 
+    prepopulated_fields = {"slug": ("name",)}
     readonly_fields = ["created_at", "updated_at"]

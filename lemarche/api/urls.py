@@ -5,12 +5,14 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 
 from lemarche.api.siaes.views import SiaeViewSet
 from lemarche.api.sectors.views import SectorViewSet
+from lemarche.api.networks.views import NetworkViewSet
 
 
 router = routers.DefaultRouter()
 
 router.register(r'siae', SiaeViewSet, basename='siae')
 router.register(r'sectors', SectorViewSet, basename='sectors')
+router.register(r'networks', NetworkViewSet, basename='networks')
 
 
 urlpatterns = [
