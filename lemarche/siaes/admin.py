@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from lemarche.siaes.models import Siae
+from lemarche.siaes.models import Siae, SiaeOffer
 
 
 @admin.register(Siae)
@@ -48,3 +48,13 @@ class SiaeAdmin(admin.ModelAdmin):
             )
         })
     ]
+
+
+@admin.register(SiaeOffer)
+class SiaeOfferAdmin(admin.ModelAdmin):
+    list_display = ["id", "name", "siae_id", "source", "created_at"]
+    list_filter = ["source"]
+    search_fields = ["id", "name"]
+
+    autocomplete_fields = ["siae_id"]
+    readonly_fields = ["source", "created_at", "updated_at"]

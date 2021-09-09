@@ -1,6 +1,7 @@
 import io
 import re
 import pymysql
+from collections import Counter
 
 from django.conf import settings
 from django.core.management import call_command
@@ -109,11 +110,12 @@ class Command(BaseCommand):
 
         try:
             with connMy.cursor(pymysql.cursors.DictCursor) as cur:
-                self.migrate_siae(cur)
-                self.migrate_network(cur)
-                self.migrate_siae_network(cur)
-                self.migrate_sector(cur)
-                self.migrate_siae_sector(cur)
+                # self.migrate_siae(cur)
+                # self.migrate_network(cur)
+                # self.migrate_siae_network(cur)
+                # self.migrate_sector(cur)
+                # self.migrate_siae_sector(cur)
+                self.migrate_siae_offer(cur)
         except Exception as e:
             # logger.exception(e)
             print(e)
@@ -304,3 +306,29 @@ class Command(BaseCommand):
                 pass
 
         print(f"Created {Siae.sectors.through.objects.count()} M2M objects !")
+
+
+    def migrate_siae_offer(self, cur):
+        """
+        elem exemple: {'directory_id': 270, 'network_id': 8}
+        """
+        print("Migrating SiaeOffer...")
+
+        # SiaeOffer.objects.all().delete()
+
+        cur.execute("SELECT * FROM directory_offer")
+        resp = cur.fetchall()
+        # print(len(resp))
+        # print(resp[0])
+
+        l = [elem["source"] for elem in resp]
+        print(Counter(l))
+
+        # elem = cur.fetchone()
+        # print(elem)
+
+        # for elem in resp:
+        #     siae = Siae.objects.get(pk=elem["directory_id"])
+        #     siae.networks.add(elem["network_id"])
+
+        # print(f"Created {Siae.networks.through.objects.count()} offers !")
