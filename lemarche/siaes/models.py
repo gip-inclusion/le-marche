@@ -157,7 +157,7 @@ class SiaeOffer(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
     description = models.TextField(verbose_name="Description", blank=True)
 
-    siae_id = models.ForeignKey(
+    siae = models.ForeignKey(
         "siaes.Siae",
         verbose_name="Structure",
         related_name="offers",

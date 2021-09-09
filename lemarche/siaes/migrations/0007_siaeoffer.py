@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('source', models.CharField(blank=True, max_length=20, null=True, verbose_name='Source')),
                 ('created_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Date de création')),
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Date de modification')),
-                ('siae_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='offers', to='siaes.siae', verbose_name='Structure')),
+                ('siae', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='offers', to='siaes.siae', verbose_name='Structure')),
             ],
             options={
                 'verbose_name': 'Prestation',
