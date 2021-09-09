@@ -312,6 +312,7 @@ class Command(BaseCommand):
 
     def migrate_siae_offer(self, cur):
         """
+        Migrate SiaeOffer data
         """
         print("Migrating SiaeOffer...")
 
