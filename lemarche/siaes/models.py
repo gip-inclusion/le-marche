@@ -65,9 +65,9 @@ class Siae(models.Model):
     PRESTA_BUILD = "BUILD"
 
     PRESTA_CHOICES = (
-        (PRESTA_DISP, "Mise à disposition - Interim"),
-        (PRESTA_PREST, "Prestation de service"),
-        (PRESTA_BUILD, "Fabrication et commercialisation de biens"),
+        (PRESTA_DISP, "Mise à disposition - Interim"),  # 0010
+        (PRESTA_PREST, "Prestation de service"),  # 0100
+        (PRESTA_BUILD, "Fabrication et commercialisation de biens"),  # 1000
     )
 
     DEPARTMENT_CHOICES = DEPARTMENTS.items()
@@ -137,8 +137,8 @@ class Siae(models.Model):
     last_sync_date = models.DateTimeField(blank=True, null=True)
     sync_skip = models.BooleanField(blank=False, null=False, default=False)
 
-    createdat = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
-    updatedat = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
 
     class Meta:
         verbose_name = "Structure"

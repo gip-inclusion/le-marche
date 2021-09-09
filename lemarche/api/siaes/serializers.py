@@ -37,7 +37,7 @@ class SiaeSerializer(serializers.ModelSerializer):
             "region",
             "codePostal",
             "zoneQPV",
-            "createdat",
+            "created_at",
             "updatedat",
             "url",
             "siretUrl",
@@ -76,7 +76,7 @@ class SiaeAnonSerializer(SiaeSerializer):
             "departement",
             "region",
             "codePostal",
-            "createdat",
+            "created_at",
             "url",
         ]
 
@@ -91,8 +91,8 @@ class SiaeListSerializer(SiaeSerializer):
             "siret",
             "type",
             "departement",
-            "createdat",
-            "updatedat",
+            "created_at",
+            "updated_at",
             "url",
         ]
 
@@ -141,7 +141,7 @@ class SiaeHyperSerializer(serializers.HyperlinkedModelSerializer):
             "departement",
             "region",
             "codePostal",
-            "createdat",
+            "created_at",
             "target",
             # 'url',
         ]

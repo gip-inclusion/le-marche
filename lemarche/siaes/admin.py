@@ -5,12 +5,12 @@ from lemarche.siaes.models import Siae
 
 @admin.register(Siae)
 class SiaeAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", "siret", "kind", "createdat"]
+    list_display = ["id", "name", "siret", "kind", "created_at"]
     list_filter = ["kind", "networks"]
     search_fields = ["id", "name"]
 
     autocomplete_fields = ["sectors", "networks"]
-    readonly_fields = Siae.READONLY_FIELDS + ["createdat", "updatedat"]
+    readonly_fields = Siae.READONLY_FIELDS + ["created_at", "updated_at"]
 
     fieldsets = [
         ("Affichage", {
