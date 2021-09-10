@@ -152,7 +152,6 @@ class Siae(models.Model):
         return self.name
 
 
-
 class SiaeOffer(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
     description = models.TextField(verbose_name="Description", blank=True)
@@ -170,6 +169,26 @@ class SiaeOffer(models.Model):
     class Meta:
         verbose_name = "Prestation"
         verbose_name_plural = "Prestations"
+
+    def __str__(self):
+        return self.name
+
+
+class SiaeLabel(models.Model):
+    name = models.CharField(verbose_name="Nom", max_length=255)
+
+    siae = models.ForeignKey(
+        "siaes.Siae",
+        verbose_name="Structure",
+        related_name="labels",
+        on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField("Date de création", default=timezone.now)
+    updated_at = models.DateTimeField("Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Label & certification"
+        verbose_name_plural = "Labels & certifications"
 
     def __str__(self):
         return self.name

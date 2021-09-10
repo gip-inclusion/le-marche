@@ -11,7 +11,7 @@ from django.db.models.fields import BooleanField, DateTimeField
 from django.utils import timezone
 from django.utils.text import slugify
 
-from lemarche.siaes.models import Siae, SiaeOffer
+from lemarche.siaes.models import Siae, SiaeOffer, SiaeLabel
 from lemarche.networks.models import Network
 from lemarche.sectors.models import SectorGroup, Sector
 
@@ -117,6 +117,7 @@ class Command(BaseCommand):
                 self.migrate_sector(cur)
                 self.migrate_siae_sector(cur)
                 self.migrate_siae_offer(cur)
+                self.migrate_siae_label(cur)
         except Exception as e:
             # logger.exception(e)
             print(e)
@@ -344,3 +345,38 @@ class Command(BaseCommand):
             SiaeOffer.objects.create(**elem)
 
         print(f"Created {SiaeOffer.objects.count()} offers !")
+
+
+    def migrate_siae_label(self, cur):
+        """
+        """
+        print("Migrating SiaeLabel...")
+
+        SiaeLabel.objects.all().delete()
+
+        cur.execute("SELECT * FROM directory_label")
+        resp = cur.fetchall()
+        # print(len(resp))
+        # print(resp[0])
+
+        # l = [elem["source"] for elem in resp]
+        # print(Counter(l))
+
+        # elem = cur.fetchone()
+        # print(elem)
+
+        for elem in resp:
+            # cleanup dates
+            cleanup_date_field_names(elem)
+            make_aware_dates(elem)
+
+            # cleanup relation
+            elem["siae_id"] = elem["directory_id"]
+
+            # remove useless keys
+            [elem.pop(key) for key in ["directory_id"]]
+
+            # create object
+            SiaeLabel.objects.create(**elem)
+
+        print(f"Created {SiaeLabel.objects.count()} labels !")
