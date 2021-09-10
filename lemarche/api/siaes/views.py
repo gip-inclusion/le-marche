@@ -12,7 +12,7 @@ from lemarche.api.siaes.serializers import (
     SiaeListAnonSerializer,
 )
 from lemarche.api.siaes.filters import SiaeFilter
-from lemarche.api.utils import ensure_user_permission, decode_hashed_pk
+from lemarche.api.utils import ensure_user_permission
 from lemarche.cocorico.models import Directory
 
 
@@ -47,14 +47,12 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
                 serializer = SiaeListAnonSerializer(
                     queryset[:10],
                     many=True,
-                    context={"hashed_pk": True},
                 )
             else:
                 ensure_user_permission(token)
                 serializer = SiaeListSerializer(
                     page,
                     many=True,
-                    context={"hashed_pk": True},
                 )
 
             return self.get_paginated_response(serializer.data)
@@ -65,7 +63,6 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         ],
         responses=SiaeSerializer,
     )
-    @decode_hashed_pk
     def retrieve_by_id(self, request, pk=None, format=None):
         """
         Détail d'une structure
@@ -92,14 +89,12 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
             serializer = SiaeAnonSerializer(
                 queryset,
                 many=False,
-                context={"hashed_pk": True},
             )
         else:
             ensure_user_permission(token)
             serializer = SiaeSerializer(
                 queryset,
                 many=False,
-                context={"hashed_pk": True},
             )
 
         return Response(serializer.data)

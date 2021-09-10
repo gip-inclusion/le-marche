@@ -3,7 +3,6 @@ from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
 from lemarche.siaes.models import Siae
 from lemarche.api.sectors.serializers import SectorSimpleSerializer
-from lemarche.api.utils import hasher
 
 
 class SiaeSerializer(serializers.ModelSerializer):
@@ -16,7 +15,6 @@ class SiaeSerializer(serializers.ModelSerializer):
     ville = serializers.CharField(source="city")
     departement = serializers.CharField(source="department")
     codePostal = serializers.CharField(source="post_code")
-    url = serializers.SerializerMethodField()
     siretUrl = serializers.SerializerMethodField()
     sectors = SectorSimpleSerializer(many=True, read_only=True)
     # zoneQPV = serializers.BooleanField(source="is_qpv", default=False)
@@ -38,19 +36,10 @@ class SiaeSerializer(serializers.ModelSerializer):
             "codePostal",
             "zoneQPV",
             "created_at",
-            "updatedat",
-            "url",
+            "updated_at",
             "siretUrl",
             "sectors",
         ]
-
-    @extend_schema_field(OpenApiTypes.STR)
-    def get_url(self, obj):
-        # Writing URL by hand is a hack, use hyperlinkedmodelserializer for
-        # greater good
-        must_hash_id = self.context.get("hashed_pk", False)
-        key = hasher.encode(obj.pk) if must_hash_id else obj.pk
-        return f"/siae/id/{key}"
 
     @extend_schema_field(OpenApiTypes.STR)
     def get_siretUrl(self, obj):
@@ -77,7 +66,6 @@ class SiaeAnonSerializer(SiaeSerializer):
             "region",
             "codePostal",
             "created_at",
-            "url",
         ]
 
 
@@ -93,7 +81,6 @@ class SiaeListSerializer(SiaeSerializer):
             "departement",
             "created_at",
             "updated_at",
-            "url",
         ]
 
 
@@ -105,7 +92,6 @@ class SiaeListAnonSerializer(SiaeSerializer):
         fields = [
             "raisonSociale",
             "siret",
-            "url",
         ]
 
 
@@ -143,8 +129,4 @@ class SiaeHyperSerializer(serializers.HyperlinkedModelSerializer):
             "codePostal",
             "created_at",
             "target",
-            # 'url',
         ]
-        # extra_kwargs = {
-        #     'url': {'view_name': 'siae-detail', 'lookup_field': 'siret'},
-        # }
