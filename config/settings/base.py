@@ -171,6 +171,7 @@ DATABASES = {
         "PORT": env.str("MYSQL_ADDON_PORT"),
     },
 }
+MYSQL_ADDON_DIRECT_URI = env.str("MYSQL_ADDON_DIRECT_URI")
 
 # Needed as long as Cocorico database used as data source
 DATABASE_ROUTERS = ["config.routers.CocoRouter"]
