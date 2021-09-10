@@ -11,6 +11,7 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 ### [0.8] - (2021-09)
 
 - Premier script de migration pour récupérer la donnée des Siae, Réseaux et Secteurs
+- API : la données des Sector provient des nouveaux modèles
 
 ### [0.7] - (2021-08)
 
