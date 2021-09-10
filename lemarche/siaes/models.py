@@ -150,3 +150,26 @@ class Siae(models.Model):
 
     def __str__(self):
         return self.name
+
+
+
+class SiaeOffer(models.Model):
+    name = models.CharField(verbose_name="Nom", max_length=255)
+    description = models.TextField(verbose_name="Description", blank=True)
+
+    siae = models.ForeignKey(
+        "siaes.Siae",
+        verbose_name="Structure",
+        related_name="offers",
+        on_delete=models.CASCADE)
+    source = models.CharField(verbose_name="Source", max_length=20, blank=True, null=True)  # "listing_import"
+
+    created_at = models.DateTimeField("Date de création", default=timezone.now)
+    updated_at = models.DateTimeField("Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Prestation"
+        verbose_name_plural = "Prestations"
+
+    def __str__(self):
+        return self.name

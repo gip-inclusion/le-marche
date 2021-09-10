@@ -1,6 +1,7 @@
 import io
 import re
 import pymysql
+from collections import Counter
 
 from django.conf import settings
 from django.core.management import call_command
@@ -10,7 +11,7 @@ from django.db.models.fields import BooleanField, DateTimeField
 from django.utils import timezone
 from django.utils.text import slugify
 
-from lemarche.siaes.models import Siae
+from lemarche.siaes.models import Siae, SiaeOffer
 from lemarche.networks.models import Network
 from lemarche.sectors.models import SectorGroup, Sector
 
@@ -51,7 +52,8 @@ def cleanup_date_field_names(elem):
             elem["updated_at"] = elem["updatedAt"]
         elem.pop("updatedAt")
 
-def make_aware_dates(elem, date_keys):
+def make_aware_dates(elem):
+    date_keys = list(set(DIRECTORY_DATE_FIELDS + NETWORK_DATE_FIELDS + SECTOR_DATE_FIELDS))
     for key in date_keys:
             if key in elem:
                 if elem[key]:
@@ -114,6 +116,7 @@ class Command(BaseCommand):
                 self.migrate_siae_network(cur)
                 self.migrate_sector(cur)
                 self.migrate_siae_sector(cur)
+                self.migrate_siae_offer(cur)
         except Exception as e:
             # logger.exception(e)
             print(e)
@@ -148,7 +151,7 @@ class Command(BaseCommand):
 
             # cleanup dates
             cleanup_date_field_names(elem)
-            make_aware_dates(elem, DIRECTORY_DATE_FIELDS)
+            make_aware_dates(elem)
 
             # cleanup presta_type
             if "presta_type" in elem:
@@ -187,14 +190,15 @@ class Command(BaseCommand):
         for elem in resp:
             # cleanup dates
             cleanup_date_field_names(elem)
-            make_aware_dates(elem, NETWORK_DATE_FIELDS)
-            
+            make_aware_dates(elem)
+
             # remove useless keys
             [elem.pop(key) for key in ["accronym", "siret"]]
 
             # add new keys
             elem["slug"] = slugify(elem["name"])
-            
+
+            # create object
             Network.objects.create(**elem)
 
         print(f"Created {Network.objects.count()} siae networks !")
@@ -304,3 +308,39 @@ class Command(BaseCommand):
                 pass
 
         print(f"Created {Siae.sectors.through.objects.count()} M2M objects !")
+
+
+    def migrate_siae_offer(self, cur):
+        """
+        Migrate SiaeOffer data
+        """
+        print("Migrating SiaeOffer...")
+
+        SiaeOffer.objects.all().delete()
+
+        cur.execute("SELECT * FROM directory_offer")
+        resp = cur.fetchall()
+        # print(len(resp))
+        # print(resp[0])
+
+        # l = [elem["source"] for elem in resp]
+        # print(Counter(l))
+
+        # elem = cur.fetchone()
+        # print(elem)
+
+        for elem in resp:
+            # cleanup dates
+            cleanup_date_field_names(elem)
+            make_aware_dates(elem)
+
+            # cleanup relation
+            elem["siae_id"] = elem["directory_id"]
+
+            # remove useless keys
+            [elem.pop(key) for key in ["directory_id"]]
+
+            # create object
+            SiaeOffer.objects.create(**elem)
+
+        print(f"Created {SiaeOffer.objects.count()} offers !")
