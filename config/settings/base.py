@@ -86,6 +86,8 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
+    "django.contrib.flatpages",
 ]
 
 THIRD_PARTY_APPS = [
@@ -95,6 +97,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "drf_spectacular",
     "compressor",
+    "ckeditor",  # django-ckeditor
 ]
 
 LOCAL_APPS = [
@@ -105,6 +108,8 @@ LOCAL_APPS = [
     "lemarche.sectors",
     "lemarche.networks",
     "lemarche.tracker",
+    # Flatpages
+    "lemarche.pages",
     # Api
     "lemarche.api",
 ]
@@ -209,6 +214,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+SITE_ID = 1
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -278,4 +285,25 @@ LOGGING = {
             "level": env.str("DJANGO_LOG_LEVEL", "DEBUG"),
         },
     },
+}
+
+# django-ckeditor settings.
+# https://django-ckeditor.readthedocs.io/en/latest/#optional-customizing-ckeditor-editor
+# ----------------------------------------------------
+CKEDITOR_CONFIGS = {
+    "default": {
+        "toolbar": "Custom",
+        "toolbar_Custom": [
+            ["Bold", "Italic", "Underline"],
+            ["NumberedList", "BulletedList"],
+            ["Link", "Unlink"],
+            ["SpecialChar"],
+            # ['HorizontalRule', 'Smiley'],
+            ["Undo", "Redo"],
+            ["RemoveFormat", "Source"],
+        ],
+        # avoid special characters encoding
+        "basicEntities": False,
+        "entities": False,
+    }
 }
