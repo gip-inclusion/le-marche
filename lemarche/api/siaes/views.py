@@ -1,17 +1,15 @@
 from django.shortcuts import get_object_or_404
-
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import mixins, viewsets
 from rest_framework.response import Response
-from drf_spectacular.utils import extend_schema, OpenApiParameter
 
-from lemarche.api.siaes.serializers import (
-    # SiaeHyperSerializer,
-    SiaeSerializer,
-    SiaeAnonSerializer,
-    SiaeListSerializer,
-    SiaeListAnonSerializer,
-)
 from lemarche.api.siaes.filters import SiaeFilter
+from lemarche.api.siaes.serializers import (  # SiaeHyperSerializer,
+    SiaeAnonSerializer,
+    SiaeListAnonSerializer,
+    SiaeListSerializer,
+    SiaeSerializer,
+)
 from lemarche.api.utils import ensure_user_permission
 from lemarche.cocorico.models import Directory
 

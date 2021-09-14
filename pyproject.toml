@@ -33,6 +33,7 @@ poethepoet = "^0.10.0"
 black = "^21.5b2"
 pytest-django = "^4.4.0"
 factory-boy = "^3.2.0"
+coverage = "^5.5"
 
 [tool.poetry.scripts]
 
@@ -47,6 +48,12 @@ build-backend = "poetry.core.masonry.api"
 max-line-length = 119
 ignore = "E203, E266, W503"
 max-complexity = 10
+exclude = '''
+/(
+  | migrations
+  | */migrations/*
+)/
+'''
 
 [tool.isort]
 combine_as_imports = true

@@ -1,9 +1,9 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
-from django.contrib.postgres.fields import ArrayField
 
 from lemarche.siaes.constants import DEPARTMENTS, REGIONS
-from lemarche.siaes.validators import validate_post_code, validate_siret, validate_naf
+from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
 
 
 class Siae(models.Model):

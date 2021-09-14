@@ -3,7 +3,7 @@ name: Poe Flake8
 on: [push]
 
 jobs:
-  test:
+  linting_check:
     runs-on: ubuntu-latest
     steps:
       #----------------------------------------------
@@ -35,23 +35,38 @@ jobs:
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
       #----------------------------------------------
       # install dependencies if cache does not exist
       #----------------------------------------------
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
+
       #----------------------------------------------
-      # install your root project, if required
+      # install your root project
       #----------------------------------------------
       - name: Install library
         run: poetry install --no-interaction
+
       #----------------------------------------------
-      #              run test suite
+      #              run lint suite
+      # Why not install default flake8 or pylint ? 
+      # Because we use pyproject.toml config file, and
+      # prefer locally reproducible tests.
       #----------------------------------------------
-      - name: Run tests
+      - name: Run Linters
         run: |
             source .venv/bin/activate
             poe flake8
-            # pytest tests/
-            # coverage report
+            black . --check
+            isort ./lemarche/*.py --check-only
+
+      #----------------------------------------------
+      #              run tests
+      #----------------------------------------------
+      - name: Run Tests
+        run: |
+            source .venv/bin/activate
+            ./manage.py test
+            coverage report

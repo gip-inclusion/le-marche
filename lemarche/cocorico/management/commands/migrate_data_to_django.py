@@ -1,19 +1,19 @@
 import io
 import re
-import pymysql
 from collections import Counter
 
+import pymysql
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
-from django.db import connection, IntegrityError
+from django.db import IntegrityError, connection
 from django.db.models.fields import BooleanField, DateTimeField
 from django.utils import timezone
 from django.utils.text import slugify
 
-from lemarche.siaes.models import Siae, SiaeOffer, SiaeLabel
 from lemarche.networks.models import Network
-from lemarche.sectors.models import SectorGroup, Sector
+from lemarche.sectors.models import Sector, SectorGroup
+from lemarche.siaes.models import Siae, SiaeLabel, SiaeOffer
 
 
 DIRECTORY_EXTRA_KEYS = [

@@ -3,7 +3,7 @@ from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html
 
-from lemarche.siaes.models import Siae, SiaeOffer, SiaeLabel
+from lemarche.siaes.models import Siae, SiaeLabel, SiaeOffer
 
 
 @admin.register(Siae)

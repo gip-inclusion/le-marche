@@ -3,7 +3,7 @@ from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html
 
-from lemarche.sectors.models import SectorGroup, Sector
+from lemarche.sectors.models import Sector, SectorGroup
 
 
 @admin.register(SectorGroup)

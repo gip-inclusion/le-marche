@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from lemarche.sectors.models import SectorGroup, Sector
+from lemarche.sectors.models import Sector, SectorGroup
 
 
 class SectorGroupSimpleSerializer(serializers.ModelSerializer):

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import environ
 
+
 # django-environ eases the application of twelve-factor methodology :
 # it makes it easier and less error-prone to integrate
 # environment variables into Django application settings.

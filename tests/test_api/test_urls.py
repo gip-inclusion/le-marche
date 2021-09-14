@@ -1,6 +1,9 @@
-import pytest
 import json
+
+import pytest
+
 from tests import data_setup
+
 
 pytestmark = pytest.mark.django_db
 

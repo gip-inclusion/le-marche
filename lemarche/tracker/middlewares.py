@@ -1,8 +1,10 @@
-from django.conf import settings
-from datetime import datetime
-import httpx
-import logging
 import json
+import logging
+from datetime import datetime
+
+import httpx
+from django.conf import settings
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
