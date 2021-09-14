@@ -1,4 +1,4 @@
-name: Poe Flake8
+name: Itou Test & Lint tasks
 
 on: [push]
 
