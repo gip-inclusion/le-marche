@@ -23,6 +23,11 @@ class ApiKeyFilter(admin.SimpleListFilter):
         return queryset
 
 
+class SiaeInline(admin.TabularInline):
+    model = User.siaes.through
+    # autocomplete_fields = ["name"]
+
+
 class UserAdmin(UserAdmin):
     add_form = UserCreationForm
     form = UserChangeForm
@@ -35,6 +40,7 @@ class UserAdmin(UserAdmin):
 
     readonly_fields = [field.name for field in User._meta.fields if field.name.startswith("c4_")] + \
         ["last_login", "created_at", "updated_at"]
+    # inlines = [SiaeInline]
 
     fieldsets = (
         (None, {

@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 
 from lemarche.siaes.constants import DEPARTMENTS, REGIONS
@@ -119,6 +120,11 @@ class Siae(models.Model):
     networks = models.ManyToManyField(
         "networks.Network",
         verbose_name="Réseaux",
+        related_name="siaes",
+        blank=True)
+    users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        verbose_name="Gestionnaires",
         related_name="siaes",
         blank=True)
 
