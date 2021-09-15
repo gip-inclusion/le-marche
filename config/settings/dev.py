@@ -6,6 +6,7 @@ from .base import *  # noqa
 DEBUG = True
 
 INSTALLED_APPS += [
+    "django_extensions",
     "debug_toolbar"
 ]
 
@@ -27,6 +28,19 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
+
+# django-extensions settings.
+# https://django-extensions.readthedocs.io/en/latest/index.html
+# ----------------------------------------------------
+SHELL_PLUS = "ipython"
+SHELL_PLUS_IMPORTS = [
+    "import csv, json, yaml",
+    "from datetime import datetime, date, timedelta",
+]
+
+# django-debug-toolbar settings.
+# https://django-debug-toolbar.readthedocs.io/en/latest/
+# ----------------------------------------------------
 DEBUG_TOOLBAR_CONFIG = {
     # https://django-debug-toolbar.readthedocs.io/en/latest/panels.html#panels
     "DISABLE_PANELS": [
