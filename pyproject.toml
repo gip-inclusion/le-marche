@@ -34,6 +34,7 @@ poethepoet = "^0.10.0"
 black = "^21.5b2"
 pytest-django = "^4.4.0"
 factory-boy = "^3.2.0"
+django-debug-toolbar = "^3.2.2"
 
 [tool.poetry.scripts]
 
