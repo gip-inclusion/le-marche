@@ -123,7 +123,7 @@ def reset_app_sql_sequences(app_name):
     with connection.cursor() as cursor:
         cursor.execute(sql)
     output.close()
-    print("Done !")
+    print("Reset complete !")
 
 
 class Command(BaseCommand):
@@ -149,14 +149,14 @@ class Command(BaseCommand):
 
         try:
             with connMy.cursor(pymysql.cursors.DictCursor) as cur:
-                # self.migrate_siae(cur)
-                # self.migrate_network(cur)
-                # self.migrate_siae_network(cur)
-                # self.migrate_sector(cur)
-                # self.migrate_siae_sector(cur)
-                # self.migrate_siae_offer(cur)
-                # self.migrate_siae_label(cur)
-                # self.migrate_siae_client_reference(cur)
+                self.migrate_siae(cur)
+                self.migrate_network(cur)
+                self.migrate_siae_network(cur)
+                self.migrate_sector(cur)
+                self.migrate_siae_sector(cur)
+                self.migrate_siae_offer(cur)
+                self.migrate_siae_label(cur)
+                self.migrate_siae_client_reference(cur)
                 self.migrate_user(cur)
         except Exception as e:
             # logger.exception(e)
@@ -200,7 +200,6 @@ class Command(BaseCommand):
             # create object
             try:
                 first = Siae.objects.create(**elem)
-                # print(first.__dict__)
             except Exception as e:
                 print(e)
 
@@ -455,7 +454,8 @@ class Command(BaseCommand):
         """
         print("Migrating User...")
 
-        User.objects.all().delete()
+        User.objects.filter(api_key__isnull=True).delete()
+        reset_app_sql_sequences("users")
 
         cur.execute("SELECT * FROM user")
         resp = cur.fetchall()
@@ -470,6 +470,7 @@ class Command(BaseCommand):
         for elem in resp:
             # rename fields
             rename_field(elem, "enabled", "is_active")
+            rename_field(elem, "id", "c4_id")
             
             # cleanup fields
             cleanup_date_field_names(elem)
@@ -493,7 +494,6 @@ class Command(BaseCommand):
             # create object
             try:
                 first = User.objects.create(**elem)
-                # print(first.__dict__)
             except Exception as e:
                 print("a", e)
 

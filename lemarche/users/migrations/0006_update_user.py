@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='user',
-            name='c1_id',
+            name='c4_id',
             field=models.IntegerField(blank=True, null=True),
         ),
         migrations.AddField(

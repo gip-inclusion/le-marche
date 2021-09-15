@@ -4,11 +4,25 @@ from django.db import models
 from django.utils import timezone
 
 
+class UserQueryset(models.QuerySet):
+    """
+    Custom queryset with additional filtering methods for users.
+    """
+
+    def with_api_key(self):
+        """Only return users with an API Key."""
+
+        return self.filter(api_key__isnull=False)
+
+
 class UserManager(BaseUserManager):
     """
     Custom user model manager where email is the unique identifiers
     for authentication instead of usernames.
     """
+
+    def get_queryset(self):
+        return UserQueryset(self.model, using=self._db)
 
     def create_user(self, email, password, **extra_fields):
         """
@@ -37,6 +51,11 @@ class UserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
+    def with_api_key(self):
+        """Only return users with an API Key."""
+
+        return self.get_queryset().with_api_key()
+
 
 class User(AbstractUser):
     """
@@ -61,12 +80,12 @@ class User(AbstractUser):
     KIND_PARTNER = "PARTNER"  # PERSON_TYPE_PARTNER / 6
 
     KIND_CHOICES = (
-        (KIND_PERSO, "Une personne"),
-        (KIND_COMPANY, "Une entreprise"),
-        (KIND_BUYER, "Un acheteur qui souhaite réaliser un achat inclusif"),
-        (KIND_SIAE, "Structure inclusive qui souhaite proposer ses offres"),
-        (KIND_ADMIN, "Administrateur.trice"),
-        (KIND_PARTNER, "Partenaire")
+        (KIND_PERSO, "Une personne"),  # Utilisateur
+        (KIND_COMPANY, "Une entreprise"),  # Entreprise
+        (KIND_BUYER, "Un acheteur qui souhaite réaliser un achat inclusif"),  # Acheteur (classique)
+        (KIND_SIAE, "Structure inclusive qui souhaite proposer ses offres"),  # SIAE
+        (KIND_ADMIN, "Administrateur.trice"),  # Administrateur
+        (KIND_PARTNER, "Partenaire")  # Partenaire
     )
 
     username = None
@@ -84,7 +103,7 @@ class User(AbstractUser):
 
     api_key = models.CharField(verbose_name="Clé API", max_length=128, unique=True, blank=True, null=True)
 
-    c1_id = models.IntegerField(blank=True, null=True)
+    c4_id = models.IntegerField(blank=True, null=True)
 
     # is_active, is_staff, is_superuser
 
