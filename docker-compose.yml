@@ -28,7 +28,7 @@ services:
     env_file:
       - env.docker.local
     ports:
-      - "8880:8000"
+      - "8880:8880"
     depends_on:
       - postgres
     networks:
