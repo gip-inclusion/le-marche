@@ -8,22 +8,33 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('siaes', '0007_siaeoffer'),
+        ("siaes", "0007_siaeoffer"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SiaeLabel',
+            name="SiaeLabel",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, verbose_name='Nom')),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Date de création')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Date de modification')),
-                ('siae', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='labels', to='siaes.siae', verbose_name='Structure')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=255, verbose_name="Nom")),
+                (
+                    "created_at",
+                    models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date de création"),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True, verbose_name="Date de modification")),
+                (
+                    "siae",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="labels",
+                        to="siaes.siae",
+                        verbose_name="Structure",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Label & certification',
-                'verbose_name_plural': 'Labels & certifications',
+                "verbose_name": "Label & certification",
+                "verbose_name_plural": "Labels & certifications",
             },
         ),
     ]

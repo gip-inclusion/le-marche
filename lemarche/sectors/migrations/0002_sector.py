@@ -8,23 +8,36 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sectors', '0001_initial'),
+        ("sectors", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Sector',
+            name="Sector",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, verbose_name='Nom')),
-                ('slug', models.SlugField(max_length=255, unique=True, verbose_name='Slug')),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Date de création')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Date de modification')),
-                ('group', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='sectors', to='sectors.sectorgroup', verbose_name='Groupe parent')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=255, verbose_name="Nom")),
+                ("slug", models.SlugField(max_length=255, unique=True, verbose_name="Slug")),
+                (
+                    "created_at",
+                    models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date de création"),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True, verbose_name="Date de modification")),
+                (
+                    "group",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="sectors",
+                        to="sectors.sectorgroup",
+                        verbose_name="Groupe parent",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': "Secteur d'activité",
-                'verbose_name_plural': "Secteurs d'activité",
+                "verbose_name": "Secteur d'activité",
+                "verbose_name_plural": "Secteurs d'activité",
             },
         ),
     ]

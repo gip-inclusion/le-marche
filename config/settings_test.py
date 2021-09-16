@@ -3,8 +3,6 @@ from pathlib import Path
 
 from django.test.runner import DiscoverRunner
 
-from config.settings import *
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

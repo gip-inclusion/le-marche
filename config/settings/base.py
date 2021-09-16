@@ -22,11 +22,11 @@ import environ
 #
 # "env" is the object that wil contain the defined environment, along some
 # default settings
-env = environ.Env(DEBUG=(bool, False), SECRET_KEY=(str, 'SOME_SECRET_KEY'))
+env = environ.Env(DEBUG=(bool, False), SECRET_KEY=(str, "SOME_SECRET_KEY"))
 
 # Build paths inside the project like this: ROOT_DIR / 'subdir'.
 ROOT_DIR = environ.Path(__file__) - 3  # (ROOT/config/settings/base.py - 3 = ROOT )
-APPS_DIR = ROOT_DIR.path('lemarche')
+APPS_DIR = ROOT_DIR.path("lemarche")
 
 
 # Quick-start development settings - unsuitable for production
@@ -36,13 +36,13 @@ APPS_DIR = ROOT_DIR.path('lemarche')
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DEBUG', False)
+DEBUG = env.bool("DEBUG", False)
 
 ALLOWED_HOSTS = []
 
 # Bitoubi Specific Settings
-TRACKER_HOST = env.str('TRACKER_HOST', 'http://localhost')
-BITOUBI_ENV = env.str('ENV', 'dev')
+TRACKER_HOST = env.str("TRACKER_HOST", "http://localhost")
+BITOUBI_ENV = env.str("ENV", "dev")
 
 # Static Files
 STATIC_URL = "/static/"
@@ -52,7 +52,7 @@ STATICFILES_DIRS = [STATIC_SOURCE_ROOT]
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    'compressor.finders.CompressorFinder',
+    "compressor.finders.CompressorFinder",
 ]
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
@@ -60,7 +60,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
 
 COMPRESS_PRECOMPILERS = [
-        ("text/x-scss", "django_libsass.SassCompiler"),
+    ("text/x-scss", "django_libsass.SassCompiler"),
 ]
 
 COMPRESS_ENABLED = env.bool("COMPRESS_ENABLED", default=True)
@@ -69,7 +69,7 @@ COMPRESS_URL = STATIC_URL
 
 COMPRESS_ENABLED = True
 COMPRESS_OFFLINE = True
-LIBSASS_OUTPUT_STYLE = 'compressed'
+LIBSASS_OUTPUT_STYLE = "compressed"
 
 # Application definition
 
@@ -126,7 +126,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Third-party Middlewares
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     # BITOUBI Middlewares
     "lemarche.tracker.middlewares.TokenVisitMiddleware",
 ]
@@ -175,9 +175,7 @@ DATABASES = {
         "PASSWORD": env.str("MYSQL_ADDON_PASSWORD", "password"),
         "HOST": env.str("MYSQL_ADDON_HOST", "localhost"),
         "PORT": env.str("MYSQL_ADDON_PORT", "3306"),
-        "TEST": {
-            "MIRROR": "default"
-        }
+        "TEST": {"MIRROR": "default"},
     },
 }
 MYSQL_ADDON_DIRECT_URI = env.str("MYSQL_ADDON_DIRECT_URI", False)
@@ -234,10 +232,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REST_FRAMEWORK = {
     # YOUR SETTINGS
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
-    'DEFAULT_PAGINATION_CLASS':
-        'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 100,
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 100,
 }
 
 # Spectacular settings.

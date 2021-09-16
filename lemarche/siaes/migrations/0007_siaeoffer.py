@@ -8,24 +8,35 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('siaes', '0006_rename_siae_timestamps'),
+        ("siaes", "0006_rename_siae_timestamps"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SiaeOffer',
+            name="SiaeOffer",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, verbose_name='Nom')),
-                ('description', models.TextField(blank=True, verbose_name='Description')),
-                ('source', models.CharField(blank=True, max_length=20, null=True, verbose_name='Source')),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Date de création')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Date de modification')),
-                ('siae', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='offers', to='siaes.siae', verbose_name='Structure')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=255, verbose_name="Nom")),
+                ("description", models.TextField(blank=True, verbose_name="Description")),
+                ("source", models.CharField(blank=True, max_length=20, null=True, verbose_name="Source")),
+                (
+                    "created_at",
+                    models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date de création"),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True, verbose_name="Date de modification")),
+                (
+                    "siae",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="offers",
+                        to="siaes.siae",
+                        verbose_name="Structure",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Prestation',
-                'verbose_name_plural': 'Prestations',
+                "verbose_name": "Prestation",
+                "verbose_name_plural": "Prestations",
             },
         ),
     ]
