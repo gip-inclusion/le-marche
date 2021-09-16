@@ -1,0 +1,11 @@
+{% extends 'layouts/layout-itou.html' %}
+{% load static %}
+
+{% block content %}
+
+<section class="container">
+  <p>Logged out!</p>
+  <a href="{% url 'login' %}">Click here to login again.</a>
+</section>
+
+{% endblock %}

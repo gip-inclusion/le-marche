@@ -23,6 +23,9 @@ INTERNAL_IPS = [
 ]
 
 
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+
 # django-extensions settings.
 # https://django-extensions.readthedocs.io/en/latest/index.html
 # ----------------------------------------------------
