@@ -84,7 +84,8 @@ DJANGO_SETTINGS_MODULE = "lemarche.pytest_settings"
 # addopts = "--nomigrations --self-containted-html --junitxml=./tests/results/junit.xml"
 
 [tool.poe.tasks]
-export = { shell = "poetry export -f requirements.txt --output requirements.txt"}
+export = { shell = "poetry export --output requirements/staging.txt" }
+export_dev = { shell = "poetry export --dev --output requirements/dev.txt" }
 flake8 = { shell = "pflake8 lemarche"}
 isort = { shell = "isort ./lemarche/*.py"}
 black = { shell = "black lemarche"}
