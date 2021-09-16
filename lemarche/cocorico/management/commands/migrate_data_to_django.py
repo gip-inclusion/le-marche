@@ -14,17 +14,30 @@ from django.utils.text import slugify
 from lemarche.siaes.models import Siae, SiaeOffer, SiaeLabel, SiaeClientReference
 from lemarche.networks.models import Network
 from lemarche.sectors.models import SectorGroup, Sector
+from lemarche.users.models import User
 
 
 DIRECTORY_EXTRA_KEYS = [
     "latitude", "longitude", "geo_range", "pol_range",
     "sector",  # string 'list' with ' - ' seperator. We can map to Sector. But we use instead the 'directory_category' table.
 ]
+USER_EXTRA_KEYS = [
+    "username", "username_canonical", "email_canonical", "slug", "salt", "password", "confirmation_token", "password_requested_at",
+    "roles", "person_type", "birthday", "nationality", "country_of_residence", "profession", "mother_tongue",
+    # "phone_prefix", "time_zone", "phone_verified", "email_verified", "id_card_verified",
+    # "accept_survey", "accept_rgpd", "offers_for_pro_sector", "quote_promise",
+    "iban", "bic", "bank_owner_name", "bank_owner_address", "annual_income",
+    "nb_bookings_offerer", "nb_bookings_asker", "fee_as_asker", "fee_as_offerer", "average_rating_as_asker", "average_rating_as_offerer", "answer_delay",
+    "nb_quotes_offerer", "nb_quotes_asker", "company_addr_string"
+]
 
 DIRECTORY_BOOLEAN_FIELDS = [field.name for field in Siae._meta.fields if type(field) == BooleanField]
+USER_BOOLEAN_FIELDS = [field.name for field in User._meta.fields if type(field) == BooleanField]
+
 DIRECTORY_DATE_FIELDS = [field.name for field in Siae._meta.fields if type(field) == DateTimeField]
 NETWORK_DATE_FIELDS = [field.name for field in Network._meta.fields if type(field) == DateTimeField]
 SECTOR_DATE_FIELDS = [field.name for field in Sector._meta.fields if type(field) == DateTimeField]
+USER_DATE_FIELDS = [field.name for field in User._meta.fields if type(field) == DateTimeField]
 
 
 def dsn2params(dsn):
@@ -39,12 +52,15 @@ def rename_field(elem, field_name_before, field_name_after):
     elem[field_name_after] = elem[field_name_before]
     elem.pop(field_name_before)
 
-def integer_to_boolean(input_value):
-    if input_value in [1]:
-        return True
-    elif input_value in [0, None]:
-        return False
-    return False
+def integer_to_boolean(elem):
+    boolean_keys = list(set(DIRECTORY_BOOLEAN_FIELDS + USER_BOOLEAN_FIELDS))
+    for key in boolean_keys:
+        if key in elem:
+            if elem[key] in [1]:
+                elem[key] = True
+            elif elem[key] in [0, None]:
+                elem[key] = False
+            elem[key] = False
 
 def cleanup_date_field_names(elem):
     if "createdAt" in elem:
@@ -57,7 +73,7 @@ def cleanup_date_field_names(elem):
         elem.pop("updatedAt")
 
 def make_aware_dates(elem):
-    date_keys = list(set(DIRECTORY_DATE_FIELDS + NETWORK_DATE_FIELDS + SECTOR_DATE_FIELDS))
+    date_keys = list(set(DIRECTORY_DATE_FIELDS + NETWORK_DATE_FIELDS + SECTOR_DATE_FIELDS + USER_DATE_FIELDS))
     for key in date_keys:
             if key in elem:
                 if elem[key]:
@@ -77,7 +93,27 @@ def map_presta_type(input_value_byte):
             "12": [Siae.PRESTA_PREST, Siae.PRESTA_BUILD],
             "14": [Siae.PRESTA_DISP, Siae.PRESTA_PREST, Siae.PRESTA_BUILD]
         }
-        return presta_type_mapping[input_value_string]
+        try:
+            return presta_type_mapping[input_value_string]
+        except:
+            pass
+    return None
+
+def map_user_kind(input_value_integer):
+    if input_value_integer:
+        user_kind_mapping = {
+            None: None,
+            # 1: User.KIND_PERSO,
+            # 2: User.KIND_COMPANY,
+            3: User.KIND_BUYER,
+            4: User.KIND_SIAE,
+            5: User.KIND_ADMIN,
+            6: User.KIND_PARTNER,
+        }
+        try:
+            return user_kind_mapping[input_value_integer]
+        except:
+            pass
     return None
 
 def reset_app_sql_sequences(app_name):
@@ -93,7 +129,7 @@ def reset_app_sql_sequences(app_name):
     with connection.cursor() as cursor:
         cursor.execute(sql)
     output.close()
-    print("Done !")
+    print("Reset complete !")
 
 
 class Command(BaseCommand):
@@ -108,6 +144,7 @@ class Command(BaseCommand):
     directory_label --> SiaeLabel ("Labels & certifications") + OneToMany between Siae & Label
     directory_offer --> SiaeOffer ("Prestations proposées") + OneToMany between Siae & Offer
     directory_client_image --> SiaeClientReference ("Références clients") + OneToMany between Siae & SiaeClientReference
+    user --> User
 
     Usage: poetry run python manage.py migrate_data_to_django
     """
@@ -118,14 +155,15 @@ class Command(BaseCommand):
 
         try:
             with connMy.cursor(pymysql.cursors.DictCursor) as cur:
-                self.migrate_siae(cur)
-                self.migrate_network(cur)
-                self.migrate_siae_network(cur)
-                self.migrate_sector(cur)
-                self.migrate_siae_sector(cur)
-                self.migrate_siae_offer(cur)
-                self.migrate_siae_label(cur)
-                self.migrate_siae_client_reference(cur)
+                # self.migrate_siae(cur)
+                # self.migrate_network(cur)
+                # self.migrate_siae_network(cur)
+                # self.migrate_sector(cur)
+                # self.migrate_siae_sector(cur)
+                # self.migrate_siae_offer(cur)
+                # self.migrate_siae_label(cur)
+                # self.migrate_siae_client_reference(cur)
+                self.migrate_user(cur)
         except Exception as e:
             # logger.exception(e)
             print(e)
@@ -153,14 +191,10 @@ class Command(BaseCommand):
         # print(elem)
 
         for elem in resp:
-            # cleanup boolean fields
-            for key in DIRECTORY_BOOLEAN_FIELDS:
-                if key in elem:
-                    elem[key] = integer_to_boolean(elem[key])
-
-            # cleanup dates
+            # cleanup fields
             cleanup_date_field_names(elem)
             make_aware_dates(elem)
+            integer_to_boolean(elem)
 
             # cleanup presta_type
             if "presta_type" in elem:
@@ -172,7 +206,6 @@ class Command(BaseCommand):
             # create object
             try:
                 first = Siae.objects.create(**elem)
-                # print(first.__dict__)
             except Exception as e:
                 print(e)
 
@@ -339,12 +372,12 @@ class Command(BaseCommand):
         # print(elem)
 
         for elem in resp:
-            # cleanup dates
-            cleanup_date_field_names(elem)
-            make_aware_dates(elem)
-
             # rename fields
             rename_field(elem, "directory_id", "siae_id")
+
+            # cleanup fields
+            cleanup_date_field_names(elem)
+            make_aware_dates(elem)
 
             # create object
             SiaeOffer.objects.create(**elem)
@@ -372,12 +405,12 @@ class Command(BaseCommand):
         # print(elem)
 
         for elem in resp:
-            # cleanup dates
-            cleanup_date_field_names(elem)
-            make_aware_dates(elem)
-
             # rename fields
             rename_field(elem, "directory_id", "siae_id")
+
+            # cleanup fields
+            cleanup_date_field_names(elem)
+            make_aware_dates(elem)
 
             # create object
             SiaeLabel.objects.create(**elem)
@@ -419,3 +452,69 @@ class Command(BaseCommand):
             SiaeClientReference.objects.create(**elem)
 
         print(f"Created {SiaeClientReference.objects.count()} client references !")
+
+
+    def migrate_user(self, cur):
+        """
+        Migrate User data
+        """
+        print("Migrating User...")
+
+        User.objects.filter(api_key__isnull=True).delete()
+        reset_app_sql_sequences("users")
+
+        cur.execute("SELECT * FROM user")
+        resp = cur.fetchall()
+        # print(len(resp))
+        
+        # s = set([elem["answer_delay"] for elem in resp])
+        # print(s)
+
+        # elem = cur.fetchone()
+        # print(elem)
+
+        for elem in resp:
+            # rename fields
+            rename_field(elem, "enabled", "is_active")
+            rename_field(elem, "id", "c4_id")
+            rename_field(elem, "phone_prefix", "c4_phone_prefix")
+            rename_field(elem, "time_zone", "c4_time_zone")
+            rename_field(elem, "website", "c4_website")
+            rename_field(elem, "company_name", "c4_company_name")
+            rename_field(elem, "siret", "c4_siret")
+            rename_field(elem, "naf", "c4_naf")
+            rename_field(elem, "phone_verified", "c4_phone_verified")
+            rename_field(elem, "email_verified", "c4_email_verified")
+            rename_field(elem, "id_card_verified", "c4_id_card_verified")
+            rename_field(elem, "accept_survey", "c4_accept_survey")
+            rename_field(elem, "accept_rgpd", "c4_accept_rgpd")
+            rename_field(elem, "offers_for_pro_sector", "c4_offers_for_pro_sector")
+            rename_field(elem, "quote_promise", "c4_quote_promise")
+
+            # cleanup fields
+            cleanup_date_field_names(elem)
+            make_aware_dates(elem)
+            integer_to_boolean(elem)
+
+            # cleanup person_type
+            if "person_type" in elem:
+                elem["kind"] = map_user_kind(elem["person_type"])
+
+            # set staff users
+            if "roles" in elem:
+                if elem["roles"].startswith("a:1:{i:0;s:10"):
+                    elem["is_staff"] = True
+                if elem["roles"].startswith("a:1:{i:0;s:16"):
+                    elem["is_superuser"] = True
+
+            # remove useless keys
+            [elem.pop(key) for key in USER_EXTRA_KEYS]
+
+            # create object
+            if elem["kind"]:
+                try:
+                    first = User.objects.create(**elem)
+                except Exception as e:
+                    print("a", e)
+
+        print(f"Created {User.objects.count()} users !")
