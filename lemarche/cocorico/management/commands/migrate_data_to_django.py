@@ -145,6 +145,7 @@ class Command(BaseCommand):
     directory_offer --> SiaeOffer ("Prestations proposées") + OneToMany between Siae & Offer
     directory_client_image --> SiaeClientReference ("Références clients") + OneToMany between Siae & SiaeClientReference
     user --> User
+    directory_user --> M2M between Siae & User
 
     Usage: poetry run python manage.py migrate_data_to_django
     """
@@ -155,15 +156,16 @@ class Command(BaseCommand):
 
         try:
             with connMy.cursor(pymysql.cursors.DictCursor) as cur:
-                # self.migrate_siae(cur)
-                # self.migrate_network(cur)
-                # self.migrate_siae_network(cur)
-                # self.migrate_sector(cur)
-                # self.migrate_siae_sector(cur)
-                # self.migrate_siae_offer(cur)
-                # self.migrate_siae_label(cur)
-                # self.migrate_siae_client_reference(cur)
+                self.migrate_siae(cur)
+                self.migrate_network(cur)
+                self.migrate_siae_network(cur)
+                self.migrate_sector(cur)
+                self.migrate_siae_sector(cur)
+                self.migrate_siae_offer(cur)
+                self.migrate_siae_label(cur)
+                self.migrate_siae_client_reference(cur)
                 self.migrate_user(cur)
+                self.migrate_siae_user(cur)
         except Exception as e:
             # logger.exception(e)
             print(e)
@@ -511,6 +513,7 @@ class Command(BaseCommand):
             [elem.pop(key) for key in USER_EXTRA_KEYS]
 
             # create object
+            # Note: we ignore users with kind=None
             if elem["kind"]:
                 try:
                     first = User.objects.create(**elem)
@@ -518,3 +521,30 @@ class Command(BaseCommand):
                     print("a", e)
 
         print(f"Created {User.objects.count()} users !")
+
+
+    def migrate_siae_user(self, cur):
+        """
+        Migrate M2M data between Siae & User
+
+        Notes:
+        - elem exemple: {'directory_id': 270, 'user_id': 471234844}
+        """
+        print("Migrating M2M between Siae & User...")
+
+        Siae.users.through.objects.all().delete()
+
+        cur.execute("SELECT * FROM directory_user")
+        resp = cur.fetchall()
+        # print(len(resp))
+        # print(resp[0])
+
+        for elem in resp:
+            try:
+                user = User.objects.get(c4_id=elem["user_id"])
+                user.siaes.add(elem["directory_id"])
+            # Note: some users were ignored because of kind=None. So we ignore the relation as well.
+            except:
+                pass
+
+        print(f"Created {Siae.users.through.objects.count()} M2M objects !")
