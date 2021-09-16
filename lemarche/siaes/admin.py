@@ -12,7 +12,7 @@ class SiaeAdmin(admin.ModelAdmin):
     list_filter = ["kind", "networks"]
     search_fields = ["id", "name"]
 
-    autocomplete_fields = ["sectors", "networks"]
+    autocomplete_fields = ["sectors", "networks", "users"]
     readonly_fields = Siae.READONLY_FIELDS + ["created_at", "updated_at"]
 
     fieldsets = [
@@ -43,11 +43,18 @@ class SiaeAdmin(admin.ModelAdmin):
         ("Données APIGouv", {
             "fields": Siae.READONLY_FIELDS_FROM_APIGOUV
         }),
-        ("Autres", {
+        ("Détails", {
             "fields": (
                 "description",
                 "sectors",
                 "networks",
+                "users",
+            )
+        }),
+        ("Autres", {
+            "fields": (
+                "created_at",
+                "updated_at"
             )
         })
     ]
