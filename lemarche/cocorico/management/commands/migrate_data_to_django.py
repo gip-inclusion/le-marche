@@ -24,8 +24,8 @@ DIRECTORY_EXTRA_KEYS = [
 USER_EXTRA_KEYS = [
     "username", "username_canonical", "email_canonical", "slug", "salt", "password", "confirmation_token", "password_requested_at",
     "roles", "person_type", "birthday", "nationality", "country_of_residence", "profession", "mother_tongue",
-    "phone_prefix", "time_zone", "phone_verified", "email_verified", "id_card_verified",  # ?
-    "accept_survey", "accept_rgpd", "offers_for_pro_sector", "quote_promise",  # ?
+    # "phone_prefix", "time_zone", "phone_verified", "email_verified", "id_card_verified",
+    # "accept_survey", "accept_rgpd", "offers_for_pro_sector", "quote_promise",
     "iban", "bic", "bank_owner_name", "bank_owner_address", "annual_income",
     "nb_bookings_offerer", "nb_bookings_asker", "fee_as_asker", "fee_as_offerer", "average_rating_as_asker", "average_rating_as_offerer", "answer_delay",
     "nb_quotes_offerer", "nb_quotes_asker", "company_addr_string"
@@ -93,21 +93,27 @@ def map_presta_type(input_value_byte):
             "12": [Siae.PRESTA_PREST, Siae.PRESTA_BUILD],
             "14": [Siae.PRESTA_DISP, Siae.PRESTA_PREST, Siae.PRESTA_BUILD]
         }
-        return presta_type_mapping[input_value_string]
+        try:
+            return presta_type_mapping[input_value_string]
+        except:
+            pass
     return None
 
 def map_user_kind(input_value_integer):
     if input_value_integer:
         user_kind_mapping = {
             None: None,
-            1: User.KIND_PERSO,
-            2: User.KIND_COMPANY,
+            # 1: User.KIND_PERSO,
+            # 2: User.KIND_COMPANY,
             3: User.KIND_BUYER,
             4: User.KIND_SIAE,
             5: User.KIND_ADMIN,
             6: User.KIND_PARTNER,
         }
-        return user_kind_mapping[input_value_integer]
+        try:
+            return user_kind_mapping[input_value_integer]
+        except:
+            pass
     return None
 
 def reset_app_sql_sequences(app_name):
@@ -149,14 +155,14 @@ class Command(BaseCommand):
 
         try:
             with connMy.cursor(pymysql.cursors.DictCursor) as cur:
-                self.migrate_siae(cur)
-                self.migrate_network(cur)
-                self.migrate_siae_network(cur)
-                self.migrate_sector(cur)
-                self.migrate_siae_sector(cur)
-                self.migrate_siae_offer(cur)
-                self.migrate_siae_label(cur)
-                self.migrate_siae_client_reference(cur)
+                # self.migrate_siae(cur)
+                # self.migrate_network(cur)
+                # self.migrate_siae_network(cur)
+                # self.migrate_sector(cur)
+                # self.migrate_siae_sector(cur)
+                # self.migrate_siae_offer(cur)
+                # self.migrate_siae_label(cur)
+                # self.migrate_siae_client_reference(cur)
                 self.migrate_user(cur)
         except Exception as e:
             # logger.exception(e)
@@ -471,7 +477,20 @@ class Command(BaseCommand):
             # rename fields
             rename_field(elem, "enabled", "is_active")
             rename_field(elem, "id", "c4_id")
-            
+            rename_field(elem, "phone_prefix", "c4_phone_prefix")
+            rename_field(elem, "time_zone", "c4_time_zone")
+            rename_field(elem, "website", "c4_website")
+            rename_field(elem, "company_name", "c4_company_name")
+            rename_field(elem, "siret", "c4_siret")
+            rename_field(elem, "naf", "c4_naf")
+            rename_field(elem, "phone_verified", "c4_phone_verified")
+            rename_field(elem, "email_verified", "c4_email_verified")
+            rename_field(elem, "id_card_verified", "c4_id_card_verified")
+            rename_field(elem, "accept_survey", "c4_accept_survey")
+            rename_field(elem, "accept_rgpd", "c4_accept_rgpd")
+            rename_field(elem, "offers_for_pro_sector", "c4_offers_for_pro_sector")
+            rename_field(elem, "quote_promise", "c4_quote_promise")
+
             # cleanup fields
             cleanup_date_field_names(elem)
             make_aware_dates(elem)
@@ -479,7 +498,7 @@ class Command(BaseCommand):
 
             # cleanup person_type
             if "person_type" in elem:
-                elem["person_type"] = map_user_kind(elem["person_type"])
+                elem["kind"] = map_user_kind(elem["person_type"])
 
             # set staff users
             if "roles" in elem:
@@ -492,9 +511,10 @@ class Command(BaseCommand):
             [elem.pop(key) for key in USER_EXTRA_KEYS]
 
             # create object
-            try:
-                first = User.objects.create(**elem)
-            except Exception as e:
-                print("a", e)
+            if elem["kind"]:
+                try:
+                    first = User.objects.create(**elem)
+                except Exception as e:
+                    print("a", e)
 
         print(f"Created {User.objects.count()} users !")

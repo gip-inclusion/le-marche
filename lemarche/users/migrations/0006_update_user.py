@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='user',
-            name='company_name',
+            name='c4_company_name',
             field=models.CharField(blank=True, max_length=255, null=True, verbose_name="Nom de l'entreprise"),
         ),
         migrations.AddField(
@@ -29,9 +29,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='kind',
-            field=models.CharField(choices=[('PERSO', 'Une personne'), ('COMPANY', 'Une entreprise'), ('BUYER', 'Un acheteur qui souhaite réaliser un achat inclusif'), ('SIAE', 'Structure inclusive qui souhaite proposer ses offres'), ('ADMIN', 'Administrateur.trice'), ('PARTNER', 'Partenaire')], default='PERSO', max_length=20, verbose_name='Type'),
+            field=models.CharField(choices=[('BUYER', 'Acheteur (classique)'), ('SIAE', 'SIAE'), ('ADMIN', 'Administrateur'), ('PARTNER', 'Partenaire')], max_length=20, verbose_name='Type'),
         ),
-        migrations.AlterField(
+        migrations.AddField(
             model_name='user',
             name='phone',
             field=models.CharField(blank=True, max_length=20, null=True, verbose_name='Téléphone'),
@@ -41,9 +41,9 @@ class Migration(migrations.Migration):
             name='updated_at',
             field=models.DateTimeField(auto_now=True, verbose_name='Date de mise à jour'),
         ),
-        migrations.AlterField(
+        migrations.AddField(
             model_name='user',
-            name='website',
+            name='c4_website',
             field=models.URLField(blank=True, null=True, verbose_name='Site web'),
         ),
         migrations.AlterField(
@@ -63,13 +63,58 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='user',
-            name='siret',
+            name='c4_siret',
             field=models.CharField(blank=True, max_length=14, null=True, verbose_name='Siret ou Siren'),
         ),
         migrations.AddField(
             model_name='user',
-            name='naf',
+            name='c4_naf',
             field=models.CharField(blank=True, max_length=5, null=True, verbose_name='Naf'),
+        ),
+        migrations.AddField(
+            model_name='user',
+            name='c4_accept_rgpd',
+            field=models.BooleanField(default=False, help_text="J'accepte les conditions d'utilisation du service"),
+        ),
+        migrations.AddField(
+            model_name='user',
+            name='c4_accept_survey',
+            field=models.BooleanField(default=False, help_text="J'accepte de répondre à une enquête deux fois par an afin de permettre de mesurer la progression des achats inclusifs en France"),
+        ),
+        migrations.AddField(
+            model_name='user',
+            name='c4_email_verified',
+            field=models.BooleanField(default=False),
+        ),
+        migrations.AddField(
+            model_name='user',
+            name='c4_id_card_verified',
+            field=models.BooleanField(default=False),
+        ),
+        migrations.AddField(
+            model_name='user',
+            name='c4_offers_for_pro_sector',
+            field=models.BooleanField(default=False, help_text="Je m'engage à ce que les offres déposées sur la Place de marché soient destinées à des structures professionnelles (association, secteur privé ou public)"),
+        ),
+        migrations.AddField(
+            model_name='user',
+            name='c4_phone_prefix',
+            field=models.CharField(blank=True, max_length=20, null=True, verbose_name='Indicatif international'),
+        ),
+        migrations.AddField(
+            model_name='user',
+            name='c4_time_zone',
+            field=models.CharField(blank=True, max_length=150, null=True, verbose_name='Fuseau'),
+        ),
+        migrations.AddField(
+            model_name='user',
+            name='c4_phone_verified',
+            field=models.BooleanField(default=False),
+        ),
+        migrations.AddField(
+            model_name='user',
+            name='c4_quote_promise',
+            field=models.BooleanField(default=False, help_text="Je m'engage à traiter les demandes de devis qui me seront adressées (soumettre un devis, solliciter des informations complémentaires ou  refuser une demande constituent des réponses)"),
         ),
         migrations.AlterField(
             model_name='user',

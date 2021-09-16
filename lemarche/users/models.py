@@ -72,19 +72,19 @@ class User(AbstractUser):
     ACCOUNT_USERNAME_REQUIRED = False
     ACCOUNT_EMAIL_REQUIRED = True
 
-    KIND_PERSO = "PERSO"  # PERSON_TYPE_NATURAL / 1
-    KIND_COMPANY = "COMPANY"  # PERSON_TYPE_LEGAL / 2 (not used)
+    # KIND_PERSO = "PERSO"  # PERSON_TYPE_NATURAL / 1
+    # KIND_COMPANY = "COMPANY"  # PERSON_TYPE_LEGAL / 2 (not used)
     KIND_BUYER = "BUYER"  # PERSON_TYPE_CLASSIC / 3
     KIND_SIAE = "SIAE"  # PERSON_TYPE_INCLUSIVE / 4
     KIND_ADMIN = "ADMIN"  # PERSON_TYPE_ADMIN/ 5
     KIND_PARTNER = "PARTNER"  # PERSON_TYPE_PARTNER / 6
 
     KIND_CHOICES = (
-        (KIND_PERSO, "Une personne"),  # Utilisateur
-        (KIND_COMPANY, "Une entreprise"),  # Entreprise
-        (KIND_BUYER, "Un acheteur qui souhaite réaliser un achat inclusif"),  # Acheteur (classique)
-        (KIND_SIAE, "Structure inclusive qui souhaite proposer ses offres"),  # SIAE
-        (KIND_ADMIN, "Administrateur.trice"),  # Administrateur
+        # (KIND_PERSO, "Utilisateur"),  # Une personne
+        # (KIND_COMPANY, "Entreprise"),  # Une entreprise
+        (KIND_BUYER, "Acheteur (classique)"),  # Un acheteur qui souhaite réaliser un achat inclusif
+        (KIND_SIAE, "SIAE"),  # Structure inclusive qui souhaite proposer ses offres
+        (KIND_ADMIN, "Administrateur"),  # Administrateur.trice
         (KIND_PARTNER, "Partenaire")  # Partenaire
     )
 
@@ -92,18 +92,32 @@ class User(AbstractUser):
     email = models.EmailField(verbose_name="E-mail", unique=True)
     first_name = models.CharField("Prénom", max_length=150)
     last_name = models.CharField("Nom", max_length=150)
-
-    kind = models.CharField(verbose_name="Type", max_length=20, choices=KIND_CHOICES, default=KIND_PERSO)
-
+    kind = models.CharField(verbose_name="Type", max_length=20, choices=KIND_CHOICES)
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True, null=True)
-    website = models.URLField(verbose_name="Site web", blank=True, null=True)
-    company_name = models.CharField(verbose_name="Nom de l'entreprise", max_length=255, blank=True, null=True)
-    siret = models.CharField(verbose_name="Siret ou Siren", max_length=14, blank=True, null=True)
-    naf = models.CharField(verbose_name="Naf", max_length=5, blank=True, null=True)
-
     api_key = models.CharField(verbose_name="Clé API", max_length=128, unique=True, blank=True, null=True)
 
     c4_id = models.IntegerField(blank=True, null=True)
+    c4_phone_prefix = models.CharField(verbose_name="Indicatif international", max_length=20, blank=True, null=True)
+    c4_time_zone = models.CharField(verbose_name="Fuseau", max_length=150, blank=True, null=True)
+    c4_website = models.URLField(verbose_name="Site web", blank=True, null=True)
+    c4_company_name = models.CharField(verbose_name="Nom de l'entreprise", max_length=255, blank=True, null=True)
+    c4_siret = models.CharField(verbose_name="Siret ou Siren", max_length=14, blank=True, null=True)
+    c4_naf = models.CharField(verbose_name="Naf", max_length=5, blank=True, null=True)
+    c4_phone_verified = models.BooleanField(default=False)
+    c4_email_verified = models.BooleanField(default=False)
+    c4_id_card_verified = models.BooleanField(default=False)
+    c4_accept_survey = models.BooleanField(
+        help_text="J'accepte de répondre à une enquête deux fois par an afin de permettre de mesurer la progression des achats inclusifs en France",
+        default=False)
+    c4_accept_rgpd = models.BooleanField(
+        help_text="J'accepte les conditions d'utilisation du service",
+        default=False)
+    c4_offers_for_pro_sector = models.BooleanField(
+        help_text="Je m'engage à ce que les offres déposées sur la Place de marché soient destinées à des structures professionnelles (association, secteur privé ou public)",
+        default=False)
+    c4_quote_promise = models.BooleanField(
+        help_text="Je m'engage à traiter les demandes de devis qui me seront adressées (soumettre un devis, solliciter des informations complémentaires ou  refuser une demande constituent des réponses)",
+        default=False)
 
     # is_active, is_staff, is_superuser
 
