@@ -9,7 +9,7 @@ from lemarche.siaes.models import Siae, SiaeOffer, SiaeLabel, SiaeClientReferenc
 @admin.register(Siae)
 class SiaeAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siret", "kind", "nb_offers", "nb_labels", "nb_cient_references", "created_at"]
-    list_filter = ["kind", "networks"]
+    list_filter = ["kind", "networks", "sectors"]
     search_fields = ["id", "name"]
 
     autocomplete_fields = ["sectors", "networks", "users"]
