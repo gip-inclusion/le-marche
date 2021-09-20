@@ -85,25 +85,28 @@ class User(AbstractUser):
 
     # KIND_PERSO = "PERSO"  # PERSON_TYPE_NATURAL / 1
     # KIND_COMPANY = "COMPANY"  # PERSON_TYPE_LEGAL / 2 (not used)
-    KIND_BUYER = "BUYER"  # PERSON_TYPE_CLASSIC / 3
     KIND_SIAE = "SIAE"  # PERSON_TYPE_INCLUSIVE / 4
-    KIND_ADMIN = "ADMIN"  # PERSON_TYPE_ADMIN/ 5
+    KIND_BUYER = "BUYER"  # PERSON_TYPE_CLASSIC / 3
     KIND_PARTNER = "PARTNER"  # PERSON_TYPE_PARTNER / 6
+    KIND_ADMIN = "ADMIN"  # PERSON_TYPE_ADMIN/ 5
 
     KIND_CHOICES = (
         # (KIND_PERSO, "Utilisateur"),  # Une personne
         # (KIND_COMPANY, "Entreprise"),  # Une entreprise
-        (KIND_BUYER, "Acheteur (classique)"),  # Un acheteur qui souhaite réaliser un achat inclusif
         (KIND_SIAE, "SIAE"),  # Structure inclusive qui souhaite proposer ses offres
+        (KIND_BUYER, "Acheteur (classique)"),  # Un acheteur qui souhaite réaliser un achat inclusif
+        (KIND_PARTNER, "Partenaire")  # Partenaire
+    )
+
+    KIND_CHOICES_WITH_ADMIN = KIND_CHOICES + (
         (KIND_ADMIN, "Administrateur"),  # Administrateur.trice
-        (KIND_PARTNER, "Partenaire"),  # Partenaire
     )
 
     username = None
     email = models.EmailField(verbose_name="E-mail", unique=True)
     first_name = models.CharField("Prénom", max_length=150)
     last_name = models.CharField("Nom", max_length=150)
-    kind = models.CharField(verbose_name="Type", max_length=20, choices=KIND_CHOICES)
+    kind = models.CharField(verbose_name="Type", max_length=20, choices=KIND_CHOICES_WITH_ADMIN)
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True, null=True)
     api_key = models.CharField(verbose_name="Clé API", max_length=128, unique=True, blank=True, null=True)
 
