@@ -24,6 +24,8 @@ INTERNAL_IPS = [
 
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+# EMAIL_FILE_PATH = str(ROOT_DIR + "sent_emails")
 
 
 # django-extensions settings.

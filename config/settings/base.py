@@ -81,8 +81,8 @@ PRIORITY_APPS = [
 ]
 
 DJANGO_APPS = [
-    "django.contrib.admin",
     "django.contrib.auth",
+    "django.contrib.admin",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
@@ -227,6 +227,12 @@ SITE_ID = 1
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = "/static/"
+
+
+# Emails.
+# ------------------------------------------------------------------------------
+
+DEFAULT_FROM_EMAIL = "noreply@inclusion.beta.gouv.fr"
 
 
 # Security.

@@ -4,66 +4,68 @@
 {% block content %}
 <section class="container">
     <div id="home" class="login_register">
-        <h1><i class="icon-clipboard"></i> Inscription</h1>
+        <h2 class="h2"><i class="icon-clipboard"></i> Inscription</h2>
 
         <div id="login-errors-wrapper">
             {{ form.errors }}
         </div>
+
         <div class="sub-form3">
             L'inscription est nécessaire pour mesurer la satisfaction, l'utilité de
             notre service. Cela nous permettra également de le faire évoluer en
             fonction de vos besoins.
         </div>
-        <div>
-            <div class="col">
-                <form class="form-signup" action="{% url 'signup' %}" method="POST">
-                    {% csrf_token %}
-                    <h3><i class="icon-user-circle-o" style="color:#006adc;"></i> Vous êtes</h3>
-                    <div class="sub-form">
-                        <div class="form-group">
-                            <!-- {{ form.kind.label_tag }} -->
-                            {{ form.kind }}
-                        </div>
-                    </div>
 
-                    <h3><i class="icon-building" style="color:#006adc;"></i>Contact et coordonnées de votre entreprise</h3>
-                    <div class="sub-form">
-                        <div class="form-group">
-                            {{ form.first_name.label_tag }}
-                            {{ form.first_name }}
-                        </div>
-                        <div class="form-group">
-                            {{ form.last_name.label_tag }}
-                            {{ form.last_name }}
-                        </div>
-                        <div class="form-group">
-                            {{ form.phone.label_tag }}
-                            {{ form.phone }}
-                        </div>
-                    </div>
+        <br />
 
-                    <h3><i class="icon-lock-empty" style="color:#006adc;"></i>Création du mot de passe</h3>
-                    <div class="sub-form">
-                        <div class="form-group">
-                            {{ form.email.label_tag }}
-                            {{ form.email }}
-                        </div>
-                        <div class="form-group">
-                            {{ form.password1.label_tag }}
-                            {{ form.password1 }}
-                        </div>
-                        <div class="form-group">
-                            {{ form.password2.label_tag }}
-                            {{ form.password2 }}
-                        </div>
+        <div class="col">
+            <form class="form-signup" action="{% url 'signup' %}" method="POST">
+                {% csrf_token %}
+                <h3><i class="icon-user-circle-o" style="color:#006adc;"></i> Vous êtes</h3>
+                <div class="sub-form">
+                    <div class="form-group">
+                        <!-- {{ form.kind.label_tag }} -->
+                        {{ form.kind }}
                     </div>
+                </div>
 
-                    <button type="submit" class="btn btn-default">
-                        Valider
-                        <i class="icon-right-small" style="float:right"></i>
-                    </button>
-                </form>
-            </div>
+                <h3><i class="icon-building" style="color:#006adc;"></i>Contact et coordonnées de votre entreprise</h3>
+                <div class="sub-form">
+                    <div class="form-group">
+                        {{ form.first_name.label_tag }}
+                        {{ form.first_name }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.last_name.label_tag }}
+                        {{ form.last_name }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.phone.label_tag }}
+                        {{ form.phone }}
+                    </div>
+                </div>
+
+                <h3><i class="icon-lock-empty" style="color:#006adc;"></i>Création du mot de passe</h3>
+                <div class="sub-form">
+                    <div class="form-group">
+                        {{ form.email.label_tag }}
+                        {{ form.email }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.password1.label_tag }}
+                        {{ form.password1 }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.password2.label_tag }}
+                        {{ form.password2 }}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-default">
+                    Valider
+                    <i class="icon-right-small" style="float:right"></i>
+                </button>
+            </form>
         </div>
     </div>
 </section>
