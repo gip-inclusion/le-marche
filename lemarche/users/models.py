@@ -104,7 +104,7 @@ class User(AbstractUser):
     email = models.EmailField(verbose_name="E-mail", unique=True)
     first_name = models.CharField("Prénom", max_length=150)
     last_name = models.CharField("Nom", max_length=150)
-    kind = models.CharField(verbose_name="Type", max_length=20, choices=KIND_CHOICES_WITH_ADMIN)
+    kind = models.CharField(verbose_name="Type", max_length=20, choices=KIND_CHOICES_WITH_ADMIN, blank=True, null=True)
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True, null=True)
     api_key = models.CharField(verbose_name="Clé API", max_length=128, unique=True, blank=True, null=True)
 
