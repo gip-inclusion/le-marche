@@ -18,6 +18,8 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 - API : les données des Sector proviennent du nouveau modèle
 - Outils : ajout des packets django-debug-toolbar & django-extensions
 - Outils : ajout d'un template de PR
+- Outils : ajout d'un pre-commit
+- Outils : ajout de Github Actions
 
 ### [0.7] - (2021-08)
 
