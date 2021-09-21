@@ -1,8 +1,8 @@
+from drf_spectacular.utils import OpenApiTypes, extend_schema_field
 from rest_framework import serializers
-from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
-from lemarche.siaes.models import Siae
 from lemarche.api.sectors.serializers import SectorSimpleSerializer
+from lemarche.siaes.models import Siae
 
 
 class SiaeSerializer(serializers.ModelSerializer):

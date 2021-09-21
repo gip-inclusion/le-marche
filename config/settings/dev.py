@@ -2,7 +2,6 @@ import os
 
 from .base import *  # noqa
 
-
 DEBUG = True
 
 INSTALLED_APPS += [

@@ -1,8 +1,8 @@
-from rest_framework import mixins, viewsets
 from drf_spectacular.utils import extend_schema
+from rest_framework import mixins, viewsets
 
-from lemarche.networks.models import Network
 from lemarche.api.networks.serializers import NetworkSerializer
+from lemarche.networks.models import Network
 
 
 class NetworkViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

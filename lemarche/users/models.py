@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
+from django.utils.translation import ugettext_lazy as _  # noqa
 from django.utils import timezone
 
 
@@ -60,7 +61,7 @@ class UserManager(BaseUserManager):
         """Only return users who are linked to a SIAE."""
 
         return self.get_queryset().siae_admins()
-    
+
     def with_api_key(self):
         """Only return users with an API Key."""
 
@@ -95,7 +96,7 @@ class User(AbstractUser):
         (KIND_BUYER, "Acheteur (classique)"),  # Un acheteur qui souhaite réaliser un achat inclusif
         (KIND_SIAE, "SIAE"),  # Structure inclusive qui souhaite proposer ses offres
         (KIND_ADMIN, "Administrateur"),  # Administrateur.trice
-        (KIND_PARTNER, "Partenaire")  # Partenaire
+        (KIND_PARTNER, "Partenaire"),  # Partenaire
     )
 
     username = None
@@ -117,17 +118,30 @@ class User(AbstractUser):
     c4_email_verified = models.BooleanField(default=False)
     c4_id_card_verified = models.BooleanField(default=False)
     c4_accept_survey = models.BooleanField(
-        help_text="J'accepte de répondre à une enquête deux fois par an afin de permettre de mesurer la progression des achats inclusifs en France",
-        default=False)
-    c4_accept_rgpd = models.BooleanField(
-        help_text="J'accepte les conditions d'utilisation du service",
-        default=False)
+        help_text=(
+            "J'accepte de répondre à une enquête deux fois par an "
+            "afin de permettre de mesurer la progression des achats "
+            "inclusifs en France"
+        ),
+        default=False,
+    )
+    c4_accept_rgpd = models.BooleanField(help_text="J'accepte les conditions d'utilisation du service", default=False)
     c4_offers_for_pro_sector = models.BooleanField(
-        help_text="Je m'engage à ce que les offres déposées sur la Place de marché soient destinées à des structures professionnelles (association, secteur privé ou public)",
-        default=False)
+        help_text=(
+            "Je m'engage à ce que les offres déposées sur la Place de marché "
+            "soient destinées à des structures professionnelles (association, "
+            "secteur privé ou public)"
+        ),
+        default=False,
+    )
     c4_quote_promise = models.BooleanField(
-        help_text="Je m'engage à traiter les demandes de devis qui me seront adressées (soumettre un devis, solliciter des informations complémentaires ou  refuser une demande constituent des réponses)",
-        default=False)
+        help_text=(
+            "Je m'engage à traiter les demandes de devis qui me seront "
+            "adressées (soumettre un devis, solliciter des informations "
+            "complémentaires ou  refuser une demande constituent des réponses)"
+        ),
+        default=False,
+    )
 
     # is_active, is_staff, is_superuser
 

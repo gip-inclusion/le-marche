@@ -2,8 +2,8 @@
 # /!\ DO NOT make them managed by django : Management is done by Doctrine, the symfony ORM
 # This API is only a mere client to these data, a coy reader.
 
-from django.db import models
 from django.conf import settings
+from django.db import models
 
 
 # QuerySets, allowing for easier future migration to managed

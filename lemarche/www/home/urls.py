@@ -1,5 +1,7 @@
 from django.urls import path
+
 from lemarche.www.home import views
+
 
 # https://docs.djangoproject.com/en/dev/topics/http/urls/#url-namespaces-and-included-urlconfs
 app_name = "home"
