@@ -8,9 +8,7 @@ INSTALLED_APPS += ["django_extensions", "debug_toolbar"]  # noqa F405
 
 MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]  # noqa F405
 
-AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", "OPTIONS": {"min_length": 4}},
-]
+AUTH_PASSWORD_VALIDATORS = []  # Avoid password strength validation in DEV.
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -21,6 +19,11 @@ ALLOWED_HOSTS = [
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+# EMAIL_FILE_PATH = str(ROOT_DIR + "sent_emails")
 
 
 # django-extensions settings.

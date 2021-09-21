@@ -1,0 +1,12 @@
+{% extends 'layouts/layout-itou.html' %}
+{% load static %}
+
+{% block title %}Déconnecté{% endblock %}
+
+{% block content %}
+<section class="container">
+    <h1>Vous êtes déconnectés !</h1>
+
+    <p><a href="{% url 'auth:login' %}">Clickez ici pour vous connecter.</a></p>
+</section>
+{% endblock %}

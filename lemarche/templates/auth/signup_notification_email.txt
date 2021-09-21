@@ -1,0 +1,11 @@
+Notification C4 : Inscription d'un nouvel utilisateur
+
+---
+email: {{ user_email }}
+id: {{ user_id }}
+nom: {{ user_last_name }}
+prenom: {{ user_first_name }}
+type: {{ user_kind_display }}
+---
+
+https://{{ domain }}{% url 'admin:users_user_change' user_id %}
