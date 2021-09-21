@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
+from django.contrib.auth.forms import PasswordResetForm, UserCreationForm
 
 from lemarche.users.models import User
 from lemarche.utils.password_validation import CnilCompositionPasswordValidator
@@ -9,34 +9,19 @@ class SignupForm(UserCreationForm):
     KIND_CHOICES_FORM = (
         (User.KIND_SIAE, "Une entreprise sociale inclusive (SIAE ou structure du handicap, GEIQ)"),
         (User.KIND_BUYER, "Un acheteur"),
-        (User.KIND_PARTNER, "Un partenaire (réseaux, facilitateurs)")
+        (User.KIND_PARTNER, "Un partenaire (réseaux, facilitateurs)"),
     )
 
-    kind = forms.ChoiceField(
-        label="",
-        widget=forms.RadioSelect,
-        choices=KIND_CHOICES_FORM,
-        required=True)
-    first_name = forms.CharField(
-        label="Votre prénom",
-        required=True)
-    last_name = forms.CharField(
-        label="Votre nom",
-        required=True)
-    phone = forms.CharField(
-        label="Votre numéro de téléphone",
-        max_length=35,
-        required=False)
-    email = forms.EmailField(
-        label="Votre adresse e-mail",
-        required=True)
-        # help_text="Nous enverrons un e-mail de confirmation à cette adresse avant de valider le compte.")  # noqa
+    kind = forms.ChoiceField(label="", widget=forms.RadioSelect, choices=KIND_CHOICES_FORM, required=True)
+    first_name = forms.CharField(label="Votre prénom", required=True)
+    last_name = forms.CharField(label="Votre nom", required=True)
+    phone = forms.CharField(label="Votre numéro de téléphone", max_length=35, required=False)
+    email = forms.EmailField(label="Votre adresse e-mail", required=True)
+    # help_text="Nous enverrons un e-mail de confirmation à cette adresse avant de valider le compte.")  # noqa
 
     class Meta:
         model = User
-        fields = [
-            "kind", "first_name", "last_name", "phone",
-            "email", "password1", "password2"]
+        fields = ["kind", "first_name", "last_name", "phone", "email", "password1", "password2"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -49,6 +34,4 @@ class SignupForm(UserCreationForm):
 
 
 class PasswordResetForm(PasswordResetForm):
-    email = forms.EmailField(
-        label="Votre adresse e-mail",
-        required=True)
+    email = forms.EmailField(label="Votre adresse e-mail", required=True)

@@ -95,12 +95,10 @@ class User(AbstractUser):
         # (KIND_COMPANY, "Entreprise"),  # Une entreprise
         (KIND_SIAE, "SIAE"),  # Structure inclusive qui souhaite proposer ses offres
         (KIND_BUYER, "Acheteur (classique)"),  # Un acheteur qui souhaite réaliser un achat inclusif
-        (KIND_PARTNER, "Partenaire")  # Partenaire
+        (KIND_PARTNER, "Partenaire"),  # Partenaire
     )
 
-    KIND_CHOICES_WITH_ADMIN = KIND_CHOICES + (
-        (KIND_ADMIN, "Administrateur"),  # Administrateur.trice
-    )
+    KIND_CHOICES_WITH_ADMIN = KIND_CHOICES + ((KIND_ADMIN, "Administrateur"),)  # Administrateur.trice
 
     username = None
     email = models.EmailField(verbose_name="E-mail", unique=True)

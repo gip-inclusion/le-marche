@@ -1,17 +1,19 @@
 {% extends 'layouts/layout-itou.html' %}
 {% load static %}
 
+{% block title %}Connexion{% endblock %}
+
 {% block content %}
 <section class="container">
     {% if form.errors %}
     <p>Erreur ! Identifiants erronés</p>
     {% endif %}
 
-    <h2 class="h2">Connexion</h2>
+    <h1>Connexion</h1>
 
-    <div id="form-registerlogin" class="form-signup validate-form row">
+    <div class="row">
         <div class="col-sm-6">
-            <form class="form-signup" action="{% url 'login' %}" method="POST">
+            <form method="POST" action="{% url 'auth:login' %}">
                 {% csrf_token %}
                 <div class="form-group">
                     {{ form.username.label_tag }}
@@ -20,20 +22,17 @@
                 <div class="form-group">
                     {{ form.password.label_tag }}
                     {{ form.password }}
-                    <p><a href="{% url 'password_reset' %}">Mot de passe oublié ?</a></p>
+                    <small><a href="{% url 'auth:password_reset' %}">Mot de passe oublié ?</a></small>
                 </div>
-                <div id="registerbutton" class="btn-block">
-                    <button type="submit" class="btn btn-default">
-                        Valider
-                        <i class="icon-right-small" style="float:right"></i>
-                    </button>
-                </div>
+                <button type="submit" class="btn btn-primary">
+                    Valider <i class="icon-right-small" style="float:right"></i>
+                </button>
             </form>
-            <div id="form-registerlink">
-                <div>Vous n'avez pas de compte ?</div>
-                <a href="{% url 'signup' %}">Créer un compte</a>
-            </div>
         </div>
     </div>
+
+    <br />
+
+    <p>Vous n'avez pas de compte ? <a href="{% url 'auth:signup' %}">Créer un compte</p>
 </section>
 {% endblock %}

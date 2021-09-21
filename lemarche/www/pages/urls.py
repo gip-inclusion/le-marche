@@ -4,6 +4,9 @@ from django.views.generic import TemplateView
 from lemarche.www.pages.views import PageView
 
 
+# https://docs.djangoproject.com/en/dev/topics/http/urls/#url-namespaces-and-included-urlconfs
+app_name = "pages"
+
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     # Static pages

@@ -201,9 +201,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "lemarche.utils.password_validation.CnilCompositionPasswordValidator"},
 ]
 
-LOGIN_URL = "login"
-LOGIN_REDIRECT_URL = "home"
-LOGOUT_REDIRECT_URL = "home"
+LOGIN_URL = "auth:login"
+LOGIN_REDIRECT_URL = "pages:home"
+LOGOUT_REDIRECT_URL = "pages:home"
 
 
 # Internationalization
@@ -234,7 +234,7 @@ STATIC_URL = "/static/"
 # ------------------------------------------------------------------------------
 
 DEFAULT_FROM_EMAIL = "noreply@inclusion.beta.gouv.fr"
-NOTIFY_EMAIL = env.str("NOTIFY_EMAIL")
+NOTIFY_EMAIL = env.str("NOTIFY_EMAIL", False)
 
 
 # Security.
@@ -278,7 +278,7 @@ REST_FRAMEWORK = {
 # https://drf-spectacular.readthedocs.io/en/latest/settings.html
 # ----------------------------------------------------
 SPECTACULAR_SETTINGS = {
-    "TITLE": "API marché de l'inclusion",
+    "TITLE": "Le marché de l'inclusion",
     "DESCRIPTION": "Une initiative de la Plateforme de l'inclusion",
     "VERSION": "0.1.0",
     "CONTACT": "lemarche@inclusion.beta.gouv.fr",
