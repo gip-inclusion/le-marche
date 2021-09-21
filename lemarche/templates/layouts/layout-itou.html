@@ -3,7 +3,7 @@
 {% block layout %}
 
     {% block header %}
-      {% include 'frontend/common/_itou_header.html' only %}
+      {% include 'frontend/common/_itou_header.html' %}
     {% endblock %}
 
     {% block sub_header %}{% endblock %}
@@ -13,12 +13,12 @@
 
         {% block breadcrumbs %}{% endblock %}
 
-        {% block main %}{% endblock %}
+        {% block content %}{% endblock %}
 
     </main>
 
     {% block footer %}
-        {% include 'frontend/common/_itou_footer.html' only %}
+        {% include 'frontend/common/_itou_footer.html' %}
     {% endblock %}
 
     {#popin#}

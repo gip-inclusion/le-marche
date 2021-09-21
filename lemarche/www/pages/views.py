@@ -1,11 +1,27 @@
-import logging
+from django.views.generic import DetailView
+from django.http import Http404, HttpResponsePermanentRedirect
 
-from django.shortcuts import render
-
-
-logger = logging.getLogger(__name__)
+from lemarche.pages.models import Page
 
 
-def inclusion(request, template_name="frontend/pages/inclusion.html"):
-    context = {}
-    return render(request, template_name, context)
+class PageView(DetailView):
+    context_object_name = "flatpage"
+    template_name = "pages/flatpage_template.html"
+
+    def get(self, request, *args, **kwargs):
+        url = self.kwargs.get("url")
+        if not url.endswith("/"):
+            return HttpResponsePermanentRedirect(url + "/")
+        return super().get(request, *args, **kwargs)
+
+    def get_object(self):
+        url = self.kwargs.get("url")
+        if not url.startswith("/"):
+            url = "/" + url
+
+        try:
+            page = Page.objects.get(url=url)
+        except Page.DoesNotExist:
+            raise Http404("Page inconnue")
+
+        return page
