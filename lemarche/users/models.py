@@ -1,8 +1,8 @@
-from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils.translation import ugettext_lazy as _  # noqa
 from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _  # noqa
 
 
 class UserQueryset(models.QuerySet):
@@ -118,28 +118,16 @@ class User(AbstractUser):
     c4_email_verified = models.BooleanField(default=False)
     c4_id_card_verified = models.BooleanField(default=False)
     c4_accept_survey = models.BooleanField(
-        help_text=(
-            "J'accepte de répondre à une enquête deux fois par an "
-            "afin de permettre de mesurer la progression des achats "
-            "inclusifs en France"
-        ),
+        help_text="J'accepte de répondre à une enquête deux fois par an afin de permettre de mesurer la progression des achats inclusifs en France",  # noqa
         default=False,
     )
     c4_accept_rgpd = models.BooleanField(help_text="J'accepte les conditions d'utilisation du service", default=False)
     c4_offers_for_pro_sector = models.BooleanField(
-        help_text=(
-            "Je m'engage à ce que les offres déposées sur la Place de marché "
-            "soient destinées à des structures professionnelles (association, "
-            "secteur privé ou public)"
-        ),
+        help_text="Je m'engage à ce que les offres déposées sur la Place de marché soient destinées à des structures professionnelles (association, secteur privé ou public)",  # noqa
         default=False,
     )
     c4_quote_promise = models.BooleanField(
-        help_text=(
-            "Je m'engage à traiter les demandes de devis qui me seront "
-            "adressées (soumettre un devis, solliciter des informations "
-            "complémentaires ou  refuser une demande constituent des réponses)"
-        ),
+        help_text="Je m'engage à traiter les demandes de devis qui me seront adressées (soumettre un devis, solliciter des informations complémentaires ou  refuser une demande constituent des réponses)",  # noqa
         default=False,
     )
 

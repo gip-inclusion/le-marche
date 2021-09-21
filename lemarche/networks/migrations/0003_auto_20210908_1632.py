@@ -5,7 +5,7 @@ from django.utils.text import slugify
 
 
 def slugify_name(apps, schema_editor):
-    Network = apps.get_model('networks', 'Network')
+    Network = apps.get_model("networks", "Network")
     for network in Network.objects.all():
         network.slug = slugify(network.name)
         network.save()
@@ -14,7 +14,7 @@ def slugify_name(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('networks', '0002_network_slug'),
+        ("networks", "0002_network_slug"),
     ]
 
     operations = [

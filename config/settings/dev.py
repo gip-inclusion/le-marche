@@ -4,14 +4,9 @@ from .base import *  # noqa
 
 DEBUG = True
 
-INSTALLED_APPS += [
-    "django_extensions",
-    "debug_toolbar"
-]
+INSTALLED_APPS += ["django_extensions", "debug_toolbar"]  # noqa F405
 
-MIDDLEWARE += [
-    "debug_toolbar.middleware.DebugToolbarMiddleware"
-]
+MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]  # noqa F405
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", "OPTIONS": {"min_length": 4}},

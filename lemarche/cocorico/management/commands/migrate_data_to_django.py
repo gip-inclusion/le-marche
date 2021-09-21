@@ -10,9 +10,9 @@ from django.db.models.fields import BooleanField, DateTimeField
 from django.utils import timezone
 from django.utils.text import slugify
 
-from lemarche.siaes.models import Siae, SiaeOffer, SiaeLabel, SiaeClientReference
 from lemarche.networks.models import Network
-from lemarche.sectors.models import SectorGroup, Sector
+from lemarche.sectors.models import Sector, SectorGroup
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer
 from lemarche.users.models import User
 
 
@@ -21,8 +21,7 @@ DIRECTORY_EXTRA_KEYS = [
     "longitude",
     "geo_range",
     "pol_range",
-    "sector",  # string 'list' with ' - ' seperator. We can map to Sector.
-    # But we use instead the 'directory_category' table.
+    "sector",  # string 'list' with ' - ' seperator. We use instead the 'directory_category' table.
 ]
 USER_EXTRA_KEYS = [
     "username",
@@ -171,17 +170,17 @@ class Command(BaseCommand):
     """
     Migrate from Symphony/MariaDB to Django/PostgreSQL
 
-    directory --> Siae
-    network --> Network
-    directory_network --> M2M between Siae & Network
-    listing_category & listing_category_translation --> Sector
-    directory_listing_category --> M2M between Siae & Sector
-    directory_label --> SiaeLabel ("Labels & certifications") + OneToMany between Siae & Label
-    directory_offer --> SiaeOffer ("Prestations proposées") + OneToMany between Siae & Offer
-    directory_client_image --> SiaeClientReference ("Références clients") +
-        OneToMany between Siae & SiaeClientReference
-    user --> User
-    directory_user --> M2M between Siae & User
+    |--------------------------|---------------------------|
+    |directory                 |Siae                       |
+    |network                   |Network                    |
+    |directory_network         |M2M between Siae & Network |
+    |listing_category & listing_category_translation | Sector|
+    |directory_listing_category|M2M between Siae & Sector  |
+    |directory_label           |SiaeLabel ("Labels & certifications") + OneToMany between Siae & Label|
+    |directory_offer           |SiaeOffer ("Prestations proposées") + OneToMany between Siae & Offer|
+    |directory_client_image    |SiaeClientReference ("Références clients") + OneToMany between Siae & SiaeClientReference|  # noqa
+    |user                      |User                       |
+    |directory_user            |M2M between Siae & User    |
 
     Usage: poetry run python manage.py migrate_data_to_django
     """
@@ -243,7 +242,7 @@ class Command(BaseCommand):
 
             # create object
             try:
-                first = Siae.objects.create(**elem)  # noqa
+                Siae.objects.create(**elem)
             except Exception as e:
                 print(e)
 
@@ -560,7 +559,7 @@ class Command(BaseCommand):
             # Note: we ignore users with kind=None
             if elem["kind"]:
                 try:
-                    first = User.objects.create(**elem)  # noqa
+                    User.objects.create(**elem)
                 except Exception as e:
                     print("a", e)
 

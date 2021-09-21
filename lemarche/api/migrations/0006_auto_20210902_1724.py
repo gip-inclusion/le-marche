@@ -7,18 +7,18 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0005_siae_sectors'),
+        ("api", "0005_siae_sectors"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='siae',
-            name='is_qpv',
-            field=models.BooleanField(default=False, verbose_name='Zone QPV'),
+            model_name="siae",
+            name="is_qpv",
+            field=models.BooleanField(default=False, verbose_name="Zone QPV"),
         ),
         migrations.AddField(
-            model_name='siae',
-            name='updatedat',
-            field=models.DateTimeField(default=django.utils.timezone.now, verbose_name='Date de mise à jour'),
+            model_name="siae",
+            name="updatedat",
+            field=models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date de mise à jour"),
         ),
     ]

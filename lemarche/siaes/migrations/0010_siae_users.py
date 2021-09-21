@@ -8,13 +8,15 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('siaes', '0009_siaeclientreference'),
+        ("siaes", "0009_siaeclientreference"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='siae',
-            name='users',
-            field=models.ManyToManyField(blank=True, related_name='siaes', to=settings.AUTH_USER_MODEL, verbose_name='Gestionnaires'),
+            model_name="siae",
+            name="users",
+            field=models.ManyToManyField(
+                blank=True, related_name="siaes", to=settings.AUTH_USER_MODEL, verbose_name="Gestionnaires"
+            ),
         ),
     ]

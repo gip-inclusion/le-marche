@@ -28,7 +28,7 @@ DEFAULT_PAYLOAD = {
 }
 
 
-def track(page: str, action: str, *, meta: dict = {}, session_id: str = None, client_context: dict = {}):
+def track(page: str, action: str, *, meta: dict = {}, session_id: str = None, client_context: dict = {}):  # noqa B006
     # TODO : Make Async / non-blocking
     set_meta = {"source": "bitoubi_api"}
 
