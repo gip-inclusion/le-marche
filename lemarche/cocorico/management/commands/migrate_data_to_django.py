@@ -1,12 +1,11 @@
 import io
 import re
-import pymysql
-from collections import Counter
 
+import pymysql
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
-from django.db import connection, IntegrityError
+from django.db import IntegrityError, connection
 from django.db.models.fields import BooleanField, DateTimeField
 from django.utils import timezone
 from django.utils.text import slugify
@@ -18,17 +17,46 @@ from lemarche.users.models import User
 
 
 DIRECTORY_EXTRA_KEYS = [
-    "latitude", "longitude", "geo_range", "pol_range",
-    "sector",  # string 'list' with ' - ' seperator. We can map to Sector. But we use instead the 'directory_category' table.
+    "latitude",
+    "longitude",
+    "geo_range",
+    "pol_range",
+    "sector",  # string 'list' with ' - ' seperator. We can map to Sector.
+    # But we use instead the 'directory_category' table.
 ]
 USER_EXTRA_KEYS = [
-    "username", "username_canonical", "email_canonical", "slug", "salt", "password", "confirmation_token", "password_requested_at",
-    "roles", "person_type", "birthday", "nationality", "country_of_residence", "profession", "mother_tongue",
+    "username",
+    "username_canonical",
+    "email_canonical",
+    "slug",
+    "salt",
+    "password",
+    "confirmation_token",
+    "password_requested_at",
+    "roles",
+    "person_type",
+    "birthday",
+    "nationality",
+    "country_of_residence",
+    "profession",
+    "mother_tongue",
     # "phone_prefix", "time_zone", "phone_verified", "email_verified", "id_card_verified",
     # "accept_survey", "accept_rgpd", "offers_for_pro_sector", "quote_promise",
-    "iban", "bic", "bank_owner_name", "bank_owner_address", "annual_income",
-    "nb_bookings_offerer", "nb_bookings_asker", "fee_as_asker", "fee_as_offerer", "average_rating_as_asker", "average_rating_as_offerer", "answer_delay",
-    "nb_quotes_offerer", "nb_quotes_asker", "company_addr_string"
+    "iban",
+    "bic",
+    "bank_owner_name",
+    "bank_owner_address",
+    "annual_income",
+    "nb_bookings_offerer",
+    "nb_bookings_asker",
+    "fee_as_asker",
+    "fee_as_offerer",
+    "average_rating_as_asker",
+    "average_rating_as_offerer",
+    "answer_delay",
+    "nb_quotes_offerer",
+    "nb_quotes_asker",
+    "company_addr_string",
 ]
 
 DIRECTORY_BOOLEAN_FIELDS = [field.name for field in Siae._meta.fields if type(field) == BooleanField]
@@ -42,15 +70,17 @@ USER_DATE_FIELDS = [field.name for field in User._meta.fields if type(field) == 
 
 def dsn2params(dsn):
     # PyMySQL doesn't support URI connection strings
-    p = re.compile(r'mysql:\/\/(?P<user>[^:]+):(?P<password>[^@]+)@(?P<host>[^:]+):(?P<port>[^\/]+)\/(?P<db>.*)')
+    p = re.compile(r"mysql:\/\/(?P<user>[^:]+):(?P<password>[^@]+)@(?P<host>[^:]+):(?P<port>[^\/]+)\/(?P<db>.*)")
     m = re.match(p, dsn)
     d = m.groupdict()
-    d['port'] = int(d['port'])
+    d["port"] = int(d["port"])
     return d
+
 
 def rename_field(elem, field_name_before, field_name_after):
     elem[field_name_after] = elem[field_name_before]
     elem.pop(field_name_before)
+
 
 def integer_to_boolean(elem):
     boolean_keys = list(set(DIRECTORY_BOOLEAN_FIELDS + USER_BOOLEAN_FIELDS))
@@ -62,6 +92,7 @@ def integer_to_boolean(elem):
                 elem[key] = False
             elem[key] = False
 
+
 def cleanup_date_field_names(elem):
     if "createdAt" in elem:
         if elem["createdAt"]:
@@ -72,12 +103,14 @@ def cleanup_date_field_names(elem):
             elem["updated_at"] = elem["updatedAt"]
         elem.pop("updatedAt")
 
+
 def make_aware_dates(elem):
     date_keys = list(set(DIRECTORY_DATE_FIELDS + NETWORK_DATE_FIELDS + SECTOR_DATE_FIELDS + USER_DATE_FIELDS))
     for key in date_keys:
-            if key in elem:
-                if elem[key]:
-                    elem[key] = timezone.make_aware(elem[key])
+        if key in elem:
+            if elem[key]:
+                elem[key] = timezone.make_aware(elem[key])
+
 
 def map_presta_type(input_value_byte):
     if input_value_byte:
@@ -91,13 +124,14 @@ def map_presta_type(input_value_byte):
             "8": [Siae.PRESTA_BUILD],
             "10": [Siae.PRESTA_DISP, Siae.PRESTA_BUILD],
             "12": [Siae.PRESTA_PREST, Siae.PRESTA_BUILD],
-            "14": [Siae.PRESTA_DISP, Siae.PRESTA_PREST, Siae.PRESTA_BUILD]
+            "14": [Siae.PRESTA_DISP, Siae.PRESTA_PREST, Siae.PRESTA_BUILD],
         }
         try:
             return presta_type_mapping[input_value_string]
-        except:
+        except:  # noqa
             pass
     return None
+
 
 def map_user_kind(input_value_integer):
     if input_value_integer:
@@ -112,9 +146,10 @@ def map_user_kind(input_value_integer):
         }
         try:
             return user_kind_mapping[input_value_integer]
-        except:
+        except:  # noqa
             pass
     return None
+
 
 def reset_app_sql_sequences(app_name):
     """
@@ -124,7 +159,7 @@ def reset_app_sql_sequences(app_name):
     """
     print(f"Resetting SQL sequences for {app_name}...")
     output = io.StringIO()
-    call_command('sqlsequencereset', app_name, stdout=output, no_color=True)
+    call_command("sqlsequencereset", app_name, stdout=output, no_color=True)
     sql = output.getvalue()
     with connection.cursor() as cursor:
         cursor.execute(sql)
@@ -143,12 +178,14 @@ class Command(BaseCommand):
     directory_listing_category --> M2M between Siae & Sector
     directory_label --> SiaeLabel ("Labels & certifications") + OneToMany between Siae & Label
     directory_offer --> SiaeOffer ("Prestations proposées") + OneToMany between Siae & Offer
-    directory_client_image --> SiaeClientReference ("Références clients") + OneToMany between Siae & SiaeClientReference
+    directory_client_image --> SiaeClientReference ("Références clients") +
+        OneToMany between Siae & SiaeClientReference
     user --> User
     directory_user --> M2M between Siae & User
 
     Usage: poetry run python manage.py migrate_data_to_django
     """
+
     def handle(self, *args, **options):
 
         mysql_params = dsn2params(settings.MYSQL_ADDON_DIRECT_URI)
@@ -173,7 +210,6 @@ class Command(BaseCommand):
         finally:
             connMy.close()
 
-
     def migrate_siae(self, cur):
         """
         Migrate Siae data
@@ -185,7 +221,7 @@ class Command(BaseCommand):
         cur.execute("SELECT * FROM directory")
         resp = cur.fetchall()
         # print(len(resp))
-        
+
         # s = set([elem["pol_range"] for elem in resp])
         # print(s)
 
@@ -207,12 +243,11 @@ class Command(BaseCommand):
 
             # create object
             try:
-                first = Siae.objects.create(**elem)
+                first = Siae.objects.create(**elem)  # noqa
             except Exception as e:
                 print(e)
 
         print(f"Created {Siae.objects.count()} siaes !")
-
 
     def migrate_network(self, cur):
         """
@@ -247,7 +282,6 @@ class Command(BaseCommand):
 
         print(f"Created {Network.objects.count()} siae networks !")
 
-
     def migrate_siae_network(self, cur):
         """
         Migrate M2M data between Siae & Network
@@ -269,7 +303,6 @@ class Command(BaseCommand):
             siae.networks.add(elem["network_id"])
 
         print(f"Created {Siae.networks.through.objects.count()} M2M objects !")
-
 
     def migrate_sector(self, cur):
         """
@@ -293,17 +326,21 @@ class Command(BaseCommand):
         for elem in resp:
             if not elem["parent_id"]:
                 # this is a group elem, create it if it doesn't exist yet
-                sector_group_index = next((index for (index, s) in enumerate(sector_group_list) if s["id"] == elem["id"]), None)
+                sector_group_index = next(
+                    (index for (index, s) in enumerate(sector_group_list) if s["id"] == elem["id"]), None
+                )
                 if sector_group_index is None:
-                    sector_group_list.append({ "id": elem["id"], "children": [] })
+                    sector_group_list.append({"id": elem["id"], "children": []})
             else:
                 # this is a child elem
-                sector_group_index = next((index for (index, s) in enumerate(sector_group_list) if s["id"] == elem["parent_id"]), None)
+                sector_group_index = next(
+                    (index for (index, s) in enumerate(sector_group_list) if s["id"] == elem["parent_id"]), None
+                )
                 if sector_group_index is None:
-                    sector_group_list.append({ "id": elem["parent_id"], "children": [] })
+                    sector_group_list.append({"id": elem["parent_id"], "children": []})
                     sector_group_index = len(sector_group_list) - 1
                 sector_group_list[sector_group_index]["children"].append(elem["id"])
-        
+
         # print(sector_group_list)
 
         cur.execute("SELECT * FROM listing_category_translation")
@@ -311,19 +348,30 @@ class Command(BaseCommand):
 
         # then we loop on the hierarchy to create the SectorGroup & Sector objects
         for sector_group_dict in sector_group_list:
-            elem_data = next(s for (index, s) in enumerate(resp) if ((s["translatable_id"] == sector_group_dict["id"]) and (s["locale"] == "fr")))
-            sector_group = SectorGroup.objects.create(pk=sector_group_dict["id"], name=elem_data["name"], slug=elem_data["slug"])
+            elem_data = next(
+                s
+                for (index, s) in enumerate(resp)
+                if ((s["translatable_id"] == sector_group_dict["id"]) and (s["locale"] == "fr"))
+            )
+            sector_group = SectorGroup.objects.create(
+                pk=sector_group_dict["id"], name=elem_data["name"], slug=elem_data["slug"]
+            )
             for sector_id in sector_group_dict["children"]:
-                elem_data = next(s for (index, s) in enumerate(resp) if ((s["translatable_id"] == sector_id) and (s["locale"] == "fr")))
+                elem_data = next(
+                    s
+                    for (index, s) in enumerate(resp)
+                    if ((s["translatable_id"] == sector_id) and (s["locale"] == "fr"))
+                )
                 try:
-                    Sector.objects.create(pk=sector_id, name=elem_data["name"], slug=elem_data["slug"], group=sector_group)
+                    Sector.objects.create(
+                        pk=sector_id, name=elem_data["name"], slug=elem_data["slug"], group=sector_group
+                    )
                 except IntegrityError:  # sometimes the slugs are duplicated (e.g. "autre")
                     slug_fix = f"{elem_data['slug']}-{sector_group_dict['id']}"
                     Sector.objects.create(pk=sector_id, name=elem_data["name"], slug=slug_fix, group=sector_group)
 
         print(f"Created {SectorGroup.objects.count()} sector groups !")
         print(f"Created {Sector.objects.count()} sectors !")
-
 
     def migrate_siae_sector(self, cur):
         """
@@ -347,12 +395,11 @@ class Command(BaseCommand):
             try:
                 siae = Siae.objects.get(pk=elem["directory_id"])
                 siae.sectors.add(elem["listing_category_id"])
-            except:
+            except:  # noqa
                 # print(elem)
                 pass
 
         print(f"Created {Siae.sectors.through.objects.count()} M2M objects !")
-
 
     def migrate_siae_offer(self, cur):
         """
@@ -386,7 +433,6 @@ class Command(BaseCommand):
 
         print(f"Created {SiaeOffer.objects.count()} offers !")
 
-
     def migrate_siae_label(self, cur):
         """
         Migrate SiaeLabel data
@@ -418,7 +464,6 @@ class Command(BaseCommand):
             SiaeLabel.objects.create(**elem)
 
         print(f"Created {SiaeLabel.objects.count()} labels !")
-
 
     def migrate_siae_client_reference(self, cur):
         """
@@ -455,7 +500,6 @@ class Command(BaseCommand):
 
         print(f"Created {SiaeClientReference.objects.count()} client references !")
 
-
     def migrate_user(self, cur):
         """
         Migrate User data
@@ -468,7 +512,7 @@ class Command(BaseCommand):
         cur.execute("SELECT * FROM user")
         resp = cur.fetchall()
         # print(len(resp))
-        
+
         # s = set([elem["answer_delay"] for elem in resp])
         # print(s)
 
@@ -516,12 +560,11 @@ class Command(BaseCommand):
             # Note: we ignore users with kind=None
             if elem["kind"]:
                 try:
-                    first = User.objects.create(**elem)
+                    first = User.objects.create(**elem)  # noqa
                 except Exception as e:
                     print("a", e)
 
         print(f"Created {User.objects.count()} users !")
-
 
     def migrate_siae_user(self, cur):
         """
@@ -544,7 +587,7 @@ class Command(BaseCommand):
                 user = User.objects.get(c4_id=elem["user_id"])
                 user.siaes.add(elem["directory_id"])
             # Note: some users were ignored because of kind=None. So we ignore the relation as well.
-            except:
+            except:  # noqa
                 pass
 
         print(f"Created {Siae.users.through.objects.count()} M2M objects !")

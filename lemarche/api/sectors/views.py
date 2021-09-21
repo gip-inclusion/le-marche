@@ -1,8 +1,8 @@
-from rest_framework import mixins, viewsets
 from drf_spectacular.utils import extend_schema
+from rest_framework import mixins, viewsets
 
-from lemarche.sectors.models import Sector
 from lemarche.api.sectors.serializers import SectorSerializer
+from lemarche.sectors.models import Sector
 
 
 class SectorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
