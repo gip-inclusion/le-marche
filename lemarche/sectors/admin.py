@@ -29,9 +29,21 @@ class SectorGroupAdmin(admin.ModelAdmin):
 
 @admin.register(Sector)
 class SectorAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", "group", "created_at"]
+    list_display = ["id", "name", "nb_siaes", "group", "created_at"]
     list_filter = ["group"]
     search_fields = ["id", "name"]
 
     prepopulated_fields = {"slug": ("name",)}
     readonly_fields = ["created_at", "updated_at"]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.annotate(siae_count=Count("siaes"))
+        return qs
+
+    def nb_siaes(self, sector):
+        url = reverse("admin:siaes_siae_changelist") + f"?sectors__id__exact={sector.id}"
+        return format_html(f'<a href="{url}">{sector.siae_count}</a>')
+
+    nb_siaes.short_description = "Nombre de structures rattachées"
+    nb_siaes.admin_order_field = "siae_count"
