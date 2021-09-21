@@ -13,9 +13,7 @@ admin.site.site_title = "Administration du Marché de l'Inclusion"  # default: "
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("lemarche.api.urls")),
-    path("", include("lemarche.www.home.urls")),
     path("", include("lemarche.www.pages.urls")),
-    path("", include("django.contrib.flatpages.urls")),
 ]
 
 if settings.DEBUG and "debug_toolbar" in settings.INSTALLED_APPS:

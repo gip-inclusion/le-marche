@@ -16,10 +16,10 @@
   <section class="s-header__container container">
     <div class="s-header__row row">
       <div class="s-header__col s-header__col--logo col-auto d-flex align-items-center pr-0 pr-md-3">
-        <a href="#" class="s-header__logo-ministere"><img src="{% static 'img/logo-ministere-emploi.svg' %}" alt="Ministère de l'emploi"></a>
+        <a href="{% url 'pages:home' %}" class="s-header__logo-ministere"><img src="{% static 'img/logo-ministere-emploi.svg' %}" alt="Ministère de l'emploi"></a>
       </div>
       <div class="s-header__col s-header__col--logo col-auto d-flex align-items-center px-0 px-md-3">
-        <a href=""/><img src="{% static 'itou/images/logo-marche-inclusion.svg' %}" alt="Le marché de l'inclusion"></a>
+        <a href="{% url 'pages:home' %}"/><img src="{% static 'itou/images/logo-marche-inclusion.svg' %}" alt="Le marché de l'inclusion"></a>
       </div>
       <div class="s-header__col s-header__col--nav col d-none d-xl-inline-flex d-xl-flex align-items-center justify-content-end">
         <nav role="navigation">
@@ -62,8 +62,8 @@
         </nav>
       </div>
       <div class="s-header__col s-header__col--burger col d-flex align-items-center justify-content-end d-xl-none" data-toggle="burger">
-        <span id="burger"><img src="{% static 'itou/images/picto-burger.svg'}" alt="Menu" /></span>
-        <span id="close"><img src="{% static 'itou/images/picto-close.svg'}" alt="Fermer" /></span>
+        <span id="burger"><img src="{% static 'itou/images/picto-burger.svg' %}" alt="Menu" /></span>
+        <span id="close"><img src="{% static 'itou/images/picto-close.svg' %}" alt="Fermer" /></span>
       </div>
       <div id="burgerNav">
         <nav role="navigation">
