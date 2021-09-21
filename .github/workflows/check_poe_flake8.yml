@@ -59,7 +59,7 @@ jobs:
         run: |
             source .venv/bin/activate
             ls
-            pflake8 "./lemarche"
+            # pflake8 "./lemarche"
             black . --check
             isort ./lemarche/*.py --check-only
 
