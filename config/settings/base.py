@@ -22,7 +22,7 @@ import environ
 #
 # "env" is the object that wil contain the defined environment, along some
 # default settings
-env = environ.Env(DEBUG=(bool, False))
+env = environ.Env(DEBUG=(bool, False), SECRET_KEY=(str, 'SOME_SECRET_KEY'))
 
 # Build paths inside the project like this: ROOT_DIR / 'subdir'.
 ROOT_DIR = environ.Path(__file__) - 3  # (ROOT/config/settings/base.py - 3 = ROOT )
@@ -33,7 +33,7 @@ APPS_DIR = ROOT_DIR.path('lemarche')
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET_KEY", "SOME_SECRET_KEY")
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', False)
@@ -162,25 +162,25 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.contrib.gis.db.backends.postgis",
-        "HOST": env.str("POSTGRESQL_ADDON_HOST"),
-        "PORT": env.str("POSTGRESQL_ADDON_PORT"),
-        "NAME": env.str("POSTGRESQL_ADDON_DB"),
-        "USER": env.str("POSTGRESQL_ADDON_USER"),
-        "PASSWORD": env.str("POSTGRESQL_ADDON_PASSWORD"),
+        "HOST": env.str("POSTGRESQL_ADDON_HOST", "localhost"),
+        "PORT": env.str("POSTGRESQL_ADDON_PORT", "5432"),
+        "NAME": env.str("POSTGRESQL_ADDON_DB", "marche"),
+        "USER": env.str("POSTGRESQL_ADDON_USER", "user"),
+        "PASSWORD": env.str("POSTGRESQL_ADDON_PASSWORD", "password"),
     },
     "structures": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": env.str("MYSQL_ADDON_DB"),
-        "USER": env.str("MYSQL_ADDON_USER"),
-        "PASSWORD": env.str("MYSQL_ADDON_PASSWORD"),
-        "HOST": env.str("MYSQL_ADDON_HOST"),
-        "PORT": env.str("MYSQL_ADDON_PORT"),
+        "NAME": env.str("MYSQL_ADDON_DB", "mysql"),
+        "USER": env.str("MYSQL_ADDON_USER", "user"),
+        "PASSWORD": env.str("MYSQL_ADDON_PASSWORD", "password"),
+        "HOST": env.str("MYSQL_ADDON_HOST", "localhost"),
+        "PORT": env.str("MYSQL_ADDON_PORT", "3306"),
         "TEST": {
             "MIRROR": "default"
         }
     },
 }
-MYSQL_ADDON_DIRECT_URI = env.str("MYSQL_ADDON_DIRECT_URI")
+MYSQL_ADDON_DIRECT_URI = env.str("MYSQL_ADDON_DIRECT_URI", False)
 
 # Needed as long as Cocorico database used as data source
 DATABASE_ROUTERS = ["config.routers.CocoRouter"]
