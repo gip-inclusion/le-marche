@@ -1,0 +1,10 @@
+{ "deploy": {
+    "module": "lemarche.config.wsgi:application",
+    "managetasks":
+        [
+            "migrate --no-input",
+            "collectstatic --no-input",
+            "compress --force"
+        ]
+    }
+}

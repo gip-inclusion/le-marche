@@ -13,5 +13,10 @@ while ! pg_isready -h $POSTGRESQL_ADDON_HOST -p $POSTGRESQL_ADDON_PORT; do
 done
 
 export PYTHONPATH=$PYTHONPATH:./lemarche:./config
+
+./manage.py collectstatic --noinput
+./manage.py compress --force
+
 ./manage.py migrate
-./manage.py runserver 0.0.0.0:8000
+
+./manage.py runserver 0.0.0.0:8880

@@ -20,6 +20,7 @@ whitenoise = "^5.2.0"
 django-filter = "^2.4.0"
 django-bootstrap4 = "^3.0.1"
 django-compressor = "^2.4.1"
+django-ckeditor = "^6.1.0"
 django-libsass = "^0.9"
 django-environ = "^0.4.5"
 django-crispy-forms = "^1.12.0"
@@ -34,6 +35,9 @@ black = "^21.5b2"
 pytest-django = "^4.4.0"
 factory-boy = "^3.2.0"
 coverage = "^5.5"
+django-debug-toolbar = "^3.2.2"
+django-extensions = "^3.1.3"
+ipython = "^7.27.0"
 
 [tool.poetry.scripts]
 
@@ -97,7 +101,8 @@ DJANGO_SETTINGS_MODULE = "lemarche.pytest_settings"
 # addopts = "--nomigrations --self-containted-html --junitxml=./tests/results/junit.xml"
 
 [tool.poe.tasks]
-export = { shell = "poetry export -f requirements.txt --output requirements.txt"}
+export = { shell = "poetry export --output requirements/staging.txt" }
+export_dev = { shell = "poetry export --dev --output requirements/dev.txt" }
 flake8 = { shell = "pflake8 lemarche"}
 isort = { shell = "isort ./lemarche/*.py"}
 black = { shell = "black lemarche"}

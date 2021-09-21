@@ -1,6 +1,7 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
 
 from lemarche.siaes.constants import DEPARTMENTS, REGIONS
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
@@ -138,6 +139,9 @@ class Siae(models.Model):
         "sectors.Sector", verbose_name="Secteurs d'activité", related_name="siaes", blank=True
     )
     networks = models.ManyToManyField("networks.Network", verbose_name="Réseaux", related_name="siaes", blank=True)
+    users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, verbose_name="Gestionnaires", related_name="siaes", blank=True
+    )
 
     is_qpv = models.BooleanField(verbose_name="Zone QPV", blank=False, null=False, default=False)
     qpv_name = models.CharField(max_length=255, blank=True, null=True)
@@ -198,6 +202,27 @@ class SiaeLabel(models.Model):
     class Meta:
         verbose_name = "Label & certification"
         verbose_name_plural = "Labels & certifications"
+
+    def __str__(self):
+        return self.name
+
+
+class SiaeClientReference(models.Model):
+    name = models.CharField(verbose_name="Nom", max_length=255, blank=True, null=True)
+    description = models.TextField(verbose_name="Description", blank=True)
+    image_name = models.CharField(verbose_name="Nom de l'image", max_length=255)
+    order = models.PositiveIntegerField(verbose_name="Ordre", blank=False, default=1)
+
+    siae = models.ForeignKey(
+        "siaes.Siae", verbose_name="Structure", related_name="client_references", on_delete=models.CASCADE
+    )
+
+    created_at = models.DateTimeField("Date de création", default=timezone.now)
+    updated_at = models.DateTimeField("Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Référence client"
+        verbose_name_plural = "Références clients"
 
     def __str__(self):
         return self.name

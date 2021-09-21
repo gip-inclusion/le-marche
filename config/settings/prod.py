@@ -7,7 +7,8 @@ from .base import *  # noqa
 
 env = environ.Env()
 
-LOADED_SETTINGS = "prod"
+
+DEBUG = False
 
 ALLOWED_HOSTS = [
     env.str("CURRENT_HOST"),

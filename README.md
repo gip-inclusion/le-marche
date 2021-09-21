@@ -79,6 +79,8 @@ Après création du fichier `env.docker.local`,
 ```bash
  # Démarrage
  > docker-compose up
+ # Après démarrage, le serveur est disponible sur http://localhost:8880/
+
  # Se connecter au containeur django
  > docker exec -it bitoubi_django /bin/bash
 
@@ -104,11 +106,11 @@ Le script [start_docker.sh](./start_docker.sh) permet de lancer les environnemen
 
 ## Utilisation
 
-Une fois lancé, l'api propose plusieurs endpoints et interfaces de documentation (liens vers environnement local) :
+Une fois lancé, l'api propose plusieurs endpoints et interfaces de documentation (liens vers environnement docker-compose, port 8880) :
 
-- Documentation Swaggger/OpenAPI : [/docs](http://localhost:8000/api/docs)
-- Documentation ReDoc : [/redoc](http://localhost:8000/api/redoc)
-- Schema OpenApi3 : [/redoc](http://localhost:8000/api/schema)
+- Documentation Swaggger/OpenAPI : [/docs](http://localhost:8880/api/docs)
+- Documentation ReDoc : [/redoc](http://localhost:8880/api/redoc)
+- Schema OpenApi3 : [/redoc](http://localhost:8880/api/schema)
 
 Tant que faire se peut, la documentation des endpoints se fait dans le code, en visant une bonne lisibilité
 de la documentation autogénérée.
