@@ -9,6 +9,6 @@
 {% block main %}
 <section class="container">
     <h1 class="h1">{{ flatpage.title }}</h1>
-    {{ flatpage.content }}
+    {{ flatpage.content | safe }}
 </section>
 {% endblock %}
