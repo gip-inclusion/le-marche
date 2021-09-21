@@ -53,9 +53,6 @@ exclude = '''
   | migrations
   | */migrations/*
   | .venv
-  | manage.py
-  | config
-  | tests
 )/
 '''
 
@@ -75,10 +72,18 @@ skip="migrations"
 line-length = 119
 target-version = ['py38', 'py39']
 include = '\.pyi?$'
+force-exclude = '''
+/(
+  | manage.py
+)/
+'''
+
 exclude = '''
 /(
   | migrations
   | .venv
+  | config
+  | tests
 )/
 
 '''

@@ -58,9 +58,11 @@ jobs:
       - name: Run Linters
         run: |
             source .venv/bin/activate
-            ls
-            # pflake8 "./lemarche"
+            echo "flake8"
+            pflake8 "./lemarche"
+            echo "black"
             black . --check
+            echo "isort"
             isort ./lemarche/*.py --check-only
 
       #----------------------------------------------
