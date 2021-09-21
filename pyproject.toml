@@ -53,6 +53,9 @@ exclude = '''
   | migrations
   | */migrations/*
   | .venv
+  | manage.py
+  | config
+  | tests
 )/
 '''
 
