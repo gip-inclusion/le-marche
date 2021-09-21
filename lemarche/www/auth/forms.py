@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 
 from lemarche.users.models import User
+from lemarche.utils.password_validation import CnilCompositionPasswordValidator
 
 
 class SignupForm(UserCreationForm):
@@ -28,8 +29,8 @@ class SignupForm(UserCreationForm):
         required=False)
     email = forms.EmailField(
         label="Votre adresse e-mail",
-        required=True,
-        help_text="Nous enverrons un e-mail de confirmation à cette adresse avant de valider le compte.")  # noqa
+        required=True)
+        # help_text="Nous enverrons un e-mail de confirmation à cette adresse avant de valider le compte.")  # noqa
 
     class Meta:
         model = User
@@ -39,8 +40,8 @@ class SignupForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["email"].widget.attrs.update({
-            "placeholder": "Merci de bien vérifier l'adresse saisie."})
+        self.fields["email"].widget.attrs.update({"placeholder": "Merci de bien vérifier l'adresse saisie."})
+        self.fields["password1"].help_text = CnilCompositionPasswordValidator().get_help_text()
 
     def clean_email(self):
         email = self.cleaned_data["email"]
