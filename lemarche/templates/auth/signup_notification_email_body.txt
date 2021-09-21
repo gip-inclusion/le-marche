@@ -1,4 +1,4 @@
-Notification C4 : Inscription d'un nouvel utilisateur
+<a href="https://lemarche.inclusion.beta.gouv.fr/">Marché de l'inclusion</a> : inscription d'un nouvel utilisateur
 
 ---
 email: {{ user_email }}

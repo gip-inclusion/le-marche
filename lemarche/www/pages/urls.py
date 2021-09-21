@@ -1,7 +1,7 @@
 from django.urls import path
 from django.views.generic import TemplateView
 
-from lemarche.www.pages.views import PageView
+from lemarche.www.pages.views import ContactView, PageView
 
 
 # https://docs.djangoproject.com/en/dev/topics/http/urls/#url-namespaces-and-included-urlconfs
@@ -9,6 +9,7 @@ app_name = "pages"
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
+    path("contact/", ContactView.as_view(), name="contact"),
     # Static pages
     path("cest-quoi-linclusion/", TemplateView.as_view(template_name="pages/inclusion.html"), name="inclusion"),
     # Flatpages (created in the admin)

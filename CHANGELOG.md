@@ -15,6 +15,8 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 - Ajout du modèle SiaeLabel
 - Ajout du modèle SiaeClientReference
 - Ajout de Flatpages pour créer des pages statiques directement dans l'admin
+- Ajout des pages de connexion, inscription & réinitialisation du mot de passe
+- Ajout de la page contact
 - API : les données des Sector proviennent du nouveau modèle
 - Outils : ajout des packets django-debug-toolbar & django-extensions
 - Outils : ajout d'un template de PR

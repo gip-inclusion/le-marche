@@ -30,7 +30,9 @@
           <nav role="navigation">
             <ul>
               <!-- <li><a href="#" rel="noopener" target="_blank" class="is-external">Besoin d'aide ?</a></li> -->
-              <!-- <li><a href="#" rel="noopener">Nous contacter</a></li> -->
+              {% comment 'hidden' %}
+              <li><a href="{% url 'contact' %}" rel="noopener">Nous contacter</a></li>
+              {% endcomment %}
               <!-- <li><a href="#" rel="noopener" target="_blank" class="is-external">Inscription Newsletter</a></li> -->
             </ul>
           </nav>
