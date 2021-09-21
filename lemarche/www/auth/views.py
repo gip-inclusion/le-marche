@@ -3,7 +3,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView
 
-from lemarche.www.auth.forms import PasswordResetForm, SignupForm
+from lemarche.www.auth.forms import SignupForm, PasswordResetForm
 from lemarche.www.auth.tasks import send_signup_notification_email
 
 
@@ -24,8 +24,8 @@ class PasswordResetView(auth_views.PasswordResetView):
     template_name = "auth/password_reset.html"
     form_class = PasswordResetForm
     # success_url = reverse_lazy("auth:password_reset_sent")
-    email_template_name = "auth/password_reset_email.html"
-    subject_template_name = "auth/password_reset_subject.txt"
+    email_template_name = "auth/password_reset_email_body.html"
+    subject_template_name = "auth/password_reset_email_subject.txt"
 
     def get_success_url(self):
         success_url = reverse("auth:password_reset_sent")
