@@ -10,18 +10,21 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Network',
+            name="Network",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, verbose_name='Nom')),
-                ('brand', models.CharField(blank=True, max_length=255, verbose_name='Enseigne')),
-                ('website', models.URLField(blank=True, verbose_name='Site web')),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Date de création')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Date de modification')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=255, verbose_name="Nom")),
+                ("brand", models.CharField(blank=True, max_length=255, verbose_name="Enseigne")),
+                ("website", models.URLField(blank=True, verbose_name="Site web")),
+                (
+                    "created_at",
+                    models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date de création"),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True, verbose_name="Date de modification")),
             ],
             options={
-                'verbose_name': 'Réseau',
-                'verbose_name_plural': 'Réseaux',
+                "verbose_name": "Réseau",
+                "verbose_name_plural": "Réseaux",
             },
         ),
     ]

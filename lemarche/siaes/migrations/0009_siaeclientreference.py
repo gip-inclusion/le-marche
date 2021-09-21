@@ -8,25 +8,36 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('siaes', '0008_siaelabel'),
+        ("siaes", "0008_siaelabel"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SiaeClientReference',
+            name="SiaeClientReference",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=255, null=True, verbose_name="Nom")),
-                ('description', models.TextField(blank=True, verbose_name="Description")),
-                ('image_name', models.CharField(max_length=255, verbose_name="Nom de l'image")),
-                ('order', models.PositiveIntegerField(default=1, verbose_name='Ordre')),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Date de création')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Date de modification')),
-                ('siae', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='client_references', to='siaes.siae', verbose_name='Structure')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(blank=True, max_length=255, null=True, verbose_name="Nom")),
+                ("description", models.TextField(blank=True, verbose_name="Description")),
+                ("image_name", models.CharField(max_length=255, verbose_name="Nom de l'image")),
+                ("order", models.PositiveIntegerField(default=1, verbose_name="Ordre")),
+                (
+                    "created_at",
+                    models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date de création"),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True, verbose_name="Date de modification")),
+                (
+                    "siae",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="client_references",
+                        to="siaes.siae",
+                        verbose_name="Structure",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Référence client',
-                'verbose_name_plural': 'Références clients',
+                "verbose_name": "Référence client",
+                "verbose_name_plural": "Références clients",
             },
         ),
     ]

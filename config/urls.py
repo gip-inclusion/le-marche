@@ -5,8 +5,8 @@ from django.urls import include, path
 
 # Admin
 admin.site.site_header = "Administration du Marché de l'Inclusion"  # default: "Django Administration"  # noqa
-admin.site.index_title = 'Accueil'                                  # default: "Site administration"  # noqa
-admin.site.site_title = "Administration du Marché de l'Inclusion"   # default: "Django site admin"  # noqa
+admin.site.index_title = "Accueil"  # default: "Site administration"  # noqa
+admin.site.site_title = "Administration du Marché de l'Inclusion"  # default: "Django site admin"  # noqa
 # admin.site.enable_nav_sidebar = False
 
 

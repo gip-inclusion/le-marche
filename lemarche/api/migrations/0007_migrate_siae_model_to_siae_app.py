@@ -6,21 +6,21 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0006_auto_20210902_1724'),
+        ("api", "0006_auto_20210902_1724"),
     ]
 
     operations = [
         migrations.SeparateDatabaseAndState(
             state_operations=[
                 migrations.DeleteModel(
-                    name='Siae',
+                    name="Siae",
                 )
             ],
             database_operations=[
                 migrations.AlterModelTable(
-                    name='Siae',
-                    table='siaes_siae',
+                    name="Siae",
+                    table="siaes_siae",
                 )
-            ]
+            ],
         )
     ]

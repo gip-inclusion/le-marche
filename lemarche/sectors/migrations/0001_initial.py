@@ -8,22 +8,24 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='SectorGroup',
+            name="SectorGroup",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, verbose_name='Nom')),
-                ('slug', models.SlugField(max_length=255, unique=True, verbose_name='Slug')),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Date de création')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Date de modification')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=255, verbose_name="Nom")),
+                ("slug", models.SlugField(max_length=255, unique=True, verbose_name="Slug")),
+                (
+                    "created_at",
+                    models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date de création"),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True, verbose_name="Date de modification")),
             ],
             options={
-                'verbose_name': "Groupe de secteurs d'activité",
-                'verbose_name_plural': "Groupes de secteurs d'activité",
+                "verbose_name": "Groupe de secteurs d'activité",
+                "verbose_name_plural": "Groupes de secteurs d'activité",
             },
         ),
     ]

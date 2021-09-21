@@ -10,41 +10,87 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('api', '0007_migrate_siae_model_to_siae_app'),
+        ("api", "0007_migrate_siae_model_to_siae_app"),
     ]
 
     operations = [
         migrations.SeparateDatabaseAndState(
             state_operations=[
                 migrations.CreateModel(
-                    name='Siae',
+                    name="Siae",
                     fields=[
-                        ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                        ('name', models.CharField(max_length=255, verbose_name='Nom')),
-                        ('brand', models.CharField(blank=True, max_length=255, verbose_name='Enseigne')),
-                        ('kind', models.CharField(choices=[('EI', "Entreprise d'insertion"), ('AI', 'Association intermédiaire'), ('ACI', "Atelier chantier d'insertion"), ('ETTI', "Entreprise de travail temporaire d'insertion"), ('EITI', "Entreprise d'insertion par le travail indépendant"), ('GEIQ', "Groupement d'employeurs pour l'insertion et la qualification"), ('EA', 'Entreprise adaptée'), ('EATT', 'Entreprise adaptée de travail temporaire')], default='EI', max_length=6, verbose_name='Type')),
-                        ('siret', models.CharField(db_index=True, max_length=14, validators=[lemarche.siaes.validators.validate_siret], verbose_name='Siret')),
-                        ('naf', models.CharField(blank=True, max_length=5, validators=[lemarche.siaes.validators.validate_naf], verbose_name='Naf')),
-                        ('address', models.TextField(verbose_name='Adresse')),
-                        ('website', models.URLField(blank=True, verbose_name='Site web')),
-                        ('email', models.CharField(blank=True, max_length=255, null=True)),
-                        ('phone', models.CharField(blank=True, max_length=255, null=True)),
-                        ('city', models.CharField(blank=True, max_length=255, null=True)),
-                        ('department', models.CharField(blank=True, max_length=255, null=True)),
-                        ('region', models.CharField(blank=True, max_length=255, null=True)),
-                        ('post_code', models.CharField(blank=True, max_length=255, null=True)),
-                        ('is_qpv', models.BooleanField(default=False, verbose_name='Zone QPV')),
-                        ('createdat', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Date de création')),
-                        ('updatedat', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Date de mise à jour')),
-                        ('sectors', models.ManyToManyField(to='api.Sector')),
+                        (
+                            "id",
+                            models.BigAutoField(
+                                auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                            ),
+                        ),
+                        ("name", models.CharField(max_length=255, verbose_name="Nom")),
+                        ("brand", models.CharField(blank=True, max_length=255, verbose_name="Enseigne")),
+                        (
+                            "kind",
+                            models.CharField(
+                                choices=[
+                                    ("EI", "Entreprise d'insertion"),
+                                    ("AI", "Association intermédiaire"),
+                                    ("ACI", "Atelier chantier d'insertion"),
+                                    ("ETTI", "Entreprise de travail temporaire d'insertion"),
+                                    ("EITI", "Entreprise d'insertion par le travail indépendant"),
+                                    ("GEIQ", "Groupement d'employeurs pour l'insertion et la qualification"),
+                                    ("EA", "Entreprise adaptée"),
+                                    ("EATT", "Entreprise adaptée de travail temporaire"),
+                                ],
+                                default="EI",
+                                max_length=6,
+                                verbose_name="Type",
+                            ),
+                        ),
+                        (
+                            "siret",
+                            models.CharField(
+                                db_index=True,
+                                max_length=14,
+                                validators=[lemarche.siaes.validators.validate_siret],
+                                verbose_name="Siret",
+                            ),
+                        ),
+                        (
+                            "naf",
+                            models.CharField(
+                                blank=True,
+                                max_length=5,
+                                validators=[lemarche.siaes.validators.validate_naf],
+                                verbose_name="Naf",
+                            ),
+                        ),
+                        ("address", models.TextField(verbose_name="Adresse")),
+                        ("website", models.URLField(blank=True, verbose_name="Site web")),
+                        ("email", models.CharField(blank=True, max_length=255, null=True)),
+                        ("phone", models.CharField(blank=True, max_length=255, null=True)),
+                        ("city", models.CharField(blank=True, max_length=255, null=True)),
+                        ("department", models.CharField(blank=True, max_length=255, null=True)),
+                        ("region", models.CharField(blank=True, max_length=255, null=True)),
+                        ("post_code", models.CharField(blank=True, max_length=255, null=True)),
+                        ("is_qpv", models.BooleanField(default=False, verbose_name="Zone QPV")),
+                        (
+                            "createdat",
+                            models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date de création"),
+                        ),
+                        (
+                            "updatedat",
+                            models.DateTimeField(
+                                default=django.utils.timezone.now, verbose_name="Date de mise à jour"
+                            ),
+                        ),
+                        ("sectors", models.ManyToManyField(to="api.Sector")),
                     ],
                     options={
-                        'ordering': ['name'],
-                        'permissions': [('access_api', 'Can acces the API')],
+                        "ordering": ["name"],
+                        "permissions": [("access_api", "Can acces the API")],
                     },
                 ),
             ],
             # Table already exists. See api/migrations/0007_migrate_siae_model_to_siae_app.py
-            database_operations=[]
+            database_operations=[],
         )
     ]
