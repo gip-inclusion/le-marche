@@ -4,7 +4,6 @@ from lemarche.sectors.models import Sector, SectorGroup
 
 
 class SectorGroupSimpleSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = SectorGroup
         fields = [
@@ -26,7 +25,6 @@ class SectorSerializer(serializers.ModelSerializer):
 
 
 class SectorSimpleSerializer(SectorSerializer):
-
     class Meta:
         model = Sector
         fields = [

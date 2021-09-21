@@ -22,9 +22,11 @@ class Sector(models.Model):
     group = models.ForeignKey(
         "SectorGroup",
         verbose_name="Groupe parent",
-        related_name='sectors',
+        related_name="sectors",
         on_delete=models.SET_NULL,
-        null=True, blank=True)
+        null=True,
+        blank=True,
+    )
     created_at = models.DateTimeField("Date de création", default=timezone.now)
     updated_at = models.DateTimeField("Date de modification", auto_now=True)
 

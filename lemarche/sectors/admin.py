@@ -16,12 +16,13 @@ class SectorGroupAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.annotate(sector_count=Count('sectors'))
+        qs = qs.annotate(sector_count=Count("sectors"))
         return qs
 
     def nb_sectors(self, sector_group):
         url = reverse("admin:sectors_sector_changelist") + f"?group__id__exact={sector_group.id}"
-        return format_html(f"<a href=\"{url}\">{sector_group.sector_count}</a>")
+        return format_html(f'<a href="{url}">{sector_group.sector_count}</a>')
+
     nb_sectors.short_description = "Nombre de secteurs d'activité"
     nb_sectors.admin_order_field = "sector_count"
 
