@@ -6,8 +6,9 @@ from django.template.loader import render_to_string
 
 # TODO: make async (celery)
 def send_signup_notification_email(user):
+    email_subject = "Marché de l'inclusion : inscription d'un nouvel utilisateur"
     email_body = render_to_string(
-        "auth/signup_notification_email.txt",
+        "auth/signup_notification_email_body.txt",
         {
             "user_email": user.email,
             "user_id": user.id,
@@ -19,7 +20,7 @@ def send_signup_notification_email(user):
     )
 
     send_mail(
-        subject="C4 Notif: Inscription d'un nouvel utilisateur",
+        subject=email_subject,
         message=email_body,
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[settings.NOTIFY_EMAIL],

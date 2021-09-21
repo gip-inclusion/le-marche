@@ -1,0 +1,18 @@
+<a href="https://lemarche.inclusion.beta.gouv.fr/">Marché de l'inclusion</a> : demande d'information
+
+
+Bonjour,
+
+Vous avez une nouvelle demande d'information via le formulaire de contact :
+
+- Prénom : {{ form_dict.first_name }}
+- Nom : {{ form_dict.last_name }}
+- Email : {{ form_dict.email }}
+- Téléphone : {{ form_dict.phone }}
+
+- Sujet : {{ form_dict.subject }}
+
+- Message : {{ form_dict.message }}
+
+	
+A bientôt,
