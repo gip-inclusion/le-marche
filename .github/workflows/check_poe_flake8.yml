@@ -71,5 +71,5 @@ jobs:
       - name: Run Tests
         run: |
             source .venv/bin/activate
-            ./manage.py test
+            coverage run --source='./lemarche' ./manage.py test
             coverage report
