@@ -1,4 +1,4 @@
-{% extends 'layouts/layout-itou.html' %}
+{% extends "layouts/layout-itou.html" %}
 {% load static %}
 
 {% block title %}{{ flatpage.title }}{% endblock %}
@@ -6,7 +6,7 @@
 {% block meta_title %}{{ flatpage.meta_title|default:flatpage.title }}{% endblock %}
 {% block meta_description %}{{ flatpage.meta_description }}{% endblock %}
 
-{% block main %}
+{% block content %}
 <section class="container">
     <h1 class="h1">{{ flatpage.title }}</h1>
     {{ flatpage.content | safe }}
