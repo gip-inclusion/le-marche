@@ -233,6 +233,7 @@ STATIC_URL = "/static/"
 # ------------------------------------------------------------------------------
 
 DEFAULT_FROM_EMAIL = "noreply@inclusion.beta.gouv.fr"
+NOTIFY_EMAIL = env.str("NOTIFY_EMAIL")
 
 
 # Security.

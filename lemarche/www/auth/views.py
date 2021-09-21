@@ -1,7 +1,9 @@
 from django.views.generic import CreateView, FormView
 from django.contrib.auth import views as auth_views
 from django.urls import reverse, reverse_lazy
+from django.contrib import messages
 
+from lemarche.www.auth.tasks import send_signup_notification_email
 from lemarche.www.auth.forms import SignupForm, PasswordResetForm
 
 
@@ -9,6 +11,13 @@ class SignupView(CreateView):
     template_name = "auth/signup.html"
     form_class = SignupForm
     success_url = reverse_lazy("home")
+
+    def form_valid(self, form):
+        """Send a notification email to the team."""
+        user = form.save()
+        send_signup_notification_email(user)
+        messages.success(self.request, "Inscription validée !")
+        return super().form_valid(form)
 
 
 class PasswordResetView(auth_views.PasswordResetView):
