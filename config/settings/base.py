@@ -170,6 +170,9 @@ DATABASES = {
         "PASSWORD": env.str("MYSQL_ADDON_PASSWORD"),
         "HOST": env.str("MYSQL_ADDON_HOST"),
         "PORT": env.str("MYSQL_ADDON_PORT"),
+        "TEST": {
+            "MIRROR": "default"
+        }
     },
 }
 MYSQL_ADDON_DIRECT_URI = env.str("MYSQL_ADDON_DIRECT_URI")

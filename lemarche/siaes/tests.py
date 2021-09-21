@@ -1,13 +1,9 @@
-from django.test import TestCase
-
-from lemarche.siaes.models import Siae, SiaeLabel, SiaeOffer
+from django.test import SimpleTestCase
 
 
-class SiaeLabelModelTest(TestCase):
+class SiaeLabelModelTest(SimpleTestCase):
     def setUp(self):
-        Siae.objects.create()
-        SiaeLabel.objects.create()
-        SiaeOffer.objects.create()
+        pass
 
     def test_spacetime_continuum(self):
         self.assertEqual(1, 1)

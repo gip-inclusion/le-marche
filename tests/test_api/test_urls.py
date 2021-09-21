@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from tests import data_setup
+# from tests import data_setup
 
 
 pytestmark = pytest.mark.django_db
@@ -12,8 +12,8 @@ class TestApiEndpoints:
 
     endpoint = '/siaes'
 
-    def setUp(self):
-        data_setup.basic_setup(self)
+    # def setUp(self):
+    #     data_setup.basic_setup(self)
 
     def test_list(self, api_client):
         response = api_client().get(
