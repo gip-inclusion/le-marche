@@ -52,6 +52,7 @@ exclude = '''
 /(
   | migrations
   | */migrations/*
+  | .venv
 )/
 '''
 
@@ -74,6 +75,7 @@ include = '\.pyi?$'
 exclude = '''
 /(
   | migrations
+  | .venv
 )/
 
 '''
