@@ -1,6 +1,5 @@
 import io
 import re
-from collections import Counter
 
 import pymysql
 from django.conf import settings
@@ -21,7 +20,8 @@ DIRECTORY_EXTRA_KEYS = [
     "longitude",
     "geo_range",
     "pol_range",
-    "sector",  # string 'list' with ' - ' seperator. We can map to Sector. But we use instead the 'directory_category' table.
+    "sector",  # string 'list' with ' - ' seperator. We can map to Sector.
+               # But we use instead the 'directory_category' table.
 ]
 
 DIRECTORY_BOOLEAN_FIELDS = [field.name for field in Siae._meta.fields if type(field) == BooleanField]
@@ -171,7 +171,7 @@ class Command(BaseCommand):
 
             # create object
             try:
-                first = Siae.objects.create(**elem)
+                first = Siae.objects.create(**elem) # noqa
                 # print(first.__dict__)
             except Exception as e:
                 print(e)
@@ -324,7 +324,7 @@ class Command(BaseCommand):
             try:
                 siae = Siae.objects.get(pk=elem["directory_id"])
                 siae.sectors.add(elem["listing_category_id"])
-            except:
+            except: # noqa
                 # print(elem)
                 pass
 

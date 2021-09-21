@@ -6,6 +6,8 @@ from lemarche.siaes.models import Siae, SiaeLabel, SiaeOffer
 class SiaeLabelModelTest(TestCase):
     def setUp(self):
         Siae.objects.create()
+        SiaeLabel.objects.create()
+        SiaeOffer.objects.create()
 
     def test_spacetime_continuum(self):
         self.assertEqual(1, 1)
