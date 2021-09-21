@@ -81,8 +81,8 @@ PRIORITY_APPS = [
 ]
 
 DJANGO_APPS = [
-    "django.contrib.admin",
     "django.contrib.auth",
+    "django.contrib.admin",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
@@ -184,21 +184,26 @@ MYSQL_ADDON_DIRECT_URI = env.str("MYSQL_ADDON_DIRECT_URI", False)
 DATABASE_ROUTERS = ["config.routers.CocoRouter"]
 
 
+# Default primary key field type
+# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    # {
-    #     'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    # },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", "OPTIONS": {"min_length": 4}},
-    # {
-    #     'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    # },
-    # {
-    #     'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    # },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+    {"NAME": "lemarche.utils.password_validation.CnilCompositionPasswordValidator"},
 ]
+
+LOGIN_URL = "auth:login"
+LOGIN_REDIRECT_URL = "pages:home"
+LOGOUT_REDIRECT_URL = "pages:home"
 
 
 # Internationalization
@@ -224,11 +229,42 @@ SITE_ID = 1
 
 STATIC_URL = "/static/"
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+# Emails.
+# ------------------------------------------------------------------------------
 
+DEFAULT_FROM_EMAIL = "noreply@inclusion.beta.gouv.fr"
+NOTIFY_EMAIL = env.str("NOTIFY_EMAIL", False)
+
+
+# Security.
+# ------------------------------------------------------------------------------
+
+CSRF_COOKIE_HTTPONLY = True
+
+CSRF_COOKIE_SECURE = True
+
+SECURE_BROWSER_XSS_FILTER = True
+
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Load the site over HTTPS only.
+# TODO: use a small value for testing, once confirmed that HSTS didn't break anything increase it.
+# https://docs.djangoproject.com/en/dev/ref/middleware/#http-strict-transport-security
+SECURE_HSTS_SECONDS = 30
+
+SESSION_COOKIE_HTTPONLY = True
+
+SESSION_COOKIE_SECURE = True
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+X_FRAME_OPTIONS = "DENY"
+
+
+# Django REST Framework settings.
+# https://www.django-rest-framework.org/
+# ----------------------------------------------------
 REST_FRAMEWORK = {
     # YOUR SETTINGS
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
@@ -237,15 +273,17 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 100,
 }
 
+
 # Spectacular settings.
 # https://drf-spectacular.readthedocs.io/en/latest/settings.html
 # ----------------------------------------------------
 SPECTACULAR_SETTINGS = {
-    "TITLE": "API marché de l'inclusion",
+    "TITLE": "Le marché de l'inclusion",
     "DESCRIPTION": "Une initiative de la Plateforme de l'inclusion",
     "VERSION": "0.1.0",
     "CONTACT": "lemarche@inclusion.beta.gouv.fr",
 }
+
 
 # django-bootstrap4.
 # https://django-bootstrap4.readthedocs.io/en/latest/settings.html
@@ -258,6 +296,7 @@ BOOTSTRAP4 = {
     # a bug in django-bootstrap4, it should be investigated.
     "success_css_class": "",
 }
+
 
 # Logging.
 # https://docs.djangoproject.com/en/dev/topics/logging
@@ -287,6 +326,7 @@ LOGGING = {
         },
     },
 }
+
 
 # django-ckeditor settings.
 # https://django-ckeditor.readthedocs.io/en/latest/#optional-customizing-ckeditor-editor
