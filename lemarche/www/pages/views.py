@@ -6,7 +6,7 @@ from django.views.generic import DetailView, FormView
 from lemarche.pages.models import Page
 from lemarche.www.pages.forms import ContactForm
 from lemarche.www.pages.tasks import send_contact_form_email
-from lemarche.www.search.forms import SiaeSearchForm
+from lemarche.www.siae.forms import SiaeSearchForm
 
 
 class HomeView(FormView):

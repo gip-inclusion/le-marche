@@ -1,0 +1,71 @@
+// itou.scss > HOME STYLES
+
+#map-canvas {
+    width:100%;
+    height:100%;
+ }
+.container {
+    max-width: 1400px;
+}
+
+.visual {
+    background:none;
+    margin-bottom:1rem;
+}
+
+.visual .title-holder {
+    height:150px;
+    padding-top:100px;
+}
+
+.home-page h1 {
+    line-height:1.4em;
+    max-width:none;
+    font-size:2.5rem;
+    max-width:800px;
+}
+
+.home-page h2 {
+    font-size:2rem;
+}
+
+.home-page h3 {
+    font-size:1.5rem;
+}
+
+#itou-results-form,
+.home-page .form-category {
+    background-color: transparent;
+    border: transparent;
+}
+
+#itou-results-form  .col,
+.home-page .form-category .col {
+    margin:0;
+    padding:0;
+}
+
+#itou-results-form .col .btn-group {
+    background-color:#fff;
+}
+
+#itou-results-form .col .form-control,
+#itou-results-form .col .btn-group,
+.home-page .form-category .col .form-control,
+.home-page .form-category .col .btn-group {
+    max-width:none;
+    width:350px;
+    height:40px;
+    max-height:40px;
+    border: 1px solid #979797;
+    text-align:left;
+    padding-bottom:3px;
+    margin:0;
+    border-radius:0 !important;
+}
+
+.testme {
+    width:292px;
+    height:40px;
+    border:1px solid #ccc;
+}
