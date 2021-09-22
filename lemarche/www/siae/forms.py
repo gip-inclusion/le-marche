@@ -18,7 +18,7 @@ class SiaeSearchForm(forms.Form):
         choices_groupby="group",
         to_field_name="slug",
         required=False,
-        widget=forms.Select(attrs={"autofocus": "autofocus", "style": "width:100%"}),
+        widget=forms.Select(attrs={"style": "width:100%"}),
     )
     kind = forms.ChoiceField(
         label="Type de structure",

@@ -1,4 +1,4 @@
-{% load static array_choices_display %}
+{% load static array_choices_display m2m_list_display %}
 
 <a href="#" class="siae-card-container">
     <div class="siae-card">
@@ -40,8 +40,8 @@
                         </li>
                         {% endif %}
                         <li class="sc-profile-type">{{ siae.get_kind_display }}</li>
-                        {% if siae.hasDirectoryListingCategory %}
-                            <li class="sc-profile-sectors">{{ siae.sectors }}</li>
+                        {% if siae.sectors %}
+                            <li class="sc-profile-sectors">{% m2m_list_display siae 'sectors' 3 %}</li>
                         {% else %}
                             <li class="sc-profile-sectors-empty"> </li>
                         {% endif %}

@@ -14,6 +14,13 @@ class SiaeSearchResultsView(FormMixin, ListView):
     paginator_class = Paginator
 
     def get_queryset(self):
+        """Filter results."""
         filter_form = SiaeSearchForm(data=self.request.GET)
         results = filter_form.filter_queryset()
         return results
+
+    def get_context_data(self, **kwargs):
+        """Initialize the form with the query parameters."""
+        context = super().get_context_data(**kwargs)
+        context["form"] = SiaeSearchForm(data=self.request.GET)
+        return context
