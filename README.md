@@ -72,6 +72,7 @@ Pour un déploiement local **sous Docker**, renommez le fichier `env.docker_defa
 
 > :information_source: pour accéder à l'environnemnt depuis une autre machine, pensez à définir la variable d'environnemnt `CURRENT_HOST` dans le fichier d'environnement
 
+
 #### Lancement docker-compose
 
 Après création du fichier `env.docker.local`,
