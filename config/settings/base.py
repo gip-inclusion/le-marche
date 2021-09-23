@@ -178,7 +178,6 @@ DATABASES = {
         "TEST": {"MIRROR": "default"},
     },
 }
-MYSQL_ADDON_DIRECT_URI = env.str("MYSQL_ADDON_DIRECT_URI", False)
 
 # Needed as long as Cocorico database used as data source
 DATABASE_ROUTERS = ["config.routers.CocoRouter"]
