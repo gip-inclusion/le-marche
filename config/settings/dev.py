@@ -2,6 +2,7 @@ import os
 
 from .base import *  # noqa
 
+
 DEBUG = True
 
 INSTALLED_APPS += ["django_extensions", "debug_toolbar"]  # noqa F405
@@ -13,6 +14,7 @@ AUTH_PASSWORD_VALIDATORS = []  # Avoid password strength validation in DEV.
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
+    "0.0.0.0",
     os.environ.get("CURRENT_HOST"),
 ]
 
@@ -21,9 +23,20 @@ INTERNAL_IPS = [
 ]
 
 
+# Emails.
+# ------------------------------------------------------------------------------
+
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 # EMAIL_FILE_PATH = str(ROOT_DIR + "sent_emails")
+
+
+# Security.
+# ------------------------------------------------------------------------------
+
+SESSION_COOKIE_SECURE = False
+
+CSRF_COOKIE_SECURE = False
 
 
 # django-extensions settings.
