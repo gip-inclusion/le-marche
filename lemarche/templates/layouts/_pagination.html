@@ -1,0 +1,33 @@
+{% load url_add_query %}
+
+{% if is_paginated %}
+<nav class="nav-pagination mb-5">
+    {% if paginator.num_pages > 1 %}
+        <ul class="pagination justify-content-center">
+            {% if page_obj.number > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{% url_add_query page=page_obj.previous_page_number %}" aria-label="Précédent">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for p in paginator_range %}
+                <li class="page-item {% if p == page_obj.number %}active{% endif %}">
+                    <a class="page-link" href="{% url_add_query page=p %}">
+                        {{ p }}
+                    </a>
+                </li>
+            {% endfor %}
+
+            {% if page_obj.number < paginator.num_pages %}
+                <li class="page-item">
+                    <a class="page-link" href="{% url_add_query page=page_obj.next_page_number %}" aria-label="Suivant">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    {% endif %}
+</nav>
+{% endif %}
