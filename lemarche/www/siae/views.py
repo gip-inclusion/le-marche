@@ -23,4 +23,8 @@ class SiaeSearchResultsView(FormMixin, ListView):
         """Initialize the form with the query parameters."""
         context = super().get_context_data(**kwargs)
         context["form"] = SiaeSearchForm(data=self.request.GET)
+        # display p numbers only from p-4 to p+4 but don't go <1 or >pages_count
+        context["paginator_range"] = range(
+            max(context["page_obj"].number - 4, 1), min(context["page_obj"].number + 4, context["paginator"].num_pages)
+        )
         return context

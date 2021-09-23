@@ -94,12 +94,14 @@
                 <div class="col-sm-8">
                 {% if siaes %}
                     {% for siae in siaes %}
-                        {% include 'siae/_siae_card_result.html' with siae=siae %}
+                        {% include "siae/_siae_card_result.html" with siae=siae %}
                     {% endfor %}
 
                     {% comment "hidden" %}
                     {% include '@CocoricoCore/Frontend/Common/_pagination.html.twig' with { 'pagination': pagination,  'alignment': 'text-center' } only %}
                     {% endcomment %}
+
+                    {% include "layouts/_pagination.html" %}
 
                 {% else %}
                     <div class="col-xs-12 form-confirm min-height justify-content-center" style="margin:-21px 0 30rem;">
