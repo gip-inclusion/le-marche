@@ -34,7 +34,7 @@ class SiaeSearchForm(forms.Form):
     )
 
     def filter_queryset(self):
-        qs = Siae.objects.prefetch_related("sectors")
+        qs = Siae.objects.prefetch_related("sectors", "networks")
 
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
