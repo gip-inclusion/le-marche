@@ -8,5 +8,5 @@ app_name = "siae"
 
 urlpatterns = [
     path("", SiaeSearchResultsView.as_view(), name="search_results"),
-    path("<int:pk>/", include([path("", SiaeDetailView.as_view(), name="siae_detail_view")])),
+    path("<int:pk>/", include([path("", SiaeDetailView.as_view(), name="detail")])),
 ]
