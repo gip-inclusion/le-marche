@@ -33,6 +33,7 @@ apt-get -y install --no-install-recommends \
     libpcre3-dev \
     libsass1 \
     gettext \
+    build-essential \
     gcc
 
 # Delete cached files we don't need anymore:
