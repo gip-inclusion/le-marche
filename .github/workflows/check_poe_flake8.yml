@@ -30,7 +30,7 @@ jobs:
       #       load cached venv if cache exists
       #----------------------------------------------
       - name: Load cached venv
-        id: cached-poetry-dependencies
+        id: cached-poetry-dependencies-v2
         uses: actions/cache@v2
         with:
           path: .venv
@@ -40,7 +40,7 @@ jobs:
       # install dependencies if cache does not exist
       #----------------------------------------------
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        if: steps.cached-poetry-dependencies-v2.outputs.cache-hit != 'true'
         run:  |
           poetry install --no-interaction --no-root
           sudo apt-get -y install gdal-bin
