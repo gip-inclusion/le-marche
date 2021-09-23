@@ -18,6 +18,6 @@ def ensure_user_permission(token):
     """
     try:
         user = User.objects.get(api_key=token)
-        assert user.has_perm("api.access_api")
+        assert user.has_perm("siaes.access_api")
     except (User.DoesNotExist, AssertionError):
         raise Unauthorized
