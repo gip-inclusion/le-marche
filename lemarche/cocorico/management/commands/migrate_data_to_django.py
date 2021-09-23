@@ -178,6 +178,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         connMy = pymysql.connect(
             host=os.environ.get("MYSQL_ADDON_HOST"),
+            port=int(os.environ.get("MYSQL_ADDON_PORT")),
             user=os.environ.get("MYSQL_ADDON_USER"),
             password=os.environ.get("MYSQL_ADDON_PASSWORD"),
             database=os.environ.get("MYSQL_ADDON_DB"),
@@ -186,7 +187,6 @@ class Command(BaseCommand):
 
         try:
             with connMy.cursor() as cur:
-                print("coucou")
                 self.migrate_siae(cur)
                 self.migrate_network(cur)
                 self.migrate_siae_network(cur)
