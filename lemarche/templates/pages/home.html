@@ -14,6 +14,26 @@
                 </article>
             </div>
             <div class="s-article-picture-01__col col-12 col-lg-6 pl-lg-6">
+                <form method="GET" action="{% url 'siae:search_results' %}" class="s-hp-01__form bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
+                    <fieldset>
+                        <legend class="s-hp-01__form__legend ff-extra-01">Que cherchez-vous ?</legend>
+                        <div id="dir_form" class="form-group">
+                            <label class="h4" for="sector">Secteur d’activité</label>
+                            <div class="multiselect itou-multiselect listing-category">
+                                {{ form.sectors }}
+                            </div>
+                        </div>
+                        <p class="text-center mb-0 mt-5">
+                            <button type="submit" class="btn btn-ico btn-primary">
+                                <span>Recherche</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none">
+                                    <path d="M12.523 10.963l3.213 3.211-1.062 1.062-3.211-3.213A6.72 6.72 0 017.25 13.5 6.752 6.752 0 01.5 6.75 6.752 6.752 0 017.25 0 6.752 6.752 0 0114 6.75a6.72 6.72 0 01-1.477 4.213zm-1.504-.557A5.233 5.233 0 0012.5 6.75c0-2.901-2.35-5.25-5.25-5.25A5.248 5.248 0 002 6.75C2 9.65 4.349 12 7.25 12a5.233 5.233 0 003.656-1.481l.113-.113z" fill="currentColor" />
+                                </svg>
+                            </button>
+                        </p>
+                    </fieldset>
+                </form>
+
                 {% comment "hidden" %}
                 {{ form_start(form, {'attr': {'class': 's-hp-01__form bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5'}}) }}
                 {{ form_errors(form) }}
@@ -26,21 +46,20 @@
                             <input type="text" class="form-control" id="inputSecteur" placeholder="Région, département, ville">
                             -->
                             <div class="multiselect itou-multiselect listing-category">
-                            {{form_widget(form.sector, {
-                                'id': 'sector',
-                                'attr': {
-                                    'class': 'form-control jcf-ignore',
-                                    'name': 'sector',
-                                    'placeholder': 'Jardinage, Restauration, ...'
-                                }}
-                            )}}
+                                {{form_widget(form.sector, {
+                                    'id': 'sector',
+                                    'attr': {
+                                        'class': 'form-control jcf-ignore',
+                                        'name': 'sector',
+                                        'placeholder': 'Jardinage, Restauration, ...'
+                                    }}
+                                )}}
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="h4" for="address">Lieu d’intervention</label>
                             <div class="input-group">
                                 {# <input type="text" class="form-control" id="inputLieu" placeholder="Tous"> #}
-
                                 {{form_widget(form.address, {
                                     'id': 'address',
                                     'attr': {
@@ -48,11 +67,10 @@
                                         'placeholder': 'Région, département, code postal'
                                     }}
                                 )}}
-                                
                                 <div class="input-group-append">
                                     <span class="input-group-text"><img src="{% static 'itou/images/ico-geo-alt.svg' %}" alt=""></span>
                                 </div>
-                            </div>                                
+                            </div>
                         </div>
                         <p class="text-center mb-0 mt-5">
                             <button type="submit" class="btn btn-ico btn-primary">
@@ -123,7 +141,7 @@
                         </a>
                     </div>
                 </div>
-            </div>                    
+            </div>
             <div class="s-cards-grid-01__col col mb-3 mb-md-5">
                 <div class="card c-card h-100 w-100 c-card--marche">
                     <div class="card-header">
@@ -176,9 +194,7 @@
         </div>
         <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4">
             {% for structure in structures %}
-                    {% include '@CocoricoCore/Frontend/Directory/_minicard.html.twig' with {
-                    'structure' : structure
-                    } %}
+                {% include '@CocoricoCore/Frontend/Directory/_minicard.html.twig' with { 'structure' : structure } %}
             {% endfor %}
         </div>
     </div>

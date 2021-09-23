@@ -19,7 +19,7 @@
     <br />
 
     <div class="col">
-        <form class="form-signup" action="{% url 'auth:signup' %}" method="POST">
+        <form method="POST" action="{% url 'auth:signup' %}" class="form-signup">
             {% csrf_token %}
             <h3><i class="icon-user-circle-o" style="color:#006adc;"></i> Vous êtes</h3>
             <div class="sub-form">

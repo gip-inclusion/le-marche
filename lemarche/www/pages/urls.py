@@ -1,14 +1,14 @@
 from django.urls import path
 from django.views.generic import TemplateView
 
-from lemarche.www.pages.views import ContactView, PageView
+from lemarche.www.pages.views import ContactView, HomeView, PageView
 
 
 # https://docs.djangoproject.com/en/dev/topics/http/urls/#url-namespaces-and-included-urlconfs
 app_name = "pages"
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
+    path("", HomeView.as_view(), name="home"),
     path("contact/", ContactView.as_view(), name="contact"),
     # Static pages
     path(

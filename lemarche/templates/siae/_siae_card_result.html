@@ -1,0 +1,55 @@
+{% load static array_choices_display m2m_list_display %}
+
+<a href="#" class="siae-card-container">
+    <div class="siae-card">
+        <div class="sc-img mr-5">
+            {% comment "hidden" %}
+            {% if siae.images|length %}
+                    {% set image = siae.images[0] %}
+                    <img src="{{ (ListingImageConstants.IMAGE_FOLDER ~ image.name) | imagine_filter('listing_xsmall') }}"
+                         alt="{{ siae.name }}" class="img-responsive" />
+            {% else %}
+                    <img src="{{ (ListingImageConstants.IMAGE_FOLDER ~ ListingImageConstants.IMAGE_DEFAULT) | imagine_filter('listing_large') }}"
+                         alt="{{ siae.name }}" class="img-responsive" />
+            {% endif %}
+            {% endcomment %}
+        </div>
+        <div class="sc-main">
+            <div class="sc-head">
+                <h3>
+                    {% if siae.brand %}
+                        {{ siae.brand }}
+                    {% else %}
+                        {{ siae.name }}
+                    {% endif %}
+                </h3>
+            </div>
+
+            <div class="sc-body">
+                <div class="sc-profile">
+                    <ul>
+                        {% if siae.kind %}
+                        <li class="sc-profile-kind">
+                            {% if siae.kind == 'ETTI' %}
+                                intérim
+                            {% elif siae.kind == 'AI' %}
+                                Mise à disposition du personnel
+                            {% else %}
+                                {% array_choices_display siae 'presta_type' %}
+                            {% endif %}
+                        </li>
+                        {% endif %}
+                        <li class="sc-profile-type">{{ siae.get_kind_display }}</li>
+                        {% if siae.sectors %}
+                            <li class="sc-profile-sectors">{% m2m_list_display siae 'sectors' 3 %}</li>
+                        {% else %}
+                            <li class="sc-profile-sectors-empty"> </li>
+                        {% endif %}
+                        <li class="sc-profile-town">Situé à {{ siae.city }}</li>
+                        <li class="sc-profile-town-work">Intervient sur : {{ siae.getNiceRange }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</a>

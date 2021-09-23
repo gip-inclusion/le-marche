@@ -6,11 +6,17 @@ from django.views.generic import DetailView, FormView
 from lemarche.pages.models import Page
 from lemarche.www.pages.forms import ContactForm
 from lemarche.www.pages.tasks import send_contact_form_email
+from lemarche.www.siae.forms import SiaeSearchForm
+
+
+class HomeView(FormView):
+    template_name = "pages/home.html"
+    form_class = SiaeSearchForm
 
 
 class ContactView(SuccessMessageMixin, FormView):
-    form_class = ContactForm
     template_name = "pages/contact.html"
+    form_class = ContactForm
     success_message = "Votre message a bien été envoyé, merci !"
     success_url = reverse_lazy("pages:home")
 
