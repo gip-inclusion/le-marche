@@ -8,7 +8,6 @@ export MYSQL_ADDON_PORT="3306"
 export MYSQL_ADDON_USER=""
 export MYSQL_ADDON_PASSWORD=""
 export MYSQL_ADDON_DB=""
-export MYSQL_ADDON_DIRECT_URI = ""  # for the migration script
 
 # PostGreSQL Config
 export POSTGRESQL_ADDON_HOST="localhost"
@@ -18,6 +17,6 @@ export POSTGRESQL_ADDON_PASSWORD=""
 export POSTGRESQL_ADDON_DB=""
 
 # Django Settings
-export SECRET_KEY=""
+export SECRET_KEY="coucou"
 export DJANGO_SETTINGS_MODULE="config.settings.dev"
-export TRACKER_HOST=""
+export TRACKER_HOST="https://example.com"
