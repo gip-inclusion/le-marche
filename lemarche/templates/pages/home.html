@@ -1,85 +1,232 @@
 {% extends "layouts/layout-itou.html" %}
 {% load static %}
 
-{% block title %}Le marché de l'inclusion{% endblock %}
+{% block title %}Accueil{{ block.super }}{% endblock %}
 
 {% block content %}
-    <nav class="navbar navbar-expand-lg bg-warning text-dark">
-        Service en expérimentation et en construction
-    </nav>
-    <div class="container">
-       <div class="row no-gutters pt-3">
-           <div class="col col-lg-10 offset-lg-1 mt-4">
-            <div class="jumbotron">
-                <h1>API marché de l'inclusion</h1>
-                <p class="lead">L'API du <a href="https://lemarche.inclusion.beta.gouv.fr" target="_blank">marché de l'inclusion</a> met à disposition le répertoire qualifié des structures d'insertion par l'activité économique.</p>
-                <p>Cet API est encore en construction, et est appelée à évoluer.</p>
-                <p>
-                <p class="text-muted">Version: 0.8</p>
+<section class="s-article-picture-01 s-article-picture-01--marche s-hp-01 has-illustration-bg-01 py-sm-8">
+    <div class="s-article-picture-01__container container">
+        <div class="s-article-picture-01__row row">
+            <div class="s-article-picture-01__col s-article-picture-01__col--article col-12 col-lg-6 d-flex align-items-center">
+                <article>
+                    <h3 class="h3">Bienvenue sur le marché de l’inclusion</h3>
+                    <h2 class="s-article-picture-01__col--article__title h1"><strong>Vos prestations de qualité, socialement engagées et locales</strong></h2>
+                </article>
             </div>
-            <div class="row mt-5">
-                <div class="col-12 bg-info text-white p-3">
-                    L'accès aux données complètes est limité pendant la période de construction du service.<br />
-                    Si vous désirez obtenir un jeton (<i>token</i>) utilisateur, merci de nous adresser votre demande sur
-                    <a href="mailto:lemarche@inclusion.beta.gouv.fr" class="text-dark">lemarche@inclusion.beta.gouv.fr</a>
-                </div>
-            </div>
-            <div class="row mt-5">
-                <div class="col-12">
-                    <h3 class="mb-3">Dernières Nouveautés</h3>
-                    <div class="container">
-                        <dl class="row">
-                            <dt class="col-sm-3">Données "Réseau"</dt>
-                            <dd class="col-sm-9">Un nouvel endpoint "/networks" donne la liste des réseaux de l'inclusion</dd>
+            <div class="s-article-picture-01__col col-12 col-lg-6 pl-lg-6">
+                {% comment "hidden" %}
+                {{ form_start(form, {'attr': {'class': 's-hp-01__form bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5'}}) }}
+                {{ form_errors(form) }}
+                {#<form class="s-hp-01__form bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">#}
+                    <fieldset>
+                        <legend class="s-hp-01__form__legend ff-extra-01">Que cherchez-vous ?</legend>
+                        <div id="dir_form" class="form-group">
+                            <label class="h4" for="sector">Secteur d’activité</label>
+                            <!--
+                            <input type="text" class="form-control" id="inputSecteur" placeholder="Région, département, ville">
+                            -->
+                            <div class="multiselect itou-multiselect listing-category">
+                            {{form_widget(form.sector, {
+                                'id': 'sector',
+                                'attr': {
+                                    'class': 'form-control jcf-ignore',
+                                    'name': 'sector',
+                                    'placeholder': 'Jardinage, Restauration, ...'
+                                }}
+                            )}}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="h4" for="address">Lieu d’intervention</label>
+                            <div class="input-group">
+                                {# <input type="text" class="form-control" id="inputLieu" placeholder="Tous"> #}
 
-                            <dt class="col-sm-3">Données "Label"</dt>
-                            <dd class="col-sm-9">Ajout de la donnée "label" aux structures</dd>
-
-                            <dt class="col-sm-3">Accès API déplacé</dt>
-                            <dd class="col-sm-9">L'accès à l'API est déplacé dans le sous-dossiers <a href="/api">/api</a></dd>
-
-                            <dt class="col-sm-3">Secteurs d'activité</dt>
-                            <dd class="col-sm-9">L'endpoint secteurs d'activité a été re-architecturé, les données sont désormais mieux représentées</dd>
-
-                            <dt class="col-sm-3">Migration du Marché</dt>
-                            <dd class="col-sm-9">Le site du marché de l'inclusion va rejoindre le socle technique de l'API</dd>
-                        </dl>
-                    </div>
-                </div>
-            </div>
-            <div class="row mt-5">
-                <div class="col-md-4">
-                    <h2>OpenAPI</h2>
-                    <p>Interface OpenAPI, aussi connue sous le nom de Swagger</p>
-                    <p><a href="{% url 'api:swagger-ui' %}" target="_blank" class="btn btn-success">Ouvrir OpenAPI</a></p>
-                </div>
-                <div class="col-md-4">
-                    <h2>Redoc</h2>
-                    <p>ReDoc est une interface REACT par-dessus la spécification OpenAPI</p>
-                    <p><a href="{% url 'api:redoc' %}" target="_blank" class="btn btn-success">Ouvrir ReDoc</a></p>
-                </div>
-                <div class="col-md-4">
-                    <h2>DJango REST</h2>
-                    <p>Interface REST Framework : une interface REST interactive </p>
-                    <p><a href="{% url 'api:siae-list' %}" target="_blank" class="btn btn-success">Ouvrir DRF</a></p>
-                </div>
-            </div>
-            <hr>
-            <footer>
-                <div class="row">
-                    <div class="col-md-6">
-                        <p>2021 ITOU - <a href="https://inclusion.beta.gouv.fr/" target="_blank">la plateforme de l'inclusion</a></p>
-                    </div>
-                    <!--
-                    <div class="col-md-6 text-md-right">
-                        <a href="#" class="text-dark">Terms of Use</a> 
-                        <span class="text-muted mx-2">|</span> 
-                        <a href="#" class="text-dark">Privacy Policy</a>
-                    </div>
-                    -->
-                </div>
-            </footer>
+                                {{form_widget(form.address, {
+                                    'id': 'address',
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'placeholder': 'Région, département, code postal'
+                                    }}
+                                )}}
+                                
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><img src="{% static 'itou/images/ico-geo-alt.svg' %}" alt=""></span>
+                                </div>
+                            </div>                                
+                        </div>
+                        <p class="text-center mb-0 mt-5">
+                            <button type="submit" class="btn btn-ico btn-primary">
+                                <span>Recherche</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none">
+                                    <path d="M12.523 10.963l3.213 3.211-1.062 1.062-3.211-3.213A6.72 6.72 0 017.25 13.5 6.752 6.752 0 01.5 6.75 6.752 6.752 0 017.25 0 6.752 6.752 0 0114 6.75a6.72 6.72 0 01-1.477 4.213zm-1.504-.557A5.233 5.233 0 0012.5 6.75c0-2.901-2.35-5.25-5.25-5.25A5.248 5.248 0 002 6.75C2 9.65 4.349 12 7.25 12a5.233 5.233 0 003.656-1.481l.113-.113z" fill="currentColor" />
+                                </svg>
+                            </button>
+                        </p>
+                    </fieldset>
+                {# </form> #}
+                {{ form_end(form) }}
+                {% endcomment %}
             </div>
         </div>
     </div>
+</section>
+
+<section class="s-article-picture-01 p-0">
+    <div class="s-article-picture-01__container container container-max-lg">
+        <div class="s-article-picture-01__row row">
+            <div class="s-article-picture-01__col s-article-picture-01__col--picture col-12 col-lg-5 d-flex align-items-center px-lg-4">
+                <picture>
+                    <img class="img-fluid" src="{% static 'img/hp-02-illustration-01.png' %}" alt="">
+                </picture>
+            </div>
+            <div class="s-article-picture-01__col s-article-picture-01__col--article col-12 col-lg-7 d-flex align-items-center">
+                <article>
+                    <h2 class="h2 mb-3 mb-lg-5"><strong>Vous recherchez un prestataire ?</strong></h2>
+                    <h3 class="h4 mb-3 mb-lg-5">Nous diffuserons votre besoin auprès de nos partenaires et structures socialement insclusives.</h3>
+                    <p class="s-article-picture-01__col--article__cta">
+                        <a class="btn btn-primary btn-ico" href="https://itou.typeform.com/to/nxG0HlYx" rel="noopener" target="_blank">
+                            <span>Contactez-nous</span>
+                            <svg width="17" height="15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16.5 13.505a.75.75 0 01-.744.745H2.244a.745.745 0 01-.744-.745v-.755H15V3.975l-6 5.4-7.5-6.75V1.5a.75.75 0 01.75-.75h13.5a.75.75 0 01.75.75v12.005zM3.325 2.25L9 7.357l5.675-5.107H3.325zM0 9.75h6v1.5H0v-1.5zM0 6h3.75v1.5H0V6z" fill="currentColor"></path>
+                            </svg>
+                        </a>
+                    </p>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="s-cards-grid-01 bg-gray-400">
+    <div class="s-cards-grid-01__container container">
+        <div class="s-cards-grid-01__row row">
+            <div class="s-cards-grid-01__col s-cards-grid-01__col--title col-12">
+                <h3 class="h2 mb-3 mb-lg-5">Solutions</h3>
+            </div>
+        </div>
+        <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3 justify-content-center">
+            <div class="s-cards-grid-01__col col mb-3 mb-md-5">
+                <div class="card c-card h-100 w-100 c-card--marche">
+                    <div class="card-header">
+                        <img class="card-img-top" src="{% static 'img/hp-02-photo-01.jpg' %}" alt="">
+                    </div>
+                    <div class="card-body">
+                        <p class="h4 lh-base">Restaurants, trouvez des renforts de personnel ? </p>
+                        <p>On vous en dit plus sur la mesure du gouvernement et sur les structures que vous pourrez contacter.</p>
+                    </div>
+                    <div class="card-footer text-right">
+                        <a class="btn btn-outline-primary btn-ico" href="#">
+                            <span>En savoir plus</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19">
+                                <path fill="currentColor" d="M8.66517015,2.82577407 C8.34562066,3.18534827 8.34130426,3.73389577 8.67429909,4.0990571 L11.359,7.039 L1.46428571,7.03948778 C0.93400271,7.03948778 0.5,7.46464861 0.5,7.99431466 L0.506519822,8.10609811 C0.562491613,8.58254879 0.971880067,8.94914154 1.46428571,8.94914154 L11.354,8.949 L8.64311662,11.8995038 C8.28105469,12.2965343 8.31618249,12.9073498 8.7191121,13.2599671 C9.11604213,13.6073339 9.72177649,13.5739032 10.0771295,13.184224 L14.2544508,8.63732099 L14.3103844,8.56958432 L14.3728703,8.47818478 L14.4352531,8.3399089 L14.4491817,8.28987794 L14.462,8.193 L14.4705425,8.17556014 C14.4890266,8.12237865 14.5,8.06201568 14.5,7.99431466 L14.5,7.84422179 L14.4816817,7.71012206 L14.4677531,7.6600911 L14.4094639,7.52822311 L14.3908925,7.49865936 L14.3296866,7.41519605 L10.1084913,2.81453208 C9.75427649,2.42609678 9.14854213,2.39266615 8.7516121,2.74003295 L8.66517015,2.82577407 Z" transform="rotate(-45 10.56 5.732)"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>                    
+            <div class="s-cards-grid-01__col col mb-3 mb-md-5">
+                <div class="card c-card h-100 w-100 c-card--marche">
+                    <div class="card-header">
+                        <img class="card-img-top" src="{% static 'img/hp-02-photo-02.jpg' %}" alt="">
+                    </div>
+                    <div class="card-body">
+                        <p class="h4 lh-base">Acheteurs, alliez impact social et environnemental !</p>
+                        <p>Quelques soient les déchets que produit votre entreprise, vous trouverez forcément un prestataire capable de répondre à vos besoins.</p>
+                    </div>
+                    <div class="card-footer text-right">
+                        <a class="btn btn-outline-primary btn-ico" href="#">
+                            <span>Découvrir le recyclage</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19">
+                                <path fill="currentColor" d="M8.66517015,2.82577407 C8.34562066,3.18534827 8.34130426,3.73389577 8.67429909,4.0990571 L11.359,7.039 L1.46428571,7.03948778 C0.93400271,7.03948778 0.5,7.46464861 0.5,7.99431466 L0.506519822,8.10609811 C0.562491613,8.58254879 0.971880067,8.94914154 1.46428571,8.94914154 L11.354,8.949 L8.64311662,11.8995038 C8.28105469,12.2965343 8.31618249,12.9073498 8.7191121,13.2599671 C9.11604213,13.6073339 9.72177649,13.5739032 10.0771295,13.184224 L14.2544508,8.63732099 L14.3103844,8.56958432 L14.3728703,8.47818478 L14.4352531,8.3399089 L14.4491817,8.28987794 L14.462,8.193 L14.4705425,8.17556014 C14.4890266,8.12237865 14.5,8.06201568 14.5,7.99431466 L14.5,7.84422179 L14.4816817,7.71012206 L14.4677531,7.6600911 L14.4094639,7.52822311 L14.3908925,7.49865936 L14.3296866,7.41519605 L10.1084913,2.81453208 C9.75427649,2.42609678 9.14854213,2.39266615 8.7516121,2.74003295 L8.66517015,2.82577407 Z" transform="rotate(-45 10.56 5.732)"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="s-cards-grid-01__col col mb-3 mb-md-5">
+                <div class="card c-card h-100 w-100 c-card--marche">
+                    <div class="card-header">
+                        <img class="card-img-top" src="{% static 'img/hp-02-photo-03.jpg' %}" alt="">
+                    </div>
+                    <div class="card-body">
+                        <p class="h4 lh-base">Être acteur de l’inclusion dans l’emploi</p>
+                        <p>Être acteur d’une société juste aujourd’hui c’est possible en orientant votre politique d’achat vers des partenaires locaux. Ces structures participent aux développement economique et social de votre territoire en travaillant avec des personnes éloignées de l'emploi.</p>
+                    </div>
+                    <div class="card-footer text-right">
+                        <a class="btn btn-outline-primary btn-ico" href="{% url 'pages:cest-quoi-linclusion' %}">
+                            <span>Découvrir l’inclusion dans l’emploi</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19">
+                                <path fill="currentColor" d="M8.66517015,2.82577407 C8.34562066,3.18534827 8.34130426,3.73389577 8.67429909,4.0990571 L11.359,7.039 L1.46428571,7.03948778 C0.93400271,7.03948778 0.5,7.46464861 0.5,7.99431466 L0.506519822,8.10609811 C0.562491613,8.58254879 0.971880067,8.94914154 1.46428571,8.94914154 L11.354,8.949 L8.64311662,11.8995038 C8.28105469,12.2965343 8.31618249,12.9073498 8.7191121,13.2599671 C9.11604213,13.6073339 9.72177649,13.5739032 10.0771295,13.184224 L14.2544508,8.63732099 L14.3103844,8.56958432 L14.3728703,8.47818478 L14.4352531,8.3399089 L14.4491817,8.28987794 L14.462,8.193 L14.4705425,8.17556014 C14.4890266,8.12237865 14.5,8.06201568 14.5,7.99431466 L14.5,7.84422179 L14.4816817,7.71012206 L14.4677531,7.6600911 L14.4094639,7.52822311 L14.3908925,7.49865936 L14.3296866,7.41519605 L10.1084913,2.81453208 C9.75427649,2.42609678 9.14854213,2.39266615 8.7516121,2.74003295 L8.66517015,2.82577407 Z" transform="rotate(-45 10.56 5.732)"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% comment "hidden" %}
+<section class="s-cards-grid-01 bg-marche-lightest">
+    <div class="s-cards-grid-01__container container">
+        <div class="s-cards-grid-01__row row">
+            <div class="s-cards-grid-01__col s-cards-grid-01__col--title col-12">
+                <h3 class="h2 mb-3 mb-lg-5"><strong>Nos structures à la une</strong></h3>
+            </div>
+        </div>
+        <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4">
+            {% for structure in structures %}
+                    {% include '@CocoricoCore/Frontend/Directory/_minicard.html.twig' with {
+                    'structure' : structure
+                    } %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endcomment %}
+
+<section class="s-cards-grid-01 has-illustration-bg-01">
+    <div class="s-cards-grid-01__container container">
+        <div class="s-cards-grid-01__row row">
+            <div class="s-cards-grid-01__col s-cards-grid-01__col--title col-12 text-center">
+                <h3 class="h2 mb-3 mb-lg-5">Sur le marché</h3>
+            </div>
+        </div>
+        <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3 justify-content-center">
+            <div class="s-cards-grid-01__col col mb-3 mb-md-5">
+                <div class="card c-card h-100 w-100 c-card--marche">
+                    <div class="card-header text-center">
+                        <img height="80" src="{% static 'itou/images/ico-bicro-marche-local.svg' %}" alt="">
+                    </div>
+                    <div class="card-body">
+                        <p class="h4 lh-base">Participez à la dynamique économique et sociale de votre territoire avec des partenaires de proximité</p>
+                    </div>
+                    <div class="card-footer"></div>
+                </div>
+            </div>
+            <div class="s-cards-grid-01__col col mb-3 mb-md-5">
+                <div class="card c-card h-100 w-100 c-card--marche">
+                    <div class="card-header text-center">
+                        <img height="80" src="{% static 'itou/images/ico-bicro-marche-recyclage.svg' %}" alt="">
+                    </div>
+                    <div class="card-body">
+                        <p class="h4 lh-base">Mesurer vos achats inclusifs, renforcez votre politique d’achats responsables et valorisez votre image d’entreprise.</p>
+                    </div>
+                    <div class="card-footer"></div>
+                </div>
+            </div>
+            <div class="s-cards-grid-01__col col mb-3 mb-md-5">
+                <div class="card c-card h-100 w-100 c-card--marche">
+                    <div class="card-header text-center">
+                        <img height="80" src="{% static 'itou/images/ico-bicro-marche-ouvrier.svg' %}" alt="">
+                    </div>
+                    <div class="card-body">
+                        <p class="h4 lh-base">Trouvez des prestataires et palliez efficacement vos besoins de main-d’oeuvre, métiers en tension, et vos besoins de services.</p>
+                    </div>
+                    <div class="card-footer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
