@@ -1,8 +1,7 @@
 import io
-import re
+import os
 
 import pymysql
-from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError, connection
@@ -65,15 +64,6 @@ DIRECTORY_DATE_FIELDS = [field.name for field in Siae._meta.fields if type(field
 NETWORK_DATE_FIELDS = [field.name for field in Network._meta.fields if type(field) == DateTimeField]
 SECTOR_DATE_FIELDS = [field.name for field in Sector._meta.fields if type(field) == DateTimeField]
 USER_DATE_FIELDS = [field.name for field in User._meta.fields if type(field) == DateTimeField]
-
-
-def dsn2params(dsn):
-    # PyMySQL doesn't support URI connection strings
-    p = re.compile(r"mysql:\/\/(?P<user>[^:]+):(?P<password>[^@]+)@(?P<host>[^:]+):(?P<port>[^\/]+)\/(?P<db>.*)")
-    m = re.match(p, dsn)
-    d = m.groupdict()
-    d["port"] = int(d["port"])
-    return d
 
 
 def rename_field(elem, field_name_before, field_name_after):
@@ -186,12 +176,17 @@ class Command(BaseCommand):
     """
 
     def handle(self, *args, **options):
-
-        mysql_params = dsn2params(settings.MYSQL_ADDON_DIRECT_URI)
-        connMy = pymysql.connect(**mysql_params)
+        connMy = pymysql.connect(
+            host=os.environ.get("MYSQL_ADDON_HOST"),
+            user=os.environ.get("MYSQL_ADDON_USER"),
+            password=os.environ.get("MYSQL_ADDON_PASSWORD"),
+            database=os.environ.get("MYSQL_ADDON_DB"),
+            cursorclass=pymysql.cursors.DictCursor,
+        )
 
         try:
-            with connMy.cursor(pymysql.cursors.DictCursor) as cur:
+            with connMy.cursor() as cur:
+                print("coucou")
                 self.migrate_siae(cur)
                 self.migrate_network(cur)
                 self.migrate_siae_network(cur)
