@@ -1,0 +1,246 @@
+// itou.scss > PROFILE STYLES
+
+.profile-detail {
+    margin:0;
+    padding-right:1rem;
+    color:#000638;
+}
+
+.shadow {
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.1), 4px 4px 20px 0 rgba(0,0,0,0.05);
+}
+
+.deflist {
+    padding: 0;
+    list-style: none;
+
+    li {
+        display: flex;
+        padding-bottom:10px;
+    }
+
+    .prof_icon {
+        min-width: 30px
+	}
+}
+
+@media screen and (min-width:768px) {
+    .dir-profile-row {
+        display: flex;
+        justify-content: stretch;
+    }
+
+    .dir-profile-row .col-sm-8,
+    .dir-profile-row .col-sm-4 {
+        float: none !important;
+    }
+}
+
+
+#dir-profile aside.profile {
+    background-image:url('/svg/ronds_rose.svg');
+    background-repeat:no-repeat;
+    background-position: bottom left;
+    background-color:#fff;
+    box-shadow: 0 2px 19px 0 rgba(0, 0, 0, 0.09);
+    padding: 2rem 1rem;
+    border-radius: 5px;
+}
+
+@media screen and (min-width:768px) {
+    #dir-profile aside.profile {
+        position: sticky;
+        top: 150px;
+        z-index: 1;
+    }
+}
+
+.profile_capsule {
+    background-color:#fff;
+    padding: 2rem 1rem;
+    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.05), inset 0px 1px 0px rgba(255, 255, 255, 0.1);
+}
+
+.profile .btn-link {
+   text-align: left !important;
+}
+
+.profile .btn-link:hover i::before,
+.profile .btn-link.is-active i::before {
+    content:'\e81f';
+}
+
+.profile_capsule .separator {
+    border-bottom:5px solid #FE5455;
+    border-radius:4px;
+}
+
+.profile_capsule h3 {
+    margin:2rem 1rem;
+    padding-bottom:.4rem;
+    padding-top:.6rem;
+    border-bottom: 1px solid #999;
+}
+
+.profile_capsule #show_data {
+    display: flex;
+    padding-bottom:10px;
+    
+    .prof_icon {
+        min-width: 20px
+    }
+
+    &.is-open .prof_icon img {
+        transform: rotate(90deg);
+    }
+}
+
+.profile_capsule #show_data,
+.profile_capsule #show_data:focus,
+.profile_capsule #show_data:active {
+    color:#000638;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.profile_capsule #show_data:hover {
+  color:#22285a;
+  background-color:#fff;
+}
+
+.map_capsule .deflist,
+.profile_capsule .deflist {
+    padding: 0 0 0 0rem;
+}
+
+.map_capsule {
+    margin:2rem 1rem;
+    border-radius:4px;
+}
+
+.user_description {
+    padding:1rem;
+    font-size:1.2rem;
+}
+
+.map_details {
+	background-color: #fff;
+	border-radius: 0 4px 4px 0;
+
+    .prof_icon {
+        min-width: 30px
+	}
+}
+
+#sidebar .map-holder {
+    height:225px;
+    width:100%;
+    top:10px;
+    border-radius:4px;
+}
+
+.profile-detail {
+    
+	.listing-holder {
+		display: flex !important;
+		flex-wrap: wrap;
+		justify-content: space-evenly;
+	}
+    
+    .listing-box { 
+        width: 380px; 
+    }
+
+	.img-left {
+		display: flex;
+		flex-direction: row;
+        justify-content: stretch;
+	}
+
+	h3 {
+		font-size: 1.375em;
+        margin-top: 10px;
+        margin-bottom: 1rem;
+	}
+
+    .il-r {
+        flex: 1;
+    }
+}
+
+.img-left .il-l img {
+    height:auto;
+    max-width:100%;
+    margin-right:.7rem;
+    margin-top:5px;
+}
+
+.img-left span.il-l {
+    width:45px;
+    flex-shrink: 0;
+}
+
+.img-left span.il-r {
+    flex-grow:1;
+    display:block;
+}
+
+.prests-holder {
+    display:flex;
+    flex-wrap:wrap;
+}
+
+.prests-post {
+    min-height:4rem;
+}
+
+.prests-post h4 {
+    display:inline;
+}
+
+.equal {
+  display: flex;
+  display: -webkit-flex;
+  flex-wrap: wrap;
+}
+
+#user_profile .gallery-small .slideset,
+#user_profile .gallery-small .slideset .slide {
+    width:150px;
+    height:100px;
+    margin: 0 auto;
+}
+
+#user_profile {
+    background-color: #F2F3F5;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+#user_profile .cell,
+#user_profile h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+
+#user_profile .cell {
+    display: flex;
+}
+
+#user_profile .cell .prof_icon {
+    min-width: 25px;
+}
+
+.active_sectors {
+    list-style-type: none;
+    margin:0;
+}
+
+.active_sectors > li:before {
+    content: "- ";
+    text-indent:-5rem;
+}
+.active_sectors {
+    padding-left:0;
+}

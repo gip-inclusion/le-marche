@@ -1,7 +1,8 @@
 from django.core.paginator import Paginator
-from django.views.generic import ListView
+from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
 
+from lemarche.siaes.models import Siae
 from lemarche.www.siae.forms import SiaeSearchForm
 
 
@@ -28,3 +29,9 @@ class SiaeSearchResultsView(FormMixin, ListView):
             max(context["page_obj"].number - 4, 1), min(context["page_obj"].number + 4, context["paginator"].num_pages)
         )
         return context
+
+
+class SiaeDetailView(DetailView):
+    template_name = "siae/detail.html"
+    context_object_name = "siae"
+    queryset = Siae.objects.prefetch_related("sectors")
