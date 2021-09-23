@@ -1,7 +1,6 @@
 {% extends 'layouts/layout-itou.html' %}
-{% load static %}
 
-{% block title %}Déconnecté{% endblock %}
+{% block title %}Déconnecté{{ block.super }}{% endblock %}
 
 {% block content %}
 <section class="container">

@@ -11,7 +11,11 @@ urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path("contact/", ContactView.as_view(), name="contact"),
     # Static pages
-    path("cest-quoi-linclusion/", TemplateView.as_view(template_name="pages/inclusion.html"), name="inclusion"),
+    path(
+        "cest-quoi-linclusion/",
+        TemplateView.as_view(template_name="pages/cest-quoi-linclusion.html"),
+        name="cest-quoi-linclusion",
+    ),
     # Flatpages (created in the admin)
     # path("", include("django.contrib.flatpages.urls")),
     path("<path:url>", PageView.as_view(), name="flatpage"),

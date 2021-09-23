@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import TemplateView
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework import routers
 
@@ -16,6 +17,7 @@ router.register(r"sectors", SectorViewSet, basename="sectors")
 router.register(r"networks", NetworkViewSet, basename="networks")
 
 urlpatterns = [
+    path("", TemplateView.as_view(template_name="api/home.html"), name="home"),
     # Additional API endpoints
     path("siaes/siret/<str:siret>/", SiaeViewSet.as_view({"get": "retrieve_by_siret"})),
     # Swagger / OpenAPI documentation
