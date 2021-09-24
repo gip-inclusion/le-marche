@@ -7,11 +7,15 @@ class SiaeFilter(django_filters.FilterSet):
     """
     Filtres pour liste SIAE
 
-    Kind : Filtre par choix multiple des types de structure
-    Department: Filtrer par numéro du département
+    kind : Filtre par choix multiple des types de structures
+    presta_type : Filtre par choix multiple des types de prestations
+    department: Filtrer par numéro du département
     """
 
     kind = django_filters.MultipleChoiceFilter(label="Type(s) de structure")
+    presta_type = django_filters.MultipleChoiceFilter(
+        label="Type(s) de prestation", choices=Siae.PRESTA_CHOICES, lookup_expr="icontains"
+    )
 
     # NOTE: Not all departements are pure numbers
     department = django_filters.CharFilter(label="Numéro du département")
@@ -20,4 +24,4 @@ class SiaeFilter(django_filters.FilterSet):
 
     class Meta:
         model = Siae
-        fields = ["kind", "department", "updated_at"]
+        fields = ["kind", "presta_type", "department", "updated_at"]
