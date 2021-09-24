@@ -4,9 +4,9 @@ from rest_framework import mixins, viewsets
 from rest_framework.response import Response
 
 from lemarche.api.siaes.filters import SiaeFilter
-from lemarche.api.siaes.serializers import (  # SiaeHyperSerializer,
+from lemarche.api.siaes.serializers import (
     SiaeAnonSerializer,
-    SiaeKindSerializer,
+    SiaeChoiceSerializer,
     SiaeListAnonSerializer,
     SiaeListSerializer,
     SiaeSerializer,
@@ -103,12 +103,24 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
 
 
 class SiaeKindViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    serializer_class = SiaeKindSerializer
+    serializer_class = SiaeChoiceSerializer
 
     def get_queryset(self):
         siae_kinds = [{"id": id, "name": name} for (id, name) in Siae.KIND_CHOICES]
         return siae_kinds
 
     @extend_schema(summary="Lister tous les choix de types de structures", tags=[Siae._meta.verbose_name_plural])
+    def list(self, request, *args, **kwargs):
+        return super().list(request, args, kwargs)
+
+
+class SiaePrestaTypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = SiaeChoiceSerializer
+
+    def get_queryset(self):
+        siae_kinds = [{"id": id, "name": name} for (id, name) in Siae.PRESTA_CHOICES]
+        return siae_kinds
+
+    @extend_schema(summary="Lister tous les choix de types de prestations", tags=[Siae._meta.verbose_name_plural])
     def list(self, request, *args, **kwargs):
         return super().list(request, args, kwargs)
