@@ -5,13 +5,15 @@ from rest_framework import routers
 
 from lemarche.api.networks.views import NetworkViewSet
 from lemarche.api.sectors.views import SectorViewSet
-from lemarche.api.siaes.views import SiaeViewSet
+from lemarche.api.siaes.views import SiaeKindViewSet, SiaePrestaTypeViewSet, SiaeViewSet
 
 
 # https://docs.djangoproject.com/en/dev/topics/http/urls/#url-namespaces-and-included-urlconfs
 app_name = "api"
 
 router = routers.DefaultRouter()
+router.register(r"siae/kinds", SiaeKindViewSet, basename="siae-kinds")
+router.register(r"siae/presta-types", SiaePrestaTypeViewSet, basename="siae-presta-types")
 router.register(r"siae", SiaeViewSet, basename="siae")
 router.register(r"sectors", SectorViewSet, basename="sectors")
 router.register(r"networks", NetworkViewSet, basename="networks")

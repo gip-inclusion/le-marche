@@ -4,14 +4,15 @@ from rest_framework import mixins, viewsets
 from rest_framework.response import Response
 
 from lemarche.api.siaes.filters import SiaeFilter
-from lemarche.api.siaes.serializers import (  # SiaeHyperSerializer,
+from lemarche.api.siaes.serializers import (
     SiaeAnonSerializer,
+    SiaeChoiceSerializer,
     SiaeListAnonSerializer,
     SiaeListSerializer,
     SiaeSerializer,
 )
 from lemarche.api.utils import ensure_user_permission
-from lemarche.cocorico.models import Directory
+from lemarche.siaes.models import Siae
 
 
 class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -22,14 +23,15 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     # ModelViewSet needs 'queryset' to be set otherwise the router won't be
     # able to derive the model Basename. To avoid loading data on object
     # initialisation we load an empty queryset.
-    queryset = Directory.objects.all()
+    queryset = Siae.objects.all()
     serializer_class = SiaeListSerializer
     filter_class = SiaeFilter
 
     @extend_schema(
+        tags=[Siae._meta.verbose_name_plural],
         parameters=[
             OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
-        ]
+        ],
     )
     def list(self, request, format=None):
         """
@@ -56,12 +58,13 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
             return self.get_paginated_response(serializer.data)
 
     @extend_schema(
+        tags=[Siae._meta.verbose_name_plural],
         parameters=[
             OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
         ],
         responses=SiaeSerializer,
     )
-    def retrieve_by_id(self, request, pk=None, format=None):
+    def retrieve(self, request, pk=None, format=None):
         """
         Détail d'une structure
         """
@@ -69,6 +72,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         return self._retrieve_return(request, queryset, format)
 
     @extend_schema(
+        tags=[Siae._meta.verbose_name_plural],
         parameters=[
             OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
         ],
@@ -96,3 +100,27 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
             )
 
         return Response(serializer.data)
+
+
+class SiaeKindViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = SiaeChoiceSerializer
+
+    def get_queryset(self):
+        siae_kinds = [{"id": id, "name": name} for (id, name) in Siae.KIND_CHOICES]
+        return siae_kinds
+
+    @extend_schema(summary="Lister tous les choix de types de structures", tags=[Siae._meta.verbose_name_plural])
+    def list(self, request, *args, **kwargs):
+        return super().list(request, args, kwargs)
+
+
+class SiaePrestaTypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = SiaeChoiceSerializer
+
+    def get_queryset(self):
+        siae_kinds = [{"id": id, "name": name} for (id, name) in Siae.PRESTA_CHOICES]
+        return siae_kinds
+
+    @extend_schema(summary="Lister tous les choix de types de prestations", tags=[Siae._meta.verbose_name_plural])
+    def list(self, request, *args, **kwargs):
+        return super().list(request, args, kwargs)

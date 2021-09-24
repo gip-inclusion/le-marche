@@ -10,13 +10,14 @@ class SiaeSerializer(serializers.ModelSerializer):
     raisonSociale = serializers.CharField(source="name")
     enseigne = serializers.CharField(source="brand")
     type = serializers.CharField(source="kind")
+    # presta_type =
     telephone = serializers.CharField(source="phone")
     siteWeb = serializers.CharField(source="website")
     ville = serializers.CharField(source="city")
     departement = serializers.CharField(source="department")
     codePostal = serializers.CharField(source="post_code")
     siretUrl = serializers.SerializerMethodField()
-    sectors = SectorSimpleSerializer(many=True, read_only=True)
+    sectors = SectorSimpleSerializer(many=True)
     # zoneQPV = serializers.BooleanField(source="is_qpv", default=False)
     zoneQPV = serializers.SerializerMethodField()
 
@@ -27,6 +28,7 @@ class SiaeSerializer(serializers.ModelSerializer):
             "enseigne",
             "siret",
             "type",
+            "presta_type",
             "email",
             "telephone",
             "siteWeb",
@@ -78,6 +80,7 @@ class SiaeListSerializer(SiaeSerializer):
             "raisonSociale",
             "siret",
             "type",
+            "presta_type",
             "departement",
             "created_at",
             "updated_at",
@@ -95,38 +98,6 @@ class SiaeListAnonSerializer(SiaeSerializer):
         ]
 
 
-class SiaeHyperSerializer(serializers.HyperlinkedModelSerializer):
-    # Tested this, bur error messages are very confusing.
-    # Should replace all manually generated URLS, so
-    # I keep it here as a reminder
-
-    raisonSociale = serializers.CharField(source="name")
-    enseigne = serializers.CharField(source="brand")
-    type = serializers.CharField(source="kind")
-    telephone = serializers.CharField(source="phone")
-    siteWeb = serializers.CharField(source="website")
-    ville = serializers.CharField(source="city")
-    departement = serializers.CharField(source="department")
-    codePostal = serializers.CharField(source="post_code")
-
-    target = serializers.HyperlinkedIdentityField(
-        view_name="siae-detail", lookup_field="siret", lookup_url_kwarg="key"
-    )
-
-    class Meta:
-        model = Siae
-        fields = [
-            "raisonSociale",
-            "enseigne",
-            "siret",
-            "type",
-            "email",
-            "telephone",
-            "siteWeb",
-            "ville",
-            "departement",
-            "region",
-            "codePostal",
-            "created_at",
-            "target",
-        ]
+class SiaeChoiceSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    name = serializers.CharField()

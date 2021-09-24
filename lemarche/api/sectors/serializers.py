@@ -24,7 +24,7 @@ class SectorSerializer(serializers.ModelSerializer):
         ]
 
 
-class SectorSimpleSerializer(SectorSerializer):
+class SectorSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sector
         fields = [

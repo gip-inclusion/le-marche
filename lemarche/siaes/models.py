@@ -93,14 +93,14 @@ class Siae(models.Model):
 
     name = models.CharField(verbose_name="Raison sociale", max_length=255)
     brand = models.CharField(verbose_name="Enseigne", max_length=255, blank=True, null=True)
-    kind = models.CharField(verbose_name="Type", max_length=6, choices=KIND_CHOICES, default=KIND_EI)
+    kind = models.CharField(verbose_name="Type de structure", max_length=6, choices=KIND_CHOICES, default=KIND_EI)
     description = models.TextField(verbose_name="Description", blank=True)
     siret = models.CharField(verbose_name="Siret", validators=[validate_siret], max_length=14, db_index=True)
     siret_is_valid = models.BooleanField(verbose_name="Siret Valide", default=False)
     naf = models.CharField(verbose_name="Naf", validators=[validate_naf], max_length=5, blank=True, null=True)
     nature = models.CharField(max_length=20, choices=NATURE_CHOICES, blank=True, null=True)
     presta_type = ArrayField(
-        verbose_name="Codes postaux",  # Type prestation
+        verbose_name="Type de prestation",
         base_field=models.CharField(max_length=20, choices=PRESTA_CHOICES),
         blank=True,
         null=True,
