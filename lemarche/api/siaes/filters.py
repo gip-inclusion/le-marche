@@ -1,37 +1,27 @@
 import django_filters
 
-from lemarche.cocorico.models import Directory
-
-
-TYPE_CHOICES = (
-    ("EI", "EI"),
-    ("EA", "EA"),
-    ("EITI", "EITI"),
-    ("ETTI", "ETTI"),
-    ("EATT", "EATT"),
-    ("ACI", "ACI"),
-    ("AI", "AI"),
-    ("GEIQ", "GEIQ"),
-)
+from lemarche.siaes.models import Siae
 
 
 class SiaeFilter(django_filters.FilterSet):
     """
     Filtres pour liste SIAE
 
-    Type : Filtre par choix multiple des types de structure
-    Departement: Filtrer par numéro du département
+    kind : Filtre par choix multiple des types de structures
+    presta_type : Filtre par choix multiple des types de prestations
+    department: Filtrer par numéro du département
     """
 
-    type = django_filters.MultipleChoiceFilter(field_name="kind", label="Type(s) de structure", choices=TYPE_CHOICES)
-    updatedat = django_filters.IsoDateTimeFromToRangeFilter(label="Date de dernière mise à jour")
-
-    # NOTE: Not all departements are pure numbers
-    departement = django_filters.CharFilter(
-        label="Numéro du département",
-        field_name="department",
+    kind = django_filters.MultipleChoiceFilter(label="Type(s) de structure")
+    presta_type = django_filters.MultipleChoiceFilter(
+        label="Type(s) de prestation", choices=Siae.PRESTA_CHOICES, lookup_expr="icontains"
     )
 
+    # NOTE: Not all departements are pure numbers
+    department = django_filters.CharFilter(label="Numéro du département")
+
+    updated_at = django_filters.IsoDateTimeFromToRangeFilter(label="Date de dernière mise à jour")
+
     class Meta:
-        model = Directory
-        fields = ["type", "departement", "updatedat"]
+        model = Siae
+        fields = ["kind", "presta_type", "department", "updated_at"]
