@@ -1,27 +1,121 @@
-{% load static %}
-{% load bootstrap4 %}
-<!DOCTYPE HTML>
+{% load static compress bootstrap4 %}
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>{% block title %} - marché de l'inclusion {% endblock %}</title>
-    {% block meta_description %}<meta name="description" content="">{% endblock %}
+    {% block meta_description %}
+    <meta name="description" content="Les emplois de l'inclusion facilitent le retour à l'emploi des personnes en situation d'exclusion par l'orientation et le recrutement auprès d'employeurs solidaires (structures de l'insertion par l'activité économique et du secteur adapté)">
+    {% endblock %}
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    {# https://metatags.io #}
-    <meta name="title" content="Le marché de l'inclusion">
-    {# https://metatags.io Open Graph / Facebook #}
-    <!-- TODO -->
-    {# https://metatags.io Twitter #}
-    <!-- TODO -->
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <meta name="theme-color" content="#ffffff">
 
     {# Use this to get the value of the CSRF token in JavaScript. #}
     <meta name="csrf-token" content="{{ csrf_token }}">
-    {% bootstrap_css %}
+
     {% bootstrap_javascript jquery='full' %}
+
+    {% bootstrap_css %}
+
+    <link rel="stylesheet" href="{% static 'itou/stylesheets/app.css' %}" type="text/css">
+
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'css/itou_c4.scss' %}" type="text/x-scss">
+    {% endcompress %}
+
+    {% block extra_css %}{% endblock %}
+
+    {% comment "migrate first" %}
+    {% include '@CocoricoCore/Frontend/Common/js/_google_analytics_js.html.twig' only %}
+    {% include '@CocoricoCore/Frontend/Common/js/_matomo_analytics_js.html.twig' only %}
+    {% include '@CocoricoCore/Frontend/Common/js/_hotjar_analytics_js.html.twig' only %}
+    {% include '@CocoricoCore/Frontend/Common/js/_itou_tracker_js.html.twig' only %}
+    {% include '@CocoricoCore/Frontend/Common/js/_tarteaucitron_js.html.twig' only %}
+
+    {% include '@CocoricoCore/Frontend/Common/_cookie_consent_js.html.twig' only %}
+    {% endcomment %}
+
     {% block extra_head %}{% endblock %}
 </head>
-<body>
+
+<body id="top" class="loading">
+    <!-- allow a user to go to the main content of the page -->
+    <noscript>Javascript doit être activé pour pouvoir assurer l'affichage correct de la page </noscript>
+
+    {% comment "migrate first" %}
+    {% include '@CocoricoCore/Frontend/Common/js/_google_tag_manager_js.html.twig' only %}
+    {% endcomment %}
+
+    <div class="sr-only">
+        <a tabindex="1" href="#main">aller au contenu</a>
+    </div>
+
+    {% block header %}
+      {% include "layouts/_header.html" %}
+    {% endblock %}
+
+    {% block sub_header %}{% endblock %}
+
+    <!-- contains main informative part of the site -->
+    <main id="main" role="main" class="s-main">
+
+        {% block breadcrumbs %}{% endblock %}
+
+        {% block messages %}
+        {% if messages %}
+            <div class="messages fr-container fr-my-5w">
+                {% for message in messages %}
+                    <div role="alert" class="fr-alert fr-alert--{{ message.tags|default:'info' }} fr-alert--sm">
+                        <p>{{ message|safe }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% endblock %}
+
+        {% block content %}{% endblock %}
+
+    </main>
+
+    {% block footer %}
+        {% include "layouts/_footer.html" %}
+    {% endblock %}
+
+    <!-- popin -->
+    {% block modal %}{% endblock %}
+
+    <!-- allow a user to go to the top of the page -->
+    <div class="sr-only">
+        <a href="#header">retour au début de la page</a>
+    </div>
+
+    {% block script %}
+    {% compress js %}
+    <script src="{% static 'itou/javascripts/app.js' %}"></script>
+    {% endcompress %}
+    <script>
+        //Global Javascript variables
+        {% comment "migration fix" %}
+        var locale = '{{ app.request.locale }}';
+        var locales = {{ locales| json_encode | raw }};
+        var defaultCurrency = '{{ defaultCurrency }}';
+        var currentCurrency = '{{ currentCurrency }}';
+        //Does the app is in day mode or time mode
+        var timeUnitIsDay = {{ timeUnitIsDay ?'true': 'false' }};
+        var timeUnitAllDay = {{ timeUnitAllDay ?'true': 'false' }};
+        var endDayIncluded = {{ endDayIncluded ?'true': 'false' }};
+        var isAuthenticated = {{ app.user is not null and is_granted("IS_AUTHENTICATED_FULLY") ? 'true' : 'false' }};
+        var hoursAvailable = {{ timeHoursAvailable| json_encode | raw }};
+        var sessId = '{{ app.session.get('uuid') }}';
+        var isAdmin = {{ app.session.get('isAdmin') ? 'true' : 'false'}};
+        var uType = '{{ app.session.get('userType') }}';
+        {% endcomment %}
+    </script>
+    {% endblock %}
+    {% block extra_js %}{% endblock %}
+
     {% bootstrap_messages %}
-    {% block content %}{% endblock %}
 </body>
 </html>

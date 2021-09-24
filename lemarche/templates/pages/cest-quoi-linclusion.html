@@ -1,16 +1,13 @@
-{% extends "layouts/layout-itou.html" %}
+{% extends "layouts/base.html" %}
 {% load static %}
 
 {% comment "migration fix" %}
 {%- block meta_title -%}
 {{ 'home.meta_title'|trans({}, 'cocorico_meta') ~ " - " ~ cocorico_site_name }}
 {%- endblock -%}
-
 {%- block meta_description -%}
 {{ 'home.meta_desc'|trans({}, 'cocorico_meta') }}
 {%- endblock -%}
-
-{% block theme %}itou-page{% endblock %}
 {% endcomment %}
 
 {% block content %}
