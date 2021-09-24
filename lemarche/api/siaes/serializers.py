@@ -16,7 +16,7 @@ class SiaeSerializer(serializers.ModelSerializer):
     departement = serializers.CharField(source="department")
     codePostal = serializers.CharField(source="post_code")
     siretUrl = serializers.SerializerMethodField()
-    sectors = SectorSimpleSerializer(many=True, read_only=True)
+    sectors = SectorSimpleSerializer(many=True)
     # zoneQPV = serializers.BooleanField(source="is_qpv", default=False)
     zoneQPV = serializers.SerializerMethodField()
 
