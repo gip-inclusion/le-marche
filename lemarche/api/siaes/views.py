@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from lemarche.api.siaes.filters import SiaeFilter
 from lemarche.api.siaes.serializers import (  # SiaeHyperSerializer,
     SiaeAnonSerializer,
+    SiaeKindSerializer,
     SiaeListAnonSerializer,
     SiaeListSerializer,
     SiaeSerializer,
@@ -99,3 +100,15 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
             )
 
         return Response(serializer.data)
+
+
+class SiaeKindViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = SiaeKindSerializer
+
+    def get_queryset(self):
+        siae_kinds = [{"id": id, "name": name} for (id, name) in Siae.KIND_CHOICES]
+        return siae_kinds
+
+    @extend_schema(summary="Lister tous les choix de types de structures", tags=[Siae._meta.verbose_name_plural])
+    def list(self, request, *args, **kwargs):
+        return super().list(request, args, kwargs)

@@ -130,3 +130,8 @@ class SiaeHyperSerializer(serializers.HyperlinkedModelSerializer):
             "created_at",
             "target",
         ]
+
+
+class SiaeKindSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    name = serializers.CharField()
