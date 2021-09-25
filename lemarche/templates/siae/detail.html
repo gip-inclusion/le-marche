@@ -7,7 +7,7 @@
 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'siae:search_results' %}?" title="Revenir aux résultats de recherche">Recherche</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'siae:search_results' %}?{{ current_search_query }}" title="Revenir aux résultats de recherche">Recherche</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{ siae.name }}</li>
     </ol>
 </nav>
