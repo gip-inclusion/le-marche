@@ -17,6 +17,11 @@ urlpatterns = [
         name="filiere_restauration",
     ),
     path(
+        "filiere/recyclage/",
+        TemplateView.as_view(template_name="pages/filiere_recyclage.html"),
+        name="filiere_recyclage",
+    ),
+    path(
         "cest-quoi-linclusion/",
         TemplateView.as_view(template_name="pages/cest-quoi-linclusion.html"),
         name="cest-quoi-linclusion",
