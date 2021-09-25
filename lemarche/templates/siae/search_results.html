@@ -3,213 +3,218 @@
 
 {% block title %}Recherche{{ block.super }}{% endblock %}
 
+{% block breadcrumbs %}
+<nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Recherche</li>
+    </ol>
+</nav>
+{% endblock %}
+
 {% block content %}
-<section class="container">
-    <div class="row">
-        {% block breadcrumbs %}
-        {% endblock %}
-
-        <div id="dir_form" class="dir_form">
-            <form method="GET" action="{% url 'siae:search_results' %}">
-            <div class="row">
-                <div class="col-sm-8">
-                    <div class="row first-row">
-                        <div class="col-sm-6 pr-sm-0 mt-4">
-                            <div class="title">
-                                Secteur d'activité
-                            </div>
-                            <div class="field-holder">
-                                <div class="multiselect itou-multiselect listing-category">
-                                    {{ form.sectors }}
-                                </div>
-                            </div>
+<div class="row">
+    <!-- Search form -->
+    <div id="dir_form" class="dir_form">
+        <form method="GET" action="{% url 'siae:search_results' %}">
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="row first-row">
+                    <div class="col-sm-6 pr-sm-0 mt-4">
+                        <div class="title">
+                            Secteur d'activité
                         </div>
-                        {% comment "hidden" %}
-                        <div class="col-sm-6 pl-sm-0 mt-4">
-                            <div class="title">
-                                Lieu d'intervention
-                            </div>
-                            <div class="field-holder">
-                            {{form_widget(form.address, {
-                                'id': 'address',
-                                'attr': {
-                                    'class': 'form-control',
-                                    'placeholder': 'Région, département, code postal'
-                                }}
-                            )}}
-                            </div>
-                        </div>
-                        {% endcomment %}
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-5 mt-4">
-                            <div class="title">
-                                Type de structure
-                            </div>
-                            <div class="field-holder">
-                                <div class="multiselect itou-multiselect structure-type">
-                                    {{ form.kind }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-5 mt-4">
-                            <div class="title">
-                                Type de prestation
-                            </div>
-                            <div class="field-holder">
-                                {{ form.presta_type }}
+                        <div class="field-holder">
+                            <div class="multiselect itou-multiselect listing-category">
+                                {{ form.sectors }}
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                    </div>
-                </div>
-                <div class="col-xs-6 col-sm-2">
-                    <button class="btn btn-block btn-default" id="filter-submit" type="submit">
-                        Rechercher <i class="icon-search"></i>
-                    </button>
-                </div>
-                <div class="col-xs-6 col-sm-2">
-                    <a class="btn btn-block btn-outline-primary reset" href="{% url 'siae:search_results' %}">
-                        Réinitialiser <i class="icon-cw"></i>
-                    </a>
-                </div>                    
-            </div>
-            </form>
-        </div>
-
-        <div id="dir_list">
-            <div class="meta">
-                {% with paginator.count as siae_count %}
-                {% if request.city %}
-                    {{ siae_count }} structures interviennent sur {{ request.city }}
-                {% elif request.area %}
-                    {{ siae_count }} structures interviennent sur/en "{{ request.area }}"
-                {% else %}
-                    {{ siae_count }} structures{% if withAntenna %}et leurs antennes{% endif %} correspondent à vos critères
-                {% endif %}
-                {% endwith %}
-            </div>
-            <div class="row dir_list-row">
-                <div class="col-sm-8">
-                {% if siaes %}
-                    {% for siae in siaes %}
-                        {% include "siae/_siae_card_result.html" with siae=siae %}
-                    {% endfor %}
-
                     {% comment "hidden" %}
-                    {% include '@CocoricoCore/Frontend/Common/_pagination.html.twig' with { 'pagination': pagination,  'alignment': 'text-center' } only %}
+                    <div class="col-sm-6 pl-sm-0 mt-4">
+                        <div class="title">
+                            Lieu d'intervention
+                        </div>
+                        <div class="field-holder">
+                        {{form_widget(form.address, {
+                            'id': 'address',
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Région, département, code postal'
+                            }}
+                        )}}
+                        </div>
+                    </div>
                     {% endcomment %}
-
-                    {% include "layouts/_pagination.html" %}
-
-                {% else %}
-                    <div class="col-xs-12 form-confirm min-height justify-content-center" style="margin:-21px 0 30rem;">
-                        <div class="container col-sm-8 no-results">
-                            <div style="text-align:center">
-                                <img src="{% static 'img/home_help_icon_white.png' %}" style="height:64px;margin-bottom:1rem;" alt="icon description" class="icon">
-                            </div>
-                            <div class="row ">
-                                <div>
-                                    <p>Malheureusement, nous n'avons pas encore de prestataires correspondant à votre recherche sur La place de marché de l'inclusion.</p>
-                                </div>
-                            </div>
-                            <div class="row justify-content-center">
-                                <div>
-                                    <b>Faites nous part de votre besoin et nous vous recontacterons rapidement</b>
-                                </div>
-                            </div>
-                            <div class="row" style="margin-top:4rem">
-                                <div class="buttonrow" style="display:flex">
-                                    <a class="btn btn-default" href="https://itou.typeform.com/to/nxG0HlYx">Déposez votre demande</a>
-                                </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-5 mt-4">
+                        <div class="title">
+                            Type de structure
+                        </div>
+                        <div class="field-holder">
+                            <div class="multiselect itou-multiselect structure-type">
+                                {{ form.kind }}
                             </div>
                         </div>
                     </div>
-                {% endif %}
+                    <div class="col-sm-5 mt-4">
+                        <div class="title">
+                            Type de prestation
+                        </div>
+                        <div class="field-holder">
+                            {{ form.presta_type }}
+                        </div>
+                    </div>
                 </div>
-                <div class="col-sm-4 siae-info mt-6 mt-sm-0">
-                    <div class="siae-info-sticky">
-                        {% comment "hidden" %}
+                <div class="row">
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-2">
+                <button class="btn btn-block btn-default" id="filter-submit" type="submit">
+                    Rechercher <i class="icon-search"></i>
+                </button>
+            </div>
+            <div class="col-xs-6 col-sm-2">
+                <a class="btn btn-block btn-outline-primary reset" href="{% url 'siae:search_results' %}">
+                    Réinitialiser <i class="icon-cw"></i>
+                </a>
+            </div>                    
+        </div>
+        </form>
+    </div>
+
+    <!-- Search results -->
+    <div id="dir_list">
+        <div class="meta">
+            {% with paginator.count as siae_count %}
+            {% if request.city %}
+                {{ siae_count }} structures interviennent sur {{ request.city }}
+            {% elif request.area %}
+                {{ siae_count }} structures interviennent sur/en "{{ request.area }}"
+            {% else %}
+                {{ siae_count }} structures{% if withAntenna %}et leurs antennes{% endif %} correspondent à vos critères
+            {% endif %}
+            {% endwith %}
+        </div>
+        <div class="row dir_list-row">
+            <div class="col-sm-8">
+            {% if siaes %}
+                {% for siae in siaes %}
+                    {% include "siae/_siae_card_result.html" with siae=siae %}
+                {% endfor %}
+
+                {% comment "hidden" %}
+                {% include '@CocoricoCore/Frontend/Common/_pagination.html.twig' with { 'pagination': pagination,  'alignment': 'text-center' } only %}
+                {% endcomment %}
+
+                {% include "layouts/_pagination.html" %}
+
+            {% else %}
+                <div class="col-xs-12 form-confirm min-height justify-content-center" style="margin:-21px 0 30rem;">
+                    <div class="container col-sm-8 no-results">
+                        <div style="text-align:center">
+                            <img src="{% static 'img/home_help_icon_white.png' %}" style="height:64px;margin-bottom:1rem;" alt="icon description" class="icon">
+                        </div>
+                        <div class="row ">
+                            <div>
+                                <p>Malheureusement, nous n'avons pas encore de prestataires correspondant à votre recherche sur La place de marché de l'inclusion.</p>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div>
+                                <b>Faites nous part de votre besoin et nous vous recontacterons rapidement</b>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:4rem">
+                            <div class="buttonrow" style="display:flex">
+                                <a class="btn btn-default" href="https://itou.typeform.com/to/nxG0HlYx">Déposez votre demande</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            </div>
+            <div class="col-sm-4 siae-info mt-6 mt-sm-0">
+                <div class="siae-info-sticky">
+                    {% comment "hidden" %}
+                    <div class="maparea">
                         <div class="maparea">
-                            <div class="maparea">
-                                {#
-                                <div class="checkbox search-on-drag-cb-wrapper">
-                                    <input type="checkbox" name="search-on-drag" id="search-on-drag">
-                                    <label class="form-label" for="search-on-drag">
-                                        {{ 'search-on-map-drag'|trans }}
-                                    </label>
-                                </div>
-                                #}
-                                <div class="map-holder">
-                                    <div id="map-canvas"></div>
-                                    {% include '@CocoricoCore/Frontend/Directory/_marker.html.twig'  with {
-                                    'markers': markers,
-                                    } only %}
-                                </div>
+                            {#
+                            <div class="checkbox search-on-drag-cb-wrapper">
+                                <input type="checkbox" name="search-on-drag" id="search-on-drag">
+                                <label class="form-label" for="search-on-drag">
+                                    {{ 'search-on-map-drag'|trans }}
+                                </label>
+                            </div>
+                            #}
+                            <div class="map-holder">
+                                <div id="map-canvas"></div>
+                                {% include '@CocoricoCore/Frontend/Directory/_marker.html.twig'  with {
+                                'markers': markers,
+                                } only %}
                             </div>
                         </div>
-                        {% endcomment %}
-                        <div class="si-separator"></div>
-                        <div class="si-ideas">
-                            <h3>Idées reçues</h3>
-                            <p><img src="{% static 'img/check.svg' %}" style="height:22px" /> 
-                                <span>La structure est trop petite pour répondre à mon besoin...
-                                <b>Mais elle est sûrement ouverte à la co-traitance.</b>
-                                </span>
-                            </p>
+                    </div>
+                    {% endcomment %}
+                    <div class="si-separator"></div>
+                    <div class="si-ideas">
+                        <h3>Idées reçues</h3>
+                        <p><img src="{% static 'img/check.svg' %}" style="height:22px" /> 
+                            <span>La structure est trop petite pour répondre à mon besoin...
+                            <b>Mais elle est sûrement ouverte à la co-traitance.</b>
+                            </span>
+                        </p>
 
-                            <p><img src="{% static 'img/check.svg' %}" style="height:22px" />
-                                <span>Son chiffre d’affaire est trop bas et je ne veux pas être
-                                son seul client... <b>Mais Vous pouvez commencer par lui confier
-                                un marché de plus faible périmètre, sans prendre de risque,
-                                puis faire grandir ce partenariat si vous en êtes satisfait.</b>
-                                </span>
-                            </p>
+                        <p><img src="{% static 'img/check.svg' %}" style="height:22px" />
+                            <span>Son chiffre d’affaire est trop bas et je ne veux pas être
+                            son seul client... <b>Mais Vous pouvez commencer par lui confier
+                            un marché de plus faible périmètre, sans prendre de risque,
+                            puis faire grandir ce partenariat si vous en êtes satisfait.</b>
+                            </span>
+                        </p>
 
-                            <p><img src="{% static 'img/check.svg' %}" style="height:22px" />
-                                <span>L'offre ne correspond pas exactement à ce que je cherche...
-                                <b>Heureusement les entreprises sociales inclusives sont très
-                                innovantes et s'adaptent à vos besoins.</b>
-                                </span>
-                        </div>
+                        <p><img src="{% static 'img/check.svg' %}" style="height:22px" />
+                            <span>L'offre ne correspond pas exactement à ce que je cherche...
+                            <b>Heureusement les entreprises sociales inclusives sont très
+                            innovantes et s'adaptent à vos besoins.</b>
+                            </span>
                     </div>
                 </div>
             </div>
-
-            {% comment "hidden" %}
-            {{ form_start(dlform) }}
-            <div id="csv_form" class="row dir_form">
-                {{ form_widget(dlform.sector, {'attr': {'style': 'display:none', 'class': 'jcf-ignore'}}) }}
-                {#
-                {{ form_widget(dlform.withAntenna, {'attr': {'style': 'display:none'}}) }}
-                {{ form_widget(dlform.withRange, {'attr': {'style': 'display:none'}}) }}
-                #}
-                {{ form_widget(dlform.prestaType, {'attr': {'style': 'display:none'}}) }}
-                {{ form_widget(dlform.structureType, {'attr': {'style': 'display:none', 'class': 'jcf-ignore'}}) }}
-                {% do dlform.structureType.setRendered() %}
-                {% do dlform.address.setRendered() %}
-                <div class="col-sm-3 col-sm-offset-1 mt-4">
-                    <div class="title">
-                        Format
-                    </div>
-                    <div class="field-holder">
-                        {{form_widget(dlform.format,{
-                            'id': 'format'
-                        })}}
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <button id="csv-submit" type="submit" class="btn btn-block btn-default">
-                        Télécharger la liste
-                        <i class="icon-down"></i>
-                    </button>
-                </div>
-            </div>
-            {{ form_end(dlform) }}
-            {% endcomment %}
         </div>
 
+        {% comment "hidden" %}
+        {{ form_start(dlform) }}
+        <div id="csv_form" class="row dir_form">
+            {{ form_widget(dlform.sector, {'attr': {'style': 'display:none', 'class': 'jcf-ignore'}}) }}
+            {#
+            {{ form_widget(dlform.withAntenna, {'attr': {'style': 'display:none'}}) }}
+            {{ form_widget(dlform.withRange, {'attr': {'style': 'display:none'}}) }}
+            #}
+            {{ form_widget(dlform.prestaType, {'attr': {'style': 'display:none'}}) }}
+            {{ form_widget(dlform.structureType, {'attr': {'style': 'display:none', 'class': 'jcf-ignore'}}) }}
+            {% do dlform.structureType.setRendered() %}
+            {% do dlform.address.setRendered() %}
+            <div class="col-sm-3 col-sm-offset-1 mt-4">
+                <div class="title">
+                    Format
+                </div>
+                <div class="field-holder">
+                    {{form_widget(dlform.format,{
+                        'id': 'format'
+                    })}}
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <button id="csv-submit" type="submit" class="btn btn-block btn-default">
+                    Télécharger la liste
+                    <i class="icon-down"></i>
+                </button>
+            </div>
+        </div>
+        {{ form_end(dlform) }}
+        {% endcomment %}
     </div>
-</section>
+</div>
 {% endblock %}
