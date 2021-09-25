@@ -3,38 +3,36 @@
 {% block title %}Contact{{ block.super }}{% endblock %}
 
 {% block content %}
-<section class="container">
-    <h1>Nous contacter</h1>
+<h1>Nous contacter</h1>
 
-    <form method="POST">
-        {% csrf_token %}
-        <div class="form-group">
-            {{ form.first_name.label_tag }}
-            {{ form.first_name }}
-        </div>
-        <div class="form-group">
-            {{ form.last_name.label_tag }}
-            {{ form.last_name }}
-        </div>
-        <div class="form-group">
-            {{ form.email.label_tag }}
-            {{ form.email }}
-        </div>
-        <div class="form-group">
-            {{ form.phone.label_tag }}
-            {{ form.phone }}
-        </div>
-        <div class="form-group">
-            {{ form.subject.label_tag }}
-            {{ form.subject }}
-        </div>
-        <div class="form-group">
-            {{ form.message.label_tag }}
-            {{ form.message }}
-        </div>
-        <button type="submit" class="btn btn-primary">
-            Envoyer
-        </button>
-    </form>
-</section>
+<form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.first_name.label_tag }}
+        {{ form.first_name }}
+    </div>
+    <div class="form-group">
+        {{ form.last_name.label_tag }}
+        {{ form.last_name }}
+    </div>
+    <div class="form-group">
+        {{ form.email.label_tag }}
+        {{ form.email }}
+    </div>
+    <div class="form-group">
+        {{ form.phone.label_tag }}
+        {{ form.phone }}
+    </div>
+    <div class="form-group">
+        {{ form.subject.label_tag }}
+        {{ form.subject }}
+    </div>
+    <div class="form-group">
+        {{ form.message.label_tag }}
+        {{ form.message }}
+    </div>
+    <button type="submit" class="btn btn-primary">
+        Envoyer
+    </button>
+</form>
 {% endblock %}

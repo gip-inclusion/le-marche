@@ -10,6 +10,15 @@
 {%- endblock -%}
 {% endcomment %}
 
+{% block breadcrumbs %}
+<nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+        <li class="breadcrumb-item active" aria-current="page">C'est quoi l'inclusion ?</li>
+    </ol>
+</nav>
+{% endblock %}
+
 {% block content %}
 <section class="s-page-menu-01 s-page-menu-01--marche">
     <div class="s-page-menu-01__container container">

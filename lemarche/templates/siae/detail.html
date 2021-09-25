@@ -3,289 +3,296 @@
 
 {% block title %}{{ siae.name }}{{ block.super }}{% endblock %}
 
-{% block content %}
-<section class="container">
-    <div class="row">
-        {% block breadcrumbs %}
-        {% endblock %}
+{% block breadcrumbs %}
+<nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'siae:search_results' %}?{{ current_search_query }}" title="Revenir aux résultats de recherche">Recherche</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ siae.name }}</li>
+    </ol>
+</nav>
+{% endblock %}
 
-        <div id="dir-profile" class="dir-profile-row row">
-            <!-- contain the main content of the page -->
-            <div id="content" class="col-12 col-md-8 listing-area">
-                <!-- profile-detail -->
-                <section class="profile-detail">
-                    <!-- First Row, company details -->
-                    <!-- gallery-small -->
-                    <div id="user_profile" class="row mb-5 mb-md-6 align-items-start">
-                        <div class="gallery-small slideshow col-12 col-lg-3">
-                            {% comment "hidden" %}
-                            <div class="slideset">
-                                {% if structure_images|length %}
-                                    {% for image in structure_images %}
-                                        <div class="slide">
-                                            <img src="{{ (ListingImageConstants.IMAGE_FOLDER ~ image.name) | imagine_filter('user_profile') }}" alt="{{ siae.name }}"/>
-                                        </div>
-                                    {% endfor %}
-                                {% else %}
+{% block content %}
+<div class="row">
+    <div id="dir-profile" class="dir-profile-row row">
+        <!-- contain the main content of the page -->
+        <div id="content" class="col-12 col-md-8 listing-area">
+            <!-- profile-detail -->
+            <section class="profile-detail">
+                <!-- First Row, company details -->
+                <!-- gallery-small -->
+                <div id="user_profile" class="row mb-5 mb-md-6 align-items-start">
+                    <div class="gallery-small slideshow col-12 col-lg-3">
+                        {% comment "hidden" %}
+                        <div class="slideset">
+                            {% if structure_images|length %}
+                                {% for image in structure_images %}
                                     <div class="slide">
-                                        <img src="{{ (ListingImageConstants.IMAGE_FOLDER ~ ListingImageConstants.IMAGE_DEFAULT) | imagine_filter('user_profile') }}" alt="{{ siae.name }}"/>
+                                        <img src="{{ (ListingImageConstants.IMAGE_FOLDER ~ image.name) | imagine_filter('user_profile') }}" alt="{{ siae.name }}"/>
                                     </div>
-                                {% endif %}
-                            </div>
-                            <a href="#" class="btn-prev">précédent</a>
-                            <a href="#" class="btn-next">suivant</a>
-                            {% endcomment %}
+                                {% endfor %}
+                            {% else %}
+                                <div class="slide">
+                                    <img src="{{ (ListingImageConstants.IMAGE_FOLDER ~ ListingImageConstants.IMAGE_DEFAULT) | imagine_filter('user_profile') }}" alt="{{ siae.name }}"/>
+                                </div>
+                            {% endif %}
                         </div>
-                        <div class="col-12 col-lg-9 pl-md-5">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <h3 class="h3 mb-3 mt-1">
-                                        {% if siae.brand %}
-                                            {{ siae.brand }}
-                                        {% else %}
-                                            {{ siae.name }}
-                                        {% endif %}
-                                    </h3>
-                                </div>
+                        <a href="#" class="btn-prev">précédent</a>
+                        <a href="#" class="btn-next">suivant</a>
+                        {% endcomment %}
+                    </div>
+                    <div class="col-12 col-lg-9 pl-md-5">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h3 class="h3 mb-3 mt-1">
+                                    {% if siae.brand %}
+                                        {{ siae.brand }}
+                                    {% else %}
+                                        {{ siae.name }}
+                                    {% endif %}
+                                </h3>
                             </div>
-                            <div class="row">
-                                <div class="col-12 col-md-6 mb-3">
-                                    <span class="prof_icon mr-1"><img src="{% static 'img/prof_siret.svg' %}" /></span>
-                                    <span>Siret : {{ siae.siret }}</span>
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    <span class="prof_icon mr-1"><img src="{% static 'img/prof_types.svg' %}" /></span>
-                                    <span>{% array_choices_display siae 'presta_type' %}</span>
-                                </div>
-                                <div class="clearfix visible-md-block"></div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    <span class="prof_icon mr-1"><img src="{% static 'img/prof_workers.svg' %}" /></span>
-                                    <span>Salariés<sup>*</sup> : {% if siae.ig_employees %}{{ siae.ig_employees }}{% else %}non disponible{% endif %}</span>
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    <span class="prof_icon mr-1"><img src="{% static 'img/prof_nature.svg' %}" /></span>
-                                    <span>{{ siae.get_kind_display }}</span>
-                                </div>
-                                <div class="clearfix visible-md-block"></div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    <span class="prof_icon mr-1"><img src="{% static 'img/prof_calendar.svg' %}" /></span>
-                                    <span>Date de création<sup>*</sup> : non disponible</span>
-                                </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3">
+                                <span class="prof_icon mr-1"><img src="{% static 'img/prof_siret.svg' %}" /></span>
+                                <span>Siret : {{ siae.siret }}</span>
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                <span class="prof_icon mr-1"><img src="{% static 'img/prof_types.svg' %}" /></span>
+                                <span>{% array_choices_display siae 'presta_type' %}</span>
+                            </div>
+                            <div class="clearfix visible-md-block"></div>
+                            <div class="col-12 col-md-6 mb-3">
+                                <span class="prof_icon mr-1"><img src="{% static 'img/prof_workers.svg' %}" /></span>
+                                <span>Salariés<sup>*</sup> : {% if siae.ig_employees %}{{ siae.ig_employees }}{% else %}non disponible{% endif %}</span>
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                <span class="prof_icon mr-1"><img src="{% static 'img/prof_nature.svg' %}" /></span>
+                                <span>{{ siae.get_kind_display }}</span>
+                            </div>
+                            <div class="clearfix visible-md-block"></div>
+                            <div class="col-12 col-md-6 mb-3">
+                                <span class="prof_icon mr-1"><img src="{% static 'img/prof_calendar.svg' %}" /></span>
+                                <span>Date de création<sup>*</sup> : non disponible</span>
                             </div>
                         </div>
                     </div>
-                    <!-- Second Row, Company Details -->
-                    <div class="row mb-3">
+                </div>
+                <!-- Second Row, Company Details -->
+                <div class="row mb-3">
+                    <div class="col-sm-6 img-left mb-5 mb-md-7">
+                        <div class="il-l">
+                            <img class="cell_icon" src="{% static 'img/prof_sectors.svg' %}" />
+                        </div>
+                        <div class="il-r">
+                            <h3 class="h3 mb-1 mt-1">Secteurs d'activité</h3>
+                            <ul>
+                                {% if siae.kind == 'ETTI' and siae.sectors.count > 3 %}
+                                    <li>Multisectoriel</li>
+                                {% elif siae.sectors.count %}
+                                    {% for sector in siae.sectors.all %}
+                                        {% if forloop.counter0 < 7 %}
+                                            <li>{{ sector.name }}</li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if siae.sectors.count > 6 %}
+                                        <li>...</li>
+                                    {% endif %}
+                                {% endif %}
+                            </ul>
+                            {% if not siae.sectors.count %}
+                                <p>Non renseigné</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% comment "hidden" %}
+                    {% if siae.clientImages is not empty %}
                         <div class="col-sm-6 img-left mb-5 mb-md-7">
                             <div class="il-l">
-                                <img class="cell_icon" src="{% static 'img/prof_sectors.svg' %}" />
+                                <img class="cell_icon" src="{% static 'img/prof_images.svg' %}" />
                             </div>
                             <div class="il-r">
-                                <h3 class="h3 mb-1 mt-1">Secteurs d'activité</h3>
-                                <ul>
-                                    {% if siae.kind == 'ETTI' and siae.sectors.count > 3 %}
-                                        <li>Multisectoriel</li>
-                                    {% elif siae.sectors.count %}
-                                        {% for sector in siae.sectors.all %}
-                                            {% if forloop.counter0 < 7 %}
-                                                <li>{{ sector.name }}</li>
-                                            {% endif %}
-                                        {% endfor %}
-                                        {% if siae.sectors.count > 6 %}
-                                            <li>...</li>
-                                        {% endif %}
-                                    {% endif %}
-                                </ul>
-                                {% if not siae.sectors.count %}
-                                    <p>Non renseigné</p>
+                                <h3 class="h3 mb-1 mt-1">Références clients</h3>
+                                {% for image in siae.clientImages %}
+                                    <!-- slide -->
+                                    <img
+                                        src="{{ (ListingImageConstants.IMAGE_FOLDER ~ image.name) | imagine_filter('listing_small') }}" 
+                                        class="client-ref"
+                                        alt="{{ image.description }}"
+                                        title="{{ image.description }}"
+                                    />
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% endcomment %}
+                </div>
+                <!-- Third Row, Description -->
+                <div class="row">
+                    <div class="col-sm-12 img-left mb-5 mb-md-7">
+                        <div class="il-l">
+                            <img class="cell_icon" src="{% static 'img/prof_discuss.svg' %}" />
+                        </div>
+                        <div class="il-r">
+                            <h3 class="h3 mb-1 mt-1">Description de l'activité commerciale</h3>
+                            <div>
+                                {% if siae.description %}
+                                    {{ siae.description }}
+                                {% else %}
+                                    Non renseigné
                                 {% endif %}
                             </div>
                         </div>
-                        {% comment "hidden" %}
-                        {% if siae.clientImages is not empty %}
-                            <div class="col-sm-6 img-left mb-5 mb-md-7">
-                                <div class="il-l">
-                                    <img class="cell_icon" src="{% static 'img/prof_images.svg' %}" />
-                                </div>
-                                <div class="il-r">
-                                    <h3 class="h3 mb-1 mt-1">Références clients</h3>
-                                    {% for image in siae.clientImages %}
-                                        <!-- slide -->
-                                        <img
-                                            src="{{ (ListingImageConstants.IMAGE_FOLDER ~ image.name) | imagine_filter('listing_small') }}" 
-                                            class="client-ref"
-                                            alt="{{ image.description }}"
-                                            title="{{ image.description }}"
-                                        />
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        {% endif %}
-                        {% endcomment %}
                     </div>
-                    <!-- Third Row, Description -->
-                    <div class="row">
-                        <div class="col-sm-12 img-left mb-5 mb-md-7">
-                            <div class="il-l">
-                                <img class="cell_icon" src="{% static 'img/prof_discuss.svg' %}" />
-                            </div>
-                            <div class="il-r">
-                                <h3 class="h3 mb-1 mt-1">Description de l'activité commerciale</h3>
-                                <div>
-                                    {% if siae.description %}
-                                        {{ siae.description }}
-                                    {% else %}
-                                        Non renseigné
-                                    {% endif %}
-                                </div>
+                </div>
+                <!-- Fourth Row -->
+                {% if siae.offers.count %}
+                <div class="row">
+                    <div class="col-sm-12 img-left mb-5 mb-md-7">
+                        <div class="il-l">
+                            <img class="cell_icon" src="{% static 'img/prof_discuss.svg' %}" />
+                        </div>
+                        <div class="il-r">
+                            <h3 class="h3 mb-1 mt-1">Les prestations proposées</h3>
+                            <div class="row">
+                            {% for offer in siae.offers.all %}
+                                <article class="prests-post col-12 col-lg-6 mt-2">
+                                    <img class="cell_icon" src="{% static 'img/prof_dot.png' %}" />
+                                    <h4>{{ offer.title }}</h4>
+                                    <div>
+                                        {{ offer.description }}
+                                    </div>
+                                </article>
+                            {% endfor %}
                             </div>
                         </div>
                     </div>
-                    <!-- Fourth Row -->
-                    {% if siae.offers.count %}
-                    <div class="row">
-                        <div class="col-sm-12 img-left mb-5 mb-md-7">
+                </div>
+                {% endif %}
+                <!-- Fifth Row -->
+                {% if siae.networks.count or siae.labels.count %}
+                <div class="row">
+                    {% if siae.networks.count %}
+                        <div class="col-12 col-md-6 img-left mt-2 mt-md-3">
                             <div class="il-l">
-                                <img class="cell_icon" src="{% static 'img/prof_discuss.svg' %}" />
+                                <img class="cell_icon" src="{% static 'img/prof_elements.svg' %}" />
                             </div>
                             <div class="il-r">
-                                <h3 class="h3 mb-1 mt-1">Les prestations proposées</h3>
-                                <div class="row">
-                                {% for offer in siae.offers.all %}
-                                    <article class="prests-post col-12 col-lg-6 mt-2">
-                                        <img class="cell_icon" src="{% static 'img/prof_dot.png' %}" />
-                                        <h4>{{ offer.title }}</h4>
-                                        <div>
-                                            {{ offer.description }}
-                                        </div>
-                                    </article>
+                                <h3 class="h3 mb-1 mt-1">Réseaux</h3>
+                                <ul>
+                                {% for network in siae.networks.all %}
+                                    <li><a class="network_link" href="{{ network.website }}">{{ network.brand }}</a></li>
                                 {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                    <!-- Fifth Row -->
-                    {% if siae.networks.count or siae.labels.count %}
-                    <div class="row">
-                        {% if siae.networks.count %}
-                            <div class="col-12 col-md-6 img-left mt-2 mt-md-3">
-                                <div class="il-l">
-                                    <img class="cell_icon" src="{% static 'img/prof_elements.svg' %}" />
-                                </div>
-                                <div class="il-r">
-                                    <h3 class="h3 mb-1 mt-1">Réseaux</h3>
-                                    <ul>
-                                    {% for network in siae.networks.all %}
-                                        <li><a class="network_link" href="{{ network.website }}">{{ network.brand }}</a></li>
-                                    {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-                        {% endif %}
-                        {% if siae.labels.count %}
-                            <div class="col-12 col-md-6 img-left mt-2 mt-md-3">
-                                <div class="il-l">
-                                    <img class="cell_icon" src="{% static 'img/prof_images.svg' %}" />
-                                </div>
-                                <div class="il-r">
-                                    <h3 class="h3 mb-1 mt-1">Labels & certifications</h3>
-                                    <ul>
-                                    {% for label in siae.labels.all %}
-                                        <li>{{ label.name }}</li>
-                                    {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                    {% endif %}
-                </section>
-            </div>
-            <div class="col-12 col-md-4">
-                <aside id="sidebar" class="profile">
-                    {% if not siae.website and not user %}
-                    <div class="row mb-3 mb-md-6">
-                        <div class="col-xs-5 col-sm-12 col-md-5 mb-3">
-                            <!-- FIXME: établir la fonctionnalité
-                            <button class="btn btn-sm btn-link btn-block pl-0">Enregistrer<i class="ml-2 icon-star-empty"></i></button>
-                            -->
-                        </div>
-                        <div class="col-xs-7 col-sm-12 col-md-7 mb-3">
-                            <a id="contact" href="https://itou.typeform.com/to/nxG0HlYx#data={{ siae.id }}" class="btn btn-sm btn-primary btn-block">Être recontacté<i class="ml-2 icon-mail-alt"></i></a>
-                        </div>
-                    </div>
-                    {% endif %}
-                    <div class="profile_capsule">
-                        {% if siae.website != '' or user %}
-                            <a href="#" id="show_data">
-                                <span class="prof_icon"><img src="{% static 'img/profile-ico-chevron.svg' %}" /></span>
-                                <span>Afficher les coordonnées</span>
-                            </a>
-                            <div id="the_data" style="display:none">
-                                <ul class="deflist">
-                                    {% if siae.website %}
-                                        <li>
-                                            <span class="prof_icon"><img src="{% static 'img/profile-ico-web.svg' %}" /></span>
-                                            <a id="company_website" href="{{ siae.website }}" rel="nofollow" target="_blank">{{ siae.website }}</a>
-                                        </li>
-                                    {% endif %}                                
-                                    {% if user %}
-                                        <li>
-                                            <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" /></span>
-                                            <span>{{ user.email }}</span>
-                                        </li>
-                                        {% if user.phone %}
-                                            <li>
-                                                <span class="prof_icon"><img src="{% static 'img/profile-ico-phone.svg' %}" /></span>
-                                                <span>{{ user.phone }}</span>
-                                            </li>
-                                        {% endif %}
-                                        <li>
-                                            <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" /></span>
-                                            <span>{{ user.namebis }}</span>
-                                        </li>
-                                        <li>
-                                            <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>
-                                            <span>{{ siae.post_code }} {{ siae.city }}</span>
-                                        </li>
-                                    {% endif %}
                                 </ul>
                             </div>
-                        <div class="separator mb-3 mb-md-6"></div>
-                        {% endif %}
-                        {% comment "hidden" %}
-                        <div class="map-holder mb-3 mb-md-7">
-                            <div id="map-company" class="map-canvas"></div>
                         </div>
-                        {% endcomment %}
-                        <div class="map_details">
-                            <div class="d-flex mb-3">
-                                <span class="prof_icon"><img src="{% static 'img/profile-ico-geo.svg' %}" /></span>
-                                <span>Situé à {{ siae.city }}</span>
+                    {% endif %}
+                    {% if siae.labels.count %}
+                        <div class="col-12 col-md-6 img-left mt-2 mt-md-3">
+                            <div class="il-l">
+                                <img class="cell_icon" src="{% static 'img/prof_images.svg' %}" />
                             </div>
-                            <div class="d-flex mb-3">
-                                <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>
-                                <span>Intervient sur : {{ siae.getNiceRange }}</span>
+                            <div class="il-r">
+                                <h3 class="h3 mb-1 mt-1">Labels & certifications</h3>
+                                <ul>
+                                {% for label in siae.labels.all %}
+                                    <li>{{ label.name }}</li>
+                                {% endfor %}
+                                </ul>
                             </div>
+                        </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </section>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-12 col-md-4">
+            <aside id="sidebar" class="profile">
+                {% if not siae.website and not user %}
+                <div class="row mb-3 mb-md-6">
+                    <div class="col-xs-5 col-sm-12 col-md-5 mb-3">
+                        <!-- FIXME: établir la fonctionnalité
+                        <button class="btn btn-sm btn-link btn-block pl-0">Enregistrer<i class="ml-2 icon-star-empty"></i></button>
+                        -->
+                    </div>
+                    <div class="col-xs-7 col-sm-12 col-md-7 mb-3">
+                        <a id="contact" href="https://itou.typeform.com/to/nxG0HlYx#data={{ siae.id }}" class="btn btn-sm btn-primary btn-block">Être recontacté<i class="ml-2 icon-mail-alt"></i></a>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="profile_capsule">
+                    {% if siae.website != '' or user %}
+                        <a href="#" id="show_data">
+                            <span class="prof_icon"><img src="{% static 'img/profile-ico-chevron.svg' %}" /></span>
+                            <span>Afficher les coordonnées</span>
+                        </a>
+                        <div id="the_data" style="display:none">
+                            <ul class="deflist">
+                                {% if siae.website %}
+                                    <li>
+                                        <span class="prof_icon"><img src="{% static 'img/profile-ico-web.svg' %}" /></span>
+                                        <a id="company_website" href="{{ siae.website }}" rel="nofollow" target="_blank">{{ siae.website }}</a>
+                                    </li>
+                                {% endif %}                                
+                                {% if user %}
+                                    <li>
+                                        <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" /></span>
+                                        <span>{{ user.email }}</span>
+                                    </li>
+                                    {% if user.phone %}
+                                        <li>
+                                            <span class="prof_icon"><img src="{% static 'img/profile-ico-phone.svg' %}" /></span>
+                                            <span>{{ user.phone }}</span>
+                                        </li>
+                                    {% endif %}
+                                    <li>
+                                        <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" /></span>
+                                        <span>{{ user.namebis }}</span>
+                                    </li>
+                                    <li>
+                                        <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>
+                                        <span>{{ siae.post_code }} {{ siae.city }}</span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    <div class="separator mb-3 mb-md-6"></div>
+                    {% endif %}
+                    {% comment "hidden" %}
+                    <div class="map-holder mb-3 mb-md-7">
+                        <div id="map-company" class="map-canvas"></div>
+                    </div>
+                    {% endcomment %}
+                    <div class="map_details">
+                        <div class="d-flex mb-3">
+                            <span class="prof_icon"><img src="{% static 'img/profile-ico-geo.svg' %}" /></span>
+                            <span>Situé à {{ siae.city }}</span>
+                        </div>
+                        <div class="d-flex mb-3">
+                            <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>
+                            <span>Intervient sur : {{ siae.getNiceRange }}</span>
                         </div>
                     </div>
-                </aside>            
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12 mt-5 mb-6">
-                <small><sup>*</sup>source: <a href="https://entreprise.api.gouv.fr/" rel="nofollow" target="_blank">informations en provenance de https://entreprise.api.gouv.fr</a></small>
-            </div>
+                </div>
+            </aside>            
         </div>
     </div>
-</section>
+
+    <div class="row">
+        <div class="col-12 mt-5 mb-6">
+            <small><sup>*</sup>source: <a href="https://entreprise.api.gouv.fr/" rel="nofollow" target="_blank">informations en provenance de https://entreprise.api.gouv.fr</a></small>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
 $(function () {
-
     $('#show_data').click((e) => {
         var $this = $(e.currentTarget);
         $this.toggleClass('is-open');

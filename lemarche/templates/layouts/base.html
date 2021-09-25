@@ -60,23 +60,25 @@
 
     <!-- contains main informative part of the site -->
     <main id="main" role="main" class="s-main">
+        <div class="container">
 
-        {% block breadcrumbs %}{% endblock %}
+            {% block breadcrumbs %}{% endblock %}
 
-        {% block messages %}
-        {% if messages %}
-            <div class="messages fr-container fr-my-5w">
-                {% for message in messages %}
-                    <div role="alert" class="fr-alert fr-alert--{{ message.tags|default:'info' }} fr-alert--sm">
-                        <p>{{ message|safe }}</p>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-        {% endblock %}
+            {% block messages %}
+            {% if messages %}
+                <div class="messages fr-container fr-my-5w">
+                    {% for message in messages %}
+                        <div role="alert" class="fr-alert fr-alert--{{ message.tags|default:'info' }} fr-alert--sm">
+                            <p>{{ message|safe }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% endblock %}
 
-        {% block content %}{% endblock %}
+            {% block content %}{% endblock %}
 
+        </div>
     </main>
 
     {% block footer %}
