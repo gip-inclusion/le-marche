@@ -5,10 +5,17 @@
 {% block meta_title %}{{ flatpage.meta_title|default:flatpage.title }}{% endblock %}
 {% block meta_description %}{{ flatpage.meta_description }}{% endblock %}
 
-{% block content %}
-<section class="container">
-    <h1 class="h1">{{ flatpage.title }}</h1>
+{% block breadcrumbs %}
+<nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ flatpage.title }}</li>
+    </ol>
+</nav>
+{% endblock %}
 
-    {{ flatpage.content | safe }}
-</section>
+{% block content %}
+<h1 class="h1">{{ flatpage.title }}</h1>
+
+{{ flatpage.content | safe }}
 {% endblock %}
