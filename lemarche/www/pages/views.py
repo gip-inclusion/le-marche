@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, FormView
 
 from lemarche.pages.models import Page
+from lemarche.siaes.models import Siae
 from lemarche.www.pages.forms import ContactForm
 from lemarche.www.pages.tasks import send_contact_form_email
 from lemarche.www.siae.forms import SiaeSearchForm
@@ -12,6 +13,14 @@ from lemarche.www.siae.forms import SiaeSearchForm
 class HomeView(FormView):
     template_name = "pages/home.html"
     form_class = SiaeSearchForm
+
+    def get_context_data(self, **kwargs):
+        """
+        - add SIAE that should appear in the section "à la une"
+        """
+        context = super().get_context_data(**kwargs)
+        context["siaes_first_page"] = Siae.objects.filter(is_first_page=True)
+        return context
 
 
 class ContactView(SuccessMessageMixin, FormView):
