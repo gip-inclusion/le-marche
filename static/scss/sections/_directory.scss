@@ -133,14 +133,14 @@
     top: 0;
     right: 0;
     background-color: transparent;
-    background-image: url('../images/sc-fav-star.svg');
+    background-image: url('/static/images/sc-fav-star.svg');
     background-repeat: no-repeat;
     cursor: pointer;
 }
 
 .sc-fav:hover,
 .sc-fav.is-active {
-    background-image: url('../images/sc-fav-star-active.svg');
+    background-image: url('/static/images/sc-fav-star-active.svg');
 }
 
 .sc-main h3 {
