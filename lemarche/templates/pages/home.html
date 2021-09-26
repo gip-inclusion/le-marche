@@ -14,6 +14,7 @@
                 </article>
             </div>
             <div class="s-article-picture-01__col col-12 col-lg-6 pl-lg-6">
+                <!-- New form -->
                 <form method="GET" action="{% url 'siae:search_results' %}" class="s-hp-01__form bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
                     <fieldset>
                         <legend class="s-hp-01__form__legend ff-extra-01">Que cherchez-vous ?</legend>
@@ -33,7 +34,7 @@
                         </p>
                     </fieldset>
                 </form>
-
+                <!-- Old form -->
                 {% comment "hidden" %}
                 {{ form_start(form, {'attr': {'class': 's-hp-01__form bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5'}}) }}
                 {{ form_errors(form) }}
@@ -184,7 +185,7 @@
     </div>
 </section>
 
-{% comment "hidden" %}
+{% if siaes_first_page %}
 <section class="s-cards-grid-01 bg-marche-lightest">
     <div class="s-cards-grid-01__container container">
         <div class="s-cards-grid-01__row row">
@@ -193,13 +194,13 @@
             </div>
         </div>
         <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4">
-            {% for structure in structures %}
-                {% include '@CocoricoCore/Frontend/Directory/_minicard.html.twig' with { 'structure' : structure } %}
+            {% for siae in siaes_first_page %}
+                {% include "siae/_card_home.html" with siae=siae %}
             {% endfor %}
         </div>
     </div>
 </section>
-{% endcomment %}
+{% endif %}
 
 <section class="s-cards-grid-01 has-illustration-bg-01">
     <div class="s-cards-grid-01__container container">
