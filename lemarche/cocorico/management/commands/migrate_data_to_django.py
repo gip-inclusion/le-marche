@@ -16,8 +16,6 @@ from lemarche.users.models import User
 
 
 DIRECTORY_EXTRA_KEYS = [
-    "latitude",
-    "longitude",
     "geo_range",
     "pol_range",
     "sector",  # string 'list' with ' - ' seperator. We use instead the 'directory_category' table.
