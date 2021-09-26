@@ -3,13 +3,13 @@ from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html
 
-from lemarche.siaes.models import Siae, SiaeOffer, SiaeLabel, SiaeClientReference
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer
 
 
 @admin.register(Siae)
 class SiaeAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siret", "kind", "nb_offers", "nb_labels", "nb_cient_references", "created_at"]
-    list_filter = ["kind", "networks", "sectors"]
+    list_filter = ["is_first_page", "kind", "networks", "sectors"]
     search_fields = ["id", "name"]
 
     autocomplete_fields = ["sectors", "networks", "users"]
