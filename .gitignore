@@ -20,6 +20,7 @@ docker/prod/
 docker/staging/
 
 # Project specific
+lemarche/staticfiles/
 
 # Debian
 .bash_history
