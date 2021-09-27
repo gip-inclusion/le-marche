@@ -17,8 +17,6 @@
 
     {% bootstrap_javascript jquery='full' %}
 
-    {% bootstrap_css %}
-
     <link rel="stylesheet" href="{% static 'itou/stylesheets/app.css' %}" type="text/css">
 
     {% compress css %}
@@ -48,7 +46,7 @@
     {% include '@CocoricoCore/Frontend/Common/js/_google_tag_manager_js.html.twig' only %}
     {% endcomment %}
 
-    <div class="sr-only">
+    <div class="sr-only sr-only-focusable">
         <a tabindex="1" href="#main">aller au contenu</a>
     </div>
 
@@ -60,25 +58,23 @@
 
     <!-- contains main informative part of the site -->
     <main id="main" role="main" class="s-main">
-        <div class="container">
 
-            {% block breadcrumbs %}{% endblock %}
+        {% block breadcrumbs %}{% endblock %}
 
-            {% block messages %}
-            {% if messages %}
-                <div class="messages fr-container fr-my-5w">
-                    {% for message in messages %}
-                        <div role="alert" class="fr-alert fr-alert--{{ message.tags|default:'info' }} fr-alert--sm">
-                            <p>{{ message|safe }}</p>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-            {% endblock %}
+        {% block messages %}
+        {% if messages %}
+            <div class="messages fr-container fr-my-5w">
+                {% for message in messages %}
+                    <div role="alert" class="fr-alert fr-alert--{{ message.tags|default:'info' }} fr-alert--sm">
+                        <p>{{ message|safe }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% endblock %}
 
-            {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
 
-        </div>
     </main>
 
     {% block footer %}
@@ -89,7 +85,7 @@
     {% block modal %}{% endblock %}
 
     <!-- allow a user to go to the top of the page -->
-    <div class="sr-only">
+    <div class="sr-only sr-only-focusable">
         <a href="#header">retour au début de la page</a>
     </div>
 
