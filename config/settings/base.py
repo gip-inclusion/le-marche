@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+import os
 
 import environ
 
@@ -46,9 +47,9 @@ BITOUBI_ENV = env.str("ENV", "dev")
 
 # Static Files
 STATIC_URL = "/static/"
-STATIC_SOURCE_ROOT = str(ROOT_DIR.path("static"))
-STATIC_ROOT = str(ROOT_DIR.path("staticfiles"))
-STATICFILES_DIRS = [STATIC_SOURCE_ROOT]
+# Path to the directory where collectstatic will collect static files for deployment.
+STATIC_ROOT = os.path.join(APPS_DIR, "staticfiles")
+STATICFILES_DIRS = (os.path.join(APPS_DIR, "static"),)
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
