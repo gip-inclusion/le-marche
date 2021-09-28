@@ -3,36 +3,64 @@
 {% block title %}Contact{{ block.super }}{% endblock %}
 
 {% block content %}
-<h1>Nous contacter</h1>
-
-<form method="POST">
-    {% csrf_token %}
-    <div class="form-group">
-        {{ form.first_name.label_tag }}
-        {{ form.first_name }}
+<section class="pt-4 pt-lg-6 pb-6 pb-lg-8">
+    <div class="container container-max-lg">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-3 mb-lg-5">Nous contacter ?</h2>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-group row">
+                        <label class="col-12 col-md-3 col-form-label">
+                            {{ form.first_name.label }}
+                        </label>
+                        <div class="col-12 col-md-6">
+                            {{ form.first_name }}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-12 col-md-3 col-form-label">{{ form.last_name.label }}</label>
+                        <div class="col-12 col-md-6">
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-12 col-md-3 col-form-label">{{ form.email.label }} <strong class="text-warning">*</strong></label>
+                        <div class="col-12 col-md-6">
+                            {{ form.email }}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-12 col-md-3 col-form-label">{{ form.phone.label }}</label>
+                        <div class="col-12 col-md-6">
+                            {{ form.phone }}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-12 col-md-3 col-form-label">{{ form.subject.label }} <strong class="text-warning">*</strong></label>
+                        <div class="col-12 col-md-9">
+                            {{ form.subject }}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-12 col-md-3 col-form-label">{{ form.message.label }} <strong class="text-warning">*</strong></label>
+                        <div class="col-12 col-md-9">
+                            {{ form.message }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 offset-md-3 col-md-auto pt-3">
+                            <button type="submit" class="btn btn-primary btn-block btn-ico">
+                                <span>Envoyer</span>
+                                <svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M16.5 13.505a.75.75 0 01-.744.745H2.244a.745.745 0 01-.744-.745v-.755H15V3.975l-6 5.4-7.5-6.75V1.5a.75.75 0 01.75-.75h13.5a.75.75 0 01.75.75v12.005zM3.325 2.25L9 7.357l5.675-5.107H3.325zM0 9.75h6v1.5H0v-1.5zM0 6h3.75v1.5H0V6z" fill="currentColor"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="form-group">
-        {{ form.last_name.label_tag }}
-        {{ form.last_name }}
-    </div>
-    <div class="form-group">
-        {{ form.email.label_tag }}
-        {{ form.email }}
-    </div>
-    <div class="form-group">
-        {{ form.phone.label_tag }}
-        {{ form.phone }}
-    </div>
-    <div class="form-group">
-        {{ form.subject.label_tag }}
-        {{ form.subject }}
-    </div>
-    <div class="form-group">
-        {{ form.message.label_tag }}
-        {{ form.message }}
-    </div>
-    <button type="submit" class="btn btn-primary">
-        Envoyer
-    </button>
-</form>
+</section>
 {% endblock %}
