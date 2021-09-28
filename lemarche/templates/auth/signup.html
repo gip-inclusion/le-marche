@@ -25,7 +25,7 @@
                         <div class="form-group">
                             {% for x,y in form.fields.kind.choices %}
                             <div class="custom-control custom-radio">
-                                <input type="radio" id="{{ x }}" name="kind" class="custom-control-input">
+                                <input type="radio" id="{{ x }}" value="{{ x }}" name="kind" class="custom-control-input">
                                 <label class="custom-control-label" for="{{ x }}">{{ y }}</label>
                             </div>                        
                         {% endfor %} 
