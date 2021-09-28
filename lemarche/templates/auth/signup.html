@@ -21,7 +21,7 @@
                 <form method="POST" action="{% url 'auth:signup' %}">
                     {% csrf_token %}
                     <fieldset class="mb-3 mb-lg-5">
-                        <h3>Vous êtes</h3>
+                        <h3>Vous êtes <strong class="text-warning fs-base">*</strong></h3>
                         <div class="form-group">
                             {% for x,y in form.fields.kind.choices %}
                             <div class="custom-control custom-radio">
@@ -36,16 +36,16 @@
                         <h3>Contact et coordonnées de votre entreprise</h3>
                         <div class="form-group row">
                             <label class="col-12 col-md-3 col-form-label">
-                                {{ form.first_name.label }}
+                                {{ form.first_name.label }} <strong class="text-warning">*</strong>
                             </label>                       
                             <div class="col-12 col-md-6">
                                 {{ form.first_name }}
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-12 col-md-3 col-form-label">{{ form.last_name.label }}</label>
+                            <label class="col-12 col-md-3 col-form-label">{{ form.last_name.label }} <strong class="text-warning">*</strong></label>
                             <div class="col-12 col-md-6">
-                                {{ form.last_name }}
+                                {{ form.last_name }} 
                             </div>
                         </div>
                         <div class="form-group row">
@@ -59,21 +59,21 @@
                     <fieldset>
                         <h3>Création du mot de passe</h3>
                         <div class="form-group row">
-                            <label class="col-12 col-md-3 col-form-label">{{ form.email.label }}</label>
+                            <label class="col-12 col-md-3 col-form-label">{{ form.email.label }} <strong class="text-warning">*</strong></label>
                             <div class="col-12 col-md-6">
                                 {{ form.email }}
                                 <small class="form-text text-muted">{{ form.email.help_text }}</small>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-12 col-md-3 col-form-label">{{ form.password1.label }}</label>
+                            <label class="col-12 col-md-3 col-form-label">{{ form.password1.label }} <strong class="text-warning">*</strong></label>
                             <div class="col-12 col-md-6">
                                 {{ form.password1 }}
                                 <small class="form-text text-muted">{{ form.password1.help_text }}</small>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-12 col-md-3 col-form-label">{{ form.password2.label }}</label>
+                            <label class="col-12 col-md-3 col-form-label">{{ form.password2.label }} <strong class="text-warning">*</strong></label>
                             <div class="col-12 col-md-6">
                                 {{ form.password2 }}
                             </div>

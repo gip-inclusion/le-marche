@@ -17,14 +17,14 @@
                     {% csrf_token %}
                     <div class="form-group row">
                         <label class="col-12 col-md-3 col-form-label">
-                            {{ form.username.label }}
+                            {{ form.username.label }} <strong class="text-warning">*</strong>
                         </label>                       
                         <div class="col-12 col-md-6">
                             {{ form.username }}
                         </div>
                     </div>                    
                     <div class="form-group row">
-                        <label class="col-12 col-md-3 col-form-label">{{ form.password.label }}</label>
+                        <label class="col-12 col-md-3 col-form-label">{{ form.password.label }} <strong class="text-warning">*</strong></label>
                         <div class="col-12 col-md-6">
                             {{ form.password }}
                             <small class="form-text text-muted"><a href="{% url 'auth:password_reset' %}">Mot de passe oublié</a> ?</small>
