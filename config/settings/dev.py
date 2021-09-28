@@ -20,6 +20,10 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
+COMPRESS_OFFLINE = False
+LIBSASS_SOURCE_COMMENTS = True
+LIBSASS_OUTPUT_STYLE = "nested"
+
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"

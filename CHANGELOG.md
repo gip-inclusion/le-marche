@@ -23,6 +23,7 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 - Outils : ajout d'un pre-commit
 - Outils : ajout de Github Actions
 - Màj homepage API
+- Correctif SASS Django pour developpement
 
 ### [0.7] - (2021-08)
 

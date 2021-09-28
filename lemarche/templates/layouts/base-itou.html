@@ -22,7 +22,10 @@
 
     {% load compress %}
     {% compress css %}
+      {# Warning : Do not use imports, they don't work well with the django compressor #}
       <link rel="stylesheet" href="{% static 'css/itou_c4.scss' %}" type="text/x-scss">
+      <link rel="stylesheet" href="{% static 'css/base/_variables.scss' %}" type="text/x-scss">
+      <link rel="stylesheet" href="{% static 'css/sections/_inclusion.scss' %}" type="text/x-scss">
     {% endcompress %}
 
     {% comment "migrate first" %}

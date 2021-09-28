@@ -68,7 +68,7 @@ COMPRESS_STORAGE = "compressor.storage.GzipCompressorFileStorage"
 COMPRESS_URL = STATIC_URL
 
 COMPRESS_ENABLED = True
-COMPRESS_OFFLINE = True
+COMPRESS_OFFLINE = False
 LIBSASS_OUTPUT_STYLE = "compressed"
 
 # Application definition
