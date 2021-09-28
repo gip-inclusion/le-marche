@@ -13,10 +13,21 @@ class SignupForm(UserCreationForm):
     )
 
     kind = forms.ChoiceField(label="", widget=forms.RadioSelect, choices=KIND_CHOICES_FORM, required=True)
-    first_name = forms.CharField(label="Votre prénom", required=True)
-    last_name = forms.CharField(label="Votre nom", required=True)
-    phone = forms.CharField(label="Votre numéro de téléphone", max_length=35, required=False)
-    email = forms.EmailField(label="Votre adresse e-mail", required=True)
+    first_name = forms.CharField(
+        label="Votre prénom", widget=forms.TextInput(attrs={"class": "form-control"}), required=True
+    )
+    last_name = forms.CharField(
+        label="Votre nom", widget=forms.TextInput(attrs={"class": "form-control"}), required=True
+    )
+    phone = forms.CharField(
+        label="Votre numéro de téléphone",
+        max_length=35,
+        widget=forms.TextInput(attrs={"class": "form-control"}),
+        required=False,
+    )
+    email = forms.EmailField(
+        label="Votre adresse e-mail", widget=forms.TextInput(attrs={"class": "form-control"}), required=True
+    )
     # help_text="Nous enverrons un e-mail de confirmation à cette adresse avant de valider le compte.")  # noqa
 
     class Meta:
@@ -25,8 +36,12 @@ class SignupForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["email"].widget.attrs.update({"placeholder": "Merci de bien vérifier l'adresse saisie."})
+        self.fields["email"].widget.attrs.update(
+            {"placeholder": "Merci de bien vérifier l'adresse saisie.", "class": "form-control"}
+        )
+        self.fields["password1"].widget.attrs.update({"class": "form-control"})
         self.fields["password1"].help_text = CnilCompositionPasswordValidator().get_help_text()
+        self.fields["password2"].widget.attrs.update({"class": "form-control"})
 
     def clean_email(self):
         email = self.cleaned_data["email"]
@@ -34,4 +49,6 @@ class SignupForm(UserCreationForm):
 
 
 class PasswordResetForm(PasswordResetForm):
-    email = forms.EmailField(label="Votre adresse e-mail", required=True)
+    email = forms.EmailField(
+        label="Votre adresse e-mail", widget=forms.TextInput(attrs={"class": "form-control"}), required=True
+    )
