@@ -16,8 +16,6 @@ from lemarche.users.models import User
 
 
 DIRECTORY_EXTRA_KEYS = [
-    "geo_range",
-    "pol_range",
     "sector",  # string 'list' with ' - ' seperator. We use instead the 'directory_category' table.
 ]
 USER_EXTRA_KEYS = [
@@ -133,6 +131,20 @@ def map_siae_presta_type(input_value_byte):
     return None
 
 
+def map_geo_range(input_value_integer):
+    geo_range_mapping = {
+        3: Siae.GEO_RANGE_COUNTRY,
+        2: Siae.GEO_RANGE_REGION,
+        1: Siae.GEO_RANGE_DEPARTMENT,
+        0: Siae.GEO_RANGE_CUSTOM,
+        None: None,
+    }
+    try:
+        return geo_range_mapping[input_value_integer]
+    except:  # noqa
+        return None
+
+
 def map_user_kind(input_value_integer):
     if input_value_integer:
         user_kind_mapping = {
@@ -199,15 +211,15 @@ class Command(BaseCommand):
         try:
             with connMy.cursor() as cur:
                 self.migrate_siae(cur)
-                self.migrate_network(cur)
-                self.migrate_siae_network(cur)
-                self.migrate_sector(cur)
-                self.migrate_siae_sector(cur)
-                self.migrate_siae_offer(cur)
-                self.migrate_siae_label(cur)
-                self.migrate_siae_client_reference(cur)
-                self.migrate_user(cur)
-                self.migrate_siae_user(cur)
+                # self.migrate_network(cur)
+                # self.migrate_siae_network(cur)
+                # self.migrate_sector(cur)
+                # self.migrate_siae_sector(cur)
+                # self.migrate_siae_offer(cur)
+                # self.migrate_siae_label(cur)
+                # self.migrate_siae_client_reference(cur)
+                # self.migrate_user(cur)
+                # self.migrate_siae_user(cur)
         except Exception as e:
             # logger.exception(e)
             print(e)
@@ -234,6 +246,10 @@ class Command(BaseCommand):
         # print(elem)
 
         for elem in resp:
+            # rename fields
+            rename_field(elem, "geo_range", "geo_range_custom_distance")
+            rename_field(elem, "pol_range", "geo_range")
+
             # cleanup fields
             cleanup_date_field_names(elem)
             make_aware_dates(elem)
@@ -246,6 +262,10 @@ class Command(BaseCommand):
             # cleanup presta_type
             if "presta_type" in elem:
                 elem["presta_type"] = map_siae_presta_type(elem["presta_type"])
+
+            # cleanup geo_range
+            if "geo_range" in elem:
+                elem["geo_range"] = map_geo_range(elem["geo_range"])
 
             # remove useless keys
             [elem.pop(key) for key in DIRECTORY_EXTRA_KEYS]
