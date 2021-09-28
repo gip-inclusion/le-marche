@@ -19,9 +19,15 @@
                     <fieldset>
                         <legend class="s-hp-01__form__legend ff-extra-01">Que cherchez-vous ?</legend>
                         <div id="dir_form" class="form-group">
-                            <label class="h4" for="sector">Secteur d’activité</label>
+                            <label class="h4" for="sector">{{ form.sectors.label }}</label>
                             <div class="multiselect itou-multiselect listing-category">
                                 {{ form.sectors }}
+                            </div>
+                        </div>
+                        <div id="dir_form" class="form-group">
+                            <label class="h4" for="sector">{{ form.city.label }}</label>
+                            <div class="">
+                                {{ form.city }}
                             </div>
                         </div>
                         <p class="text-center mb-0 mt-5">
