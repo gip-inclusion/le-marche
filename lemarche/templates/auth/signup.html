@@ -3,68 +3,95 @@
 {% block title %}Inscription{{ block.super }}{% endblock %}
 
 {% block content %}
-<h1><i class="icon-clipboard"></i> Inscription</h1>
+<section class="pt-4 pt-lg-6 pb-6 pb-lg-8">
+    <div class="container container-max-lg">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-3">Inscription</h2>
+                <p class="lead mb-3 mb-lg-5">
+                    L'inscription est nécessaire pour mesurer la satisfaction, l'utilité de
+                    notre service. Cela nous permettra également de le faire évoluer en
+                    fonction de vos besoins.
+                </p>
+                <div class="mb-3 mb-lg-5">
+                    {{ form.errors }}
+                </div>
 
-<div>
-    {{ form.errors }}
-</div>
-
-<div class="sub-form3">
-    L'inscription est nécessaire pour mesurer la satisfaction, l'utilité de
-    notre service. Cela nous permettra également de le faire évoluer en
-    fonction de vos besoins.
-</div>
-
-<br />
-
-<div class="col">
-    <form method="POST" action="{% url 'auth:signup' %}" class="form-signup">
-        {% csrf_token %}
-        <h3><i class="icon-user-circle-o" style="color:#006adc;"></i> Vous êtes</h3>
-        <div class="sub-form">
-            <div class="form-group">
-                <!-- {{ form.kind.label_tag }} -->
-                {{ form.kind }}
+                <form method="POST" action="{% url 'auth:signup' %}">
+                    {% csrf_token %}
+                    <fieldset class="mb-3 mb-lg-5">
+                        <h3>Vous êtes</h3>
+                        <div class="form-group">
+                            {% for x,y in form.fields.kind.choices %}
+                            <div class="custom-control custom-radio">
+                                <input type="radio" id="{{ x }}" name="kind" class="custom-control-input">
+                                <label class="custom-control-label" for="{{ x }}">{{ y }}</label>
+                            </div>                        
+                        {% endfor %} 
+                        </div>
+                    </fieldset>
+            
+                    <fieldset class="mb-3 mb-lg-5">
+                        <h3>Contact et coordonnées de votre entreprise</h3>
+                        <div class="form-group row">
+                            <label class="col-12 col-md-3 col-form-label">
+                                {{ form.first_name.label }}
+                            </label>                       
+                            <div class="col-12 col-md-6">
+                                {{ form.first_name }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-12 col-md-3 col-form-label">{{ form.last_name.label }}</label>
+                            <div class="col-12 col-md-6">
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-12 col-md-3 col-form-label">{{ form.phone.label }}</label>
+                            <div class="col-12 col-md-6">
+                                {{ form.phone }}
+                            </div>
+                        </div>
+                    </fieldset>
+            
+                    <fieldset>
+                        <h3>Création du mot de passe</h3>
+                        <div class="form-group row">
+                            <label class="col-12 col-md-3 col-form-label">{{ form.email.label }}</label>
+                            <div class="col-12 col-md-6">
+                                {{ form.email }}
+                            </div>
+                            <small>{{ form.email.help_text }}</small>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-12 col-md-3 col-form-label">{{ form.password1.label }}</label>
+                            <div class="col-12 col-md-6">
+                                {{ form.password1 }}
+                                <small class="form-text text-muted">{{ form.password1.help_text }}</small>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-12 col-md-3 col-form-label">{{ form.password2.label }}</label>
+                            <div class="col-12 col-md-6">
+                                {{ form.password2 }}
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="row">
+                        <div class="col-12 offset-md-3 col-md-auto pt-3">
+                            <button type="submit" class="btn btn-primary btn-block btn-ico">
+                                <span>Valider</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+                                    <path fill="currentColor" fill-rule="nonzero" stroke="currentColor" d="M1.964 8.95h11.03L9.51 12.737a.451.451 0 00.037.646.474.474 0 00.66-.037L14.386 8.8l.035-.043.033-.05.013-.05V8.539c0-.012.033-.02.033-.044v-.151l-.014-.05-.019-.03-.034-.045-4.193-4.566a.474.474 0 00-.66-.037.452.452 0 00-.036.646l3.45 3.777H1.963a.46.46 0 00-.464.455.46.46 0 00.464.455z"></path>
+                                </svg>                                
+                            </button>
+                        </div>
+                    </div>    
+                </form>
             </div>
         </div>
+    </div>
+</section>
 
-        <h3><i class="icon-building" style="color:#006adc;"></i>Contact et coordonnées de votre entreprise</h3>
-        <div class="sub-form">
-            <div class="form-group">
-                {{ form.first_name.label_tag }}
-                {{ form.first_name }}
-            </div>
-            <div class="form-group">
-                {{ form.last_name.label_tag }}
-                {{ form.last_name }}
-            </div>
-            <div class="form-group">
-                {{ form.phone.label_tag }}
-                {{ form.phone }}
-            </div>
-        </div>
-
-        <h3><i class="icon-lock-empty" style="color:#006adc;"></i>Création du mot de passe</h3>
-        <div class="sub-form">
-            <div class="form-group">
-                {{ form.email.label_tag }}
-                {{ form.email }}
-                <small>{{ form.email.help_text }}</small>
-            </div>
-            <div class="form-group">
-                {{ form.password1.label_tag }}
-                {{ form.password1 }}
-                <small>{{ form.password1.help_text }}</small>
-            </div>
-            <div class="form-group">
-                {{ form.password2.label_tag }}
-                {{ form.password2 }}
-            </div>
-        </div>
-
-        <button type="submit" class="btn btn-primary">
-            Valider <i class="icon-right-small" style="float:right"></i>
-        </button>
-    </form>
-</div>
 {% endblock %}
