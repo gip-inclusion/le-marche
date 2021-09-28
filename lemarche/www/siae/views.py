@@ -70,6 +70,9 @@ class SiaeSearchResultsDownloadView(View):
             "siret",
             "nature",
             "kind",
+            "email",  # TODO: c1 --> siae user
+            "phone",  # TODO: c1 --> siae user
+            "website",
             "city",
             "department",
             "region",

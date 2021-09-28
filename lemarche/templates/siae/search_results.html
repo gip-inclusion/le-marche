@@ -115,11 +115,9 @@
                                 Télécharger la liste
                             </a>
                         {% else %}
-                            {% comment "hidden" %}
-                            <a href="{% url 'auth:login' %}?message=login-to-download" id="csv-submit" class="btn btn-block btn-outline-primary">
+                            <a href="{% url 'auth:login' %}?message=login-to-download&next={% url 'siae:search_results' %}?{{ current_search_query }}" id="csv-submit" class="btn btn-block btn-outline-primary">
                                 Télécharger la liste
                             </a>
-                            {% endcomment %}
                         {% endif %}
                     </div>
                 </div>
