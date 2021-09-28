@@ -33,7 +33,7 @@ jobs:
       uses: Discontract/github-action-slack-notify-deployment@v1
       with:
         message_id: ${{ steps.slack.outputs.message_id }}
-        channel: c4-business
+        channel: tech-notifications-c4
         status: SUCCESS
         color: good
     - name: Notify slack fail
@@ -42,6 +42,6 @@ jobs:
         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
       uses: Discontract/github-action-slack-notify-deployment@v1
       with:
-        channel: c4-business
+        channel: tech-notifications-c4
         status: FAILED
         color: danger
