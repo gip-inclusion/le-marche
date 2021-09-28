@@ -1,4 +1,6 @@
 from django import forms
+from django.db.models import Value
+from django.db.models.functions import NullIf
 
 from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae
@@ -7,6 +9,13 @@ from lemarche.utils.fields import GroupedModelChoiceField
 
 EMPTY_CHOICE = (("", ""),)
 
+SECTOR_FORM_QUERYSET = (
+    Sector.objects.select_related("group")
+    .exclude(group=None)
+    .annotate(sector_is_autre=NullIf("name", Value("Autre")))
+    .order_by("group__id", "sector_is_autre")
+)
+
 
 class SiaeSearchForm(forms.Form):
     FORM_KIND_CHOICES = EMPTY_CHOICE + Siae.KIND_CHOICES
@@ -14,7 +23,7 @@ class SiaeSearchForm(forms.Form):
 
     sectors = GroupedModelChoiceField(
         label="Secteur d’activité",
-        queryset=Sector.objects.select_related("group").exclude(group=None),
+        queryset=SECTOR_FORM_QUERYSET,
         choices_groupby="group",
         to_field_name="slug",
         required=False,
