@@ -75,11 +75,12 @@ def integer_to_boolean(elem):
     boolean_keys = list(set(DIRECTORY_BOOLEAN_FIELDS + USER_BOOLEAN_FIELDS))
     for key in boolean_keys:
         if key in elem:
-            if elem[key] in [1]:
+            if elem[key] in [1, "1"]:
                 elem[key] = True
-            elif elem[key] in [0, None]:
+            elif elem[key] in [0, "0", None]:
                 elem[key] = False
-            elem[key] = False
+            else:
+                elem[key] = False
 
 
 def cleanup_date_field_names(elem):
@@ -101,7 +102,19 @@ def make_aware_dates(elem):
                 elem[key] = timezone.make_aware(elem[key])
 
 
-def map_presta_type(input_value_byte):
+def map_siae_nature(input_value):
+    if input_value:
+        nature_mapping = {
+            "siege": Siae.NATURE_HEAD_OFFICE,
+            "antenne": Siae.NATURE_ANTENNA,
+            "n/a": None,
+            None: None,
+        }
+        return nature_mapping[input_value]
+    return None
+
+
+def map_siae_presta_type(input_value_byte):
     if input_value_byte:
         input_value_string = input_value_byte.decode()
         presta_type_mapping = {
@@ -216,7 +229,7 @@ class Command(BaseCommand):
         resp = cur.fetchall()
         # print(len(resp))
 
-        # s = set([elem["pol_range"] for elem in resp])
+        # s = set([elem["is_qpv"] for elem in resp])
         # print(s)
 
         # elem = cur.fetchone()
@@ -228,9 +241,13 @@ class Command(BaseCommand):
             make_aware_dates(elem)
             integer_to_boolean(elem)
 
+            # cleanup nature
+            if "nature" in elem:
+                elem["nature"] = map_siae_nature(elem["nature"])
+
             # cleanup presta_type
             if "presta_type" in elem:
-                elem["presta_type"] = map_presta_type(elem["presta_type"])
+                elem["presta_type"] = map_siae_presta_type(elem["presta_type"])
 
             # remove useless keys
             [elem.pop(key) for key in DIRECTORY_EXTRA_KEYS]

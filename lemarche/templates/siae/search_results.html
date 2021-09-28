@@ -106,6 +106,22 @@
 
                 {% include "layouts/_pagination.html" %}
 
+                <br />
+
+                <div class="row justify-content-center">
+                    <div class="col-sm-6">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}" id="csv-submit" class="btn btn-block btn-outline-primary" target="_blank">
+                                Télécharger la liste
+                            </a>
+                        {% else %}
+                            <a href="{% url 'auth:login' %}?message=login-to-download&next={% url 'siae:search_results' %}?{{ current_search_query }}" id="csv-submit" class="btn btn-block btn-outline-primary">
+                                Télécharger la liste
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
             {% else %}
                 <div class="col-xs-12 form-confirm min-height justify-content-center" style="margin:-21px 0 30rem;">
                     <div class="container col-sm-8 no-results">
