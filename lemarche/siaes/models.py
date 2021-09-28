@@ -98,7 +98,9 @@ class Siae(models.Model):
     siret = models.CharField(verbose_name="Siret", validators=[validate_siret], max_length=14, db_index=True)
     siret_is_valid = models.BooleanField(verbose_name="Siret Valide", default=False)
     naf = models.CharField(verbose_name="Naf", validators=[validate_naf], max_length=5, blank=True, null=True)
-    nature = models.CharField(max_length=20, choices=NATURE_CHOICES, blank=True, null=True)
+    nature = models.CharField(
+        verbose_name="Établissement", max_length=20, choices=NATURE_CHOICES, blank=True, null=True
+    )
     presta_type = ArrayField(
         verbose_name="Type de prestation",
         base_field=models.CharField(max_length=20, choices=PRESTA_CHOICES),
@@ -171,6 +173,9 @@ class Siae(models.Model):
 
     def __str__(self):
         return self.name
+
+    def sectors_list_to_string(self):
+        return ", ".join(self.sectors.all().values_list("name", flat=True))
 
 
 class SiaeOffer(models.Model):
