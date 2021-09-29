@@ -1,6 +1,7 @@
 import os
 
 import pymysql
+from django.contrib.gis.geos import GEOSGeometry
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 from django.db.models.fields import BooleanField, DateTimeField
@@ -15,6 +16,8 @@ from lemarche.utils.data import reset_app_sql_sequences
 
 
 DIRECTORY_EXTRA_KEYS = [
+    "latitude",
+    "longitude",
     "sector",  # string 'list' with ' - ' seperator. We use instead the 'directory_category' table.
 ]
 USER_EXTRA_KEYS = [
@@ -249,6 +252,12 @@ class Command(BaseCommand):
             # cleanup geo_range
             if "geo_range" in elem:
                 elem["geo_range"] = map_geo_range(elem["geo_range"])
+
+            # create coords from latitude & longitude
+            if "latitude" in elem and "longitude" in elem:
+                if elem["latitude"] and elem["longitude"]:
+                    coords = {"type": "Point", "coordinates": [float(elem["longitude"]), float(elem["latitude"])]}
+                    elem["coords"] = GEOSGeometry(f"{coords}")  # Feed `GEOSGeometry` with GeoJSON.
 
             # remove useless keys
             [elem.pop(key) for key in DIRECTORY_EXTRA_KEYS]

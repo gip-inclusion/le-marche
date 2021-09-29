@@ -2,6 +2,7 @@ from django import forms
 from django.db.models import Value
 from django.db.models.functions import NullIf
 
+from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae
 from lemarche.utils.fields import GroupedModelChoiceField
@@ -29,6 +30,13 @@ class SiaeSearchForm(forms.Form):
         required=False,
         widget=forms.Select(attrs={"style": "width:100%"}),
     )
+    perimeter = forms.CharField(
+        label="Lieu d'intervention",
+        required=False,
+        widget=forms.TextInput(
+            attrs={"placeholder": "Autour de (Arras, Bobigny, Strasbourg…)", "style": "width:100%"}
+        ),
+    )
     kind = forms.ChoiceField(
         label="Type de structure",
         choices=FORM_KIND_CHOICES,
@@ -45,12 +53,19 @@ class SiaeSearchForm(forms.Form):
     def filter_queryset(self):
         qs = Siae.objects.prefetch_related("sectors", "networks")
 
+        # we only display live Siae
+        qs = qs.live()
+
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
 
         sector = self.cleaned_data.get("sectors", None)
         if sector:
             qs = qs.filter(sectors__in=[sector])
+
+        perimeter = self.cleaned_data.get("perimeter", None)
+        if perimeter:
+            qs = self.perimeter_filter(qs, perimeter)
 
         kind = self.cleaned_data.get("kind", None)
         if kind:
@@ -60,4 +75,30 @@ class SiaeSearchForm(forms.Form):
         if presta_type:
             qs = qs.filter(presta_type=presta_type)
 
+        return qs
+
+    def perimeter_filter(self, qs, search_perimeter):
+        """
+        The search_perimeter should be a Perimeter slug.
+        Depending on the type of Perimeter that was chosen, different cases arise:
+        - CITY:
+        - DEPARTMENT:
+        - REGION:
+        """
+        perimeter = Perimeter.objects.get(slug=search_perimeter)
+        if perimeter.kind == Perimeter.KIND_CITY:
+            qs = qs.within(perimeter.coords, 50)
+        elif perimeter.kind == Perimeter.KIND_DEPARTMENT:
+            qs = qs.in_department(code=perimeter.insee_code)
+        elif perimeter.kind == Perimeter.KIND_REGION:
+            qs = qs.in_region(name=perimeter.name)
+        else:
+            # unknown perimeter kind, don't filter
+            pass
+        return qs
+
+    def order_queryset(self, qs):
+        # perimeter = self.cleaned_data.get("perimeter", None)
+        # if perimeter:
+        qs = qs.order_by("name")
         return qs

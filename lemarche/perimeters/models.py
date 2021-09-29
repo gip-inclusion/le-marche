@@ -7,7 +7,7 @@ from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 from django.utils import timezone
 
-from lemarche.siaes.constants import DEPARTMENTS, REGIONS_WITH_CODES
+from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS
 
 
 class Perimeter(models.Model):
@@ -19,8 +19,8 @@ class Perimeter(models.Model):
         (KIND_DEPARTMENT, "Département"),
         (KIND_REGION, "Région"),
     )
-    DEPARTMENT_CHOICES = DEPARTMENTS.items()
-    REGION_CHOICES = REGIONS_WITH_CODES.items()
+    DEPARTMENT_CHOICES = DEPARTMENTS_PRETTY.items()
+    REGION_CHOICES = REGIONS.items()
 
     name = models.CharField(verbose_name="Nom", max_length=255, db_index=True)
     # Note: some REGIONS have the same name as a DEPARTMENT. So we add '-region' at their end
