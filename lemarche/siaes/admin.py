@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.gis import admin as gis_admin
 from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html
@@ -7,7 +8,7 @@ from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffe
 
 
 @admin.register(Siae)
-class SiaeAdmin(admin.ModelAdmin):
+class SiaeAdmin(gis_admin.OSMGeoAdmin):
     list_display = [
         "id",
         "name",
@@ -23,7 +24,12 @@ class SiaeAdmin(admin.ModelAdmin):
     search_fields = ["id", "name"]
 
     autocomplete_fields = ["sectors", "networks", "users"]
-    readonly_fields = Siae.READONLY_FIELDS + ["created_at", "updated_at"]
+    readonly_fields = [field for field in Siae.READONLY_FIELDS if field not in ("coords")] + [
+        "created_at",
+        "updated_at",
+    ]
+
+    modifiable = False
 
     fieldsets = [
         (
@@ -46,8 +52,7 @@ class SiaeAdmin(admin.ModelAdmin):
                     "post_code",
                     "department",
                     "region",
-                    "latitude",
-                    "longitude",
+                    "coords",
                 )
             },
         ),
