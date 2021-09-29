@@ -1,4 +1,5 @@
 # https://github.com/betagouv/itou/blob/master/itou/cities/models.py
+# code_insee --> insee_code
 
 from django.contrib.gis.db import models as gis_models
 from django.contrib.postgres.fields import ArrayField
@@ -21,9 +22,11 @@ class Perimeter(models.Model):
     REGION_CHOICES = REGIONS_WITH_CODES.items()
 
     name = models.CharField(verbose_name="Nom", max_length=255, db_index=True)
+    # Note: some REGIONS have the same name as a DEPARTMENT. So we add '-region' at their end
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
 
     kind = models.CharField(verbose_name="Type de structure", max_length=20, choices=KIND_CHOICES)
+    # Note: REGION insee_codes are prefixed with a 'R' to avoid conflicts with DEPARTMENT
     insee_code = models.CharField(verbose_name="Code INSEE", max_length=5, unique=True)
 
     # only for cities
@@ -52,7 +55,7 @@ class Perimeter(models.Model):
     @property
     def display_name(self):
         if self.kind == self.KIND_CITY:
-            return f"{self.name} ({self.department})"
+            return f"{self.name} ({self.department_code})"
         return self.name
 
     @property

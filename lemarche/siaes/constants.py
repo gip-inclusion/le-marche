@@ -19,12 +19,12 @@ REGIONS = {
     "Occitanie": ["09", "11", "12", "30", "31", "32", "34", "46", "48", "65", "66", "81", "82"],
     "Pays de la Loire": ["44", "49", "53", "72", "85"],
     "Provence-Alpes-Côte d'Azur": ["04", "05", "06", "13", "83", "84"],
-    "Collectivités d'outre-mer": ["975", "977", "978"],
-    "Anciens territoires d'outre-mer": ["986", "987", "988"],
+    "Collectivités d'outre-mer": ["975", "977", "978", "984", "986", "987", "988", "989"],  # updated
+    # "Anciens territoires d'outre-mer": ["986", "987", "988"],  # moved above
 }
 
 REGIONS_WITH_CODES = {
-    "O1": "Guadeloupe",
+    "01": "Guadeloupe",
     "02": "Martinique",
     "03": "Guyane",
     "04": "La Réunion",
@@ -42,7 +42,14 @@ REGIONS_WITH_CODES = {
     "84": "Auvergne-Rhône-Alpes",
     "93": "Provence-Alpes-Côte d'Azur",
     "94": "Corse",
+    "97": "Collectivités d'outre-mer",
 }
+
+REGIONS_WITH_IDENTICAL_DEPARTMENT_NAME = ["Guadeloupe", "Martinique", "Guyane", "La Réunion", "Mayotte"]
+
+
+def get_region_code_by_name(region_name):
+    return next((code for code, name in REGIONS_WITH_CODES.items() if name == region_name), None)
 
 
 def get_department_to_region():
@@ -160,9 +167,11 @@ DEPARTMENTS = {
     "976": "976 - Mayotte",
     "977": "977 - Saint-Barthélémy",
     "978": "978 - Saint-Martin",
+    "984": "984 - Terres australes et antarctiques françaises",  # added
     "986": "986 - Wallis-et-Futuna",
     "987": "987 - Polynésie française",
     "988": "988 - Nouvelle-Calédonie",
+    "989": "989 - Île de Clipperton",  # added
 }
 
 # Marseille, Lyon and Paris
