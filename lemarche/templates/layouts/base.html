@@ -17,10 +17,13 @@
 
     {% bootstrap_javascript jquery='full' %}
 
-    <link rel="stylesheet" href="{% static 'itou/stylesheets/app.css' %}" type="text/css">
 
     {% compress css %}
+    {# Warning : Avoid using imports, they don't work well with the django compressor #}
+    <link rel="stylesheet" href="{% static 'itou/stylesheets/app.css' %}" type="text/css">
     <link rel="stylesheet" href="{% static 'itou_marche/itou_marche.scss' %}" type="text/x-scss">
+    <link rel="stylesheet" href="{% static 'css/base/_variables.scss' %}" type="text/x-scss">
+    <link rel="stylesheet" href="{% static 'css/base/_inclusion.scss' %}" type="text/x-scss">
     {% endcompress %}
 
     {% block extra_css %}{% endblock %}
