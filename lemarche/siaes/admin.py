@@ -8,8 +8,18 @@ from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffe
 
 @admin.register(Siae)
 class SiaeAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", "siret", "kind", "nb_offers", "nb_labels", "nb_cient_references", "created_at"]
-    list_filter = ["is_first_page", "kind", "networks", "sectors"]
+    list_display = [
+        "id",
+        "name",
+        "siret",
+        "kind",
+        "city",
+        "nb_offers",
+        "nb_labels",
+        "nb_cient_references",
+        "created_at",
+    ]
+    list_filter = ["is_first_page", "kind", "networks", "sectors", "geo_range"]
     search_fields = ["id", "name"]
 
     autocomplete_fields = ["sectors", "networks", "users"]
@@ -36,6 +46,8 @@ class SiaeAdmin(admin.ModelAdmin):
                     "post_code",
                     "department",
                     "region",
+                    "latitude",
+                    "longitude",
                 )
             },
         ),
@@ -49,6 +61,8 @@ class SiaeAdmin(admin.ModelAdmin):
                     "sectors",
                     "networks",
                     "users",
+                    "geo_range",
+                    "geo_range_custom_distance",
                 )
             },
         ),
