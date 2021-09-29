@@ -20,7 +20,9 @@ class Siae(models.Model):
         "city",
         "post_code",
         "department",
-        "region",  # "longitude", "latitude", "geo_range", "pol_range"
+        "region",
+        "latitude",
+        "longitude",
         "admin_name",
         "admin_email",
         "is_delisted",
@@ -90,6 +92,16 @@ class Siae(models.Model):
 
     DEPARTMENT_CHOICES = DEPARTMENTS.items()
     REGION_CHOICES = zip(REGIONS.keys(), REGIONS.keys())
+    GEO_RANGE_COUNTRY = "COUNTRY"  # 3
+    GEO_RANGE_REGION = "REGION"  # 2
+    GEO_RANGE_DEPARTMENT = "DEPARTMENT"  # 1
+    GEO_RANGE_CUSTOM = "CUSTOM"  # 0
+    GEO_RANGE_CHOICES = (
+        (GEO_RANGE_COUNTRY, "France entière"),
+        (GEO_RANGE_REGION, "Région"),
+        (GEO_RANGE_DEPARTMENT, "Département"),
+        (GEO_RANGE_CUSTOM, "Distance en kilomètres"),
+    )
 
     name = models.CharField(verbose_name="Raison sociale", max_length=255)
     brand = models.CharField(verbose_name="Enseigne", max_length=255, blank=True, null=True)
@@ -120,12 +132,14 @@ class Siae(models.Model):
     post_code = models.CharField(
         verbose_name="Code Postal", validators=[validate_post_code], max_length=5, blank=True, null=True
     )
-
-    longitude = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
     latitude = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
-
-    # geo_range = models.IntegerField(blank=True, null=True)
-    # pol_range = models.IntegerField(verbose_name="Perimètre d'intervention", blank=True, null=True)
+    longitude = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
+    geo_range = models.CharField(
+        verbose_name="Périmètre d'intervention", max_length=20, choices=GEO_RANGE_CHOICES, blank=True, null=True
+    )
+    geo_range_custom_distance = models.IntegerField(
+        verbose_name="Distance en kilomètres (périmètre d'intervention)", blank=True, null=True
+    )
 
     is_consortium = models.BooleanField(verbose_name="Consortium", default=False)
     is_cocontracting = models.BooleanField(verbose_name="Co-traitance", default=False)

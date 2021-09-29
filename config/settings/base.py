@@ -110,6 +110,7 @@ LOCAL_APPS = [
     "lemarche.siaes",
     "lemarche.sectors",
     "lemarche.networks",
+    "lemarche.perimeters",
     "lemarche.tracker",
     # Flatpages
     "lemarche.pages",
@@ -261,6 +262,17 @@ SESSION_COOKIE_SECURE = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 X_FRAME_OPTIONS = "DENY"
+
+
+# APIs.
+# ------------------------------------------------------------------------------
+
+# Base Adresse Nationale (BAN).
+# https://adresse.data.gouv.fr/faq
+API_BAN_BASE_URL = "https://api-adresse.data.gouv.fr"
+
+# https://api.gouv.fr/api/api-geo.html#doc_tech
+API_GEO_BASE_URL = "https://geo.api.gouv.fr"
 
 
 # Django REST Framework settings.
