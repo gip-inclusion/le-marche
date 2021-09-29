@@ -87,11 +87,18 @@ class SiaeSearchForm(forms.Form):
         """
         perimeter = Perimeter.objects.get(slug=search_perimeter)
         if perimeter.kind == Perimeter.KIND_CITY:
-            return qs.within(perimeter.coords, 50)
+            qs = qs.within(perimeter.coords, 50)
         elif perimeter.kind == Perimeter.KIND_DEPARTMENT:
-            return qs.filter(department=perimeter.insee_code)
+            qs = qs.in_department(code=perimeter.insee_code)
         elif perimeter.kind == Perimeter.KIND_REGION:
-            return qs.filter(region=perimeter.name)
+            qs = qs.in_region(name=perimeter.name)
         else:
             # unknown perimeter kind, don't filter
-            return qs
+            pass
+        return qs
+
+    def order_queryset(self, qs):
+        # perimeter = self.cleaned_data.get("perimeter", None)
+        # if perimeter:
+        qs = qs.order_by("name")
+        return qs

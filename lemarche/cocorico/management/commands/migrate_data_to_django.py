@@ -257,7 +257,6 @@ class Command(BaseCommand):
             if "latitude" in elem and "longitude" in elem:
                 if elem["latitude"] and elem["longitude"]:
                     coords = {"type": "Point", "coordinates": [float(elem["longitude"]), float(elem["latitude"])]}
-                    print(coords)
                     elem["coords"] = GEOSGeometry(f"{coords}")  # Feed `GEOSGeometry` with GeoJSON.
 
             # remove useless keys

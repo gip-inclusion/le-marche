@@ -90,7 +90,7 @@ class Command(BaseCommand):
         if not dry_run:
             name = "Collectivités d'outre-mer"
             kind = Perimeter.KIND_REGION
-            insee_code = "97"
+            insee_code = "R97"
 
             slug = slugify(name)
 

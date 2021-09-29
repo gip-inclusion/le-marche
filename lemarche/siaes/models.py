@@ -5,13 +5,28 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
 
-from lemarche.siaes.constants import DEPARTMENTS, REGIONS
+from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY, get_department_code_from_name
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
 
 
 class SiaeQuerySet(models.QuerySet):
     def live(self):
         return self.filter(is_active=True).filter(is_delisted=False)
+
+    def in_region(self, **kwargs):
+        if "name" in kwargs:
+            return self.filter(region=kwargs["name"])
+        if "code" in kwargs:
+            code_clean = kwargs["code"].strip("R")  # "R" ? see Perimeter model & import_region.py
+            region_name = REGIONS.get(code_clean)
+            return self.filter(region=region_name)
+
+    def in_department(self, **kwargs):
+        if "name" in kwargs:
+            department_code = get_department_code_from_name(kwargs["name"])
+            return self.filter(department=department_code)
+        if "code" in kwargs:
+            return self.filter(department=kwargs["code"])
 
     def within(self, point, distance_km):
         return self.filter(coords__dwithin=(point, D(km=distance_km)))
@@ -99,8 +114,8 @@ class Siae(models.Model):
         (PRESTA_BUILD, "Fabrication et commercialisation de biens"),  # 1000
     )
 
-    DEPARTMENT_CHOICES = DEPARTMENTS.items()
-    REGION_CHOICES = zip(REGIONS.keys(), REGIONS.keys())
+    DEPARTMENT_CHOICES = DEPARTMENTS_PRETTY.items()
+    REGION_CHOICES = REGIONS_PRETTY.items()
     GEO_RANGE_COUNTRY = "COUNTRY"  # 3
     GEO_RANGE_REGION = "REGION"  # 2
     GEO_RANGE_DEPARTMENT = "DEPARTMENT"  # 1
