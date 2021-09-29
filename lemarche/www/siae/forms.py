@@ -29,13 +29,6 @@ class SiaeSearchForm(forms.Form):
         required=False,
         widget=forms.Select(attrs={"style": "width:100%"}),
     )
-    city = forms.CharField(
-        label="Lieu d'intervention",
-        required=False,
-        widget=forms.TextInput(
-            attrs={"placeholder": "Autour de (Arras, Bobigny, Strasbourg…)", "style": "width:100%"}
-        ),
-    )
     kind = forms.ChoiceField(
         label="Type de structure",
         choices=FORM_KIND_CHOICES,
