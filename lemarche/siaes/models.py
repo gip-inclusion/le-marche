@@ -10,6 +10,9 @@ from lemarche.siaes.validators import validate_naf, validate_post_code, validate
 
 
 class SiaeQuerySet(models.QuerySet):
+    def live(self):
+        return self.filter(is_active=True).filter(is_delisted=False)
+
     def within(self, point, distance_km):
         return self.filter(coords__dwithin=(point, D(km=distance_km)))
 
