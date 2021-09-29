@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                     models.CharField(
                         choices=[("CITY", "Commune"), ("DEPARTMENT", "Département"), ("REGION", "Région")],
                         max_length=20,
-                        verbose_name="Type de structure",
+                        verbose_name="Type de périmètre",
                     ),
                 ),
                 ("insee_code", models.CharField(max_length=5, unique=True, verbose_name="Code INSEE")),
@@ -159,7 +159,7 @@ class Migration(migrations.Migration):
                         ],
                         max_length=3,
                         null=True,
-                        verbose_name="Département",
+                        verbose_name="Département (code)",
                     ),
                 ),
                 ("population", models.IntegerField(blank=True, null=True, verbose_name="Population")),
@@ -190,7 +190,7 @@ class Migration(migrations.Migration):
                         ],
                         max_length=2,
                         null=True,
-                        verbose_name="Région",
+                        verbose_name="Région (code)",
                     ),
                 ),
                 (

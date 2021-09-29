@@ -25,7 +25,7 @@ class Perimeter(models.Model):
     # Note: some REGIONS have the same name as a DEPARTMENT. So we add '-region' at their end
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
 
-    kind = models.CharField(verbose_name="Type de structure", max_length=20, choices=KIND_CHOICES)
+    kind = models.CharField(verbose_name="Type de périmètre", max_length=20, choices=KIND_CHOICES)
     # Note: REGION insee_codes are prefixed with a 'R' to avoid conflicts with DEPARTMENT
     insee_code = models.CharField(verbose_name="Code INSEE", max_length=5, unique=True)
 
@@ -35,12 +35,14 @@ class Perimeter(models.Model):
     coords = gis_models.PointField(geography=True, blank=True, null=True)
     post_codes = ArrayField(models.CharField(max_length=5), verbose_name="Codes postaux", blank=True, null=True)
     department_code = models.CharField(
-        verbose_name="Département", choices=DEPARTMENT_CHOICES, max_length=3, blank=True, null=True
+        verbose_name="Département (code)", choices=DEPARTMENT_CHOICES, max_length=3, blank=True, null=True
     )
     population = models.IntegerField(verbose_name="Population", blank=True, null=True)
 
     # only for cities & departments
-    region_code = models.CharField(verbose_name="Région", choices=REGION_CHOICES, max_length=2, blank=True, null=True)
+    region_code = models.CharField(
+        verbose_name="Région (code)", choices=REGION_CHOICES, max_length=2, blank=True, null=True
+    )
 
     created_at = models.DateTimeField("Date de création", default=timezone.now)
     updated_at = models.DateTimeField("Date de modification", auto_now=True)
