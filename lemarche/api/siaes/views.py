@@ -104,6 +104,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
 
 class SiaeKindViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = SiaeChoiceSerializer
+    queryset = Siae.objects.none()
 
     def get_queryset(self):
         siae_kinds = [{"id": id, "name": name} for (id, name) in Siae.KIND_CHOICES]
@@ -116,6 +117,7 @@ class SiaeKindViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 class SiaePrestaTypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = SiaeChoiceSerializer
+    queryset = Siae.objects.none()
 
     def get_queryset(self):
         siae_kinds = [{"id": id, "name": name} for (id, name) in Siae.PRESTA_CHOICES]
