@@ -1,4 +1,8 @@
 # https://github.com/betagouv/itou/blob/master/itou/cities/management/commands/generate_cities.py
+# Changes compared to the source script (above) ?
+# - we take all the fields (adds population)
+# - communes.json instead of cities.json
+
 
 import os
 
@@ -18,8 +22,11 @@ class Command(BaseCommand):
     It can be run from time to time (every year) to get updated data that
     can be imported via `django-admin import_cities`.
 
-    To generate the file:
-        django-admin generate_cities
+    Usage:
+    django-admin generate_communes
+
+    Output example:
+    {"nom":"L'Abergement-Clémenciat","code":"01001","codeDepartement":"01","codeRegion":"84","codesPostaux":["01400"],"population":767}
     """
 
     help = "Create a JSON file with all cities of France."
@@ -27,13 +34,13 @@ class Command(BaseCommand):
     def handle(self, **options):
 
         base_url = f"{settings.API_GEO_BASE_URL}/communes"
-        fields = "?fields=nom,code,codesPostaux,codeDepartement,codeRegion,centre"
+        fields = ""  # "?fields=nom,code,codesPostaux,codeDepartement,codeRegion,centre"
         extra = "&format=json"
         url = f"{base_url}{fields}{extra}"
 
         r = httpx.get(url)
 
-        file_path = f"{CURRENT_DIR}/data/cities.json"
+        file_path = f"{CURRENT_DIR}/data/communes.json"
         with open(file_path, "wb") as f:
             f.write(r.content)
 
