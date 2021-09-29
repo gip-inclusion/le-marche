@@ -28,7 +28,8 @@ class SiaeSearchResultsView(FormMixin, ListView):
         """Filter results."""
         filter_form = SiaeSearchForm(data=self.request.GET)
         results = filter_form.filter_queryset()
-        return results
+        results_ordered = filter_form.order_queryset(results)
+        return results_ordered
 
     def get_context_data(self, **kwargs):
         """

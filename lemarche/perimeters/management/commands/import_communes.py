@@ -12,9 +12,9 @@ from lemarche.perimeters.models import Perimeter
 from lemarche.siaes.constants import (
     DEPARTMENT_TO_REGION,
     DEPARTMENTS,
-    REGIONS_WITH_CODES,
+    REGIONS,
     department_from_postcode,
-    get_region_code_by_name,
+    get_region_code_from_name,
 )
 
 
@@ -211,9 +211,9 @@ class Command(BaseCommand):
                 if not region_code:
                     # Sometimes region is missing. We get it from the department_code.
                     region_name = DEPARTMENT_TO_REGION[department_code]
-                    region_code = get_region_code_by_name(region_name)
+                    region_code = get_region_code_from_name(region_name)
 
-                assert region_code in REGIONS_WITH_CODES
+                assert region_code in REGIONS
 
                 coords = item.get("centre")
 

@@ -22,7 +22,7 @@
                 <div class="row first-row">
                     <div class="col-sm-6 pr-sm-0 mt-4">
                         <div class="title">
-                            Secteur d'activité
+                            {{ form.sectors.label }}
                         </div>
                         <div class="field-holder">
                             <div class="multiselect itou-multiselect listing-category">
@@ -30,22 +30,16 @@
                             </div>
                         </div>
                     </div>
-                    {% comment "hidden" %}
                     <div class="col-sm-6 pl-sm-0 mt-4">
                         <div class="title">
-                            Lieu d'intervention
+                            {{ form.perimeter.label }}
                         </div>
                         <div class="field-holder">
-                        {{form_widget(form.address, {
-                            'id': 'address',
-                            'attr': {
-                                'class': 'form-control',
-                                'placeholder': 'Région, département, code postal'
-                            }}
-                        )}}
+                            <div>
+                                {{ form.perimeter }}
+                            </div>
                         </div>
                     </div>
-                    {% endcomment %}
                 </div>
                 <div class="row">
                     <div class="col-sm-5 mt-4">

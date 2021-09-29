@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand
 from django.template.defaultfilters import slugify
 
 from lemarche.perimeters.models import Perimeter
-from lemarche.siaes.constants import DEPARTMENTS, REGIONS_WITH_CODES
+from lemarche.siaes.constants import DEPARTMENTS, REGIONS
 
 
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -62,7 +62,7 @@ class Command(BaseCommand):
                 region_code = item.get("codeRegion")
 
                 assert insee_code in DEPARTMENTS
-                assert region_code in REGIONS_WITH_CODES
+                assert region_code in REGIONS
 
                 slug = slugify(name)
 

@@ -1,10 +1,35 @@
 from django.conf import settings
+from django.contrib.gis.db import models as gis_models
+from django.contrib.gis.measure import D
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
 
-from lemarche.siaes.constants import DEPARTMENTS, REGIONS
+from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY, get_department_code_from_name
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
+
+
+class SiaeQuerySet(models.QuerySet):
+    def live(self):
+        return self.filter(is_active=True).filter(is_delisted=False)
+
+    def in_region(self, **kwargs):
+        if "name" in kwargs:
+            return self.filter(region=kwargs["name"])
+        if "code" in kwargs:
+            code_clean = kwargs["code"].strip("R")  # "R" ? see Perimeter model & import_region.py
+            region_name = REGIONS.get(code_clean)
+            return self.filter(region=region_name)
+
+    def in_department(self, **kwargs):
+        if "name" in kwargs:
+            department_code = get_department_code_from_name(kwargs["name"])
+            return self.filter(department=department_code)
+        if "code" in kwargs:
+            return self.filter(department=kwargs["code"])
+
+    def within(self, point, distance_km):
+        return self.filter(coords__dwithin=(point, D(km=distance_km)))
 
 
 class Siae(models.Model):
@@ -21,8 +46,7 @@ class Siae(models.Model):
         "post_code",
         "department",
         "region",
-        "latitude",
-        "longitude",
+        "coords",
         "admin_name",
         "admin_email",
         "is_delisted",
@@ -90,8 +114,8 @@ class Siae(models.Model):
         (PRESTA_BUILD, "Fabrication et commercialisation de biens"),  # 1000
     )
 
-    DEPARTMENT_CHOICES = DEPARTMENTS.items()
-    REGION_CHOICES = zip(REGIONS.keys(), REGIONS.keys())
+    DEPARTMENT_CHOICES = DEPARTMENTS_PRETTY.items()
+    REGION_CHOICES = REGIONS_PRETTY.items()
     GEO_RANGE_COUNTRY = "COUNTRY"  # 3
     GEO_RANGE_REGION = "REGION"  # 2
     GEO_RANGE_DEPARTMENT = "DEPARTMENT"  # 1
@@ -132,8 +156,9 @@ class Siae(models.Model):
     post_code = models.CharField(
         verbose_name="Code Postal", validators=[validate_post_code], max_length=5, blank=True, null=True
     )
-    latitude = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
+    # Latitude and longitude coordinates.
+    # https://docs.djangoproject.com/en/2.2/ref/contrib/gis/model-api/#pointfield
+    coords = gis_models.PointField(geography=True, blank=True, null=True)
     geo_range = models.CharField(
         verbose_name="Périmètre d'intervention", max_length=20, choices=GEO_RANGE_CHOICES, blank=True, null=True
     )
@@ -177,6 +202,8 @@ class Siae(models.Model):
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
 
+    objects = models.Manager.from_queryset(SiaeQuerySet)()
+
     class Meta:
         verbose_name = "Structure"
         verbose_name_plural = "Structures"
@@ -187,6 +214,18 @@ class Siae(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def latitude(self):
+        if self.coords:
+            return self.coords.y
+        return None
+
+    @property
+    def longitude(self):
+        if self.coords:
+            return self.coords.x
+        return None
 
     def sectors_list_to_string(self):
         return ", ".join(self.sectors.all().values_list("name", flat=True))

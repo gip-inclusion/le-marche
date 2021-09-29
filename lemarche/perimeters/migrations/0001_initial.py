@@ -168,7 +168,7 @@ class Migration(migrations.Migration):
                     models.CharField(
                         blank=True,
                         choices=[
-                            ("O1", "Guadeloupe"),
+                            ("01", "Guadeloupe"),
                             ("02", "Martinique"),
                             ("03", "Guyane"),
                             ("04", "La Réunion"),
