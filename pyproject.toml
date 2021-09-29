@@ -71,12 +71,7 @@ target-version = ['py38', 'py39']
 include = '\.pyi?$'
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "lemarche.pytest_settings"
-# testpaths = [
-#     "tests",
-#     "integration",
-# ]
-# addopts = "--nomigrations --self-containted-html --junitxml=./tests/results/junit.xml"
+DJANGO_SETTINGS_MODULE = "lemarche.settings.test"
 
 [tool.poe.tasks]
 export = { shell = "poetry export --output requirements/staging.txt" }
