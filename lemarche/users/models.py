@@ -100,7 +100,7 @@ class User(AbstractUser):
     KIND_CHOICES_WITH_ADMIN = KIND_CHOICES + ((KIND_ADMIN, "Administrateur"),)  # Administrateur.trice
 
     username = None
-    email = models.EmailField(verbose_name="E-mail", unique=True)
+    email = models.EmailField(verbose_name="Adresse e-mail", unique=True)
     first_name = models.CharField("Prénom", max_length=150)
     last_name = models.CharField("Nom", max_length=150)
     kind = models.CharField(verbose_name="Type", max_length=20, choices=KIND_CHOICES_WITH_ADMIN, blank=True, null=True)
@@ -136,6 +136,10 @@ class User(AbstractUser):
     # date_joined, last_login
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
+
+    class Meta:
+        verbose_name = "Utilisateur"
+        verbose_name_plural = "Utilisateurs"
 
     def __str__(self):
         return self.email
