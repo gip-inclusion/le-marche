@@ -11,6 +11,8 @@ from django.views import View
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
 
+from lemarche.tracker.tracker import track
+
 from lemarche.siaes.models import Siae
 from lemarche.www.siaes.forms import SiaeSearchForm
 
@@ -107,6 +109,10 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
                 else:
                     siae_row.append(getattr(siae, field_name, ""))
             writer.writerow(siae_row)
+
+        # Track download event
+        # FIXME: payload has to be a dict, don't know if query_params is a dict
+        track('backend', 'directory_csv', self.request.query_params)
 
         return response
 
