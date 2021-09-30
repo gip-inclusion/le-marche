@@ -16,6 +16,7 @@ services:
 
   bitoubi:
     container_name: bitoubi_django
+    restart: always
     build:
         context: .
         target: dev
