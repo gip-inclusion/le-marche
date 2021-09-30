@@ -112,7 +112,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
 
         # Track download event
         # FIXME: payload has to be a dict, don't know if query_params is a dict
-        track('backend', 'directory_csv', self.request.query_params)
+        track("backend", "directory_csv", self.request.query_params)
 
         return response
 
