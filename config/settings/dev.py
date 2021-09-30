@@ -22,6 +22,9 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
+COMPRESS_OFFLINE = False
+LIBSASS_SOURCE_COMMENTS = True
+LIBSASS_OUTPUT_STYLE = "nested"
 
 # Emails.
 # ------------------------------------------------------------------------------

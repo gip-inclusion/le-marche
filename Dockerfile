@@ -44,7 +44,6 @@ RUN poetry config virtualenvs.create false && \
     poetry config virtualenvs.path /opt/venv && \
     poetry install $(test $ENV == "prod" && echo "--no-dev") --no-interaction --no-ansi
 
-
 # ----------------------------------------------------
 # Build project
 # ----------------------------------------------------
@@ -54,10 +53,10 @@ ENV PATH="/opt/venv/bin:$PATH" \
     VIRTUALENV="/opt/venv" \
     PYTHONPATH="$PYTHONPATH:/app/lemarche:/app/config"
 COPY ./lemarche ./lemarche
-COPY ./static ./static
 COPY ./config ./config
 COPY ./manage.py ./manage.py
 COPY ./pyproject.toml ./pyproject.toml
+COPY ./docker ./docker
 
 # ----------------------------------------------------
 # Run Dev
@@ -94,7 +93,7 @@ ENV DJANGO_SETTINGS_MODULE="config.settings.prod" \
     ENV="prod" \
     DEBUG="False"
 
-CMD ["config/entrypoint.sh"]
+CMD [".docker/dev/entrypoint.sh"]
 
 # # For some _real_ performance, at cost of ease of use:
 # FROM python:3.9-alpine as prod

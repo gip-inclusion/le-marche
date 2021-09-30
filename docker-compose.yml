@@ -5,6 +5,7 @@ services:
     container_name: bitoubi_postgres
     image: postgis/postgis:12-master
     volumes:
+      - ./docker/dev/postgres/:/docker-entrypoint-initdb.d/
       - postgres_data:/var/lib/postgresql/data
     env_file:
       - env.docker.local
@@ -15,11 +16,12 @@ services:
 
   bitoubi:
     container_name: bitoubi_django
+    restart: always
     build:
         context: .
         target: dev
         dockerfile: ./Dockerfile
-    command: ./config/dev/entrypoint.sh
+    command: ./docker/dev/entrypoint.sh
     volumes:
       - ./lemarche:/app/lemarche
       - ./config:/app/config
