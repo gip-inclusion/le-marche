@@ -3,6 +3,14 @@
 
 {% block title %}{{ siae.name }}{{ block.super }}{% endblock %}
 
+{% block extra_head %}
+<meta property="og:title" content="{{ siae.name }}" />
+<meta property="og:url" content="{{ request.build_absolute_uri }}" />
+{# <meta property="og:description" content="" /> #}
+{# <meta property="og:image" content="{{ }}" /> #}
+{# <meta property="og:image:alt" content="Logo : {{ siae.name }}" /> #}
+{% endblock %}
+
 {% block breadcrumbs %}
 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
     <ol class="breadcrumb">
