@@ -15,7 +15,7 @@ done
 export PYTHONPATH=$PYTHONPATH:./lemarche:./config
 
 ./manage.py collectstatic --noinput
-./manage.py compress --force
+# ./manage.py compress --force
 
 ./manage.py migrate
 
