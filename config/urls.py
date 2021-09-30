@@ -15,6 +15,7 @@ urlpatterns = [
     path("api/", include("lemarche.api.urls")),
     path("accounts/", include("lemarche.www.auth.urls")),
     path("siae/", include("lemarche.www.siae.urls")),
+    path("dashboard/", include("lemarche.www.dashboard.urls")),
     path("", include("lemarche.www.pages.urls")),
 ]
 

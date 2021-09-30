@@ -23,8 +23,9 @@ class LoginView(auth_views.LoginView):
         """Redirect to next_url if there is a next param."""
         success_url = super().get_success_url()
         next_url = self.request.GET.get("next", None)
+        print(next_url)
         # sanitize next_url
-        if next_url and next_url.startswith(("/siae/")):
+        if next_url and next_url.startswith(("/siae/", "/dashboard/")):
             success_url = next_url
         return success_url
 
