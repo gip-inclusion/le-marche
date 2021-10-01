@@ -1,13 +1,13 @@
 {% extends "layouts/base.html" %}
 {% load static get_verbose_name %}
 
-{% block title %}Tableau de bord{{ block.super }}{% endblock %}
+{% block title %}Mon espace{{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Tableau de bord</li>
+        <li class="breadcrumb-item active" aria-current="page">Mon espace</li>
     </ol>
 </nav>
 {% endblock %}
@@ -40,13 +40,18 @@
                                 <a href="{% url 'dashboard:profile_edit' %}" class="btn btn-outline-primary btn-ico">
                                     <span>Modifier</span>
                                 </a>
+                                <a href="{% url 'auth:logout' %}" class="btn btn-outline-primary btn-ico float-right">
+                                    <span>Déconnexion</span>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {% if user.kind == user.KIND_SIAE or user.kind == user.KIND_ADMIN %}
-                    <h2 class="mb-3 mb-lg-5">Mes structures</h2>
+                    <h2 class="mb-3 mb-lg-5">
+                        {% if user.siae.count > 1 %}Mes structures{% else %}Ma structure{% endif %}
+                    </h2>
 
                     <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3">
                         {% for siae in user.siaes.all %}

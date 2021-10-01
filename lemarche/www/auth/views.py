@@ -34,13 +34,19 @@ class SignupView(SuccessMessageMixin, CreateView):
     template_name = "auth/signup.html"
     form_class = SignupForm
     success_url = reverse_lazy("pages:home")
-    success_message = "Inscription validée !"
+    success_message = "Inscription validée ! Vous pouvez maintenant vous connecter."
 
     def form_valid(self, form):
         """Send a notification email to the team."""
         user = form.save()
         send_signup_notification_email(user)
         return super().form_valid(form)
+
+    def get_success_message(self, cleaned_data):
+        success_message = super().get_success_message(cleaned_data)
+        if cleaned_data["kind"] == "SIAE":
+            success_message += " L'ajout de votre structure se fera ensuite dans votre espace utilisateur."
+        return success_message
 
 
 class PasswordResetView(auth_views.PasswordResetView):

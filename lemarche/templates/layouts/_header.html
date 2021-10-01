@@ -43,12 +43,7 @@
                         {% if user.is_authenticated %}
                         <li>
                             <a id="h_login" href="{% url 'dashboard:home' %}" tabindex="7" rel="noopener">
-                                <span>Tableau de bord</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a id="h_login" href="{% url 'auth:logout' %}" tabindex="7" rel="noopener">
-                                <span>Déconnexion</span>
+                                <span>Mon espace</span>
                             </a>
                         </li>
                         {% else %}
