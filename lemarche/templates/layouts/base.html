@@ -3,20 +3,46 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8" />
-    <title>{% block title %} - marché de l'inclusion {% endblock %}</title>
+    <title>{% block title %} - Le marché de l'inclusion{% endblock %}</title>
     {% block meta_description %}
-    <meta name="description" content="Les emplois de l'inclusion facilitent le retour à l'emploi des personnes en situation d'exclusion par l'orientation et le recrutement auprès d'employeurs solidaires (structures de l'insertion par l'activité économique et du secteur adapté)">
+    <meta name="description" content="Le marché de l'inclusion est un service numérique permettant de trouver un prestataire sociale inclusif proposant des produits ou services professionnels.">
     {% endblock %}
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-
     <meta name="theme-color" content="#ffffff">
 
-    {# Use this to get the value of the CSRF token in JavaScript. #}
+    <!-- https://metatags.io Open Graph -->
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://lemarche.inclusion.beta.gouv.fr/" />
+    <meta property="og:description" content="Le marché de l'inclusion est un service numérique permettant de trouver un prestataire sociale inclusif proposant des produits ou services professionnels." />
+    <meta property="og:image" content="{% static 'img/logo_metatags_marche.png' %}" />
+    <meta property="og:image:alt" content="Logo du marché de l'inclusion" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <!-- https://metatags.io Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://lemarche.inclusion.beta.gouv.fr/" />
+    <meta property="twitter:title" content="{% block meta_twitter_title %}Le marché de l'inclusion{% endblock %}" />
+    <meta property="twitter:description" content="Le marché de l'inclusion est un service numérique permettant de trouver un prestataire sociale inclusif proposant des produits ou services professionnels." />
+    <meta property="twitter:image" content="{% static 'img/logo_metatags_marche.png' %}" />
+    <meta property="twitter:site" content="inclusion_gouv" />
+    <!-- https://metatags.io Facebook -->
+    <meta property="fb:page_id" content="inclusion.gouv" />
+
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'img/favicon.png' %}" type="image/png">
+    <link rel="icon" sizes="16x16" href="{% static 'img/favicon-16x16.png' %}" type="image/png">
+    <link rel="icon" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}" type="image/png">
+    <link rel="icon" sizes="96x96" href="{% static 'img/favicon-96x96.png' %}" type="image/png">
+    <link rel="icon" sizes="256x256" href="{% static 'img/favicon-256x256.png' %}" type="image/png">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/favicon-180x180.png' %}" type="image/png">
+
+    <!-- Use this to get the value of the CSRF token in JavaScript. -->
     <meta name="csrf-token" content="{{ csrf_token }}">
 
     {% bootstrap_javascript jquery='full' %}
-
 
     {% compress css %}
     <link rel="stylesheet" href="{% static 'itou/stylesheets/app.css' %}" type="text/css">
