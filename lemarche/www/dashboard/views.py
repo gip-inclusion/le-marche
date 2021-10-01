@@ -4,7 +4,8 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
-from lemarche.www.dashboard.forms import ProfileEditForm, SiaeSearchBySiretForm
+from lemarche.siaes.models import Siae
+from lemarche.www.dashboard.forms import ProfileEditForm, SiaeAdoptConfirmForm, SiaeSearchBySiretForm
 
 
 class DashboardHomeView(LoginRequiredMixin, DetailView):
@@ -25,7 +26,7 @@ class ProfileEditView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return self.request.user
 
 
-class SiaeSearchBySiretView(FormMixin, ListView):
+class SiaeSearchBySiretView(LoginRequiredMixin, FormMixin, ListView):
     form_class = SiaeSearchBySiretForm
     template_name = "dashboard/siae_search_by_siret.html"
     context_object_name = "siaes"
@@ -41,5 +42,20 @@ class SiaeSearchBySiretView(FormMixin, ListView):
         - initialize the form with the query parameters
         """
         context = super().get_context_data(**kwargs)
-        context["form"] = SiaeSearchBySiretForm(data=self.request.GET)
+        if "siret" in self.request.GET:
+            context["form"] = SiaeSearchBySiretForm(data=self.request.GET)
         return context
+
+
+class SiaeAdoptConfirmView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    form_class = SiaeAdoptConfirmForm
+    template_name = "dashboard/siae_adopt_confirm.html"
+    context_object_name = "siae"
+    queryset = Siae.objects.all()
+    success_message = "Votre structure a été rajoutée dans votre espace."
+    success_url = reverse_lazy("dashboard:home")
+
+    def form_valid(self, form):
+        """Add the Siae to the User."""
+        self.object.users.add(self.request.user)
+        return super().form_valid(form)

@@ -70,10 +70,10 @@
                     </p>
                     {% if siae.users.count %}
                         <p class="text-muted">
-                            Cette structure est <strong>déjà</strong> enregistrée sur le marché, par l'utilisateur <strong>{{ siae.users.first.first_name|slice:'1:' }}. {{ siae.users.first.last_name }}</strong>.
+                            Cette structure est <strong>déjà</strong> enregistrée sur le marché, par l'utilisateur <strong>{{ siae.users.first.first_name|slice:':1' }}. {{ siae.users.first.last_name }}</strong>.
                         </p>
                     {% else %}
-                        <a href="" class="btn btn-outline-primary btn-ico">
+                        <a href="{% url 'dashboard:siae_adopt_confirm' siae.id %}" class="btn btn-outline-primary btn-ico">
                             <span>Sélectionner</span>
                         </a>
                     {% endif %}

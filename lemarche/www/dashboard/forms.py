@@ -21,16 +21,12 @@ class ProfileEditForm(forms.ModelForm):
         self.fields["email"].disabled = True
 
 
-class SiaeSearchBySiretForm(forms.ModelForm):
+class SiaeSearchBySiretForm(forms.Form):
     siret = forms.CharField(
         label="Entrez le numéro SIRET ou SIREN de votre structure",
         widget=forms.TextInput(attrs={"class": "form-control"}),
         required=True,
     )
-
-    class Meta:
-        model = Siae
-        fields = ["siret"]
 
     def clean_siret(self):
         siret = self.cleaned_data["siret"]
@@ -60,3 +56,9 @@ class SiaeSearchBySiretForm(forms.ModelForm):
             qs = qs.none()
 
         return qs
+
+
+class SiaeAdoptConfirmForm(forms.ModelForm):
+    class Meta:
+        model = Siae
+        fields = []

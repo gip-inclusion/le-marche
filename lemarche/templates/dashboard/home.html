@@ -50,7 +50,7 @@
 
                 {% if user.kind == user.KIND_SIAE or user.kind == user.KIND_ADMIN %}
                     <h2 class="mb-3 mb-lg-5">
-                        {% if user.siae.count > 1 %}Mes structures{% else %}Ma structure{% endif %}
+                        {% if user.siaes.count > 1 %}Mes structures{% else %}Ma structure{% endif %}
                     </h2>
 
                     <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3">
@@ -77,9 +77,9 @@
                                     </p>
                                 </div>
                                 <div class="card-footer">
-                                    <a href="" class="btn btn-outline-primary btn-ico">
+                                    <button class="btn btn-outline-primary btn-ico" disabled>
                                         <span>Modifier</span>
-                                    </a>
+                                    </button>
                                     <a href="{% url 'siae:detail' siae.id %}" target="_blank" class="btn btn-outline-primary btn-ico float-right is-external">
                                         <span>Afficher</span>
                                     </a>
