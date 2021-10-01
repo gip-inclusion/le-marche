@@ -92,8 +92,8 @@ class User(AbstractUser):
     KIND_CHOICES = (
         # (KIND_PERSO, "Utilisateur"),  # Une personne
         # (KIND_COMPANY, "Entreprise"),  # Une entreprise
-        (KIND_SIAE, "SIAE"),  # Structure inclusive qui souhaite proposer ses offres
-        (KIND_BUYER, "Acheteur (classique)"),  # Un acheteur qui souhaite réaliser un achat inclusif
+        (KIND_SIAE, "Structure"),  # Structure inclusive qui souhaite proposer ses offres
+        (KIND_BUYER, "Acheteur"),  # Un acheteur qui souhaite réaliser un achat inclusif
         (KIND_PARTNER, "Partenaire"),  # Partenaire
     )
 
