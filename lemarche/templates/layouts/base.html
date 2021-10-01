@@ -3,7 +3,7 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8" />
-    <title>{% block title %} - marché de l'inclusion {% endblock %}</title>
+    <title>{% block title %} - Le marché de l'inclusion{% endblock %}</title>
     {% block meta_description %}
     <meta name="description" content="Le marché de l'inclusion est un service numérique permettant de trouver un prestataire sociale inclusif proposant des produits ou services professionnels.">
     {% endblock %}
@@ -32,10 +32,12 @@
     <meta property="twitter:description" content="Le marché de l'inclusion est un service numérique permettant de trouver un prestataire sociale inclusif proposant des produits ou services professionnels." />
     <meta property="twitter:image" content="{% static 'img/logo_metatags_marche.png' %}" />
 
-    <link rel="shortcut icon" href="{% static 'itou/images/favicon.png' %}" type="image/x-icon">
-    <link rel="icon" href="{% static 'itou/images/favicon.png' %}" type="image/png">
-    <link rel="icon" sizes="16x16" href="{% static 'itou/images/favicon-16x16.png' %}" type="image/png">
-    <link rel="icon" sizes="32x32" href="{% static 'itou/images/favicon-32x32.png' %}" type="image/png">
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'img/favicon.png' %}" type="image/png">
+    <link rel="icon" sizes="16x16" href="{% static 'img/favicon-16x16.png' %}" type="image/png">
+    <link rel="icon" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}" type="image/png">
+    <link rel="icon" sizes="96x96" href="{% static 'img/favicon-96x96.png' %}" type="image/png">
+    <link rel="icon" sizes="256x256" href="{% static 'img/favicon-256x256.png' %}" type="image/png">
 
     <!-- Use this to get the value of the CSRF token in JavaScript. -->
     <meta name="csrf-token" content="{{ csrf_token }}">
