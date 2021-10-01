@@ -95,13 +95,11 @@
             <div class="container container-max-lg">
                 {% block messages %}
                 {% if messages %}
-                    <div class="messages fr-container fr-my-5w">
-                        {% for message in messages %}
-                            <div role="alert" class="alert alert-{{ message.tags|default:'info' }} alert-dismissible">
-                                <p>{{ message|safe }}</p>
-                            </div>
-                        {% endfor %}
-                    </div>
+                    {% for message in messages %}
+                        <div role="alert" class="alert alert-{{ message.tags|default:'info' }} alert-dismissible">
+                            <p>{{ message|safe }}</p>
+                        </div>
+                    {% endfor %}
                 {% endif %}
                 {% endblock %}
             </div>
