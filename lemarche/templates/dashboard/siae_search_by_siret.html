@@ -1,0 +1,85 @@
+{% extends "layouts/base.html" %}
+{% load static get_verbose_name %}
+
+{% block title %}Rechercher ma structure{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Rechercher ma structure</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<section class="pt-4 pt-lg-6 pb-6 pb-lg-8">
+    <div class="container container-max-lg">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-3 mb-lg-5">Ma structure</h2>
+
+                <p>
+                    Recherchez la structure à laquelle vous êtes attaché.<br />
+                    <small>Si il y en a plusieurs, vous aurez la possibilité de spécifier d'autres structures par la suite.</small>
+                </p>
+
+                <br />
+
+                {% if form.errors %}
+                    <div class="alert alert-danger mb-3 mb-lg-5" role="alert">{{ form.errors }}</div>
+                {% endif %}
+
+                <form method="GET" action="{% url 'dashboard:siae_search_by_siret' %}" class="mb-3 mb-lg-5">
+                    <div class="form-group">
+                        <label for="{{ form.siret.id_for_label }}">
+                            {{ form.siret.label }} <strong class="text-warning">*</strong>
+                        </label>
+                        {{ form.siret }}
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-md-auto pt-3">
+                            <button type="submit" class="btn btn-primary btn-block btn-ico">
+                                <span>Rechercher</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+                                    <path fill="currentColor" fill-rule="nonzero" stroke="currentColor" d="M1.964 8.95h11.03L9.51 12.737a.451.451 0 00.037.646.474.474 0 00.66-.037L14.386 8.8l.035-.043.033-.05.013-.05V8.539c0-.012.033-.02.033-.044v-.151l-.014-.05-.019-.03-.034-.045-4.193-4.566a.474.474 0 00-.66-.037.452.452 0 00-.036.646l3.45 3.777H1.963a.46.46 0 00-.464.455.46.46 0 00.464.455z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                {% for siae in siaes %}
+                    <hr />
+                    <p title="{% get_verbose_name siae 'name' %}">
+                        <strong>{% get_verbose_name siae 'name' %} :</strong>
+                        {{ siae.name }}
+                    </p>
+                    <p title="{% get_verbose_name siae 'brand' %}">
+                        <strong>{% get_verbose_name siae 'brand' %} :</strong>
+                        {{ siae.brand }}
+                    </p>
+                    <p title="{% get_verbose_name siae 'siret' %}">
+                        <strong>{% get_verbose_name siae 'siret' %} :</strong>
+                        {{ siae.siret }}
+                    </p>
+                    <p title="Localisation">
+                        <strong>Localisation :</strong>
+                        {{ siae.city }} {{ siae.post_code }}
+                    </p>
+                    {% if siae.users.count %}
+                        <p class="text-muted">
+                            Cette structure est <strong>déjà</strong> enregistrée sur le marché, par l'utilisateur <strong>{{ siae.users.first.first_name|slice:'1:' }}. {{ siae.users.first.last_name }}</strong>.
+                        </p>
+                    {% else %}
+                        <a href="" class="btn btn-outline-primary btn-ico">
+                            <span>Sélectionner</span>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
