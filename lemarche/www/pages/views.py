@@ -1,7 +1,8 @@
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404, HttpResponsePermanentRedirect
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, FormView
+from django.views.generic import DetailView, FormView, TemplateView
+from django.views.generic.edit import FormMixin
 
 from lemarche.pages.models import Page
 from lemarche.siaes.models import Siae
@@ -10,7 +11,7 @@ from lemarche.www.pages.tasks import send_contact_form_email
 from lemarche.www.siae.forms import SiaeSearchForm
 
 
-class HomeView(FormView):
+class HomeView(FormMixin, TemplateView):
     template_name = "pages/home.html"
     form_class = SiaeSearchForm
 

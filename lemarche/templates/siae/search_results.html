@@ -17,64 +17,64 @@
     <!-- Search form -->
     <div id="dir_form" class="dir_form">
         <form method="GET" action="{% url 'siae:search_results' %}">
-        <div class="row">
-            <div class="col-sm-8">
-                <div class="row first-row">
-                    <div class="col-sm-6 pr-sm-0 mt-4">
-                        <div class="title">
-                            {{ form.sectors.label }}
+            <div class="row">
+                <div class="col-sm-8">
+                    <div class="row first-row">
+                        <div class="col-sm-6 pr-sm-0 mt-4">
+                            <div class="title">
+                                {{ form.sectors.label }}
+                            </div>
+                            <div class="field-holder">
+                                <div class="multiselect itou-multiselect listing-category">
+                                    {{ form.sectors }}
+                                </div>
+                            </div>
                         </div>
-                        <div class="field-holder">
-                            <div class="multiselect itou-multiselect listing-category">
-                                {{ form.sectors }}
+                        <div class="col-sm-6 pl-sm-0 mt-4">
+                            <div class="title">
+                                {{ form.perimeter.label }}
+                            </div>
+                            <div class="field-holder">
+                                <div>
+                                    {{ form.perimeter }}
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-6 pl-sm-0 mt-4">
-                        <div class="title">
-                            {{ form.perimeter.label }}
+                    <div class="row">
+                        <div class="col-sm-5 mt-4">
+                            <div class="title">
+                                Type de structure
+                            </div>
+                            <div class="field-holder">
+                                <div class="multiselect itou-multiselect structure-type">
+                                    {{ form.kind }}
+                                </div>
+                            </div>
                         </div>
-                        <div class="field-holder">
-                            <div>
-                                {{ form.perimeter }}
+                        <div class="col-sm-5 mt-4">
+                            <div class="title">
+                                Type de prestation
+                            </div>
+                            <div class="field-holder">
+                                {{ form.presta_type }}
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-5 mt-4">
-                        <div class="title">
-                            Type de structure
-                        </div>
-                        <div class="field-holder">
-                            <div class="multiselect itou-multiselect structure-type">
-                                {{ form.kind }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-5 mt-4">
-                        <div class="title">
-                            Type de prestation
-                        </div>
-                        <div class="field-holder">
-                            {{ form.presta_type }}
-                        </div>
+                    <div class="row">
                     </div>
                 </div>
-                <div class="row">
+                <div class="col-xs-6 col-sm-2">
+                    <button class="btn btn-primary btn-block btn-ico" id="filter-submit" type="submit">
+                        Rechercher <i class="icon-search"></i>
+                    </button>
                 </div>
+                <div class="col-xs-6 col-sm-2">
+                    <a class="btn btn-outline-primary btn-block reset btn-ico" href="{% url 'siae:search_results' %}">
+                        Réinitialiser <i class="icon-cw"></i>
+                    </a>
+                </div>                    
             </div>
-            <div class="col-xs-6 col-sm-2">
-                <button class="btn btn-primary btn-block btn-ico" id="filter-submit" type="submit">
-                    Rechercher <i class="icon-search"></i>
-                </button>
-            </div>
-            <div class="col-xs-6 col-sm-2">
-                <a class="btn btn-outline-primary btn-block reset btn-ico" href="{% url 'siae:search_results' %}">
-                    Réinitialiser <i class="icon-cw"></i>
-                </a>
-            </div>                    
-        </div>
         </form>
     </div>
 

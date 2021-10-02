@@ -1,10 +1,9 @@
 import csv
 import datetime
 
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponse
-from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
@@ -33,12 +32,13 @@ class SiaeSearchResultsView(FormMixin, ListView):
 
     def get_context_data(self, **kwargs):
         """
-        - initialize the form with the query parameters
+        - initialize the form with the query parameters (only if they are present)
         - store the current search query in the session
         - set the paginator range
         """
         context = super().get_context_data(**kwargs)
-        context["form"] = SiaeSearchForm(data=self.request.GET)
+        if len(self.request.GET.keys()):
+            context["form"] = SiaeSearchForm(data=self.request.GET)
         # store the current search query in the session
         current_search_query = self.request.GET.urlencode()
         self.request.session[CURRENT_SEARCH_QUERY_COOKIE_NAME] = current_search_query
@@ -50,14 +50,15 @@ class SiaeSearchResultsView(FormMixin, ListView):
         return context
 
 
-class SiaeSearchResultsDownloadView(View):
+class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
+    http_method_names = ["get"]
+
     def get_queryset(self):
         """Filter results."""
         filter_form = SiaeSearchForm(data=self.request.GET)
         results = filter_form.filter_queryset()
         return results
 
-    @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         siae_list = self.get_queryset()
 
