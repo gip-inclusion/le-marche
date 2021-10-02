@@ -22,9 +22,13 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
+
+# Static files.
+# ------------------------------------------------------------------------------
+
+COMPRESS_ENABLED = False
 COMPRESS_OFFLINE = False
-LIBSASS_SOURCE_COMMENTS = True
-LIBSASS_OUTPUT_STYLE = "nested"
+
 
 # Emails.
 # ------------------------------------------------------------------------------

@@ -14,9 +14,9 @@
                     fonction de vos besoins.
                 </p>
 
-                <div class="mb-3 mb-lg-5">
-                    {{ form.errors }}
-                </div>
+                {% if form.errors %}
+                    <div class="alert alert-danger mb-3 mb-lg-5" role="alert">{{ form.errors }}</div>
+                {% endif %}
 
                 <form method="POST" action="{% url 'auth:signup' %}">
                     {% csrf_token %}

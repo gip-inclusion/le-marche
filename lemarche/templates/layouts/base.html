@@ -85,19 +85,27 @@
     <!-- contains main informative part of the site -->
     <main id="main" role="main" class="s-main">
 
-        {% block breadcrumbs %}{% endblock %}
-
-        {% block messages %}
-        {% if messages %}
-            <div class="messages fr-container fr-my-5w">
-                {% for message in messages %}
-                    <div role="alert" class="alert alert-{{ message.tags|default:'info' }}">
-                        <p>{{ message|safe }}</p>
-                    </div>
-                {% endfor %}
+        <section>
+            <div class="container container-max-lg">
+                {% block breadcrumbs %}{% endblock %}
             </div>
-        {% endif %}
-        {% endblock %}
+        </section>
+
+        <section>
+            <div class="container container-max-lg">
+                {% block messages %}
+                {% if messages %}
+                    <div class="messages fr-container fr-my-5w">
+                        {% for message in messages %}
+                            <div role="alert" class="alert alert-{{ message.tags|default:'info' }}">
+                                <p>{{ message|safe }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% endblock %}
+            </div>
+        </section>
 
         {% block content %}{% endblock %}
 

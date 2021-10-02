@@ -14,10 +14,10 @@ done
 
 export PYTHONPATH=$PYTHONPATH:./lemarche:./config
 
-./manage.py collectstatic --noinput
+# ./manage.py collectstatic --noinput
 # ./manage.py compress --force
 
 ./manage.py migrate
 
-# ./manage.py runserver 0.0.0.0:8880
-gunicorn config.wsgi:application -w 2 -b :8880 --reload
+./manage.py runserver 0.0.0.0:8880
+# gunicorn config.wsgi:application -w 2 -b :8880 --reload
