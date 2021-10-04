@@ -13,4 +13,4 @@ class PerimeterFactory(DjangoModelFactory):
 
     name = factory.Faker("name")
     slug = factory.LazyAttribute(lambda o: slugify(o.name))
-    scale = Perimeter.KIND_CITY
+    kind = Perimeter.KIND_CITY
