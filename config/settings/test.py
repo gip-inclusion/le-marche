@@ -1,7 +1,6 @@
 import logging
 
-
-# from .base import *
+from .base import *  # noqa
 
 
 # Disable logging and traceback in unit tests for readability.
