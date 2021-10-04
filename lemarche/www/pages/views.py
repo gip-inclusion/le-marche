@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404, HttpResponsePermanentRedirect
 from django.urls import reverse_lazy
@@ -14,6 +15,12 @@ from lemarche.www.siae.forms import SiaeSearchForm
 class HomeView(FormMixin, TemplateView):
     template_name = "pages/home.html"
     form_class = SiaeSearchForm
+
+    def get(self, request, *args, **kwargs):
+        message = request.GET.get("message", None)
+        if message == "newsletter-success":
+            messages.add_message(request, messages.INFO, "Merci de votre inscription à notre newsletter !")
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """
