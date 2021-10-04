@@ -103,7 +103,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     # Core
     "lemarche.utils",
-    "lemarche.cocorico",
+    # "lemarche.cocorico",
     "lemarche.users",
     "lemarche.siaes",
     "lemarche.sectors",
@@ -169,20 +169,7 @@ DATABASES = {
         "USER": env.str("POSTGRESQL_ADDON_USER", "user"),
         "PASSWORD": env.str("POSTGRESQL_ADDON_PASSWORD", "password"),
     },
-    "structures": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": env.str("MYSQL_ADDON_DB", "mysql"),
-        "USER": env.str("MYSQL_ADDON_USER", "user"),
-        "PASSWORD": env.str("MYSQL_ADDON_PASSWORD", "password"),
-        "HOST": env.str("MYSQL_ADDON_HOST", "localhost"),
-        "PORT": env.str("MYSQL_ADDON_PORT", "3306"),
-        "TEST": {"MIRROR": "default"},
-    },
 }
-
-# Needed as long as Cocorico database used as data source
-DATABASE_ROUTERS = ["config.routers.CocoRouter"]
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

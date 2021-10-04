@@ -2,7 +2,6 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _  # noqa
 
 
 class UserQueryset(models.QuerySet):
@@ -140,3 +139,7 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
