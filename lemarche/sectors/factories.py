@@ -2,13 +2,13 @@ import factory
 from django.utils.text import slugify
 from factory.django import DjangoModelFactory
 
-from lemarche.perimeters.models import Perimeter
+from lemarche.sectors.models import Sector
 
 
-class PerimeterFactory(DjangoModelFactory):
+class SectorFactory(DjangoModelFactory):
     class Meta:
-        model = Perimeter
+        model = Sector
 
     name = factory.Faker("name")
     slug = factory.LazyAttribute(lambda o: slugify(o.name))
-    kind = Perimeter.KIND_CITY
+    # group =

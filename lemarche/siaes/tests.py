@@ -1,9 +1,12 @@
-from django.test import SimpleTestCase
+from django.test import TestCase
+
+from lemarche.siaes.factories import SiaeFactory
 
 
-class SiaeLabelModelTest(SimpleTestCase):
+class SiaeModelTest(TestCase):
     def setUp(self):
-        pass
+        SiaeFactory()
 
-    def test_spacetime_continuum(self):
-        self.assertEqual(1, 1)
+    def test_str(self):
+        siae = SiaeFactory(name="Ma boite")
+        self.assertEqual(str(siae), "Ma boite")
