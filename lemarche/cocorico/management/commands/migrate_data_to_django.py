@@ -224,7 +224,7 @@ class Command(BaseCommand):
 
         Siae.objects.all().delete()
 
-        cur.execute("SELECT * FROM directory")
+        cur.execute("SELECT * FROM directory ORDER BY is_active DESC")
         resp = cur.fetchall()
         # print(len(resp))
 
