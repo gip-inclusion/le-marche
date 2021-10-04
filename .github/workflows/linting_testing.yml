@@ -36,6 +36,15 @@ jobs:
 
     steps:
       #----------------------------------------------
+      # set up the PostgreSQL database: extensions, ...
+      #----------------------------------------------
+      - name: Set up the database
+        run: |
+          psql -d postgresql://postgres:password@localhost/template1 -c 'CREATE EXTENSION IF NOT EXISTS pg_trgm;'
+        env:
+          PGPASSWORD: password
+
+      #----------------------------------------------
       # check-out repo and set-up python
       #----------------------------------------------
       - name: Check out repository
