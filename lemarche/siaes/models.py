@@ -91,6 +91,7 @@ class SiaeQuerySet(models.QuerySet):
 class Siae(models.Model):
     READONLY_FIELDS_FROM_C1 = [
         "name",
+        "slug",  # generated from 'name'
         "brand",
         "siret",
         "naf",

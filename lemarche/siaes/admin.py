@@ -80,6 +80,7 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
             {
                 "fields": (
                     "name",
+                    "slug",
                     "brand",
                     "siret",
                     "naf",
