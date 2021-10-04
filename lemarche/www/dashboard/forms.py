@@ -33,12 +33,15 @@ class SiaeSearchBySiretForm(forms.Form):
         if siret:
             # strip spaces (beginning, inbetween, end)
             siret = siret.replace(" ", "")
-            # check siret length
-            if len(siret) < 8:
+            # siret/siren validation
+            if len(siret) < 9:
                 msg = "Le longueur du numéro doit être supérieure ou égale à 9 caractères."
                 raise forms.ValidationError(msg)
             if len(siret) > 14:
                 msg = "Le longueur du numéro ne peut pas dépasser 14 caractères."
+                raise forms.ValidationError(msg)
+            if not siret.isdigit():
+                msg = "Le numéro ne doit être composé que de chiffres."
                 raise forms.ValidationError(msg)
         return siret
 

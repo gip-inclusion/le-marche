@@ -4,6 +4,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
+from lemarche.utils.urls import get_safe_url
 from lemarche.www.auth.forms import PasswordResetForm, SignupForm
 from lemarche.www.auth.tasks import send_signup_notification_email
 
@@ -23,10 +24,11 @@ class LoginView(auth_views.LoginView):
         """Redirect to next_url if there is a next param."""
         success_url = super().get_success_url()
         next_url = self.request.GET.get("next", None)
-        print(next_url)
         # sanitize next_url
-        if next_url and next_url.startswith(("/siae/", "/dashboard/")):
-            success_url = next_url
+        if next_url:
+            safe_url = get_safe_url(self.request, param_name="next")
+            if safe_url:
+                success_url = safe_url
         return success_url
 
 
