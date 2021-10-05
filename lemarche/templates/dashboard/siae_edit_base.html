@@ -6,7 +6,7 @@
 <section>
     <div class="container">
         <div class="row">
-            <div class="col-12">
+            <div class="col-8">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
@@ -14,6 +14,11 @@
                         <li class="breadcrumb-item active" aria-current="page">{{ siae.name }}</li>
                     </ol>
                 </nav>
+            </div>
+            <div class="col-4">
+                <a href="{% url 'siae:detail' siae.id %}" target="_blank" class="btn btn-outline-primary btn-ico float-right is-external">
+                    <span>Voir la fiche</span>
+                </a>
             </div>
         </div>
     </div>
@@ -27,13 +32,13 @@
         <div class="pb-6">
             <ul class="nav nav-tabs" style="justify-content: space-between;">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#">1. Infos & Contact</a>
+                    <a class="nav-link {% if 'contact' in request.path %}active{% endif %}" href="{% url 'dashboard:siae_edit_info_contact' siae.id %}">1. Infos & Contact</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">2. Votre offre commerciale</a>
+                    <a class="nav-link {% if 'offer' in request.path %}active{% endif %}" href="{% url 'dashboard:siae_edit_offer' siae.id %}">2. Votre offre commerciale</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">3. Vos prestations</a>
+                    <a class="nav-link {% if 'presta' in request.path %}active{% endif %}" href="{% url 'dashboard:siae_edit_presta' siae.id %}">3. Vos prestations</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">4. Les plus</a>

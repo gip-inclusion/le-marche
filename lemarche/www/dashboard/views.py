@@ -7,7 +7,14 @@ from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
 from lemarche.siaes.models import Siae
-from lemarche.www.dashboard.forms import ProfileEditForm, SiaeAdoptConfirmForm, SiaeEditForm, SiaeSearchBySiretForm
+from lemarche.www.dashboard.forms import (
+    ProfileEditForm,
+    SiaeAdoptConfirmForm,
+    SiaeEditInfoContactForm,
+    SiaeEditOfferForm,
+    SiaeEditPrestaForm,
+    SiaeSearchBySiretForm,
+)
 from lemarche.www.dashboard.mixins import SiaeOwnerRequiredMixin, SiaeUserRequiredMixin
 
 
@@ -74,13 +81,35 @@ class SiaeAdoptConfirmView(LoginRequiredMixin, SiaeUserRequiredMixin, SuccessMes
         return super().form_valid(form)
 
 
-class SiaeEditView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
-    form_class = SiaeEditForm
-    template_name = "dashboard/siae_edit_contact.html"
+class SiaeEditInfoContactView(LoginRequiredMixin, SiaeOwnerRequiredMixin, UpdateView):
+    form_class = SiaeEditInfoContactForm
+    template_name = "dashboard/siae_edit_info_contact.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
-    success_message = "Votre structure a été mise à jour."
     # success_url = reverse_lazy("dashboard:home")
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit", args=[self.kwargs.get("pk")])
+        return reverse_lazy("dashboard:siae_edit_offer", args=[self.kwargs.get("pk")])
+
+
+class SiaeEditOfferView(LoginRequiredMixin, SiaeOwnerRequiredMixin, UpdateView):
+    form_class = SiaeEditOfferForm
+    template_name = "dashboard/siae_edit_offer.html"
+    context_object_name = "siae"
+    queryset = Siae.objects.all()
+    # success_url = reverse_lazy("dashboard:home")
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard:siae_edit_presta", args=[self.kwargs.get("pk")])
+
+
+class SiaeEditPrestaView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
+    form_class = SiaeEditPrestaForm
+    template_name = "dashboard/siae_edit_presta.html"
+    context_object_name = "siae"
+    queryset = Siae.objects.all()
+    success_message = "Votre profil a été mis à jour."
+    success_url = reverse_lazy("dashboard:home")
+
+    # def get_success_url(self):
+    #     return reverse_lazy("dashboard:siae_edit", args=[self.kwargs.get("pk")])

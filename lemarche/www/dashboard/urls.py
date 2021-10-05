@@ -1,10 +1,13 @@
-from django.urls import path
+from django.urls import include, path
+from django.views.generic.base import RedirectView
 
 from lemarche.www.dashboard.views import (
     DashboardHomeView,
     ProfileEditView,
     SiaeAdoptConfirmView,
-    SiaeEditView,
+    SiaeEditInfoContactView,
+    SiaeEditOfferView,
+    SiaeEditPrestaView,
     SiaeSearchBySiretView,
 )
 
@@ -17,5 +20,19 @@ urlpatterns = [
     path("profile-edit/", ProfileEditView.as_view(), name="profile_edit"),
     path("siae/search/", SiaeSearchBySiretView.as_view(), name="siae_search_by_siret"),
     path("siae/<int:pk>/adopt-confirm/", SiaeAdoptConfirmView.as_view(), name="siae_adopt_confirm"),
-    path("siae/<int:pk>/edit/", SiaeEditView.as_view(), name="siae_edit"),
+    path(
+        "siae/<int:pk>/edit/",
+        include(
+            [
+                path(
+                    "",
+                    RedirectView.as_view(pattern_name="dashboard:siae_edit_info_contact", permanent=False),
+                    name="siae_edit",
+                ),
+                path("contact/", SiaeEditInfoContactView.as_view(), name="siae_edit_info_contact"),
+                path("offer/", SiaeEditOfferView.as_view(), name="siae_edit_offer"),
+                path("presta/", SiaeEditPrestaView.as_view(), name="siae_edit_presta"),
+            ]
+        ),
+    ),
 ]

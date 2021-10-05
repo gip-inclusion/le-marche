@@ -2,6 +2,8 @@ from django import forms
 
 from lemarche.siaes.models import Siae
 from lemarche.users.models import User
+from lemarche.utils.fields import GroupedModelMultipleChoiceField
+from lemarche.www.siae.forms import SECTOR_FORM_QUERYSET
 
 
 class ProfileEditForm(forms.ModelForm):
@@ -67,19 +69,10 @@ class SiaeAdoptConfirmForm(forms.ModelForm):
         fields = []
 
 
-class SiaeEditForm(forms.ModelForm):
+class SiaeEditInfoContactForm(forms.ModelForm):
     kind = forms.CharField()
     department = forms.CharField()
     region = forms.CharField()
-    presta_type = forms.MultipleChoiceField(
-        label=Siae._meta.get_field("presta_type").verbose_name,
-        choices=Siae.PRESTA_CHOICES,
-        widget=forms.CheckboxSelectMultiple,
-    )
-    is_cocontracting = forms.BooleanField(
-        label=Siae._meta.get_field("is_cocontracting").verbose_name,
-        widget=forms.RadioSelect(choices=[(True, "Oui"), (False, "Non")]),
-    )
 
     class Meta:
         model = Siae
@@ -93,9 +86,6 @@ class SiaeEditForm(forms.ModelForm):
             "department",
             "region",
             "website",
-            "description",
-            "presta_type",
-            "is_cocontracting",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -105,3 +95,56 @@ class SiaeEditForm(forms.ModelForm):
         for field in Siae.READONLY_FIELDS_FROM_C1:
             if field in self.fields:
                 self.fields[field].disabled = True
+
+
+class SiaeEditOfferForm(forms.ModelForm):
+    presta_type = forms.MultipleChoiceField(
+        label=Siae._meta.get_field("presta_type").verbose_name,
+        choices=Siae.PRESTA_CHOICES,
+        required=True,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    # is_cocontracting = forms.BooleanField(
+    #     label=Siae._meta.get_field("is_cocontracting").verbose_name,
+    #     widget=forms.RadioSelect(choices=[(True, "Oui"), (False, "Non")]),
+    # )
+    geo_range = forms.ChoiceField(
+        label=Siae._meta.get_field("geo_range").verbose_name,
+        choices=Siae.GEO_RANGE_CHOICES,
+        required=True,
+        widget=forms.RadioSelect,
+    )
+    sectors = GroupedModelMultipleChoiceField(
+        label=Siae._meta.get_field("sectors").verbose_name,
+        queryset=SECTOR_FORM_QUERYSET,
+        choices_groupby="group",
+        required=True,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    class Meta:
+        model = Siae
+        fields = [
+            "presta_type",
+            # "is_cocontracting",
+            "geo_range",
+            "geo_range_custom_distance",
+            "sectors",
+        ]
+
+
+class SiaeEditPrestaForm(forms.ModelForm):
+    class Meta:
+        model = Siae
+        fields = [
+            "description",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["description"].widget.attrs.update(
+            {
+                "placeholder": "N'hésitez pas à mettre en avant les spécificités de votre structure",
+                "class": "form-control",
+            }
+        )
