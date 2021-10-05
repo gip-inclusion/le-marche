@@ -65,3 +65,43 @@ class SiaeAdoptConfirmForm(forms.ModelForm):
     class Meta:
         model = Siae
         fields = []
+
+
+class SiaeEditForm(forms.ModelForm):
+    kind = forms.CharField()
+    department = forms.CharField()
+    region = forms.CharField()
+    presta_type = forms.MultipleChoiceField(
+        label=Siae._meta.get_field("presta_type").verbose_name,
+        choices=Siae.PRESTA_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    is_cocontracting = forms.BooleanField(
+        label=Siae._meta.get_field("is_cocontracting").verbose_name,
+        widget=forms.RadioSelect(choices=[(True, "Oui"), (False, "Non")]),
+    )
+
+    class Meta:
+        model = Siae
+        fields = [
+            "name",
+            "brand",
+            "siret",
+            "kind",
+            "city",
+            "post_code",
+            "department",
+            "region",
+            "website",
+            "description",
+            "presta_type",
+            "is_cocontracting",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Disabled fields
+        for field in Siae.READONLY_FIELDS_FROM_C1:
+            if field in self.fields:
+                self.fields[field].disabled = True

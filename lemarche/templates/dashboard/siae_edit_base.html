@@ -1,0 +1,47 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Modifier ma structure{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ siae.name }}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="pt-4 pt-lg-6 pb-6 pb-lg-8">
+    <div class="container container-max-lg">
+        <!-- Navigation -->
+        <div class="pb-6">
+            <ul class="nav nav-tabs" style="justify-content: space-between;">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">1. Infos & Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">2. Votre offre commerciale</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">3. Vos prestations</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">4. Les plus</a>
+                </li>
+            </ul>
+        </div>
+
+        {% block content_siae_form %}{% endblock %}
+    </div>
+</section>
+{% endblock %}

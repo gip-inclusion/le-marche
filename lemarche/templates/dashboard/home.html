@@ -25,7 +25,7 @@
     <div class="container container-max-lg">
         <div class="row">
             <div class="col-12">
-                <h2 class="mb-3 mb-lg-5">Mon profil</h2>
+                <h2 id="profil" class="mb-3 mb-lg-5">Mon profil</h2>
 
                 <div class="s-cards-grid-01__row row">
                     <div class="s-cards-grid-01__col col mb-3 mb-md-5">
@@ -57,7 +57,7 @@
                 </div>
 
                 {% if user.kind == user.KIND_SIAE or user.kind == user.KIND_ADMIN %}
-                    <h2 class="mb-3 mb-lg-5">
+                    <h2 id="structures" class="mb-3 mb-lg-5">
                         {% if user.siaes.count > 1 %}Mes structures{% else %}Ma structure{% endif %}
                     </h2>
 
@@ -86,7 +86,7 @@
                                 </div>
                                 <div class="card-footer">
                                     <a href="{% url 'dashboard:siae_edit' siae.id %}" class="btn btn-outline-primary btn-ico">
-                                        <span>Afficher</span>
+                                        <span>Modifier</span>
                                     </a>
                                     <a href="{% url 'siae:detail' siae.id %}" target="_blank" class="btn btn-outline-primary btn-ico float-right is-external">
                                         <span>Afficher</span>

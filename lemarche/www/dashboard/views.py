@@ -7,7 +7,7 @@ from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
 from lemarche.siaes.models import Siae
-from lemarche.www.dashboard.forms import ProfileEditForm, SiaeAdoptConfirmForm, SiaeSearchBySiretForm
+from lemarche.www.dashboard.forms import ProfileEditForm, SiaeAdoptConfirmForm, SiaeEditForm, SiaeSearchBySiretForm
 from lemarche.www.dashboard.mixins import SiaeOwnerRequiredMixin, SiaeUserRequiredMixin
 
 
@@ -75,9 +75,12 @@ class SiaeAdoptConfirmView(LoginRequiredMixin, SiaeUserRequiredMixin, SuccessMes
 
 
 class SiaeEditView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
-    form_class = SiaeAdoptConfirmForm
-    template_name = "dashboard/siae_edit.html"
+    form_class = SiaeEditForm
+    template_name = "dashboard/siae_edit_contact.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
     success_message = "Votre structure a été mise à jour."
-    success_url = reverse_lazy("dashboard:home")
+    # success_url = reverse_lazy("dashboard:home")
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard:siae_edit", args=[self.kwargs.get("pk")])
