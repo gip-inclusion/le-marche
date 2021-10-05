@@ -1,0 +1,40 @@
+.mh-5 {
+	@media (min-width:992px) {
+		min-height: 5rem;
+	}
+}
+
+.s-filiere-01 {
+	padding-top: 1.5rem;
+	padding-bottom: 1.5rem;
+
+	@media (min-width:992px) {
+		padding-top: 3rem;
+		padding-bottom: 3rem;
+	}
+
+	&__col {
+
+		&--card {
+			position: relative;
+
+			&::before {
+				content: "";
+				position: absolute;
+				width: 156px;
+				height: 260px;
+				z-index: -1;
+				bottom: -40px;
+				right: -55px;
+				background-image: url('/static/images/inclusion-02-illu-01.png');
+				background-repeat: no-repeat;
+				background-position: 100% 100%;
+				display: none;
+
+				@media (min-width:1200px) {
+					display: block;
+				}				
+			}	
+		}	
+	}
+} 
