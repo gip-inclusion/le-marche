@@ -1,0 +1,82 @@
+{% extends "layouts/base.html" %}
+{% load static get_verbose_name %}
+
+{% block title %}Vérifier ma structure{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:siae_search_by_siret' %}">Rechercher ma structure</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Vérifier ma structure</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<section class="pt-4 pt-lg-6 pb-6 pb-lg-8">
+    <div class="container container-max-lg">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-3 mb-lg-5">Dernière vérification</h2>
+
+                <p>
+                    Vérifiez si ces données correspondent bien à votre structure.<br />
+                    <small>Données fixes provenant de l'ASP.</small>
+                </p>
+
+                
+                <p title="{% get_verbose_name siae 'name' %}">
+                    <strong>{% get_verbose_name siae 'name' %} :</strong>
+                    {{ siae.name }}
+                </p>
+                <p title="{% get_verbose_name siae 'brand' %}">
+                    <strong>{% get_verbose_name siae 'brand' %} :</strong>
+                    {{ siae.brand }}
+                </p>
+                <p title="{% get_verbose_name siae 'siret' %}">
+                    <strong>{% get_verbose_name siae 'siret' %} :</strong>
+                    {{ siae.siret }}
+                </p>
+                <p title="{% get_verbose_name siae 'kind' %}">
+                    <strong>{% get_verbose_name siae 'kind' %} :</strong>
+                    {{ siae.get_kind_display }}
+                </p>
+                <p title="{% get_verbose_name siae 'nature' %}">
+                    <strong>{% get_verbose_name siae 'nature' %} :</strong>
+                    {{ siae.get_nature_display }}
+                </p>
+                <p title="{% get_verbose_name siae 'city' %}">
+                    <strong>{% get_verbose_name siae 'city' %} :</strong>
+                    {{ siae.city }}
+                </p>
+                <p title="{% get_verbose_name siae 'post_code' %}">
+                    <strong>{% get_verbose_name siae 'post_code' %} :</strong>
+                    {{ siae.post_code }}
+                </p>
+                <p title="{% get_verbose_name siae 'region' %}">
+                    <strong>{% get_verbose_name siae 'region' %} :</strong>
+                    {{ siae.region }}
+                </p>
+
+                <form method="POST" class="mb-3 mb-lg-5">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-12 col-md-auto pt-3">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <span>Je confirme</span>
+                            </button>
+                        </div>
+                        <div class="col-12 col-md-auto pt-3">
+                            <a class="btn btn-outline-primary btn-block reset btn-ico" href="{% url 'dashboard:siae_search_by_siret' %}">
+                                Non, refaire une recherche <i class="icon-cw"></i>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

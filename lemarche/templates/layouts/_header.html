@@ -2,10 +2,10 @@
 
 {% comment 'migration fix' %}
 {% if app.environment == 'dev' %}
-    <div class="alert alert-warning fixed-bottom">DEV</div>
+<div class="alert alert-warning fixed-bottom">DEV</div>
 {% endif %}
 {% if app.session.get('isAdmin') %}
-    <div class="alert alert-danger fixed-bottom">ADMIN MODE</div>
+<div class="alert alert-danger fixed-bottom">ADMIN MODE</div>
 {% endif %}
 
 {% endcomment %}
@@ -41,10 +41,9 @@
                         </li>                        
                         <!-- Missing "dashboard-dropdown" stuff -->
                         {% if user.is_authenticated %}
-                        <li>{{ user.first_name }}</li>
                         <li>
-                            <a id="h_login" href="{% url 'auth:logout' %}" tabindex="7" rel="noopener">
-                                <span>Déconnexion</span>
+                            <a id="h_login" href="{% url 'dashboard:home' %}" tabindex="7" rel="noopener">
+                                <span>Mon espace</span>
                             </a>
                         </li>
                         {% else %}
@@ -103,8 +102,7 @@
                                 <span id="nb-unread-msg" class="fs-xs badge badge-marche badge-pill ml-1"></span>
                             </a>
                             {% include '@CocoricoCore/Frontend/Common/_itou_nav.html.twig' with
-                            {'nav_dashboard_current':'',
-                            'dropdown_extra_class':''} only %}
+                            {'nav_dashboard_current':'', 'dropdown_extra_class':''} only %}
                         </li>
                         {%- else -%}
                         <li>

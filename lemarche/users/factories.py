@@ -1,6 +1,6 @@
 import string
 
-import factory
+import factory.fuzzy
 from factory.django import DjangoModelFactory
 
 from lemarche.users.models import User
