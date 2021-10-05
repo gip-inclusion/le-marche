@@ -86,9 +86,9 @@ class SiaeSearchForm(forms.Form):
         """
         The search_perimeter should be a Perimeter slug.
         Depending on the type of Perimeter that was chosen, different cases arise:
-        - CITY:
-        - DEPARTMENT:
-        - REGION:
+        - CITY: return only the Siae with a perimeter radius that overlaps with the city
+        - DEPARTMENT: return only the Siae in this department
+        - REGION: return only the Siae in this region
         """
         perimeter = Perimeter.objects.get(slug=search_perimeter)
         if perimeter.kind == Perimeter.KIND_CITY:
