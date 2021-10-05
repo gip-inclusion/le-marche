@@ -3,13 +3,21 @@
 {% block title %}Modifier mon profil{{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
-<nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Modifier mon profil</li>
-    </ol>
-</nav>
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Modifier mon profil</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
 
 {% block content %}
