@@ -4,6 +4,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
+from lemarche.users.models import User
 from lemarche.utils.urls import get_safe_url
 from lemarche.www.auth.forms import PasswordResetForm, SignupForm
 from lemarche.www.auth.tasks import send_signup_notification_email
@@ -46,7 +47,7 @@ class SignupView(SuccessMessageMixin, CreateView):
 
     def get_success_message(self, cleaned_data):
         success_message = super().get_success_message(cleaned_data)
-        if cleaned_data["kind"] == "SIAE":
+        if cleaned_data["kind"] == User.KIND_SIAE:
             success_message += " L'ajout de votre structure se fera ensuite dans votre espace utilisateur."
         return success_message
 

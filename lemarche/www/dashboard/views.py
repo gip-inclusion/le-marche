@@ -63,7 +63,7 @@ class SiaeAdoptConfirmView(LoginRequiredMixin, SiaeUserRequiredMixin, SuccessMes
         response = super().get(request, *args, **kwargs)
         if self.object.users.count():
             messages.add_message(
-                request, messages.INFO, "La structure est déjà enregistrée sur le marché par un utilisateur."
+                request, messages.INFO, "La structure a déjà été enregistrée sur le marché par un autre utilisateur."
             )
             return HttpResponseRedirect(reverse_lazy("dashboard:home"))
         return response
