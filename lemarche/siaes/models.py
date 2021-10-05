@@ -5,7 +5,7 @@ from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django.contrib.postgres.fields import ArrayField
-from django.db import models, IntegrityError
+from django.db import models, IntegrityError, transaction
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.text import slugify
@@ -286,18 +286,21 @@ class Siae(models.Model):
 
     def set_slug(self, with_uuid=False):
         """
+        The slug field should be unique.
         Some SIAE have duplicate name, so we suffix the slug with their department.
+        In some rare cases, name+department is not enough, so we add 4 random characters at the end.
         """
-        # if not self.id:
-        self.slug = f"{slugify(self.name)[:40]}-{self.department}"
+        # if not self.id:  # TODO: revert post-migration
+        self.slug = f"{slugify(self.name)[:40]}-{str(self.department or '')}"
         if with_uuid:
             self.slug += f"-{str(uuid4())[:4]}"
 
     def save(self, *args, **kwargs):
-        """slug field is unique, may return errors."""
+        """Generate the slug field before saving."""
         try:
             self.set_slug()
-            super().save(*args, **kwargs)
+            with transaction.atomic():
+                super().save(*args, **kwargs)
         except IntegrityError:
             self.set_slug(with_uuid=True)
             super().save(*args, **kwargs)
