@@ -4,6 +4,8 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
+from lemarche.users.models import User
+from lemarche.utils.urls import get_safe_url
 from lemarche.www.auth.forms import PasswordResetForm, SignupForm
 from lemarche.www.auth.tasks import send_signup_notification_email
 
@@ -24,8 +26,10 @@ class LoginView(auth_views.LoginView):
         success_url = super().get_success_url()
         next_url = self.request.GET.get("next", None)
         # sanitize next_url
-        if next_url and next_url.startswith(("/siae/")):
-            success_url = next_url
+        if next_url:
+            safe_url = get_safe_url(self.request, param_name="next")
+            if safe_url:
+                success_url = safe_url
         return success_url
 
 
@@ -33,13 +37,19 @@ class SignupView(SuccessMessageMixin, CreateView):
     template_name = "auth/signup.html"
     form_class = SignupForm
     success_url = reverse_lazy("pages:home")
-    success_message = "Inscription validée !"
+    success_message = "Inscription validée ! Vous pouvez maintenant vous connecter."
 
     def form_valid(self, form):
         """Send a notification email to the team."""
         user = form.save()
         send_signup_notification_email(user)
         return super().form_valid(form)
+
+    def get_success_message(self, cleaned_data):
+        success_message = super().get_success_message(cleaned_data)
+        if cleaned_data["kind"] == User.KIND_SIAE:
+            success_message += " L'ajout de votre structure se fera ensuite dans votre espace utilisateur."
+        return success_message
 
 
 class PasswordResetView(auth_views.PasswordResetView):

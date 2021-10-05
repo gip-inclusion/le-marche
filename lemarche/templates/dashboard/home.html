@@ -1,0 +1,102 @@
+{% extends "layouts/base.html" %}
+{% load static get_verbose_name %}
+
+{% block title %}Mon espace{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Mon espace</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<section class="pt-4 pt-lg-6 pb-6 pb-lg-8">
+    <div class="container container-max-lg">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-3 mb-lg-5">Mon profil</h2>
+
+                <div class="s-cards-grid-01__row row">
+                    <div class="s-cards-grid-01__col col mb-3 mb-md-5">
+                        <div class="card c-card c-card--marche h-100 w-100">
+                            <div class="card-body">
+                                <p class="h4 lh-base">
+                                    {{ user.full_name }}
+                                    <small><span class="badge badge-pill badge-marche">{{ user.get_kind_display }}</span></small>
+                                </p>
+                                <p title="{% get_verbose_name user 'email' %}">
+                                    <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" /></span>
+                                    {{ user.email }}
+                                </p>
+                                <p title="{% get_verbose_name user 'phone' %}">
+                                    <span class="prof_icon"><img src="{% static 'img/profile-ico-phone.svg' %}" /></span>
+                                    {% if user.phone %}{{ user.phone }}{% endif %}
+                                </p>
+                            </div>
+                            <div class="card-footer text-left">
+                                <a href="{% url 'dashboard:profile_edit' %}" class="btn btn-outline-primary btn-ico">
+                                    <span>Modifier</span>
+                                </a>
+                                <a href="{% url 'auth:logout' %}" class="btn btn-outline-primary btn-ico float-right">
+                                    <span>Déconnexion</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if user.kind == user.KIND_SIAE or user.kind == user.KIND_ADMIN %}
+                    <h2 class="mb-3 mb-lg-5">
+                        {% if user.siaes.count > 1 %}Mes structures{% else %}Ma structure{% endif %}
+                    </h2>
+
+                    <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3">
+                        {% for siae in user.siaes.all %}
+                        <div class="s-cards-grid-01__col col mb-3 mb-md-5">
+                            <div class="card c-card c-card--mini h-100 w-100">
+                                <div class="card-body">
+                                    <p class="h4 lh-base">{{ siae.name }}</p>
+                                    <p title="{% get_verbose_name siae 'brand' %}">
+                                        <strong>{% get_verbose_name siae 'brand' %} :</strong>
+                                        {{ siae.brand }}
+                                    </p>
+                                    <p title="{% get_verbose_name siae 'siret' %}">
+                                        <strong>{% get_verbose_name siae 'siret' %} :</strong>
+                                        {{ siae.siret }}
+                                    </p>
+                                    <p title="{% get_verbose_name siae 'kind' %}">
+                                        <strong>{% get_verbose_name siae 'kind' %} :</strong>
+                                        {{ siae.get_kind_name }}
+                                    </p>
+                                    <p title="{% get_verbose_name siae 'nature' %}">
+                                        <strong>{% get_verbose_name siae 'nature' %} :</strong>
+                                        {{ siae.get_nature_name }}
+                                    </p>
+                                </div>
+                                <div class="card-footer">
+                                    <button class="btn btn-outline-primary btn-ico" disabled>
+                                        <span>Modifier</span>
+                                    </button>
+                                    <a href="{% url 'siae:detail' siae.id %}" target="_blank" class="btn btn-outline-primary btn-ico float-right is-external">
+                                        <span>Afficher</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <a href={% url 'dashboard:siae_search_by_siret' %} class="btn btn-outline-success btn-ico">
+                        <span>Ajouter une structure</span>
+                    </a>
+                {% endif %}
+
+                {# <h2 class="mb-3 mb-lg-5">Mes favoris</h2> #}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
