@@ -1,0 +1,55 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Modifier ma structure{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Modifier ma structure {{ siae.name }}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="pt-4 pt-lg-6 pb-6 pb-lg-8">
+    <div class="container container-max-lg">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-3 mb-lg-5">Modifier ma structure</h2>
+                
+                <form method="POST" action="" class="mb-3 mb-lg-5">
+                    {% csrf_token %}
+                    <div class="form-group row">
+                        <label class="col-12 col-md-3 col-form-label">
+                            {{ form.first_name.label }} <strong class="text-warning">*</strong>
+                        </label>
+                        <div class="col-12 col-md-6">
+                            {{ form.first_name }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 offset-md-3 col-md-auto pt-3">
+                            <button type="submit" class="btn btn-primary btn-block btn-ico">
+                                <span>Sauvegarder</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+                                    <path fill="currentColor" fill-rule="nonzero" stroke="currentColor" d="M1.964 8.95h11.03L9.51 12.737a.451.451 0 00.037.646.474.474 0 00.66-.037L14.386 8.8l.035-.043.033-.05.013-.05V8.539c0-.012.033-.02.033-.044v-.151l-.014-.05-.019-.03-.034-.045-4.193-4.566a.474.474 0 00-.66-.037.452.452 0 00-.036.646l3.45 3.777H1.963a.46.46 0 00-.464.455.46.46 0 00.464.455z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -85,9 +85,9 @@
                                     </p>
                                 </div>
                                 <div class="card-footer">
-                                    <button class="btn btn-outline-primary btn-ico" disabled>
-                                        <span>Modifier</span>
-                                    </button>
+                                    <a href="{% url 'dashboard:siae_edit' siae.id %}" class="btn btn-outline-primary btn-ico">
+                                        <span>Afficher</span>
+                                    </a>
                                     <a href="{% url 'siae:detail' siae.id %}" target="_blank" class="btn btn-outline-primary btn-ico float-right is-external">
                                         <span>Afficher</span>
                                     </a>

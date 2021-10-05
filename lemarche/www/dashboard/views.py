@@ -8,7 +8,7 @@ from django.views.generic.edit import FormMixin
 
 from lemarche.siaes.models import Siae
 from lemarche.www.dashboard.forms import ProfileEditForm, SiaeAdoptConfirmForm, SiaeSearchBySiretForm
-from lemarche.www.dashboard.mixins import SiaeUserRequiredMixin
+from lemarche.www.dashboard.mixins import SiaeOwnerRequiredMixin, SiaeUserRequiredMixin
 
 
 class DashboardHomeView(LoginRequiredMixin, DetailView):
@@ -72,3 +72,12 @@ class SiaeAdoptConfirmView(LoginRequiredMixin, SiaeUserRequiredMixin, SuccessMes
         """Add the Siae to the User."""
         self.object.users.add(self.request.user)
         return super().form_valid(form)
+
+
+class SiaeEditView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
+    form_class = SiaeAdoptConfirmForm
+    template_name = "dashboard/siae_edit.html"
+    context_object_name = "siae"
+    queryset = Siae.objects.all()
+    success_message = "Votre structure a été mise à jour."
+    success_url = reverse_lazy("dashboard:home")

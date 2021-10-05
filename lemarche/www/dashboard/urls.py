@@ -4,6 +4,7 @@ from lemarche.www.dashboard.views import (
     DashboardHomeView,
     ProfileEditView,
     SiaeAdoptConfirmView,
+    SiaeEditView,
     SiaeSearchBySiretView,
 )
 
@@ -16,4 +17,5 @@ urlpatterns = [
     path("profile-edit/", ProfileEditView.as_view(), name="profile_edit"),
     path("siae/search/", SiaeSearchBySiretView.as_view(), name="siae_search_by_siret"),
     path("siae/<int:pk>/adopt-confirm/", SiaeAdoptConfirmView.as_view(), name="siae_adopt_confirm"),
+    path("siae/<int:pk>/edit/", SiaeEditView.as_view(), name="siae_edit"),
 ]

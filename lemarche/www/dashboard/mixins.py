@@ -16,3 +16,17 @@ class SiaeUserRequiredMixin(UserPassesTestMixin):
 
     def handle_no_permission(self):
         return HttpResponseRedirect(reverse_lazy("dashboard:home"))
+
+
+class SiaeOwnerRequiredMixin(UserPassesTestMixin):
+    """
+    Restrict access to the "edit Siae" page to the Siae's users
+    """
+
+    def test_func(self):
+        user = self.request.user
+        siae_id = int(self.kwargs.get("pk"))
+        return user.is_authenticated and siae_id in user.siaes.values_list("id", flat=True)
+
+    def handle_no_permission(self):
+        return HttpResponseRedirect(reverse_lazy("dashboard:home"))
