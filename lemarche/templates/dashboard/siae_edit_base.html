@@ -15,7 +15,7 @@
                     </ol>
                 </nav>
             </div>
-            <div class="col-4">
+            <div class="col-4 pt-3">
                 <a href="{% url 'siae:detail' siae.id %}" target="_blank" class="btn btn-outline-primary btn-ico float-right is-external">
                     <span>Voir la fiche</span>
                 </a>
@@ -32,7 +32,7 @@
         <div class="pb-6">
             <ul class="nav nav-tabs" style="justify-content: space-between;">
                 <li class="nav-item">
-                    <a class="nav-link {% if 'contact' in request.path %}active{% endif %}" href="{% url 'dashboard:siae_edit_info_contact' siae.id %}">1. Infos & Contact</a>
+                    <a class="nav-link {% if 'contact' in request.path %}active{% endif %}" href="{% url 'dashboard:siae_edit_info_contact' siae.id %}">1. Informations & Contact</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {% if 'offer' in request.path %}active{% endif %}" href="{% url 'dashboard:siae_edit_offer' siae.id %}">2. Votre offre commerciale</a>
@@ -41,7 +41,7 @@
                     <a class="nav-link {% if 'presta' in request.path %}active{% endif %}" href="{% url 'dashboard:siae_edit_presta' siae.id %}">3. Vos prestations</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">4. Les plus</a>
+                    <a class="nav-link {% if 'other' in request.path %}active{% endif %}" href="{% url 'dashboard:siae_edit_other' siae.id %}">4. Les plus</a>
                 </li>
             </ul>
         </div>

@@ -8,10 +8,10 @@
 <form method="POST" action="" class="mb-3 mb-lg-5">
     {% csrf_token %}
 
-    <div class="row">
-        <div class="col-12">
-            <h5>Données ASP de votre structure</h5>
+    <h5>Données ASP de votre structure</h5>
 
+    <div class="row">
+        <div class="col-8">
             <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
                 <div class="form-group row">
                     <label class="col-12 col-md-3 col-form-label">
@@ -120,6 +120,8 @@
                         <input value="{{ siae.users.first.email }}" disabled />
                     </div>
                 </div>
+
+                <hr />
                 <div class="form-group">
                     <label>
                         {{ form.website.label }}

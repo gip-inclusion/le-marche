@@ -12,6 +12,7 @@ from lemarche.www.dashboard.forms import (
     SiaeAdoptConfirmForm,
     SiaeEditInfoContactForm,
     SiaeEditOfferForm,
+    SiaeEditOtherForm,
     SiaeEditPrestaForm,
     SiaeSearchBySiretForm,
 )
@@ -103,13 +104,25 @@ class SiaeEditOfferView(LoginRequiredMixin, SiaeOwnerRequiredMixin, UpdateView):
         return reverse_lazy("dashboard:siae_edit_presta", args=[self.kwargs.get("pk")])
 
 
-class SiaeEditPrestaView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeEditPrestaView(LoginRequiredMixin, SiaeOwnerRequiredMixin, UpdateView):
     form_class = SiaeEditPrestaForm
     template_name = "dashboard/siae_edit_presta.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
-    success_message = "Votre profil a été mis à jour."
+    # success_url = reverse_lazy("dashboard:home")
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard:siae_edit_other", args=[self.kwargs.get("pk")])
+
+
+class SiaeEditOtherView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
+    form_class = SiaeEditOtherForm
+    template_name = "dashboard/siae_edit_other.html"
+    context_object_name = "siae"
+    queryset = Siae.objects.all()
+    # success_message = "Votre structure a été mise à jour."
     success_url = reverse_lazy("dashboard:home")
 
-    # def get_success_url(self):
-    #     return reverse_lazy("dashboard:siae_edit", args=[self.kwargs.get("pk")])
+    def get_success_message(self, cleaned_data):
+        success_message = f"Votre structure <strong>{self.object.name}</strong> a été mise à jour."
+        return success_message

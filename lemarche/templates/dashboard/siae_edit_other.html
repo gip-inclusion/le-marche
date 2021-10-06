@@ -8,14 +8,17 @@
 <form method="POST" action="" class="mb-3 mb-lg-5">
     {% csrf_token %}
 
-    <h5>{{ form.presta_type.label }} <strong class="text-warning">*</strong></h5>
+    <h5>Les informations en plus</h5>
 
     <div class="row">
         <div class="col-8">
             <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
                 <div class="form-group">
+                    <label>
+                        {{ form.is_cocontracting.label }}
+                    </label>
                     <div>
-                        {{ form.presta_type }}
+                        {{ form.is_cocontracting }}
                     </div>
                 </div>
             </fieldset>
@@ -23,67 +26,38 @@
         <div class="col-4">
             <div role="alert" class="alert alert-info">
                 <p>
-                    <strong>Type de prestation</strong><br />
-                    Vous pourrez ensuite détailler vos prestations à la prochaine étape.
+                    <strong>Qu'est-ce que la co-traitance ?</strong><br />
+                    En signalant que vous êtes ouvert à la co-traitance vous indiquez être prêt à répondre à un marché en groupement
+                    avec d'autres structure pour mutualiser vos moyens professionels, techniques et financiers.
                 </p>
             </div>
         </div>
     </div>
 
     <br />
-
-    <h5>{{ form.geo_range.label }} <strong class="text-warning">*</strong></h5>
+    
+    <h5>Les réseaux</h5>
 
     <div class="row">
         <div class="col-8">
             <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
                 <div class="form-group">
                     <div>
-                        {{ form.geo_range }}
+                        {{ form.networks }}
                     </div>
-                    {{ form.geo_range_custom_distance }}
                 </div>
             </fieldset>
-        </div>
-        <div class="col-4">
-            <div role="alert" class="alert alert-info">
-                <p>
-                    <strong>Périmètre d'intervention</strong><br />
-                    Le périmètre d'intervention est un critère essentiel dans le choix des acheteurs.
-                    Il est nécessaire de bien le renseigner.
-                </p>
-            </div>
         </div>
     </div>
 
     <br />
 
-    <h5>{{ form.sectors.label }} <strong class="text-warning">*</strong></h5>
-
-    <div class="row">
-        <div class="col-8">
-            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                <div class="form-group">
-                    <div>
-                        {{ form.sectors }}
-                    </div>
-                </div>
-            </fieldset>
-        </div>
-        <div class="col-4">
-            <div role="alert" class="alert alert-info">
-                <p>
-                    <strong>Secteurs d'activité</strong><br />
-                    Le choix des secteurs d'activité va déterminer ce que trouvent les acheteurs lors de leur recherche.
-                </p>
-            </div>
-        </div>
-    </div>
+    <h5>Labels et certifications</h5>
 
     <div class="row">
         <div class="col-12 offset-md-3 col-md-auto pt-3">
             <button type="submit" class="btn btn-primary btn-block btn-ico">
-                <span>Sauvegarder et passer à l'étape suivante</span>
+                <span>Sauvegarder</span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
                     <path fill="currentColor" fill-rule="nonzero" stroke="currentColor" d="M1.964 8.95h11.03L9.51 12.737a.451.451 0 00.037.646.474.474 0 00.66-.037L14.386 8.8l.035-.043.033-.05.013-.05V8.539c0-.012.033-.02.033-.044v-.151l-.014-.05-.019-.03-.034-.045-4.193-4.566a.474.474 0 00-.66-.037.452.452 0 00-.036.646l3.45 3.777H1.963a.46.46 0 00-.464.455.46.46 0 00.464.455z"></path>
                 </svg>

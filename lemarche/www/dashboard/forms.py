@@ -1,5 +1,6 @@
 from django import forms
 
+from lemarche.networks.models import Network
 from lemarche.siaes.models import Siae
 from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
@@ -70,9 +71,10 @@ class SiaeAdoptConfirmForm(forms.ModelForm):
 
 
 class SiaeEditInfoContactForm(forms.ModelForm):
-    kind = forms.CharField()
-    department = forms.CharField()
-    region = forms.CharField()
+    # slug =
+    kind = forms.CharField(label=Siae._meta.get_field("kind").verbose_name)
+    department = forms.CharField(label=Siae._meta.get_field("department").verbose_name)
+    region = forms.CharField(label=Siae._meta.get_field("region").verbose_name)
 
     class Meta:
         model = Siae
@@ -95,6 +97,7 @@ class SiaeEditInfoContactForm(forms.ModelForm):
         for field in Siae.READONLY_FIELDS_FROM_C1:
             if field in self.fields:
                 self.fields[field].disabled = True
+        self.fields["website"].widget.attrs.update({"class": "form-control"})
 
 
 class SiaeEditOfferForm(forms.ModelForm):
@@ -104,10 +107,6 @@ class SiaeEditOfferForm(forms.ModelForm):
         required=True,
         widget=forms.CheckboxSelectMultiple,
     )
-    # is_cocontracting = forms.BooleanField(
-    #     label=Siae._meta.get_field("is_cocontracting").verbose_name,
-    #     widget=forms.RadioSelect(choices=[(True, "Oui"), (False, "Non")]),
-    # )
     geo_range = forms.ChoiceField(
         label=Siae._meta.get_field("geo_range").verbose_name,
         choices=Siae.GEO_RANGE_CHOICES,
@@ -132,6 +131,12 @@ class SiaeEditOfferForm(forms.ModelForm):
             "sectors",
         ]
 
+    def save(self, *args, **kwargs):
+        """Clean geo_range_custom_distance before save."""
+        if self.cleaned_data["geo_range"] != Siae.GEO_RANGE_CUSTOM:
+            self.instance.geo_range_custom_distance = None
+        super().save(*args, **kwargs)
+
 
 class SiaeEditPrestaForm(forms.ModelForm):
     class Meta:
@@ -148,3 +153,24 @@ class SiaeEditPrestaForm(forms.ModelForm):
                 "class": "form-control",
             }
         )
+
+
+class SiaeEditOtherForm(forms.ModelForm):
+    is_cocontracting = forms.BooleanField(
+        label="Êtes-vous ouvert à la co-traitance ?",
+        widget=forms.RadioSelect(choices=[(True, "Oui"), (False, "Non")]),
+    )
+    networks = forms.ModelMultipleChoiceField(
+        # label=Siae._meta.get_field("sectors").verbose_name,
+        queryset=Network.objects.all().order_by("name"),
+        # choices_groupby="group",
+        # required=True,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    class Meta:
+        model = Siae
+        fields = [
+            "is_cocontracting",
+            "networks",
+        ]
