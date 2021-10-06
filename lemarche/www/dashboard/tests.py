@@ -101,10 +101,31 @@ class SiaeEditView(TestCase):
         self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
         url = reverse("dashboard:siae_edit", args=[self.siae_with_user.id])
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/dashboard/siae/{self.siae_with_user.id}/edit/contact/")
 
         self.client.login(email=self.other_user_siae.email, password=DEFAULT_PASSWORD)
         url = reverse("dashboard:siae_edit", args=[self.siae_with_user.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/dashboard/")
+        # self.assertEqual(response.url, "/dashboard/")  # redirects first to siae_edit_info_contact
+
+    def test_only_siae_user_can_edit_siae_tabs(self):
+        SIAE_EDIT_URLS = [
+            "dashboard:siae_edit_info_contact",
+            "dashboard:siae_edit_offer",
+            "dashboard:siae_edit_presta",
+            "dashboard:siae_edit_other",
+        ]
+        self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
+        for siae_edit_url in SIAE_EDIT_URLS:
+            url = reverse(siae_edit_url, args=[self.siae_with_user.id])
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200)
+
+        self.client.login(email=self.other_user_siae.email, password=DEFAULT_PASSWORD)
+        for siae_edit_url in SIAE_EDIT_URLS:
+            url = reverse(siae_edit_url, args=[self.siae_with_user.id])
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 302)
+            self.assertEqual(response.url, "/dashboard/")

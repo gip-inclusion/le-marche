@@ -261,6 +261,7 @@ class SiaeLabel(models.Model):
     class Meta:
         verbose_name = "Label & certification"
         verbose_name_plural = "Labels & certifications"
+        # ordering = ["id"]
 
     def __str__(self):
         return self.name

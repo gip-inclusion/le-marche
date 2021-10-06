@@ -10,10 +10,13 @@ from lemarche.siaes.models import Siae
 from lemarche.www.dashboard.forms import (
     ProfileEditForm,
     SiaeAdoptConfirmForm,
+    SiaeClientReferenceFormSet,
     SiaeEditInfoContactForm,
     SiaeEditOfferForm,
     SiaeEditOtherForm,
     SiaeEditPrestaForm,
+    SiaeLabelFormSet,
+    SiaeOfferFormSet,
     SiaeSearchBySiretForm,
 )
 from lemarche.www.dashboard.mixins import SiaeOwnerRequiredMixin, SiaeUserRequiredMixin
@@ -87,7 +90,6 @@ class SiaeEditInfoContactView(LoginRequiredMixin, SiaeOwnerRequiredMixin, Update
     template_name = "dashboard/siae_edit_info_contact.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
-    # success_url = reverse_lazy("dashboard:home")
 
     def get_success_url(self):
         return reverse_lazy("dashboard:siae_edit_offer", args=[self.kwargs.get("pk")])
@@ -98,7 +100,6 @@ class SiaeEditOfferView(LoginRequiredMixin, SiaeOwnerRequiredMixin, UpdateView):
     template_name = "dashboard/siae_edit_offer.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
-    # success_url = reverse_lazy("dashboard:home")
 
     def get_success_url(self):
         return reverse_lazy("dashboard:siae_edit_presta", args=[self.kwargs.get("pk")])
@@ -109,7 +110,38 @@ class SiaeEditPrestaView(LoginRequiredMixin, SiaeOwnerRequiredMixin, UpdateView)
     template_name = "dashboard/siae_edit_presta.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
-    # success_url = reverse_lazy("dashboard:home")
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data["offer_formset"] = SiaeOfferFormSet(self.request.POST, instance=self.object)
+            data["client_reference_formset"] = SiaeClientReferenceFormSet(self.request.POST, instance=self.object)
+        else:
+            data["offer_formset"] = SiaeOfferFormSet(instance=self.object)
+            data["client_reference_formset"] = SiaeClientReferenceFormSet(instance=self.object)
+        return data
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        offer_formset = SiaeOfferFormSet(self.request.POST, instance=self.object)
+        client_reference_formset = SiaeClientReferenceFormSet(self.request.POST, instance=self.object)
+        if form.is_valid() and offer_formset.is_valid() and client_reference_formset.is_valid():
+            return self.form_valid(form, offer_formset, client_reference_formset)
+        else:
+            return self.form_invalid(form, offer_formset, client_reference_formset)
+
+    def form_valid(self, form, offer_formset, client_reference_formset):
+        self.object = form.save()
+        offer_formset.instance = self.object
+        offer_formset.save()
+        client_reference_formset.instance = self.object
+        client_reference_formset.save()
+        return super().form_valid(form)
+
+    def form_invalid(self, form, offer_formset, client_reference_formset):
+        return self.render_to_response(self.get_context_data())
 
     def get_success_url(self):
         return reverse_lazy("dashboard:siae_edit_other", args=[self.kwargs.get("pk")])
@@ -122,6 +154,33 @@ class SiaeEditOtherView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessa
     queryset = Siae.objects.all()
     # success_message = "Votre structure a été mise à jour."
     success_url = reverse_lazy("dashboard:home")
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data["formset"] = SiaeLabelFormSet(self.request.POST, instance=self.object)
+        else:
+            data["formset"] = SiaeLabelFormSet(instance=self.object)
+        return data
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        formset = SiaeLabelFormSet(self.request.POST, instance=self.object)
+        if form.is_valid() and formset.is_valid():
+            return self.form_valid(form, formset)
+        else:
+            return self.form_invalid(form, formset)
+
+    def form_valid(self, form, formset):
+        self.object = form.save()
+        formset.instance = self.object
+        formset.save()
+        return super().form_valid(form)
+
+    def form_invalid(self, form, formset):
+        return self.render_to_response(self.get_context_data())
 
     def get_success_message(self, cleaned_data):
         success_message = f"Votre structure <strong>{self.object.name}</strong> a été mise à jour."

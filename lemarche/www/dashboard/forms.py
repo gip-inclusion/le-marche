@@ -1,7 +1,8 @@
 from django import forms
+from django.forms.models import inlineformset_factory
 
 from lemarche.networks.models import Network
-from lemarche.siaes.models import Siae
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer
 from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.www.siae.forms import SECTOR_FORM_QUERYSET
@@ -131,6 +132,14 @@ class SiaeEditOfferForm(forms.ModelForm):
             "sectors",
         ]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["geo_range_custom_distance"].widget.attrs.update(
+            {
+                "placeholder": "Distance en kilomètres",
+            }
+        )
+
     def save(self, *args, **kwargs):
         """Clean geo_range_custom_distance before save."""
         if self.cleaned_data["geo_range"] != Siae.GEO_RANGE_CUSTOM:
@@ -143,6 +152,8 @@ class SiaeEditPrestaForm(forms.ModelForm):
         model = Siae
         fields = [
             "description",
+            # "offers",  # inlineformset
+            # "client_references",  # inlineformset
         ]
 
     def __init__(self, *args, **kwargs):
@@ -155,16 +166,61 @@ class SiaeEditPrestaForm(forms.ModelForm):
         )
 
 
+class SiaeOfferForm(forms.ModelForm):
+    class Meta:
+        model = SiaeOffer
+        fields = ["name", "description"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["name"].widget.attrs.update(
+            {
+                "class": "form-control",
+            }
+        )
+        self.fields["description"].widget.attrs.update(
+            {
+                "class": "form-control",
+                "rows": 5,
+            }
+        )
+
+
+SiaeOfferFormSet = inlineformset_factory(Siae, SiaeOffer, form=SiaeOfferForm, extra=2, can_delete=True)
+
+
+class SiaeClientReferenceForm(forms.ModelForm):
+    class Meta:
+        model = SiaeClientReference
+        fields = ["name", "image_name"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["name"].widget.attrs.update(
+            {
+                "class": "form-control",
+            }
+        )
+        self.fields["image_name"].widget.attrs.update(
+            {
+                "class": "form-control",
+            }
+        )
+
+
+SiaeClientReferenceFormSet = inlineformset_factory(
+    Siae, SiaeClientReference, form=SiaeClientReferenceForm, extra=2, can_delete=True
+)
+
+
 class SiaeEditOtherForm(forms.ModelForm):
     is_cocontracting = forms.BooleanField(
         label="Êtes-vous ouvert à la co-traitance ?",
         widget=forms.RadioSelect(choices=[(True, "Oui"), (False, "Non")]),
     )
     networks = forms.ModelMultipleChoiceField(
-        # label=Siae._meta.get_field("sectors").verbose_name,
         queryset=Network.objects.all().order_by("name"),
-        # choices_groupby="group",
-        # required=True,
+        required=False,
         widget=forms.CheckboxSelectMultiple,
     )
 
@@ -173,4 +229,22 @@ class SiaeEditOtherForm(forms.ModelForm):
         fields = [
             "is_cocontracting",
             "networks",
+            # "labels",  # inlineformset
         ]
+
+
+class SiaeLabelForm(forms.ModelForm):
+    class Meta:
+        model = SiaeLabel
+        fields = ["name"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["name"].widget.attrs.update(
+            {
+                "class": "form-control",
+            }
+        )
+
+
+SiaeLabelFormSet = inlineformset_factory(Siae, SiaeLabel, form=SiaeLabelForm, extra=2, can_delete=True)
