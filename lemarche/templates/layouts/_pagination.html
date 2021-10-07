@@ -22,7 +22,7 @@
 
             {% if page_obj.number < paginator.num_pages %}
                 <li class="page-item">
-                    <ahref="{% url_add_query page=page_obj.next_page_number %}" class="page-link" aria-label="Suivant">
+                    <a href="{% url_add_query page=page_obj.next_page_number %}" class="page-link" aria-label="Suivant">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
