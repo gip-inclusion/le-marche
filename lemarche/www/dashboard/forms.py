@@ -132,7 +132,6 @@ class SiaeEditOfferForm(forms.ModelForm):
         model = Siae
         fields = [
             "presta_type",
-            # "is_cocontracting",
             "geo_range",
             "geo_range_custom_distance",
             "sectors",
@@ -140,11 +139,7 @@ class SiaeEditOfferForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["geo_range_custom_distance"].widget.attrs.update(
-            {
-                "placeholder": "Distance en kilomètres",
-            }
-        )
+        self.fields["geo_range_custom_distance"].widget.attrs.update({"placeholder": "Distance en kilomètres"})
 
     def save(self, *args, **kwargs):
         """Clean geo_range_custom_distance before save."""
@@ -179,17 +174,9 @@ class SiaeOfferForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["name"].widget.attrs.update(
-            {
-                "class": "form-control",
-            }
-        )
-        self.fields["description"].widget.attrs.update(
-            {
-                "class": "form-control",
-                "rows": 5,
-            }
-        )
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({"class": "form-control"})
+        self.fields["description"].widget.attrs.update({"rows": 5})
 
 
 SiaeOfferFormSet = inlineformset_factory(Siae, SiaeOffer, form=SiaeOfferForm, extra=2, can_delete=True)
@@ -202,16 +189,8 @@ class SiaeClientReferenceForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["name"].widget.attrs.update(
-            {
-                "class": "form-control",
-            }
-        )
-        self.fields["image_name"].widget.attrs.update(
-            {
-                "class": "form-control",
-            }
-        )
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({"class": "form-control"})
 
 
 SiaeClientReferenceFormSet = inlineformset_factory(
@@ -222,6 +201,7 @@ SiaeClientReferenceFormSet = inlineformset_factory(
 class SiaeEditOtherForm(forms.ModelForm):
     is_cocontracting = forms.BooleanField(
         label="Êtes-vous ouvert à la co-traitance ?",
+        required=False,
         widget=forms.RadioSelect(choices=[(True, "Oui"), (False, "Non")]),
     )
     networks = forms.ModelMultipleChoiceField(
@@ -246,11 +226,8 @@ class SiaeLabelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["name"].widget.attrs.update(
-            {
-                "class": "form-control",
-            }
-        )
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({"class": "form-control"})
 
 
 SiaeLabelFormSet = inlineformset_factory(Siae, SiaeLabel, form=SiaeLabelForm, extra=2, can_delete=True)
