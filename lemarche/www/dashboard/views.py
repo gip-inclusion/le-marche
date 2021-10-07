@@ -158,28 +158,28 @@ class SiaeEditOtherView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessa
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         if self.request.POST:
-            data["formset"] = SiaeLabelFormSet(self.request.POST, instance=self.object)
+            data["label_formset"] = SiaeLabelFormSet(self.request.POST, instance=self.object)
         else:
-            data["formset"] = SiaeLabelFormSet(instance=self.object)
+            data["label_formset"] = SiaeLabelFormSet(instance=self.object)
         return data
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        formset = SiaeLabelFormSet(self.request.POST, instance=self.object)
-        if form.is_valid() and formset.is_valid():
-            return self.form_valid(form, formset)
+        label_formset = SiaeLabelFormSet(self.request.POST, instance=self.object)
+        if form.is_valid() and label_formset.is_valid():
+            return self.form_valid(form, label_formset)
         else:
-            return self.form_invalid(form, formset)
+            return self.form_invalid(form, label_formset)
 
-    def form_valid(self, form, formset):
+    def form_valid(self, form, label_formset):
         self.object = form.save()
-        formset.instance = self.object
-        formset.save()
+        label_formset.instance = self.object
+        label_formset.save()
         return super().form_valid(form)
 
-    def form_invalid(self, form, formset):
+    def form_invalid(self, form, label_formset):
         return self.render_to_response(self.get_context_data())
 
     def get_success_message(self, cleaned_data):

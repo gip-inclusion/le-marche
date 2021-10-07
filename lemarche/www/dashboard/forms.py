@@ -98,7 +98,8 @@ class SiaeEditInfoContactForm(forms.ModelForm):
         for field in Siae.READONLY_FIELDS_FROM_C1:
             if field in self.fields:
                 self.fields[field].disabled = True
-        self.fields["website"].widget.attrs.update({"class": "form-control"})
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({"class": "form-control"})
 
 
 class SiaeEditOfferForm(forms.ModelForm):
