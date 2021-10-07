@@ -449,6 +449,9 @@ class Command(BaseCommand):
             cleanup_date_field_names(elem)
             make_aware_dates(elem)
 
+            # remove useless keys
+            [elem.pop(key) for key in ["id"]]
+
             # create object
             SiaeOffer.objects.create(**elem)
 
@@ -480,6 +483,9 @@ class Command(BaseCommand):
             # cleanup fields
             cleanup_date_field_names(elem)
             make_aware_dates(elem)
+
+            # remove useless keys
+            [elem.pop(key) for key in ["id"]]
 
             # create object
             SiaeLabel.objects.create(**elem)
@@ -515,6 +521,9 @@ class Command(BaseCommand):
             rename_field(elem, "description", "name")
             rename_field(elem, "position", "order")
             rename_field(elem, "directory_id", "siae_id")
+
+            # remove useless keys
+            [elem.pop(key) for key in ["id"]]
 
             # create object
             SiaeClientReference.objects.create(**elem)
