@@ -72,14 +72,14 @@
                     {% csrf_token %}
                     <div class="row">
                         <div class="col-12 col-md-auto pt-3">
-                            <button type="submit" class="btn btn-primary btn-block">
-                                <span>Je confirme</span>
-                            </button>
-                        </div>
-                        <div class="col-12 col-md-auto pt-3">
                             <a href="{% url 'dashboard:siae_search_by_siret' %}" class="btn btn-outline-primary btn-block reset btn-ico">
                                 Non, refaire une recherche <i class="icon-cw"></i>
                             </a>
+                        </div>
+                        <div class="col-12 col-md-auto pt-3">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <span>Je confirme</span>
+                            </button>
                         </div>
                     </div>
                 </form>
