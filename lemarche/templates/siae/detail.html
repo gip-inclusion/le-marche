@@ -249,18 +249,24 @@
                                         </li>
                                     {% endif %}
                                     {% if siae.users.count %}
-                                        <li>
-                                            <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" /></span>
-                                            <span>{{ siae.contact_email }}</span>
-                                        </li>
-                                        <li>
-                                            <span class="prof_icon"><img src="{% static 'img/profile-ico-phone.svg' %}" /></span>
-                                            <span>{{ siae.contact_phone }}</span>
-                                        </li>
-                                        <li>
-                                            <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" /></span>
-                                            <span>{{ siae.contact_short_name }}</span>
-                                        </li>
+                                        {% if siae.contact_email %}
+                                            <li>
+                                                <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" /></span>
+                                                <span>{{ siae.contact_email }}</span>
+                                            </li>
+                                        {% endif %}
+                                        {% if siae.contact_phone %}
+                                            <li>
+                                                <span class="prof_icon"><img src="{% static 'img/profile-ico-phone.svg' %}" /></span>
+                                                <span>{{ siae.contact_phone }}</span>
+                                            </li>
+                                        {% endif %}
+                                        {% if siae.contact_short_name %}
+                                            <li>
+                                                <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" /></span>
+                                                <span>{{ siae.contact_short_name }}</span>
+                                            </li>
+                                        {% endif %}
                                     {% endif %}
                                     <li>
                                         <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>

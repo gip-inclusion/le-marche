@@ -249,8 +249,8 @@ class Siae(models.Model):
 
     @property
     def contact_short_name(self):
-        if self.first_name and self.last_name:
-            return f"{self.first_name[:1]} {self.last_name.upper()}"
+        if self.contact_first_name and self.contact_last_name:
+            return f"{self.contact_first_name.upper()[:1]}. {self.contact_last_name.upper()}"
         return ""
 
     def sectors_list_to_string(self):
