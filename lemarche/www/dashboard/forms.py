@@ -84,22 +84,27 @@ class SiaeEditInfoContactForm(forms.ModelForm):
             "brand",
             "siret",
             "kind",
+            "email",
+            "phone",
             "city",
             "post_code",
             "department",
             "region",
-            "website",
+            "contact_first_name",
+            "contact_last_name",
+            "contact_email",
+            "contact_phone",
+            "contact_website",
         ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({"class": "form-control"})
         # Disabled fields
         for field in Siae.READONLY_FIELDS_FROM_C1:
             if field in self.fields:
                 self.fields[field].disabled = True
-        for field in self.fields:
-            self.fields[field].widget.attrs.update({"class": "form-control"})
 
 
 class SiaeEditOfferForm(forms.ModelForm):
