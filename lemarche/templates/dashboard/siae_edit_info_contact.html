@@ -8,6 +8,66 @@
 <form method="POST" action="" class="mb-3 mb-lg-5">
     {% csrf_token %}
 
+    <h5>Informations & Contact</h5>
+
+    <div class="row">
+        <div class="col-8">
+            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
+                <div class="form-group">
+                    <label>
+                        {{ form.contact_first_name.label }}
+                    </label>
+                    <div>
+                        {{ form.contact_first_name }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        {{ form.contact_last_name.label }}
+                    </label>
+                    <div>
+                        {{ form.contact_last_name }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        {{ form.contact_phone.label }}
+                    </label>
+                    <div>
+                        {{ form.contact_phone }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        {{ form.contact_email.label }}
+                    </label>
+                    <div>
+                        {{ form.contact_email }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        {{ form.contact_website.label }}
+                    </label>
+                    <div>
+                        {{ form.contact_website }}
+                    </div>
+                </div>
+                <!-- Logo -->
+            </fieldset>
+        </div>
+        <div class="col-4">
+            <div role="alert" class="alert alert-info">
+                <p>
+                    <strong>Contact commercial</strong><br />
+                    Les informations de contact seront mis à disposition des acheteurs afin de leur permettre de vous contacter facilement.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
     <h5>Données ASP de votre structure</h5>
 
     <div class="row">
@@ -47,6 +107,22 @@
                 </div>
                 <div class="form-group row">
                     <label class="col-12 col-md-3 col-form-label">
+                        {{ form.email.label }} <strong class="text-warning">*</strong>
+                    </label>
+                    <div class="col-12 col-md-9">
+                        {{ form.email }}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-12 col-md-3 col-form-label">
+                        {{ form.phone.label }} <strong class="text-warning">*</strong>
+                    </label>
+                    <div class="col-12 col-md-9">
+                        {{ form.phone }}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-12 col-md-3 col-form-label">
                         {{ form.city.label }} <strong class="text-warning">*</strong>
                     </label>
                     <div class="col-12 col-md-9">
@@ -78,71 +154,6 @@
                     </div>
                 </div>
             </fieldset>
-        </div>
-    </div>
-
-    <br />
-
-    <h5>Informations & Contact</h5>
-
-    <div class="row">
-        <div class="col-8">
-            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                <div class="form-group row">
-                    <label class="col-12 col-md-3 col-form-label">
-                        Nom
-                    </label>
-                    <div class="col-12 col-md-9">
-                        <input class="form-control" value="{{ siae.users.first.first_name }}" disabled />
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-12 col-md-3 col-form-label">
-                        Prénom
-                    </label>
-                    <div class="col-12 col-md-9">
-                        <input class="form-control" value="{{ siae.users.first.last_name }}" disabled />
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-12 col-md-3 col-form-label">
-                        Numéro de téléphone
-                    </label>
-                    <div class="col-12 col-md-9">
-                        <input class="form-control" value="{{ siae.users.first.phone }}" disabled />
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-12 col-md-3 col-form-label">
-                        Adresse e-mail
-                    </label>
-                    <div class="col-12 col-md-9">
-                        <input class="form-control" value="{{ siae.users.first.email }}" disabled />
-                    </div>
-                </div>
-
-                <hr />
-                <div class="form-group">
-                    <label>
-                        {{ form.website.label }}
-                    </label>
-                    <div>
-                        {{ form.website }}
-                    </div>
-                </div>
-                <!-- Logo -->
-            </fieldset>
-        </div>
-        <div class="col-4">
-            <div role="alert" class="alert alert-info">
-                <p>
-                    <strong>Contact commercial</strong><br />
-                    Les informations de contact seront mis à disposition des acheteurs afin de leur permettre de vous contacter facilement.
-                </p>
-                <p>
-                    Comment les modifier ? Actuellement, ce sont les informations de contact du premier utilisateur rattaché à la structure qui sont utilisées.
-                </p>
-            </div>
         </div>
     </div>
 

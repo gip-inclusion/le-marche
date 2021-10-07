@@ -32,16 +32,16 @@
         <div class="pb-6">
             <ul class="nav nav-tabs" style="justify-content: space-between;">
                 <li class="nav-item">
-                    <a href="{% url 'dashboard:siae_edit_info_contact' siae.id %}" class="nav-link {% if 'contact' in request.path %}active font-weight-bold{% endif %}">1. Informations & Contact</a>
+                    <a href="{% url 'dashboard:siae_edit_info_contact' siae.id %}" class="nav-link {% if 'contact' in request.path %}active font-weight-bold{% endif %}">Informations & Contact</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{% url 'dashboard:siae_edit_offer' siae.id %}" class="nav-link {% if 'offer' in request.path %}active font-weight-bold{% endif %}">2. Votre offre commerciale</a>
+                    <a href="{% url 'dashboard:siae_edit_offer' siae.id %}" class="nav-link {% if 'offer' in request.path %}active font-weight-bold{% endif %}">Votre offre commerciale</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{% url 'dashboard:siae_edit_presta' siae.id %}" class="nav-link {% if 'presta' in request.path %}active font-weight-bold{% endif %}">3. Vos prestations</a>
+                    <a href="{% url 'dashboard:siae_edit_presta' siae.id %}" class="nav-link {% if 'presta' in request.path %}active font-weight-bold{% endif %}">Vos prestations</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{% url 'dashboard:siae_edit_other' siae.id %}" class="nav-link {% if 'other' in request.path %}active font-weight-bold{% endif %}">4. Les plus</a>
+                    <a href="{% url 'dashboard:siae_edit_other' siae.id %}" class="nav-link {% if 'other' in request.path %}active font-weight-bold{% endif %}">Les plus</a>
                 </li>
             </ul>
         </div>
