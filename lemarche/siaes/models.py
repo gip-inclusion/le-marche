@@ -46,10 +46,11 @@ class Siae(models.Model):
         "brand",
         "siret",
         "naf",
+        "website",
         "email",
         "phone",
         "kind",
-        "nature",  # "website", "presta_type"
+        "nature",
         "city",
         "post_code",
         "department",
@@ -152,7 +153,7 @@ class Siae(models.Model):
         null=True,
     )
 
-    website = models.URLField(verbose_name="Site web", blank=True, null=True)
+    website = models.URLField(verbose_name="Site internet", blank=True, null=True)
     email = models.EmailField(verbose_name="E-mail", blank=True, null=True)
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True, null=True)
     address = models.TextField(verbose_name="Adresse")
@@ -173,6 +174,12 @@ class Siae(models.Model):
     geo_range_custom_distance = models.IntegerField(
         verbose_name="Distance en kilomètres (périmètre d'intervention)", blank=True, null=True
     )
+
+    contact_website = models.URLField(verbose_name="Site internet", blank=True, null=True)
+    contact_email = models.EmailField(verbose_name="E-mail", blank=True, null=True)
+    contact_phone = models.CharField(verbose_name="Téléphone", max_length=150, blank=True, null=True)
+    contact_first_name = models.CharField(verbose_name="Prénom", max_length=150, blank=True, null=True)
+    contact_last_name = models.CharField(verbose_name="Nom", max_length=150, blank=True, null=True)
 
     is_consortium = models.BooleanField(verbose_name="Consortium", default=False)
     is_cocontracting = models.BooleanField(verbose_name="Co-traitance", default=False)
@@ -235,6 +242,16 @@ class Siae(models.Model):
         if self.coords:
             return self.coords.x
         return None
+
+    @property
+    def contact_full_name(self):
+        return f"{self.contact_first_name} {self.contact_last_name}"
+
+    @property
+    def contact_short_name(self):
+        if self.first_name and self.last_name:
+            return f"{self.first_name[:1]} {self.last_name.upper()}"
+        return ""
 
     def sectors_list_to_string(self):
         return ", ".join(self.sectors.all().values_list("name", flat=True))

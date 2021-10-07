@@ -72,9 +72,9 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
             "siret",
             "nature",
             "kind",
-            "email",  # TODO: c1 --> siae user
-            "phone",  # TODO: c1 --> siae user
-            "website",
+            "email",  # TODO: c1 --> contact_email
+            "phone",  # TODO: c1 --> contact_phone
+            "website",  # TODO: c1/c4 --> contact_website
             "city",
             "department",
             "region",
@@ -83,7 +83,6 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
             "sectors",
         ]
         # siret_pretty
-        # email, phone, website
 
         writer = csv.writer(response)
         # header

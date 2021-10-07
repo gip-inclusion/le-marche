@@ -235,39 +235,37 @@
                     </div>
                     {% endif %}
                     <div class="profile_capsule">
-                        {% if siae.website != '' or siae.users.count %}
+                        {% if siae.contact_website or siae.users.count %}
                             <a href="#" id="show_data">
                                 <span class="prof_icon"><img src="{% static 'img/profile-ico-chevron.svg' %}" /></span>
                                 <span>Afficher les coordonnées</span>
                             </a>
                             <div id="the_data" style="display:none">
                                 <ul class="deflist">
-                                    {% if siae.website %}
+                                    {% if siae.contact_website %}
                                         <li>
                                             <span class="prof_icon"><img src="{% static 'img/profile-ico-web.svg' %}" /></span>
-                                            <a id="company_website" href="{{ siae.website }}" rel="nofollow" target="_blank">{{ siae.website }}</a>
+                                            <a id="company_website" href="{{ siae.contact_website }}" target="_blank" rel="nofollow noopener">{{ siae.contact_website }}</a>
                                         </li>
                                     {% endif %}
                                     {% if siae.users.count %}
                                         <li>
                                             <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" /></span>
-                                            <span>{{ siae.users.first.email }}</span>
+                                            <span>{{ siae.contact_email }}</span>
                                         </li>
-                                        {% if user.phone %}
-                                            <li>
-                                                <span class="prof_icon"><img src="{% static 'img/profile-ico-phone.svg' %}" /></span>
-                                                <span>{{ siae.users.first.phone }}</span>
-                                            </li>
-                                        {% endif %}
+                                        <li>
+                                            <span class="prof_icon"><img src="{% static 'img/profile-ico-phone.svg' %}" /></span>
+                                            <span>{{ siae.contact_phone }}</span>
+                                        </li>
                                         <li>
                                             <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" /></span>
-                                            <span>{{ siae.users.first.short_name }}</span>
-                                        </li>
-                                        <li>
-                                            <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>
-                                            <span>{{ siae.post_code }} {{ siae.city }}</span>
+                                            <span>{{ siae.contact_short_name }}</span>
                                         </li>
                                     {% endif %}
+                                    <li>
+                                        <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>
+                                        <span>{{ siae.post_code }} {{ siae.city }}</span>
+                                    </li>
                                 </ul>
                             </div>
                         <div class="separator mb-3 mb-md-6"></div>
