@@ -11,12 +11,10 @@ class UserQueryset(models.QuerySet):
 
     def siae_admins(self):
         """Only return users who are linked to a SIAE."""
-
         return self.filter(siaes__isnull=False)
 
     def with_api_key(self):
         """Only return users with an API Key."""
-
         return self.filter(api_key__isnull=False)
 
 
@@ -58,12 +56,10 @@ class UserManager(BaseUserManager):
 
     def siae_admins(self):
         """Only return users who are linked to a SIAE."""
-
         return self.get_queryset().siae_admins()
 
     def with_api_key(self):
         """Only return users with an API Key."""
-
         return self.get_queryset().with_api_key()
 
 

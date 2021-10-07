@@ -7,6 +7,42 @@ from django.utils.html import format_html
 from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer
 
 
+class IsLiveFilter(admin.SimpleListFilter):
+    """Custom admin filter to target siaes who are live (active and not delisted)."""
+
+    title = "Live ? (active et non délistée)"
+    parameter_name = "is_live"
+
+    def lookups(self, request, model_admin):
+        return (("Yes", "Oui"), ("No", "Non"))
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "Yes":
+            return queryset.is_live()
+        elif value == "No":
+            return queryset.is_not_live()
+        return queryset
+
+
+class HasUserFilter(admin.SimpleListFilter):
+    """Custom admin filter to target siaes who have at least 1 user."""
+
+    title = "Avec un gestionnaire ?"
+    parameter_name = "has_user"
+
+    def lookups(self, request, model_admin):
+        return (("Yes", "Oui"), ("No", "Non"))
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "Yes":
+            return queryset.has_user()
+        elif value == "No":
+            return queryset.filter(users__isnull=True)
+        return queryset
+
+
 @admin.register(Siae)
 class SiaeAdmin(gis_admin.OSMGeoAdmin):
     list_display = [
@@ -20,7 +56,7 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
         "nb_cient_references",
         "created_at",
     ]
-    list_filter = ["is_first_page", "kind", "networks", "sectors", "geo_range"]
+    list_filter = [IsLiveFilter, "is_first_page", HasUserFilter, "kind", "networks", "sectors", "geo_range"]
     search_fields = ["id", "name"]
 
     autocomplete_fields = ["sectors", "networks", "users"]

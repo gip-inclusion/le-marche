@@ -54,7 +54,7 @@ class SiaeSearchForm(forms.Form):
         qs = Siae.objects.prefetch_related("sectors", "networks")
 
         # we only display live Siae
-        qs = qs.live()
+        qs = qs.is_live()
 
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
