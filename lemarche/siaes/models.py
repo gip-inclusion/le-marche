@@ -3,6 +3,7 @@ from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.measure import D
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 
 from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY, get_department_code_from_name
@@ -10,8 +11,15 @@ from lemarche.siaes.validators import validate_naf, validate_post_code, validate
 
 
 class SiaeQuerySet(models.QuerySet):
-    def live(self):
+    def is_live(self):
         return self.filter(is_active=True).filter(is_delisted=False)
+
+    def is_not_live(self):
+        return self.filter(Q(is_active=False) | Q(is_delisted=True))
+
+    def has_user(self):
+        """Only return siaes who have at least 1 user."""
+        return self.filter(users__isnull=False)
 
     def in_region(self, **kwargs):
         if "name" in kwargs:
