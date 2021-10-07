@@ -23,7 +23,16 @@
 {% endblock %}
 
 {% block content %}
-<h1 class="h1">{{ flatpage.title }}</h1>
-
-{{ flatpage.content | safe }}
+<section class="s-flatpage">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="h2 mb-3 mb-lg-5"><strong>{{ flatpage.title }}</strong></h1>
+                <div class="s-flatpage-content">
+                    {{ flatpage.content | safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
