@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand
 from django.template.defaultfilters import slugify
 
 from lemarche.perimeters.models import Perimeter
-from lemarche.siaes.constants import REGIONS_WITH_CODES, REGIONS_WITH_IDENTICAL_DEPARTMENT_NAME
+from lemarche.siaes.constants import REGIONS, REGIONS_WITH_IDENTICAL_DEPARTMENT_NAME
 
 
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -59,7 +59,7 @@ class Command(BaseCommand):
                 kind = Perimeter.KIND_REGION
                 insee_code = item["code"]
 
-                assert insee_code in REGIONS_WITH_CODES
+                assert insee_code in REGIONS
 
                 # Important! We need to prefix the regions' insee_code to avoid conflicts with departments
                 insee_code = f"R{insee_code}"

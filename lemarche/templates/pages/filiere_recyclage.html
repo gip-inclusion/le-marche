@@ -25,7 +25,9 @@
     <div class="s-filiere-01__container container">
         <div class="s-filiere-01__row row">     
             <div class="s-filiere-01__col s-filiere-01__col--article col-12 col-lg-8">
-                <h3 class="h2 mb-3 mb-lg-5"><strong>Et si vous confiez le recyclage de vos déchets à un prestataire inclusif ?</strong></h3>
+                <h3 class="h2 mb-3 mb-lg-5">
+                    <strong>Et si vous confiez le recyclage de vos déchets à un prestataire inclusif ?</strong>
+                </h3>
                 <article>
                     <p class="lead">Il y a en France plus de 130 entreprises sociales inclusives qui proposent ces prestations ?  Il y en a forcément une proche de chez vous !</p>
                 </article>
@@ -36,11 +38,11 @@
                     <h5 class="h3 mb-3 mb-lg-5">Entreprise sociale inclusive, complétez votre fiche entreprise pour être encore plus visible</h5>
                     </div>
                     <p class="s-filiere-01__col__cta">
-                        <a href="{% url 'auth:login' %}" target="_blank" rel="noopener" class="btn btn-lg btn-block btn-primary btn-ico">
-                        <span>Je m'inscris</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19">
-                            <path fill="currentColor" d="M8.66517015,2.82577407 C8.34562066,3.18534827 8.34130426,3.73389577 8.67429909,4.0990571 L11.359,7.039 L1.46428571,7.03948778 C0.93400271,7.03948778 0.5,7.46464861 0.5,7.99431466 L0.506519822,8.10609811 C0.562491613,8.58254879 0.971880067,8.94914154 1.46428571,8.94914154 L11.354,8.949 L8.64311662,11.8995038 C8.28105469,12.2965343 8.31618249,12.9073498 8.7191121,13.2599671 C9.11604213,13.6073339 9.72177649,13.5739032 10.0771295,13.184224 L14.2544508,8.63732099 L14.3103844,8.56958432 L14.3728703,8.47818478 L14.4352531,8.3399089 L14.4491817,8.28987794 L14.462,8.193 L14.4705425,8.17556014 C14.4890266,8.12237865 14.5,8.06201568 14.5,7.99431466 L14.5,7.84422179 L14.4816817,7.71012206 L14.4677531,7.6600911 L14.4094639,7.52822311 L14.3908925,7.49865936 L14.3296866,7.41519605 L10.1084913,2.81453208 C9.75427649,2.42609678 9.14854213,2.39266615 8.7516121,2.74003295 L8.66517015,2.82577407 Z" transform="rotate(-45 10.56 5.732)"></path>
-                        </svg>
+                        <a href="{% url 'auth:login' %}" target="_blank" class="btn btn-lg btn-block btn-primary btn-ico">
+                            <span>Je m'inscris</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19">
+                                <path fill="currentColor" d="M8.66517015,2.82577407 C8.34562066,3.18534827 8.34130426,3.73389577 8.67429909,4.0990571 L11.359,7.039 L1.46428571,7.03948778 C0.93400271,7.03948778 0.5,7.46464861 0.5,7.99431466 L0.506519822,8.10609811 C0.562491613,8.58254879 0.971880067,8.94914154 1.46428571,8.94914154 L11.354,8.949 L8.64311662,11.8995038 C8.28105469,12.2965343 8.31618249,12.9073498 8.7191121,13.2599671 C9.11604213,13.6073339 9.72177649,13.5739032 10.0771295,13.184224 L14.2544508,8.63732099 L14.3103844,8.56958432 L14.3728703,8.47818478 L14.4352531,8.3399089 L14.4491817,8.28987794 L14.462,8.193 L14.4705425,8.17556014 C14.4890266,8.12237865 14.5,8.06201568 14.5,7.99431466 L14.5,7.84422179 L14.4816817,7.71012206 L14.4677531,7.6600911 L14.4094639,7.52822311 L14.3908925,7.49865936 L14.3296866,7.41519605 L10.1084913,2.81453208 C9.75427649,2.42609678 9.14854213,2.39266615 8.7516121,2.74003295 L8.66517015,2.82577407 Z" transform="rotate(-45 10.56 5.732)"></path>
+                            </svg>
                         </a>
                     </p>
                 </div>
@@ -62,7 +64,8 @@
                         <li>Disposer des corbeilles de tri ergonomiques au sein de vos bureaux</li>
                         <li>Sensibiliser vos collaborateurs à la valorisation des déchets</li>
                     </ul>
-                    <p>Qu'il s'agisse de déchets bureautiques, industriels, médicaux ou ménagers, nos prestataires inclusifs prennent en
+                    <p>
+                        Qu'il s'agisse de déchets bureautiques, industriels, médicaux ou ménagers, nos prestataires inclusifs prennent en
                         charge plus de 13 typologies de déchets (papier, plastique, canette, pile, cartouche, DEEE, DDD, huile, bois,
                         verre, métaux, organique, textile ...)
                     </p>
@@ -82,21 +85,27 @@
         <div class="s-article-picture-01__row row">
             <div class="s-article-picture-01__col s-article-picture-01__col--picture col-12 col-lg-5 d-flex align-items-center px-lg-4">
                 <picture class="w-100">
-                    <a href="" rel="noopener" target="_blank"><img src="{% static 'img/filiere_map.png' %}" class="img-fluid img-fitcover" alt=""></a>
+                    <a href="" target="_blank" rel="noopener">
+                        <img src="{% static 'img/filiere_map.png' %}" class="img-fluid img-fitcover" alt="">
+                    </a>
                 </picture>
             </div>
             <div class="s-article-picture-01__col s-article-picture-01__col--article col-12 col-lg-7 d-flex align-items-center">
                 <article>
                     <h2 class="s-article-picture-01__col--article__title h2">Les structures du recyclage présentes sur le marché</h2>
-                    <p>De nombreuses structures d’insertion et du handicap proposent des prestations très diversifiées dans le recyclage sur tout le territoire français. Grâce à notre moteur de recherche, elles sont désormais à portée de clics !</p>  
+                    <p>
+                        De nombreuses structures d’insertion et du handicap proposent des prestations très diversifiées
+                        dans le recyclage sur tout le territoire français. Grâce à notre moteur de recherche,
+                        elles sont désormais à portée de clics !
+                    </p>  
                     <p class="s-article-picture-01__col--article__cta">
-                        <a href="{% url 'siae:search_results' %}?sectors=recyclage-delements-dameublement-dae-et-petits-objets&sectors=recyclage-dequipements-electriques-et-electroniques-deee&sectors=vente-de-vehicules-velos-doccasions&sectors=recyclage-textiles&sectors=recyclage-papiers-et-fournitures-dentreprises&sectors=autre-85" rel="noopener" target="_blank" class="btn btn-primary btn-ico">
+                        <a href="{% url 'siae:search_results' %}?sectors=recyclage-delements-dameublement-dae-et-petits-objets&sectors=recyclage-dequipements-electriques-et-electroniques-deee&sectors=vente-de-vehicules-velos-doccasions&sectors=recyclage-textiles&sectors=recyclage-papiers-et-fournitures-dentreprises&sectors=autre-85" target="_blank" class="btn btn-primary btn-ico">
                             <span>Accéder aux résultats</span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-                            <path fill="currentColor" fill-rule="nonzero" stroke="currentColor" d="M1.964 8.95h11.03L9.51 12.737a.451.451 0 00.037.646.474.474 0 00.66-.037L14.386 8.8l.035-.043.033-.05.013-.05V8.539c0-.012.033-.02.033-.044v-.151l-.014-.05-.019-.03-.034-.045-4.193-4.566a.474.474 0 00-.66-.037.452.452 0 00-.036.646l3.45 3.777H1.963a.46.46 0 00-.464.455.46.46 0 00.464.455z"></path>
+                                <path fill="currentColor" fill-rule="nonzero" stroke="currentColor" d="M1.964 8.95h11.03L9.51 12.737a.451.451 0 00.037.646.474.474 0 00.66-.037L14.386 8.8l.035-.043.033-.05.013-.05V8.539c0-.012.033-.02.033-.044v-.151l-.014-.05-.019-.03-.034-.045-4.193-4.566a.474.474 0 00-.66-.037.452.452 0 00-.036.646l3.45 3.777H1.963a.46.46 0 00-.464.455.46.46 0 00.464.455z"></path>
                             </svg>
                         </a>
-                        </p>                                      
+                    </p>                                      
                 </article>
             </div>
         </div>
@@ -107,7 +116,9 @@
     <div class="s-cards-grid-01__container container container-max-lg">
         <div class="s-cards-grid-01__row row">
             <div class="s-cards-grid-01__col s-cards-grid-01__col--title col-12">
-                <h3 class="h2 mb-3 mb-lg-5 text-center"><strong>Le recyclage, en quelques chiffres</strong></h3>
+                <h3 class="h2 mb-3 mb-lg-5 text-center">
+                    <strong>Le recyclage, en quelques chiffres</strong>
+                </h3>
             </div>
         </div>
         <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3">
@@ -168,60 +179,71 @@
             <div class="s-cards-grid-01__col col mb-3 mb-md-5">
                 <div class="card c-card c-card--mini w-100 h-100">
                     <div class="card-header text-center pb-0">
-                      <img src="{% static 'img/logo-recylliance-recyclage.png' %}" alt="" height="130">
+                        <img src="{% static 'img/logo-recylliance-recyclage.png' %}" alt="" height="130">
                     </div>
                     <div class="card-body pt-0">
                         <h4>Recylliance</h4>
-                        <p>Composé de 19 entreprises françaises spécialisées dans le recyclage de déchets tertiaires, industriels et ménagers recyclables, le réseau Recylliance souhaite répondre collectivement aux enjeux de l’économie circulaire, en stimulant la création d’emplois locaux, les logiques de circuits courts et le recyclage de proximité. Au total c’est 75 000 tonnes de déchets recyclés et plus de 670 emplois créés.</p>
+                        <p>Composé de 19 entreprises françaises spécialisées dans le recyclage de déchets tertiaires, industriels et
+                            ménagers recyclables, le réseau Recylliance souhaite répondre collectivement aux enjeux de l’économie circulaire,
+                            en stimulant la création d’emplois locaux, les logiques de circuits courts et le recyclage de proximité.
+                            Au total c’est 75 000 tonnes de déchets recyclés et plus de 670 emplois créés.
+                        </p>
                     </div>
                     <div class="card-footer text-right">
-                      <a href="https://www.recylliance.fr/" class="btn btn-ico btn-primary btn-block">
-                        <span>Accèder au site</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19">
-                          <path fill="currentColor" d="M8.66517015,2.82577407 C8.34562066,3.18534827 8.34130426,3.73389577 8.67429909,4.0990571 L11.359,7.039 L1.46428571,7.03948778 C0.93400271,7.03948778 0.5,7.46464861 0.5,7.99431466 L0.506519822,8.10609811 C0.562491613,8.58254879 0.971880067,8.94914154 1.46428571,8.94914154 L11.354,8.949 L8.64311662,11.8995038 C8.28105469,12.2965343 8.31618249,12.9073498 8.7191121,13.2599671 C9.11604213,13.6073339 9.72177649,13.5739032 10.0771295,13.184224 L14.2544508,8.63732099 L14.3103844,8.56958432 L14.3728703,8.47818478 L14.4352531,8.3399089 L14.4491817,8.28987794 L14.462,8.193 L14.4705425,8.17556014 C14.4890266,8.12237865 14.5,8.06201568 14.5,7.99431466 L14.5,7.84422179 L14.4816817,7.71012206 L14.4677531,7.6600911 L14.4094639,7.52822311 L14.3908925,7.49865936 L14.3296866,7.41519605 L10.1084913,2.81453208 C9.75427649,2.42609678 9.14854213,2.39266615 8.7516121,2.74003295 L8.66517015,2.82577407 Z" transform="rotate(-45 10.56 5.732)"></path>
-                        </svg>
-                      </a>
+                        <a href="https://www.recylliance.fr/" class="btn btn-ico btn-primary btn-block">
+                            <span>Accèder au site</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19">
+                                <path fill="currentColor" d="M8.66517015,2.82577407 C8.34562066,3.18534827 8.34130426,3.73389577 8.67429909,4.0990571 L11.359,7.039 L1.46428571,7.03948778 C0.93400271,7.03948778 0.5,7.46464861 0.5,7.99431466 L0.506519822,8.10609811 C0.562491613,8.58254879 0.971880067,8.94914154 1.46428571,8.94914154 L11.354,8.949 L8.64311662,11.8995038 C8.28105469,12.2965343 8.31618249,12.9073498 8.7191121,13.2599671 C9.11604213,13.6073339 9.72177649,13.5739032 10.0771295,13.184224 L14.2544508,8.63732099 L14.3103844,8.56958432 L14.3728703,8.47818478 L14.4352531,8.3399089 L14.4491817,8.28987794 L14.462,8.193 L14.4705425,8.17556014 C14.4890266,8.12237865 14.5,8.06201568 14.5,7.99431466 L14.5,7.84422179 L14.4816817,7.71012206 L14.4677531,7.6600911 L14.4094639,7.52822311 L14.3908925,7.49865936 L14.3296866,7.41519605 L10.1084913,2.81453208 C9.75427649,2.42609678 9.14854213,2.39266615 8.7516121,2.74003295 L8.66517015,2.82577407 Z" transform="rotate(-45 10.56 5.732)"></path>
+                            </svg>
+                        </a>
                     </div>
-                  </div>
+                </div>
             </div>
             <div class="s-cards-grid-01__col col mb-3 mb-md-5">
                 <div class="card c-card c-card--mini w-100 h-100">
                     <div class="card-header text-center pb-0">
-                      <img src="{% static 'img/logo-elise-recyclage.png' %}" alt="" height="130">
+                        <img src="{% static 'img/logo-elise-recyclage.png' %}" alt="" height="130">
                     </div>
                     <div class="card-body pt-0">
                         <h4>Elise</h4>
-                        <p>Avec ELISE, faites le choix de valoriser 100% des déchets de bureau en assurant leur recyclage et en créant des emplois solidaires. Pour cela, des corbeilles sont mises à la disposition des collaborateurs de votre entreprise. ELISE se charge de la collecte, du tri et du recyclage. Plus de 12 600 entreprises ont déjà pris l’initiative avec ELISE</p>
+                        <p>Avec ELISE, faites le choix de valoriser 100% des déchets de bureau en assurant leur recyclage et en créant
+                            des emplois solidaires. Pour cela, des corbeilles sont mises à la disposition des collaborateurs de votre entreprise.
+                            ELISE se charge de la collecte, du tri et du recyclage. Plus de 12 600 entreprises ont déjà pris l’initiative avec ELISE
+                        </p>
                     </div>
                     <div class="card-footer text-right">
-                      <a href="https://www.elise.com.fr/" class="btn btn-ico btn-primary btn-block">
-                        <span>Accèder au site</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19">
-                          <path fill="currentColor" d="M8.66517015,2.82577407 C8.34562066,3.18534827 8.34130426,3.73389577 8.67429909,4.0990571 L11.359,7.039 L1.46428571,7.03948778 C0.93400271,7.03948778 0.5,7.46464861 0.5,7.99431466 L0.506519822,8.10609811 C0.562491613,8.58254879 0.971880067,8.94914154 1.46428571,8.94914154 L11.354,8.949 L8.64311662,11.8995038 C8.28105469,12.2965343 8.31618249,12.9073498 8.7191121,13.2599671 C9.11604213,13.6073339 9.72177649,13.5739032 10.0771295,13.184224 L14.2544508,8.63732099 L14.3103844,8.56958432 L14.3728703,8.47818478 L14.4352531,8.3399089 L14.4491817,8.28987794 L14.462,8.193 L14.4705425,8.17556014 C14.4890266,8.12237865 14.5,8.06201568 14.5,7.99431466 L14.5,7.84422179 L14.4816817,7.71012206 L14.4677531,7.6600911 L14.4094639,7.52822311 L14.3908925,7.49865936 L14.3296866,7.41519605 L10.1084913,2.81453208 C9.75427649,2.42609678 9.14854213,2.39266615 8.7516121,2.74003295 L8.66517015,2.82577407 Z" transform="rotate(-45 10.56 5.732)"></path>
-                        </svg>
-                      </a>
+                        <a href="https://www.elise.com.fr/" class="btn btn-ico btn-primary btn-block">
+                            <span>Accèder au site</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19">
+                                <path fill="currentColor" d="M8.66517015,2.82577407 C8.34562066,3.18534827 8.34130426,3.73389577 8.67429909,4.0990571 L11.359,7.039 L1.46428571,7.03948778 C0.93400271,7.03948778 0.5,7.46464861 0.5,7.99431466 L0.506519822,8.10609811 C0.562491613,8.58254879 0.971880067,8.94914154 1.46428571,8.94914154 L11.354,8.949 L8.64311662,11.8995038 C8.28105469,12.2965343 8.31618249,12.9073498 8.7191121,13.2599671 C9.11604213,13.6073339 9.72177649,13.5739032 10.0771295,13.184224 L14.2544508,8.63732099 L14.3103844,8.56958432 L14.3728703,8.47818478 L14.4352531,8.3399089 L14.4491817,8.28987794 L14.462,8.193 L14.4705425,8.17556014 C14.4890266,8.12237865 14.5,8.06201568 14.5,7.99431466 L14.5,7.84422179 L14.4816817,7.71012206 L14.4677531,7.6600911 L14.4094639,7.52822311 L14.3908925,7.49865936 L14.3296866,7.41519605 L10.1084913,2.81453208 C9.75427649,2.42609678 9.14854213,2.39266615 8.7516121,2.74003295 L8.66517015,2.82577407 Z" transform="rotate(-45 10.56 5.732)"></path>
+                            </svg>
+                        </a>
                     </div>
-                  </div>
+                </div>
             </div>
             <div class="s-cards-grid-01__col col mb-3 mb-md-5">
                 <div class="card c-card c-card--mini w-100 h-100">
                     <div class="card-header text-center pb-0">
-                      <img src="{% static 'img/logo-envie-recyclage.png' %}" alt="" height="130">
+                        <img src="{% static 'img/logo-envie-recyclage.png' %}" alt="" height="130">
                     </div>
                     <div class="card-body pt-0">
                         <h4>Envie</h4>
-                        <p>À travers la collecte et la valorisation des déchets, ainsi que la rénovation et le réutilisation des équipements électriques et électroniques, Envie participe depuis 1984 à la limitation des déchets et contribue à faire changer les modes de consommation.
-                            Un réseau dense de points de vente, d’ateliers de réparation et de centres de recyclage implanté dans toute la France. Plus de 50 entreprises autonomes fédérées !</p>
+                        <p>
+                            À travers la collecte et la valorisation des déchets, ainsi que la rénovation et le réutilisation des équipements électriques et électroniques,
+                            Envie participe depuis 1984 à la limitation des déchets et contribue à faire changer les modes de consommation.
+                            Un réseau dense de points de vente, d’ateliers de réparation et de centres de recyclage implanté dans toute la France.
+                            Plus de 50 entreprises autonomes fédérées !
+                        </p>
                     </div>
                     <div class="card-footer text-right">
-                      <a href="https://www.envie.org/" class="btn btn-ico btn-primary btn-block">
-                        <span>Accèder au site</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19">
-                          <path fill="currentColor" d="M8.66517015,2.82577407 C8.34562066,3.18534827 8.34130426,3.73389577 8.67429909,4.0990571 L11.359,7.039 L1.46428571,7.03948778 C0.93400271,7.03948778 0.5,7.46464861 0.5,7.99431466 L0.506519822,8.10609811 C0.562491613,8.58254879 0.971880067,8.94914154 1.46428571,8.94914154 L11.354,8.949 L8.64311662,11.8995038 C8.28105469,12.2965343 8.31618249,12.9073498 8.7191121,13.2599671 C9.11604213,13.6073339 9.72177649,13.5739032 10.0771295,13.184224 L14.2544508,8.63732099 L14.3103844,8.56958432 L14.3728703,8.47818478 L14.4352531,8.3399089 L14.4491817,8.28987794 L14.462,8.193 L14.4705425,8.17556014 C14.4890266,8.12237865 14.5,8.06201568 14.5,7.99431466 L14.5,7.84422179 L14.4816817,7.71012206 L14.4677531,7.6600911 L14.4094639,7.52822311 L14.3908925,7.49865936 L14.3296866,7.41519605 L10.1084913,2.81453208 C9.75427649,2.42609678 9.14854213,2.39266615 8.7516121,2.74003295 L8.66517015,2.82577407 Z" transform="rotate(-45 10.56 5.732)"></path>
-                        </svg>
-                      </a>
+                        <a href="https://www.envie.org/" class="btn btn-ico btn-primary btn-block">
+                            <span>Accèder au site</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19">
+                                <path fill="currentColor" d="M8.66517015,2.82577407 C8.34562066,3.18534827 8.34130426,3.73389577 8.67429909,4.0990571 L11.359,7.039 L1.46428571,7.03948778 C0.93400271,7.03948778 0.5,7.46464861 0.5,7.99431466 L0.506519822,8.10609811 C0.562491613,8.58254879 0.971880067,8.94914154 1.46428571,8.94914154 L11.354,8.949 L8.64311662,11.8995038 C8.28105469,12.2965343 8.31618249,12.9073498 8.7191121,13.2599671 C9.11604213,13.6073339 9.72177649,13.5739032 10.0771295,13.184224 L14.2544508,8.63732099 L14.3103844,8.56958432 L14.3728703,8.47818478 L14.4352531,8.3399089 L14.4491817,8.28987794 L14.462,8.193 L14.4705425,8.17556014 C14.4890266,8.12237865 14.5,8.06201568 14.5,7.99431466 L14.5,7.84422179 L14.4816817,7.71012206 L14.4677531,7.6600911 L14.4094639,7.52822311 L14.3908925,7.49865936 L14.3296866,7.41519605 L10.1084913,2.81453208 C9.75427649,2.42609678 9.14854213,2.39266615 8.7516121,2.74003295 L8.66517015,2.82577407 Z" transform="rotate(-45 10.56 5.732)"></path>
+                            </svg>
+                        </a>
                     </div>
-                  </div>
+                </div>
             </div>
         </div>
     </div>

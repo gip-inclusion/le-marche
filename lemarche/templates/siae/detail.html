@@ -193,7 +193,7 @@
                                     <h3 class="h3 mb-1 mt-1">Réseaux</h3>
                                     <ul>
                                     {% for network in siae.networks.all %}
-                                        <li><a class="network_link" href="{{ network.website }}">{{ network.brand }}</a></li>
+                                        <li><a href="{{ network.website }}" class="network_link">{{ network.brand }}</a></li>
                                     {% endfor %}
                                     </ul>
                                 </div>

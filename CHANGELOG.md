@@ -8,6 +8,10 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 
 ## CONTENTS
 
+### [0.9] - (2021-10)
+
+- Ajout des pages espace utilisateur
+
 ### [0.8] - (2021-09)
 
 - Premier script de migration pour récupérer la donnée des Siae, Réseaux, Secteurs, Prestations, Labels et Références

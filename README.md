@@ -1,11 +1,10 @@
 [![Generic badge](https://img.shields.io/badge/ITOU-Oh_Oui-lightgreen.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/État-En_Construction-yellow.svg)](https://shields.io/)
 
-# Itou - le marché de l'inclusion - API
+# Itou - Le marché de l'inclusion
 
-API du marché de l'inclusion
-
-Publication de la liste de toutes les structures d'insertion et entreprises adaptées de France.
+> Le marché de l'inclusion est un service numérique permettant de trouver un prestataire sociale inclusif
+> proposant des produits ou services professionnels.
 
 **Ce dépôt est en cours de construction.**
 
@@ -107,7 +106,11 @@ Le script [start_docker.sh](./start_docker.sh) permet de lancer les environnemen
 
 ## Utilisation
 
-Une fois lancé, l'api propose plusieurs endpoints et interfaces de documentation (liens vers environnement docker-compose, port 8880) :
+Une fois lancé, l'application est disponible sur http://localhost:8880/.
+
+## API
+
+Il y a aussi une API, qui propose plusieurs endpoints et interfaces de documentation :
 
 - Documentation Swaggger/OpenAPI : [/docs](http://localhost:8880/api/docs)
 - Documentation ReDoc : [/redoc](http://localhost:8880/api/redoc)
@@ -186,22 +189,3 @@ un sous-répertoire par app django.
 - https://dev.to/sherlockcodes/pytest-with-django-rest-framework-from-zero-to-hero-8c4
 - https://hannylicious.com/blog/testing-django/
 - https://flowfx.de/blog/populate-your-django-test-database-with-pytest-fixtures/
-
-## Contenu de l'API du marché de l'inclusion
-
-### Le projet aujourd'hui
-
-- API du marché de l'inclusion, qui offre :
-    - La liste des SIAE, leur données et secteurs d'activité
-    - La liste hierarchisée des secteurs d'activité
-
-### Le projet demain
-
-En plus de l'API :
-- Interface de consultation
-- Moteur de recherche des structures
-- Partenaires, consortiums, réseaux, ...
-- Gestion des utilisateurs, des structures, ...
-- Intégration de référentiels externes
-- Pages d'info, thématiques, filières, ...
-- Et bien d'autres choses ! 🛸
