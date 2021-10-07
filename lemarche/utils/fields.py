@@ -2,7 +2,7 @@ from functools import partial
 from itertools import groupby
 from operator import attrgetter
 
-from django.forms.models import ModelChoiceField, ModelChoiceIterator
+from django.forms.models import ModelChoiceField, ModelChoiceIterator, ModelMultipleChoiceField
 
 
 # taken from https://simpleisbetterthancomplex.com/tutorial/2019/01/02/how-to-implement-grouped-model-choice-field.html
@@ -23,6 +23,16 @@ class GroupedModelChoiceIterator(ModelChoiceIterator):
 
 
 class GroupedModelChoiceField(ModelChoiceField):
+    def __init__(self, *args, choices_groupby, **kwargs):
+        if isinstance(choices_groupby, str):
+            choices_groupby = attrgetter(choices_groupby)
+        elif not callable(choices_groupby):
+            raise TypeError("choices_groupby must either be a str or a callable accepting a single argument")
+        self.iterator = partial(GroupedModelChoiceIterator, groupby=choices_groupby)
+        super().__init__(*args, **kwargs)
+
+
+class GroupedModelMultipleChoiceField(ModelMultipleChoiceField):
     def __init__(self, *args, choices_groupby, **kwargs):
         if isinstance(choices_groupby, str):
             choices_groupby = attrgetter(choices_groupby)

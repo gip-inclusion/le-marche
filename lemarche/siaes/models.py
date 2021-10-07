@@ -183,6 +183,7 @@ class Siae(models.Model):
     users = models.ManyToManyField(
         settings.AUTH_USER_MODEL, verbose_name="Gestionnaires", related_name="siaes", blank=True
     )
+    # ForeignKeys: offers, labels, client_references
 
     is_qpv = models.BooleanField(verbose_name="Zone QPV", blank=False, null=False, default=False)
     qpv_name = models.CharField(max_length=255, blank=True, null=True)
@@ -260,6 +261,7 @@ class SiaeLabel(models.Model):
     class Meta:
         verbose_name = "Label & certification"
         verbose_name_plural = "Labels & certifications"
+        # ordering = ["id"]
 
     def __str__(self):
         return self.name
