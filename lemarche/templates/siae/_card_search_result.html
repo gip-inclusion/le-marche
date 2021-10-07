@@ -1,14 +1,14 @@
 {% load static array_choices_display m2m_list_display %}
 
-<a href="{% url 'siae:detail' siae.id %}" class="siae-card-container">
+<a href="{% url 'siae:detail' siae.id %}" class="siae-card-container card">
     <div class="siae-card">
         <div class="sc-img mr-5">
             {% comment "hidden" %}
             {% if siae.images|length %}
                 {% set image = siae.images[0] %}
-                <img src="{{ (ListingImageConstants.IMAGE_FOLDER ~ image.name) | imagine_filter('listing_xsmall') }}" alt="{{ siae.name }}" class="img-responsive" />
+                <img src="{{ (ListingImageConstants.IMAGE_FOLDER ~ image.name) | imagine_filter('listing_xsmall') }}" alt="{{ siae.name }}" class="img-fluid" />
             {% else %}
-                <img src="{{ (ListingImageConstants.IMAGE_FOLDER ~ ListingImageConstants.IMAGE_DEFAULT) | imagine_filter('listing_large') }}" alt="{{ siae.name }}" class="img-responsive" />
+                <img src="{{ (ListingImageConstants.IMAGE_FOLDER ~ ListingImageConstants.IMAGE_DEFAULT) | imagine_filter('listing_large') }}" alt="{{ siae.name }}" class="img-fluid" />
             {% endif %}
             {% endcomment %}
         </div>
@@ -44,7 +44,7 @@
                             <li class="sc-profile-sectors-empty"> </li>
                         {% endif %}
                         <li class="sc-profile-town">Situé à {{ siae.city }}</li>
-                        <li class="sc-profile-town-work">Intervient sur : {{ siae.getNiceRange }}</li>
+                        <li class="sc-profile-town-work">Intervient sur : TODO</li>
                     </ul>
                 </div>
             </div>

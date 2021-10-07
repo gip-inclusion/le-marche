@@ -143,3 +143,9 @@ class User(AbstractUser):
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
+
+    @property
+    def short_name(self):
+        if self.first_name and self.last_name:
+            return f"{self.first_name.upper()[:1]}. {self.last_name.upper()}"
+        return ""
