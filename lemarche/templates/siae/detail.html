@@ -149,7 +149,7 @@
                                 <h3 class="h3 mb-1 mt-1">Description de l'activité commerciale</h3>
                                 <div>
                                     {% if siae.description %}
-                                        {{ siae.description }}
+                                        {{ siae.description|linebreaks }}
                                     {% else %}
                                         Non renseigné
                                     {% endif %}
@@ -235,7 +235,7 @@
                     </div>
                     {% endif %}
                     <div class="profile_capsule">
-                        {% if siae.website != '' or user %}
+                        {% if siae.website != '' or siae.users.count %}
                             <a href="#" id="show_data">
                                 <span class="prof_icon"><img src="{% static 'img/profile-ico-chevron.svg' %}" /></span>
                                 <span>Afficher les coordonnées</span>
@@ -247,21 +247,21 @@
                                             <span class="prof_icon"><img src="{% static 'img/profile-ico-web.svg' %}" /></span>
                                             <a id="company_website" href="{{ siae.website }}" rel="nofollow" target="_blank">{{ siae.website }}</a>
                                         </li>
-                                    {% endif %}                                
-                                    {% if user %}
+                                    {% endif %}
+                                    {% if siae.users.count %}
                                         <li>
                                             <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" /></span>
-                                            <span>{{ user.email }}</span>
+                                            <span>{{ siae.users.first.email }}</span>
                                         </li>
                                         {% if user.phone %}
                                             <li>
                                                 <span class="prof_icon"><img src="{% static 'img/profile-ico-phone.svg' %}" /></span>
-                                                <span>{{ user.phone }}</span>
+                                                <span>{{ siae.users.first.phone }}</span>
                                             </li>
                                         {% endif %}
                                         <li>
                                             <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" /></span>
-                                            <span>{{ user.namebis }}</span>
+                                            <span>{{ siae.users.first.short_name }}</span>
                                         </li>
                                         <li>
                                             <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>
@@ -284,7 +284,7 @@
                             </div>
                             <div class="d-flex mb-3">
                                 <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>
-                                <span>Intervient sur : {{ siae.getNiceRange }}</span>
+                                <span>Intervient sur : TODO</span>
                             </div>
                         </div>
                     </div>
