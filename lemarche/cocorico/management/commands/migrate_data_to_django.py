@@ -206,9 +206,10 @@ class Command(BaseCommand):
                 self.migrate_siae_client_reference(cur)
                 self.migrate_user(cur)
                 self.migrate_siae_user(cur)
+                self.update_siae_contact()
         except Exception as e:
             # logger.exception(e)
-            print(e)
+            self.stdout.write(e)
             connMy.rollback()
         finally:
             connMy.close()
@@ -217,19 +218,20 @@ class Command(BaseCommand):
         """
         Migrate Siae data
         """
-        print("Migrating Siae...")
+        self.stdout.write("-" * 80)
+        self.stdout.write("Migrating Siae...")
 
         Siae.objects.all().delete()
 
         cur.execute("SELECT * FROM directory")
         resp = cur.fetchall()
-        # print(len(resp))
+        # self.stdout.write(len(resp))
 
         # s = set([elem["is_qpv"] for elem in resp])
-        # print(s)
+        # self.stdout.write(s)
 
         # elem = cur.fetchone()
-        # print(elem)
+        # self.stdout.write(elem)
 
         for elem in resp:
             # rename fields
@@ -266,9 +268,9 @@ class Command(BaseCommand):
             try:
                 Siae.objects.create(**elem)
             except Exception as e:
-                print(e)
+                self.stdout.write(e)
 
-        print(f"Created {Siae.objects.count()} siaes !")
+        self.stdout.write(f"Created {Siae.objects.count()} siaes !")
 
     def migrate_network(self, cur):
         """
@@ -277,7 +279,7 @@ class Command(BaseCommand):
         Notes:
         - fields 'accronym' and 'siret' are always empty
         """
-        print("Migrating Network...")
+        self.stdout.write("Migrating Network...")
 
         Network.objects.all().delete()
 
@@ -285,7 +287,7 @@ class Command(BaseCommand):
         resp = cur.fetchall()
 
         # s = set([elem["siret"] for elem in resp])
-        # print(s)
+        # self.stdout.write(s)
 
         for elem in resp:
             # cleanup dates
@@ -301,7 +303,7 @@ class Command(BaseCommand):
             # create object
             Network.objects.create(**elem)
 
-        print(f"Created {Network.objects.count()} siae networks !")
+        self.stdout.write(f"Created {Network.objects.count()} siae networks !")
 
     def migrate_siae_network(self, cur):
         """
@@ -310,20 +312,20 @@ class Command(BaseCommand):
         Notes:
         - elem exemple: {'directory_id': 270, 'network_id': 8}
         """
-        print("Migrating M2M between Siae & Network...")
+        self.stdout.write("Migrating M2M between Siae & Network...")
 
         Siae.networks.through.objects.all().delete()
 
         cur.execute("SELECT * FROM directory_network")
         resp = cur.fetchall()
-        # print(len(resp))
-        # print(resp[0])
+        # self.stdout.write(len(resp))
+        # self.stdout.write(resp[0])
 
         for elem in resp:
             siae = Siae.objects.get(pk=elem["directory_id"])
             siae.networks.add(elem["network_id"])
 
-        print(f"Created {Siae.networks.through.objects.count()} M2M objects !")
+        self.stdout.write(f"Created {Siae.networks.through.objects.count()} M2M objects !")
 
     def migrate_sector(self, cur):
         """
@@ -333,7 +335,7 @@ class Command(BaseCommand):
         - the current implementation in Symphony is overly complex
         - we simplify it with a simple parent/child hierarchy
         """
-        print("Migrating Sector & SectorGroup...")
+        self.stdout.write("Migrating Sector & SectorGroup...")
 
         Sector.objects.all().delete()
         SectorGroup.objects.all().delete()
@@ -362,7 +364,7 @@ class Command(BaseCommand):
                     sector_group_index = len(sector_group_list) - 1
                 sector_group_list[sector_group_index]["children"].append(elem["id"])
 
-        # print(sector_group_list)
+        # self.stdout.write(sector_group_list)
 
         cur.execute("SELECT * FROM listing_category_translation")
         resp = cur.fetchall()
@@ -391,8 +393,8 @@ class Command(BaseCommand):
                     slug_fix = f"{elem_data['slug']}-{sector_group_dict['id']}"
                     Sector.objects.create(pk=sector_id, name=elem_data["name"], slug=slug_fix, group=sector_group)
 
-        print(f"Created {SectorGroup.objects.count()} sector groups !")
-        print(f"Created {Sector.objects.count()} sectors !")
+        self.stdout.write(f"Created {SectorGroup.objects.count()} sector groups !")
+        self.stdout.write(f"Created {Sector.objects.count()} sectors !")
 
     def migrate_siae_sector(self, cur):
         """
@@ -401,14 +403,14 @@ class Command(BaseCommand):
         Notes:
         - elem exemple: {'category_id': 270, 'listing_category_id': 8}
         """
-        print("Migrating M2M between Siae & Sector...")
+        self.stdout.write("Migrating M2M between Siae & Sector...")
 
         Siae.sectors.through.objects.all().delete()
 
         cur.execute("SELECT * FROM directory_listing_category")
         resp = cur.fetchall()
-        # print(len(resp))
-        # print(resp[0])
+        # self.stdout.write(len(resp))
+        # self.stdout.write(resp[0])
 
         # Sometimes Siaes are linked to a SectorGroup instead of a Sector.
         # We ignore these cases
@@ -417,29 +419,29 @@ class Command(BaseCommand):
                 siae = Siae.objects.get(pk=elem["directory_id"])
                 siae.sectors.add(elem["listing_category_id"])
             except:  # noqa
-                # print(elem)
+                # self.stdout.write(elem)
                 pass
 
-        print(f"Created {Siae.sectors.through.objects.count()} M2M objects !")
+        self.stdout.write(f"Created {Siae.sectors.through.objects.count()} M2M objects !")
 
     def migrate_siae_offer(self, cur):
         """
         Migrate SiaeOffer data
         """
-        print("Migrating SiaeOffer...")
+        self.stdout.write("Migrating SiaeOffer...")
 
         SiaeOffer.objects.all().delete()
 
         cur.execute("SELECT * FROM directory_offer")
         resp = cur.fetchall()
-        # print(len(resp))
-        # print(resp[0])
+        # self.stdout.write(len(resp))
+        # self.stdout.write(resp[0])
 
         # l = [elem["source"] for elem in resp]
-        # print(Counter(l))
+        # self.stdout.write(Counter(l))
 
         # elem = cur.fetchone()
-        # print(elem)
+        # self.stdout.write(elem)
 
         for elem in resp:
             # rename fields
@@ -455,26 +457,26 @@ class Command(BaseCommand):
             # create object
             SiaeOffer.objects.create(**elem)
 
-        print(f"Created {SiaeOffer.objects.count()} offers !")
+        self.stdout.write(f"Created {SiaeOffer.objects.count()} offers !")
 
     def migrate_siae_label(self, cur):
         """
         Migrate SiaeLabel data
         """
-        print("Migrating SiaeLabel...")
+        self.stdout.write("Migrating SiaeLabel...")
 
         SiaeLabel.objects.all().delete()
 
         cur.execute("SELECT * FROM directory_label")
         resp = cur.fetchall()
-        # print(len(resp))
-        # print(resp[0])
+        # self.stdout.write(len(resp))
+        # self.stdout.write(resp[0])
 
         # l = [elem["source"] for elem in resp]
-        # print(Counter(l))
+        # self.stdout.write(Counter(l))
 
         # elem = cur.fetchone()
-        # print(elem)
+        # self.stdout.write(elem)
 
         for elem in resp:
             # rename fields
@@ -490,26 +492,26 @@ class Command(BaseCommand):
             # create object
             SiaeLabel.objects.create(**elem)
 
-        print(f"Created {SiaeLabel.objects.count()} labels !")
+        self.stdout.write(f"Created {SiaeLabel.objects.count()} labels !")
 
     def migrate_siae_client_reference(self, cur):
         """
         Migrate SiaeClientReference data
         """
-        print("Migrating SiaeClientReference...")
+        self.stdout.write("Migrating SiaeClientReference...")
 
         SiaeClientReference.objects.all().delete()
 
         cur.execute("SELECT * FROM directory_client_image")
         resp = cur.fetchall()
-        # print(len(resp))
-        # print(resp[0])
+        # self.stdout.write(len(resp))
+        # self.stdout.write(resp[0])
 
         # l = [elem["position"] for elem in resp]
-        # print(Counter(l))
+        # self.stdout.write(Counter(l))
 
         # elem = cur.fetchone()
-        # print(elem)
+        # self.stdout.write(elem)
 
         for elem in resp:
             # cleanup dates
@@ -528,26 +530,26 @@ class Command(BaseCommand):
             # create object
             SiaeClientReference.objects.create(**elem)
 
-        print(f"Created {SiaeClientReference.objects.count()} client references !")
+        self.stdout.write(f"Created {SiaeClientReference.objects.count()} client references !")
 
     def migrate_user(self, cur):
         """
         Migrate User data
         """
-        print("Migrating User...")
+        self.stdout.write("Migrating User...")
 
         User.objects.filter(api_key__isnull=True).delete()
         reset_app_sql_sequences("users")
 
         cur.execute("SELECT * FROM user")
         resp = cur.fetchall()
-        # print(len(resp))
+        # self.stdout.write(len(resp))
 
         # s = set([elem["answer_delay"] for elem in resp])
-        # print(s)
+        # self.stdout.write(s)
 
         # elem = cur.fetchone()
-        # print(elem)
+        # self.stdout.write(elem)
 
         for elem in resp:
             # rename fields
@@ -592,9 +594,9 @@ class Command(BaseCommand):
                 try:
                     User.objects.create(**elem)
                 except Exception as e:
-                    print("a", e)
+                    self.stdout.write("a", e)
 
-        print(f"Created {User.objects.count()} users !")
+        self.stdout.write(f"Created {User.objects.count()} users !")
 
     def migrate_siae_user(self, cur):
         """
@@ -603,14 +605,14 @@ class Command(BaseCommand):
         Notes:
         - elem exemple: {'directory_id': 270, 'user_id': 471234844}
         """
-        print("Migrating M2M between Siae & User...")
+        self.stdout.write("Migrating M2M between Siae & User...")
 
         Siae.users.through.objects.all().delete()
 
         cur.execute("SELECT * FROM directory_user")
         resp = cur.fetchall()
-        # print(len(resp))
-        # print(resp[0])
+        # self.stdout.write(len(resp))
+        # self.stdout.write(resp[0])
 
         for elem in resp:
             try:
@@ -620,4 +622,28 @@ class Command(BaseCommand):
             except:  # noqa
                 pass
 
-        print(f"Created {Siae.users.through.objects.count()} M2M objects !")
+        self.stdout.write(f"Created {Siae.users.through.objects.count()} M2M objects !")
+
+    def update_siae_contact(self):
+        """
+        Update SIAE contact fields from user contact info.
+
+        Currently, contact info where taken from the first user.
+        We now store these fields directly on the SIAE.
+        """
+        self.stdout.write("-" * 80)
+        self.stdout.write("Updating Siae contact fields...")
+
+        for siae in Siae.objects.has_user():
+            # website was already an editable field in C4
+            siae.contact_website = siae.website
+
+            first_user = siae.users.order_by("c4_id").first()
+            siae.contact_email = first_user.email
+            siae.contact_phone = first_user.phone
+            siae.contact_first_name = first_user.first_name
+            siae.contact_last_name = first_user.last_name
+
+            siae.save()
+
+        self.stdout.write(f"Updated {Siae.objects.has_user().count()} SIAE !")
