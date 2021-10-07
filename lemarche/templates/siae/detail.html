@@ -32,16 +32,16 @@
 {% endblock %}
 
 {% block content %}
-<section class="pt-4 pt-lg-6 pb-6 pb-lg-8">
-    <div class="container container-max-lg">
+<section class="s-siae-03">
+    <div class="container">
         <div id="dir-profile" class="dir-profile-row row">
             <!-- contain the main content of the page -->
             <div id="content" class="col-12 col-md-8 listing-area">
                 <!-- profile-detail -->
-                <section class="profile-detail">
+                <article class="profile-detail">
                     <!-- First Row, company details -->
                     <!-- gallery-small -->
-                    <div id="user_profile" class="row mb-5 mb-md-6 align-items-start bg-white w-100 rounded-lg shadow-lg">
+                    <div id="user_profile" class="row mb-5 mb-md-6 align-items-start">
                         <div class="gallery-small slideshow col-12 col-lg-3">
                             <div class="slideset">
                                 {% if siae.images.count %}
@@ -99,7 +99,7 @@
                     </div>
                     <!-- Second Row, Company Details -->
                     <div class="row mb-3">
-                        <div class="col-sm-6 img-left mb-5 mb-md-7">
+                        <div class="col-sm-6 img-left mb-3 mb-md-5">
                             <div class="il-l">
                                 <img class="cell_icon" src="{% static 'img/prof_sectors.svg' %}" />
                             </div>
@@ -125,7 +125,7 @@
                             </div>
                         </div>
                         {% if siae.client_references.count %}
-                            <div class="col-sm-6 img-left mb-5 mb-md-7">
+                            <div class="col-sm-6 img-left mb-3 mb-md-5">
                                 <div class="il-l">
                                     <img class="cell_icon" src="{% static 'img/prof_images.svg' %}" />
                                 </div>
@@ -141,7 +141,7 @@
                     </div>
                     <!-- Third Row, Description -->
                     <div class="row">
-                        <div class="col-sm-12 img-left mb-5 mb-md-7">
+                        <div class="col-sm-12 img-left mb-3 mb-md-5">
                             <div class="il-l">
                                 <img class="cell_icon" src="{% static 'img/prof_discuss.svg' %}" />
                             </div>
@@ -160,7 +160,7 @@
                     <!-- Fourth Row -->
                     {% if siae.offers.count %}
                     <div class="row">
-                        <div class="col-sm-12 img-left mb-5 mb-md-7">
+                        <div class="col-sm-12 img-left mb-3 mb-md-5">
                             <div class="il-l">
                                 <img class="cell_icon" src="{% static 'img/prof_discuss.svg' %}" />
                             </div>
@@ -216,12 +216,12 @@
                         {% endif %}
                     </div>
                     {% endif %}
-                </section>
+                </article>
             </div>
 
             <!-- Sidebar -->
             <div class="col-12 col-md-4">
-                <aside id="sidebar" class="profile bg-white w-100 rounded-lg shadow-lg">
+                <aside id="sidebar" class="profile">
                     {% if not siae.website and not user %}
                     <div class="row mb-3 mb-md-6">
                         <div class="col-xs-5 col-sm-12 col-md-5 mb-3">
@@ -291,7 +291,6 @@
                 </aside>            
             </div>
         </div>
-
         <div class="row">
             <div class="col-12 mt-5 mb-6">
                 <small><sup>*</sup>source: <a href="https://entreprise.api.gouv.fr/" rel="nofollow" target="_blank">informations en provenance de https://entreprise.api.gouv.fr</a></small>
