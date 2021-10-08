@@ -36,7 +36,7 @@
     <div class="container">
         <div id="dir-profile" class="dir-profile-row row">
             <!-- contain the main content of the page -->
-            <div id="content" class="col-12 col-md-8 listing-area">
+            <div id="content" class="col-12 col-lg-8 listing-area">
                 <!-- profile-detail -->
                 <article class="profile-detail">
                     <!-- First Row, company details -->
@@ -220,7 +220,7 @@
             </div>
 
             <!-- Sidebar -->
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-lg-4">
                 <aside id="sidebar" class="profile">
                     {% if not siae.website and not user %}
                     <div class="row mb-3 mb-md-6">
@@ -234,13 +234,15 @@
                         </div>
                     </div>
                     {% endif %}
-                    <div class="profile_capsule">
+                    <div class="profile_capsule d-flex flex-column">
                         {% if siae.contact_website or siae.users.count %}
-                            <a href="#" id="show_data">
-                                <span class="prof_icon"><img src="{% static 'img/profile-ico-chevron.svg' %}" /></span>
+                        <div class="map_coordonnees order-2 order-lg-1">
+                            <button class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-3" type="button" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
                                 <span>Afficher les coordonnées</span>
-                            </a>
-                            <div id="the_data" style="display:none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-up"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 8l6 6H6z"/></svg>
+                            </button>
+                            <div class="collapse mb-lg-2" id="collapseCoordonnees">
                                 <ul class="deflist">
                                     {% if siae.contact_website %}
                                         <li>
@@ -274,19 +276,19 @@
                                     </li>
                                 </ul>
                             </div>
-                        <div class="separator mb-3 mb-md-6"></div>
-                        {% endif %}
+                        </div>
+                        {% endif %}                     
                         {% comment "hidden" %}
-                        <div class="map-holder mb-3 mb-md-7">
+                        <div class="map-holder mb-3 mb-lg-4 order-1 order-lg-2">
                             <div id="map-company" class="map-canvas"></div>
                         </div>
                         {% endcomment %}
-                        <div class="map_details">
-                            <div class="d-flex mb-3">
+                        <div class="map_details order-3">
+                            <div class="d-flex mb-2">
                                 <span class="prof_icon"><img src="{% static 'img/profile-ico-geo.svg' %}" /></span>
                                 <span>Situé à {{ siae.city }}</span>
                             </div>
-                            <div class="d-flex mb-3">
+                            <div class="d-flex mb-2">
                                 <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>
                                 <span>Intervient sur : TODO</span>
                             </div>
