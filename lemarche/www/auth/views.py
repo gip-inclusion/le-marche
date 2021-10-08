@@ -13,10 +13,12 @@ from lemarche.www.auth.tasks import send_signup_notification_email, send_welcome
 class LoginView(auth_views.LoginView):
     template_name = "auth/login.html"
     redirect_authenticated_user = True
-    # success_url = settings.LOGIN_REDIRECT_URL
+    # success_url = settings.LOGIN_REDIRECT_URL  # see get_success_url() below
 
     def get(self, request, *args, **kwargs):
+        """Check if there is any custom message to display."""
         message = request.GET.get("message", None)
+        # Users need to be logged in to download the search results in CSV
         if message == "login-to-download":
             messages.add_message(request, messages.INFO, "Vous devez être connecté pour télécharger la liste.")
         return super().get(request, *args, **kwargs)
@@ -37,12 +39,12 @@ class SignupView(SuccessMessageMixin, CreateView):
     template_name = "auth/signup.html"
     form_class = SignupForm
     success_url = reverse_lazy("pages:home")
-    success_message = "Inscription validée !"
+    success_message = "Inscription validée !"  # see get_success_message() below
 
     def form_valid(self, form):
         """
         - send a welcome email to the user
-        - send a notification email to the team
+        - send a notification email to the staff
         """
         user = form.save()
         send_welcome_email(user)
@@ -60,7 +62,7 @@ class SignupView(SuccessMessageMixin, CreateView):
 class PasswordResetView(auth_views.PasswordResetView):
     template_name = "auth/password_reset.html"
     form_class = PasswordResetForm
-    success_url = reverse_lazy("auth:password_reset_sent")
+    success_url = reverse_lazy("auth:password_reset_sent")  # see get_success_url() below
     email_template_name = "auth/password_reset_email_body.html"
     subject_template_name = "auth/password_reset_email_subject.txt"
 
