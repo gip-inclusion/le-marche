@@ -5,7 +5,7 @@ from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django.contrib.postgres.fields import ArrayField
-from django.db import models, IntegrityError, transaction
+from django.db import IntegrityError, models, transaction
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.text import slugify
@@ -301,9 +301,14 @@ class Siae(models.Model):
             self.set_slug()
             with transaction.atomic():
                 super().save(*args, **kwargs)
-        except IntegrityError:
-            self.set_slug(with_uuid=True)
-            super().save(*args, **kwargs)
+        except IntegrityError as e:
+            # check that it's a slug conflict
+            # Full message expected: duplicate key value violates unique constraint "siaes_siae_slug_0f0b821f_uniq" DETAIL:  Key (slug)=(...) already exists.  # noqa
+            if "siaes_siae_slug" in str(e):
+                self.set_slug(with_uuid=True)
+                super().save(*args, **kwargs)
+            else:
+                raise e
 
     @property
     def latitude(self):
