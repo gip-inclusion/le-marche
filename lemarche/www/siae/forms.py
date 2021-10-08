@@ -1,10 +1,11 @@
 from django import forms
-from django.db.models import Value
+from django.contrib.gis.db.models.functions import Distance
+from django.db.models import BooleanField, Case, Exists, OuterRef, Value, When
 from django.db.models.functions import NullIf
 
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
-from lemarche.siaes.models import Siae
+from lemarche.siaes.models import Siae, SiaeOffer
 from lemarche.utils.fields import GroupedModelChoiceField
 
 
@@ -56,7 +57,7 @@ class SiaeSearchForm(forms.Form):
             self.fields[field].widget.attrs.update({"class": "form-control"})
 
     def filter_queryset(self):
-        qs = Siae.objects.prefetch_related("sectors", "networks")
+        qs = Siae.objects.prefetch_related("sectors", "networks", "users")
 
         # we only display live Siae
         qs = qs.is_live()
@@ -115,7 +116,33 @@ class SiaeSearchForm(forms.Form):
         return qs
 
     def order_queryset(self, qs):
-        # perimeter = self.cleaned_data.get("perimeter", None)
-        # if perimeter:
-        qs = qs.order_by("name")
+        """
+        The siae are ordered by name.
+
+        **BUT**
+        - if a Siae has a a SiaeOffer > description > User, then it is "boosted"
+        - if the search is on a CITY perimeter, we order by coordinates
+        """
+        ORDER_BY_FIELDS = ["-has_offer", "-has_description", "-has_user", "name"]
+        # annotate on distance to siae if CITY searched
+        # TODO: avoid duplicate Perimeter query...
+        search_perimeter = self.cleaned_data.get("perimeter", None)
+        if search_perimeter:
+            perimeter = Perimeter.objects.get(slug=search_perimeter)
+            if perimeter and perimeter.kind == Perimeter.KIND_CITY:
+                qs = qs.annotate(distance=Distance("coords", perimeter.coords))
+                ORDER_BY_FIELDS = ["distance"] + ORDER_BY_FIELDS
+        # annotate on SiaeOffer FK exists
+        qs = qs.annotate(has_offer=Exists(SiaeOffer.objects.filter(siae_id=OuterRef("pk"))))
+        # annotate on description presence: https://stackoverflow.com/a/65014409/4293684
+        # qs = qs.annotate(has_description=Exists(F("description")))  # doesn't work
+        qs = qs.annotate(
+            has_description=Case(
+                When(description__gte=1, then=Value(True)), default=Value(False), output_field=BooleanField()
+            )
+        )
+        # annotation on User M2M exists: https://stackoverflow.com/a/58641475/4293684
+        qs = qs.annotate(has_user=Exists(Siae.users.through.objects.filter(siae_id=OuterRef("pk"))))
+        # final ordering
+        qs = qs.order_by(*ORDER_BY_FIELDS)
         return qs

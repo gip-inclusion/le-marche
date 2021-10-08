@@ -23,8 +23,28 @@ class SiaeQuerySet(models.QuerySet):
         return self.filter(Q(is_active=False) | Q(is_delisted=True))
 
     def has_user(self):
-        """Only return siaes who have at least 1 user."""
-        return self.filter(users__isnull=False)
+        """Only return siaes who have at least 1 User."""
+        return self.filter(users__isnull=False).distinct()
+
+    def has_sector(self):
+        """Only return siaes who have at least 1 Sector."""
+        return self.filter(sectors__isnull=False).distinct()
+
+    def has_network(self):
+        """Only return siaes who have at least 1 Network."""
+        return self.filter(networks__isnull=False).distinct()
+
+    def has_offer(self):
+        """Only return siaes who have at least 1 SiaeOffer."""
+        return self.filter(offers__isnull=False).distinct()
+
+    def has_label(self):
+        """Only return siaes who have at least 1 SiaeLabel."""
+        return self.filter(labels__isnull=False).distinct()
+
+    def has_client_reference(self):
+        """Only return siaes who have at least 1 SiaeClientReference."""
+        return self.filter(client_references__isnull=False).distinct()
 
     def in_region(self, **kwargs):
         if "region_name" in kwargs:
@@ -152,7 +172,7 @@ class Siae(models.Model):
     REGION_CHOICES = REGIONS_PRETTY.items()
     GEO_RANGE_COUNTRY = "COUNTRY"  # 3
     GEO_RANGE_REGION = "REGION"  # 2
-    GEO_RANGE_DEPARTMENT = "DEPARTMENT"  # 1
+    GEO_RANGE_DEPARTMENT = GEO_RANGE_DEPARTMENT  # 1
     GEO_RANGE_CUSTOM = GEO_RANGE_CUSTOM  # 0
     GEO_RANGE_CHOICES = (
         (GEO_RANGE_COUNTRY, "France entière"),
@@ -216,13 +236,13 @@ class Siae(models.Model):
     admin_name = models.CharField(max_length=255, blank=True, null=True)
     admin_email = models.EmailField(max_length=255, blank=True, null=True)
 
+    users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, verbose_name="Gestionnaires", related_name="siaes", blank=True
+    )
     sectors = models.ManyToManyField(
         "sectors.Sector", verbose_name="Secteurs d'activité", related_name="siaes", blank=True
     )
     networks = models.ManyToManyField("networks.Network", verbose_name="Réseaux", related_name="siaes", blank=True)
-    users = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, verbose_name="Gestionnaires", related_name="siaes", blank=True
-    )
     # ForeignKeys: offers, labels, client_references
 
     is_qpv = models.BooleanField(verbose_name="Zone QPV", blank=False, null=False, default=False)

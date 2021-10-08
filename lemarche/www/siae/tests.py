@@ -1,17 +1,19 @@
 from django.contrib.gis.geos import Point
 from django.test import TestCase
+from django.urls import reverse
 
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
-from lemarche.siaes.factories import SiaeFactory
+from lemarche.siaes.factories import SiaeFactory, SiaeOfferFactory
 from lemarche.siaes.models import Siae
+from lemarche.users.factories import UserFactory
 from lemarche.www.siae.forms import SiaeSearchForm
 
 
-class SiaeSearchTest(TestCase):
+class SiaePerimeterSearchFilterTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        # create 3 perimeters
+        # create the Perimeters
         PerimeterFactory(
             name="Grenoble",
             kind=Perimeter.KIND_CITY,
@@ -30,7 +32,7 @@ class SiaeSearchTest(TestCase):
         )
         PerimeterFactory(name="Isère", kind=Perimeter.KIND_DEPARTMENT, insee_code="38", region_code="84")
         PerimeterFactory(name="Auvergne-Rhône-Alpes", kind=Perimeter.KIND_REGION, insee_code="R84")
-        # create the SIAE
+        # create the Siaes
         SiaeFactory(city="Grenoble", department="38", region="Auvergne-Rhône-Alpes", geo_range=Siae.GEO_RANGE_COUNTRY)
         SiaeFactory(city="Grenoble", department="38", region="Auvergne-Rhône-Alpes", geo_range=Siae.GEO_RANGE_REGION)
         SiaeFactory(
@@ -119,3 +121,90 @@ class SiaeSearchTest(TestCase):
         form = SiaeSearchForm({"perimeter": "chamrousse-38"})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 1 + 1)
+
+
+class SiaeSearchOrderTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        SiaeFactory(name="Ma boite")
+        SiaeFactory(name="Une autre structure")
+        SiaeFactory(name="ABC Insertion")
+
+    def test_should_order_by_name(self):
+        url = reverse("siae:search_results", kwargs={})
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 3)
+        self.assertEqual(siaes[0].name, "ABC Insertion")
+        self.assertEqual(siaes[-1].name, "Une autre structure")
+
+    def test_should_bring_the_siae_with_users_to_the_top(self):
+        siae_with_user = SiaeFactory(name="ZZ ESI")
+        user = UserFactory()
+        siae_with_user.users.add(user)
+        url = reverse("siae:search_results", kwargs={})
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 3 + 1)
+        self.assertEqual(siaes[0].has_user, True)
+        self.assertEqual(siaes[0].name, "ZZ ESI")
+        self.assertEqual(siaes[1].name, "ABC Insertion")
+
+    def test_should_bring_the_siae_with_descriptions_to_the_top(self):
+        SiaeFactory(name="ZZ ESI 2", description="coucou")
+        url = reverse("siae:search_results", kwargs={})
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 3 + 1)
+        self.assertEqual(siaes[0].has_description, True)
+        self.assertEqual(siaes[0].name, "ZZ ESI 2")
+        self.assertEqual(siaes[1].name, "ABC Insertion")
+
+    def test_should_bring_the_siae_with_offers_to_the_top(self):
+        siae_with_offer = SiaeFactory(name="ZZ ESI 3")
+        SiaeOfferFactory(siae=siae_with_offer)
+        url = reverse("siae:search_results", kwargs={})
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 3 + 1)
+        self.assertEqual(siaes[0].has_offer, True)
+        self.assertEqual(siaes[0].name, "ZZ ESI 3")
+        self.assertEqual(siaes[1].name, "ABC Insertion")
+
+    def test_should_bring_the_siae_closer_to_the_city_to_the_top(self):
+        PerimeterFactory(
+            name="Grenoble",
+            kind=Perimeter.KIND_CITY,
+            insee_code="38185",
+            department_code="38",
+            region_code="84",
+            coords=Point(5.7301, 45.1825),
+        )
+        SiaeFactory(
+            name="ZZ GEO Pontcharra",
+            department="38",
+            geo_range=Siae.GEO_RANGE_DEPARTMENT,
+            coords=Point(6.0271, 45.4144),
+        )
+        SiaeFactory(
+            name="ZZ GEO La Tronche",
+            department="38",
+            geo_range=Siae.GEO_RANGE_CUSTOM,
+            geo_range_custom_distance=10,
+            coords=Point(5.746, 45.2124),
+        )
+        SiaeFactory(
+            name="ZZ GEO Grenoble",
+            department="38",
+            geo_range=Siae.GEO_RANGE_CUSTOM,
+            geo_range_custom_distance=10,
+            coords=Point(5.7301, 45.1825),
+        )
+        url = f"{reverse('siae:search_results')}?perimeter=grenoble-38"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 3)
+        self.assertEqual(siaes[0].distance.km, 0)
+        self.assertEqual(siaes[0].name, "ZZ GEO Grenoble")
+        self.assertEqual(siaes[1].name, "ZZ GEO La Tronche")
+        self.assertEqual(siaes[2].name, "ZZ GEO Pontcharra")
