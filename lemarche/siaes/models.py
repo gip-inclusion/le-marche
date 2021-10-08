@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
+from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -8,6 +9,10 @@ from django.utils import timezone
 
 from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY, get_department_code_from_name
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
+
+
+GEO_RANGE_DEPARTMENT = "DEPARTMENT"
+GEO_RANGE_CUSTOM = "CUSTOM"
 
 
 class SiaeQuerySet(models.QuerySet):
@@ -22,21 +27,41 @@ class SiaeQuerySet(models.QuerySet):
         return self.filter(users__isnull=False)
 
     def in_region(self, **kwargs):
-        if "name" in kwargs:
-            return self.filter(region=kwargs["name"])
-        if "code" in kwargs:
-            code_clean = kwargs["code"].strip("R")  # "R" ? see Perimeter model & import_region.py
+        if "region_name" in kwargs:
+            return self.filter(region=kwargs["region_name"])
+        if "region_code" in kwargs:
+            code_clean = kwargs["region_code"].strip("R")  # "R" ? see Perimeter model & import_region.py
             region_name = REGIONS.get(code_clean)
             return self.filter(region=region_name)
 
     def in_department(self, **kwargs):
-        if "name" in kwargs:
-            department_code = get_department_code_from_name(kwargs["name"])
+        if "depatment_name" in kwargs:
+            department_code = get_department_code_from_name(kwargs["depatment_name"])
             return self.filter(department=department_code)
-        if "code" in kwargs:
-            return self.filter(department=kwargs["code"])
+        if "department_code" in kwargs:
+            return self.filter(department=kwargs["department_code"])
 
-    def within(self, point, distance_km):
+    def in_range_of_point(self, **kwargs):
+        if "city_coords" in kwargs:
+            # Doesn't work..
+            # return self.filter(Q(geo_range=GEO_RANGE_CUSTOM) & Q(coords__dwithin=(kwargs["city_coords"], D(km=F("geo_range_custom_distance")))))  # noqa
+            # Distance returns a number in meters. But geo_range_custom_distance is stored in km. So we divide by 1000  # noqa
+            return self.filter(
+                Q(geo_range=GEO_RANGE_CUSTOM)
+                & Q(geo_range_custom_distance__lte=Distance("coords", kwargs["city_coords"]) / 1000)
+            )
+
+    def in_range_of_point_or_in_department(self, **kwargs):
+        if "city_coords" in kwargs and "department_code" in kwargs:
+            return self.filter(
+                (
+                    Q(geo_range=GEO_RANGE_CUSTOM)
+                    & Q(geo_range_custom_distance__gte=Distance("coords", kwargs["city_coords"]) / 1000)
+                )
+                | ((Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=kwargs["department_code"])))
+            )
+
+    def within(self, point, distance_km=0):
         return self.filter(coords__dwithin=(point, D(km=distance_km)))
 
 
@@ -128,7 +153,7 @@ class Siae(models.Model):
     GEO_RANGE_COUNTRY = "COUNTRY"  # 3
     GEO_RANGE_REGION = "REGION"  # 2
     GEO_RANGE_DEPARTMENT = "DEPARTMENT"  # 1
-    GEO_RANGE_CUSTOM = "CUSTOM"  # 0
+    GEO_RANGE_CUSTOM = GEO_RANGE_CUSTOM  # 0
     GEO_RANGE_CHOICES = (
         (GEO_RANGE_COUNTRY, "France entière"),
         (GEO_RANGE_REGION, "Région"),

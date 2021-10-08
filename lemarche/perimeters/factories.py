@@ -9,4 +9,5 @@ class PerimeterFactory(DjangoModelFactory):
         model = Perimeter
 
     name = factory.Faker("name")
+    # slug auto-generated
     kind = Perimeter.KIND_CITY

@@ -82,21 +82,33 @@ class SiaeSearchForm(forms.Form):
 
         return qs
 
-    def perimeter_filter(self, qs, search_perimeter):
+    def perimeter_filter(self, qs, search_perimeter, add_department_to_city_search=True):
         """
         The search_perimeter should be a Perimeter slug.
         Depending on the type of Perimeter that was chosen, different cases arise:
-        - CITY: return only the Siae with a perimeter radius that overlaps with the city
-        - DEPARTMENT: return only the Siae in this department
-        - REGION: return only the Siae in this region
+
+        **CITY**
+        return the Siae with geo_range=GEO_RANGE_CUSTOM and a perimeter radius that overlaps with the search_perimeter
+        OR the Siae with geo_range=GEO_RANGE_DEPARTMENT and a department equal to the search_perimeter's
+
+        **DEPARTMENT**
+        return only the Siae in this department
+
+        **REGION**
+        return only the Siae in this region
         """
         perimeter = Perimeter.objects.get(slug=search_perimeter)
         if perimeter.kind == Perimeter.KIND_CITY:
-            qs = qs.within(perimeter.coords, 50)
+            if not add_department_to_city_search:
+                qs = qs.in_range_of_point(city_coords=perimeter.coords)
+            else:
+                qs = qs.in_range_of_point_or_in_department(
+                    city_coords=perimeter.coords, department_code=perimeter.department_code
+                )
         elif perimeter.kind == Perimeter.KIND_DEPARTMENT:
-            qs = qs.in_department(code=perimeter.insee_code)
+            qs = qs.in_department(department_code=perimeter.insee_code)
         elif perimeter.kind == Perimeter.KIND_REGION:
-            qs = qs.in_region(name=perimeter.name)
+            qs = qs.in_region(region_name=perimeter.name)
         else:
             # unknown perimeter kind, don't filter
             pass
