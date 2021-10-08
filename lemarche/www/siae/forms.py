@@ -117,11 +117,11 @@ class SiaeSearchForm(forms.Form):
 
     def order_queryset(self, qs):
         """
-        The siae are ordered by name.
+        The Siae are ordered by name.
 
         **BUT**
-        - if a Siae has a a SiaeOffer > description > User, then it is "boosted"
-        - if the search is on a CITY perimeter, we order by coordinates
+        - if a Siae has a a SiaeOffer, or a description, or a User, then it is "boosted"
+        - if the search is on a CITY perimeter, we order by coordinates first
         """
         ORDER_BY_FIELDS = ["-has_offer", "-has_description", "-has_user", "name"]
         # annotate on distance to siae if CITY searched

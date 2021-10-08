@@ -203,10 +203,13 @@ class Siae(models.Model):
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True, null=True)
     address = models.TextField(verbose_name="Adresse")
     city = models.CharField(verbose_name="Ville", max_length=255, blank=True, null=True)
+    # department is a code
     department = models.CharField(
         verbose_name="Département", max_length=255, choices=DEPARTMENT_CHOICES, blank=True, null=True
     )
+    # region is a name
     region = models.CharField(verbose_name="Région", max_length=255, choices=REGION_CHOICES, blank=True, null=True)
+    # post_code or insee_code ?
     post_code = models.CharField(
         verbose_name="Code Postal", validators=[validate_post_code], max_length=5, blank=True, null=True
     )
@@ -297,6 +300,32 @@ class Siae(models.Model):
         if self.contact_first_name and self.contact_last_name:
             return f"{self.contact_first_name.upper()[:1]}. {self.contact_last_name.upper()}"
         return ""
+
+    @property
+    def geo_range_pretty_display(self):
+        if self.geo_range == Siae.GEO_RANGE_COUNTRY:
+            return self.get_geo_range_display()
+        elif self.geo_range == Siae.GEO_RANGE_REGION:
+            return f"{self.get_geo_range_display().lower()} ({self.region})"
+        elif self.geo_range == Siae.GEO_RANGE_DEPARTMENT:
+            return f"{self.get_geo_range_display().lower()} ({self.department})"
+        elif self.geo_range == Siae.GEO_RANGE_CUSTOM:
+            if self.geo_range_custom_distance:
+                return f"{self.geo_range_custom_distance} km"
+        return "non disponible"
+
+    @property
+    def geo_range_pretty_title(self):
+        if self.geo_range == Siae.GEO_RANGE_COUNTRY:
+            return self.geo_range_pretty_display
+        elif self.geo_range == Siae.GEO_RANGE_REGION:
+            return self.region
+        elif self.geo_range == Siae.GEO_RANGE_DEPARTMENT:
+            return self.get_department_display()
+        elif self.geo_range == Siae.GEO_RANGE_CUSTOM:
+            if self.geo_range_custom_distance:
+                return f"{self.geo_range_pretty_display} de {self.city}"
+        return self.geo_range_pretty_display
 
     def sectors_list_to_string(self):
         return ", ".join(self.sectors.all().values_list("name", flat=True))
