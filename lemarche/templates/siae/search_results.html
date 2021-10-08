@@ -21,8 +21,6 @@
 {% endblock %}
 
 {% block content %}
-
-
 <section class="s-siae-01">
     <div class="container">
         <div id="dir_form" class="dir_form">
@@ -230,5 +228,62 @@
         </div>
     </div>
 </section>
+{% endblock %}
 
+{% block modal %}
+<div class="modal fade modal-siae" id="user_modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="z-index:3000">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <strong class="title">
+                    Plus de {{ paginator.count }} prestataires inclusifs répondent à votre recherche.
+                </strong>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body home-content-body">
+                <p class="mt-2">Pour accéder aux résultats, dites-nous si vous êtes :
+                <ul style="padding-left:0;list-style:none;">
+                    <li><a href="#" data-usr="buyer" class="btn btn-outline-primary btn-block mb-2" style="text-align:left;">Une entreprise ou une institution qui souhaite augmenter ses achats inclusifs</a></li>
+                    <li><a href="#" data-usr="siae" class="btn btn-outline-primary btn-block mb-2" style="text-align:left;">Une structure d’insertion ou du handicap</a></li>
+                    <li><a href="#" data-usr="actor" class="btn btn-outline-primary btn-block mb-2" style="text-align:left;">Un acteur de l’inclusion (facilitateurs, réseaux...)</a></li>
+                </ul>
+            </div>
+            {# <div class="modal-footer"></div> #}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const COOKIE_NAME = 'leMarcheTypeUsagerV2';
+        $(document).on('shown.bs.modal', '.modal', function () {
+            $('.modal-backdrop').before($(this));
+        });
+
+        // Set listings markers on load
+        // TODO
+
+        // if (true) {
+        if (!document.cookie.split('; ').find(row => row.startsWith(COOKIE_NAME))) {
+            var modal = $("#user_modal");
+            modal.find('.close').remove();
+            modal.modal('show');
+
+            modal.find('a').on('click', (e) => {
+                // Only set cookie if button clicked
+                let type = $(e.target).data('usr');
+                document.cookie = `${COOKIE_NAME}=${type}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
+
+                if (typeof track === "function") {
+                    track('', Steps.USER_TYPE, {'type': type});
+                }
+                modal.modal('hide');
+            })
+        }
+    });
+</script>
 {% endblock %}
