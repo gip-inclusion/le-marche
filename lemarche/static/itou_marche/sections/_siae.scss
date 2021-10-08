@@ -396,15 +396,16 @@
 
 .deflist {
     padding: 0;
+		margin: 0;
     list-style: none;
 
     li {
         display: flex;
-        padding-bottom:10px;
+        padding-bottom: 8px;
     }
 
     .prof_icon {
-        min-width: 30px
+      min-width: 30px
 	}
 }
 
@@ -428,7 +429,7 @@
 
 	.profile_capsule {
 			background-color:#fff;
-			padding: 2rem 1rem;
+			padding: 1rem;
 			box-shadow: 0 2px 9px 0 rgba(56,56,56,.1) !important;
 	}
 
@@ -439,11 +440,6 @@
 	.profile .btn-link:hover i::before,
 	.profile .btn-link.is-active i::before {
 			content:'\e81f';
-	}
-
-	.profile_capsule .separator {
-		border-bottom:5px solid $marche;
-		border-radius:4px;
 	}
 
 	.profile_capsule h3 {
@@ -481,7 +477,7 @@
 
 	.map_capsule .deflist,
 	.profile_capsule .deflist {
-			padding: 0 0 0 0rem;
+			padding: 0;
 	}
 
 	.map_capsule {
@@ -503,11 +499,34 @@
 		}
 	}
 
+	.map_coordonnees__btn {
+
+		&[aria-expanded="false"] {
+			#map_coordonnees__ico-up {
+				display: none;
+			}
+
+			#map_coordonnees__ico-down {
+				display: inline;
+			}
+		}
+
+		&[aria-expanded="true"] {
+			#map_coordonnees__ico-up {
+				display: inline;
+			}
+
+			#map_coordonnees__ico-down {
+				display: none;
+			}
+		}		
+	}
+
+
 	#sidebar .map-holder {
 			height:225px;
 			width:100%;
 			top:10px;
-			border-radius:4px;
 	}
 
 	.profile-detail {
