@@ -107,6 +107,18 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
                 )
             },
         ),
+        (
+            "Contact",
+            {
+                "fields": (
+                    "contact_first_name",
+                    "contact_last_name",
+                    "contact_email",
+                    "contact_phone",
+                    "contact_website",
+                )
+            },
+        ),
         ("Autres", {"fields": ("created_at", "updated_at")}),
     ]
 

@@ -2,8 +2,9 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.urls import reverse
 from django.utils.html import format_html
-from lemarche.users.models import User
+
 from lemarche.users.forms import UserChangeForm, UserCreationForm
+from lemarche.users.models import User
 
 
 class SiaeAdminFilter(admin.SimpleListFilter):
@@ -52,6 +53,7 @@ class UserAdmin(UserAdmin):
     search_fields = ["id", "email"]
     ordering = ["-created_at"]
 
+    # autocomplete_fields = ["siaes"]
     readonly_fields = [field.name for field in User._meta.fields if field.name.startswith("c4_")] + [
         "siae_admin_list",
         "last_login",
@@ -80,11 +82,17 @@ class UserAdmin(UserAdmin):
                 )
             },
         ),
-        ("Structures", {"fields": ("siae_admin_list",)}),
+        (
+            "Structures",
+            {
+                "description": "Ajouter l'utilisateur à une nouvelle structure ? Possible en se rendant sur la fiche de la structure.",  # noqa
+                "fields": ("siae_admin_list",),
+            },
+        ),
         ("API", {"fields": ("api_key",)}),
         ("Permissions", {"fields": ("is_active", "is_staff", "groups")}),
         (
-            "Données C4 Symphony",
+            "Données C4 Cocorico",
             {
                 "fields": (
                     "c4_id",
