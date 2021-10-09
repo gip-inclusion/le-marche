@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404, HttpResponsePermanentRedirect
 from django.urls import reverse_lazy
@@ -14,6 +15,14 @@ from lemarche.www.siae.forms import SiaeSearchForm
 class HomeView(FormMixin, TemplateView):
     template_name = "pages/home.html"
     form_class = SiaeSearchForm
+
+    def get(self, request, *args, **kwargs):
+        """Check if there is any custom message to display."""
+        message = request.GET.get("message", None)
+        # On newsletter subscription success, users will be redirected to our website + show them a short message
+        if message == "newsletter-success":
+            messages.add_message(request, messages.INFO, "Merci de votre inscription à notre newsletter !")
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """
