@@ -31,7 +31,11 @@ class SiaeSearchForm(forms.Form):
         required=False,
         widget=forms.Select(attrs={"style": "width:100%"}),
     )
-    perimeter = forms.CharField(
+    # The hidden `perimeter` field is populated by the autocomplete JavaScript mechanism,
+    # see `perimeter_autocomplete_field.js`.
+    perimeter = forms.CharField(widget=forms.HiddenInput())
+    # Most of the field will be overriden by the autocomplete mechanism
+    perimeter_name = forms.CharField(
         label="Lieu d'intervention",
         required=False,
         widget=forms.TextInput(
@@ -98,7 +102,12 @@ class SiaeSearchForm(forms.Form):
         **REGION**
         return only the Siae in this region
         """
-        perimeter = Perimeter.objects.get(slug=search_perimeter)
+        try:
+            perimeter = Perimeter.objects.get(slug=search_perimeter)
+        except Perimeter.DoesNotExist:
+            perimeter = None
+            return qs
+
         if perimeter.kind == Perimeter.KIND_CITY:
             if not add_department_to_city_search:
                 qs = qs.in_range_of_point(city_coords=perimeter.coords)
