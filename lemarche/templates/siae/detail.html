@@ -288,9 +288,9 @@
                                 <span class="prof_icon"><img src="{% static 'img/profile-ico-geo.svg' %}" /></span>
                                 <span>Situé à {{ siae.city }}</span>
                             </div>
-                            <div class="d-flex mb-2">
+                            <div class="d-flex mb-2" title="{{ siae.geo_range_pretty_title }}">
                                 <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>
-                                <span>Intervient sur : TODO</span>
+                                <span>Intervient sur : {{ siae.geo_range_pretty_display }}</span>
                             </div>
                         </div>
                     </div>

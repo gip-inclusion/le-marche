@@ -9,7 +9,7 @@ class PerimeterAdmin(admin.ModelAdmin):
     list_filter = ["kind", "region_code", "department_code"]
     search_fields = ["id", "name", "insee_code"]
 
-    readonly_fields = [f.name for f in Perimeter._meta.fields]
+    readonly_fields = [field.name for field in Perimeter._meta.fields]
 
     def has_add_permission(self, request):
         return False

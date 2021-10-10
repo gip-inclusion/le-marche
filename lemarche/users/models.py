@@ -11,7 +11,7 @@ class UserQueryset(models.QuerySet):
 
     def siae_admins(self):
         """Only return users who are linked to a SIAE."""
-        return self.filter(siaes__isnull=False)
+        return self.filter(siaes__isnull=False).distinct()
 
     def with_api_key(self):
         """Only return users with an API Key."""

@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
+from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -10,6 +11,10 @@ from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
 
 
+GEO_RANGE_DEPARTMENT = "DEPARTMENT"
+GEO_RANGE_CUSTOM = "CUSTOM"
+
+
 class SiaeQuerySet(models.QuerySet):
     def is_live(self):
         return self.filter(is_active=True).filter(is_delisted=False)
@@ -18,25 +23,65 @@ class SiaeQuerySet(models.QuerySet):
         return self.filter(Q(is_active=False) | Q(is_delisted=True))
 
     def has_user(self):
-        """Only return siaes who have at least 1 user."""
-        return self.filter(users__isnull=False)
+        """Only return siaes who have at least 1 User."""
+        return self.filter(users__isnull=False).distinct()
+
+    def has_sector(self):
+        """Only return siaes who have at least 1 Sector."""
+        return self.filter(sectors__isnull=False).distinct()
+
+    def has_network(self):
+        """Only return siaes who have at least 1 Network."""
+        return self.filter(networks__isnull=False).distinct()
+
+    def has_offer(self):
+        """Only return siaes who have at least 1 SiaeOffer."""
+        return self.filter(offers__isnull=False).distinct()
+
+    def has_label(self):
+        """Only return siaes who have at least 1 SiaeLabel."""
+        return self.filter(labels__isnull=False).distinct()
+
+    def has_client_reference(self):
+        """Only return siaes who have at least 1 SiaeClientReference."""
+        return self.filter(client_references__isnull=False).distinct()
 
     def in_region(self, **kwargs):
-        if "name" in kwargs:
-            return self.filter(region=kwargs["name"])
-        if "code" in kwargs:
-            code_clean = kwargs["code"].strip("R")  # "R" ? see Perimeter model & import_region.py
+        if "region_name" in kwargs:
+            return self.filter(region=kwargs["region_name"])
+        if "region_code" in kwargs:
+            code_clean = kwargs["region_code"].strip("R")  # "R" ? see Perimeter model & import_region.py
             region_name = REGIONS.get(code_clean)
             return self.filter(region=region_name)
 
     def in_department(self, **kwargs):
-        if "name" in kwargs:
-            department_code = get_department_code_from_name(kwargs["name"])
+        if "depatment_name" in kwargs:
+            department_code = get_department_code_from_name(kwargs["depatment_name"])
             return self.filter(department=department_code)
-        if "code" in kwargs:
-            return self.filter(department=kwargs["code"])
+        if "department_code" in kwargs:
+            return self.filter(department=kwargs["department_code"])
 
-    def within(self, point, distance_km):
+    def in_range_of_point(self, **kwargs):
+        if "city_coords" in kwargs:
+            # Doesn't work..
+            # return self.filter(Q(geo_range=GEO_RANGE_CUSTOM) & Q(coords__dwithin=(kwargs["city_coords"], D(km=F("geo_range_custom_distance")))))  # noqa
+            # Distance returns a number in meters. But geo_range_custom_distance is stored in km. So we divide by 1000  # noqa
+            return self.filter(
+                Q(geo_range=GEO_RANGE_CUSTOM)
+                & Q(geo_range_custom_distance__lte=Distance("coords", kwargs["city_coords"]) / 1000)
+            )
+
+    def in_range_of_point_or_in_department(self, **kwargs):
+        if "city_coords" in kwargs and "department_code" in kwargs:
+            return self.filter(
+                (
+                    Q(geo_range=GEO_RANGE_CUSTOM)
+                    & Q(geo_range_custom_distance__gte=Distance("coords", kwargs["city_coords"]) / 1000)
+                )
+                | ((Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=kwargs["department_code"])))
+            )
+
+    def within(self, point, distance_km=0):
         return self.filter(coords__dwithin=(point, D(km=distance_km)))
 
 
@@ -127,8 +172,8 @@ class Siae(models.Model):
     REGION_CHOICES = REGIONS_PRETTY.items()
     GEO_RANGE_COUNTRY = "COUNTRY"  # 3
     GEO_RANGE_REGION = "REGION"  # 2
-    GEO_RANGE_DEPARTMENT = "DEPARTMENT"  # 1
-    GEO_RANGE_CUSTOM = "CUSTOM"  # 0
+    GEO_RANGE_DEPARTMENT = GEO_RANGE_DEPARTMENT  # 1
+    GEO_RANGE_CUSTOM = GEO_RANGE_CUSTOM  # 0
     GEO_RANGE_CHOICES = (
         (GEO_RANGE_COUNTRY, "France entière"),
         (GEO_RANGE_REGION, "Région"),
@@ -158,10 +203,13 @@ class Siae(models.Model):
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True, null=True)
     address = models.TextField(verbose_name="Adresse")
     city = models.CharField(verbose_name="Ville", max_length=255, blank=True, null=True)
+    # department is a code
     department = models.CharField(
         verbose_name="Département", max_length=255, choices=DEPARTMENT_CHOICES, blank=True, null=True
     )
+    # region is a name
     region = models.CharField(verbose_name="Région", max_length=255, choices=REGION_CHOICES, blank=True, null=True)
+    # post_code or insee_code ?
     post_code = models.CharField(
         verbose_name="Code Postal", validators=[validate_post_code], max_length=5, blank=True, null=True
     )
@@ -191,13 +239,13 @@ class Siae(models.Model):
     admin_name = models.CharField(max_length=255, blank=True, null=True)
     admin_email = models.EmailField(max_length=255, blank=True, null=True)
 
+    users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, verbose_name="Gestionnaires", related_name="siaes", blank=True
+    )
     sectors = models.ManyToManyField(
         "sectors.Sector", verbose_name="Secteurs d'activité", related_name="siaes", blank=True
     )
     networks = models.ManyToManyField("networks.Network", verbose_name="Réseaux", related_name="siaes", blank=True)
-    users = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, verbose_name="Gestionnaires", related_name="siaes", blank=True
-    )
     # ForeignKeys: offers, labels, client_references
 
     is_qpv = models.BooleanField(verbose_name="Zone QPV", blank=False, null=False, default=False)
@@ -252,6 +300,32 @@ class Siae(models.Model):
         if self.contact_first_name and self.contact_last_name:
             return f"{self.contact_first_name.upper()[:1]}. {self.contact_last_name.upper()}"
         return ""
+
+    @property
+    def geo_range_pretty_display(self):
+        if self.geo_range == Siae.GEO_RANGE_COUNTRY:
+            return self.get_geo_range_display()
+        elif self.geo_range == Siae.GEO_RANGE_REGION:
+            return f"{self.get_geo_range_display().lower()} ({self.region})"
+        elif self.geo_range == Siae.GEO_RANGE_DEPARTMENT:
+            return f"{self.get_geo_range_display().lower()} ({self.department})"
+        elif self.geo_range == Siae.GEO_RANGE_CUSTOM:
+            if self.geo_range_custom_distance:
+                return f"{self.geo_range_custom_distance} km"
+        return "non disponible"
+
+    @property
+    def geo_range_pretty_title(self):
+        if self.geo_range == Siae.GEO_RANGE_COUNTRY:
+            return self.geo_range_pretty_display
+        elif self.geo_range == Siae.GEO_RANGE_REGION:
+            return self.region
+        elif self.geo_range == Siae.GEO_RANGE_DEPARTMENT:
+            return self.get_department_display()
+        elif self.geo_range == Siae.GEO_RANGE_CUSTOM:
+            if self.geo_range_custom_distance:
+                return f"{self.geo_range_pretty_display} de {self.city}"
+        return self.geo_range_pretty_display
 
     def sectors_list_to_string(self):
         return ", ".join(self.sectors.all().values_list("name", flat=True))
