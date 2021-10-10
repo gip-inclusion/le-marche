@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
 
-  const autocompletePerimeterInput = document.getElementById('id_perimeter_name');
-  const hiddenPerimeterInput = document.getElementById('id_perimeter');
+  let perimeterNameInput = document.getElementById('id_perimeter_name');  // autocomplete
+  let perimeterInput = document.getElementById('id_perimeter');  // hidden
 
   // check if there is an initial value for the autocomplete
   const urlParams = new URLSearchParams(window.location.search);
@@ -53,10 +53,13 @@ document.addEventListener("DOMContentLoaded", function() {
     // reconstruct resultName & resultKind from the result string
     if (typeof result === 'string') {
       resultName = result.substring(0, result.lastIndexOf(' '));
-      resultKind = result.substring(result.lastIndexOf(' ') + 2, result.length - 1);
+      resultKind = result.includes('(') ? result.substring(result.lastIndexOf(' ') + 2, result.length - 1) : '';
     }
 
-    const nameWithKind = '<strong>' + resultName + '</strong>' + ' <small>(' + resultKind + ')</small>'
+    let nameWithKind = '<strong>' + resultName + '</strong>';
+    if (resultKind) {
+      nameWithKind += ' <small>(' + resultKind + ')</small>';
+    }
     return result && nameWithKind;
   }
 
@@ -70,14 +73,17 @@ document.addEventListener("DOMContentLoaded", function() {
     // we want to avoid clicks outside that return 'undefined'
     if (result) {
       if (typeof result === 'object') {
-        hiddenPerimeterInput.value = result.slug;
+        perimeterInput.value = result.slug;
       }
-
       // // Edge case: if there is an initial value and it is selected again (!)  // commented out because the hidden input value is already set, no need to re-set it
       // if (typeof result === 'string') {
-      //   hiddenPerimeterInput.value = perimeterParamInitial;
+      //   perimeterInput.value = perimeterParamInitial;
       // }
     }
+  }
+
+  function resetInputValueHiddenField() {
+    perimeterInput.value = '';
   }
   
   // https://github.com/alphagov/accessible-autocomplete
@@ -88,24 +94,34 @@ document.addEventListener("DOMContentLoaded", function() {
     placeholder: 'Autour de (Arras, Bobigny, Strasbourg…)',
     minLength: 2,
     defaultValue: perimeterNameParamInitial,
-    source: async (query, populateResults) => {
+    source: async (query, populateResults) => {  // TODO; use debounce ?
       const res = await fetchSource(query);
       populateResults(res);
+      // we also reset the inputValueHiddenField because the perimeter hasn't been chosen yet (will happen with onConfirm)
+      resetInputValueHiddenField();
     },
-    // source: debounce(async (query, populateResults) => {
-    //   const res = await fetchSource(query);
-    //   populateResults(res);
-    // }, 150),
     displayMenu: 'overlay',
     templates: {
       inputValue: inputValue,  // returns the string value to be inserted into the input
       suggestion: suggestion,  // used when rendering suggestions, and should return a string, which can contain HTML
     },
+    // autoselect: true,
     onConfirm: (confirmed) => {
       inputValueHiddenField(confirmed);
     },
     showNoOptionsFound: false,
     // Internationalization
     tNoResults: () => 'Aucun résultat',
+    tStatusQueryTooShort: (minQueryLength) => `Tapez au moins ${minQueryLength} caractères pour avoir des résultats`,
+    tStatusNoResults: () => 'Aucun résultat pour cette recherche',
+    tStatusSelectedOption: (selectedOption, length, index) => `${selectedOption} ${index + 1} de ${length} est sélectionnée`,
+    // tStatusResults: 
+    // tAssistiveHint: 
   })
+
+  if (perimeterNameInput) {
+    perimeterNameInput.addEventListener('change', event => {
+      console.log(event.target.value);
+    })
+  }
 });
