@@ -4,7 +4,8 @@
 from django.contrib.gis.db import models as gis_models
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import GinIndex
-from django.db import models
+from django.db import IntegrityError, models, transaction
+from django.template.defaultfilters import slugify
 from django.utils import timezone
 
 from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS
@@ -23,7 +24,8 @@ class Perimeter(models.Model):
     REGION_CHOICES = REGIONS.items()
 
     name = models.CharField(verbose_name="Nom", max_length=255, db_index=True)
-    # Note: some REGIONS have the same name as a DEPARTMENT. So we add '-region' at their end
+    # Note for CITIES: we add the department_code at the end to avoid duplicates
+    # Note for REGIONS: some have the same name as a DEPARTMENT. So we add '-region' at their end
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
 
     kind = models.CharField(verbose_name="Type de périmètre", max_length=20, choices=KIND_CHOICES)
@@ -60,6 +62,25 @@ class Perimeter(models.Model):
 
     def __str__(self):
         return self.display_name
+
+    def set_slug(self, region_duplicate=False):
+        if not self.id:
+            if self.kind == self.KIND_CITY:
+                self.slug = slugify(f"{self.name}-{self.department_code}")
+            elif (self.kind == self.KIND_REGION) and region_duplicate:
+                self.slug = slugify(f"{self.name}-region")
+            else:
+                self.slug = slugify(self.name)
+
+    def save(self, *args, **kwargs):
+        """Generate the slug field before saving."""
+        try:
+            self.set_slug()
+            with transaction.atomic():
+                super().save(*args, **kwargs)
+        except IntegrityError:
+            self.set_slug(region_duplicate=True)
+            super().save(*args, **kwargs)
 
     @property
     def display_name(self):

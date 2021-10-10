@@ -3,7 +3,7 @@ import string
 import factory.fuzzy
 from factory.django import DjangoModelFactory
 
-from lemarche.siaes.models import Siae
+from lemarche.siaes.models import Siae, SiaeOffer
 
 
 class SiaeFactory(DjangoModelFactory):
@@ -20,3 +20,10 @@ class SiaeFactory(DjangoModelFactory):
     city = factory.Faker("city", locale="fr_FR")
     post_code = factory.Faker("postalcode")
     department = factory.fuzzy.FuzzyChoice([key for (key, value) in Siae.DEPARTMENT_CHOICES])
+
+
+class SiaeOfferFactory(DjangoModelFactory):
+    class Meta:
+        model = SiaeOffer
+
+    name = factory.Faker("name")

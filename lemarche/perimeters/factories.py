@@ -1,5 +1,4 @@
 import factory
-from django.utils.text import slugify
 from factory.django import DjangoModelFactory
 
 from lemarche.perimeters.models import Perimeter
@@ -10,5 +9,5 @@ class PerimeterFactory(DjangoModelFactory):
         model = Perimeter
 
     name = factory.Faker("name")
-    slug = factory.LazyAttribute(lambda o: slugify(o.name))
+    # slug auto-generated
     kind = Perimeter.KIND_CITY

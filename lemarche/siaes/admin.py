@@ -65,6 +65,7 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
         "updated_at",
     ]
 
+    # OSMGeoAdmin param for coords fields
     modifiable = False
 
     fieldsets = [
