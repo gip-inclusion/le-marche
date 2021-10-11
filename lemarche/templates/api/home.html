@@ -4,94 +4,106 @@
 {% block title %}API{{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
-<nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
-        <li class="breadcrumb-item active" aria-current="page">API</li>
-    </ol>
-</nav>
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">API</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
 
 {% block content %}
-<div class="row no-gutters pt-3">
-    <div class="col">
-        <div class="row">
-            <div class="col-12 bg-warning text-dark p-3">
-                Service en expérimentation et en construction
-            </div>
-        </div>
-
-        <br />
-
-        <div class="jumbotron">
-            <h1>API marché de l'inclusion</h1>
-            <p class="lead">L'API du <a href="{% url 'pages:home' %}" target="_blank">marché de l'inclusion</a> met à disposition le répertoire qualifié des structures d'insertion par l'activité économique.</p>
-            <p>Cet API est encore en construction, et est appelée à évoluer.</p>
-            <p>
-            <p class="text-muted">Version: 0.9</p>
-        </div>
-        <div class="row mt-5">
-            <div class="col-12 bg-info text-white p-3">
-                L'accès aux données complètes est limité pendant la période de construction du service.<br />
-                Si vous désirez obtenir un jeton (<i>token</i>) utilisateur, merci de nous adresser votre demande sur
-                <a href="mailto:lemarche@inclusion.beta.gouv.fr" class="text-dark">lemarche@inclusion.beta.gouv.fr</a>
-            </div>
-        </div>
-        <div class="row mt-5">
-            <div class="col-12">
-                <h3 class="mb-3">Dernières Nouveautés</h3>
-                <div class="container">
-                    <dl class="row">
-                        <dt class="col-sm-3">[v0.9] Données "Type de structure" & "Type de prestation"</dt>
-                        <dd class="col-sm-9">2 nouveaux endpoints "/siae/kinds" & "/siaes/presta-types". Possible aussi de filtrer les structures par type de prestation</dd>
-
-                        <dt class="col-sm-3">Données "Réseau"</dt>
-                        <dd class="col-sm-9">Un nouvel endpoint "/networks" donne la liste des réseaux de l'inclusion</dd>
-
-                        <dt class="col-sm-3">Accès API déplacé</dt>
-                        <dd class="col-sm-9">L'accès à l'API est déplacé dans le sous-dossiers <a href="/api">/api</a></dd>
-
-                        <dt class="col-sm-3">Secteurs d'activité</dt>
-                        <dd class="col-sm-9">L'endpoint secteurs d'activité a été re-architecturé, les données sont désormais mieux représentées</dd>
-
-                        <dt class="col-sm-3">Migration du Marché</dt>
-                        <dd class="col-sm-9">Le site du marché de l'inclusion va rejoindre le socle technique de l'API</dd>
-                    </dl>
+<section class="pt-4 pb-6 pb-lg-8">
+    <div class="container container-max-lg">
+        <div class="row no-gutters pt-3">
+            <div class="col">
+                <div class="row">
+                    <div class="col-12 bg-warning text-dark p-3">
+                        Service en expérimentation et en construction
+                    </div>
                 </div>
+
+                <br />
+
+                <div class="jumbotron">
+                    <h1>API marché de l'inclusion</h1>
+                    <p class="lead">L'API du <a href="{% url 'pages:home' %}" target="_blank">marché de l'inclusion</a> met à disposition le répertoire qualifié des structures d'insertion par l'activité économique.</p>
+                    <p>Cet API est encore en construction, et est appelée à évoluer.</p>
+                    <p>
+                    <p class="text-muted">Version: 0.9</p>
+                </div>
+                <div class="row mt-5">
+                    <div class="col-12 bg-info text-white p-3">
+                        L'accès aux données complètes est limité pendant la période de construction du service.<br />
+                        Si vous désirez obtenir un jeton (<i>token</i>) utilisateur, merci de nous adresser votre demande sur
+                        <a href="mailto:lemarche@inclusion.beta.gouv.fr" class="text-dark">lemarche@inclusion.beta.gouv.fr</a>
+                    </div>
+                </div>
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <h3 class="mb-3">Dernières Nouveautés</h3>
+                        <div class="container">
+                            <dl class="row">
+                                <dt class="col-sm-3">[v0.9] Données "Type de structure" & "Type de prestation"</dt>
+                                <dd class="col-sm-9">2 nouveaux endpoints "/siae/kinds" & "/siaes/presta-types". Possible aussi de filtrer les structures par type de prestation</dd>
+
+                                <dt class="col-sm-3">Données "Réseau"</dt>
+                                <dd class="col-sm-9">Un nouvel endpoint "/networks" donne la liste des réseaux de l'inclusion</dd>
+
+                                <dt class="col-sm-3">Accès API déplacé</dt>
+                                <dd class="col-sm-9">L'accès à l'API est déplacé dans le sous-dossiers <a href="/api">/api</a></dd>
+
+                                <dt class="col-sm-3">Secteurs d'activité</dt>
+                                <dd class="col-sm-9">L'endpoint secteurs d'activité a été re-architecturé, les données sont désormais mieux représentées</dd>
+
+                                <dt class="col-sm-3">Migration du Marché</dt>
+                                <dd class="col-sm-9">Le site du marché de l'inclusion va rejoindre le socle technique de l'API</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-5">
+                    <div class="col-md-4">
+                        <h2>OpenAPI</h2>
+                        <p>Interface OpenAPI, aussi connue sous le nom de Swagger</p>
+                        <p><a href="{% url 'api:swagger-ui' %}" target="_blank" class="btn btn-success">Ouvrir OpenAPI</a></p>
+                    </div>
+                    <div class="col-md-4">
+                        <h2>Redoc</h2>
+                        <p>ReDoc est une interface REACT par-dessus la spécification OpenAPI</p>
+                        <p><a href="{% url 'api:redoc' %}" target="_blank" class="btn btn-success">Ouvrir ReDoc</a></p>
+                    </div>
+                    <div class="col-md-4">
+                        <h2>DJango REST</h2>
+                        <p>Interface REST Framework : une interface REST interactive </p>
+                        <p><a href="{% url 'api:siae-list' %}" target="_blank" class="btn btn-success">Ouvrir DRF</a></p>
+                    </div>
+                </div>
+                <hr>
+                <footer>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>2021 ITOU - <a href="https://inclusion.beta.gouv.fr/" target="_blank" rel="noopener">la plateforme de l'inclusion</a></p>
+                        </div>
+                        <!--
+                        <div class="col-md-6 text-md-right">
+                            <a href="#" class="text-dark">Terms of Use</a> 
+                            <span class="text-muted mx-2">|</span> 
+                            <a href="#" class="text-dark">Privacy Policy</a>
+                        </div>
+                        -->
+                    </div>
+                </footer>
             </div>
         </div>
-        <div class="row mt-5">
-            <div class="col-md-4">
-                <h2>OpenAPI</h2>
-                <p>Interface OpenAPI, aussi connue sous le nom de Swagger</p>
-                <p><a href="{% url 'api:swagger-ui' %}" target="_blank" class="btn btn-success">Ouvrir OpenAPI</a></p>
-            </div>
-            <div class="col-md-4">
-                <h2>Redoc</h2>
-                <p>ReDoc est une interface REACT par-dessus la spécification OpenAPI</p>
-                <p><a href="{% url 'api:redoc' %}" target="_blank" class="btn btn-success">Ouvrir ReDoc</a></p>
-            </div>
-            <div class="col-md-4">
-                <h2>DJango REST</h2>
-                <p>Interface REST Framework : une interface REST interactive </p>
-                <p><a href="{% url 'api:siae-list' %}" target="_blank" class="btn btn-success">Ouvrir DRF</a></p>
-            </div>
-        </div>
-        <hr>
-        <footer>
-            <div class="row">
-                <div class="col-md-6">
-                    <p>2021 ITOU - <a href="https://inclusion.beta.gouv.fr/" target="_blank" rel="noopener">la plateforme de l'inclusion</a></p>
-                </div>
-                <!--
-                <div class="col-md-6 text-md-right">
-                    <a href="#" class="text-dark">Terms of Use</a> 
-                    <span class="text-muted mx-2">|</span> 
-                    <a href="#" class="text-dark">Privacy Policy</a>
-                </div>
-                -->
-            </div>
-        </footer>
     </div>
-</div>
+</section>
 {% endblock %}
