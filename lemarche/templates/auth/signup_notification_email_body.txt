@@ -1,4 +1,4 @@
-<a href="https://lemarche.inclusion.beta.gouv.fr/">Marché de l'inclusion</a> : inscription d'un nouvel utilisateur
+Le marché de l'inclusion (C4) : inscription d'un nouvel utilisateur
 
 ---
 email: {{ user_email }}
