@@ -223,7 +223,7 @@ STATIC_URL = "/static/"
 ANYMAIL = {
     "MAILJET_API_KEY": os.environ.get("MAILJET_API_KEY"),
     "MAILJET_SECRET_KEY": os.environ.get("MAILJET_API_SECRET"),
-    "WEBHOOK_SECRET": os.environ.get("MAILJET_WEBHOOK_SECRET"),
+    # "WEBHOOK_SECRET": os.environ.get("MAILJET_WEBHOOK_SECRET"),
 }
 
 MAILJET_API_URL = "https://api.mailjet.com/v3.1"
