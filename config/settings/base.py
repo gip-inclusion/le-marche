@@ -91,8 +91,8 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    "anymail",
     "django_filters",
-    "crispy_forms",
     "bootstrap4",
     "rest_framework",
     "drf_spectacular",
@@ -219,6 +219,16 @@ STATIC_URL = "/static/"
 
 # Emails.
 # ------------------------------------------------------------------------------
+
+ANYMAIL = {
+    "MAILJET_API_KEY": os.environ.get("MAILJET_API_KEY"),
+    "MAILJET_SECRET_KEY": os.environ.get("MAILJET_API_SECRET"),
+    "WEBHOOK_SECRET": os.environ.get("MAILJET_WEBHOOK_SECRET"),
+}
+
+MAILJET_API_URL = "https://api.mailjet.com/v3.1"
+
+EMAIL_BACKEND = "anymail.backends.mailjet.EmailBackend"
 
 DEFAULT_FROM_EMAIL = "noreply@inclusion.beta.gouv.fr"
 NOTIFY_EMAIL = env("NOTIFY_EMAIL", default="test@example.com")
