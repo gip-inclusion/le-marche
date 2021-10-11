@@ -23,7 +23,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     # ModelViewSet needs 'queryset' to be set otherwise the router won't be
     # able to derive the model Basename. To avoid loading data on object
     # initialisation we load an empty queryset.
-    queryset = Siae.objects.all()
+    queryset = Siae.objects.prefetch_related("sectors").all()
     serializer_class = SiaeListSerializer
     filter_class = SiaeFilter
 
