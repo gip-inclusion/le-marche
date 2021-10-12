@@ -2,6 +2,7 @@ from django.contrib.gis.geos import Point
 from django.test import TestCase
 from django.urls import reverse
 
+from lemarche.networks.factories import NetworkFactory
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
@@ -123,6 +124,30 @@ class SiaeSectorSearchFilterTest(TestCase):
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 1 + 1)  # OR
+
+
+class SiaeNetworkSearchFilterTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.network = NetworkFactory()
+        SiaeFactory()
+        siae_with_network = SiaeFactory()
+        siae_with_network.networks.add(cls.network)
+
+    def test_search_network_empty(self):
+        form = SiaeSearchForm({"networks": ""})
+        qs = form.filter_queryset()
+        self.assertEqual(qs.count(), 2)
+
+    def test_search_network(self):
+        form = SiaeSearchForm({"networks": f"{self.network.slug}"})
+        qs = form.filter_queryset()
+        self.assertEqual(qs.count(), 1)
+
+    def test_search_unknown_network_ignores_filter(self):
+        form = SiaeSearchForm({"networks": "coucou"})
+        qs = form.filter_queryset()
+        self.assertEqual(qs.count(), 2)
 
 
 class SiaePerimeterSearchFilterTest(TestCase):

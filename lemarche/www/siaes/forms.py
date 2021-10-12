@@ -56,7 +56,6 @@ class SiaeSearchForm(forms.Form):
         to_field_name="slug",
         empty_label="",
         required=False,
-        widget=forms.Select(attrs={"style": "width:100%"}),
     )
 
     def clean(self):

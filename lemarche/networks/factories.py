@@ -10,6 +10,5 @@ class NetworkFactory(DjangoModelFactory):
         model = Network
 
     name = factory.Faker("company", locale="fr_FR")
-    # TODO: model method to create slug on save() instead
-    slug = factory.LazyAttribute(lambda o: slugify(o.name))
+    # slug is auto-generated
     website = "https://example.com"
