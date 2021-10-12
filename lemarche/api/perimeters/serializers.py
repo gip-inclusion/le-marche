@@ -10,6 +10,8 @@ class PerimeterSimpleSerializer(serializers.ModelSerializer):
             "name",
             "slug",
             "kind",
+            "department_code",  # only for CITY
+            "region_code",  # only for CITY & DEPARTMENT
         ]
 
 

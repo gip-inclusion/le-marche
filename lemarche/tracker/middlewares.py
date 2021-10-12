@@ -13,6 +13,7 @@ VERSION = 1
 IGNORE_FILTER = [
     "favicon",
     "static",
+    "api/perimeters",
 ]
 DEFAULT_PAYLOAD = {
     "_v": VERSION,
