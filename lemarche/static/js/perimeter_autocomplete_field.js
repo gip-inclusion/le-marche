@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function() {
       inputValue: inputValue,  // returns the string value to be inserted into the input
       suggestion: suggestion,  // used when rendering suggestions, and should return a string, which can contain HTML
     },
-    // autoselect: true,
+    autoselect: true,
     onConfirm: (confirmed) => {
       inputValueHiddenField(confirmed);
     },
