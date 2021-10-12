@@ -20,6 +20,9 @@
                     {% else %}
                         {{ siae.name }}
                     {% endif %}
+                    {% if not siae.users.count %}
+                        <small class="text-muted">(bientôt inscrite sur le marché)</small>
+                    {% endif %}
                 </h3>
             </div>
 
