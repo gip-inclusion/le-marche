@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function() {
     element: document.querySelector('#dir_form_perimeter_name'),
     id: 'perimeter_name',
     name: 'perimeter_name',  // url GET param name
-    placeholder: 'Autour de (Arras, Bobigny, Strasbourg…)',
+    placeholder: 'Région, département, ville',  // 'Autour de (Arras, Bobigny, Strasbourg…)',
     minLength: 2,
     defaultValue: perimeterNameParamInitial,
     source: async (query, populateResults) => {  // TODO; use debounce ?

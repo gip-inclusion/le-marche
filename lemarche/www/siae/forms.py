@@ -34,13 +34,11 @@ class SiaeSearchForm(forms.Form):
     # The hidden `perimeter` field is populated by the autocomplete JavaScript mechanism,
     # see `perimeter_autocomplete_field.js`.
     perimeter = forms.CharField(required=False, widget=forms.HiddenInput())
-    # Most of the field will be overriden by the autocomplete mechanism
+    # Most of the field will be overridden by the autocomplete mechanism
     perimeter_name = forms.CharField(
         label="Lieu d'intervention",
         required=False,
-        widget=forms.TextInput(
-            attrs={"placeholder": "Autour de (Arras, Bobigny, Strasbourg…)", "style": "width:100%"}
-        ),
+        widget=forms.TextInput(attrs={"placeholder": "Région, département, ville", "style": "width:100%"}),
     )
     kind = forms.ChoiceField(
         label="Type de structure",
@@ -157,7 +155,7 @@ class SiaeSearchForm(forms.Form):
         """
         ORDER_BY_FIELDS = ["-has_offer", "-has_description", "-has_user", "name"]
         # annotate on distance to siae if CITY searched
-        # TODO: avoid duplicate Perimeter query...
+        # TODO: avoid this second Perimeter query...
         search_perimeter = self.cleaned_data.get("perimeter", None)
         if search_perimeter:
             perimeter = Perimeter.objects.get(slug=search_perimeter)
