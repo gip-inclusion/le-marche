@@ -13,6 +13,10 @@
 <meta property="twitter:title" content="{{ siae.name }}" />
 {% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'vendor/leaflet-1.7.1/leaflet.css' %}" type="text/css" />
+{% endblock %}
+
 {% block breadcrumbs %}
 <section>
     <div class="container">
@@ -277,13 +281,11 @@
                                 </ul>
                             </div>
                         </div>
-                        {% endif %}                     
-                        {% comment "hidden" %}
-                        <div class="map-holder mb-3 mb-lg-4 order-1 order-lg-2">
+                        {% endif %}
+                        <div class="map-holder order-1 order-lg-2 mb-3">
                             <div id="map-company" class="map-canvas"></div>
                         </div>
-                        {% endcomment %}
-                        <div class="map_details order-3">
+                        <div class="map_details order-4">
                             <div class="d-flex mb-2">
                                 <span class="prof_icon"><img src="{% static 'img/profile-ico-geo.svg' %}" /></span>
                                 <span>Situé à {{ siae.city }}</span>
@@ -307,13 +309,27 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'vendor/leaflet-1.7.1/leaflet.js' %}"></script>
 <script>
-$(function () {
-    $('#show_data').click((e) => {
-        var $this = $(e.currentTarget);
-        $this.toggleClass('is-open');
-        $('#the_data').toggle('slow');
-    });
+document.addEventListener("DOMContentLoaded", function() {
+    // siae coords output as floats with commas. We need to transform them into floats.
+    const siaeLatitudeString = "{{ siae.coords.x }}";
+    const siaeLongitudeString = "{{ siae.coords.y }}";
+    const siaeLatitudeFloat = parseFloat(siaeLatitudeString.replace(',', '.'));
+    const siaeLongitudeFloat = parseFloat(siaeLongitudeString.replace(',', '.'));
+    // init map
+    var map = L.map('map-company').setView([siaeLongitudeFloat, siaeLatitudeFloat], 13);
+    // map tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19,
+        zoomControl: false,
+    }).addTo(map);
+    // map zoom controls in the bottom right
+    map.zoomControl.remove();
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+    // map siae marker
+    L.marker([siaeLongitudeFloat, siaeLatitudeFloat]).addTo(map);
 });
 </script>
 {% endblock %}

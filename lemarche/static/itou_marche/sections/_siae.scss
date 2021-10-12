@@ -524,9 +524,14 @@
 
 
 	#sidebar .map-holder {
-			height:225px;
-			width:100%;
-			top:10px;
+		height:200px;
+		width:100%;
+		// top:10px;s
+		overflow:hidden;
+	}
+
+	#mapid {
+		height: 180px;
 	}
 
 	.profile-detail {
