@@ -17,6 +17,11 @@ class ContactForm(forms.Form):
         widget=forms.TextInput(attrs={"class": "form-control"}),
         required=False,
     )
+    siret = forms.CharField(
+        label="SIRET",
+        widget=forms.TextInput(attrs={"class": "form-control"}),
+        required=False,
+    )
 
     # ChoiceField + choices=SUBJECT_CHOICES ?
     subject = forms.CharField(
