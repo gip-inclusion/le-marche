@@ -24,7 +24,9 @@ def send_welcome_email(user):
 # TODO: make async (celery)
 def send_signup_notification_email(user):
     email_subject_prefix = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_ENV != "prod" else ""
-    email_subject = email_subject_prefix + "Marché de l'inclusion : inscription d'un nouvel utilisateur"
+    email_subject = (
+        email_subject_prefix + f"Marché de l'inclusion : inscription d'un nouvel utilisateur {user.get_kind_display()}"
+    )
     email_body = render_to_string(
         "auth/signup_notification_email_body.txt",
         {
