@@ -61,9 +61,10 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
 
 COMPRESS_ENABLED = env.bool("COMPRESS_ENABLED", default=True)
+COMPRESS_OFFLINE = True
 COMPRESS_STORAGE = "compressor.storage.GzipCompressorFileStorage"
 COMPRESS_URL = STATIC_URL
-COMPRESS_OFFLINE = True
+COMPRESS_ROOT = STATIC_ROOT
 COMPRESS_PRECOMPILERS = [
     ("text/x-scss", "django_libsass.SassCompiler"),
 ]
@@ -72,6 +73,7 @@ LIBSASS_OUTPUT_STYLE = "compressed"
 # Application definition
 
 AUTH_USER_MODEL = "users.User"
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 PRIORITY_APPS = [
     # Force whitenoise to serve assets in debug mode
@@ -171,11 +173,9 @@ DATABASES = {
     },
 }
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
+# Authentication.
+# ------------------------------------------------------------------------------
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -195,6 +195,7 @@ LOGOUT_REDIRECT_URL = "pages:home"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
+# ------------------------------------------------------------------------------
 
 # API is in french
 LANGUAGE_CODE = "fr-fr"
@@ -209,12 +210,6 @@ USE_L10N = True
 USE_TZ = True
 
 SITE_ID = 1
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
-STATIC_URL = "/static/"
 
 
 # Emails.

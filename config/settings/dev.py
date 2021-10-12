@@ -9,8 +9,6 @@ INSTALLED_APPS += ["django_extensions", "debug_toolbar"]  # noqa F405
 
 MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]  # noqa F405
 
-AUTH_PASSWORD_VALIDATORS = []  # Avoid password strength validation in DEV.
-
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
@@ -21,6 +19,12 @@ ALLOWED_HOSTS = [
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+
+# Authentication.
+# ------------------------------------------------------------------------------
+
+AUTH_PASSWORD_VALIDATORS = []  # Avoid password strength validation in DEV.
 
 
 # Static files.
