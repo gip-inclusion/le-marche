@@ -75,11 +75,15 @@
                             {{ siae.city }} {{ siae.post_code }}
                         </p>
                         {% if siae.users.count %}
-                            <p class="text-muted">
-                                Cette structure est <strong>déjà</strong> enregistrée sur le marché, par l'utilisateur <strong>{{ siae.users.first.short_name }}</strong>.
-                            </p>
+                            <div role="alert" class="alert alert-warning">
+                                <p>
+                                    <strong>Rejoindre cette structure</strong><br />
+                                    <i>{{ siae.users.first.full_name }}</i> a déjà activé cette structure sur le marché.
+                                    Si vous souhaitez rejoindre la structure, <strong><a href="{% url 'pages:contact' %}">contactez le support</a></strong>.
+                                </p>
+                            </div>
                         {% else %}
-                            <a href="{% url 'dashboard:siae_adopt_confirm' siae.id %}" class="btn btn-outline-primary btn-ico">
+                            <a href="{% url 'dashboard:siae_search_adopt_confirm' siae.id %}" class="btn btn-outline-primary btn-ico">
                                 <span>Sélectionner</span>
                             </a>
                         {% endif %}

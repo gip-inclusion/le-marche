@@ -24,7 +24,7 @@ class DashboardHomeViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class SiaeAdoptViewTest(TestCase):
+class SiaeSearchAdoptViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user_siae = UserFactory(kind=User.KIND_SIAE)
@@ -60,11 +60,11 @@ class SiaeAdoptViewTest(TestCase):
     def test_only_siaes_without_users_can_be_adopted(self):
         self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
 
-        url = reverse("dashboard:siae_adopt_confirm", args=[self.siae_without_user.id])
+        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_without_user.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        url = reverse("dashboard:siae_adopt_confirm", args=[self.siae_with_user.id])
+        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_with_user.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/dashboard/")
@@ -74,7 +74,7 @@ class SiaeAdoptViewTest(TestCase):
         self.assertEqual(self.siae_without_user.users.count(), 0)
         self.assertEqual(self.user_siae.siaes.count(), 1)  # setUpTestData
 
-        url = reverse("dashboard:siae_adopt_confirm", args=[self.siae_without_user.id])
+        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_without_user.id])
         response = self.client.post(url)  # data={}
         self.assertEqual(response.status_code, 302)  # redirect to success_url
         self.assertEqual(response.url, "/dashboard/")

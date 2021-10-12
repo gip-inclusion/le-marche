@@ -9,7 +9,6 @@ from django.views.generic.edit import FormMixin
 from lemarche.siaes.models import Siae
 from lemarche.www.dashboard.forms import (
     ProfileEditForm,
-    SiaeAdoptConfirmForm,
     SiaeClientReferenceFormSet,
     SiaeEditInfoContactForm,
     SiaeEditOfferForm,
@@ -17,6 +16,7 @@ from lemarche.www.dashboard.forms import (
     SiaeEditPrestaForm,
     SiaeLabelFormSet,
     SiaeOfferFormSet,
+    SiaeSearchAdoptConfirmForm,
     SiaeSearchBySiretForm,
 )
 from lemarche.www.dashboard.mixins import SiaeOwnerRequiredMixin, SiaeUserRequiredMixin
@@ -61,9 +61,9 @@ class SiaeSearchBySiretView(LoginRequiredMixin, SiaeUserRequiredMixin, FormMixin
         return context
 
 
-class SiaeAdoptConfirmView(LoginRequiredMixin, SiaeUserRequiredMixin, SuccessMessageMixin, UpdateView):
-    form_class = SiaeAdoptConfirmForm
-    template_name = "dashboard/siae_adopt_confirm.html"
+class SiaeSearchAdoptConfirmView(LoginRequiredMixin, SiaeUserRequiredMixin, SuccessMessageMixin, UpdateView):
+    form_class = SiaeSearchAdoptConfirmForm
+    template_name = "dashboard/siae_search_adopt_confirm.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
     success_message = "Votre structure a été rajoutée dans votre espace."

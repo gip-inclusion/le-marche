@@ -65,7 +65,7 @@ class SiaeSearchBySiretForm(forms.Form):
         return qs
 
 
-class SiaeAdoptConfirmForm(forms.ModelForm):
+class SiaeSearchAdoptConfirmForm(forms.ModelForm):
     class Meta:
         model = Siae
         fields = []
