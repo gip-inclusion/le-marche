@@ -10,6 +10,7 @@ packages = [
 python = "^3.9"
 Django = "^3.2.1"
 djangorestframework = "^3.12.4"
+django-anymail = "^8.4"
 mysqlclient = "^2.0.3"
 drf-spectacular = "^0.15.1"
 psycopg2-binary = "^2.8.6"
@@ -24,7 +25,7 @@ django-ckeditor = "^6.1.0"
 django-libsass = "^0.9"
 django-environ = "^0.4.5"
 PyMySQL = "^1.0.2"
-django-anymail = "^8.4"
+sentry-sdk = "^1.4.3"
 
 [tool.poetry.dev-dependencies]
 isort = "^5.8.0"
