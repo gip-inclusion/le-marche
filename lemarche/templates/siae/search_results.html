@@ -109,13 +109,7 @@
                 <div class="col-12">
                     <div class="meta h2 mb-3 mb-md-6 mt-3 mt-3 font-weight-light text-center text-md-left">
                         {% with paginator.count as siae_count %}
-                        {% if request.city %}
-                            {{ siae_count }} structures interviennent sur {{ request.city }}
-                        {% elif request.area %}
-                            {{ siae_count }} structures interviennent sur/en "{{ request.area }}"
-                        {% else %}
-                            {{ siae_count }} structures{% if withAntenna %}et leurs antennes{% endif %} correspondent à vos critères
-                        {% endif %}
+                            {{ siae_count }} structures correspondent à vos critères
                         {% endwith %}
                     </div>
                 </div>
@@ -128,9 +122,9 @@
                     {% endfor %}
     
                     {% include "layouts/_pagination.html" %}
-    
+
                     <br />
-    
+
                     <div class="row justify-content-center">
                         <div class="col-sm-6">
                             {% if user.is_authenticated %}
