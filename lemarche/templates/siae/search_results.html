@@ -1,7 +1,11 @@
 {% extends "layouts/base.html" %}
-{% load static %}
+{% load static show_first_form_error_message %}
 
 {% block title %}Recherche{{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.css' %}" />
+{% endblock %}
 
 {% block breadcrumbs %}
 <section>
@@ -25,10 +29,13 @@
     <div class="container">
         <div id="dir_form" class="dir_form">
             <form method="GET" action="{% url 'siae:search_results' %}">
+                {% if form.errors %}
+                    <div class="alert alert-danger" role="alert">{{ form.errors|show_first_form_error_message }}</div>
+                {% endif %}
                 <div class="row">
                     <div class="col-12 col-lg-8">
                         <div class="row first-row">
-                            <div class="col-sm-6 pr-sm-0 mt-4">
+                            <div class="col-12 col-md-6 mt-4 pr-md-0">
                                 <div class="title">
                                     {{ form.sectors.label }}
                                 </div>
@@ -38,13 +45,14 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-6 pl-sm-0 mt-4">
+                            {{ form.perimeter }}
+                            <div  id="dir_form_perimeter_name" class="col-12 col-md-6 mt-4">
                                 <div class="title">
-                                    {{ form.perimeter.label }}
+                                    {{ form.perimeter_name.label }}
                                 </div>
                                 <div class="field-holder">
                                     <div>
-                                        {{ form.perimeter }}
+                                        {# {{ form.perimeter_name }} #}
                                     </div>
                                 </div>
                             </div>
@@ -257,7 +265,10 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.js' %}"></script>
+<script src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
 <script>
+    // show type user modal
     document.addEventListener("DOMContentLoaded", function() {
         const COOKIE_NAME = 'leMarcheTypeUsagerV2';
         $(document).on('shown.bs.modal', '.modal', function () {

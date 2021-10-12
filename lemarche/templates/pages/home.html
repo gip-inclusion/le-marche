@@ -4,6 +4,10 @@
 {% block title %}Accueil{{ block.super }}{% endblock %}
 {% block meta_twitter_title %}Accueil - {{ block.super }}{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.css' %}" />
+{% endblock %}
+
 {% block content %}
 <section class="s-article-picture-01 s-article-picture-01--marche s-hp-01 has-illustration-bg-01 py-sm-8">
     <div class="s-article-picture-01__container container">
@@ -25,10 +29,11 @@
                                 {{ form.sectors }}
                             </div>
                         </div>
-                        <div id="dir_form" class="form-group">
-                            <label class="h5" for="sector">{{ form.perimeter.label }}</label>
+                        {{ form.perimeter }}
+                        <div id="dir_form_perimeter_name" class="form-group">
+                            <label class="h5" for="perimeter_name">{{ form.perimeter_name.label }}</label>
                             <div>
-                                {{ form.perimeter }}
+                                {# {{ form.perimeter_name }} #}
                             </div>
                         </div>
                         <p class="text-center mb-0 mt-5">
@@ -202,4 +207,9 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.js' %}"></script>
+<script src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
 {% endblock %}
