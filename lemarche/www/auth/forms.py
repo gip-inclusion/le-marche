@@ -30,11 +30,23 @@ class SignupForm(UserCreationForm):
         widget=forms.TextInput(attrs={"placeholder": "Merci de bien vérifier l'adresse saisie."}),
         required=True,
     )
-    # help_text="Nous enverrons un e-mail de confirmation à cette adresse avant de valider le compte.")  # noqa
+    # help_text="Nous enverrons un e-mail de confirmation à cette adresse avant de valider le compte.")
+
+    accept_rgpd = forms.BooleanField(label=User._meta.get_field("accept_rgpd").help_text, help_text="", required=True)
 
     class Meta:
         model = User
-        fields = ["kind", "first_name", "last_name", "phone", "company_name", "email", "password1", "password2"]
+        fields = [
+            "kind",
+            "first_name",
+            "last_name",
+            "phone",
+            "company_name",
+            "email",
+            "password1",
+            "password2",
+            "accept_rgpd",
+        ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -90,6 +90,17 @@ class UserAdmin(UserAdmin):
                 "fields": ("siae_admin_list",),
             },
         ),
+        (
+            "RGPD & co",
+            {
+                "fields": (
+                    "accept_rgpd",
+                    "accept_survey",
+                    "accept_offers_for_pro_sector",
+                    "accept_quote_promise",
+                )
+            },
+        ),
         ("API", {"fields": ("api_key",)}),
         ("Permissions", {"fields": ("is_active", "is_staff", "groups")}),
         (
@@ -105,10 +116,6 @@ class UserAdmin(UserAdmin):
                     "c4_phone_verified",
                     "c4_email_verified",
                     "c4_id_card_verified",
-                    "c4_accept_survey",
-                    "c4_accept_rgpd",
-                    "c4_offers_for_pro_sector",
-                    "c4_quote_promise",
                 )
             },
         ),

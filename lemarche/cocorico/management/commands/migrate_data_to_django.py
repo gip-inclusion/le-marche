@@ -564,10 +564,10 @@ class Command(BaseCommand):
             rename_field(elem, "phone_verified", "c4_phone_verified")
             rename_field(elem, "email_verified", "c4_email_verified")
             rename_field(elem, "id_card_verified", "c4_id_card_verified")
-            rename_field(elem, "accept_survey", "c4_accept_survey")
-            rename_field(elem, "accept_rgpd", "c4_accept_rgpd")
-            rename_field(elem, "offers_for_pro_sector", "c4_offers_for_pro_sector")
-            rename_field(elem, "quote_promise", "c4_quote_promise")
+            # rename_field(elem, "accept_survey", "c4_accept_survey")
+            # rename_field(elem, "accept_rgpd", "c4_accept_rgpd")
+            rename_field(elem, "offers_for_pro_sector", "accept_offers_for_pro_sector")
+            rename_field(elem, "quote_promise", "accept_quote_promise")
 
             # cleanup fields
             cleanup_date_field_names(elem)
