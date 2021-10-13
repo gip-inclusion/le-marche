@@ -20,7 +20,7 @@ class SignupForm(UserCreationForm):
         max_length=35,
         required=False,
     )
-    # Hidden by default. Show if user is type BUYER or PARTNER
+    # company_name is hidden by default in the frontend. Shown if the user choses kind BUYER or PARTNER
     company_name = forms.CharField(
         label="Le nom de votre structure",
         required=False,
@@ -33,6 +33,10 @@ class SignupForm(UserCreationForm):
     # help_text="Nous enverrons un e-mail de confirmation à cette adresse avant de valider le compte.")
 
     accept_rgpd = forms.BooleanField(label=User._meta.get_field("accept_rgpd").help_text, help_text="", required=True)
+    # accept_survey is hidden by default in the frontend. Shown if the user choses kind BUYER or PARTNER
+    accept_survey = forms.BooleanField(
+        label=User._meta.get_field("accept_survey").help_text, help_text="", required=False
+    )
 
     class Meta:
         model = User
@@ -46,6 +50,7 @@ class SignupForm(UserCreationForm):
             "password1",
             "password2",
             "accept_rgpd",
+            "accept_survey",
         ]
 
     def __init__(self, *args, **kwargs):

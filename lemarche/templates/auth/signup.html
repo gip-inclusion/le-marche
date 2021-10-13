@@ -66,6 +66,7 @@
                     <br />
 
                     {% bootstrap_field form.accept_rgpd %}
+                    {% bootstrap_field form.accept_survey form_group_class="accept-survey-form-group d-none" %}
 
                     <div class="row">
                         <div class="col-12 offset-md-3 col-md-auto pt-3">
@@ -89,14 +90,19 @@
 document.addEventListener("DOMContentLoaded", function() {
     let companyNameFormGroupDiv = document.getElementsByClassName('company-name-form-group')[0];
     let companyNameInput = document.getElementById('id_company_name');
+
+    let acceptSurveyFormGroupDiv = document.getElementsByClassName('accept-survey-form-group')[0];
+
     let kindRadios = document.querySelectorAll('input[type=radio][name="kind"]');
     kindRadios.forEach(radio => radio.addEventListener('change', () => {
         if (radio.value !== 'SIAE') {
             companyNameFormGroupDiv.classList.remove('d-none');
             companyNameInput.required = true;
+            acceptSurveyFormGroupDiv.classList.remove('d-none');
         } else {
             companyNameFormGroupDiv.classList.add('d-none');
             companyNameInput.required = false;
+            acceptSurveyFormGroupDiv.classList.add('d-none');
         }
     }));
 });
