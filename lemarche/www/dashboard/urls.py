@@ -30,7 +30,7 @@ urlpatterns = [
                     RedirectView.as_view(pattern_name="dashboard:siae_edit_info_contact", permanent=False),
                     name="siae_edit",
                 ),
-                path("contact/", SiaeEditInfoContactView.as_view(), name="siae_edit_info_contact"),
+                path("info-contact/", SiaeEditInfoContactView.as_view(), name="siae_edit_info_contact"),
                 path("offer/", SiaeEditOfferView.as_view(), name="siae_edit_offer"),
                 path("presta/", SiaeEditPrestaView.as_view(), name="siae_edit_presta"),
                 path("other/", SiaeEditOtherView.as_view(), name="siae_edit_other"),

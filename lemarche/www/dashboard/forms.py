@@ -27,7 +27,6 @@ class ProfileEditForm(forms.ModelForm):
 class SiaeSearchBySiretForm(forms.Form):
     siret = forms.CharField(
         label="Entrez le numéro SIRET ou SIREN de votre structure",
-        widget=forms.TextInput(attrs={"class": "form-control"}),
         required=True,
     )
 
@@ -98,11 +97,10 @@ class SiaeEditInfoContactForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].widget.attrs.update({"class": "form-control"})
-        # Disabled fields
+        # Required & Disabled fields
         for field in Siae.READONLY_FIELDS_FROM_C1:
             if field in self.fields:
+                self.fields[field].required = True
                 self.fields[field].disabled = True
 
 
@@ -161,7 +159,6 @@ class SiaeEditPrestaForm(forms.ModelForm):
         self.fields["description"].widget.attrs.update(
             {
                 "placeholder": "N'hésitez pas à mettre en avant les spécificités de votre structure",
-                "class": "form-control",
             }
         )
 
