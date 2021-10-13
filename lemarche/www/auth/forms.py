@@ -20,9 +20,10 @@ class SignupForm(UserCreationForm):
         max_length=35,
         required=False,
     )
+    # Hidden by default. Show if user is type BUYER or PARTNER
     company_name = forms.CharField(
         label="Le nom de votre structure",
-        required=False,  # display:none by default
+        required=False,
     )
     email = forms.EmailField(
         label="Votre adresse e-mail",
@@ -37,9 +38,7 @@ class SignupForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].widget.attrs.update({"class": "form-control"})
-        # password validation
+        # password validation rules
         self.fields["password1"].help_text = CnilCompositionPasswordValidator().get_help_text()
 
     def clean_email(self):
