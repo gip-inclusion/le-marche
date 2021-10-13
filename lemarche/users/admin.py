@@ -79,6 +79,7 @@ class UserAdmin(UserAdmin):
                     "last_name",
                     "kind",
                     "phone",
+                    "company_name",
                 )
             },
         ),
@@ -87,6 +88,17 @@ class UserAdmin(UserAdmin):
             {
                 "description": "Ajouter l'utilisateur à une nouvelle structure ? Possible en se rendant sur la fiche de la structure.",  # noqa
                 "fields": ("siae_admin_list",),
+            },
+        ),
+        (
+            "RGPD & co",
+            {
+                "fields": (
+                    "accept_rgpd",
+                    "accept_survey",
+                    "accept_offers_for_pro_sector",
+                    "accept_quote_promise",
+                )
             },
         ),
         ("API", {"fields": ("api_key",)}),
@@ -104,10 +116,6 @@ class UserAdmin(UserAdmin):
                     "c4_phone_verified",
                     "c4_email_verified",
                     "c4_id_card_verified",
-                    "c4_accept_survey",
-                    "c4_accept_rgpd",
-                    "c4_offers_for_pro_sector",
-                    "c4_quote_promise",
                 )
             },
         ),

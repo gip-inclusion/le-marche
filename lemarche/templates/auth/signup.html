@@ -1,4 +1,5 @@
 {% extends "layouts/base.html" %}
+{% load bootstrap4 %}
 
 {% block title %}Inscription{{ block.super }}{% endblock %}
 
@@ -9,71 +10,57 @@
             <div class="col-12">
                 <h2 class="mb-3">Inscription</h2>
 
-                {% if form.errors %}
-                    <div class="alert alert-danger mb-3 mb-lg-5" role="alert">{{ form.errors }}</div>
-                {% endif %}
+                <br />
 
                 <form method="POST" action="{% url 'auth:signup' %}">
                     {% csrf_token %}
-                    <fieldset class="mb-3 mb-lg-5">
-                        <h3>Vous êtes <strong class="text-warning fs-base">*</strong></h3>
-                        <div class="form-group">
-                            {% for x,y in form.fields.kind.choices %}
-                                <div class="custom-control custom-radio">
-                                    <input type="radio" id="{{ x }}" value="{{ x }}" name="kind" class="custom-control-input">
-                                    <label class="custom-control-label" for="{{ x }}">{{ y }}</label>
-                                </div>
-                            {% endfor %}
+
+                    {% bootstrap_form_errors form type="all" %}
+
+                    <h5>Vous êtes <strong class="text-warning fs-base">*</strong></h5>
+
+                    <div class="row">
+                        <div class="col-8">
+                            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
+                                {% bootstrap_field form.kind %}
+                            </fieldset>
                         </div>
-                    </fieldset>
-            
-                    <fieldset class="mb-3 mb-lg-5">
-                        <h3>Contact et coordonnées de votre entreprise</h3>
-                        <div class="form-group row">
-                            <label class="col-12 col-md-3 col-form-label">
-                                {{ form.first_name.label }} <strong class="text-warning">*</strong>
-                            </label>
-                            <div class="col-12 col-md-6">
-                                {{ form.first_name }}
-                            </div>
+                    </div>
+
+                    <br />
+
+                    <h5>Contact et coordonnées de votre entreprise</h5>
+
+                    <div class="row">
+                        <div class="col-8">
+                            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
+                                {% bootstrap_field form.first_name %}
+                                {% bootstrap_field form.last_name %}
+                                {% bootstrap_field form.phone %}
+                                {% bootstrap_field form.company_name form_group_class="company-name-form-group form-group-required d-none" %}
+                            </fieldset>
                         </div>
-                        <div class="form-group row">
-                            <label class="col-12 col-md-3 col-form-label">{{ form.last_name.label }} <strong class="text-warning">*</strong></label>
-                            <div class="col-12 col-md-6">
-                                {{ form.last_name }} 
-                            </div>
+                    </div>
+
+                    <br />
+
+                    <h5>Création du mot de passe</h5>
+
+                    <div class="row">
+                        <div class="col-8">
+                            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
+                                {% bootstrap_field form.email %}
+                                {% bootstrap_field form.password1 %}
+                                {% bootstrap_field form.password2 %}
+                            </fieldset>
                         </div>
-                        <div class="form-group row">
-                            <label class="col-12 col-md-3 col-form-label">{{ form.phone.label }}</label>
-                            <div class="col-12 col-md-6">
-                                {{ form.phone }}
-                            </div>
-                        </div>
-                    </fieldset>
-            
-                    <fieldset>
-                        <h3>Création du mot de passe</h3>
-                        <div class="form-group row">
-                            <label class="col-12 col-md-3 col-form-label">{{ form.email.label }} <strong class="text-warning">*</strong></label>
-                            <div class="col-12 col-md-6">
-                                {{ form.email }}
-                                <small class="form-text text-muted">{{ form.email.help_text }}</small>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-12 col-md-3 col-form-label">{{ form.password1.label }} <strong class="text-warning">*</strong></label>
-                            <div class="col-12 col-md-6">
-                                {{ form.password1 }}
-                                <small class="form-text text-muted">{{ form.password1.help_text }}</small>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-12 col-md-3 col-form-label">{{ form.password2.label }} <strong class="text-warning">*</strong></label>
-                            <div class="col-12 col-md-6">
-                                {{ form.password2 }}
-                            </div>
-                        </div>
-                    </fieldset>
+                    </div>
+
+                    <br />
+
+                    {% bootstrap_field form.accept_rgpd %}
+                    {% bootstrap_field form.accept_survey form_group_class="accept-survey-form-group d-none" %}
+
                     <div class="row">
                         <div class="col-12 offset-md-3 col-md-auto pt-3">
                             <button type="submit" class="btn btn-primary btn-block btn-ico">
@@ -89,4 +76,28 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let companyNameFormGroupDiv = document.getElementsByClassName('company-name-form-group')[0];
+    let companyNameInput = document.getElementById('id_company_name');
+
+    let acceptSurveyFormGroupDiv = document.getElementsByClassName('accept-survey-form-group')[0];
+
+    let kindRadios = document.querySelectorAll('input[type=radio][name="kind"]');
+    kindRadios.forEach(radio => radio.addEventListener('change', () => {
+        if (radio.value !== 'SIAE') {
+            companyNameFormGroupDiv.classList.remove('d-none');
+            companyNameInput.required = true;
+            acceptSurveyFormGroupDiv.classList.remove('d-none');
+        } else {
+            companyNameFormGroupDiv.classList.add('d-none');
+            companyNameInput.required = false;
+            acceptSurveyFormGroupDiv.classList.add('d-none');
+        }
+    }));
+});
+</script>
 {% endblock %}
