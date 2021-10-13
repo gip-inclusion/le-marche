@@ -1,23 +1,18 @@
 {% extends "dashboard/siae_edit_base.html" %}
+{% load bootstrap4 %}
 
 {% block content_siae_form %}
-{% if form.errors %}
-    <div class="alert alert-danger mb-3 mb-lg-5" role="alert">{{ form.errors }}</div>
-{% endif %}
-
 <form method="POST" action="" class="mb-3 mb-lg-5">
     {% csrf_token %}
+
+    {% bootstrap_form_errors form type="all" %}
 
     <h5>Présenter votre structure</h5>
 
     <div class="row">
         <div class="col-8">
             <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                <div class="form-group">
-                    <div>
-                        {{ form.description }}
-                    </div>
-                </div>
+                {% bootstrap_field form.description show_label=False %}
             </fieldset>
         </div>
         <div class="col-4">
@@ -32,17 +27,13 @@
 
     <br />
     
-    <h5>Détails des prestations effectués <small>(matériels, lieux, savoirs faire…)</small></h5>
+    <h5>Détails des prestations effectués <small class="text-muted">(matériels, lieux, savoirs faire…)</small></h5>
 
     <div class="row">
         <div class="col-8">
             <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                {{ offer_formset.management_form }}
-                {% for form in offer_formset %}
-                    <div class="{{ offer_formset.prefix }}">
-                        <div>{{ form }}</div>
-                    </div>
-                {% endfor %}
+                {% bootstrap_formset_errors offer_formset %}
+                {% bootstrap_formset offer_formset %}
             </fieldset>
         </div>
         <div class="col-4">
@@ -66,12 +57,8 @@
     <div class="row">
         <div class="col-8">
             <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                {{ client_reference_formset.management_form }}
-                {% for form in client_reference_formset %}
-                    <div class="{{ client_reference_formset.prefix }}">
-                        <div>{{ form }}</div>
-                    </div>
-                {% endfor %}
+                {% bootstrap_formset_errors client_reference_formset %}
+                {% bootstrap_formset client_reference_formset %}
             </fieldset>
         </div>
         <div class="col-4">
@@ -88,8 +75,8 @@
     </div>
 
     <div class="row">
-        <div class="col-12 offset-md-3 col-md-auto pt-3">
-            <button type="submit" class="btn btn-primary btn-block btn-ico">
+        <div class="col-12 pt-3">
+            <button type="submit" class="btn btn-primary btn-ico">
                 <span>Enregistrer mes modifications</span>
             </button>
         </div>

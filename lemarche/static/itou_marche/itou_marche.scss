@@ -16,6 +16,9 @@
 @import 'sections/flatpage';
 
 // TODO: move somewhere else
+.form-group > label {
+  font-weight: bold;
+}
 .form-group-required > label::after,
 .form-group-required > div > label::after {
   content: " *";
