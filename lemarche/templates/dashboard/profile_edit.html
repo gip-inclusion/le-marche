@@ -1,4 +1,5 @@
 {% extends "layouts/base.html" %}
+{% load bootstrap4 %}
 
 {% block title %}Modifier mon profil{{ block.super }}{% endblock %}
 
@@ -29,56 +30,34 @@
                 
                 <form method="POST" action="" class="mb-3 mb-lg-5">
                     {% csrf_token %}
-                    <div class="form-group row">
-                        <label class="col-12 col-md-3 col-form-label">
-                            {{ form.first_name.label }} <strong class="text-warning">*</strong>
-                        </label>
-                        <div class="col-12 col-md-6">
-                            {{ form.first_name }}
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-12 col-md-3 col-form-label">
-                            {{ form.last_name.label }} <strong class="text-warning">*</strong>
-                        </label>
-                        <div class="col-12 col-md-6">
-                            {{ form.last_name }}
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-12 col-md-3 col-form-label">
-                            {{ form.email.label }} <strong class="text-warning">*</strong>
-                        </label>
-                        <div class="col-12 col-md-6">
-                            {{ form.email }}
-                            <small class="form-text text-muted">
-                                Vous souhaitez mettre à jour votre adresse e-mail ?<br />
-                                Veuillez nous <a href="{% url 'pages:contact' %}">contacter</a>.
-                            </small>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-12 col-md-3 col-form-label">
-                            {{ form.phone.label }}
-                        </label>
-                        <div class="col-12 col-md-6">
-                            {{ form.phone }}
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-12 col-md-3 col-form-label">
-                            Mot de passe
-                        </label>
-                        <div class="col-12 col-md-6">
-                            <small class="form-text text-muted">
-                                Vous souhaitez mettre à jour votre mot de passe ?<br />
-                                Pour cela, rendez-vous sur la page de connexion (déconnectez-vous au préalable), puis cliquez sur "Mot de passe oublié".
-                            </small>
-                        </div>
-                    </div>
+
+                    {% bootstrap_form_errors form type="all" %}
+
                     <div class="row">
-                        <div class="col-12 offset-md-3 col-md-auto pt-3">
-                            <button type="submit" class="btn btn-primary btn-block btn-ico">
+                        <div class="col-md-8">
+                            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
+                                {% bootstrap_field form.first_name %}
+                                {% bootstrap_field form.last_name %}
+                                {% bootstrap_field form.email form_group_class="form-group mb-0" %}
+                                <small class="form-text text-muted mb-3">
+                                    Vous souhaitez mettre à jour votre adresse e-mail ?<br />
+                                    Veuillez nous <a href="{% url 'pages:contact' %}">contacter</a>.
+                                </small>
+                                {% bootstrap_field form.phone %}
+                                <div class="form-group">
+                                    <label class="mb-0">Mot de passe</label>
+                                    <small class="form-text text-muted">
+                                        Vous souhaitez mettre à jour votre mot de passe ?<br />
+                                        Pour cela, déconnectez-vous. Rendez-vous ensuite sur la page de connexion, puis cliquez sur "Mot de passe oublié".
+                                    </small>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-8 offset-md-2 pt-3">
+                            <button type="submit" class="btn btn-primary btn-ico">
                                 <span>Sauvegarder</span>
                             </button>
                         </div>

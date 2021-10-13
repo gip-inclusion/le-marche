@@ -64,6 +64,4 @@ class SignupForm(UserCreationForm):
 
 
 class PasswordResetForm(PasswordResetForm):
-    email = forms.EmailField(
-        label="Votre adresse e-mail", widget=forms.TextInput(attrs={"class": "form-control"}), required=True
-    )
+    email = forms.EmailField(label="Votre adresse e-mail", required=True)

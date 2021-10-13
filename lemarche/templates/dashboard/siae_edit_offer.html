@@ -1,23 +1,18 @@
 {% extends "dashboard/siae_edit_base.html" %}
+{% load bootstrap4 %}
 
 {% block content_siae_form %}
-{% if form.errors %}
-    <div class="alert alert-danger mb-3 mb-lg-5" role="alert">{{ form.errors }}</div>
-{% endif %}
-
 <form method="POST" action="" class="mb-3 mb-lg-5">
     {% csrf_token %}
 
-    <h5>{{ form.presta_type.label }} <strong class="text-warning">*</strong></h5>
+    {% bootstrap_form_errors form type="all" %}
+
+    <h5>{{ form.presta_type.label }} <strong class="text-marche">*</strong></h5>
 
     <div class="row">
         <div class="col-8">
             <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                <div class="form-group">
-                    <div>
-                        {{ form.presta_type }}
-                    </div>
-                </div>
+                {% bootstrap_field form.presta_type show_label=False %}
             </fieldset>
         </div>
         <div class="col-4">
@@ -32,17 +27,13 @@
 
     <br />
 
-    <h5>{{ form.geo_range.label }} <strong class="text-warning">*</strong></h5>
+    <h5>{{ form.geo_range.label }} <strong class="text-marche">*</strong></h5>
 
     <div class="row">
         <div class="col-8">
             <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                <div class="form-group">
-                    <div>
-                        {{ form.geo_range }}
-                    </div>
-                    {{ form.geo_range_custom_distance }}
-                </div>
+                {% bootstrap_field form.geo_range show_label=False %}
+                {{ form.geo_range_custom_distance }}
             </fieldset>
         </div>
         <div class="col-4">
@@ -63,11 +54,7 @@
     <div class="row">
         <div class="col-8">
             <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                <div class="form-group">
-                    <div>
-                        {{ form.sectors }}
-                    </div>
-                </div>
+                {% bootstrap_field form.sectors show_label=False %}
             </fieldset>
         </div>
         <div class="col-4">
@@ -81,8 +68,8 @@
     </div>
 
     <div class="row">
-        <div class="col-12 offset-md-3 col-md-auto pt-3">
-            <button type="submit" class="btn btn-primary btn-block btn-ico">
+        <div class="col-12 pt-3">
+            <button type="submit" class="btn btn-primary btn-ico">
                 <span>Enregistrer mes modifications</span>
             </button>
         </div>

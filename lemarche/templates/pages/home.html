@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load static %}
+{% load static bootstrap4 %}
 
 {% block title %}Accueil{{ block.super }}{% endblock %}
 {% block meta_twitter_title %}Accueil - {{ block.super }}{% endblock %}
@@ -23,15 +23,10 @@
                     <fieldset>
                         <legend class="s-hp-01__form__legend ff-extra-01">Que cherchez-vous ?</legend>
                         <p class="h4 mb-3 mb-lg-5">Trouver ici toutes les structures de l’insertion et du handicap (les ESAT arrivent bientôt)</p>
-                        <div id="dir_form" class="form-group">
-                            <label class="h5" for="sector">{{ form.sectors.label }}</label>
-                            <div class="multiselect itou-multiselect listing-category">
-                                {{ form.sectors }}
-                            </div>
-                        </div>
-                        {{ form.perimeter }}
+                        {% bootstrap_field form.sectors %}
+                        {% bootstrap_field form.perimeter %}
                         <div id="dir_form_perimeter_name" class="form-group">
-                            <label class="h5" for="perimeter_name">{{ form.perimeter_name.label }}</label>
+                            <label for="perimeter_name">{{ form.perimeter_name.label }}</label>
                             <div>
                                 {# {{ form.perimeter_name }} #}
                             </div>

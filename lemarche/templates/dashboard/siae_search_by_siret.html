@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load get_verbose_name %}
+{% load bootstrap4 get_verbose_name %}
 
 {% block title %}Rechercher ma structure{{ block.super }}{% endblock %}
 
@@ -33,22 +33,20 @@
                     <small>Si vous en avez plusieurs, vous aurez la possibilité de spécifier d'autres structures par la suite.</small>
                 </p>
 
-                <br />
-
-                {% if form.errors %}
-                    <div class="alert alert-danger mb-3 mb-lg-5" role="alert">{{ form.errors }}</div>
-                {% endif %}
-
                 <form method="GET" action="{% url 'dashboard:siae_search_by_siret' %}" class="mb-3 mb-lg-5">
-                    <div class="form-group">
-                        <label for="{{ form.siret.id_for_label }}">
-                            {{ form.siret.label }} <strong class="text-warning">*</strong>
-                        </label>
-                        {{ form.siret }}
-                    </div>
+                    {% bootstrap_form_errors form type="all" %}
+
                     <div class="row">
-                        <div class="col-12 col-md-auto pt-3">
-                            <button type="submit" class="btn btn-primary btn-block btn-ico">
+                        <div class="col-md-8">
+                            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
+                                {% bootstrap_field form.siret %}
+                            </fieldset>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-8 pt-3">
+                            <button type="submit" class="btn btn-primary btn-ico">
                                 <span>Rechercher</span>
                             </button>
                         </div>

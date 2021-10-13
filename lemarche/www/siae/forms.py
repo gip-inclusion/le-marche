@@ -29,7 +29,7 @@ class SiaeSearchForm(forms.Form):
         choices_groupby="group",
         to_field_name="slug",
         required=False,
-        widget=forms.Select(attrs={"style": "width:100%"}),
+        # widget=forms.Select(),
     )
     # The hidden `perimeter` field is populated by the autocomplete JavaScript mechanism,
     # see `perimeter_autocomplete_field.js`.
@@ -38,25 +38,18 @@ class SiaeSearchForm(forms.Form):
     perimeter_name = forms.CharField(
         label="Lieu d'intervention",
         required=False,
-        widget=forms.TextInput(attrs={"placeholder": "Région, département, ville", "style": "width:100%"}),
+        widget=forms.TextInput(attrs={"placeholder": "Région, département, ville"}),
     )
     kind = forms.ChoiceField(
         label="Type de structure",
         choices=FORM_KIND_CHOICES,
         required=False,
-        widget=forms.Select(attrs={"style": "width:100%"}),
     )
     presta_type = forms.ChoiceField(
         label="Type de prestation",
         choices=FORM_PRESTA_CHOICES,
         required=False,
-        widget=forms.Select(attrs={"style": "width:100%"}),
     )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].widget.attrs.update({"class": "form-control"})
 
     def clean(self):
         """

@@ -1,58 +1,22 @@
 {% extends "dashboard/siae_edit_base.html" %}
+{% load bootstrap4 %}
 
 {% block content_siae_form %}
-{% if form.errors %}
-    <div class="alert alert-danger mb-3 mb-lg-5" role="alert">{{ form.errors }}</div>
-{% endif %}
-
 <form method="POST" action="" class="mb-3 mb-lg-5">
     {% csrf_token %}
+
+    {% bootstrap_form_errors form type="all" %}
 
     <h5>Informations & Contact</h5>
 
     <div class="row">
         <div class="col-8">
             <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                <div class="form-group">
-                    <label>
-                        {{ form.contact_first_name.label }}
-                    </label>
-                    <div>
-                        {{ form.contact_first_name }}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>
-                        {{ form.contact_last_name.label }}
-                    </label>
-                    <div>
-                        {{ form.contact_last_name }}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>
-                        {{ form.contact_phone.label }}
-                    </label>
-                    <div>
-                        {{ form.contact_phone }}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>
-                        {{ form.contact_email.label }}
-                    </label>
-                    <div>
-                        {{ form.contact_email }}
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>
-                        {{ form.contact_website.label }}
-                    </label>
-                    <div>
-                        {{ form.contact_website }}
-                    </div>
-                </div>
+                {% bootstrap_field form.contact_first_name %}
+                {% bootstrap_field form.contact_last_name %}
+                {% bootstrap_field form.contact_phone %}
+                {% bootstrap_field form.contact_email %}
+                {% bootstrap_field form.contact_website %}
                 <!-- Logo -->
             </fieldset>
         </div>
@@ -73,93 +37,23 @@
     <div class="row">
         <div class="col-8">
             <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                <div class="form-group row">
-                    <label class="col-12 col-md-3 col-form-label">
-                        {{ form.name.label }} <strong class="text-warning">*</strong>
-                    </label>
-                    <div class="col-12 col-md-9">
-                        {{ form.name }}
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-12 col-md-3 col-form-label">
-                        {{ form.brand.label }} <strong class="text-warning">*</strong>
-                    </label>
-                    <div class="col-12 col-md-9">
-                        {{ form.brand }}
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-12 col-md-3 col-form-label">
-                        {{ form.siret.label }} <strong class="text-warning">*</strong>
-                    </label>
-                    <div class="col-12 col-md-9">
-                        {{ form.siret }}
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-12 col-md-3 col-form-label">
-                        {{ form.kind.label }} <strong class="text-warning">*</strong>
-                    </label>
-                    <div class="col-12 col-md-9">
-                        {{ form.kind }}
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-12 col-md-3 col-form-label">
-                        {{ form.email.label }} <strong class="text-warning">*</strong>
-                    </label>
-                    <div class="col-12 col-md-9">
-                        {{ form.email }}
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-12 col-md-3 col-form-label">
-                        {{ form.phone.label }} <strong class="text-warning">*</strong>
-                    </label>
-                    <div class="col-12 col-md-9">
-                        {{ form.phone }}
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-12 col-md-3 col-form-label">
-                        {{ form.city.label }} <strong class="text-warning">*</strong>
-                    </label>
-                    <div class="col-12 col-md-9">
-                        {{ form.city }}
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-12 col-md-3 col-form-label">
-                        {{ form.post_code.label }} <strong class="text-warning">*</strong>
-                    </label>
-                    <div class="col-12 col-md-9">
-                        {{ form.post_code }}
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-12 col-md-3 col-form-label">
-                        {{ form.department.label }} <strong class="text-warning">*</strong>
-                    </label>
-                    <div class="col-12 col-md-9">
-                        {{ form.department }}
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-12 col-md-3 col-form-label">
-                        {{ form.region.label }} <strong class="text-warning">*</strong>
-                    </label>
-                    <div class="col-12 col-md-9">
-                        {{ form.region }}
-                    </div>
-                </div>
+                {% bootstrap_field form.name layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
+                {% bootstrap_field form.brand layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
+                {% bootstrap_field form.siret layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
+                {% bootstrap_field form.kind layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
+                {% bootstrap_field form.email layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
+                {% bootstrap_field form.phone layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
+                {% bootstrap_field form.city layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
+                {% bootstrap_field form.post_code layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
+                {% bootstrap_field form.department layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
+                {% bootstrap_field form.region layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
             </fieldset>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-12 offset-md-3 col-md-auto pt-3">
-            <button type="submit" class="btn btn-primary btn-block btn-ico">
+        <div class="col-12 pt-3">
+            <button type="submit" class="btn btn-primary btn-ico">
                 <span>Enregistrer mes modifications</span>
             </button>
         </div>
