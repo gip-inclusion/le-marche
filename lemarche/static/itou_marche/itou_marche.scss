@@ -15,4 +15,9 @@
 @import 'sections/filiere';
 @import 'sections/flatpage';
 
-// Layout
+// TODO: move somewhere else
+.form-group-required > label::after,
+.form-group-required > div > label::after {
+  content: " *";
+  color: $marche;
+}

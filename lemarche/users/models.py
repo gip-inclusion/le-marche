@@ -101,31 +101,32 @@ class User(AbstractUser):
     last_name = models.CharField("Nom", max_length=150)
     kind = models.CharField(verbose_name="Type", max_length=20, choices=KIND_CHOICES_WITH_ADMIN, blank=True, null=True)
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True, null=True)
+    company_name = models.CharField(verbose_name="Nom de l'entreprise", max_length=255, blank=True, null=True)
     api_key = models.CharField(verbose_name="Clé API", max_length=128, unique=True, blank=True, null=True)
+
+    accept_rgpd = models.BooleanField(help_text="J'accepte les conditions d'utilisation du service", default=False)
+    accept_survey = models.BooleanField(
+        help_text="J'accepte de répondre à une enquête deux fois par an afin de permettre de mesurer la progression des achats inclusifs en France",  # noqa
+        default=False,
+    )
+    accept_offers_for_pro_sector = models.BooleanField(
+        help_text="Je m'engage à ce que les offres déposées sur la Place de marché soient destinées à des structures professionnelles (association, secteur privé ou public)",  # noqa
+        default=False,
+    )
+    accept_quote_promise = models.BooleanField(
+        help_text="Je m'engage à traiter les demandes de devis qui me seront adressées (soumettre un devis, solliciter des informations complémentaires ou  refuser une demande constituent des réponses)",  # noqa
+        default=False,
+    )
 
     c4_id = models.IntegerField(blank=True, null=True)
     c4_phone_prefix = models.CharField(verbose_name="Indicatif international", max_length=20, blank=True, null=True)
     c4_time_zone = models.CharField(verbose_name="Fuseau", max_length=150, blank=True, null=True)
     c4_website = models.URLField(verbose_name="Site web", blank=True, null=True)
-    c4_company_name = models.CharField(verbose_name="Nom de l'entreprise", max_length=255, blank=True, null=True)
     c4_siret = models.CharField(verbose_name="Siret ou Siren", max_length=14, blank=True, null=True)
     c4_naf = models.CharField(verbose_name="Naf", max_length=5, blank=True, null=True)
     c4_phone_verified = models.BooleanField(default=False)
     c4_email_verified = models.BooleanField(default=False)
     c4_id_card_verified = models.BooleanField(default=False)
-    c4_accept_survey = models.BooleanField(
-        help_text="J'accepte de répondre à une enquête deux fois par an afin de permettre de mesurer la progression des achats inclusifs en France",  # noqa
-        default=False,
-    )
-    c4_accept_rgpd = models.BooleanField(help_text="J'accepte les conditions d'utilisation du service", default=False)
-    c4_offers_for_pro_sector = models.BooleanField(
-        help_text="Je m'engage à ce que les offres déposées sur la Place de marché soient destinées à des structures professionnelles (association, secteur privé ou public)",  # noqa
-        default=False,
-    )
-    c4_quote_promise = models.BooleanField(
-        help_text="Je m'engage à traiter les demandes de devis qui me seront adressées (soumettre un devis, solliciter des informations complémentaires ou  refuser une demande constituent des réponses)",  # noqa
-        default=False,
-    )
 
     # is_active, is_staff, is_superuser
 
