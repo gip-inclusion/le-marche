@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load static show_first_form_error_message %}
+{% load static bootstrap4 show_first_form_error_message %}
 
 {% block title %}Recherche{{ block.super }}{% endblock %}
 
@@ -36,45 +36,26 @@
                     <div class="col-12 col-lg-8">
                         <div class="row first-row">
                             <div class="col-12 col-md-6 mt-4 pr-md-0">
-                                <div class="title">
-                                    {{ form.sectors.label }}
-                                </div>
-                                <div class="field-holder">
-                                    <div class="multiselect itou-multiselect listing-category">
-                                        {{ form.sectors }}
-                                    </div>
-                                </div>
+                                {% bootstrap_field form.sectors %}
                             </div>
-                            {{ form.perimeter }}
-                            <div  id="dir_form_perimeter_name" class="col-12 col-md-6 mt-4">
-                                <div class="title">
-                                    {{ form.perimeter_name.label }}
-                                </div>
-                                <div class="field-holder">
-                                    <div>
-                                        {# {{ form.perimeter_name }} #}
+                            {% bootstrap_field form.perimeter %}
+                            <div class="col-12 col-md-6 mt-4">
+                                <div id="dir_form_perimeter_name" class="form-group">
+                                    <label for="perimeter_name">{{ form.perimeter_name.label }}</label>
+                                    <div class="field-holder">
+                                        <div>
+                                            {# {{ form.perimeter_name }} #}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-12 col-md-6 mt-4 pr-md-0">
-                                <div class="title">
-                                    Type de structure
-                                </div>
-                                <div class="field-holder">
-                                    <div class="multiselect itou-multiselect structure-type">
-                                        {{ form.kind }}
-                                    </div>
-                                </div>
+                                {% bootstrap_field form.kind %}
                             </div>
                             <div class="col-12 col-md-6 mt-4">
-                                <div class="title">
-                                    Type de prestation
-                                </div>
-                                <div class="field-holder">
-                                    {{ form.presta_type }}
-                                </div>
+                                {% bootstrap_field form.presta_type %}
                             </div>
                         </div>
                         <div class="row">

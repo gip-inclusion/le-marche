@@ -170,8 +170,6 @@ class SiaeOfferForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].widget.attrs.update({"class": "form-control"})
         self.fields["description"].widget.attrs.update({"rows": 5})
 
 
@@ -182,11 +180,6 @@ class SiaeClientReferenceForm(forms.ModelForm):
     class Meta:
         model = SiaeClientReference
         fields = ["name", "image_name"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].widget.attrs.update({"class": "form-control"})
 
 
 SiaeClientReferenceFormSet = inlineformset_factory(
@@ -219,11 +212,6 @@ class SiaeLabelForm(forms.ModelForm):
     class Meta:
         model = SiaeLabel
         fields = ["name"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].widget.attrs.update({"class": "form-control"})
 
 
 SiaeLabelFormSet = inlineformset_factory(Siae, SiaeLabel, form=SiaeLabelForm, extra=2, can_delete=True)
