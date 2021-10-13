@@ -69,12 +69,12 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         SIAE_FIELDS_TO_EXPORT = [
             "name",
             "brand",
-            "siret",
+            "siret",  # siret_pretty ?
             "nature",
             "kind",
-            "email",  # TODO: c1 --> contact_email
-            "phone",  # TODO: c1 --> contact_phone
-            "website",  # TODO: c1/c4 --> contact_website
+            "contact_email",
+            "contact_phone",
+            "contact_website",
             "city",
             "department",
             "region",
@@ -82,7 +82,6 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
             "is_qpv",
             "sectors",
         ]
-        # siret_pretty
 
         writer = csv.writer(response)
         # header
@@ -91,6 +90,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         for siae in siae_list:
             siae_row = []
             for field_name in SIAE_FIELDS_TO_EXPORT:
+                # Improve display of some fields: ChoiceFields, BooleanFields, ManyToManyFields
                 if field_name == "nature":
                     siae_row.append(getattr(siae, f"get_{field_name}_display")())
                 elif field_name in ["is_qpv"]:
