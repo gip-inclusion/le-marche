@@ -49,6 +49,12 @@
                                 {{ form.phone }}
                             </div>
                         </div>
+                        <div id="company_name_form_group" class="form-group row" style="display:none">
+                            <label class="col-12 col-md-3 col-form-label">{{ form.company_name.label }} <strong class="text-warning">*</strong></label>
+                            <div class="col-12 col-md-6">
+                                {{ form.company_name }}
+                            </div>
+                        </div>
                     </fieldset>
             
                     <fieldset>
@@ -89,4 +95,25 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let companyNameFormGroupDiv = document.getElementById('company_name_form_group');
+    let companyNameInput = document.getElementById('id_company_name');
+    // console.log(document.querySelector('input[name="kind"]:checked').value);
+    let kindRadios = document.querySelectorAll('input[type=radio][name="kind"]');
+    kindRadios.forEach(radio => radio.addEventListener('change', () => {
+        console.log(radio.value);
+        if (radio.value !== 'SIAE') {
+            companyNameFormGroupDiv.style.display = 'flex';
+            companyNameInput.required = true;
+        } else {
+            companyNameFormGroupDiv.style.display = 'none';
+            companyNameInput.required = false;
+        }
+    }));
+});
+</script>
 {% endblock %}

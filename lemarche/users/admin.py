@@ -79,6 +79,7 @@ class UserAdmin(UserAdmin):
                     "last_name",
                     "kind",
                     "phone",
+                    "company_name",
                 )
             },
         ),

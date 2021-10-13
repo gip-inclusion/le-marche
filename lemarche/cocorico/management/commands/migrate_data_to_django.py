@@ -559,7 +559,6 @@ class Command(BaseCommand):
             rename_field(elem, "phone_prefix", "c4_phone_prefix")
             rename_field(elem, "time_zone", "c4_time_zone")
             rename_field(elem, "website", "c4_website")
-            rename_field(elem, "company_name", "c4_company_name")
             rename_field(elem, "siret", "c4_siret")
             rename_field(elem, "naf", "c4_naf")
             rename_field(elem, "phone_verified", "c4_phone_verified")
