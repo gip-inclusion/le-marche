@@ -7,16 +7,17 @@
 
     {% bootstrap_form_errors form type="all" %}
 
-    <h5>Les informations en plus</h5>
-
-    <div class="row">
-        <div class="col-8">
-            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                {% bootstrap_field form.is_cocontracting %}
-            </fieldset>
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h4">Les informations en plus</legend>
+                    {% bootstrap_field form.is_cocontracting %}
+                </fieldset>
+            </div>
         </div>
-        <div class="col-4">
-            <div role="alert" class="alert alert-info">
+        <div class="col-12 col-lg-4">
+            <div role="alert" class="alert alert-info mt-3 mt-lg-0">
                 <p>
                     <strong>Qu'est-ce que la co-traitance ?</strong><br />
                     En signalant que vous êtes ouvert à la co-traitance vous indiquez être prêt à répondre à un marché en groupement
@@ -25,32 +26,30 @@
             </div>
         </div>
     </div>
-
-    <br />
-    
-    <h5>Les réseaux</h5>
-
-    <div class="row">
-        <div class="col-8">
-            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                {% bootstrap_field form.networks show_label=False %}
-            </fieldset>
+        
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h4">Les réseaux</legend>
+                    {% bootstrap_field form.networks show_label=False %}
+                </fieldset>
+            </div>
         </div>
     </div>
-
-    <br />
-
-    <h5>Labels et certifications</h5>
-
-    <div class="row">
-        <div class="col-8">
-            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                {% bootstrap_formset_errors label_formset %}
-                {% bootstrap_formset label_formset %}
-            </fieldset>
+    
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h4">Labels et certifications</legend>
+                    {% bootstrap_formset_errors label_formset %}
+                    {% bootstrap_formset label_formset %}
+                </fieldset>
+            </div>
         </div>
-        <div class="col-4">
-            <div role="alert" class="alert alert-info">
+        <div class="col-12 col-lg-4">
+            <div role="alert" class="alert alert-info mt-3 mt-lg-0">
                 <p>
                     <strong>Pourquoi mettre des labels ?</strong><br />
                     Certains labels sont recherchés par nos acheteurs, c'est donc un plus de les rendre visible rapidement.<br />
@@ -60,12 +59,13 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12 pt-3">
-            <button type="submit" class="btn btn-primary btn-ico">
+    <div class="row mt-3 mt-lg-5 justify-content-end">
+        <div class="col-12 col-lg-auto px-5 px-lg-6">
+            <button type="submit" class="btn btn-primary btn-block">
                 <span>Enregistrer mes modifications</span>
             </button>
         </div>
+        <div class="col-12 col-lg-4"></div>
     </div>
 </form>
 {% endblock %}

@@ -6,7 +6,7 @@
 <section>
     <div class="container">
         <div class="row">
-            <div class="col-8">
+            <div class="col-12 col-lg">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
@@ -15,9 +15,10 @@
                     </ol>
                 </nav>
             </div>
-            <div class="col-4 pt-3">
-                <a href="{% url 'siae:detail' siae.id %}" target="_blank" class="btn btn-outline-primary btn-ico float-right is-external">
+            <div class="col-12 col-lg-auto pt-3">
+                <a href="{% url 'siae:detail' siae.id %}" target="_blank" class="btn btn-outline-primary btn-sm btn-ico btn-block">
                     <span>Voir la fiche</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M1.181 12C2.121 6.88 6.608 3 12 3c5.392 0 9.878 3.88 10.819 9-.94 5.12-5.427 9-10.819 9-5.392 0-9.878-3.88-10.819-9zM12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0-2a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
                 </a>
             </div>
         </div>
@@ -26,27 +27,31 @@
 {% endblock %}
 
 {% block content %}
-<section class="pt-4 pb-6 pb-lg-8">
-    <div class="container container-max-lg">
+<section class="pt-4 pt-lg-6 pb-6 pb-lg-8">
+    <div class="container">
+
         <!-- Navigation -->
-        <div class="pb-6">
-            <ul class="nav nav-tabs" style="justify-content: space-between;">
-                <li class="nav-item">
-                    <a href="{% url 'dashboard:siae_edit_info_contact' siae.id %}" class="nav-link {% if 'contact' in request.path %}active font-weight-bold{% endif %}">Informations & Contact</a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'dashboard:siae_edit_offer' siae.id %}" class="nav-link {% if 'offer' in request.path %}active font-weight-bold{% endif %}">Votre offre commerciale</a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'dashboard:siae_edit_presta' siae.id %}" class="nav-link {% if 'presta' in request.path %}active font-weight-bold{% endif %}">Vos prestations</a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'dashboard:siae_edit_other' siae.id %}" class="nav-link {% if 'other' in request.path %}active font-weight-bold{% endif %}">Les plus</a>
-                </li>
-            </ul>
+        <div class="row mb-3 mb-lg-5">
+            <div class="col-12">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard:siae_edit_info_contact' siae.id %}" class="nav-link {% if 'contact' in request.path %}active font-weight-bold{% endif %}">Informations & Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard:siae_edit_offer' siae.id %}" class="nav-link {% if 'offer' in request.path %}active font-weight-bold{% endif %}">Votre offre commerciale</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard:siae_edit_presta' siae.id %}" class="nav-link {% if 'presta' in request.path %}active font-weight-bold{% endif %}">Vos prestations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard:siae_edit_other' siae.id %}" class="nav-link {% if 'other' in request.path %}active font-weight-bold{% endif %}">Les plus</a>
+                    </li>
+                </ul>
+            </div>
         </div>
 
         {% block content_siae_form %}{% endblock %}
+
     </div>
 </section>
 {% endblock %}
