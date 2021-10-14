@@ -10,6 +10,26 @@ $gray-800: #3F3E62;
 $gray-900: #000638;
 $black: #383838;
 
+$blue:    #0c2c78;
+$indigo:  #6610f2 !default;
+$purple:  #6f42c1 !default;
+$pink:    #e83e8c !default;
+$red:     #dc3545 !default;
+$orange:  #fd7e14 !default;
+$yellow:  #ffc107 !default;
+$green:   #28a745 !default;
+$teal:    #20c997 !default;
+$cyan:    #17a2b8 !default;
+
+$primary:       $gray-900;
+$secondary:     $gray-800;
+$success:       $green !default;
+$info:          $cyan !default;
+$warning:       $yellow !default;
+$danger:        $red !default;
+$light:         $gray-100 !default;
+$dark:          $black;
+
 $marche: #FE5455;
 $marche-light: #FFDDDD;
 $marche-lighter: #FFEEEE;

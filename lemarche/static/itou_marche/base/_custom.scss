@@ -1,0 +1,15 @@
+.form-group > label {
+  font-weight: bold;
+}
+.form-group-required > label::after,
+.form-group-required > div > label::after {
+  content: " *";
+  font-weight: 900;
+  font-size: 1rem;
+}
+
+// .form-group > .checkbox > .checkbox-title::text {
+.form-group > .checkbox > .checkbox-title > *:not(div) {
+  font-weight: 900;
+  font-size: 1rem;
+}

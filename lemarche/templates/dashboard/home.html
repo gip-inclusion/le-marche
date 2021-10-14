@@ -22,18 +22,17 @@
 
 {% block content %}
 <section class="pt-4 pt-lg-6 pb-6 pb-lg-8">
-    <div class="container container-max-lg">
+    <div class="container">
         <div class="row">
             <div class="col-12">
-                <h2 id="profil" class="mb-3 mb-lg-5">Mon profil</h2>
-
-                <div class="s-cards-grid-01__row row">
-                    <div class="s-cards-grid-01__col col mb-3 mb-md-5">
+                <h2 id="profil" class="mb-3 mb-lg-5"><strong>Mon profil</strong></h2>
+                <div class="s-cards-grid-01__row row mb-3 mb-md-5">
+                    <div class="s-cards-grid-01__col col">
                         <div class="card c-card c-card--marche h-100 w-100">
                             <div class="card-body">
                                 <p class="h4 lh-base">
                                     {{ user.full_name }}
-                                    <small><span class="badge badge-pill badge-marche">{{ user.get_kind_display }}</span></small>
+                                    <span class="fs-sm badge-pill badge-marche">{{ user.get_kind_display }}</span>
                                 </p>
                                 <p title="{% get_verbose_name user 'email' %}">
                                     <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" /></span>
@@ -44,62 +43,84 @@
                                     {% if user.phone %}{{ user.phone }}{% endif %}
                                 </p>
                             </div>
-                            <div class="card-footer text-left">
-                                <a href="{% url 'dashboard:profile_edit' %}" class="btn btn-outline-primary btn-ico">
-                                    <span>Modifier</span>
-                                </a>
-                                <a href="{% url 'auth:logout' %}" class="btn btn-outline-primary btn-ico float-right">
-                                    <span>Déconnexion</span>
-                                </a>
+                            <div class="card-footer">
+                                <div class="row justify-content-end">
+                                    <div class="col-6 col-md-auto pr-2">
+                                        <a href="{% url 'dashboard:profile_edit' %}" class="btn btn-outline-primary btn-block btn-ico">
+                                            <span>Modifier</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12.9 6.858l4.242 4.243L7.242 21H3v-4.243l9.9-9.9zm1.414-1.414l2.121-2.122a1 1 0 0 1 1.414 0l2.829 2.829a1 1 0 0 1 0 1.414l-2.122 2.121-4.242-4.242z"/></svg>
+                                        </a>
+                                    </div>
+                                    <div class="col-6 col-md-auto pl-2">
+                                        <a href="{% url 'auth:logout' %}" class="btn btn-outline-primary btn-block">
+                                            <span>Déconnexion</span>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {% if user.kind == user.KIND_SIAE or user.kind == user.KIND_ADMIN %}
-                    <h2 id="structures" class="mb-3 mb-lg-5">
-                        {% if user.siaes.count > 1 %}Mes structures{% else %}Ma structure{% endif %}
-                    </h2>
-
+                    <hr class="mb-3 mb-lg-5">
+                    <div class="row justify-content-end mb-3 mb-lg-5">
+                        <div class="col-12 col-lg">
+                            <h2 id="structures">
+                                <strong>{% if user.siaes.count > 1 %}Mes structures{% else %}Ma structure{% endif %}</strong>
+                            </h2>
+                        </div>
+                        <div class="col-12 col-md-auto">
+                            <a href="{% url 'dashboard:siae_search_by_siret' %}" class="btn btn-primary btn-block btn-ico">
+                                <span>Ajouter une structure</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></svg>
+                            </a>
+                        </div>
+                    </div>
                     <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3">
                         {% for siae in user.siaes.all %}
-                        <div class="s-cards-grid-01__col col mb-3 mb-md-5">
+                        <div class="s-cards-grid-01__col col">
                             <div class="card c-card c-card--mini h-100 w-100">
                                 <div class="card-body">
                                     <p class="h4 lh-base">{{ siae.name }}</p>
-                                    <p title="{% get_verbose_name siae 'brand' %}">
+                                    <p title="{% get_verbose_name siae 'brand' %}" class="mb-0">
                                         <strong>{% get_verbose_name siae 'brand' %} :</strong>
                                         {{ siae.brand }}
                                     </p>
-                                    <p title="{% get_verbose_name siae 'siret' %}">
+                                    <p title="{% get_verbose_name siae 'siret' %}" class="mb-0">
                                         <strong>{% get_verbose_name siae 'siret' %} :</strong>
                                         {{ siae.siret }}
                                     </p>
-                                    <p title="{% get_verbose_name siae 'kind' %}">
+                                    <p title="{% get_verbose_name siae 'kind' %}" class="mb-0">
                                         <strong>{% get_verbose_name siae 'kind' %} :</strong>
                                         {{ siae.get_kind_name }}
                                     </p>
-                                    <p title="{% get_verbose_name siae 'nature' %}">
+                                    <p title="{% get_verbose_name siae 'nature' %}" class="mb-0">
                                         <strong>{% get_verbose_name siae 'nature' %} :</strong>
                                         {{ siae.get_nature_name }}
                                     </p>
                                 </div>
                                 <div class="card-footer">
-                                    <a href="{% url 'dashboard:siae_edit' siae.id %}" class="btn btn-outline-primary btn-ico">
-                                        <span>Modifier</span>
-                                    </a>
-                                    <a href="{% url 'siae:detail' siae.id %}" target="_blank" class="btn btn-outline-primary btn-ico float-right is-external">
-                                        <span>Afficher</span>
-                                    </a>
+                                    <div class="row justify-content-end">
+                                        <div class="col-6 col-md-auto pr-2">
+                                            <a href="{% url 'dashboard:siae_edit' siae.id %}" class="btn btn-outline-primary btn-sm btn-block btn-ico">
+                                                <span>Modifier</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12.9 6.858l4.242 4.243L7.242 21H3v-4.243l9.9-9.9zm1.414-1.414l2.121-2.122a1 1 0 0 1 1.414 0l2.829 2.829a1 1 0 0 1 0 1.414l-2.122 2.121-4.242-4.242z"/></svg>
+                                            </a>
+                                        </div>
+                                        <div class="col-6 col-md-auto pl-2">
+                                            <a href="{% url 'siae:detail' siae.id %}" target="_blank" class="btn btn-outline-primary btn-sm btn-block btn-ico">
+                                                <span>Voir</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M1.181 12C2.121 6.88 6.608 3 12 3c5.392 0 9.878 3.88 10.819 9-.94 5.12-5.427 9-10.819 9-5.392 0-9.878-3.88-10.819-9zM12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0-2a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         {% endfor %}
                     </div>
 
-                    <a href={% url 'dashboard:siae_search_by_siret' %} class="btn btn-outline-success btn-ico">
-                        <span>Ajouter une structure</span>
-                    </a>
                 {% endif %}
 
                 {# <h2 class="mb-3 mb-lg-5">Mes favoris</h2> #}
