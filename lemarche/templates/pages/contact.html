@@ -4,58 +4,47 @@
 
 {% block content %}
 <section class="pt-4 pt-lg-6 pb-6 pb-lg-8">
-    <div class="container container-max-lg">
+    <div class="container">
         <div class="row">
-            <div class="col-12">
-                <h2 class="mb-3 mb-lg-5">Nous contacter ?</h2>
+            <div class="col-12 col-lg-8">
+                <h2 class="mb-3 mb-lg-5"><strong>Nous contacter ?</strong></h2>
                 <form method="POST">
-                    {% csrf_token %}
-                    <div class="form-group row">
-                        <label class="col-12 col-md-3 col-form-label">
-                            {{ form.first_name.label }}
-                        </label>
-                        <div class="col-12 col-md-6">
+
+                    <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>{{ form.first_name.label }}</label>
                             {{ form.first_name }}
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-12 col-md-3 col-form-label">{{ form.last_name.label }}</label>
-                        <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label>{{ form.last_name.label }}</label>
                             {{ form.last_name }}
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-12 col-md-3 col-form-label">{{ form.email.label }} <strong class="text-warning">*</strong></label>
-                        <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label>{{ form.email.label }} <strong class="fs-base">*</strong></label>
                             {{ form.email }}
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-12 col-md-3 col-form-label">{{ form.phone.label }}</label>
-                        <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label>{{ form.phone.label }}</label>
                             {{ form.phone }}
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-12 col-md-3 col-form-label">{{ form.siret.label }}</label>
-                        <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label>{{ form.siret.label }}</label>
                             {{ form.siret }}
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-12 col-md-3 col-form-label">{{ form.subject.label }} <strong class="text-warning">*</strong></label>
-                        <div class="col-12 col-md-9">
+                        <div class="form-group">
+                            <label>{{ form.subject.label }} <strong class="fs-base">*</strong></label>
                             {{ form.subject }}
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-12 col-md-3 col-form-label">{{ form.message.label }} <strong class="text-warning">*</strong></label>
-                        <div class="col-12 col-md-9">
+                        <div class="form-group">
+                            <label>{{ form.message.label }} <strong class="fs-base">*</strong></label>
                             {{ form.message }}
                         </div>
+
                     </div>
-                    <div class="row">
-                        <div class="col-12 offset-md-3 col-md-auto pt-3">
+
+                    <div class="row mt-3 mt-lg-5 justify-content-end">
+                        <div class="col-12 col-lg-auto px-5 px-lg-6">
                             <button type="submit" class="btn btn-primary btn-block btn-ico">
                                 <span>Envoyer</span>
                                 <svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -63,7 +52,8 @@
                                 </svg>
                             </button>
                         </div>
-                    </div>
+                    </div>     
+
                 </form>
             </div>
         </div>

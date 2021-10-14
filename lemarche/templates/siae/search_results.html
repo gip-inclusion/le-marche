@@ -35,11 +35,11 @@
                 <div class="row">
                     <div class="col-12 col-lg-8">
                         <div class="row first-row">
-                            <div class="col-12 col-md-6 mt-4 pr-md-0">
+                            <div class="col-12 col-md-6 mt-lg-3 pr-md-0">
                                 {% bootstrap_field form.sectors %}
                             </div>
                             {% bootstrap_field form.perimeter %}
-                            <div class="col-12 col-md-6 mt-4">
+                            <div class="col-12 col-md-6 mt-lg-3">
                                 <div id="dir_form_perimeter_name" class="form-group">
                                     <label for="perimeter_name">{{ form.perimeter_name.label }}</label>
                                     <div class="field-holder">
@@ -51,17 +51,18 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-12 col-md-6 mt-4 pr-md-0">
+                            <div class="col-12 col-md-6 mt-lg-3 pr-md-0">
                                 {% bootstrap_field form.kind %}
                             </div>
-                            <div class="col-12 col-md-6 mt-4">
+                            <div class="col-12 col-md-6 mt-lg-3">
                                 {% bootstrap_field form.presta_type %}
                             </div>
                         </div>
                         <div class="row">
                         </div>
                     </div>
-                    <div class="col-12 col-sm-6 col-lg-2 mt-5 mt-lg-6 pr-lg-2">
+                    <div class="col-12 col-sm-6 col-lg-2 mt-3 pr-md-0 pr-lg-2">
+                        <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
                         <button class="btn btn-primary btn-block btn-ico" id="filter-submit" type="submit">
                             <span>Rechercher</span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 19">
@@ -69,7 +70,8 @@
                             </svg>
                         </button>
                     </div>
-                    <div class="col-12 col-sm-6 col-lg-2 mt-5 mt-lg-6 pl-lg-2">
+                    <div class="col-12 col-sm-6 col-lg-2 mt-3 pl-lg-2">
+                        <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
                         <a class="btn btn-outline-primary btn-block reset btn-ico" href="/fr/repertoire/siae">
                             <span>Réinitialiser</span>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -192,7 +194,7 @@
                 {{ form_widget(dlform.structureType, {'attr': {'style': 'display:none', 'class': 'jcf-ignore'}}) }}
                 {% do dlform.structureType.setRendered() %}
                 {% do dlform.address.setRendered() %}
-                <div class="col-12 col-md-3 offset-md-1 mt-4">
+                <div class="col-12 col-md-3 offset-md-1 mt-lg-3">
                     <div class="title d-block font-weight-bold mb-2">Format d'export</div>
                     <div class="field-holder">
                         {{form_widget(dlform.format,{
