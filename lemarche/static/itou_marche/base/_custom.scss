@@ -7,3 +7,9 @@
   font-weight: 900;
   font-size: 1rem;
 }
+
+// .form-group > .checkbox > .checkbox-title::text {
+.form-group > .checkbox > .checkbox-title > *:not(div) {
+  font-weight: 900;
+  font-size: 1rem;
+}
