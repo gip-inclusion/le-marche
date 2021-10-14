@@ -39,68 +39,142 @@
 <section class="s-siae-03">
     <div class="container">
         <div id="dir-profile" class="dir-profile-row row">
+
             <!-- contain the main content of the page -->
-            <div id="content" class="col-12 col-lg-8 listing-area">
-                <!-- profile-detail -->
-                <article class="profile-detail">
-                    <!-- First Row, company details -->
-                    <!-- gallery-small -->
-                    <div id="user_profile" class="row mb-5 mb-md-6 align-items-start">
-                        <div class="gallery-small slideshow col-12 col-lg-3">
-                            <div class="slideset">
-                                {% if siae.images.count %}
-                                    {% for image in siae.images.all %}
-                                        <div class="slide">
-                                            <img src="{{ image.name }}" alt="{{ siae.name }}" />
-                                        </div>
-                                    {% endfor %}
-                                {% else %}
+            <div id="content" class="col-12 listing-area">
+                <div id="user_profile" class="row align-items-start">
+                    <div class="gallery-small slideshow col-12 col-lg-3">
+                        <div class="slideset">
+                            {% if siae.images.count %}
+                                {% for image in siae.images.all %}
                                     <div class="slide">
-                                        <img src="{{ siae.image.name }}" alt="{{ siae.name }}" />
+                                        <img src="{{ image.name }}" alt="{{ siae.name }}" />
                                     </div>
-                                {% endif %}
-                            </div>
-                            <a href="#" class="btn-prev">précédent</a>
-                            <a href="#" class="btn-next">suivant</a>
+                                {% endfor %}
+                            {% else %}
+                                <div class="slide">
+                                    <img src="{{ siae.image.name }}" alt="{{ siae.name }}" />
+                                </div>
+                            {% endif %}
                         </div>
-                        <div class="col-12 col-lg-9 pl-md-5">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <h3 class="h3 mb-3 mt-1">
-                                        {% if siae.brand %}
-                                            {{ siae.brand }}
-                                        {% else %}
-                                            {{ siae.name }}
-                                        {% endif %}
-                                    </h3>
-                                </div>
+                        <a href="#" class="btn-prev">précédent</a>
+                        <a href="#" class="btn-next">suivant</a>
+                    </div>
+                    <div class="col-12 col-lg-9 pl-md-5">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h3 class="h3 mb-3 mt-1">
+                                    {% if siae.brand %}
+                                        {{ siae.brand }}
+                                    {% else %}
+                                        {{ siae.name }}
+                                    {% endif %}
+                                </h3>
                             </div>
-                            <div class="row">
-                                <div class="col-12 col-md-6 mb-3">
-                                    <span class="prof_icon mr-1"><img src="{% static 'img/prof_siret.svg' %}" /></span>
-                                    <span>Siret : {{ siae.siret }}</span>
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    <span class="prof_icon mr-1"><img src="{% static 'img/prof_types.svg' %}" /></span>
-                                    <span>{% array_choices_display siae 'presta_type' %}</span>
-                                </div>
-                                <div class="clearfix visible-md-block"></div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    <span class="prof_icon mr-1"><img src="{% static 'img/prof_workers.svg' %}" /></span>
-                                    <span>Salariés<sup>*</sup> : {% if siae.ig_employees %}{{ siae.ig_employees }}{% else %}non disponible{% endif %}</span>
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    <span class="prof_icon mr-1"><img src="{% static 'img/prof_nature.svg' %}" /></span>
-                                    <span>{{ siae.get_kind_display }}</span>
-                                </div>
-                                <div class="clearfix visible-md-block"></div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    <span class="prof_icon mr-1"><img src="{% static 'img/prof_calendar.svg' %}" /></span>
-                                    <span>Date de création<sup>*</sup> : non disponible</span>
-                                </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3">
+                                <span class="prof_icon mr-1"><img src="{% static 'img/prof_siret.svg' %}" /></span>
+                                <span>Siret : {{ siae.siret }}</span>
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                <span class="prof_icon mr-1"><img src="{% static 'img/prof_types.svg' %}" /></span>
+                                <span>{% array_choices_display siae 'presta_type' %}</span>
+                            </div>
+                            <div class="clearfix visible-md-block"></div>
+                            <div class="col-12 col-md-6 mb-3">
+                                <span class="prof_icon mr-1"><img src="{% static 'img/prof_workers.svg' %}" /></span>
+                                <span>Salariés<sup>*</sup> : {% if siae.ig_employees %}{{ siae.ig_employees }}{% else %}non disponible{% endif %}</span>
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                <span class="prof_icon mr-1"><img src="{% static 'img/prof_nature.svg' %}" /></span>
+                                <span>{{ siae.get_kind_display }}</span>
+                            </div>
+                            <div class="clearfix visible-md-block"></div>
+                            <div class="col-12 col-md-6 mb-3">
+                                <span class="prof_icon mr-1"><img src="{% static 'img/prof_calendar.svg' %}" /></span>
+                                <span>Date de création<sup>*</sup> : non disponible</span>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <aside id="sidebar" class="profile mb-3">
+                    {% if not siae.website and not user %}
+                    <div class="row">
+                        <!-- FIXME: établir la fonctionnalité
+                        <div class="col-xs-5 col-sm-12 col-md-5 mb-3">
+                            <button class="btn btn-sm btn-link btn-block pl-0">Enregistrer<i class="ml-2 icon-star-empty"></i></button>
+                        </div>
+                        -->
+                        <div class="col-12 mb-3">
+                            <a id="contact" href="https://itou.typeform.com/to/nxG0HlYx#data={{ siae.id }}" class="btn btn-outline-primary btn-block">Être recontacté</a>
+                        </div>
+                    </div>
+                    {% endif %}                
+                    <div class="profile_capsule">
+                        {% if siae.contact_website or siae.users.count %}
+                        <div class="map_coordonnees">
+                            <button class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-3" type="button" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
+                                <span>Afficher les coordonnées</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-up"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 8l6 6H6z"/></svg>
+                            </button>
+                            <div class="collapse mb-lg-2" id="collapseCoordonnees">
+                                <ul class="deflist">
+                                    {% if siae.contact_website %}
+                                        <li>
+                                            <span class="prof_icon"><img src="{% static 'img/profile-ico-web.svg' %}" /></span>
+                                            <a id="company_website" href="{{ siae.contact_website }}" target="_blank" rel="nofollow noopener">{{ siae.contact_website }}</a>
+                                        </li>
+                                    {% endif %}
+                                    {% if siae.users.count %}
+                                        {% if siae.contact_email %}
+                                            <li>
+                                                <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" /></span>
+                                                <span>{{ siae.contact_email }}</span>
+                                            </li>
+                                        {% endif %}
+                                        {% if siae.contact_phone %}
+                                            <li>
+                                                <span class="prof_icon"><img src="{% static 'img/profile-ico-phone.svg' %}" /></span>
+                                                <span>{{ siae.contact_phone }}</span>
+                                            </li>
+                                        {% endif %}
+                                        {% if siae.contact_short_name %}
+                                            <li>
+                                                <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" /></span>
+                                                <span>{{ siae.contact_short_name }}</span>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+                                    <li>
+                                        <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>
+                                        <span>{{ siae.post_code }} {{ siae.city }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="map-holder mb-3">
+                            <div id="map-company" class="map-canvas"></div>
+                        </div>
+                        <div class="map_details">
+                            <div class="d-flex mb-2">
+                                <span class="prof_icon"><img src="{% static 'img/profile-ico-geo.svg' %}" /></span>
+                                <span>Situé à {{ siae.city }}</span>
+                            </div>
+                            <div class="d-flex mb-2" title="{{ siae.geo_range_pretty_title }}">
+                                <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>
+                                <span>Intervient sur : {{ siae.geo_range_pretty_display }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="mt-5 d-block d-lg-none">
+                </aside>
+     
+                <!-- profile-detail suite -->
+                <article id="user_detail" class="profile-detail">
                     <!-- Second Row, Company Details -->
                     <div class="row mb-3">
                         <div class="col-sm-6 img-left mb-3 mb-md-5">
@@ -220,84 +294,9 @@
                         {% endif %}
                     </div>
                     {% endif %}
-                </article>
+                </article>                                
             </div>
 
-            <!-- Sidebar -->
-            <div class="col-12 col-lg-4">
-                <aside id="sidebar" class="profile">
-                    {% if not siae.website and not user %}
-                    <div class="row mb-3 mb-md-6">
-                        <div class="col-xs-5 col-sm-12 col-md-5 mb-3">
-                            <!-- FIXME: établir la fonctionnalité
-                            <button class="btn btn-sm btn-link btn-block pl-0">Enregistrer<i class="ml-2 icon-star-empty"></i></button>
-                            -->
-                        </div>
-                        <div class="col-xs-7 col-sm-12 col-md-7 mb-3">
-                            <a id="contact" href="https://itou.typeform.com/to/nxG0HlYx#data={{ siae.id }}" class="btn btn-sm btn-primary btn-block">Être recontacté<i class="ml-2 icon-mail-alt"></i></a>
-                        </div>
-                    </div>
-                    {% endif %}
-                    <div class="profile_capsule d-flex flex-column">
-                        {% if siae.contact_website or siae.users.count %}
-                        <div class="map_coordonnees order-2 order-lg-1">
-                            <button class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-3" type="button" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
-                                <span>Afficher les coordonnées</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-up"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 8l6 6H6z"/></svg>
-                            </button>
-                            <div class="collapse mb-lg-2" id="collapseCoordonnees">
-                                <ul class="deflist">
-                                    {% if siae.contact_website %}
-                                        <li>
-                                            <span class="prof_icon"><img src="{% static 'img/profile-ico-web.svg' %}" /></span>
-                                            <a id="company_website" href="{{ siae.contact_website }}" target="_blank" rel="nofollow noopener">{{ siae.contact_website }}</a>
-                                        </li>
-                                    {% endif %}
-                                    {% if siae.users.count %}
-                                        {% if siae.contact_email %}
-                                            <li>
-                                                <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" /></span>
-                                                <span>{{ siae.contact_email }}</span>
-                                            </li>
-                                        {% endif %}
-                                        {% if siae.contact_phone %}
-                                            <li>
-                                                <span class="prof_icon"><img src="{% static 'img/profile-ico-phone.svg' %}" /></span>
-                                                <span>{{ siae.contact_phone }}</span>
-                                            </li>
-                                        {% endif %}
-                                        {% if siae.contact_short_name %}
-                                            <li>
-                                                <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" /></span>
-                                                <span>{{ siae.contact_short_name }}</span>
-                                            </li>
-                                        {% endif %}
-                                    {% endif %}
-                                    <li>
-                                        <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>
-                                        <span>{{ siae.post_code }} {{ siae.city }}</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        {% endif %}
-                        <div class="map-holder order-1 order-lg-2 mb-3">
-                            <div id="map-company" class="map-canvas"></div>
-                        </div>
-                        <div class="map_details order-4">
-                            <div class="d-flex mb-2">
-                                <span class="prof_icon"><img src="{% static 'img/profile-ico-geo.svg' %}" /></span>
-                                <span>Situé à {{ siae.city }}</span>
-                            </div>
-                            <div class="d-flex mb-2" title="{{ siae.geo_range_pretty_title }}">
-                                <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>
-                                <span>Intervient sur : {{ siae.geo_range_pretty_display }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </aside>
-            </div>
         </div>
         <div class="row">
             <div class="col-12 mt-5 mb-6">
