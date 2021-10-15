@@ -22,9 +22,9 @@ urlpatterns = [
         name="filiere_recyclage",
     ),
     path(
-        "cest-quoi-linclusion/",
-        TemplateView.as_view(template_name="pages/cest-quoi-linclusion.html"),
-        name="cest-quoi-linclusion",
+        "decouvrir-inclusion/",
+        TemplateView.as_view(template_name="pages/decouvrir-inclusion.html"),
+        name="decouvrir-inclusion",
     ),
     # Flatpages (created in the admin)
     # path("", include("django.contrib.flatpages.urls")),

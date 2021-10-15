@@ -83,7 +83,7 @@
                                     </p>
                                 </div>
                             {% else %}
-                                <a href="{% url 'dashboard:siae_search_adopt_confirm' siae.id %}" class="btn btn-outline-primary">
+                                <a href="{% url 'dashboard:siae_search_adopt_confirm' siae.slug %}" class="btn btn-outline-primary">
                                     <span>Sélectionner</span>
                                 </a>
                             {% endif %}

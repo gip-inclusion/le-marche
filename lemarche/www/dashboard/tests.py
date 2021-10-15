@@ -15,7 +15,7 @@ class DashboardHomeViewTest(TestCase):
         url = reverse("dashboard:home")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/accounts/login/?next=/dashboard/")
+        self.assertEqual(response.url, "/accounts/login/?next=/profil/")
 
     def user_can_access_profile(self):
         self.client.login(email=self.user.email, password=DEFAULT_PASSWORD)
@@ -55,29 +55,29 @@ class SiaeSearchAdoptViewTest(TestCase):
             url = reverse("dashboard:siae_search_by_siret")
             response = self.client.get(url)
             self.assertEqual(response.status_code, 302)
-            self.assertEqual(response.url, "/dashboard/")
+            self.assertEqual(response.url, "/profil/")
 
     def test_only_siaes_without_users_can_be_adopted(self):
         self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
 
-        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_without_user.id])
+        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_without_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_with_user.id])
+        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_with_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/dashboard/")
+        self.assertEqual(response.url, "/profil/")
 
     def test_siae_without_user_adopt_confirm(self):
         self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
         self.assertEqual(self.siae_without_user.users.count(), 0)
         self.assertEqual(self.user_siae.siaes.count(), 1)  # setUpTestData
 
-        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_without_user.id])
+        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_without_user.slug])
         response = self.client.post(url)  # data={}
         self.assertEqual(response.status_code, 302)  # redirect to success_url
-        self.assertEqual(response.url, "/dashboard/")
+        self.assertEqual(response.url, "/profil/")
         self.assertEqual(self.siae_without_user.users.count(), 1)
         self.assertEqual(self.user_siae.siaes.count(), 1 + 1)
 
@@ -99,16 +99,16 @@ class SiaeEditView(TestCase):
 
     def test_only_siae_user_can_edit_siae(self):
         self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
-        url = reverse("dashboard:siae_edit", args=[self.siae_with_user.id])
+        url = reverse("dashboard:siae_edit", args=[self.siae_with_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, f"/dashboard/siae/{self.siae_with_user.id}/edit/info-contact/")
+        self.assertEqual(response.url, f"/profil/prestataires/{self.siae_with_user.slug}/modifier/info-contact/")
 
         self.client.login(email=self.other_user_siae.email, password=DEFAULT_PASSWORD)
-        url = reverse("dashboard:siae_edit", args=[self.siae_with_user.id])
+        url = reverse("dashboard:siae_edit", args=[self.siae_with_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        # self.assertEqual(response.url, "/dashboard/")  # redirects first to siae_edit_info_contact
+        # self.assertEqual(response.url, "/profil/")  # redirects first to siae_edit_info_contact
 
     def test_only_siae_user_can_edit_siae_tabs(self):
         SIAE_EDIT_URLS = [
@@ -119,13 +119,13 @@ class SiaeEditView(TestCase):
         ]
         self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
         for siae_edit_url in SIAE_EDIT_URLS:
-            url = reverse(siae_edit_url, args=[self.siae_with_user.id])
+            url = reverse(siae_edit_url, args=[self.siae_with_user.slug])
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
 
         self.client.login(email=self.other_user_siae.email, password=DEFAULT_PASSWORD)
         for siae_edit_url in SIAE_EDIT_URLS:
-            url = reverse(siae_edit_url, args=[self.siae_with_user.id])
+            url = reverse(siae_edit_url, args=[self.siae_with_user.slug])
             response = self.client.get(url)
             self.assertEqual(response.status_code, 302)
-            self.assertEqual(response.url, "/dashboard/")
+            self.assertEqual(response.url, "/profil/")
