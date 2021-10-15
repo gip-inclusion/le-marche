@@ -13,3 +13,8 @@
   font-weight: 900;
   font-size: 1rem;
 }
+
+/* Element is shown with JavaScript. See static > js > utils.js */
+.js-display-if-javascript-enabled {
+  display: none;
+}

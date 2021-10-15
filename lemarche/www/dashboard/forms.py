@@ -93,6 +93,7 @@ class SiaeEditInfoContactForm(forms.ModelForm):
             "contact_email",
             "contact_phone",
             "contact_website",
+            "logo_url",
         ]
 
     def __init__(self, *args, **kwargs):

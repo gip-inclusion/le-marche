@@ -1,0 +1,28 @@
+{% load static %}
+{% comment %}
+
+    https://github.com/feathericons/feather#svg-sprite
+    https://developer.mozilla.org/fr/docs/Web/SVG/Attribute
+
+    https://github.com/betagouv/itou/blob/master/itou/templates/includes/icon.html
+
+    Usage:
+        {% include "layouts/_icon.html" with icon="user-plus" %}
+    Use a title if the icon convey meaning:
+        {% include "layouts/_icon.html" with icon="user-plus" title="Search" %}
+
+{% endcomment %}
+<svg
+    class="{{ class|default:'icon' }}"
+    width="{{ size|default:'18' }}"
+    height="{{ size|default:'18' }}"
+    fill="{{ fill|default:'none' }}"
+    stroke="{{ stroke|default:'currentColor' }}"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    style="vertical-align: text-top;"
+>
+    {% if title %}<title>{{ title }}</title>{% endif %}
+    <use xlink:href="{% static 'icons/feather-sprite.svg' %}#{{ icon }}"></use>
+</svg>

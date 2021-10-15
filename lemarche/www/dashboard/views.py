@@ -7,6 +7,7 @@ from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
 from lemarche.siaes.models import Siae
+from lemarche.utils.s3 import S3Upload
 from lemarche.www.dashboard.forms import (
     ProfileEditForm,
     SiaeClientReferenceFormSet,
@@ -91,6 +92,17 @@ class SiaeEditInfoContactView(LoginRequiredMixin, SiaeOwnerRequiredMixin, Succes
     context_object_name = "siae"
     queryset = Siae.objects.all()
     success_message = "Vos modifications ont bien été prises en compte."
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        s3_upload = S3Upload(kind="siae_logo")
+        context["s3_form_values"] = s3_upload.form_values
+        context["s3_upload_config"] = s3_upload.config
+        return context
+
+    def post(self, request, *args, **kwargs):
+        print(request.POST)
+        return super().post(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse_lazy("dashboard:siae_edit_info_contact", args=[self.kwargs.get("slug")])

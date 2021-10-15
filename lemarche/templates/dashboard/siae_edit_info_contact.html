@@ -1,5 +1,9 @@
 {% extends "dashboard/siae_edit_base.html" %}
-{% load bootstrap4 %}
+{% load static bootstrap4 %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'vendor/dropzone-5.9.3/dropzone.min.css' %}" />
+{% endblock %}
 
 {% block content_siae_form %}
 <form method="POST" action="" class="mb-3 mb-lg-5">
@@ -18,6 +22,12 @@
                     {% bootstrap_field form.contact_email %}
                     {% bootstrap_field form.contact_website %}
                     <!-- Logo -->
+                    {{ form.logo_url.as_hidden }}
+                    <label for="logo_form" class="js-display-if-javascript-enabled">{{ form.logo_url.label }}</label>
+                    {% include "storage/s3_upload_form.html" with dropzone_form_id="logo_form" %}
+                    {% if siae.logo_url %}
+                        <img src="{{ siae.logo_url }}" />
+                    {% endif %}
                 </fieldset>
             </div>
         </div>
@@ -61,4 +71,23 @@
     </div>
 
 </form>
+{% endblock %}
+
+
+{% block extra_js %}
+<script src="{% static 'vendor/dropzone-5.9.3/dropzone.min.js' %}"></script>
+<script src="{% static 'js/s3_upload.js' %}"></script>
+{{ s3_form_values|json_script:"s3-form-values" }}
+{{ s3_upload_config|json_script:"s3-upload-config" }}
+<script>
+    s3UploadInit({
+        dropzoneSelector: "#logo_form",
+        callbackLocationSelector: "#{{ form.logo_url.id_for_label }}",
+        s3FormValuesId: "s3-form-values",
+        s3UploadConfigId: "s3-upload-config",
+        // Not really nice
+        sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
+        sentryCsrfToken: "{{ csrf_token }}"
+    });
+</script>
 {% endblock %}
