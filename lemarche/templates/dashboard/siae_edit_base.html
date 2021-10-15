@@ -16,7 +16,7 @@
                 </nav>
             </div>
             <div class="col-12 col-lg-auto pt-3">
-                <a href="{% url 'siae:detail' siae.id %}" target="_blank" class="btn btn-outline-primary btn-sm btn-block btn-ico">
+                <a href="{% url 'siae:detail' siae.slug %}" target="_blank" class="btn btn-outline-primary btn-sm btn-block btn-ico">
                     <span>Voir la fiche</span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M1.181 12C2.121 6.88 6.608 3 12 3c5.392 0 9.878 3.88 10.819 9-.94 5.12-5.427 9-10.819 9-5.392 0-9.878-3.88-10.819-9zM12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0-2a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
                 </a>
@@ -35,16 +35,16 @@
             <div class="col-12">
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a href="{% url 'dashboard:siae_edit_info_contact' siae.id %}" class="nav-link {% if 'contact' in request.path %}active font-weight-bold{% endif %}">Informations & Contact</a>
+                        <a href="{% url 'dashboard:siae_edit_info_contact' siae.slug %}" class="nav-link {% if 'contact' in request.path %}active font-weight-bold{% endif %}">Informations & Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{% url 'dashboard:siae_edit_offer' siae.id %}" class="nav-link {% if 'offer' in request.path %}active font-weight-bold{% endif %}">Votre offre commerciale</a>
+                        <a href="{% url 'dashboard:siae_edit_offer' siae.slug %}" class="nav-link {% if 'offre' in request.path %}active font-weight-bold{% endif %}">Votre offre commerciale</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{% url 'dashboard:siae_edit_presta' siae.id %}" class="nav-link {% if 'presta' in request.path %}active font-weight-bold{% endif %}">Vos prestations</a>
+                        <a href="{% url 'dashboard:siae_edit_presta' siae.slug %}" class="nav-link {% if 'prestation' in request.path %}active font-weight-bold{% endif %}">Vos prestations</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{% url 'dashboard:siae_edit_other' siae.id %}" class="nav-link {% if 'other' in request.path %}active font-weight-bold{% endif %}">Les plus</a>
+                        <a href="{% url 'dashboard:siae_edit_other' siae.slug %}" class="nav-link {% if 'autre' in request.path %}active font-weight-bold{% endif %}">Les plus</a>
                     </li>
                 </ul>
             </div>

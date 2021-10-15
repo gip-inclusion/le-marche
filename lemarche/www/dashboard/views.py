@@ -93,7 +93,7 @@ class SiaeEditInfoContactView(LoginRequiredMixin, SiaeOwnerRequiredMixin, Succes
     success_message = "Vos modifications ont bien été prises en compte."
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_info_contact", args=[self.kwargs.get("pk")])
+        return reverse_lazy("dashboard:siae_edit_info_contact", args=[self.kwargs.get("slug")])
 
 
 class SiaeEditOfferView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -104,7 +104,7 @@ class SiaeEditOfferView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessa
     success_message = "Vos modifications ont bien été prises en compte."
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_offer", args=[self.kwargs.get("pk")])
+        return reverse_lazy("dashboard:siae_edit_offer", args=[self.kwargs.get("slug")])
 
 
 class SiaeEditPrestaView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -147,7 +147,7 @@ class SiaeEditPrestaView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMess
         return self.render_to_response(self.get_context_data())
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_presta", args=[self.kwargs.get("pk")])
+        return reverse_lazy("dashboard:siae_edit_presta", args=[self.kwargs.get("slug")])
 
 
 class SiaeEditOtherView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -185,4 +185,4 @@ class SiaeEditOtherView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessa
         return self.render_to_response(self.get_context_data())
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_other", args=[self.kwargs.get("pk")])
+        return reverse_lazy("dashboard:siae_edit_other", args=[self.kwargs.get("slug")])

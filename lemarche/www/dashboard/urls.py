@@ -18,11 +18,11 @@ app_name = "dashboard"
 
 urlpatterns = [
     path("", DashboardHomeView.as_view(), name="home"),
-    path("profile-edit/", ProfileEditView.as_view(), name="profile_edit"),
-    path("siae/search/", SiaeSearchBySiretView.as_view(), name="siae_search_by_siret"),
-    path("siae/<int:pk>/adopt-confirm/", SiaeSearchAdoptConfirmView.as_view(), name="siae_search_adopt_confirm"),
+    path("modifier/", ProfileEditView.as_view(), name="profile_edit"),
+    path("prestataires/rechercher/", SiaeSearchBySiretView.as_view(), name="siae_search_by_siret"),
+    path("prestataires/<str:slug>/adopter/", SiaeSearchAdoptConfirmView.as_view(), name="siae_search_adopt_confirm"),
     path(
-        "siae/<int:pk>/edit/",
+        "prestataires/<str:slug>/modifier/",
         include(
             [
                 path(
@@ -31,10 +31,20 @@ urlpatterns = [
                     name="siae_edit",
                 ),
                 path("info-contact/", SiaeEditInfoContactView.as_view(), name="siae_edit_info_contact"),
-                path("offer/", SiaeEditOfferView.as_view(), name="siae_edit_offer"),
-                path("presta/", SiaeEditPrestaView.as_view(), name="siae_edit_presta"),
-                path("other/", SiaeEditOtherView.as_view(), name="siae_edit_other"),
+                path("offre/", SiaeEditOfferView.as_view(), name="siae_edit_offer"),
+                path("prestations/", SiaeEditPrestaView.as_view(), name="siae_edit_presta"),
+                path("autre/", SiaeEditOtherView.as_view(), name="siae_edit_other"),
             ]
         ),
+    ),
+    path(
+        "prestataires/<str:slug>/",
+        RedirectView.as_view(pattern_name="dashboard:siae_edit_info_contact", permanent=False),
+        name="siae",
+    ),
+    path(
+        "prestataires/",
+        RedirectView.as_view(pattern_name="dashboard:siae_search_by_siret", permanent=False),
+        name="siae_search",
     ),
 ]
