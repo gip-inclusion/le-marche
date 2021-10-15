@@ -1,6 +1,6 @@
 {% load static array_choices_display m2m_list_display %}
 
-<a href="{% url 'siae:detail' siae.id %}" class="siae-card-container card">
+<a href="{% url 'siae:detail' siae.slug %}" class="siae-card-container card">
     <div class="siae-card">
         <div class="sc-img mr-5">
             {% comment "hidden" %}
