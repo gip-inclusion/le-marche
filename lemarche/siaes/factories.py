@@ -11,6 +11,7 @@ class SiaeFactory(DjangoModelFactory):
         model = Siae
 
     name = factory.Faker("company", locale="fr_FR")
+    # slug auto-generated
     kind = Siae.KIND_EI
     nature = factory.fuzzy.FuzzyChoice([key for (key, value) in Siae.NATURE_CHOICES])
     presta_type = factory.List([factory.fuzzy.FuzzyChoice([key for (key, value) in Siae.PRESTA_CHOICES])])

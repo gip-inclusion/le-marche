@@ -12,7 +12,7 @@
                     <img src="{{ (ListingImageConstants.IMAGE_FOLDER ~ ListingImageConstants.IMAGE_DEFAULT) | imagine_filter('listing_xsmall') }}" height="40" alt="{{ siae.name }}"s class="rounded-circle mr-2" />
                 {% endif %}
                 {% endcomment %}
-                <a href="{% url 'siae:detail' siae.id %}" target="_blank" class="d-block font-weight-bold text-decoration-none lh-sm stretched-link">
+                <a href="{% url 'siae:detail' siae.slug %}" target="_blank" class="d-block font-weight-bold text-decoration-none lh-sm stretched-link">
                     {% if siae.brand %}
                         {{ siae.brand }}
                     {% else %}

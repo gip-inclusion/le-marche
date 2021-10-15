@@ -1,11 +1,14 @@
+from uuid import uuid4
+
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django.contrib.postgres.fields import ArrayField
-from django.db import models
+from django.db import IntegrityError, models, transaction
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.text import slugify
 
 from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY, get_department_code_from_name
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
@@ -88,6 +91,7 @@ class SiaeQuerySet(models.QuerySet):
 class Siae(models.Model):
     READONLY_FIELDS_FROM_C1 = [
         "name",
+        "slug",  # generated from 'name'
         "brand",
         "siret",
         "naf",
@@ -182,6 +186,7 @@ class Siae(models.Model):
     )
 
     name = models.CharField(verbose_name="Raison sociale", max_length=255)
+    slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
     brand = models.CharField(verbose_name="Enseigne", max_length=255, blank=True, null=True)
     kind = models.CharField(verbose_name="Type de structure", max_length=6, choices=KIND_CHOICES, default=KIND_EI)
     description = models.TextField(verbose_name="Description", blank=True)
@@ -278,6 +283,32 @@ class Siae(models.Model):
 
     def __str__(self):
         return self.name
+
+    def set_slug(self, with_uuid=False):
+        """
+        The slug field should be unique.
+        Some SIAE have duplicate name, so we suffix the slug with their department.
+        In some rare cases, name+department is not enough, so we add 4 random characters at the end.
+        """
+        # if not self.id:  # TODO: revert post-migration
+        self.slug = f"{slugify(self.name)[:40]}-{str(self.department or '')}"
+        if with_uuid:
+            self.slug += f"-{str(uuid4())[:4]}"
+
+    def save(self, *args, **kwargs):
+        """Generate the slug field before saving."""
+        try:
+            self.set_slug()
+            with transaction.atomic():
+                super().save(*args, **kwargs)
+        except IntegrityError as e:
+            # check that it's a slug conflict
+            # Full message expected: duplicate key value violates unique constraint "siaes_siae_slug_0f0b821f_uniq" DETAIL:  Key (slug)=(...) already exists.  # noqa
+            if "siaes_siae_slug" in str(e):
+                self.set_slug(with_uuid=True)
+                super().save(*args, **kwargs)
+            else:
+                raise e
 
     @property
     def latitude(self):
