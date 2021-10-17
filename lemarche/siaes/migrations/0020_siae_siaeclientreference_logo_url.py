@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("siaes", "0018_alter_siae_slug"),
+        ("siaes", "0019_auto_20211017_1955"),
     ]
 
     operations = [
@@ -19,5 +19,10 @@ class Migration(migrations.Migration):
             model_name="siae",
             name="website",
             field=models.URLField(blank=True, null=True, verbose_name="Site internet"),
+        ),
+        migrations.AddField(
+            model_name="siaeclientreference",
+            name="logo_url",
+            field=models.URLField(blank=True, max_length=500, null=True, verbose_name="Lien vers le logo"),
         ),
     ]

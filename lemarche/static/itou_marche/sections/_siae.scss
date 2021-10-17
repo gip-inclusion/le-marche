@@ -630,7 +630,12 @@
 }
 .active_sectors {
     padding-left:0;
-}	
+}
+
+img.client-ref {
+	max-height: 100px;
+	max-width: 100px;
+}
 }
 
 // TODO: improve css overwrite of alphagov typeahead library

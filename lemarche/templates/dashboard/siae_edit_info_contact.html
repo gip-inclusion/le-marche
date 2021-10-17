@@ -26,10 +26,12 @@
                         {{ form.logo_url.as_hidden }}
                         <label for="logo_form" class="js-display-if-javascript-enabled">Logo</label>
                         {% include "storage/s3_upload_form.html" with dropzone_form_id="logo_form" %}
+                    </div>
+                    <div class="form-group">
                         <label>Logo actuel</label>
-                        {% if siae.logo_url %}
+                        {% if form.logo_url.value %}
                             <div>
-                                <img class="img-fluid" src="{{ siae.logo_url }}" />
+                                <img class="img-fluid" src="{{ form.logo_url.value }}" />
                             </div>
                         {% else %}
                             <span class="form-text text-muted">Aucun</span>
@@ -79,7 +81,6 @@
 
 </form>
 {% endblock %}
-
 
 {% block extra_js %}
 <script src="{% static 'vendor/dropzone-5.9.3/dropzone.min.js' %}"></script>

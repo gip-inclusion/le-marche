@@ -122,8 +122,9 @@
                                 <div class="il-r">
                                     <h3 class="h3 mb-1 mt-1">Références clients</h3>
                                     {% for image in siae.client_references.all %}
-                                        <!-- slide -->
-                                        <img src="{{ image.image_name }}" class="client-ref" alt="{{ image.name }}" title="{{ image.name }}" />
+                                        {% if image.image_url %}
+                                            <img class="client-ref" src="{{ image.image_url }}" alt="{{ image.name }}" title="{{ image.name }}" />
+                                        {% endif %}
                                     {% endfor %}
                                 </div>
                             </div>

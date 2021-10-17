@@ -1,4 +1,4 @@
-// 
+// https://github.com/betagouv/itou/blob/master/itou/static/js/utils.js
 
 $(document).ready(() => {
     // prevent default on click

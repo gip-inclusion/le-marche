@@ -419,6 +419,7 @@ class SiaeClientReference(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255, blank=True, null=True)
     description = models.TextField(verbose_name="Description", blank=True)
     image_name = models.CharField(verbose_name="Nom de l'image", max_length=255)
+    logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True, null=True)
     order = models.PositiveIntegerField(verbose_name="Ordre", blank=False, default=1)
 
     siae = models.ForeignKey(

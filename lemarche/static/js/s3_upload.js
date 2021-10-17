@@ -1,3 +1,5 @@
+// https://github.com/betagouv/itou/blob/master/itou/static/js/s3_upload.js
+
 "use strict";
 
 const extensionToContentTypeMapping = {
@@ -31,6 +33,7 @@ window.s3UploadInit = function s3UploadInit({
 
   // When a file is added to the drop zone, send a POST request to this URL.
   const formUrl = formValues["url"];
+  console.log(formValues)
 
   // Submit button to be disabled during file processing
   const submitButton = $("button[type='submit']");
