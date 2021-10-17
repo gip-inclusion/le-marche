@@ -112,7 +112,7 @@ class Siae(models.Model):
         "siret_is_valid",
         "c1_id",
         "c1_source",
-        "c4_id",
+        "c4_id_old",
         "last_sync_date",
     ]
     READONLY_FIELDS_FROM_QPV = ["is_qpv", "qpv_name", "qpv_code"]
@@ -263,7 +263,7 @@ class Siae(models.Model):
 
     c1_id = models.IntegerField(blank=True, null=True)
     c1_source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True, null=True)
-    c4_id = models.IntegerField(blank=True, null=True)
+    c4_id_old = models.IntegerField(blank=True, null=True)
 
     last_sync_date = models.DateTimeField(blank=True, null=True)
     sync_skip = models.BooleanField(blank=False, null=False, default=False)
