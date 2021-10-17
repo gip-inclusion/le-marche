@@ -22,12 +22,19 @@
                     {% bootstrap_field form.contact_email %}
                     {% bootstrap_field form.contact_website %}
                     <!-- Logo -->
-                    {{ form.logo_url.as_hidden }}
-                    <label for="logo_form" class="js-display-if-javascript-enabled">{{ form.logo_url.label }}</label>
-                    {% include "storage/s3_upload_form.html" with dropzone_form_id="logo_form" %}
-                    {% if siae.logo_url %}
-                        <img src="{{ siae.logo_url }}" />
-                    {% endif %}
+                    <div class="form-group">
+                        {{ form.logo_url.as_hidden }}
+                        <label for="logo_form" class="js-display-if-javascript-enabled">Logo</label>
+                        {% include "storage/s3_upload_form.html" with dropzone_form_id="logo_form" %}
+                        <label>Logo actuel</label>
+                        {% if siae.logo_url %}
+                            <div>
+                                <img class="img-fluid" src="{{ siae.logo_url }}" />
+                            </div>
+                        {% else %}
+                            <span class="form-text text-muted">Aucun</span>
+                        {% endif %}
+                    </div>
                 </fieldset>
             </div>
         </div>

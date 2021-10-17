@@ -40,7 +40,12 @@ class S3Upload:
         client = boto3.client("s3", **API_CONNECTION_DICT)
         key_path = self.config["key_path"] + "/${filename}"
         expiration = self.config["upload_expiration"]
-        values_dict = client.generate_presigned_post(settings.S3_STORAGE_BUCKET_NAME, key_path, ExpiresIn=expiration)
+        values_dict = client.generate_presigned_post(
+            settings.S3_STORAGE_BUCKET_NAME,
+            key_path,
+            ExpiresIn=expiration,
+            Conditions=[["starts-with", "$Content-Type", "image/"]],
+        )
         values_dict["fields"].pop("key")
         return values_dict
 

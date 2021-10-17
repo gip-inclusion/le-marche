@@ -1,5 +1,13 @@
 "use strict";
 
+const extensionToContentTypeMapping = {
+  'png': 'image/png',
+  'svg': 'image/svg+xml',
+  'gif': 'image/gif',
+  'jpg': 'image/jpg',
+  'jpeg': 'image/jpeg',
+}
+
 // Arguments
 // - callbackLocationSelector: input field where the location URL will be provided after success (ex. "#foo").
 // - dropzoneSelector: transform this element into a drag and drop zone.
@@ -28,7 +36,7 @@ window.s3UploadInit = function s3UploadInit({
   const submitButton = $("button[type='submit']");
 
   // S3 form params sent when a new file is added to the drop zone.
-  const formParams = formValues["fields"];
+  let formParams = formValues["fields"];
 
   // Appended before the file name. The final slash is added later.
   const keyPath = uploadConfig["key_path"];
@@ -58,14 +66,14 @@ window.s3UploadInit = function s3UploadInit({
       const extension = file.name.split(".").pop();
       const filename = Dropzone.uuidv4();
       const fileKey = `${keyPath}/${filename}.${extension}`;
-      // Add a file key to options params so that it's send
-      // as an input field on POST.
+      // Add a file key to options params so that it's sent as an input field on POST.
       this.params["key"] = fileKey;
+      // We also send the Content-Type depending on the image type.
+      // Important because by default the Content-Type will be 'application/octet-stream' (when fetched, images would be downloaded automatically instead of being displayed)
+      this.params["Content-Type"] = extensionToContentTypeMapping[extension];
       return fileKey;
     },
   };
-
-  console.log(dropzoneConfig)
 
   // By default, Dropzone attaches to any component having the "dropzone" class.
   // Turn off this behavior to control all the aspects "manually".

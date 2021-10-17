@@ -264,7 +264,8 @@ S3_STORAGE_BUCKET_REGION = env.str("S3_STORAGE_BUCKET_REGION", "")
 
 STORAGE_UPLOAD_KINDS = {
     "default": {
-        "allowed_mime_types": ["image/*"],
+        # "allowed_mime_types": ["image/*"],
+        "allowed_mime_types": ["image/png", "image/svg+xml", "image/gif", "image/jpg", "image/jpeg"],
         "upload_expiration": 60 * 60,  # in seconds
         "key_path": "default",  # appended before the file key. No backslash!
         "max_files": 1,  # 3,

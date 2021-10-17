@@ -46,22 +46,8 @@
                     <!-- First Row, company details -->
                     <!-- gallery-small -->
                     <div id="user_profile" class="row mb-5 mb-md-6 align-items-start">
-                        <div class="gallery-small slideshow col-12 col-lg-3">
-                            <div class="slideset">
-                                {% if siae.images.count %}
-                                    {% for image in siae.images.all %}
-                                        <div class="slide">
-                                            <img src="{{ image.name }}" alt="{{ siae.name }}" />
-                                        </div>
-                                    {% endfor %}
-                                {% else %}
-                                    <div class="slide">
-                                        <img src="{{ siae.image.name }}" alt="{{ siae.name }}" />
-                                    </div>
-                                {% endif %}
-                            </div>
-                            <a href="#" class="btn-prev">précédent</a>
-                            <a href="#" class="btn-next">suivant</a>
+                        <div class="gallery-small col-12 col-lg-3">
+                            <img class="img-fluid" src="{{ siae.logo_url }}" alt="Logo de la structure {{ siae.name }}" />
                         </div>
                         <div class="col-12 col-lg-9 pl-md-5">
                             <div class="row">
