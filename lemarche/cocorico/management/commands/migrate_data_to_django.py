@@ -238,6 +238,7 @@ class Command(BaseCommand):
             # rename fields
             rename_field(elem, "geo_range", "geo_range_custom_distance")
             rename_field(elem, "pol_range", "geo_range")
+            rename_field(elem, "c4_id", "c4_id_old")
 
             # cleanup fields
             cleanup_date_field_names(elem)

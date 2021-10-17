@@ -216,9 +216,9 @@ SITE_ID = 1
 # ------------------------------------------------------------------------------
 
 ANYMAIL = {
-    "MAILJET_API_KEY": os.environ.get("MAILJET_API_KEY"),
-    "MAILJET_SECRET_KEY": os.environ.get("MAILJET_API_SECRET"),
-    # "WEBHOOK_SECRET": os.environ.get("MAILJET_WEBHOOK_SECRET"),
+    "MAILJET_API_KEY": env.str("MAILJET_API_KEY", ""),
+    "MAILJET_SECRET_KEY": env.str("MAILJET_API_SECRET", ""),
+    # "WEBHOOK_SECRET": env.str("MAILJET_WEBHOOK_SECRET", ""),
 }
 
 MAILJET_API_URL = "https://api.mailjet.com/v3.1"
@@ -267,7 +267,7 @@ API_GEO_BASE_URL = "https://geo.api.gouv.fr"
 
 # Django REST Framework settings.
 # https://www.django-rest-framework.org/
-# ----------------------------------------------------
+# ------------------------------------------------------------------------------
 REST_FRAMEWORK = {
     # YOUR SETTINGS
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
@@ -279,7 +279,7 @@ REST_FRAMEWORK = {
 
 # Spectacular settings.
 # https://drf-spectacular.readthedocs.io/en/latest/settings.html
-# ----------------------------------------------------
+# ------------------------------------------------------------------------------
 SPECTACULAR_SETTINGS = {
     "TITLE": "Le marché de l'inclusion",
     "DESCRIPTION": "Une initiative de la Plateforme de l'inclusion",
@@ -304,7 +304,7 @@ BOOTSTRAP4 = {
 
 # Logging.
 # https://docs.djangoproject.com/en/dev/topics/logging
-# ----------------------------------------------------
+# ------------------------------------------------------------------------------
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -334,7 +334,7 @@ LOGGING = {
 
 # django-ckeditor settings.
 # https://django-ckeditor.readthedocs.io/en/latest/#optional-customizing-ckeditor-editor
-# ----------------------------------------------------
+# ------------------------------------------------------------------------------
 CKEDITOR_CONFIGS = {
     "default": {
         "toolbar": "Custom",
