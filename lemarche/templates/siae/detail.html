@@ -47,7 +47,13 @@
                     <!-- gallery-small -->
                     <div id="user_profile" class="row mb-5 mb-md-6 align-items-start">
                         <div class="gallery-small col-12 col-lg-3">
-                            <img class="img-fluid" src="{{ siae.logo_url }}" alt="Logo de la structure {{ siae.name }}" />
+                            <div class="img-container">
+                                {% if siae.logo_url %}
+                                    <img src="{{ siae.logo_url }}" alt="Logo de la structure {{ siae.name }}" />
+                                {% else %}
+                                    <img src="{% static 'img/default-listing.png' %}" alt="{{ siae.name }}" />
+                                {% endif %}
+                            </div>
                         </div>
                         <div class="col-12 col-lg-9 pl-md-5">
                             <div class="row">
