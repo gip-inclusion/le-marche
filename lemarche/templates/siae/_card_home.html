@@ -13,11 +13,7 @@
                 {% endif %}
                 {% endcomment %}
                 <a href="{% url 'siae:detail' siae.slug %}" target="_blank" class="d-block font-weight-bold text-decoration-none lh-sm stretched-link">
-                    {% if siae.brand %}
-                        {{ siae.brand }}
-                    {% else %}
-                        {{ siae.name }}
-                    {% endif %}
+                    {{ siae.display_name }}
                 </a>
             </div>
         </div>
@@ -30,15 +26,7 @@
             {% if siae.kind %}
             <li class="d-flex lh-sm mb-2">
                 <img src="{% static 'itou/images/ico-bicro-marche-secteur.svg' %}" alt="" class="mr-2" height="25">
-                <span>
-                    {% if siae.kind == 'ETTI' %}
-                        Intérim
-                    {% elif siae.kind == 'AI' %}
-                        Mise à disposition du personnel
-                    {% else %}
-                        {% array_choices_display siae 'presta_type' %}
-                    {% endif %}
-                </span>
+                <span>{{ siae.display_presta_type }}</span>
             </li>
             {% endif %}
             </ul>
