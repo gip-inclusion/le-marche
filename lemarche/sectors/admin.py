@@ -16,7 +16,7 @@ class SectorGroupAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.annotate(sector_count=Count("sectors"))
+        qs = qs.annotate(sector_count=Count("sectors", distinct=True))
         return qs
 
     def nb_sectors(self, sector_group):
@@ -38,7 +38,7 @@ class SectorAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.annotate(siae_count=Count("siaes"))
+        qs = qs.annotate(siae_count=Count("siaes", distinct=True))
         return qs
 
     def nb_siaes(self, sector):
