@@ -8,6 +8,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import IntegrityError, models, transaction
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.encoding import force_str
 from django.utils.text import slugify
 
 from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY, get_department_code_from_name
@@ -321,6 +322,22 @@ class Siae(models.Model):
         if self.coords:
             return self.coords.x
         return None
+
+    @property
+    def display_name(self):
+        if self.brand:
+            return self.brand
+        return self.name
+
+    @property
+    def display_presta_type(self):
+        if self.kind == Siae.KIND_ETTI:
+            return "Intérim"
+        if self.kind == Siae.KIND_AI:
+            return "Mise à disposition du personnel"
+        # return array_choices_display(self, "presta_type")
+        presta_type_values = [force_str(dict(Siae.PRESTA_CHOICES).get(key, "")) for key in self.presta_type]
+        return ", ".join(filter(None, presta_type_values))
 
     @property
     def contact_full_name(self):
