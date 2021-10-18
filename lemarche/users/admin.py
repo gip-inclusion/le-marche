@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.urls import reverse
-from django.utils.html import format_html
+from django.utils.html import format_html, mark_safe
 
 from lemarche.users.forms import UserChangeForm, UserCreationForm
 from lemarche.users.models import User
@@ -50,13 +50,15 @@ class UserAdmin(UserAdmin):
 
     list_display = ["id", "first_name", "last_name", "kind", "last_login", "created_at"]
     list_filter = ["kind", SiaeAdminFilter, ApiKeyFilter, "is_staff"]
-    search_fields = ["id", "email"]
+    search_fields = ["id", "email", "first_name", "last_name"]
     ordering = ["-created_at"]
 
     # autocomplete_fields = ["siaes"]
     readonly_fields = [field.name for field in User._meta.fields if field.name.startswith("c4_")] + [
         "siae_admin_list",
         "last_login",
+        "image_url",
+        "image_url_display",
         "created_at",
         "updated_at",
     ]
@@ -116,6 +118,8 @@ class UserAdmin(UserAdmin):
                     "c4_phone_verified",
                     "c4_email_verified",
                     "c4_id_card_verified",
+                    "image_url",
+                    "image_url_display",
                 )
             },
         ),
@@ -172,6 +176,17 @@ class UserAdmin(UserAdmin):
             return format_html(html)
 
     siae_admin_list.short_description = "Gestionnaire de"
+
+    def image_url_display(self, instance):
+        if instance.image_url:
+            return mark_safe(
+                f'<a href="{instance.image_url}" target="_blank">'
+                f'<img src="{instance.image_url}" title="{instance.image_url}" style="max-height:300px" />'
+                f"</a>"
+            )
+        return mark_safe("<div>-</div>")
+
+    image_url_display.short_description = "Image"
 
 
 admin.site.register(User, UserAdmin)
