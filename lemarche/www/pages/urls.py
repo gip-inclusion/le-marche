@@ -1,7 +1,7 @@
 from django.urls import path
 from django.views.generic import TemplateView
 
-from lemarche.www.pages.views import ContactView, HomeView, PageView
+from lemarche.www.pages.views import ContactView, HomeView, PageView, trigger_error
 
 
 # https://docs.djangoproject.com/en/dev/topics/http/urls/#url-namespaces-and-included-urlconfs
@@ -26,6 +26,7 @@ urlpatterns = [
         TemplateView.as_view(template_name="pages/decouvrir-inclusion.html"),
         name="decouvrir-inclusion",
     ),
+    path("sentry-debug/", trigger_error, name="sentry_debug"),
     # Flatpages (created in the admin)
     # path("", include("django.contrib.flatpages.urls")),
     path("<path:url>", PageView.as_view(), name="flatpage"),

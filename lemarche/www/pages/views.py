@@ -77,3 +77,10 @@ class PageView(DetailView):
             raise Http404("Page inconnue")
 
         return page
+
+
+def trigger_error(request):
+    """Endpoint to send frontend errors to Sentry."""
+    if request.POST:
+        raise Exception("%s error: %s" % (request.POST.get("status_code"), request.POST.get("error_message")))
+    print(1 / 0)  # Should raise a ZeroDivisionError.
