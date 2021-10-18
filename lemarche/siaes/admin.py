@@ -57,7 +57,7 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
         "created_at",
     ]
     list_filter = [IsLiveFilter, "is_first_page", HasUserFilter, "kind", "networks", "sectors", "geo_range"]
-    search_fields = ["id", "name"]
+    search_fields = ["id", "name", "slug", "siret"]
 
     autocomplete_fields = ["sectors", "networks", "users"]
     readonly_fields = [field for field in Siae.READONLY_FIELDS if field not in ("coords")] + [
@@ -127,9 +127,9 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = (
-            qs.annotate(offer_count=Count("offers"))
-            .annotate(label_count=Count("labels"))
-            .annotate(client_reference_count=Count("client_references"))
+            qs.annotate(offer_count=Count("offers", distinct=True))
+            .annotate(label_count=Count("labels", distinct=True))
+            .annotate(client_reference_count=Count("client_references", distinct=True))
         )
         return qs
 
@@ -141,14 +141,14 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
     nb_offers.admin_order_field = "offer_count"
 
     def nb_labels(self, siae):
-        url = reverse("admin:siaes_siaeoffer_changelist") + f"?siae__id__exact={siae.id}"
+        url = reverse("admin:siaes_siaelabel_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.label_count}</a>')
 
     nb_labels.short_description = "Nombre de labels"
     nb_labels.admin_order_field = "label_count"
 
     def nb_cient_references(self, siae):
-        url = reverse("admin:siaes_siaeoffer_changelist") + f"?siae__id__exact={siae.id}"
+        url = reverse("admin:siaes_siaeclientreference_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.client_reference_count}</a>')
 
     nb_cient_references.short_description = "Nombre de réf. clients"
