@@ -3,6 +3,7 @@ import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
+from django.core.serializers import serialize
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -48,6 +49,10 @@ class SiaeSearchResultsView(FormMixin, ListView):
         # display p numbers only from p-4 to p+4 but don"t go <1 or >pages_count
         context["paginator_range"] = range(
             max(context["page_obj"].number - 4, 1), min(context["page_obj"].number + 4, context["paginator"].num_pages)
+        )
+        # pass the results in json for javascript (leaflet map)
+        context["siaes_json"] = serialize(
+            "geojson", context["siaes"], geometry_field="coords", fields=("id", "name", "brand", "slug")
         )
         return context
 
