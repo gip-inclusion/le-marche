@@ -284,6 +284,9 @@ class Command(BaseCommand):
         Notes:
         - elem exemple: {'id': 1681 'directory_id': 2131, 'name': '29df2732c5b804db41b2cd6149fb46e9ba44ce3f.gif', 'position': 1}  # noqa
         """
+        print("-" * 80)
+        print("Migrating Siae image names...")
+
         cur.execute("SELECT * FROM directory_image")
         resp = cur.fetchall()
 
@@ -302,6 +305,7 @@ class Command(BaseCommand):
         Notes:
         - fields 'accronym' and 'siret' are always empty
         """
+        print("-" * 80)
         print("Migrating Network...")
 
         Network.objects.all().delete()
@@ -332,6 +336,7 @@ class Command(BaseCommand):
         Notes:
         - elem exemple: {'directory_id': 270, 'network_id': 8}
         """
+        print("-" * 80)
         print("Migrating M2M between Siae & Network...")
 
         Siae.networks.through.objects.all().delete()
@@ -353,6 +358,7 @@ class Command(BaseCommand):
         - the current implementation in Symphony is overly complex
         - we simplify it with a simple parent/child hierarchy
         """
+        print("-" * 80)
         print("Migrating Sector & SectorGroup...")
 
         Sector.objects.all().delete()
@@ -421,6 +427,7 @@ class Command(BaseCommand):
         Notes:
         - elem exemple: {'category_id': 270, 'listing_category_id': 8}
         """
+        print("-" * 80)
         print("Migrating M2M between Siae & Sector...")
 
         Siae.sectors.through.objects.all().delete()
@@ -444,6 +451,7 @@ class Command(BaseCommand):
         """
         Migrate SiaeOffer data
         """
+        print("-" * 80)
         print("Migrating SiaeOffer...")
 
         SiaeOffer.objects.all().delete()
@@ -471,6 +479,7 @@ class Command(BaseCommand):
         """
         Migrate SiaeLabel data
         """
+        print("-" * 80)
         print("Migrating SiaeLabel...")
 
         SiaeLabel.objects.all().delete()
@@ -498,6 +507,7 @@ class Command(BaseCommand):
         """
         Migrate SiaeClientReference data
         """
+        print("-" * 80)
         print("Migrating SiaeClientReference...")
 
         SiaeClientReference.objects.all().delete()
@@ -528,6 +538,7 @@ class Command(BaseCommand):
         """
         Migrate User data
         """
+        print("-" * 80)
         print("Migrating User...")
 
         User.objects.filter(api_key__isnull=True).delete()
@@ -590,7 +601,8 @@ class Command(BaseCommand):
         Notes:
         - elem exemple: {'id': 3, 'user_id': 1697088192, 'name': 'acbff2af48356f50f777c9ae8435335f6d73782d.gif', 'position': 1}  # noqa
         """
-        print("Migrating User images...")
+        print("-" * 80)
+        print("Migrating User image names...")
 
         cur.execute("SELECT * FROM user_image")
         resp = cur.fetchall()
@@ -610,6 +622,7 @@ class Command(BaseCommand):
         Notes:
         - elem exemple: {'directory_id': 270, 'user_id': 471234844}
         """
+        print("-" * 80)
         print("Migrating M2M between Siae & User...")
 
         Siae.users.through.objects.all().delete()
