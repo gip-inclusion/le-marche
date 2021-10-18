@@ -3,7 +3,9 @@ import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
@@ -108,6 +110,17 @@ class SiaeDetailView(DetailView):
     template_name = "siae/detail.html"
     context_object_name = "siae"
     queryset = Siae.objects.prefetch_related("sectors")
+
+    def get(self, request, *args, **kwargs):
+        """
+        Overriden to check if maybe the pk was passed instead of the slug
+        """
+        try:
+            return super().get(request, *args, **kwargs)
+        except Http404:
+            # TODO post-migration: remove the whole get() override at some point in the future (2022 ?)
+            siae = get_object_or_404(Siae, pk=self.kwargs.get("slug"))
+            return redirect(reverse_lazy("siae:detail", args=[siae.slug]))
 
     def get_context_data(self, **kwargs):
         """
