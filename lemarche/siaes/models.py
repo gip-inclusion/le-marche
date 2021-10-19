@@ -7,6 +7,7 @@ from django.contrib.gis.measure import D
 from django.contrib.postgres.fields import ArrayField
 from django.db import IntegrityError, models, transaction
 from django.db.models import Q
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_str
 from django.utils.text import slugify
@@ -394,6 +395,9 @@ class Siae(models.Model):
     def sectors_list_to_string(self):
         return ", ".join(self.sectors.all().values_list("name", flat=True))
 
+    def get_absolute_url(self):
+        return reverse("siae:detail", kwargs={"slug": self.slug})
+
 
 class SiaeOffer(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
@@ -448,5 +452,6 @@ class SiaeClientReference(models.Model):
         verbose_name = "Référence client"
         verbose_name_plural = "Références clients"
 
-    def __str__(self):
-        return self.name
+    # def __str__(self):
+    #     if self.name:
+    #         return self.name
