@@ -118,6 +118,9 @@ class User(AbstractUser):
         default=False,
     )
 
+    image_name = models.CharField(verbose_name="Nom de l'image", max_length=255, blank=True, null=True)
+    image_url = models.URLField(verbose_name="Lien vers l'image", max_length=500, blank=True, null=True)
+
     c4_id = models.IntegerField(blank=True, null=True)
     c4_phone_prefix = models.CharField(verbose_name="Indicatif international", max_length=20, blank=True, null=True)
     c4_time_zone = models.CharField(verbose_name="Fuseau", max_length=150, blank=True, null=True)

@@ -277,6 +277,9 @@ STORAGE_UPLOAD_KINDS = {
     "client_reference_logo": {
         "key_path": "client_reference_logo",
     },
+    "user_image": {
+        "key_path": "user_image",
+    },
 }
 
 
