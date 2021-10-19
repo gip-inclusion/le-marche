@@ -4,9 +4,11 @@
 
 const extensionToContentTypeMapping = {
   'png': 'image/png',
+  'PNG': 'image/png',
   'svg': 'image/svg+xml',
   'gif': 'image/gif',
   'jpg': 'image/jpg',
+  'JPG': 'image/jpg',
   'jpeg': 'image/jpeg',
 }
 

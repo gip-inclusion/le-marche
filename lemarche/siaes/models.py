@@ -234,6 +234,8 @@ class Siae(models.Model):
     contact_website = models.URLField(verbose_name="Site internet", blank=True, null=True)
     contact_email = models.EmailField(verbose_name="E-mail", blank=True, null=True)
     contact_phone = models.CharField(verbose_name="Téléphone", max_length=150, blank=True, null=True)
+
+    image_name = models.CharField(verbose_name="Nom de l'image", max_length=255, blank=True, null=True)
     logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True, null=True)
 
     is_consortium = models.BooleanField(verbose_name="Consortium", default=False)
