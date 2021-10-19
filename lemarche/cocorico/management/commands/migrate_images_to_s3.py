@@ -85,7 +85,7 @@ class Command(BaseCommand):
                 user.image_url = build_image_url(API_CONNECTION_DICT["endpoint_url"], bucket_name, s3_image_key)
                 user.save()
             else:
-                print("Image extension error", "/", "User", user.id, "/", "Image name", user.image_name)
+                print(f"Image extension error / User {user.id} / Image name {user.image_name}")
 
             # Step 4: delete local image
             os.remove(user.image_name)
@@ -125,7 +125,7 @@ class Command(BaseCommand):
                 siae.logo_url = build_image_url(API_CONNECTION_DICT["endpoint_url"], bucket_name, s3_image_key)
                 siae.save()
             else:
-                print("Image extension error", "/", "Siae", siae.id, "/", "Image name", siae.image_name)
+                print(f"Image extension error / Siae {siae.id} / Image name {siae.image_name}")
 
             # Step 4: delete local image
             os.remove(siae.image_name)
@@ -149,20 +149,6 @@ class Command(BaseCommand):
         )
 
         for client_reference in client_references_with_logos:
-            image_extension = client_reference.image_name.split(".")[1]
-            if image_extension in CONTENT_TYPE_MAPPING:
-                continue
-            else:
-                print(
-                    "Image extension error",
-                    "/",
-                    "Client reference",
-                    client_reference.id,
-                    "/",
-                    "Image name",
-                    client_reference.image_name,
-                )
-
             # Step 1: download image from FTP
             with open(client_reference.image_name, "wb") as f:
                 ftp.retrbinary("RETR " + client_reference.image_name, f.write)
@@ -184,13 +170,7 @@ class Command(BaseCommand):
                 client_reference.save()
             else:
                 print(
-                    "Image extension error",
-                    "/",
-                    "Client reference",
-                    client_reference.id,
-                    "/",
-                    "Image name",
-                    client_reference.image_name,
+                    f"Image extension error / Client reference {client_reference.id} / Image name {client_reference.image_name}"  # noqa
                 )
 
             # Step 4: delete local image
