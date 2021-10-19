@@ -66,7 +66,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     )
     def retrieve(self, request, pk=None, format=None):
         """
-        Détail d'une structure
+        Détail d'une structure (par son id)
         """
         queryset = get_object_or_404(self.get_queryset(), pk=pk)
         return self._retrieve_return(request, queryset, format)
@@ -80,7 +80,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     )
     def retrieve_by_siret(self, request, siret=None, format=None):
         """
-        Détail d'une structure
+        Détail d'une structure (par son siret)
         """
         queryset = get_object_or_404(self.get_queryset(), siret=siret)
         return self._retrieve_return(request, queryset, format)
