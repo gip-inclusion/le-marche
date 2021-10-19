@@ -6,7 +6,7 @@ from django.db.models.functions import NullIf
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae, SiaeOffer
-from lemarche.utils.fields import GroupedModelChoiceField
+from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
 EMPTY_CHOICE = (("", ""),)
@@ -23,13 +23,12 @@ class SiaeSearchForm(forms.Form):
     FORM_KIND_CHOICES = EMPTY_CHOICE + Siae.KIND_CHOICES
     FORM_PRESTA_CHOICES = EMPTY_CHOICE + Siae.PRESTA_CHOICES
 
-    sectors = GroupedModelChoiceField(
+    sectors = GroupedModelMultipleChoiceField(
         label="Secteur d’activité",
         queryset=SECTOR_FORM_QUERYSET,
         choices_groupby="group",
         to_field_name="slug",
         required=False,
-        # widget=forms.Select(),
     )
     # The hidden `perimeter` field is populated by the autocomplete JavaScript mechanism,
     # see `perimeter_autocomplete_field.js`.
@@ -80,9 +79,9 @@ class SiaeSearchForm(forms.Form):
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
 
-        sector = self.cleaned_data.get("sectors", None)
-        if sector:
-            qs = qs.filter(sectors__in=[sector])
+        sectors = self.cleaned_data.get("sectors", None)
+        if sectors:
+            qs = qs.filter(sectors__in=sectors)
 
         perimeter = self.cleaned_data.get("perimeter", None)
         if perimeter:
