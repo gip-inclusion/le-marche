@@ -4,7 +4,8 @@
 {% block title %}Recherche{{ block.super }}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.css' %}" type="text/css" />
+<link rel="stylesheet" href="{% static 'vendor/leaflet-1.7.1/leaflet.css' %}" type="text/css" />
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -139,18 +140,11 @@
                 </div>
                 <div class="col-12 col-md-4 siae-info mt-6 mt-sm-0">
                     <div class="siae-info-sticky">
-                        {% comment "hidden" %}
                         <div class="maparea">
-                            <div class="maparea">
-                                <div class="map-holder">
-                                    <div id="map-canvas"></div>
-                                    {% include '@CocoricoCore/Frontend/Directory/_marker.html.twig'  with {
-                                    'markers': markers,
-                                    } only %}
-                                </div>
+                            <div class="map-holder">
+                                <div id="map-siae-list" class="map-canvas"></div>
                             </div>
                         </div>
-                        {% endcomment %}
                         <div class="si-separator"></div>
                         <div class="si-ideas">
                             <h3 class="h3 my-3">Idées reçues</h3>
@@ -242,16 +236,15 @@
 {% block extra_js %}
 <script src="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.js' %}"></script>
 <script src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
+<script src="{% static 'vendor/leaflet-1.7.1/leaflet.js' %}"></script>
 <script>
     // show type user modal
     document.addEventListener("DOMContentLoaded", function() {
+        // show type user modal
         const COOKIE_NAME = 'leMarcheTypeUsagerV2';
         $(document).on('shown.bs.modal', '.modal', function () {
             $('.modal-backdrop').before($(this));
         });
-
-        // Set listings markers on load
-        // TODO
 
         // if (true) {
         if (!document.cookie.split('; ').find(row => row.startsWith(COOKIE_NAME))) {
@@ -270,6 +263,32 @@
                 modal.modal('hide');
             })
         }
+
+        // Set listings markers on load
+        const siaeList = {{ siaes_json|safe }};
+
+        // init map
+        var map = L.map('map-siae-list').setView([47.08333, 2.4], 5);
+
+        // map tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19,
+            zoomControl: false,
+        }).addTo(map);
+
+        // map zoom controls in the bottom right
+        map.zoomControl.remove();
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        // add geojson data
+        var geojson = L.geoJSON(siaeList, {
+            onEachFeature: function (feature, layer) {
+                var featureDisplayName = feature.properties.brand ? feature.properties.brand : feature.properties.name;
+                layer.bindPopup(`<a href="/prestataires/${feature.properties.slug}/"><p class="h6">${featureDisplayName}</p></a>`);
+            }
+        }).addTo(map);
+        map.fitBounds(geojson.getBounds());
     });
 </script>
 {% endblock %}
