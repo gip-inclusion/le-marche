@@ -588,16 +588,9 @@
   flex-wrap: wrap;
 }
 
-#user_profile .gallery-small .slideset,
-#user_profile .gallery-small .slideset .slide {
-    width:150px;
-    height:100px;
-    margin: 0 auto;
-}
-
 #user_profile {
-  background-color: $marche-lighter;
-  padding: 1.5rem;
+	background-color: $marche-lighter;
+	padding: 1.5rem;
 	margin: 0;
 	border-radius: 0.5rem;
 }
@@ -607,9 +600,23 @@
   margin-bottom: 1rem;
 }
 
+#user_profile .gallery-small {
+	margin: 0 0 20px;
+	overflow: hidden;
+	border-radius: 0.25rem;
+	position: relative;
+	text-align: center;
+}
 
-#user_profile .cell .prof_icon {
-  min-width: 25px;
+#user_profile .gallery-small .img-container {
+	// width: 150px;
+    height: 100px;
+    margin: 0 auto;
+}
+
+#user_profile .gallery-small .img-container img {
+	max-height: 100%;
+	max-width: 100%;
 }
 
 .active_sectors {
@@ -623,7 +630,12 @@
 }
 .active_sectors {
     padding-left:0;
-}	
+}
+
+img.client-ref {
+	max-height: 100px;
+	max-width: 100px;
+}
 }
 
 // TODO: improve css overwrite of alphagov typeahead library

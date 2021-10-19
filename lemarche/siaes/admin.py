@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.gis import admin as gis_admin
 from django.db.models import Count
 from django.urls import reverse
-from django.utils.html import format_html
+from django.utils.html import format_html, mark_safe
 
 from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer
 
@@ -61,6 +61,8 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
 
     autocomplete_fields = ["sectors", "networks", "users"]
     readonly_fields = [field for field in Siae.READONLY_FIELDS if field not in ("coords")] + [
+        "logo_url",
+        "logo_url_display",
         "created_at",
         "updated_at",
     ]
@@ -121,6 +123,15 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
                 )
             },
         ),
+        (
+            "Logo",
+            {
+                "fields": (
+                    "logo_url",
+                    "logo_url_display",
+                )
+            },
+        ),
         ("Autres", {"fields": ("created_at", "updated_at")}),
     ]
 
@@ -153,6 +164,17 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
 
     nb_cient_references.short_description = "Nombre de réf. clients"
     nb_cient_references.admin_order_field = "client_reference_count"
+
+    def logo_url_display(self, instance):
+        if instance.logo_url:
+            return mark_safe(
+                f'<a href="{instance.logo_url}" target="_blank">'
+                f'<img src="{instance.logo_url}" title="{instance.logo_url}" style="max-height:300px" />'
+                f"</a>"
+            )
+        return mark_safe("<div>-</div>")
+
+    logo_url_display.short_description = "Logo"
 
 
 @admin.register(SiaeOffer)
@@ -194,7 +216,7 @@ class SiaeClientReferenceAdmin(admin.ModelAdmin):
     search_fields = ["id", "name"]
 
     autocomplete_fields = ["siae"]
-    readonly_fields = ["image_name", "created_at", "updated_at"]
+    readonly_fields = ["logo_url", "logo_url_display", "created_at", "updated_at"]
 
     def siae_with_link(self, client_reference):
         url = reverse("admin:siaes_siae_change", args=[client_reference.siae_id])
@@ -202,3 +224,14 @@ class SiaeClientReferenceAdmin(admin.ModelAdmin):
 
     siae_with_link.short_description = "Structure"
     siae_with_link.admin_order_field = "siae"
+
+    def logo_url_display(self, instance):
+        if instance.logo_url:
+            return mark_safe(
+                f'<a href="{instance.logo_url}" target="_blank">'
+                f'<img src="{instance.logo_url}" title="{instance.logo_url}" style="max-height:300px" />'
+                f"</a>"
+            )
+        return mark_safe("<div>-</div>")
+
+    logo_url_display.short_description = "Logo"

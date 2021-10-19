@@ -80,7 +80,7 @@
                     <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3">
                         {% for siae in user.siaes.all %}
                         <div class="s-cards-grid-01__col col">
-                            <div class="card c-card c-card--mini h-100 w-100">
+                            <div class="card c-card c-card--mini mb-3 w-100">
                                 <div class="card-body">
                                     <p class="h4 lh-base">{{ siae.name }}</p>
                                     <p title="{% get_verbose_name siae 'brand' %}" class="mb-0">

@@ -1,16 +1,13 @@
-{% load static array_choices_display m2m_list_display %}
+{% load static m2m_list_display %}
 
 <a href="{% url 'siae:detail' siae.slug %}" class="siae-card-container card">
     <div class="siae-card">
         <div class="sc-img mr-5">
-            {% comment "hidden" %}
-            {% if siae.images|length %}
-                {% set image = siae.images[0] %}
-                <img src="{{ (ListingImageConstants.IMAGE_FOLDER ~ image.name) | imagine_filter('listing_xsmall') }}" alt="{{ siae.name }}" class="img-fluid" />
+            {% if siae.logo_url %}
+                <img class="img-fluid" src="{{ siae.logo_url }}" alt="Logo de la structure {{ siae.name }}" />
             {% else %}
-                <img src="{{ (ListingImageConstants.IMAGE_FOLDER ~ ListingImageConstants.IMAGE_DEFAULT) | imagine_filter('listing_large') }}" alt="{{ siae.name }}" class="img-fluid" />
+                <img class="img-fluid" src="{% static 'img/default-listing.png' %}" alt="{{ siae.name }}" />
             {% endif %}
-            {% endcomment %}
         </div>
         <div class="sc-main">
             <div class="sc-head">

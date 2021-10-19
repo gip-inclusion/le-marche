@@ -254,6 +254,32 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 X_FRAME_OPTIONS = "DENY"
 
 
+# S3 uploads
+# ------------------------------------------------------------------------------
+S3_STORAGE_ACCESS_KEY_ID = env.str("CELLAR_ADDON_KEY_ID", "")
+S3_STORAGE_SECRET_ACCESS_KEY = env.str("CELLAR_ADDON_KEY_SECRET", "")
+S3_STORAGE_ENDPOINT_DOMAIN = env.str("CELLAR_ADDON_HOST", "")
+S3_STORAGE_BUCKET_NAME = env.str("S3_STORAGE_BUCKET_NAME", "")
+S3_STORAGE_BUCKET_REGION = env.str("S3_STORAGE_BUCKET_REGION", "")
+
+STORAGE_UPLOAD_KINDS = {
+    "default": {
+        "allowed_mime_types": ["image/png", "image/svg+xml", "image/gif", "image/jpg", "image/jpeg"],  # ["image/*"] ?
+        "upload_expiration": 60 * 60,  # in seconds
+        "key_path": "default",  # appended before the file key. No backslash!
+        "max_files": 1,  # 3,
+        "max_file_size": 5,  # in mb
+        "timeout": 20000,  # in ms
+    },
+    "siae_logo": {
+        "key_path": "siae_logo",
+    },
+    "client_reference_logo": {
+        "key_path": "client_reference_logo",
+    },
+}
+
+
 # APIs.
 # ------------------------------------------------------------------------------
 

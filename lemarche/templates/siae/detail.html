@@ -46,22 +46,14 @@
                     <!-- First Row, company details -->
                     <!-- gallery-small -->
                     <div id="user_profile" class="row mb-5 mb-md-6 align-items-start">
-                        <div class="gallery-small slideshow col-12 col-lg-3">
-                            <div class="slideset">
-                                {% if siae.images.count %}
-                                    {% for image in siae.images.all %}
-                                        <div class="slide">
-                                            <img src="{{ image.name }}" alt="{{ siae.name }}" />
-                                        </div>
-                                    {% endfor %}
+                        <div class="gallery-small col-12 col-lg-3">
+                            <div class="img-container">
+                                {% if siae.logo_url %}
+                                    <img src="{{ siae.logo_url }}" alt="Logo de la structure {{ siae.name }}" />
                                 {% else %}
-                                    <div class="slide">
-                                        <img src="{{ siae.image.name }}" alt="{{ siae.name }}" />
-                                    </div>
+                                    <img src="{% static 'img/default-listing.png' %}" alt="{{ siae.name }}" />
                                 {% endif %}
                             </div>
-                            <a href="#" class="btn-prev">précédent</a>
-                            <a href="#" class="btn-next">suivant</a>
                         </div>
                         <div class="col-12 col-lg-9 pl-md-5">
                             <div class="row">
@@ -130,8 +122,9 @@
                                 <div class="il-r">
                                     <h3 class="h3 mb-1 mt-1">Références clients</h3>
                                     {% for image in siae.client_references.all %}
-                                        <!-- slide -->
-                                        <img src="{{ image.image_name }}" class="client-ref" alt="{{ image.name }}" title="{{ image.name }}" />
+                                        {% if image.image_url %}
+                                            <img class="client-ref" src="{{ image.image_url }}" alt="{{ image.name }}" title="{{ image.name }}" />
+                                        {% endif %}
                                     {% endfor %}
                                 </div>
                             </div>
