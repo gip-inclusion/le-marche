@@ -279,7 +279,7 @@
                         </div>
                         {% endif %}
                         <div class="map-holder order-1 order-lg-2 mb-3">
-                            <div id="map-company" class="map-canvas"></div>
+                            <div id="map-siae" class="map-canvas"></div>
                         </div>
                         <div class="map_details order-4">
                             <div class="d-flex mb-2">
@@ -314,7 +314,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const siaeLatitudeFloat = parseFloat(siaeLatitudeString.replace(',', '.'));
     const siaeLongitudeFloat = parseFloat(siaeLongitudeString.replace(',', '.'));
     // init map
-    var map = L.map('map-company').setView([siaeLongitudeFloat, siaeLatitudeFloat], 13);
+    var map = L.map('map-siae').setView([siaeLongitudeFloat, siaeLatitudeFloat], 13);
     // map tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
