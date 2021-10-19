@@ -24,19 +24,28 @@
                         <!-- Missing "dashboard-dropdown" stuff -->
                         {% if user.is_authenticated %}
                         <li>
-                            <a id="h_dashboard" href="{% url 'dashboard:home' %}" tabindex="7" rel="noopener">
-                                <span>Mon espace</span>
-                            </a>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Mon compte
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a href="{% url 'dashboard:home' %}" class="dropdown-item">
+                                        Mon espace
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="{% url 'auth:logout' %}" class="dropdown-item">Déconnexion</a>
+                                </div>
+                            </div>
                         </li>
                         {% else %}
                         <li>
-                            <a id="h_login" href="{% url 'auth:login' %}" tabindex="7" rel="noopener">
+                            <a href="{% url 'auth:login' %}" id="h_login" tabindex="7" rel="noopener">
                                 <span>Connexion</span>
                                 <span class="ml-1"><img src="{% static 'itou/images/ico-user.svg' %}" alt="Utilisateur"></span>
                             </a>
                         </li>
                         <li>
-                            <a id="h_signup" href="{% url 'auth:signup' %}" tabindex="6" class="btn btn-primary btn-ico" rel="noopener">
+                            <a href="{% url 'auth:signup' %}" id="h_signup" class="btn btn-primary btn-ico" tabindex="6" rel="noopener">
                                 <span>Inscription</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
                                     <path fill="currentColor" fill-rule="nonzero" stroke="currentColor" d="M1.964 8.95h11.03L9.51 12.737a.451.451 0 00.037.646.474.474 0 00.66-.037L14.386 8.8l.035-.043.033-.05.013-.05V8.539c0-.012.033-.02.033-.044v-.151l-.014-.05-.019-.03-.034-.045-4.193-4.566a.474.474 0 00-.66-.037.452.452 0 00-.036.646l3.45 3.777H1.963a.46.46 0 00-.464.455.46.46 0 00.464.455z"></path>
@@ -68,19 +77,25 @@
                         {% endcomment %}
                         {% if user.is_authenticated %}
                         <li>
-                            <a href="{% url 'dashboard:home' %}" tabindex="5" rel="noopener" id="h_dashboard">
+                            <a href="{% url 'dashboard:home' %}" id="h_dashboard" tabindex="5" rel="noopener">
                                 <span>Mon espace</span>
+                            </a>
+                        </li>
+                        <hr />
+                        <li>
+                            <a href="{% url 'auth:logout' %}"  id="h_logout" tabindex="7" rel="noopener">
+                                <span>Déconnexion</span>
                             </a>
                         </li>
                         {% else %}
                         <li>
-                            <a href="{% url 'auth:login' %}" tabindex="5" rel="noopener" id="h_login">
+                            <a href="{% url 'auth:login' %}" id="h_login" tabindex="5" rel="noopener">
                                 <span>Connexion</span>
                                 <span class="ml-1"><img src="{% static 'itou/images/ico-user.svg' %}" alt="Utilisateur"></span>
                             </a>
                         </li>
                         <li>
-                            <a href="{% url 'auth:signup' %}" tabindex="5" rel="noopener" id="h_signup" class="btn btn-primary btn-ico">
+                            <a href="{% url 'auth:signup' %}" id="h_signup" class="btn btn-primary btn-ico" tabindex="5" rel="noopener">
                                 <span>Inscription</span>
                             </a>
                         </li>
