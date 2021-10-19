@@ -124,8 +124,11 @@ class SiaeDetailView(DetailView):
             return super().get(request, *args, **kwargs)
         except Http404:
             # TODO post-migration: remove the whole get() override at some point in the future (2022 ?)
-            siae = get_object_or_404(Siae, pk=self.kwargs.get("slug"))
-            return redirect(reverse_lazy("siae:detail", args=[siae.slug]))
+            try:
+                siae = get_object_or_404(Siae, pk=int(self.kwargs.get("slug")))
+                return redirect(reverse_lazy("siae:detail", args=[siae.slug]))
+            except:  # noqa
+                raise Http404
 
     def get_context_data(self, **kwargs):
         """
