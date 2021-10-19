@@ -17,7 +17,7 @@ class PerimeterModelTest(TestCase):
             name="Auvergne-Rhône-Alpes", kind=Perimeter.KIND_REGION, insee_code="R84"
         )
 
-    def test_display_name(self):
+    def test_name_display_property(self):
         self.assertEqual(str(self.perimeter_city), "Grenoble (38)")
         self.assertEqual(str(self.perimeter_department), "Isère")
         self.assertEqual(str(self.perimeter_region), "Auvergne-Rhône-Alpes")

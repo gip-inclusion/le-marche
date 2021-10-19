@@ -10,7 +10,7 @@
                     <img class="rounded-circle mr-2" height="40" src="{% static 'img/default-listing.png' %}" alt="{{ siae.name }}" />
                 {% endif %}
                 <a href="{% url 'siae:detail' siae.slug %}" target="_blank" class="d-block font-weight-bold text-decoration-none lh-sm stretched-link">
-                    {{ siae.display_name }}
+                    {{ siae.name_display }}
                 </a>
             </div>
         </div>
@@ -23,7 +23,7 @@
             {% if siae.kind %}
                 <li class="d-flex lh-sm mb-2">
                     <img src="{% static 'itou/images/ico-bicro-marche-secteur.svg' %}" alt="" class="mr-2" height="25">
-                    <span>{{ siae.display_presta_type }}</span>
+                    <span>{{ siae.presta_type_display }}</span>
                 </li>
             {% endif %}
             </ul>

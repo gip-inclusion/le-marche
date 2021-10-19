@@ -12,7 +12,7 @@
         <div class="sc-main">
             <div class="sc-head">
                 <h3>
-                    {{ siae.display_name }}
+                    {{ siae.name_display }}
                     {% if not siae.users.count %}
                         <small class="text-muted">(bientôt inscrite sur le marché)</small>
                     {% endif %}
@@ -23,7 +23,7 @@
                 <div class="sc-profile">
                     <ul>
                         {% if siae.kind %}
-                            <li class="sc-profile-kind">{{ siae.display_presta_type }}</li>
+                            <li class="sc-profile-kind">{{ siae.presta_type_display }}</li>
                         {% endif %}
                         <li class="sc-profile-type">{{ siae.get_kind_display }}</li>
                         {% if siae.sectors %}

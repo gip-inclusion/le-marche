@@ -327,13 +327,13 @@ class Siae(models.Model):
         return None
 
     @property
-    def display_name(self):
+    def name_display(self):
         if self.brand:
             return self.brand
         return self.name
 
     @property
-    def display_presta_type(self):
+    def presta_type_display(self):
         if self.kind == Siae.KIND_ETTI:
             return "Intérim"
         if self.kind == Siae.KIND_AI:
@@ -341,6 +341,19 @@ class Siae(models.Model):
         # return array_choices_display(self, "presta_type")
         presta_type_values = [force_str(dict(Siae.PRESTA_CHOICES).get(key, "")) for key in self.presta_type]
         return ", ".join(filter(None, presta_type_values))
+
+    @property
+    def siret_display(self):
+        """
+        SIRET = 14 numbers
+        SIREN = 9 numbers
+        SIREN + NIC = SIRET
+        """
+        if len(self.siret) == 14:
+            return f"{self.siret[0:3]} {self.siret[3:6]} {self.siret[6:9]} {self.siret[9:14]}"
+        if len(self.siret) == 9:
+            return f"{self.siret[0:3]} {self.siret[3:6]} {self.siret[6:9]}"
+        return self.siret
 
     @property
     def contact_full_name(self):

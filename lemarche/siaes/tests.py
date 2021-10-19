@@ -33,6 +33,20 @@ class SiaeModelTest(TestCase):
         siae = SiaeFactory(name="Ma boite")
         self.assertEqual(str(siae), "Ma boite")
 
+    def test_name_display_property(self):
+        siae_without_brand = SiaeFactory(name="Ma raison sociale")
+        siae_with_brand = SiaeFactory(name="Ma raison sociale", brand="Mon enseigne")
+        self.assertEqual(siae_without_brand.name_display, "Ma raison sociale")
+        self.assertEqual(siae_with_brand.name_display, "Mon enseigne")
+
+    def test_siret_display_property(self):
+        siae_with_siret = SiaeFactory(siret="12312312312345")
+        self.assertEqual(siae_with_siret.siret_display, "123 123 123 12345")
+        siae_with_siren = SiaeFactory(siret="123123123")
+        self.assertEqual(siae_with_siren.siret_display, "123 123 123")
+        siae_with_anormal_siret = SiaeFactory(siret="123123123123")
+        self.assertEqual(siae_with_anormal_siret.siret_display, "123123123123")
+
     def test_geo_range_pretty_display_property(self):
         siae_country = SiaeFactory(geo_range=Siae.GEO_RANGE_COUNTRY)
         self.assertEqual(siae_country.geo_range_pretty_display, "France entière")

@@ -61,7 +61,7 @@ class Perimeter(models.Model):
         ]
 
     def __str__(self):
-        return self.display_name
+        return self.name_display
 
     def set_slug(self, region_duplicate=False):
         if not self.id:
@@ -83,7 +83,7 @@ class Perimeter(models.Model):
             super().save(*args, **kwargs)
 
     @property
-    def display_name(self):
+    def name_display(self):
         if self.kind == self.KIND_CITY:
             return f"{self.name} ({self.department_code})"
         return self.name
