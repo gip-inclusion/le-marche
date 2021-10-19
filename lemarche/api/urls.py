@@ -24,7 +24,7 @@ router.register(r"perimeters", PerimeterViewSet, basename="perimeters")
 urlpatterns = [
     path("", TemplateView.as_view(template_name="api/home.html"), name="home"),
     # Additional API endpoints
-    path("siaes/siret/<str:siret>/", SiaeViewSet.as_view({"get": "retrieve_by_siret"})),
+    path("siaes/siret/<str:siret>/", SiaeViewSet.as_view({"get": "retrieve_by_siret"}), name="siae-retrieve-by-siret"),
     # Swagger / OpenAPI documentation
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path("docs/", SpectacularSwaggerView.as_view(url_name="api:schema"), name="swagger-ui"),
