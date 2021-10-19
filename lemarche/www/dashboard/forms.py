@@ -180,7 +180,7 @@ SiaeOfferFormSet = inlineformset_factory(Siae, SiaeOffer, form=SiaeOfferForm, ex
 class SiaeClientReferenceForm(forms.ModelForm):
     class Meta:
         model = SiaeClientReference
-        fields = ["name", "logo_url"]
+        fields = ["name", "logo_url"]  # TODO: make name mandatory
 
 
 SiaeClientReferenceFormSet = inlineformset_factory(

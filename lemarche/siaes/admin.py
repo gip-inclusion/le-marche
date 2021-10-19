@@ -61,6 +61,9 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
 
     autocomplete_fields = ["sectors", "networks", "users"]
     readonly_fields = [field for field in Siae.READONLY_FIELDS if field not in ("coords")] + [
+        "nb_offers",
+        "nb_labels",
+        "nb_cient_references",
         "logo_url",
         "logo_url_display",
         "created_at",
@@ -105,12 +108,22 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
                     "description",
                     "sectors",
                     "networks",
-                    "users",
+                    "nb_offers",
+                    "nb_labels",
+                    "nb_cient_references",
+                )
+            },
+        ),
+        (
+            "Périmètre d'intervention",
+            {
+                "fields": (
                     "geo_range",
                     "geo_range_custom_distance",
                 )
             },
         ),
+        ("Gestionnaire(s)", {"fields": ("users",)}),
         (
             "Contact",
             {
@@ -181,7 +194,7 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
 class SiaeOfferAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "source", "created_at"]
     list_filter = ["source"]
-    search_fields = ["id", "name"]
+    search_fields = ["id", "name", "siae__id"]
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["source", "created_at", "updated_at"]
@@ -197,7 +210,7 @@ class SiaeOfferAdmin(admin.ModelAdmin):
 @admin.register(SiaeLabel)
 class SiaeLabelAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
-    search_fields = ["id", "name"]
+    search_fields = ["id", "name", "siae__id"]
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["created_at", "updated_at"]
@@ -213,7 +226,7 @@ class SiaeLabelAdmin(admin.ModelAdmin):
 @admin.register(SiaeClientReference)
 class SiaeClientReferenceAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
-    search_fields = ["id", "name"]
+    search_fields = ["id", "name", "siae__id"]
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["logo_url", "logo_url_display", "created_at", "updated_at"]
