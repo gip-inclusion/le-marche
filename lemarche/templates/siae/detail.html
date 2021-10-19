@@ -43,7 +43,7 @@
             <div id="content" class="col-12 col-lg-8 listing-area">
                 <!-- profile-detail -->
                 <article class="profile-detail">
-                    <!-- First Row, company details -->
+                    <!-- First row : Company details -->
                     <!-- gallery-small -->
                     <div id="user_profile" class="row mb-5 mb-md-6 align-items-start">
                         <div class="gallery-small col-12 col-lg-3">
@@ -80,14 +80,14 @@
                                     <span>{{ siae.get_kind_display }}</span>
                                 </div>
                                 <div class="clearfix visible-md-block"></div>
-                                <div class="col-12 col-md-6 mb-3">
+                                <div class="col-12 mb-3">
                                     <span class="prof_icon mr-1"><img src="{% static 'img/prof_calendar.svg' %}" /></span>
-                                    <span>Date de création<sup>*</sup> : non disponible</span>
+                                    <span>Date de création<sup>*</sup> : {% if siae.ig_date_constitution %}{{ siae.ig_date_constitution|date:"d/m/Y" }}{% else %}non disponible{% endif %}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- Second Row, Company Details -->
+                    <!-- Second row : Secteurs, Références -->
                     <div class="row mb-3">
                         <div class="col-sm-6 img-left mb-3 mb-md-5">
                             <div class="il-l">
@@ -115,42 +115,42 @@
                             </div>
                         </div>
                         {% if siae.client_references.count %}
-                            <div class="col-sm-6 img-left mb-3 mb-md-5">
-                                <div class="il-l">
-                                    <img class="cell_icon" src="{% static 'img/prof_images.svg' %}" />
-                                </div>
-                                <div class="il-r">
-                                    <h3 class="h3 mb-1 mt-1">Références clients</h3>
-                                    {% for image in siae.client_references.all %}
-                                        {% if image.image_url %}
-                                            <img class="client-ref" src="{{ image.image_url }}" alt="{{ image.name }}" title="{{ image.name }}" />
-                                        {% endif %}
-                                    {% endfor %}
-                                </div>
+                        <div class="col-sm-6 img-left mb-3 mb-md-5">
+                            <div class="il-l">
+                                <img class="cell_icon" src="{% static 'img/prof_images.svg' %}" />
                             </div>
+                            <div class="il-r">
+                                <h3 class="h3 mb-1 mt-1">Références clients</h3>
+                                {% for image in siae.client_references.all %}
+                                    {% if image.image_url %}
+                                        <img class="client-ref" src="{{ image.image_url }}" alt="{{ image.name }}" title="{{ image.name }}" />
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
                         {% endif %}
                     </div>
-                    {% if not siae.users.count %}
-                        <!-- Third Row, Description -->
-                        <div class="row">
-                            <div class="col-sm-12 img-left mb-3 mb-md-5">
-                                <div class="il-l">
-                                    <img class="cell_icon" src="{% static 'img/prof_discuss.svg' %}" />
-                                </div>
-                                <div class="il-r">
-                                    <h3 class="h3 mb-1 mt-1">Présentation de la structure</h3>
-                                    <div>
-                                        {% if siae.description %}
-                                            {{ siae.description|linebreaks }}
-                                        {% else %}
-                                            Non renseigné
-                                        {% endif %}
-                                    </div>
+                    <!-- Third row : Description -->
+                    {% if siae.users.count %}
+                    <div class="row">
+                        <div class="col-sm-12 img-left mb-3 mb-md-5">
+                            <div class="il-l">
+                                <img class="cell_icon" src="{% static 'img/prof_discuss.svg' %}" />
+                            </div>
+                            <div class="il-r">
+                                <h3 class="h3 mb-1 mt-1">Présentation de la structure</h3>
+                                <div>
+                                    {% if siae.description %}
+                                        {{ siae.description|linebreaks }}
+                                    {% else %}
+                                        Non renseigné
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
+                    </div>
                     {% endif %}
-                    <!-- Fourth Row -->
+                    <!-- Fourth Row : Prestations -->
                     {% if siae.offers.count %}
                     <div class="row">
                         <div class="col-sm-12 img-left mb-3 mb-md-5">
@@ -161,11 +161,11 @@
                                 <h3 class="h3 mb-1 mt-1">Les prestations proposées</h3>
                                 <div class="row">
                                 {% for offer in siae.offers.all %}
-                                    <article class="prests-post col-12 col-lg-6 mt-2">
+                                    <article class="prests-post col-12 {% if siae.offers.count > 1 %}col-lg-6{% endif %} mt-2">
                                         <img class="cell_icon" src="{% static 'img/prof_dot.png' %}" />
                                         <h4>{{ offer.name }}</h4>
                                         <div>
-                                            {{ offer.description }}
+                                            {{ offer.description|linebreaks }}
                                         </div>
                                     </article>
                                 {% endfor %}
@@ -174,7 +174,7 @@
                         </div>
                     </div>
                     {% endif %}
-                    <!-- Fifth Row -->
+                    <!-- Fifth Row : Réseaux, Labels -->
                     {% if siae.networks.count or siae.labels.count %}
                     <div class="row">
                         {% if siae.networks.count %}
@@ -186,7 +186,7 @@
                                     <h3 class="h3 mb-1 mt-1">Réseaux</h3>
                                     <ul>
                                     {% for network in siae.networks.all %}
-                                        <li><a href="{{ network.website }}" class="network_link">{{ network.brand }}</a></li>
+                                        <li><a href="{{ network.website }}" class="network_link" rel="noopener" target="_blank">{{ network.brand }}</a></li>
                                     {% endfor %}
                                     </ul>
                                 </div>
