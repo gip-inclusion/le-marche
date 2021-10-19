@@ -79,9 +79,9 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
             "siret",  # siret_pretty ?
             "nature",
             "kind",
-            "contact_email",
-            "contact_phone",
-            "contact_website",
+            # "contact_email",
+            # "contact_phone",
+            # "contact_website",
             "city",
             "department",
             "region",
