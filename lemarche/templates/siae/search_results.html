@@ -280,8 +280,15 @@
         map.zoomControl.remove();
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        // add geojson data
+        // add geojson data (with custom icons because of static url issues)
+        const icon = L.icon({
+            'iconUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-icon.png' %}",
+            'shadowUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-shadow.png' %}"
+        });
         var geojson = L.geoJSON(siaeList, {
+            pointToLayer: function(geoJsonPoint, latlng) {
+                return L.marker(latlng, {icon: icon});
+            },
             onEachFeature: function (feature, layer) {
                 var featureDisplayName = feature.properties.brand ? feature.properties.brand : feature.properties.name;
                 layer.bindPopup(`<a href="/prestataires/${feature.properties.slug}/"><p class="h6">${featureDisplayName}</p></a>`);

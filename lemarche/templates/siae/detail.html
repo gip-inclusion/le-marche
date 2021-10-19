@@ -317,8 +317,12 @@ document.addEventListener("DOMContentLoaded", function() {
     // map zoom controls in the bottom right
     map.zoomControl.remove();
     L.control.zoom({ position: 'bottomright' }).addTo(map);
-    // map siae marker
-    L.marker([siaeLongitudeFloat, siaeLatitudeFloat]).addTo(map);
+    // map siae marker (with custom icons because of static url issues)
+    const icon = L.icon({
+        'iconUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-icon.png' %}",
+        'shadowUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-shadow.png' %}"
+    });
+    L.marker([siaeLongitudeFloat, siaeLatitudeFloat], {icon: icon}).addTo(map);
 });
 </script>
 {% endblock %}
