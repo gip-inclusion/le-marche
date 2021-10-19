@@ -37,6 +37,10 @@ CONTENT_TYPE_MAPPING = {
 }  # "jfif"
 
 
+def build_image_url(endpoint, bucket_name, image_key):
+    return f"{endpoint}/{bucket_name}/{image_key}"
+
+
 class Command(BaseCommand):
     def handle(self, *args, **options):
         self.clean_bucket()
@@ -78,7 +82,7 @@ class Command(BaseCommand):
                 )
 
                 # Step 3: update object
-                user.image_url = API_CONNECTION_DICT["endpoint_url"] + "/" + bucket_name + s3_image_key
+                user.image_url = build_image_url(API_CONNECTION_DICT["endpoint_url"], bucket_name, s3_image_key)
                 user.save()
             else:
                 print("Image extension error", "/", "User", user.id, "/", "Image name", user.image_name)
@@ -86,7 +90,7 @@ class Command(BaseCommand):
             # Step 4: delete local image
             os.remove(user.image_name)
 
-            print("processed", user.image_name)
+        print(f"Migrated {users_with_images.count()} user images !")
 
     def migrate_siae_logos(self):
         """ """
@@ -118,13 +122,15 @@ class Command(BaseCommand):
                 )
 
                 # Step 3: update object
-                siae.logo_url = API_CONNECTION_DICT["endpoint_url"] + "/" + bucket_name + s3_image_key
+                siae.logo_url = build_image_url(API_CONNECTION_DICT["endpoint_url"], bucket_name, s3_image_key)
                 siae.save()
             else:
                 print("Image extension error", "/", "Siae", siae.id, "/", "Image name", siae.image_name)
 
             # Step 4: delete local image
             os.remove(siae.image_name)
+
+        print(f"Migrated {siaes_with_logos.count()} siae images !")
 
     def migrate_siae_client_reference_logos(self):
         """ """
@@ -172,7 +178,9 @@ class Command(BaseCommand):
                 )
 
                 # Step 3: update object
-                client_reference.logo_url = API_CONNECTION_DICT["endpoint_url"] + "/" + bucket_name + s3_image_key
+                client_reference.logo_url = build_image_url(
+                    API_CONNECTION_DICT["endpoint_url"], bucket_name, s3_image_key
+                )
                 client_reference.save()
             else:
                 print(
@@ -187,3 +195,5 @@ class Command(BaseCommand):
 
             # Step 4: delete local image
             os.remove(client_reference.image_name)
+
+        print(f"Migrated {client_references_with_logos.count()} client reference images !")
