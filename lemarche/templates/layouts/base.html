@@ -66,7 +66,11 @@
 
 <body id="top" class="loading">
     <!-- allow a user to go to the main content of the page -->
-    <noscript>Javascript doit être activé pour pouvoir assurer l'affichage correct de la page </noscript>
+    <noscript>
+        <div class="alert alert-danger" role="alert">
+            Javascript doit être activé pour pouvoir assurer l'affichage correct de la page (recherche géographique par exemple).
+        </div>
+    </noscript>
 
     {% comment "migrate first" %}
     {% include '@CocoricoCore/Frontend/Common/js/_google_tag_manager_js.html.twig' only %}
@@ -125,6 +129,7 @@
     {% block script %}
     {% compress js %}
     <script src="{% static 'itou/javascripts/app.js' %}"></script>
+    <script src="{% static 'js/utils.js'%}"></script>
     {% endcompress %}
     <script>
         //Global Javascript variables

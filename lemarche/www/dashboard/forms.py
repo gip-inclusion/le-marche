@@ -93,6 +93,7 @@ class SiaeEditInfoContactForm(forms.ModelForm):
             "contact_email",
             "contact_phone",
             "contact_website",
+            "logo_url",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -179,7 +180,7 @@ SiaeOfferFormSet = inlineformset_factory(Siae, SiaeOffer, form=SiaeOfferForm, ex
 class SiaeClientReferenceForm(forms.ModelForm):
     class Meta:
         model = SiaeClientReference
-        fields = ["name", "image_name"]
+        fields = ["name", "logo_url"]
 
 
 SiaeClientReferenceFormSet = inlineformset_factory(
