@@ -410,6 +410,9 @@ class SiaeUser(models.Model):
     created_at = models.DateTimeField("Date de création", default=timezone.now)
     updated_at = models.DateTimeField("Date de modification", auto_now=True)
 
+    class Meta:
+        db_table = "siae_users"
+
 
 class SiaeOffer(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)

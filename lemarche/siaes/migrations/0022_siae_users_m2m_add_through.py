@@ -27,10 +27,10 @@ class Migration(migrations.Migration):
                 ("user", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
-        migrations.AlterModelTable(
-            name="siaeuser",
-            table="siaes_siae_users",
-        ),
+        # migrations.AlterModelTable(
+        #     name="siaeuser",
+        #     table="siaes_siae_users",
+        # ),
         migrations.AlterField(
             model_name="siae",
             name="users",
