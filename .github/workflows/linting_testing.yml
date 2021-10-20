@@ -16,15 +16,16 @@ jobs:
       DJANGO_SECRET_KEY: ministryofsillywalks
       PYTHONPATH: .
       POSTGRESQL_ADDON_HOST: localhost
+      POSTGRESQL_ADDON_DB: postgres
       POSTGRESQL_ADDON_USER: postgres
-      POSTGRESQL_ADDON_PASSWORD: password
+      POSTGRESQL_ADDON_PASSWORD: postgres
 
     services:
       postgres:
         # Docker Hub image
         image: postgis/postgis:12-master
         env:
-          POSTGRES_PASSWORD: password
+          POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
         # Set health checks to wait until postgres has started
@@ -79,30 +80,41 @@ jobs:
       #----------------------------------------------
       # install your root project
       #----------------------------------------------
-      - name: Install library
+      - name: 📥 Install dependencies
         run: poetry install --no-interaction
 
       #----------------------------------------------
-      #              run lint suite
+      # run lint suite
       # Why not install default flake8 or pylint ? 
       # Because we use pyproject.toml config file, and
       # prefer locally reproducible tests.
       #----------------------------------------------
-      - name: Run Linters
+      - name: ✨ Run Linters
         run: |
-            source .venv/bin/activate
-            echo "flake8"
-            pflake8 "./lemarche"
-            echo "black"
-            black . --check
-            echo "isort"
-            isort ./lemarche/*.py --check-only
+          source .venv/bin/activate
+          echo "flake8"
+          pflake8 "./lemarche"
+          echo "black"
+          black . --check
+          echo "isort"
+          isort ./lemarche/*.py --check-only
+
+      # - name: 💾 Create a database to check migrations
+      #   run: |
+      #     psql <<SQL
+      #         CREATE DATABASE marche;
+      #     SQL
+
+      - name: 🚧 Check pending migrations
+        run: |
+          source .venv/bin/activate
+          python manage.py makemigrations --check --dry-run --noinput
 
       #----------------------------------------------
-      #              run tests
+      # run tests
       #----------------------------------------------
-      - name: Run Tests
+      - name: 🤹‍ Run Tests
         run: |
-            source .venv/bin/activate
-            coverage run --source='./lemarche' ./manage.py test
-            coverage report
+          source .venv/bin/activate
+          coverage run --source='./lemarche' ./manage.py test
+          coverage report
