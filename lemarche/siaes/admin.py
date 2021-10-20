@@ -123,7 +123,7 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
                 )
             },
         ),
-        ("Gestionnaire(s)", {"fields": ("users",)}),
+        # ("Gestionnaire(s)", {"fields": ("users",)}),
         (
             "Contact",
             {

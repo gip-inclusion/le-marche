@@ -250,7 +250,11 @@ class Siae(models.Model):
     admin_email = models.EmailField(max_length=255, blank=True, null=True)
 
     users = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, verbose_name="Gestionnaires", related_name="siaes", blank=True
+        settings.AUTH_USER_MODEL,
+        through="siaes.SiaeUser",
+        verbose_name="Gestionnaires",
+        related_name="siaes",
+        blank=True,
     )
     sectors = models.ManyToManyField(
         "sectors.Sector", verbose_name="Secteurs d'activité", related_name="siaes", blank=True
@@ -397,6 +401,14 @@ class Siae(models.Model):
 
     def get_absolute_url(self):
         return reverse("siae:detail", kwargs={"slug": self.slug})
+
+
+class SiaeUser(models.Model):
+    siae = models.ForeignKey("siaes.Siae", on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField("Date de création", default=timezone.now)
+    updated_at = models.DateTimeField("Date de modification", auto_now=True)
 
 
 class SiaeOffer(models.Model):
