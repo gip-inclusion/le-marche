@@ -8,8 +8,11 @@
   font-size: 1rem;
 }
 
-// .form-group > .checkbox > .checkbox-title::text {
-.form-group > .checkbox > .checkbox-title > *:not(div) {
+.form-group > .checkbox > .checkbox-title {
+  padding-bottom: 1rem;
+}
+// 'group-title' class added with Javascript (see static > js > utils.js)
+.form-group > .checkbox > .checkbox-title > .group-title {
   font-weight: 900;
   font-size: 1rem;
 }
@@ -20,13 +23,20 @@
 }
 
 // bootstrap-multiselect
-.multiselect {
+button.multiselect {
+  cursor: default !important;
   background-position: right 1rem center;
   background-repeat: no-repeat;    
   background-image: url('/static/images/dir_form_ico_shape.png');
 }
 .multiselect-group {
   font-weight: 900;
+  font-size: 1rem;
+  padding-bottom: 0 !important;
+}
+.multiselect-option {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 // alphagov-accessible-autocomplete
