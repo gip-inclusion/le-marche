@@ -8,8 +8,8 @@
   font-size: 1rem;
 }
 
-// .form-group > .checkbox > .checkbox-title::text {
-.form-group > .checkbox > .checkbox-title > *:not(div) {
+// 'group-title' class added with Javascript (see static > js > utils.js)
+.form-group > .checkbox > .checkbox-title > .group-title {
   font-weight: 900;
   font-size: 1rem;
 }

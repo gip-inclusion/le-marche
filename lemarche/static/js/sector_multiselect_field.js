@@ -21,7 +21,7 @@ const buttonTextAndTitle = function(options, select) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener('DOMContentLoaded', function() {
     $('#id_sectors').multiselect({
         // height & width
         maxHeight: 400,
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // reset button
         enableResetButton: true,
         resetButtonText: 'Réinitialiser',
-        // select all group options in 1 click
+        // ability to select all group's child options in 1 click
         enableClickableOptGroups: true,
         // other
         // enableHTML: true,
