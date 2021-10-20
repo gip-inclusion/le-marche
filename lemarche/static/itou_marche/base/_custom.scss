@@ -14,7 +14,24 @@
   font-size: 1rem;
 }
 
-/* Element is shown with JavaScript. See static > js > utils.js */
+/* Element is shown with JavaScript (see static > js > utils.js) */
 .js-display-if-javascript-enabled {
   display: none;
+}
+
+// bootstrap-multiselect
+.multiselect {
+  background-position: right 1rem center;
+  background-repeat: no-repeat;    
+  background-image: url('/static/images/dir_form_ico_shape.png');
+}
+.multiselect-group {
+  font-weight: 900;
+}
+
+// alphagov-accessible-autocomplete
+.autocomplete__input {
+  background-position: right 1rem center;
+  background-repeat: no-repeat;
+  background-image: url('/static/images/dir_form_ico_map.png');
 }
