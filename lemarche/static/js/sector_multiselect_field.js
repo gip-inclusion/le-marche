@@ -33,16 +33,29 @@ document.addEventListener('DOMContentLoaded', function() {
         buttonTitle: buttonTextAndTitle,
         // filter options
         enableFiltering: true,
+        enableCaseInsensitiveFiltering: true,
         filterPlaceholder: placeholder,
         // reset button
-        enableResetButton: true,
-        resetButtonText: 'Réinitialiser',
+        includeResetOption: true,
+        includeResetDivider: true,
+        resetText: 'Réinitialiser',
+        // enableResetButton: true,
+        // resetButtonText: 'Réinitialiser',
         // ability to select all group's child options in 1 click
         enableClickableOptGroups: true,
         // other
         // enableHTML: true,
         // nonSelectedText: `<span class="text-muted">${placeholder}</span>`,
+        templates: {
+            resetButton: '<div class="multiselect-reset text-center p-2"><button type="button" class="btn btn-sm btn-block btn-outline-primary"></button></div>',
+            // buttonGroupReset: '<button type="button" class="multiselect-reset btn btn-outline-primary btn-block"></button>'
+        }
     });
+
+    // // fix bug where reset button didn't work on init
+    // $('.multiselect-reset').on('click', function() {
+    //     $('#id_sectors').multiselect('deselectAll');
+    // });
 
     // hack to set the placeholder color to grey when there is no sector selected
     if (document.querySelector('.multiselect-selected-text').innerText === placeholder) {
