@@ -46,7 +46,6 @@ class HasUserFilter(admin.SimpleListFilter):
 
 class SiaeUserInline(admin.TabularInline):
     model = SiaeUser
-    verbose_name = "Gestionnaire(s)"
     readonly_fields = ["created_at", "updated_at"]
     extra = 0
 

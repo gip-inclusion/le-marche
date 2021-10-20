@@ -404,14 +404,16 @@ class Siae(models.Model):
 
 
 class SiaeUser(models.Model):
-    siae = models.ForeignKey("siaes.Siae", on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Utilisateur", on_delete=models.CASCADE)
 
     created_at = models.DateTimeField("Date de création", default=timezone.now)
     updated_at = models.DateTimeField("Date de modification", auto_now=True)
 
     class Meta:
         db_table = "siae_users"
+        verbose_name = "Gestionnaire"
+        verbose_name_plural = "Gestionnaires"
 
 
 class SiaeOffer(models.Model):

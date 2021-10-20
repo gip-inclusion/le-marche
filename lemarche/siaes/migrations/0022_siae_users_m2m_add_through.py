@@ -23,9 +23,22 @@ class Migration(migrations.Migration):
                     models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date de création"),
                 ),
                 ("updated_at", models.DateTimeField(auto_now=True, verbose_name="Date de modification")),
-                ("siae", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="siaes.siae")),
-                ("user", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "siae",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="siaes.siae", verbose_name="Structure"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Utilisateur",
+                    ),
+                ),
             ],
+            options={"verbose_name": "Gestionnaire", "verbose_name_plural": "Gestionnaires"},
         ),
         # migrations.AlterModelTable(
         #     name="siaeuser",
@@ -55,5 +68,9 @@ class Migration(migrations.Migration):
             model_name="SiaeUser",
             name="updated_at",
             field=models.DateTimeField(auto_now=True, verbose_name="Date de modification"),
+        ),
+        migrations.AlterModelOptions(
+            name="siaeuser",
+            options={"verbose_name": "Gestionnaire", "verbose_name_plural": "Gestionnaires"},
         ),
     ]
