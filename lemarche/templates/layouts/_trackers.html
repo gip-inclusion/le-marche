@@ -12,14 +12,14 @@
         "privacyUrl": "", /* Privacy policy url */
         "hashtag": "#tarteaucitron", /* Open the panel with this hashtag */
         "cookieName": "tarteaucitron", /* Cookie name */
-        "orientation": "bottom", /* Banner position (top - bottom) */
+        "orientation": "top", /* Banner position (top - bottom) */
         "groupServices": false, /* Group services by category */
         "showAlertSmall": false, /* Show the small banner on bottom right */
         "cookieslist": false, /* Show the cookie list */
         "closePopup": false, /* Show a close X on the banner */
         "showIcon": true, /* Show cookie icon to manage cookies */
         //"iconSrc": "", /* Optionnal: URL or base64 encoded image */
-        "iconPosition": "BottomRight", /* BottomRight, BottomLeft, TopRight and TopLeft */
+        "iconPosition": "BottomLeft", /* BottomRight, BottomLeft, TopRight and TopLeft */  // BottomLeft to match itou. BottomRight already has Crisp.
         "adblocker": false, /* Show a Warning if an adblocker is detected */
         "DenyAllCta" : true, /* Show the deny all button */
         "AcceptAllCta" : true, /* Show the accept all button when highPrivacy on */
@@ -30,25 +30,22 @@
         "useExternalCss": true, /* If false, the tarteaucitron.css file will be loaded */
         "useExternalJs": false, /* If false, the tarteaucitron.js file will be loaded */
         //"cookieDomain": ".my-multisite-domaine.fr", /* Shared cookie for multisite */
-        "readmoreLink": "", /* Change the default readmore link */
+        "readmoreLink": "https://doc.inclusion.beta.gouv.fr/mentions/protection-des-donnees", /* Change the default readmore link */
         "mandatory": true, /* Show a message about mandatory cookies */
+        "forceLanguage": "fr",
     });
 
     // Hotjar
-    {% if BITOUBI_ENV in "staging,prod" %}
     (tarteaucitron.job = tarteaucitron.job || []).push('hotjar');
     tarteaucitron.user.hotjarId = {{ HOTJAR_ID }};
     tarteaucitron.user.HotjarSv = 6;
-    {% endif %}
 
     // Crisp ?
 
     // Matomo
-    {% if BITOUBI_ENV in "dev,prod" %}
     tarteaucitron.user.matomoId = {{ MATOMO_SITE_ID }};
     tarteaucitron.user.matomoHost = "{{ MATOMO_HOST }}";
     (tarteaucitron.job = tarteaucitron.job || []).push('matomo');
-    {% endif %}
     
 </script>
 <script type="text/javascript">

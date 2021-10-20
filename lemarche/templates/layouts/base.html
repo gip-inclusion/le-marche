@@ -53,12 +53,7 @@
     {% block extra_css %}{% endblock %}
 
     {% comment "migrate first" %}
-    {% include '@CocoricoCore/Frontend/Common/js/_google_analytics_js.html.twig' only %}
-    {% include '@CocoricoCore/Frontend/Common/js/_matomo_analytics_js.html.twig' only %}
-    {% include '@CocoricoCore/Frontend/Common/js/_hotjar_analytics_js.html.twig' only %}
     {% include '@CocoricoCore/Frontend/Common/js/_itou_tracker_js.html.twig' only %}
-    {% include '@CocoricoCore/Frontend/Common/js/_tarteaucitron_js.html.twig' only %}
-
     {% include '@CocoricoCore/Frontend/Common/_cookie_consent_js.html.twig' only %}
     {% endcomment %}
 
@@ -72,10 +67,6 @@
             Javascript doit être activé pour pouvoir assurer l'affichage correct de la page (recherche géographique par exemple).
         </div>
     </noscript>
-
-    {% comment "migrate first" %}
-    {% include '@CocoricoCore/Frontend/Common/js/_google_tag_manager_js.html.twig' only %}
-    {% endcomment %}
 
     <div class="sr-only sr-only-focusable">
         <a tabindex="1" href="#main">aller au contenu</a>
