@@ -1,0 +1,99 @@
+{% if BITOUBI_ENV in "staging,prod" %}
+<!-- Tarteaucitron -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/AmauriC/tarteaucitron.js@1.9.3/tarteaucitron.js"></script> 
+<script type="text/javascript">
+    // Tarteaucitron's language is set according to the browser configuration
+    // but a lot of users don't know how to change it.
+    // This can be forced only by using a global `var` statement.
+    // https://github.com/AmauriC/tarteaucitron.js/blob/98b02b0bdda670bd953752d85443c3fd77dde724/tarteaucitron.js#L5
+    var tarteaucitronForceLanguage = "fr";
+
+    tarteaucitron.init({
+        "privacyUrl": "", /* Privacy policy url */
+        "hashtag": "#tarteaucitron", /* Open the panel with this hashtag */
+        "cookieName": "tarteaucitron", /* Cookie name */
+        "orientation": "bottom", /* Banner position (top - bottom) */
+        "groupServices": false, /* Group services by category */
+        "showAlertSmall": false, /* Show the small banner on bottom right */
+        "cookieslist": false, /* Show the cookie list */
+        "closePopup": false, /* Show a close X on the banner */
+        "showIcon": true, /* Show cookie icon to manage cookies */
+        //"iconSrc": "", /* Optionnal: URL or base64 encoded image */
+        "iconPosition": "BottomRight", /* BottomRight, BottomLeft, TopRight and TopLeft */
+        "adblocker": false, /* Show a Warning if an adblocker is detected */
+        "DenyAllCta" : true, /* Show the deny all button */
+        "AcceptAllCta" : true, /* Show the accept all button when highPrivacy on */
+        "highPrivacy": true, /* HIGHLY RECOMMANDED Disable auto consent */
+        "handleBrowserDNTRequest": false, /* If Do Not Track == 1, disallow all */
+        "removeCredit": true, /* Remove credit link */
+        "moreInfoLink": true, /* Show more info link */
+        "useExternalCss": true, /* If false, the tarteaucitron.css file will be loaded */
+        "useExternalJs": false, /* If false, the tarteaucitron.js file will be loaded */
+        //"cookieDomain": ".my-multisite-domaine.fr", /* Shared cookie for multisite */
+        "readmoreLink": "", /* Change the default readmore link */
+        "mandatory": true, /* Show a message about mandatory cookies */
+    });
+
+    // Hotjar
+    {% if BITOUBI_ENV in "staging,prod" %}
+    (tarteaucitron.job = tarteaucitron.job || []).push('hotjar');
+    tarteaucitron.user.hotjarId = {{ HOTJAR_ID }};
+    tarteaucitron.user.HotjarSv = 6;
+    {% endif %}
+
+    // Crisp ?
+
+    // Matomo
+    {% if BITOUBI_ENV in "dev,prod" %}
+    tarteaucitron.user.matomoId = {{ MATOMO_SITE_ID }};
+    tarteaucitron.user.matomoHost = "{{ MATOMO_HOST }}";
+    (tarteaucitron.job = tarteaucitron.job || []).push('matomo');
+    {% endif %}
+    
+</script>
+<script type="text/javascript">
+    tarteaucitron.user.googleFonts = ['Roboto', 'Covered By Your Grace'];
+    (tarteaucitron.job = tarteaucitron.job || []).push('googlefonts');
+</script>
+
+<!-- Hotjar -->
+<script>
+    (function(h,o,t,j,a,r){
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        //h._hjSettings={hjid:1932118,hjsv:6};
+        h._hjSettings={hjid:{{ HOTJAR_ID }},hjsv:6};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+</script>
+
+<!-- Crisp -->
+<script type="text/javascript">
+    window.$crisp=[];
+    window.CRISP_WEBSITE_ID="{{ CRISP_ID }}";
+    (function() {
+        d=document;
+        s=d.createElement("script");
+        s.src="https://client.crisp.chat/l.js";
+        s.async=1;
+        d.getElementsByTagName("head")[0].appendChild(s);
+    })();
+</script>
+
+<!-- Matomo -->
+<script type="text/javascript">
+    var _paq = window._paq || [];
+    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function() {
+        var u="{{ MATOMO_HOST }}";
+        _paq.push(['setTrackerUrl', u+'piwik.php']);
+        _paq.push(['setSiteId', '{{ MATOMO_SITE_ID }}']);
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+    })();
+</script>
+{% endif %}
