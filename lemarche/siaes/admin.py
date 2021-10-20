@@ -3,6 +3,7 @@ from django.contrib.gis import admin as gis_admin
 from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
+from fieldsets_with_inlines import FieldsetsInlineMixin
 
 from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer, SiaeUser
 
@@ -51,7 +52,7 @@ class SiaeUserInline(admin.TabularInline):
 
 
 @admin.register(Siae)
-class SiaeAdmin(gis_admin.OSMGeoAdmin):
+class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     list_display = [
         "id",
         "name",
@@ -67,7 +68,7 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
     search_fields = ["id", "name", "slug", "siret"]
 
     autocomplete_fields = ["sectors", "networks"]
-    inlines = [SiaeUserInline]
+    # inlines = [SiaeUserInline]
     readonly_fields = [field for field in Siae.READONLY_FIELDS if field not in ("coords")] + [
         "nb_offers",
         "nb_labels",
@@ -81,7 +82,7 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
     # OSMGeoAdmin param for coords fields
     modifiable = False
 
-    fieldsets = [
+    fieldsets_with_inlines = [
         (
             "Affichage",
             {
@@ -131,7 +132,7 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
                 )
             },
         ),
-        # ("Gestionnaire(s)", {"fields": ("users",)}),
+        SiaeUserInline,
         (
             "Contact",
             {
