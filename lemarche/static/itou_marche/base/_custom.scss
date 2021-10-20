@@ -8,6 +8,9 @@
   font-size: 1rem;
 }
 
+.form-group > .checkbox > .checkbox-title {
+  padding-bottom: 1rem;
+}
 // 'group-title' class added with Javascript (see static > js > utils.js)
 .form-group > .checkbox > .checkbox-title > .group-title {
   font-weight: 900;
