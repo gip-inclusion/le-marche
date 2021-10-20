@@ -42,13 +42,17 @@
                             <small class="form-text text-muted mb-3">
                                 Vous souhaitez mettre à jour votre adresse e-mail ?<br />
                                 Veuillez nous <a href="{% url 'pages:contact' %}">contacter</a>.
+                                {% if user.kind == 'SIAE' %}<br />A noter que chaque structure a maintenant ses propres champs contact (E-mail, Téléphone, Site internet, ...){% endif %}
                             </small>
                             {% bootstrap_field form.phone %}
                             <div class="form-group">
                                 <label class="mb-0">Mot de passe</label>
                                 <small class="form-text text-muted">
                                     Vous souhaitez mettre à jour votre mot de passe ?<br />
-                                    Pour cela, déconnectez-vous. Rendez-vous ensuite sur la page de connexion, puis cliquez sur "Mot de passe oublié".
+                                    Suivez les étapes ci-dessous :<br />
+                                    &nbsp;&nbsp;1. Déconnectez-vous<br />
+                                    &nbsp;&nbsp;2. Rendez-vous ensuite sur la page de connexion<br />
+                                    &nbsp;&nbsp;3. Cliquez sur "Mot de passe oublié"<br />
                                 </small>
                             </div>
                         </fieldset>

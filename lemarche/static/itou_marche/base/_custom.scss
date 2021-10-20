@@ -1,5 +1,5 @@
 .form-group > label {
-  font-weight: bold;
+  font-weight: bold !important;
 }
 .form-group-required > label::after,
 .form-group-required > div > label::after {
