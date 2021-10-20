@@ -118,10 +118,4 @@ document.addEventListener("DOMContentLoaded", function() {
     // tStatusResults: 
     // tAssistiveHint: 
   })
-
-  if (perimeterNameInput) {
-    perimeterNameInput.addEventListener('change', event => {
-      console.log(event.target.value);
-    })
-  }
 });
