@@ -38,6 +38,18 @@ button.multiselect {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
+// fix scrolling bug on mobile when maxHeight is set (https://github.com/davidstutz/bootstrap-multiselect/issues/1191)
+@media screen and (max-width:1023px){ 
+  .multiselect-container button.dropdown-item {
+    pointer-events:none;
+  }
+  .multiselect-container span.form-check input {
+    pointer-events: all;
+  }
+  .multiselect-container span.form-check label  {
+    pointer-events: none;
+  }
+}
 
 // alphagov-accessible-autocomplete
 .autocomplete__input {
