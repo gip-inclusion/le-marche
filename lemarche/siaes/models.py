@@ -1,11 +1,16 @@
+from uuid import uuid4
+
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django.contrib.postgres.fields import ArrayField
-from django.db import models
+from django.db import IntegrityError, models, transaction
 from django.db.models import Q
+from django.urls import reverse
 from django.utils import timezone
+from django.utils.encoding import force_str
+from django.utils.text import slugify
 
 from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY, get_department_code_from_name
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
@@ -88,6 +93,7 @@ class SiaeQuerySet(models.QuerySet):
 class Siae(models.Model):
     READONLY_FIELDS_FROM_C1 = [
         "name",
+        "slug",  # generated from 'name'
         "brand",
         "siret",
         "naf",
@@ -108,7 +114,7 @@ class Siae(models.Model):
         "siret_is_valid",
         "c1_id",
         "c1_source",
-        "c4_id",
+        "c4_id_old",
         "last_sync_date",
     ]
     READONLY_FIELDS_FROM_QPV = ["is_qpv", "qpv_name", "qpv_code"]
@@ -182,6 +188,7 @@ class Siae(models.Model):
     )
 
     name = models.CharField(verbose_name="Raison sociale", max_length=255)
+    slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
     brand = models.CharField(verbose_name="Enseigne", max_length=255, blank=True, null=True)
     kind = models.CharField(verbose_name="Type de structure", max_length=6, choices=KIND_CHOICES, default=KIND_EI)
     description = models.TextField(verbose_name="Description", blank=True)
@@ -223,11 +230,14 @@ class Siae(models.Model):
         verbose_name="Distance en kilomètres (périmètre d'intervention)", blank=True, null=True
     )
 
+    contact_first_name = models.CharField(verbose_name="Prénom", max_length=150, blank=True, null=True)
+    contact_last_name = models.CharField(verbose_name="Nom", max_length=150, blank=True, null=True)
     contact_website = models.URLField(verbose_name="Site internet", blank=True, null=True)
     contact_email = models.EmailField(verbose_name="E-mail", blank=True, null=True)
     contact_phone = models.CharField(verbose_name="Téléphone", max_length=150, blank=True, null=True)
-    contact_first_name = models.CharField(verbose_name="Prénom", max_length=150, blank=True, null=True)
-    contact_last_name = models.CharField(verbose_name="Nom", max_length=150, blank=True, null=True)
+
+    image_name = models.CharField(verbose_name="Nom de l'image", max_length=255, blank=True, null=True)
+    logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True, null=True)
 
     is_consortium = models.BooleanField(verbose_name="Consortium", default=False)
     is_cocontracting = models.BooleanField(verbose_name="Co-traitance", default=False)
@@ -240,7 +250,11 @@ class Siae(models.Model):
     admin_email = models.EmailField(max_length=255, blank=True, null=True)
 
     users = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, verbose_name="Gestionnaires", related_name="siaes", blank=True
+        settings.AUTH_USER_MODEL,
+        through="siaes.SiaeUser",
+        verbose_name="Gestionnaires",
+        related_name="siaes",
+        blank=True,
     )
     sectors = models.ManyToManyField(
         "sectors.Sector", verbose_name="Secteurs d'activité", related_name="siaes", blank=True
@@ -258,7 +272,7 @@ class Siae(models.Model):
 
     c1_id = models.IntegerField(blank=True, null=True)
     c1_source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True, null=True)
-    c4_id = models.IntegerField(blank=True, null=True)
+    c4_id_old = models.IntegerField(blank=True, null=True)
 
     last_sync_date = models.DateTimeField(blank=True, null=True)
     sync_skip = models.BooleanField(blank=False, null=False, default=False)
@@ -279,6 +293,32 @@ class Siae(models.Model):
     def __str__(self):
         return self.name
 
+    def set_slug(self, with_uuid=False):
+        """
+        The slug field should be unique.
+        Some SIAE have duplicate name, so we suffix the slug with their department.
+        In some rare cases, name+department is not enough, so we add 4 random characters at the end.
+        """
+        # if not self.id:  # TODO: revert post-migration
+        self.slug = f"{slugify(self.name)[:40]}-{str(self.department or '')}"
+        if with_uuid:
+            self.slug += f"-{str(uuid4())[:4]}"
+
+    def save(self, *args, **kwargs):
+        """Generate the slug field before saving."""
+        try:
+            self.set_slug()
+            with transaction.atomic():
+                super().save(*args, **kwargs)
+        except IntegrityError as e:
+            # check that it's a slug conflict
+            # Full message expected: duplicate key value violates unique constraint "siaes_siae_slug_0f0b821f_uniq" DETAIL:  Key (slug)=(...) already exists.  # noqa
+            if "siaes_siae_slug" in str(e):
+                self.set_slug(with_uuid=True)
+                super().save(*args, **kwargs)
+            else:
+                raise e
+
     @property
     def latitude(self):
         if self.coords:
@@ -290,6 +330,35 @@ class Siae(models.Model):
         if self.coords:
             return self.coords.x
         return None
+
+    @property
+    def name_display(self):
+        if self.brand:
+            return self.brand
+        return self.name
+
+    @property
+    def presta_type_display(self):
+        if self.kind == Siae.KIND_ETTI:
+            return "Intérim"
+        if self.kind == Siae.KIND_AI:
+            return "Mise à disposition du personnel"
+        # return array_choices_display(self, "presta_type")
+        presta_type_values = [force_str(dict(Siae.PRESTA_CHOICES).get(key, "")) for key in self.presta_type]
+        return ", ".join(filter(None, presta_type_values))
+
+    @property
+    def siret_display(self):
+        """
+        SIRET = 14 numbers
+        SIREN = 9 numbers
+        SIREN + NIC = SIRET
+        """
+        if len(self.siret) == 14:
+            return f"{self.siret[0:3]} {self.siret[3:6]} {self.siret[6:9]} {self.siret[9:14]}"
+        if len(self.siret) == 9:
+            return f"{self.siret[0:3]} {self.siret[3:6]} {self.siret[6:9]}"
+        return self.siret
 
     @property
     def contact_full_name(self):
@@ -329,6 +398,22 @@ class Siae(models.Model):
 
     def sectors_list_to_string(self):
         return ", ".join(self.sectors.all().values_list("name", flat=True))
+
+    def get_absolute_url(self):
+        return reverse("siae:detail", kwargs={"slug": self.slug})
+
+
+class SiaeUser(models.Model):
+    siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Utilisateur", on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField("Date de création", default=timezone.now)
+    updated_at = models.DateTimeField("Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Gestionnaire"
+        verbose_name_plural = "Gestionnaires"
+        ordering = ["-created_at"]
 
 
 class SiaeOffer(models.Model):
@@ -370,6 +455,7 @@ class SiaeClientReference(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255, blank=True, null=True)
     description = models.TextField(verbose_name="Description", blank=True)
     image_name = models.CharField(verbose_name="Nom de l'image", max_length=255)
+    logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True, null=True)
     order = models.PositiveIntegerField(verbose_name="Ordre", blank=False, default=1)
 
     siae = models.ForeignKey(
@@ -383,5 +469,6 @@ class SiaeClientReference(models.Model):
         verbose_name = "Référence client"
         verbose_name_plural = "Références clients"
 
-    def __str__(self):
-        return self.name
+    # def __str__(self):
+    #     if self.name:
+    #         return self.name

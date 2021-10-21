@@ -1,4 +1,5 @@
 {% load static compress bootstrap4 %}
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -52,12 +53,7 @@
     {% block extra_css %}{% endblock %}
 
     {% comment "migrate first" %}
-    {% include '@CocoricoCore/Frontend/Common/js/_google_analytics_js.html.twig' only %}
-    {% include '@CocoricoCore/Frontend/Common/js/_matomo_analytics_js.html.twig' only %}
-    {% include '@CocoricoCore/Frontend/Common/js/_hotjar_analytics_js.html.twig' only %}
     {% include '@CocoricoCore/Frontend/Common/js/_itou_tracker_js.html.twig' only %}
-    {% include '@CocoricoCore/Frontend/Common/js/_tarteaucitron_js.html.twig' only %}
-
     {% include '@CocoricoCore/Frontend/Common/_cookie_consent_js.html.twig' only %}
     {% endcomment %}
 
@@ -66,11 +62,11 @@
 
 <body id="top" class="loading">
     <!-- allow a user to go to the main content of the page -->
-    <noscript>Javascript doit être activé pour pouvoir assurer l'affichage correct de la page </noscript>
-
-    {% comment "migrate first" %}
-    {% include '@CocoricoCore/Frontend/Common/js/_google_tag_manager_js.html.twig' only %}
-    {% endcomment %}
+    <noscript>
+        <div class="alert alert-danger" role="alert">
+            Javascript doit être activé pour pouvoir assurer l'affichage correct de la page (recherche géographique par exemple).
+        </div>
+    </noscript>
 
     <div class="sr-only sr-only-focusable">
         <a tabindex="1" href="#main">aller au contenu</a>
@@ -84,14 +80,11 @@
 
     <!-- contains main informative part of the site -->
     <main id="main" role="main" class="s-main">
-
-
         {% block breadcrumbs %}{% endblock %}
-
 
         {% block messages %}
         {% if messages %}
-        <section>
+        <section class="mt-3 mt-lg-5">
             <div class="container">
                 <div class="messages fr-container fr-my-5w">
                     {% for message in messages %}
@@ -105,9 +98,7 @@
         {% endif %}
         {% endblock %}
 
-
         {% block content %}{% endblock %}
-
     </main>
 
     {% block footer %}
@@ -125,57 +116,10 @@
     {% block script %}
     {% compress js %}
     <script src="{% static 'itou/javascripts/app.js' %}"></script>
+    <script src="{% static 'js/utils.js'%}"></script>
     {% endcompress %}
-    <script>
-        //Global Javascript variables
-        {% comment "migration fix" %}
-        var locale = '{{ app.request.locale }}';
-        var locales = {{ locales| json_encode | raw }};
-        var defaultCurrency = '{{ defaultCurrency }}';
-        var currentCurrency = '{{ currentCurrency }}';
-        //Does the app is in day mode or time mode
-        var timeUnitIsDay = {{ timeUnitIsDay ?'true': 'false' }};
-        var timeUnitAllDay = {{ timeUnitAllDay ?'true': 'false' }};
-        var endDayIncluded = {{ endDayIncluded ?'true': 'false' }};
-        var isAuthenticated = {{ app.user is not null and is_granted("IS_AUTHENTICATED_FULLY") ? 'true' : 'false' }};
-        var hoursAvailable = {{ timeHoursAvailable| json_encode | raw }};
-        var sessId = '{{ app.session.get('uuid') }}';
-        var isAdmin = {{ app.session.get('isAdmin') ? 'true' : 'false'}};
-        var uType = '{{ app.session.get('userType') }}';
-        {% endcomment %}
-    </script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/AmauriC/tarteaucitron.js@1.9.3/tarteaucitron.js"></script> 
-    <script type="text/javascript">
-        tarteaucitron.init({
-        "privacyUrl": "", /* Privacy policy url */
-        "hashtag": "#tarteaucitron", /* Open the panel with this hashtag */
-        "cookieName": "tarteaucitron", /* Cookie name */
-        "orientation": "bottom", /* Banner position (top - bottom) */
-        "groupServices": false, /* Group services by category */
-        "showAlertSmall": false, /* Show the small banner on bottom right */
-        "cookieslist": false, /* Show the cookie list */
-        "closePopup": false, /* Show a close X on the banner */
-        "showIcon": true, /* Show cookie icon to manage cookies */
-        //"iconSrc": "", /* Optionnal: URL or base64 encoded image */
-        "iconPosition": "BottomRight", /* BottomRight, BottomLeft, TopRight and TopLeft */
-        "adblocker": false, /* Show a Warning if an adblocker is detected */
-        "DenyAllCta" : true, /* Show the deny all button */
-        "AcceptAllCta" : true, /* Show the accept all button when highPrivacy on */
-        "highPrivacy": true, /* HIGHLY RECOMMANDED Disable auto consent */
-        "handleBrowserDNTRequest": false, /* If Do Not Track == 1, disallow all */
-        "removeCredit": true, /* Remove credit link */
-        "moreInfoLink": true, /* Show more info link */
-        "useExternalCss": true, /* If false, the tarteaucitron.css file will be loaded */
-        "useExternalJs": false, /* If false, the tarteaucitron.js file will be loaded */
-        //"cookieDomain": ".my-multisite-domaine.fr", /* Shared cookie for multisite */
-        "readmoreLink": "", /* Change the default readmore link */
-        "mandatory": true, /* Show a message about mandatory cookies */
-        });
-      </script>
-      <script type="text/javascript">
-        tarteaucitron.user.googleFonts = ['Roboto', 'Covered By Your Grace'];
-        (tarteaucitron.job = tarteaucitron.job || []).push('googlefonts');
-      </script>
+    {% include "layouts/_trackers.html" %}
+    <!-- Mailjet newsletter -->
     <data id="mj-w-res-data" data-token="429592182df918abbac72c697a97a0fd" class="mj-w-data" data-apikey="4guK" data-w-id="KAV" data-lang="fr_FR" data-base="https://app.mailjet.com" data-width="640" data-height="450" data-statics="statics"></data>
     <script type="text/javascript" src="https://app.mailjet.com/statics/js/widget.modal.js"></script>
     {% endblock %}

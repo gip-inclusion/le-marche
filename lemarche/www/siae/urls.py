@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import path
 
 from lemarche.www.siae.views import SiaeDetailView, SiaeSearchResultsDownloadView, SiaeSearchResultsView
 
@@ -9,5 +9,5 @@ app_name = "siae"
 urlpatterns = [
     path("", SiaeSearchResultsView.as_view(), name="search_results"),
     path("download/", SiaeSearchResultsDownloadView.as_view(), name="search_results_download"),
-    path("<int:pk>/", include([path("", SiaeDetailView.as_view(), name="detail")])),
+    path("<str:slug>/", SiaeDetailView.as_view(), name="detail"),
 ]

@@ -7,6 +7,7 @@ from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
 from lemarche.siaes.models import Siae
+from lemarche.utils.s3 import S3Upload
 from lemarche.www.dashboard.forms import (
     ProfileEditForm,
     SiaeClientReferenceFormSet,
@@ -92,8 +93,18 @@ class SiaeEditInfoContactView(LoginRequiredMixin, SiaeOwnerRequiredMixin, Succes
     queryset = Siae.objects.all()
     success_message = "Vos modifications ont bien été prises en compte."
 
+    def get_context_data(self, **kwargs):
+        """
+        - pass s3 image upload config
+        """
+        context = super().get_context_data(**kwargs)
+        s3_upload = S3Upload(kind="siae_logo")
+        context["s3_form_values"] = s3_upload.form_values
+        context["s3_upload_config"] = s3_upload.config
+        return context
+
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_info_contact", args=[self.kwargs.get("pk")])
+        return reverse_lazy("dashboard:siae_edit_info_contact", args=[self.kwargs.get("slug")])
 
 
 class SiaeEditOfferView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -104,7 +115,7 @@ class SiaeEditOfferView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessa
     success_message = "Vos modifications ont bien été prises en compte."
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_offer", args=[self.kwargs.get("pk")])
+        return reverse_lazy("dashboard:siae_edit_offer", args=[self.kwargs.get("slug")])
 
 
 class SiaeEditPrestaView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -115,14 +126,21 @@ class SiaeEditPrestaView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMess
     success_message = "Vos modifications ont bien été prises en compte."
 
     def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
+        """
+        - init forms
+        - pass s3 image upload config
+        """
+        context = super().get_context_data(**kwargs)
         if self.request.POST:
-            data["offer_formset"] = SiaeOfferFormSet(self.request.POST, instance=self.object)
-            data["client_reference_formset"] = SiaeClientReferenceFormSet(self.request.POST, instance=self.object)
+            context["offer_formset"] = SiaeOfferFormSet(self.request.POST, instance=self.object)
+            context["client_reference_formset"] = SiaeClientReferenceFormSet(self.request.POST, instance=self.object)
         else:
-            data["offer_formset"] = SiaeOfferFormSet(instance=self.object)
-            data["client_reference_formset"] = SiaeClientReferenceFormSet(instance=self.object)
-        return data
+            context["offer_formset"] = SiaeOfferFormSet(instance=self.object)
+            context["client_reference_formset"] = SiaeClientReferenceFormSet(instance=self.object)
+        s3_upload = S3Upload(kind="client_reference_logo")
+        context["s3_form_values"] = s3_upload.form_values
+        context["s3_upload_config"] = s3_upload.config
+        return context
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -147,7 +165,7 @@ class SiaeEditPrestaView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMess
         return self.render_to_response(self.get_context_data())
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_presta", args=[self.kwargs.get("pk")])
+        return reverse_lazy("dashboard:siae_edit_presta", args=[self.kwargs.get("slug")])
 
 
 class SiaeEditOtherView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -185,4 +203,4 @@ class SiaeEditOtherView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessa
         return self.render_to_response(self.get_context_data())
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_other", args=[self.kwargs.get("pk")])
+        return reverse_lazy("dashboard:siae_edit_other", args=[self.kwargs.get("slug")])

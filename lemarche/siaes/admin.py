@@ -2,9 +2,10 @@ from django.contrib import admin
 from django.contrib.gis import admin as gis_admin
 from django.db.models import Count
 from django.urls import reverse
-from django.utils.html import format_html
+from django.utils.html import format_html, mark_safe
+from fieldsets_with_inlines import FieldsetsInlineMixin
 
-from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer, SiaeUser
 
 
 class IsLiveFilter(admin.SimpleListFilter):
@@ -43,8 +44,15 @@ class HasUserFilter(admin.SimpleListFilter):
         return queryset
 
 
+class SiaeUserInline(admin.TabularInline):
+    model = SiaeUser
+    autocomplete_fields = ["user"]
+    readonly_fields = ["created_at", "updated_at"]
+    extra = 0
+
+
 @admin.register(Siae)
-class SiaeAdmin(gis_admin.OSMGeoAdmin):
+class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     list_display = [
         "id",
         "name",
@@ -57,10 +65,16 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
         "created_at",
     ]
     list_filter = [IsLiveFilter, "is_first_page", HasUserFilter, "kind", "networks", "sectors", "geo_range"]
-    search_fields = ["id", "name"]
+    search_fields = ["id", "name", "slug", "siret"]
 
-    autocomplete_fields = ["sectors", "networks", "users"]
+    autocomplete_fields = ["sectors", "networks"]
+    # inlines = [SiaeUserInline]
     readonly_fields = [field for field in Siae.READONLY_FIELDS if field not in ("coords")] + [
+        "nb_offers",
+        "nb_labels",
+        "nb_cient_references",
+        "logo_url",
+        "logo_url_display",
         "created_at",
         "updated_at",
     ]
@@ -68,7 +82,7 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
     # OSMGeoAdmin param for coords fields
     modifiable = False
 
-    fieldsets = [
+    fieldsets_with_inlines = [
         (
             "Affichage",
             {
@@ -80,6 +94,7 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
             {
                 "fields": (
                     "name",
+                    "slug",
                     "brand",
                     "siret",
                     "naf",
@@ -102,12 +117,22 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
                     "description",
                     "sectors",
                     "networks",
-                    "users",
+                    "nb_offers",
+                    "nb_labels",
+                    "nb_cient_references",
+                )
+            },
+        ),
+        (
+            "Périmètre d'intervention",
+            {
+                "fields": (
                     "geo_range",
                     "geo_range_custom_distance",
                 )
             },
         ),
+        SiaeUserInline,
         (
             "Contact",
             {
@@ -120,15 +145,24 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
                 )
             },
         ),
+        (
+            "Logo",
+            {
+                "fields": (
+                    "logo_url",
+                    "logo_url_display",
+                )
+            },
+        ),
         ("Autres", {"fields": ("created_at", "updated_at")}),
     ]
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = (
-            qs.annotate(offer_count=Count("offers"))
-            .annotate(label_count=Count("labels"))
-            .annotate(client_reference_count=Count("client_references"))
+            qs.annotate(offer_count=Count("offers", distinct=True))
+            .annotate(label_count=Count("labels", distinct=True))
+            .annotate(client_reference_count=Count("client_references", distinct=True))
         )
         return qs
 
@@ -140,25 +174,36 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
     nb_offers.admin_order_field = "offer_count"
 
     def nb_labels(self, siae):
-        url = reverse("admin:siaes_siaeoffer_changelist") + f"?siae__id__exact={siae.id}"
+        url = reverse("admin:siaes_siaelabel_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.label_count}</a>')
 
     nb_labels.short_description = "Nombre de labels"
     nb_labels.admin_order_field = "label_count"
 
     def nb_cient_references(self, siae):
-        url = reverse("admin:siaes_siaeoffer_changelist") + f"?siae__id__exact={siae.id}"
+        url = reverse("admin:siaes_siaeclientreference_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.client_reference_count}</a>')
 
     nb_cient_references.short_description = "Nombre de réf. clients"
     nb_cient_references.admin_order_field = "client_reference_count"
+
+    def logo_url_display(self, instance):
+        if instance.logo_url:
+            return mark_safe(
+                f'<a href="{instance.logo_url}" target="_blank">'
+                f'<img src="{instance.logo_url}" title="{instance.logo_url}" style="max-height:300px" />'
+                f"</a>"
+            )
+        return mark_safe("<div>-</div>")
+
+    logo_url_display.short_description = "Logo"
 
 
 @admin.register(SiaeOffer)
 class SiaeOfferAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "source", "created_at"]
     list_filter = ["source"]
-    search_fields = ["id", "name"]
+    search_fields = ["id", "name", "siae__id"]
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["source", "created_at", "updated_at"]
@@ -174,7 +219,7 @@ class SiaeOfferAdmin(admin.ModelAdmin):
 @admin.register(SiaeLabel)
 class SiaeLabelAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
-    search_fields = ["id", "name"]
+    search_fields = ["id", "name", "siae__id"]
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["created_at", "updated_at"]
@@ -190,10 +235,10 @@ class SiaeLabelAdmin(admin.ModelAdmin):
 @admin.register(SiaeClientReference)
 class SiaeClientReferenceAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
-    search_fields = ["id", "name"]
+    search_fields = ["id", "name", "siae__id"]
 
     autocomplete_fields = ["siae"]
-    readonly_fields = ["image_name", "created_at", "updated_at"]
+    readonly_fields = ["logo_url", "logo_url_display", "created_at", "updated_at"]
 
     def siae_with_link(self, client_reference):
         url = reverse("admin:siaes_siae_change", args=[client_reference.siae_id])
@@ -201,3 +246,14 @@ class SiaeClientReferenceAdmin(admin.ModelAdmin):
 
     siae_with_link.short_description = "Structure"
     siae_with_link.admin_order_field = "siae"
+
+    def logo_url_display(self, instance):
+        if instance.logo_url:
+            return mark_safe(
+                f'<a href="{instance.logo_url}" target="_blank">'
+                f'<img src="{instance.logo_url}" title="{instance.logo_url}" style="max-height:300px" />'
+                f"</a>"
+            )
+        return mark_safe("<div>-</div>")
+
+    logo_url_display.short_description = "Logo"

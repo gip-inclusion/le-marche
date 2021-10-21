@@ -203,28 +203,30 @@
                             </div>
                         </div>
                         {% if siae.client_references.count %}
-                            <div class="col-sm-6 img-left mb-3 mb-md-5">
-                                <div class="il-l">
-                                    <img class="cell_icon" src="{% static 'img/prof_images.svg' %}" />
-                                </div>
-                                <div class="il-r">
-                                    <h3 class="h3 mb-1 mt-1">Références clients</h3>
-                                    {% for image in siae.client_references.all %}
-                                        <!-- slide -->
-                                        <img src="{{ image.image_name }}" class="client-ref" alt="{{ image.name }}" title="{{ image.name }}" />
-                                    {% endfor %}
-                                </div>
+                        <div class="col-sm-6 img-left mb-3 mb-md-5">
+                            <div class="il-l">
+                                <img class="cell_icon" src="{% static 'img/prof_images.svg' %}" />
                             </div>
+                            <div class="il-r">
+                                <h3 class="h3 mb-1 mt-1">Références clients</h3>
+                                {% for image in siae.client_references.all %}
+                                    {% if image.logo_url %}
+                                        <img class="client-ref" src="{{ image.logo_url }}" alt="{{ image.name }}" title="{{ image.name }}" />
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
                         {% endif %}
                     </div>
-                    <!-- Third Row, Description -->
+                    <!-- Third row : Description -->
+                    {% if siae.users.count %}
                     <div class="row">
                         <div class="col-sm-12 img-left mb-3 mb-md-5">
                             <div class="il-l">
                                 <img class="cell_icon" src="{% static 'img/prof_discuss.svg' %}" />
                             </div>
                             <div class="il-r">
-                                <h3 class="h3 mb-1 mt-1">Description de l'activité commerciale</h3>
+                                <h3 class="h3 mb-1 mt-1">Présentation de la structure</h3>
                                 <div>
                                     {% if siae.description %}
                                         {{ siae.description|linebreaks }}
@@ -235,7 +237,8 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Fourth Row -->
+                    {% endif %}
+                    <!-- Fourth Row : Prestations -->
                     {% if siae.offers.count %}
                     <div class="row">
                         <div class="col-sm-12 img-left mb-3 mb-md-5">
@@ -246,11 +249,11 @@
                                 <h3 class="h3 mb-1 mt-1">Les prestations proposées</h3>
                                 <div class="row">
                                 {% for offer in siae.offers.all %}
-                                    <article class="prests-post col-12 col-lg-6 mt-2">
+                                    <article class="prests-post col-12 {% if siae.offers.count > 1 %}col-lg-6{% endif %} mt-2">
                                         <img class="cell_icon" src="{% static 'img/prof_dot.png' %}" />
                                         <h4>{{ offer.name }}</h4>
                                         <div>
-                                            {{ offer.description }}
+                                            {{ offer.description|linebreaks }}
                                         </div>
                                     </article>
                                 {% endfor %}
@@ -259,7 +262,7 @@
                         </div>
                     </div>
                     {% endif %}
-                    <!-- Fifth Row -->
+                    <!-- Fifth Row : Réseaux, Labels -->
                     {% if siae.networks.count or siae.labels.count %}
                     <div class="row">
                         {% if siae.networks.count %}
@@ -271,7 +274,7 @@
                                     <h3 class="h3 mb-1 mt-1">Réseaux</h3>
                                     <ul>
                                     {% for network in siae.networks.all %}
-                                        <li><a href="{{ network.website }}" class="network_link">{{ network.brand }}</a></li>
+                                        <li><a href="{{ network.website }}" class="network_link" rel="noopener" target="_blank">{{ network.brand }}</a></li>
                                     {% endfor %}
                                     </ul>
                                 </div>
@@ -317,7 +320,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const siaeLatitudeFloat = parseFloat(siaeLatitudeString.replace(',', '.'));
     const siaeLongitudeFloat = parseFloat(siaeLongitudeString.replace(',', '.'));
     // init map
-    var map = L.map('map-company').setView([siaeLongitudeFloat, siaeLatitudeFloat], 13);
+    var map = L.map('map-siae').setView([siaeLongitudeFloat, siaeLatitudeFloat], 13);
     // map tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -327,8 +330,12 @@ document.addEventListener("DOMContentLoaded", function() {
     // map zoom controls in the bottom right
     map.zoomControl.remove();
     L.control.zoom({ position: 'bottomright' }).addTo(map);
-    // map siae marker
-    L.marker([siaeLongitudeFloat, siaeLatitudeFloat]).addTo(map);
+    // map siae marker (with custom icons because of static url issues)
+    const icon = L.icon({
+        'iconUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-icon.png' %}",
+        'shadowUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-shadow.png' %}"
+    });
+    L.marker([siaeLongitudeFloat, siaeLatitudeFloat], {icon: icon}).addTo(map);
 });
 </script>
 {% endblock %}

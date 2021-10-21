@@ -1,23 +1,16 @@
-{% load static array_choices_display %}
+{% load static %}
 
 <div class="s-cards-grid-01__col col mb-3 mb-md-5">
     <div class="card c-card c-card--mini h-100">
         <div class="card-header">
             <div class="d-flex align-items-center">
-                {% comment "hidden" %}
-                {% if siae.images|length %}
-                    {% set image = siae.images[0] %}
-                    <img src="{{ (ListingImageConstants.IMAGE_FOLDER ~ image.name) | imagine_filter('listing_xsmall') }}" height="40" alt="{{ siae.name }}" class="rounded-circle mr-2" />
+                {% if siae.logo_url %}
+                    <img class="rounded-circle mr-2" height="40" src="{{ siae.logo_url }}" alt="Logo de la structure {{ siae.name }}" />
                 {% else %}
-                    <img src="{{ (ListingImageConstants.IMAGE_FOLDER ~ ListingImageConstants.IMAGE_DEFAULT) | imagine_filter('listing_xsmall') }}" height="40" alt="{{ siae.name }}"s class="rounded-circle mr-2" />
+                    <img class="rounded-circle mr-2" height="40" src="{% static 'img/default-listing.png' %}" alt="{{ siae.name }}" />
                 {% endif %}
-                {% endcomment %}
-                <a href="{% url 'siae:detail' siae.id %}" target="_blank" class="d-block font-weight-bold text-decoration-none lh-sm stretched-link">
-                    {% if siae.brand %}
-                        {{ siae.brand }}
-                    {% else %}
-                        {{ siae.name }}
-                    {% endif %}
+                <a href="{% url 'siae:detail' siae.slug %}" target="_blank" class="d-block font-weight-bold text-decoration-none lh-sm stretched-link">
+                    {{ siae.name_display }}
                 </a>
             </div>
         </div>
@@ -28,18 +21,10 @@
                 <span>Situé à {{ siae.city }}</span>
             </li>
             {% if siae.kind %}
-            <li class="d-flex lh-sm mb-2">
-                <img src="{% static 'itou/images/ico-bicro-marche-secteur.svg' %}" alt="" class="mr-2" height="25">
-                <span>
-                    {% if siae.kind == 'ETTI' %}
-                        Intérim
-                    {% elif siae.kind == 'AI' %}
-                        Mise à disposition du personnel
-                    {% else %}
-                        {% array_choices_display siae 'presta_type' %}
-                    {% endif %}
-                </span>
-            </li>
+                <li class="d-flex lh-sm mb-2">
+                    <img src="{% static 'itou/images/ico-bicro-marche-secteur.svg' %}" alt="" class="mr-2" height="25">
+                    <span>{{ siae.presta_type_display }}</span>
+                </li>
             {% endif %}
             </ul>
         </div>

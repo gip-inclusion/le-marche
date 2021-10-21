@@ -7,16 +7,17 @@
 
     {% bootstrap_form_errors form type="all" %}
 
-    <h5>{{ form.presta_type.label }} <strong class="text-marche">*</strong></h5>
-
-    <div class="row">
-        <div class="col-8">
-            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                {% bootstrap_field form.presta_type show_label=False %}
-            </fieldset>
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <label class="h4">{{ form.presta_type.label }} <strong class="fs-base">*</strong></label>
+                    {% bootstrap_field form.presta_type show_label=False %}
+                </fieldset>
+            </div>
         </div>
-        <div class="col-4">
-            <div role="alert" class="alert alert-info">
+        <div class="col-12 col-lg-4">
+            <div role="alert" class="alert alert-info mt-3 mt-lg-0">
                 <p>
                     <strong>Type de prestation</strong><br />
                     Vous pourrez ensuite détailler vos prestations à la prochaine étape.
@@ -24,20 +25,19 @@
             </div>
         </div>
     </div>
-
-    <br />
-
-    <h5>{{ form.geo_range.label }} <strong class="text-marche">*</strong></h5>
-
-    <div class="row">
-        <div class="col-8">
-            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                {% bootstrap_field form.geo_range show_label=False %}
-                {{ form.geo_range_custom_distance }}
-            </fieldset>
+    
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h4">{{ form.geo_range.label }} <strong class="fs-base">*</strong></legend>
+                    {% bootstrap_field form.geo_range show_label=False %}
+                    {{ form.geo_range_custom_distance }}
+                </fieldset>
+            </div>
         </div>
-        <div class="col-4">
-            <div role="alert" class="alert alert-info">
+        <div class="col-12 col-lg-4">
+            <div role="alert" class="alert alert-info mt-3 mt-lg-0">
                 <p>
                     <strong>Périmètre d'intervention</strong><br />
                     Le périmètre d'intervention est un critère essentiel dans le choix des acheteurs.
@@ -46,19 +46,18 @@
             </div>
         </div>
     </div>
-
-    <br />
-
-    <h5>{{ form.sectors.label }} <strong class="text-warning">*</strong></h5>
-
-    <div class="row">
-        <div class="col-8">
-            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                {% bootstrap_field form.sectors show_label=False %}
-            </fieldset>
+    
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h4">{{ form.sectors.label }} <strong class="fs-base">*</strong></legend>
+                    {% bootstrap_field form.sectors show_label=False form_check_class="form-check checkbox-title" %}
+                </fieldset>
+            </div>
         </div>
-        <div class="col-4">
-            <div role="alert" class="alert alert-info">
+        <div class="col-12 col-lg-4">
+            <div role="alert" class="alert alert-info mt-3 mt-lg-0">
                 <p>
                     <strong>Secteurs d'activité</strong><br />
                     Le choix des secteurs d'activité va déterminer ce que trouvent les acheteurs lors de leur recherche.
@@ -67,12 +66,39 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12 pt-3">
-            <button type="submit" class="btn btn-primary btn-ico">
+    <div class="row mt-3 mt-lg-5 justify-content-end">
+        <div class="col-12 col-lg-auto px-5 px-lg-6">
+            <button type="submit" class="btn btn-primary btn-block">
                 <span>Enregistrer mes modifications</span>
             </button>
         </div>
+        <div class="col-12 col-lg-4"></div>
     </div>
+
 </form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// disable geo range custom distance if geo range is not CUSTOM
+document.addEventListener('DOMContentLoaded', function() {
+    let geoRangeCustomDistanceInput = document.getElementById('id_geo_range_custom_distance');
+
+    let geoRangeRadios = document.querySelectorAll('input[type=radio][name="geo_range"]');
+    // init
+    geoRangeRadios.forEach(radio => {
+        if (radio.checked && radio.value !== 'CUSTOM') {
+            geoRangeCustomDistanceInput.disabled = true;
+        }
+    });
+    // on change
+    geoRangeRadios.forEach(radio => radio.addEventListener('change', () => {
+        if (radio.value !== 'CUSTOM') {
+            geoRangeCustomDistanceInput.disabled = true;
+        } else {
+            geoRangeCustomDistanceInput.disabled = false;
+        }
+    }));
+});
+</script>
 {% endblock %}

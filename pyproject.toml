@@ -26,6 +26,8 @@ django-libsass = "^0.9"
 django-environ = "^0.4.5"
 PyMySQL = "^1.0.2"
 sentry-sdk = "^1.4.3"
+boto3 = "^1.18.61"
+django-fieldsets-with-inlines = "^0.6"
 
 [tool.poetry.dev-dependencies]
 isort = "^5.8.0"

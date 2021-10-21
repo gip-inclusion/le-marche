@@ -1,12 +1,12 @@
 // Base
 @import 'base/mixins';
 @import 'base/variables';
+@import 'base/custom';
 
 // Components
 @import 'components/multiselect';
 @import 'components/maparea';
 @import 'components/jcf';
-@import 'components/gallery';
 
 // Sections
 @import 'sections/hp';
@@ -14,13 +14,3 @@
 @import 'sections/siae';
 @import 'sections/filiere';
 @import 'sections/flatpage';
-
-// TODO: move somewhere else
-.form-group > label {
-  font-weight: bold;
-}
-.form-group-required > label::after,
-.form-group-required > div > label::after {
-  content: " *";
-  color: $marche;
-}

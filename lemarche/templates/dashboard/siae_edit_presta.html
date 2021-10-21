@@ -1,85 +1,147 @@
 {% extends "dashboard/siae_edit_base.html" %}
-{% load bootstrap4 %}
+{% load static bootstrap4 addstr %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'vendor/dropzone-5.9.3/dropzone.min.css' %}" />
+{% endblock %}
 
 {% block content_siae_form %}
 <form method="POST" action="" class="mb-3 mb-lg-5">
     {% csrf_token %}
 
     {% bootstrap_form_errors form type="all" %}
-
-    <h5>Présenter votre structure</h5>
-
-    <div class="row">
-        <div class="col-8">
-            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                {% bootstrap_field form.description show_label=False %}
-            </fieldset>
+    
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h4">Présenter votre structure</legend>
+                    {% bootstrap_field form.description show_label=False %}
+                </fieldset>
+            </div>
         </div>
-        <div class="col-4">
-            <div role="alert" class="alert alert-info">
+        <div class="col-12 col-lg-4">
+            <div role="alert" class="alert alert-info mt-3 mt-lg-0">
                 <p>
                     <strong>Présentation</strong><br />
-                    En plus des secteurs d'activités, la présentation de votre structure permet aux acheteurs de faire un choix éclairé et de vous contacter.
+                    En plus des secteurs d'activités, la présentation de votre structure permet aux acheteurs
+                    de faire un choix éclairé et de vous contacter.
                 </p>
             </div>
         </div>
     </div>
+        
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h4">Détails des prestations effectués <small class="text-muted">(matériels, lieux, savoirs faire…)</small></legend>
+                    {% bootstrap_formset_errors offer_formset %}
+                    {% if offer_formset.errors %}
+                        <div class="alert alert-danger" role="alert">{{ offer_formset.errors }}</div>
+                    {% endif %}
 
-    <br />
-    
-    <h5>Détails des prestations effectués <small class="text-muted">(matériels, lieux, savoirs faire…)</small></h5>
-
-    <div class="row">
-        <div class="col-8">
-            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                {% bootstrap_formset_errors offer_formset %}
-                {% bootstrap_formset offer_formset %}
-            </fieldset>
+                    {% bootstrap_formset offer_formset %}
+                </fieldset>
+            </div>
         </div>
-        <div class="col-4">
-            <div role="alert" class="alert alert-info">
+        <div class="col-12 col-lg-4">
+            <div role="alert" class="alert alert-info mt-3 mt-lg-0">
                 <p>
                     <strong>Prestations</strong><br />
                     En plus des secteurs d'activité, la présentation des prestations permet d'en savoir plus sur vos activités exactes.
                 </p>
                 <p>
-                    Exemple de prestations de services : Nous transformons les fruits et légumes bio ou traditionnels en produits finis (soupes, compotes, confitures).
+                    Exemple de prestations de services :
+                    Nous transformons les fruits et légumes bio ou traditionnels en produits finis (soupes, compotes, confitures).
                     Nous avons le label ECOCERT pour la transformation des matières premières biologiques.
                 </p>
             </div>
         </div>
     </div>
+    
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h4">Références clients</legend>
+                    {% bootstrap_formset_errors client_reference_formset %}
+                    {% if client_reference_formset.errors %}
+                        <div class="alert alert-danger" role="alert">{{ client_reference_formset.errors }}</div>
+                    {% endif %}
 
-    <br />
+                    {{ client_reference_formset.management_form }}
 
-    <h5>Références clients</h5>
-
-    <div class="row">
-        <div class="col-8">
-            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                {% bootstrap_formset_errors client_reference_formset %}
-                {% bootstrap_formset client_reference_formset %}
-            </fieldset>
+                    {% for form in client_reference_formset %}
+                        <div class="fieldset">
+                            {% bootstrap_field form.id %}
+                            {% bootstrap_field form.name %}
+                            <div class="form-group">
+                                {{ form.logo_url.as_hidden }}
+                                {% with "id_client_references-"|addstr:forloop.counter0|addstr:"-logo_form" as id_logo_form %}
+                                    <label for="{{ id_logo_form }}" class="js-display-if-javascript-enabled">Logo</label>
+                                    {% include "storage/s3_upload_form.html" with dropzone_form_id=id_logo_form %}
+                                {% endwith %}
+                            </div>
+                            <div class="form-group">
+                                <label>Logo actuel</label>
+                                {% if form.logo_url.value %}
+                                    <div>
+                                        <img class="img-fluid" src="{{ form.logo_url.value }}" />
+                                    </div>
+                                {% else %}
+                                    <span class="form-text text-muted">Aucun</span>
+                                {% endif %}
+                            </div>
+                            {% bootstrap_field form.DELETE %}
+                        </div>
+                        <hr />
+                    {% endfor %}
+                </fieldset>
+            </div>
         </div>
-        <div class="col-4">
-            <div role="alert" class="alert alert-info">
+        <div class="col-12 col-lg-4">
+            <div role="alert" class="alert alert-info mt-3 mt-lg-0">
                 <p>
                     <strong>Références clients</strong><br />
                     Avoir des références clients permet de donner confiance à vos futurs acheteurs et de les rassurer sur vos capacités à faire.
                 </p>
                 <p>
-                    Vous vous demandez si vous avez le droit de mettre les logos de vos clients ? Le mieux est de leur poser la question avant de les mettre sur le site.
+                    Vous vous demandez si vous avez le droit de mettre les logos de vos clients ?
+                    Le mieux est de leur poser la question avant de les mettre sur le site.
                 </p>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12 pt-3">
-            <button type="submit" class="btn btn-primary btn-ico">
+    <div class="row mt-3 mt-lg-5 justify-content-end">
+        <div class="col-12 col-lg-auto px-5 px-lg-6">
+            <button type="submit" class="btn btn-primary btn-block">
                 <span>Enregistrer mes modifications</span>
             </button>
         </div>
+        <div class="col-12 col-lg-4"></div>
     </div>
 </form>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'vendor/dropzone-5.9.3/dropzone.min.js' %}"></script>
+<script src="{% static 'js/s3_upload.js' %}"></script>
+{{ s3_form_values|json_script:"s3-form-values" }}
+{{ s3_upload_config|json_script:"s3-upload-config" }}
+<script>
+    // loop on each dropzone
+    Array.from(document.querySelectorAll(".dropzone")).forEach(function(element) {
+        s3UploadInit({
+            dropzoneSelector: `#${element.id}`,
+            callbackLocationSelector: `#${element.id.replace('logo_form', 'logo_url')}`,
+            s3FormValuesId: "s3-form-values",
+            s3UploadConfigId: "s3-upload-config",
+            // Not really nice
+            sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
+            sentryCsrfToken: "{{ csrf_token }}"
+        });
+    })
+</script>
 {% endblock %}

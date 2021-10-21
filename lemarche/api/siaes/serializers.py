@@ -25,6 +25,7 @@ class SiaeSerializer(serializers.ModelSerializer):
         model = Siae
         fields = [
             "raisonSociale",
+            "slug",
             "enseigne",
             "siret",
             "type",
@@ -61,6 +62,7 @@ class SiaeAnonSerializer(SiaeSerializer):
         model = Siae
         fields = [
             "raisonSociale",
+            # "slug",
             "enseigne",
             "siret",
             "ville",

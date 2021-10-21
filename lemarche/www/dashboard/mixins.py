@@ -25,8 +25,8 @@ class SiaeOwnerRequiredMixin(UserPassesTestMixin):
 
     def test_func(self):
         user = self.request.user
-        siae_id = int(self.kwargs.get("pk"))
-        return user.is_authenticated and siae_id in user.siaes.values_list("id", flat=True)
+        siae_slug = self.kwargs.get("slug")
+        return user.is_authenticated and siae_slug in user.siaes.values_list("slug", flat=True)
 
     def handle_no_permission(self):
         return HttpResponseRedirect(reverse_lazy("dashboard:home"))

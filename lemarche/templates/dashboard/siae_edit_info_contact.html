@@ -1,62 +1,101 @@
 {% extends "dashboard/siae_edit_base.html" %}
-{% load bootstrap4 %}
+{% load static bootstrap4 %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'vendor/dropzone-5.9.3/dropzone.min.css' %}" />
+{% endblock %}
 
 {% block content_siae_form %}
 <form method="POST" action="" class="mb-3 mb-lg-5">
     {% csrf_token %}
 
     {% bootstrap_form_errors form type="all" %}
-
-    <h5>Informations & Contact</h5>
-
-    <div class="row">
-        <div class="col-8">
-            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                {% bootstrap_field form.contact_first_name %}
-                {% bootstrap_field form.contact_last_name %}
-                {% bootstrap_field form.contact_phone %}
-                {% bootstrap_field form.contact_email %}
-                {% bootstrap_field form.contact_website %}
-                <!-- Logo -->
-            </fieldset>
+    
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h4">Informations & Contact</legend>
+                    {% bootstrap_field form.contact_first_name %}
+                    {% bootstrap_field form.contact_last_name %}
+                    {% bootstrap_field form.contact_phone %}
+                    {% bootstrap_field form.contact_email %}
+                    {% bootstrap_field form.contact_website %}
+                    <!-- Logo -->
+                    <div class="form-group">
+                        {{ form.logo_url.as_hidden }}
+                        <label for="logo_form" class="js-display-if-javascript-enabled">Logo</label>
+                        {% include "storage/s3_upload_form.html" with dropzone_form_id="logo_form" %}
+                    </div>
+                    <div class="form-group">
+                        <label>Logo actuel</label>
+                        {% if form.logo_url.value %}
+                            <div>
+                                <img class="img-fluid" src="{{ form.logo_url.value }}" />
+                            </div>
+                        {% else %}
+                            <span class="form-text text-muted">Aucun</span>
+                        {% endif %}
+                    </div>
+                </fieldset>
+            </div>
         </div>
-        <div class="col-4">
-            <div role="alert" class="alert alert-info">
-                <p>
+        <div class="col-12 col-lg-4">
+            <div role="alert" class="alert alert-info mt-3 mt-lg-0">
+                <p class="mb-0">
                     <strong>Contact commercial</strong><br />
                     Les informations de contact seront mis à disposition des acheteurs afin de leur permettre de vous contacter facilement.
                 </p>
             </div>
         </div>
     </div>
-
-    <br />
-
-    <h5>Données ASP de votre structure</h5>
-
-    <div class="row">
-        <div class="col-8">
-            <fieldset class="bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                {% bootstrap_field form.name layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
-                {% bootstrap_field form.brand layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
-                {% bootstrap_field form.siret layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
-                {% bootstrap_field form.kind layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
-                {% bootstrap_field form.email layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
-                {% bootstrap_field form.phone layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
-                {% bootstrap_field form.city layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
-                {% bootstrap_field form.post_code layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
-                {% bootstrap_field form.department layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
-                {% bootstrap_field form.region layout="horizontal" label_class="col-12 col-md-3 col-form-label" field_class="col-12 col-md-9" %}
-            </fieldset>
+   
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h4">Données ASP de votre structure</legend>
+                    {% bootstrap_field form.name %}
+                    {% bootstrap_field form.brand %}
+                    {% bootstrap_field form.siret %}
+                    {% bootstrap_field form.kind %}
+                    {% bootstrap_field form.email %}
+                    {% bootstrap_field form.phone %}
+                    {% bootstrap_field form.city %}
+                    {% bootstrap_field form.post_code %}
+                    {% bootstrap_field form.department %}
+                    {% bootstrap_field form.region %}
+                </fieldset>
+            </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12 pt-3">
-            <button type="submit" class="btn btn-primary btn-ico">
+    <div class="row mt-3 mt-lg-5 justify-content-end">
+        <div class="col-12 col-lg-auto px-5 px-lg-6">
+            <button type="submit" class="btn btn-primary btn-block">
                 <span>Enregistrer mes modifications</span>
             </button>
         </div>
+        <div class="col-12 col-lg-4"></div>
     </div>
+
 </form>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'vendor/dropzone-5.9.3/dropzone.min.js' %}"></script>
+<script src="{% static 'js/s3_upload.js' %}"></script>
+{{ s3_form_values|json_script:"s3-form-values" }}
+{{ s3_upload_config|json_script:"s3-upload-config" }}
+<script>
+    s3UploadInit({
+        dropzoneSelector: "#logo_form",
+        callbackLocationSelector: "#{{ form.logo_url.id_for_label }}",
+        s3FormValuesId: "s3-form-values",
+        s3UploadConfigId: "s3-upload-config",
+        // Not really nice
+        sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
+        sentryCsrfToken: "{{ csrf_token }}"
+    });
+</script>
 {% endblock %}

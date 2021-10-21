@@ -41,8 +41,7 @@ DEBUG = env.bool("DEBUG", False)
 
 ALLOWED_HOSTS = []
 
-# Bitoubi Specific Settings
-TRACKER_HOST = env.str("TRACKER_HOST", "http://localhost")
+# Bitoubi env
 BITOUBI_ENV = env.str("ENV", "dev")
 
 # Static Files
@@ -100,6 +99,7 @@ THIRD_PARTY_APPS = [
     "drf_spectacular",
     "compressor",
     "ckeditor",  # django-ckeditor
+    "fieldsets_with_inlines",  # django-fieldsets-with-inlines
 ]
 
 LOCAL_APPS = [
@@ -147,6 +147,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # custom
+                "lemarche.utils.settings_context_processors.expose_settings",
             ],
         },
     },
@@ -216,9 +218,9 @@ SITE_ID = 1
 # ------------------------------------------------------------------------------
 
 ANYMAIL = {
-    "MAILJET_API_KEY": os.environ.get("MAILJET_API_KEY"),
-    "MAILJET_SECRET_KEY": os.environ.get("MAILJET_API_SECRET"),
-    # "WEBHOOK_SECRET": os.environ.get("MAILJET_WEBHOOK_SECRET"),
+    "MAILJET_API_KEY": env.str("MAILJET_API_KEY", ""),
+    "MAILJET_SECRET_KEY": env.str("MAILJET_API_SECRET", ""),
+    # "WEBHOOK_SECRET": env.str("MAILJET_WEBHOOK_SECRET", ""),
 }
 
 MAILJET_API_URL = "https://api.mailjet.com/v3.1"
@@ -254,6 +256,35 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 X_FRAME_OPTIONS = "DENY"
 
 
+# S3 uploads
+# ------------------------------------------------------------------------------
+S3_STORAGE_ACCESS_KEY_ID = env.str("CELLAR_ADDON_KEY_ID", "")
+S3_STORAGE_SECRET_ACCESS_KEY = env.str("CELLAR_ADDON_KEY_SECRET", "")
+S3_STORAGE_ENDPOINT_DOMAIN = env.str("CELLAR_ADDON_HOST", "")
+S3_STORAGE_BUCKET_NAME = env.str("S3_STORAGE_BUCKET_NAME", "")
+S3_STORAGE_BUCKET_REGION = env.str("S3_STORAGE_BUCKET_REGION", "")
+
+STORAGE_UPLOAD_KINDS = {
+    "default": {
+        "allowed_mime_types": ["image/png", "image/svg+xml", "image/gif", "image/jpg", "image/jpeg"],  # ["image/*"] ?
+        "upload_expiration": 60 * 60,  # in seconds
+        "key_path": "default",  # appended before the file key. No backslash!
+        "max_files": 1,  # 3,
+        "max_file_size": 5,  # in mb
+        "timeout": 20000,  # in ms
+    },
+    "siae_logo": {
+        "key_path": "siae_logo",
+    },
+    "client_reference_logo": {
+        "key_path": "client_reference_logo",
+    },
+    "user_image": {
+        "key_path": "user_image",
+    },
+}
+
+
 # APIs.
 # ------------------------------------------------------------------------------
 
@@ -267,7 +298,7 @@ API_GEO_BASE_URL = "https://geo.api.gouv.fr"
 
 # Django REST Framework settings.
 # https://www.django-rest-framework.org/
-# ----------------------------------------------------
+# ------------------------------------------------------------------------------
 REST_FRAMEWORK = {
     # YOUR SETTINGS
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
@@ -279,13 +310,22 @@ REST_FRAMEWORK = {
 
 # Spectacular settings.
 # https://drf-spectacular.readthedocs.io/en/latest/settings.html
-# ----------------------------------------------------
+# ------------------------------------------------------------------------------
 SPECTACULAR_SETTINGS = {
     "TITLE": "Le marché de l'inclusion",
     "DESCRIPTION": "Une initiative de la Plateforme de l'inclusion",
     "VERSION": "0.1.0",
     "CONTACT": "lemarche@inclusion.beta.gouv.fr",
 }
+
+
+# Trackers
+# ------------------------------------------------------------------------------
+TRACKER_HOST = env.str("TRACKER_HOST", "http://localhost")
+HOTJAR_ID = int(env.str("HOTJAR_ID", 0))
+MATOMO_SITE_ID = int(env.str("MATOMO_SITE_ID", 0))
+MATOMO_HOST = env.str("MATOMO_HOST", "")
+CRISP_ID = env.str("CRISP_ID", "")
 
 
 # django-bootstrap4.
@@ -304,7 +344,7 @@ BOOTSTRAP4 = {
 
 # Logging.
 # https://docs.djangoproject.com/en/dev/topics/logging
-# ----------------------------------------------------
+# ------------------------------------------------------------------------------
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -334,7 +374,7 @@ LOGGING = {
 
 # django-ckeditor settings.
 # https://django-ckeditor.readthedocs.io/en/latest/#optional-customizing-ckeditor-editor
-# ----------------------------------------------------
+# ------------------------------------------------------------------------------
 CKEDITOR_CONFIGS = {
     "default": {
         "toolbar": "Custom",
