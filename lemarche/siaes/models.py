@@ -411,9 +411,9 @@ class SiaeUser(models.Model):
     updated_at = models.DateTimeField("Date de modification", auto_now=True)
 
     class Meta:
-        # db_table = "siae_users"
         verbose_name = "Gestionnaire"
         verbose_name_plural = "Gestionnaires"
+        ordering = ["-created_at"]
 
 
 class SiaeOffer(models.Model):
