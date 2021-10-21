@@ -100,6 +100,7 @@ THIRD_PARTY_APPS = [
     "drf_spectacular",
     "compressor",
     "ckeditor",  # django-ckeditor
+    "fieldsets_with_inlines",  # django-fieldsets-with-inlines
 ]
 
 LOCAL_APPS = [
