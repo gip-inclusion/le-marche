@@ -145,16 +145,41 @@
 
 <!-- itou tracker -->
 <script>
+    function getCookieValueByName(cookieName) {
+        if (document.cookie.split('; ').find(row => row.startsWith(cookieName))) {
+            return document.cookie.split('; ').find(row => row.startsWith(`${cookieName}=`)).split('=')[1];
+        }
+    }
+
     var ORDER = 1;
     var SESSION_ID = "";
     var VERSION = 1;
+
+    const uTypeMapping = {
+        'SIAE': '4',
+        'BUYER': '3',
+        'PARTNER': '6',
+        'ADMIN': '5',
+    };
+
+    var sessId = getCookieValueByName('sessionid');
+    {% if user.is_authenticated %}
+        var isAdmin = {% if user.kind == 'ADMIN' %}true{% else %}false{% endif %};
+        var uType = {% if user.is_authenticated %}"{{ user.kind }}"{% endif %};
+        if (uType) {
+            uType = uTypeMapping[uType];
+        }
+    {% else %}
+        var isAdmin = false;
+        var uType = null;
+    {% endif %}
 
     //export function track(page, action, meta={}) {
     async function track(page, action, meta={}) {
         const body = computeRequestBody(page, action, meta);
         
-        if (typeof window !== 'undefined'   ) {
-            await fetch('{{ cocorico_itou_tracker_host }}/track', {
+        if (typeof window !== 'undefined') {
+            await fetch('{{ TRACKER_HOST }}/track', {
             method: 'POST',
             headers: {
                 // 'Content-Type': 'application/json',
@@ -176,19 +201,15 @@
         USER_TYPE: 'user_type',
     }
 
-
     function computeRequestBody(page, action, metaIn) {
         const timeNow = new Date();
-        // Optionnaly add meta data (in key/value pairs) from url query stirng
+        // Optionnaly add meta data (in key/value pairs) from url query string
         const meta = Object.assign(metaIn, getUrlMeta());
         meta['is_admin'] = window.isAdmin;
         meta['user_type'] = window.uType;
 
         const COOKIE_NAME = 'leMarcheTypeUsagerV2';
-        if (document.cookie.split('; ').find(row => row.startsWith(COOKIE_NAME))) {
-            const cookieValue = document.cookie.split('; ').find(row => row.startsWith(`${COOKIE_NAME}=`)).split('=')[1];
-            meta['user_cookie_type'] = cookieValue;
-        }
+        meta['user_cookie_type'] = getCookieValueByName(COOKIE_NAME);
 
         return {
             _v:VERSION,
@@ -248,24 +269,6 @@
             return meta;
         }
     }
-
-    // Custom Events
-    let NewUser = new Event('itouNewUser', {'bubbles': true});
-
-    // Tracker attach
-    document.addEventListener('itouNewUser', () => {
-        track(
-            window.location.pathname,
-            Steps.INSCRIPTION,
-            {
-                'structure': user_registration_companyName.value,
-                'inclusive': user_registration_personType_1.checked ? 'oui' : 'non',
-                'prenom': user_registration_firstName.value,
-                'nom': user_registration_lastName.value,
-                'email': user_registration_email.value,
-            }
-        );
-    }, false);
 
     document.addEventListener('DOMContentLoaded', () => {
         track(window.location.pathname, Steps.LOAD);
