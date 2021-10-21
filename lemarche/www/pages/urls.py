@@ -107,4 +107,8 @@ urlpatterns = [
     # Flatpages (created in the admin)
     # path("", include("django.contrib.flatpages.urls")),
     path("<path:url>", PageView.as_view(), name="flatpage"),
+    # Error pages
+    path("403/", TemplateView.as_view(template_name="403.html"), name="403"),
+    path("404/", TemplateView.as_view(template_name="404.html"), name="404"),
+    path("500/", TemplateView.as_view(template_name="500.html"), name="500"),
 ]
