@@ -76,8 +76,7 @@ def track(page: str, action: str, meta: dict = {}, session_id: str = None, clien
 
 
 TRACKER_IGNORE_LIST = [
-    "favicon",
-    "static",
+    "static/",
     "api/perimeters",
 ]
 

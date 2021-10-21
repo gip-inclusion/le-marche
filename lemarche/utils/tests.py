@@ -15,6 +15,12 @@ class TrackerTest(TestCase):
         self.client.get(url)
         self.assertEqual(mock_track.call_count, 1)
 
+    # @mock.patch("lemarche.utils.tracker.track")
+    # def test_tracker_is_called_twice_on_siae_search(self, mock_track):
+    #     url = reverse("siae:search_results")
+    #     self.client.get(url)
+    #     self.assertEqual(mock_track.call_count, 2)
+
     @mock.patch("lemarche.utils.tracker.track")
     def test_tracker_is_not_called_for_request_in_ignore_list(self, mock_track):
         url = reverse("api:perimeters-list")
