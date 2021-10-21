@@ -337,6 +337,14 @@ python-versions = ">=3.6"
 Django = ">=2.2"
 
 [[package]]
+name = "django-fieldsets-with-inlines"
+version = "0.6"
+description = "Mixin inlines and fieldsets in Django admin."
+category = "main"
+optional = false
+python-versions = ">=3.4"
+
+[[package]]
 name = "django-filter"
 version = "2.4.0"
 description = "Django-filter is a reusable Django application for allowing users to filter querysets dynamically."
@@ -1189,7 +1197,7 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "423da12359cc9f93b25ffb2dbed7b12ad9ad3ae623ed12ab57196b07cc35eb83"
+content-hash = "53eec280254b2b921c925155fc36d7d27dd9a835480d1bc788d52bd826d5bb92"
 
 [metadata.files]
 anyio = [
@@ -1353,6 +1361,10 @@ django-environ = [
 django-extensions = [
     {file = "django-extensions-3.1.3.tar.gz", hash = "sha256:5f0fea7bf131ca303090352577a9e7f8bfbf5489bd9d9c8aea9401db28db34a0"},
     {file = "django_extensions-3.1.3-py3-none-any.whl", hash = "sha256:50de8977794a66a91575dd40f87d5053608f679561731845edbd325ceeb387e3"},
+]
+django-fieldsets-with-inlines = [
+    {file = "django_fieldsets_with_inlines-0.6-py3-none-any.whl", hash = "sha256:26eb222ef96a009c6a9ef301c8c906d8314c557a9814fc8bdaaa0ac22728580d"},
+    {file = "django_fieldsets_with_inlines-0.6.tar.gz", hash = "sha256:dec73d0d91f238906c93a7b99c545167a8ab0cc98f8af202d01df0cfc32a71cb"},
 ]
 django-filter = [
     {file = "django-filter-2.4.0.tar.gz", hash = "sha256:84e9d5bb93f237e451db814ed422a3a625751cbc9968b484ecc74964a8696b06"},

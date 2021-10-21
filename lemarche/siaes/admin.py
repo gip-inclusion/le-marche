@@ -3,8 +3,9 @@ from django.contrib.gis import admin as gis_admin
 from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
+from fieldsets_with_inlines import FieldsetsInlineMixin
 
-from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer, SiaeUser
 
 
 class IsLiveFilter(admin.SimpleListFilter):
@@ -43,8 +44,15 @@ class HasUserFilter(admin.SimpleListFilter):
         return queryset
 
 
+class SiaeUserInline(admin.TabularInline):
+    model = SiaeUser
+    autocomplete_fields = ["user"]
+    readonly_fields = ["created_at", "updated_at"]
+    extra = 0
+
+
 @admin.register(Siae)
-class SiaeAdmin(gis_admin.OSMGeoAdmin):
+class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     list_display = [
         "id",
         "name",
@@ -59,7 +67,8 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
     list_filter = [IsLiveFilter, "is_first_page", HasUserFilter, "kind", "networks", "sectors", "geo_range"]
     search_fields = ["id", "name", "slug", "siret"]
 
-    autocomplete_fields = ["sectors", "networks", "users"]
+    autocomplete_fields = ["sectors", "networks"]
+    # inlines = [SiaeUserInline]
     readonly_fields = [field for field in Siae.READONLY_FIELDS if field not in ("coords")] + [
         "nb_offers",
         "nb_labels",
@@ -73,7 +82,7 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
     # OSMGeoAdmin param for coords fields
     modifiable = False
 
-    fieldsets = [
+    fieldsets_with_inlines = [
         (
             "Affichage",
             {
@@ -123,7 +132,7 @@ class SiaeAdmin(gis_admin.OSMGeoAdmin):
                 )
             },
         ),
-        ("Gestionnaire(s)", {"fields": ("users",)}),
+        SiaeUserInline,
         (
             "Contact",
             {
