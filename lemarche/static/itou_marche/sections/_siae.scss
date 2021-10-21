@@ -400,37 +400,45 @@
     list-style: none;
 
     li {
-        display: flex;
-        padding-bottom: 8px;
+			padding-bottom: 8px;
+			display: flex;
     }
+
+		.prof_email {
+			max-width: 280px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;	
+		}
 
     .prof_icon {
       min-width: 30px
 	}
 }
 
-#dir-profile aside.profile {
-    background-image:url('/static/img/ronds_rose.svg');
-    background-repeat:no-repeat;
-    background-position: bottom left;
-    background-color:#fff;
-    box-shadow: 0 2px 19px 0 rgba(56,56,56,.1) !important;
-    padding: 2rem 1rem;
-    border-radius: .25rem;
-	}
+	#dir-profile aside > .profile {
 
-	@media screen and (min-width:768px) {
-			#dir-profile aside.profile {
-					position: sticky;
-					top: 150px;
-					z-index: 1;
-			}
+		@media screen and (min-width:992px) {
+			background-image:url('/static/img/ronds_rose.svg');
+			background-repeat:no-repeat;
+			background-position: bottom left;
+			background-color:#fff;
+			box-shadow: 0 2px 19px 0 rgba(56,56,56,.1) !important;
+			padding: 2rem 1rem;
+			border-radius: .25rem;			
+			position: sticky;
+			top: 150px;
+			z-index: 1;
+		}
 	}
 
 	.profile_capsule {
-			background-color:#fff;
-			padding: 1rem;
-			box-shadow: 0 2px 9px 0 rgba(56,56,56,.1) !important;
+	
+		@media screen and (min-width:992px) {
+				background-color:#fff;
+				padding: 1rem;
+				box-shadow: 0 2px 9px 0 rgba(56,56,56,.1) !important;
+			}
 	}
 
 	.profile .btn-link {
@@ -495,7 +503,7 @@
 		border-radius: 0 4px 4px 0;
 
 			.prof_icon {
-					min-width: 30px
+				min-width: 30px
 		}
 	}
 
@@ -521,7 +529,6 @@
 			}
 		}		
 	}
-
 
 	#sidebar .map-holder {
 		height:200px;
@@ -550,8 +557,36 @@
 				flex: 1;
 		}
 	}
+	
+	#content {
+		display: grid;
+		grid-column-gap: 16px;
+		grid-row-gap: 16px;
+		grid-template-columns: 1fr; 
+		grid-template-rows: auto;
+		
+		@media (min-width:992px) {
+			grid-column-gap: 32px;
+			grid-row-gap: 32px;
+			grid-template-columns: 66% 33%;
 
-
+			#user_profile {
+				grid-column: 1;
+				grid-row: 1;
+			}
+			
+			#sidebar {
+				grid-column: 2;
+				grid-row: 1 / 3;
+			}
+			
+			#user_detail {
+				grid-column: 1;
+				grid-row: 2;
+			}	
+		}
+	}
+	
 	.img-left .il-l img {
     height:auto;
     max-width:100%;
