@@ -99,6 +99,8 @@ coverage==5.5; (python_version >= "2.7" and python_full_version < "3.0.0") or (p
     --hash=sha256:f030f8873312a16414c0d8e1a1ddff2d3235655a2174e3648b4fa66b3f2f1079 \
     --hash=sha256:2a3859cb82dcbda1cfd3e6f71c27081d18aa251d20a17d87d26d4cd216fb0af4 \
     --hash=sha256:ebe78fe9a0e874362175b02371bdfbee64d8edc42a044253ddf4ee7d3c15212c
+crawlerdetect==0.1.4; python_version >= "3.4" and python_version < "4" \
+    --hash=sha256:81793d14796b0707539e62855d18c0eb4af83f97297ca64f64f67a788781a5a2
 decorator==5.1.0; python_version >= "3.7" \
     --hash=sha256:7b12e7c3c6ab203a29e157335e9122cb03de9ab7264b137594103fd4a683b374 \
     --hash=sha256:e59913af105b9860aa2c8d3272d9de5a56a4e608db9a2f167a8480b323d529a7

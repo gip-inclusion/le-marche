@@ -130,8 +130,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Third-party Middlewares
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    # BITOUBI Middlewares
-    "lemarche.tracker.middlewares.TokenVisitMiddleware",
+    # Custom Middlewares
+    "lemarche.utils.tracker.TrackerMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"

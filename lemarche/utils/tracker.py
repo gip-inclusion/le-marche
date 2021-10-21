@@ -3,11 +3,14 @@ import logging
 from datetime import datetime
 
 import httpx
+from crawlerdetect import CrawlerDetect
 from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
+crawler_detect = CrawlerDetect()
 
 
 VERSION = 1
@@ -25,7 +28,7 @@ DEFAULT_PAYLOAD = {
     "server_context": {},
 }
 
-# TODO : add event trackers for
+# TODO: add event trackers for
 # - directory_csv (csv download event)
 # - directory_list (directory page access event)
 # - directory_search (directory search event)
@@ -35,7 +38,7 @@ DEFAULT_PAYLOAD = {
 
 
 def track(page: str, action: str, *, meta: dict = {}, session_id: str = None, client_context: dict = {}):  # noqa B006
-    # TODO : Make Async / non-blocking.
+    # TODO: Make Async / non-blocking.
     # But unless the whole application becomes async,
     # the only way would be to use threads, which is another problem in itself.
     # However, nothing keeps the Django app from writing
@@ -70,3 +73,31 @@ def track(page: str, action: str, *, meta: dict = {}, session_id: str = None, cl
         except httpx.HTTPError as e:
             logger.exception(e)
             logger.warning("Failed to submit tracker")
+
+
+TRACKER_IGNORE_LIST = [
+    "favicon",
+    "static",
+    "api/perimeters",
+]
+
+
+class TrackerMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        page = request.path
+        token = request.GET.get("token", "0")
+        request_ua = request.META.get("HTTP_USER_AGENT", "")
+
+        # Final checks before calling the track() function
+        # - make sure no "filtered" keyword is in the path
+        # - make sure the request doesn't come from a crawler
+        if all([s not in page for s in TRACKER_IGNORE_LIST]):
+            is_crawler = crawler_detect.isCrawler(request_ua)
+            if not is_crawler:
+                track(page, "load", meta={"token": token})
+
+        response = self.get_response(request)
+        return response
