@@ -42,6 +42,12 @@
                     {% endif %}
 
                     {% bootstrap_formset offer_formset %}
+
+                    <div id="offer-formset-empty-form" class="d-none">{% bootstrap_form offer_formset.empty_form %}</div>
+                    <button id="offer-formset-add-more" class="btn btn-outline-primary btn-sm btn-ico float-right" type="button">
+                        <span>Ajouter une prestation</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></svg>
+                    </button>
                 </fieldset>
             </div>
         </div>
@@ -143,5 +149,25 @@
             sentryCsrfToken: "{{ csrf_token }}"
         });
     })
+</script>
+<script>
+    /**
+     * Add formset items dynamically
+     */
+    const prefixRegex = new RegExp('__prefix__', 'g');
+
+    const totalOfferFormset = document.getElementById('id_offers-TOTAL_FORMS');
+    const offerFormsetAddMoreButton = document.getElementById('offer-formset-add-more');
+
+    offerFormsetAddMoreButton.addEventListener('click', function(e) {
+        if (e) { e.preventDefault(); }
+        // add new form
+        const copyOfferFormsetEmptyForm = document.getElementById('offer-formset-empty-form').cloneNode(true);
+        copyOfferFormsetEmptyForm.setAttribute('class', 'form-group');
+        copyOfferFormsetEmptyForm.innerHTML = copyOfferFormsetEmptyForm.innerHTML.replace(prefixRegex, totalOfferFormset.value)
+        offerFormsetAddMoreButton.parentNode.insertBefore(copyOfferFormsetEmptyForm, offerFormsetAddMoreButton);
+        // update total forms count
+        totalOfferFormset.setAttribute('value', parseInt(totalOfferFormset.getAttribute('value'), 10) + 1);
+    });
 </script>
 {% endblock %}

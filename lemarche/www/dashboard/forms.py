@@ -174,7 +174,7 @@ class SiaeOfferForm(forms.ModelForm):
         self.fields["description"].widget.attrs.update({"rows": 5})
 
 
-SiaeOfferFormSet = inlineformset_factory(Siae, SiaeOffer, form=SiaeOfferForm, extra=2, can_delete=True)
+SiaeOfferFormSet = inlineformset_factory(Siae, SiaeOffer, form=SiaeOfferForm, extra=0, can_delete=True)
 
 
 class SiaeClientReferenceForm(forms.ModelForm):
@@ -184,7 +184,7 @@ class SiaeClientReferenceForm(forms.ModelForm):
 
 
 SiaeClientReferenceFormSet = inlineformset_factory(
-    Siae, SiaeClientReference, form=SiaeClientReferenceForm, extra=2, can_delete=True
+    Siae, SiaeClientReference, form=SiaeClientReferenceForm, extra=0, can_delete=True
 )
 
 
