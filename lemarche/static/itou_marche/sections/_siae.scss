@@ -400,9 +400,16 @@
     list-style: none;
 
     li {
-        display: flex;
-        padding-bottom: 8px;
+			padding-bottom: 8px;
+			display: flex;
     }
+
+		.prof_email {
+			max-width: 280px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;	
+		}
 
     .prof_icon {
       min-width: 30px

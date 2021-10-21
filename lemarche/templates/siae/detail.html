@@ -128,11 +128,11 @@
                                             <a id="company_website" href="{{ siae.contact_website }}" target="_blank" rel="nofollow noopener">{{ siae.contact_website }}</a>
                                         </li>
                                     {% endif %}
-                                    {% if siae.users.count %}
+                                    {% if siae.users.count %}                               
                                         {% if siae.contact_email %}
                                             <li>
                                                 <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" /></span>
-                                                <span>{{ siae.contact_email }}</span>
+                                                <span class="prof_email">{{ siae.contact_email }}</span>
                                             </li>
                                         {% endif %}
                                         {% if siae.contact_phone %}
@@ -160,14 +160,16 @@
                             <div id="map-company" class="map-canvas"></div>
                         </div>
                         <div class="map_details">
-                            <div class="d-flex mb-2">
-                                <span class="prof_icon"><img src="{% static 'img/profile-ico-geo.svg' %}" /></span>
-                                <span>Situé à {{ siae.city }}</span>
-                            </div>
-                            <div class="d-flex mb-2" title="{{ siae.geo_range_pretty_title }}">
-                                <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>
-                                <span>Intervient sur : {{ siae.geo_range_pretty_display }}</span>
-                            </div>
+                            <ul class="deflist">
+                                <li>
+                                    <span class="prof_icon"><img src="{% static 'img/profile-ico-geo.svg' %}" /></span>
+                                    <span>Situé à {{ siae.city }}</span>
+                                </li>
+                                <li>
+                                    <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>
+                                    <span>Intervient sur : {{ siae.geo_range_pretty_display }}</span>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                     <hr class="mt-5 d-block d-lg-none">
