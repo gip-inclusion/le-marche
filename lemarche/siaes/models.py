@@ -232,7 +232,9 @@ class Siae(models.Model):
 
     contact_first_name = models.CharField(verbose_name="Prénom", max_length=150, blank=True, null=True)
     contact_last_name = models.CharField(verbose_name="Nom", max_length=150, blank=True, null=True)
-    contact_website = models.URLField(verbose_name="Site internet", blank=True, null=True)
+    contact_website = models.URLField(
+        verbose_name="Site internet", help_text="Doit commencer par http:// ou https://", blank=True, null=True
+    )
     contact_email = models.EmailField(verbose_name="E-mail", blank=True, null=True)
     contact_phone = models.CharField(verbose_name="Téléphone", max_length=150, blank=True, null=True)
 
