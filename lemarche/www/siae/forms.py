@@ -93,7 +93,7 @@ class SiaeSearchForm(forms.Form):
 
         presta_type = self.cleaned_data.get("presta_type", None)
         if presta_type:
-            qs = qs.filter(presta_type=presta_type)
+            qs = qs.filter(presta_type__overlap=[presta_type])
 
         return qs
 

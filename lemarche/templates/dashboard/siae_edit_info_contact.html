@@ -83,11 +83,11 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'vendor/dropzone-5.9.3/dropzone.min.js' %}"></script>
-<script src="{% static 'js/s3_upload.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/dropzone-5.9.3/dropzone.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/s3_upload.js' %}"></script>
 {{ s3_form_values|json_script:"s3-form-values" }}
 {{ s3_upload_config|json_script:"s3-upload-config" }}
-<script>
+<script type="text/javascript">
     s3UploadInit({
         dropzoneSelector: "#logo_form",
         callbackLocationSelector: "#{{ form.logo_url.id_for_label }}",

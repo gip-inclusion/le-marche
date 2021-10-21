@@ -4,11 +4,6 @@
 {% block title %}Accueil{{ block.super }}{% endblock %}
 {% block meta_twitter_title %}Accueil - {{ block.super }}{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'vendor/bootstrap-multiselect-1.1.1/bootstrap-multiselect.min.css' %}" type="text/css" />
-<link rel="stylesheet" href="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.css' %}" type="text/css" />
-{% endblock %}
-
 {% block content %}
 <section class="s-article-picture-01 s-article-picture-01--marche s-hp-01 has-illustration-bg-01 py-sm-8">
     <div class="s-article-picture-01__container container">
@@ -20,7 +15,7 @@
                 </article>
             </div>
             <div class="s-article-picture-01__col col-12 col-lg-6 pl-lg-6">
-                <form method="GET" action="{% url 'siae:search_results' %}" class="s-hp-01__form bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
+                <form method="GET" action="{% url 'siae:search_results' %}" id="search-form" class="s-hp-01__form bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
                     <fieldset>
                         <legend class="s-hp-01__form__legend ff-extra-01">Que cherchez-vous ?</legend>
                         <p class="h4 mb-3 mb-lg-5">
@@ -206,11 +201,4 @@
         </div>
     </div>
 </section>
-{% endblock %}
-
-{% block extra_js %}
-<script type="text/javascript" src="{% static 'vendor/bootstrap-multiselect-1.1.1/bootstrap-multiselect.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/sector_multiselect_field.js' %}"></script>
-<script type="text/javascript" src="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
 {% endblock %}

@@ -3,12 +3,6 @@
 
 {% block title %}Recherche{{ block.super }}{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'vendor/bootstrap-multiselect-1.1.1/bootstrap-multiselect.min.css' %}" type="text/css" />
-<link rel="stylesheet" href="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.css' %}" type="text/css" />
-<link rel="stylesheet" href="{% static 'vendor/leaflet-1.7.1/leaflet.css' %}" type="text/css" />
-{% endblock %}
-
 {% block breadcrumbs %}
 <section>
     <div class="container">
@@ -30,7 +24,7 @@
 <section class="s-siae-01">
     <div class="container">
         <div id="dir_form" class="dir_form">
-            <form method="GET" action="{% url 'siae:search_results' %}">
+            <form method="GET" action="{% url 'siae:search_results' %}" id="search-form">
                 {% if form.errors %}
                     <div class="alert alert-danger" role="alert">{{ form.errors|show_first_form_error_message }}</div>
                 {% endif %}
@@ -235,12 +229,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script type="text/javascript" src="{% static 'vendor/bootstrap-multiselect-1.1.1/bootstrap-multiselect.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/sector_multiselect_field.js' %}"></script>
-<script src="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.js' %}"></script>
-<script src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
-<script src="{% static 'vendor/leaflet-1.7.1/leaflet.js' %}"></script>
-<script>
+<script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function() {
         // show type user modal
         const COOKIE_NAME = 'leMarcheTypeUsagerV2';

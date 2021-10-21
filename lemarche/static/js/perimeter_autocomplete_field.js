@@ -1,5 +1,9 @@
 document.addEventListener("DOMContentLoaded", function() {
+  /**
+   * Accessible autocomplete for the perimeter search form field
+   */
 
+  const perimeterAutocompleteContainer = document.querySelector('#search-form #dir_form_perimeter_name');
   let perimeterNameInput = document.getElementById('id_perimeter_name');  // autocomplete
   let perimeterInput = document.getElementById('id_perimeter');  // hidden
 
@@ -86,36 +90,38 @@ document.addEventListener("DOMContentLoaded", function() {
     perimeterInput.value = '';
   }
   
-  // https://github.com/alphagov/accessible-autocomplete
-  accessibleAutocomplete({
-    element: document.querySelector('#dir_form_perimeter_name'),
-    id: 'perimeter_name',
-    name: 'perimeter_name',  // url GET param name
-    placeholder: 'Région, département, ville',  // 'Autour de (Arras, Bobigny, Strasbourg…)',
-    minLength: 2,
-    defaultValue: perimeterNameParamInitial,
-    source: async (query, populateResults) => {  // TODO; use debounce ?
-      const res = await fetchSource(query);
-      populateResults(res);
-      // we also reset the inputValueHiddenField because the perimeter hasn't been chosen yet (will happen with onConfirm)
-      resetInputValueHiddenField();
-    },
-    displayMenu: 'overlay',
-    templates: {
-      inputValue: inputValue,  // returns the string value to be inserted into the input
-      suggestion: suggestion,  // used when rendering suggestions, and should return a string, which can contain HTML
-    },
-    autoselect: true,
-    onConfirm: (confirmed) => {
-      inputValueHiddenField(confirmed);
-    },
-    showNoOptionsFound: false,
-    // Internationalization
-    tNoResults: () => 'Aucun résultat',
-    tStatusQueryTooShort: (minQueryLength) => `Tapez au moins ${minQueryLength} caractères pour avoir des résultats`,
-    tStatusNoResults: () => 'Aucun résultat pour cette recherche',
-    tStatusSelectedOption: (selectedOption, length, index) => `${selectedOption} ${index + 1} de ${length} est sélectionnée`,
-    // tStatusResults: 
-    // tAssistiveHint: 
-  })
+  if (document.body.contains(perimeterAutocompleteContainer)) {
+    accessibleAutocomplete({
+      element: perimeterAutocompleteContainer,
+      id: 'perimeter_name',
+      name: 'perimeter_name',  // url GET param name
+      placeholder: 'Région, département, ville',  // 'Autour de (Arras, Bobigny, Strasbourg…)',
+      minLength: 2,
+      defaultValue: perimeterNameParamInitial,
+      source: async (query, populateResults) => {  // TODO; use debounce ?
+        const res = await fetchSource(query);
+        populateResults(res);
+        // we also reset the inputValueHiddenField because the perimeter hasn't been chosen yet (will happen with onConfirm)
+        resetInputValueHiddenField();
+      },
+      displayMenu: 'overlay',
+      templates: {
+        inputValue: inputValue,  // returns the string value to be inserted into the input
+        suggestion: suggestion,  // used when rendering suggestions, and should return a string, which can contain HTML
+      },
+      autoselect: true,
+      onConfirm: (confirmed) => {
+        inputValueHiddenField(confirmed);
+      },
+      showNoOptionsFound: false,
+      // Internationalization
+      tNoResults: () => 'Aucun résultat',
+      tStatusQueryTooShort: (minQueryLength) => `Tapez au moins ${minQueryLength} caractères pour avoir des résultats`,
+      tStatusNoResults: () => 'Aucun résultat pour cette recherche',
+      tStatusSelectedOption: (selectedOption, length, index) => `${selectedOption} ${index + 1} de ${length} est sélectionnée`,
+      // tStatusResults:
+      // tAssistiveHint:
+    });
+  }
+
 });
