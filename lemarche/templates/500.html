@@ -1,0 +1,20 @@
+{% extends "layout/content.html" %}
+
+{% block title %}Erreur 500{{ block.super }}{% endblock %}
+
+{% block content %}
+<section class="pt-4 pt-lg-6 pb-6 pb-lg-8">
+    <div class="container">
+        <h1>Erreur 500</h1>
+        <p class="lead">Une erreur technique s'est produite.</p>
+        <p>Notre équipe technique a été informée du problème et s'en occupera le plus rapidement possible.</p>
+
+        {# Using ITOU_ASSISTANCE_URL would have required a custom error handler. #}
+        {# <p>
+            Toutefois, nous vous invitons à contacter
+            <a href="https://assistance.inclusion.beta.gouv.fr/accueil/support/"> l'assistance de la Plateforme de l'inclusion</a>
+            afin que nous disposions de toutes les informations nécessaires à la résolution du problème.
+        </p> #}
+    </div>
+</section>
+{% endblock %}

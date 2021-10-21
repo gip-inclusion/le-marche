@@ -1,0 +1,19 @@
+{% extends "layout/content.html" %}
+
+{% block title %}Erreur 403{{ block.super }}{% endblock %}
+
+{% block content %}
+<section class="pt-4 pt-lg-6 pb-6 pb-lg-8">
+    <div class="container">
+        <h1>Vous ne pouvez pas continuer</h1>
+
+        {% if exception %}
+            <div class="lead alert alert-warning" role="alert">
+                <p class="mb-0">{{ exception }}</p>
+            </div>
+        {% else %}
+            <h2>Accès refusé</h2>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
