@@ -37,7 +37,7 @@ DEFAULT_PAYLOAD = {
 # - adopt_search (an adoption search event)
 
 
-def track(page: str, action: str, *, meta: dict = {}, session_id: str = None, client_context: dict = {}):  # noqa B006
+def track(page: str, action: str, meta: dict = {}, session_id: str = None, client_context: dict = {}):  # noqa B006
     # TODO: Make Async / non-blocking.
     # But unless the whole application becomes async,
     # the only way would be to use threads, which is another problem in itself.
@@ -92,7 +92,7 @@ class TrackerMiddleware:
         request_ua = request.META.get("HTTP_USER_AGENT", "")
 
         # Final checks before calling the track() function
-        # - make sure no "filtered" keyword is in the path
+        # - make sure no "ignored" keyword is in the path
         # - make sure the request doesn't come from a crawler
         if all([s not in page for s in TRACKER_IGNORE_LIST]):
             is_crawler = crawler_detect.isCrawler(request_ua)

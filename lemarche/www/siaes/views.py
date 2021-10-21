@@ -12,7 +12,7 @@ from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
 
 from lemarche.siaes.models import Siae
-from lemarche.tracker.tracker import track
+from lemarche.utils.tracker import track
 from lemarche.www.siaes.forms import SiaeSearchForm
 
 
