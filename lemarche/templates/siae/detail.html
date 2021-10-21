@@ -13,10 +13,6 @@
 <meta property="twitter:title" content="{{ siae.name }}" />
 {% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'vendor/leaflet-1.7.1/leaflet.css' %}" type="text/css" />
-{% endblock %}
-
 {% block breadcrumbs %}
 <section>
     <div class="container">
@@ -295,8 +291,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'vendor/leaflet-1.7.1/leaflet.js' %}"></script>
-<script>
+<script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
     // siae coords output as floats with commas. We need to transform them into floats.
     const siaeLatitudeString = "{{ siae.coords.x }}";

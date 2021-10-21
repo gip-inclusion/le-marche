@@ -43,10 +43,14 @@
     <!-- Use this to get the value of the CSRF token in JavaScript. -->
     <meta name="csrf-token" content="{{ csrf_token }}">
 
-    {% bootstrap_javascript jquery='full' %}
-
     {% compress css %}
+    <!-- itou theme -->
     <link rel="stylesheet" href="{% static 'itou/stylesheets/app.css' %}" type="text/css" />
+    <!-- third party css -->
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-multiselect-1.1.1/bootstrap-multiselect.min.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'vendor/leaflet-1.7.1/leaflet.css' %}" type="text/css" />
+    <!-- custom css -->
     <link rel="stylesheet" href="{% static 'itou_marche/itou_marche.scss' %}" type="text/x-scss" />
     {% endcompress %}
 
@@ -115,17 +119,27 @@
 
     {% block script %}
     {% compress js %}
-    <script src="{% static 'itou/javascripts/app.js' %}"></script>
-    <script src="{% static 'js/utils.js'%}"></script>
+    <!-- jquery & bootstrap -->
+    <script type="text/javascript" src="{% static 'vendor/jquery-3.5.1/jquery-3.5.1.slim.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/bootstrap-4.6.0/bootstrap.bundle.min.js' %}"></script>
+    <!-- itou theme -->
+    <script type="text/javascript" src="{% static 'itou/javascripts/app.js' %}"></script>
+    <!-- third party javascript -->
+    <script type="text/javascript" src="{% static 'vendor/bootstrap-multiselect-1.1.1/bootstrap-multiselect.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/leaflet-1.7.1/leaflet.js' %}"></script>
+    <!-- custom javascript -->
+    <script type="text/javascript" src="{% static 'js/utils.js'%}"></script>
+    <script type="text/javascript" src="{% static 'js/sector_multiselect_field.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
     {% endcompress %}
     {% include "layouts/_trackers.html" %}
     <!-- Mailjet newsletter -->
     <data id="mj-w-res-data" data-token="429592182df918abbac72c697a97a0fd" class="mj-w-data" data-apikey="4guK" data-w-id="KAV" data-lang="fr_FR" data-base="https://app.mailjet.com" data-width="640" data-height="450" data-statics="statics"></data>
-    <script type="text/javascript" src="https://app.mailjet.com/statics/js/widget.modal.js"></script>
+    <script type="text/javascript" type="text/javascript" src="https://app.mailjet.com/statics/js/widget.modal.js"></script>
     {% endblock %}
     
-    {% block extra_js %}
-    {% endblock %}
+    {% block extra_js %}{% endblock %}
 
     {% bootstrap_messages %}
 </body>
