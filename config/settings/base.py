@@ -41,8 +41,7 @@ DEBUG = env.bool("DEBUG", False)
 
 ALLOWED_HOSTS = []
 
-# Bitoubi Specific Settings
-TRACKER_HOST = env.str("TRACKER_HOST", "http://localhost")
+# Bitoubi env
 BITOUBI_ENV = env.str("ENV", "dev")
 
 # Static Files
@@ -148,6 +147,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # custom
+                "lemarche.utils.settings_context_processors.expose_settings",
             ],
         },
     },
@@ -316,6 +317,15 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "0.1.0",
     "CONTACT": "lemarche@inclusion.beta.gouv.fr",
 }
+
+
+# Trackers
+# ------------------------------------------------------------------------------
+TRACKER_HOST = env.str("TRACKER_HOST", "http://localhost")
+HOTJAR_ID = int(env.str("HOTJAR_ID", 0))
+MATOMO_SITE_ID = int(env.str("MATOMO_SITE_ID", 0))
+MATOMO_HOST = env.str("MATOMO_HOST", "")
+CRISP_ID = env.str("CRISP_ID", "")
 
 
 # django-bootstrap4.
