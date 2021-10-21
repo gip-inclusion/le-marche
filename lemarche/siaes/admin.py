@@ -46,6 +46,7 @@ class HasUserFilter(admin.SimpleListFilter):
 
 class SiaeUserInline(admin.TabularInline):
     model = SiaeUser
+    autocomplete_fields = ["user"]
     readonly_fields = ["created_at", "updated_at"]
     extra = 0
 
