@@ -39,9 +39,8 @@
 <section class="s-siae-03">
     <div class="container">
         <div id="dir-profile" class="dir-profile-row row">
-
-            <!-- contain the main content of the page -->
             <div id="content" class="col-12 listing-area">
+                <!-- profile-detail basic info -->
                 <div id="user_profile" class="row align-items-start">
                     <div class="gallery-small slideshow col-12 col-lg-3">
                         <div class="img-container">
@@ -55,19 +54,13 @@
                     <div class="col-12 col-lg-9 pl-md-5">
                         <div class="row">
                             <div class="col-sm-12">
-                                <h3 class="h3 mb-3 mt-1">
-                                    {% if siae.brand %}
-                                        {{ siae.brand }}
-                                    {% else %}
-                                        {{ siae.name }}
-                                    {% endif %}
-                                </h3>
+                                <h3 class="h3 mb-3 mt-1">{{ siae.name_display }}</h3>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-12 col-md-6 mb-3">
                                 <span class="prof_icon mr-1"><img src="{% static 'img/prof_siret.svg' %}" /></span>
-                                <span>Siret : {{ siae.siret }}</span>
+                                <span>Siret : {{ siae.siret_display }}</span>
                             </div>
                             <div class="col-12 col-md-6 mb-3">
                                 <span class="prof_icon mr-1"><img src="{% static 'img/prof_types.svg' %}" /></span>
@@ -85,26 +78,22 @@
                             <div class="clearfix visible-md-block"></div>
                             <div class="col-12 col-md-6 mb-3">
                                 <span class="prof_icon mr-1"><img src="{% static 'img/prof_calendar.svg' %}" /></span>
-                                <span>Date de création<sup>*</sup> : non disponible</span>
+                                <span>Date de création<sup>*</sup> : {% if siae.ig_date_constitution %}{{ siae.ig_date_constitution|date:"d/m/Y" }}{% else %}non disponible{% endif %}</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- profile-detail sidebar -->
                 <aside id="sidebar">
                     <div class="profile mb-3">
                         {% if not siae.website and not user %}
                         <div class="row">
-                            <!-- FIXME: établir la fonctionnalité
-                            <div class="col-xs-5 col-sm-12 col-md-5 mb-3">
-                                <button class="btn btn-sm btn-link btn-block pl-0">Enregistrer<i class="ml-2 icon-star-empty"></i></button>
-                            </div>
-                            -->
                             <div class="col-12 mb-3">
                                 <a id="contact" href="https://itou.typeform.com/to/nxG0HlYx#data={{ siae.id }}" class="btn btn-outline-primary btn-block">Être recontacté</a>
                             </div>
                         </div>
-                        {% endif %}                
+                        {% endif %}
                         <div class="profile_capsule">
                             {% if siae.contact_website or siae.users.count %}
                             <div class="map_coordonnees">
@@ -121,7 +110,7 @@
                                                 <a id="company_website" href="{{ siae.contact_website }}" target="_blank" rel="nofollow noopener">{{ siae.contact_website }}</a>
                                             </li>
                                         {% endif %}
-                                        {% if siae.users.count %}                               
+                                        {% if siae.users.count %}
                                             {% if siae.contact_email %}
                                                 <li>
                                                     <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" /></span>
@@ -166,12 +155,12 @@
                             </div>
                         </div>
                         <hr class="mt-5 d-block d-lg-none">
-                    </div>                    
+                    </div>
                 </aside>
-     
+
                 <!-- profile-detail suite -->
                 <article id="user_detail" class="profile-detail mt-lg-4">
-                    <!-- Second Row, Company Details -->
+                    <!-- Second Row : Secteurs, Références -->
                     <div class="row">
                         <div class="col-sm-6 img-left mb-3">
                             <div class="il-l">
@@ -293,9 +282,8 @@
                         {% endif %}
                     </div>
                     {% endif %}
-                </article>                                
+                </article>
             </div>
-
         </div>
         <div class="row">
             <div class="col-12 my-5">
