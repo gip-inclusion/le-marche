@@ -49,7 +49,7 @@ def track(page: str, action: str, *, meta: dict = {}, session_id: str = None, cl
         if not session_id:
             # TODO: generate and use uuid4-style session_ids, unique to a user's session
             # https://data-flair.training/blogs/django-sessions/
-            token = meta.get("token")
+            token = meta.get("token") or "0"
             session_id = f"{token.ljust(8,'0')}-1111-2222-AAAA-444444444444"
 
         set_payload = {
