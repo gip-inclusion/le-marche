@@ -42,6 +42,12 @@
                     {% endif %}
 
                     {% bootstrap_formset offer_formset %}
+
+                    <div id="offer-formset-empty-form" class="d-none">{% bootstrap_form offer_formset.empty_form %}</div>
+                    <button id="offer-formset-add-more" class="btn btn-outline-primary btn-sm btn-ico float-right" type="button">
+                        <span>Ajouter une prestation</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></svg>
+                    </button>
                 </fieldset>
             </div>
         </div>
@@ -97,6 +103,31 @@
                         </div>
                         <hr />
                     {% endfor %}
+
+                    <div id="client-reference-formset-empty-form" class="d-none">
+                        <div class="form-group">
+                            <label for="id_client_references-__prefix__-name">Nom</label>
+                            <input type="text" name="client_references-__prefix__-name" maxlength="255" class="form-control" title="" id="id_client_references-__prefix__-name">
+                        </div>
+                        <div class="form-group">
+                            {# <label for="id_client_references-__prefix__-logo_url">Lien vers le logo</label> #}
+                            <input type="hidden" name="client_references-__prefix__-logo_url" maxlength="500" class="form-control" title="" id="id_client_references-__prefix__-logo_url">
+                            <label for="id_client_references-__prefix__-logo_form" class="js-display-if-javascript-enabled">Logo</label>
+                            {% include "storage/s3_upload_form.html" with dropzone_form_id="id_client_references-__prefix__-logo_form" %}
+                        </div>
+                        <input type="hidden" name="client_references-__prefix__-id" id="id_client_references-__prefix__-id">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" name="client_references-__prefix__-DELETE" class="form-check-input" id="id_client_references-__prefix__-DELETE">
+                                <label class="form-check-label" for="id_client_references-__prefix__-DELETE">Supprimer</label>
+                            </div>
+                        </div>
+                        <input type="hidden" name="client_references-__prefix__-siae" value="323" id="id_client_references-__prefix__-siae">
+                    </div>
+                    <button id="client-reference-formset-add-more" class="btn btn-outline-primary btn-sm btn-ico float-right" type="button">
+                        <span>Ajouter une référence</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></svg>
+                    </button>
                 </fieldset>
             </div>
         </div>
@@ -143,5 +174,59 @@
             sentryCsrfToken: "{{ csrf_token }}"
         });
     })
+</script>
+<script>
+    /**
+     * Add formset items dynamically
+     */
+    const prefixRegex = new RegExp('__prefix__', 'g');
+
+    // offer formset
+    const totalOfferFormset = document.getElementById('id_offers-TOTAL_FORMS');
+    const offerFormsetEmptyForm = document.getElementById('offer-formset-empty-form');
+    const offerFormsetAddMoreButton = document.getElementById('offer-formset-add-more');
+
+    offerFormsetAddMoreButton.addEventListener('click', function(e) {
+        if (e) { e.preventDefault(); }
+        // add new form
+        const copyOfferFormsetEmptyForm = offerFormsetEmptyForm.cloneNode(true);
+        copyOfferFormsetEmptyForm.innerHTML = copyOfferFormsetEmptyForm.innerHTML.replace(prefixRegex, totalOfferFormset.value);
+        copyOfferFormsetEmptyForm.childNodes.forEach(node => {
+            offerFormsetEmptyForm.parentNode.insertBefore(node, offerFormsetEmptyForm);
+        });
+        // update total forms count
+        totalOfferFormset.setAttribute('value', parseInt(totalOfferFormset.getAttribute('value'), 10) + 1);
+    });
+
+    // client reference formset
+    const totalClientReferenceFormset = document.getElementById('id_client_references-TOTAL_FORMS');
+    const clientReferenceFormsetEmptyForm = document.getElementById('client-reference-formset-empty-form');
+    const clientReferenceFormsetAddMoreButton = document.getElementById('client-reference-formset-add-more');
+
+    clientReferenceFormsetAddMoreButton.addEventListener('click', function(e) {
+        if (e) { e.preventDefault(); }
+        // add new form
+        const copyClientReferenceFormsetEmptyForm = clientReferenceFormsetEmptyForm.cloneNode(true);
+        copyClientReferenceFormsetEmptyForm.innerHTML = copyClientReferenceFormsetEmptyForm.innerHTML.replace(prefixRegex, totalClientReferenceFormset.value);
+        // copyClientReferenceFormsetEmptyForm.childNodes.forEach(node => {
+        //     clientReferenceFormsetEmptyForm.parentNode.insertBefore(node, clientReferenceFormsetEmptyForm);
+        // });
+        copyClientReferenceFormsetEmptyForm.setAttribute('id', '');
+        copyClientReferenceFormsetEmptyForm.setAttribute('class', '');
+        clientReferenceFormsetEmptyForm.parentNode.insertBefore(copyClientReferenceFormsetEmptyForm, clientReferenceFormsetEmptyForm);
+        console.log(totalClientReferenceFormset.value)
+        // add dropzone
+        s3UploadInit({
+            dropzoneSelector: `#id_client_references-${totalClientReferenceFormset.value}-logo_form`,
+            callbackLocationSelector: `#id_client_references-${totalClientReferenceFormset.value}-logo_url`,
+            s3FormValuesId: "s3-form-values",
+            s3UploadConfigId: "s3-upload-config",
+            // Not really nice
+            sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
+            sentryCsrfToken: "{{ csrf_token }}"
+        });
+        // update total forms count
+        totalClientReferenceFormset.setAttribute('value', parseInt(totalClientReferenceFormset.getAttribute('value'), 10) + 1);
+    });
 </script>
 {% endblock %}
