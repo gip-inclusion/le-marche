@@ -44,7 +44,17 @@
                 <fieldset>
                     <legend class="h4">Labels et certifications</legend>
                     {% bootstrap_formset_errors label_formset %}
+                    {% if label_formset.errors %}
+                        <div class="alert alert-danger" role="alert">{{ label_formset.errors }}</div>
+                    {% endif %}
+
                     {% bootstrap_formset label_formset %}
+
+                    <div id="label-formset-empty-form" class="d-none">{% bootstrap_form label_formset.empty_form %}</div>
+                    <button id="label-formset-add-more" class="btn btn-outline-primary btn-sm btn-ico float-right" type="button">
+                        <span>Ajouter un label</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></svg>
+                    </button>
                 </fieldset>
             </div>
         </div>
@@ -68,4 +78,28 @@
         <div class="col-12 col-lg-4"></div>
     </div>
 </form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    /**
+     * Add formset items dynamically
+     */
+    const prefixRegex = new RegExp('__prefix__', 'g');
+
+    // label formset
+    const totalLabelFormset = document.getElementById('id_labels-TOTAL_FORMS');
+    const labelFormsetAddMoreButton = document.getElementById('label-formset-add-more');
+
+    labelFormsetAddMoreButton.addEventListener('click', function(e) {
+        if (e) { e.preventDefault(); }
+        // add new form
+        const copyLabelFormsetEmptyForm = document.getElementById('label-formset-empty-form').cloneNode(true);
+        copyLabelFormsetEmptyForm.setAttribute('class', 'form-group');
+        copyLabelFormsetEmptyForm.innerHTML = copyLabelFormsetEmptyForm.innerHTML.replace(prefixRegex, totalLabelFormset.value)
+        labelFormsetAddMoreButton.parentNode.insertBefore(copyLabelFormsetEmptyForm, labelFormsetAddMoreButton);
+        // update total forms count
+        totalLabelFormset.setAttribute('value', parseInt(totalLabelFormset.getAttribute('value'), 10) + 1);
+    });
+</script>
 {% endblock %}

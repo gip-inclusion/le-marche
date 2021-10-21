@@ -215,4 +215,4 @@ class SiaeLabelForm(forms.ModelForm):
         fields = ["name"]
 
 
-SiaeLabelFormSet = inlineformset_factory(Siae, SiaeLabel, form=SiaeLabelForm, extra=2, can_delete=True)
+SiaeLabelFormSet = inlineformset_factory(Siae, SiaeLabel, form=SiaeLabelForm, extra=0, can_delete=True)
