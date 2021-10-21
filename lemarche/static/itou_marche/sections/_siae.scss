@@ -416,7 +416,7 @@
 	}
 }
 
-	#dir-profile aside.profile {
+	#dir-profile aside > .profile {
 
 		@media screen and (min-width:992px) {
 			background-image:url('/static/img/ronds_rose.svg');
@@ -563,11 +563,28 @@
 		grid-column-gap: 16px;
 		grid-row-gap: 16px;
 		grid-template-columns: 1fr; 
+		grid-template-rows: auto;
 		
 		@media (min-width:992px) {
 			grid-column-gap: 32px;
+			grid-row-gap: 32px;
 			grid-template-columns: 66% 33%;
-		}		
+
+			#user_profile {
+				grid-column: 1;
+				grid-row: 1;
+			}
+			
+			#sidebar {
+				grid-column: 2;
+				grid-row: 1 / 3;
+			}
+			
+			#user_detail {
+				grid-column: 1;
+				grid-row: 2;
+			}	
+		}
 	}
 	
 	.img-left .il-l img {
