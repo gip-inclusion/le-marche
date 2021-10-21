@@ -1,11 +1,14 @@
-import logging
 import json
+import logging
 from datetime import datetime
-from django.conf import settings
+
 import httpx
+from django.conf import settings
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
 
 VERSION = 1
 
@@ -38,29 +41,32 @@ def track(page: str, action: str, *, meta: dict = {}, session_id: str = None, cl
     # However, nothing keeps the Django app from writing
     # to the tracking database directly, which would be magnitudes faster.
 
-    set_meta = {"source": "bitoubi_api"}
+    # Don't log in dev
+    if settings.BITOUBI_ENV != "dev":
 
-    if not session_id:
-        # TODO: generate and use uuid4-style session_ids, unique to a user's session
-        # https://data-flair.training/blogs/django-sessions/
-        token = meta.get("token")
-        session_id = f"{token.ljust(8,'0')}-1111-2222-AAAA-444444444444"
+        set_meta = {"source": "bitoubi_api"}
 
-    set_payload = {
-        "timestamp": datetime.now().isoformat(),
-        "page": page,
-        "session_id": session_id,
-        "action": action,
-        "meta": json.dumps(meta | set_meta),
-        "client_context": client_context,
-    }
+        if not session_id:
+            # TODO: generate and use uuid4-style session_ids, unique to a user's session
+            # https://data-flair.training/blogs/django-sessions/
+            token = meta.get("token")
+            session_id = f"{token.ljust(8,'0')}-1111-2222-AAAA-444444444444"
 
-    payload = DEFAULT_PAYLOAD | set_payload
+        set_payload = {
+            "timestamp": datetime.now().isoformat(),
+            "page": page,
+            "session_id": session_id,
+            "action": action,
+            "meta": json.dumps(meta | set_meta),
+            "client_context": client_context,
+        }
 
-    try:
-        r = httpx.post(f"{settings.TRACKER_HOST}/track", json=payload)
-        r.raise_for_status()
-        logger.info("Tracker sent")
-    except httpx.HTTPError as e:
-        logger.exception(e)
-        logger.warning("Failed to submit tracker")
+        payload = DEFAULT_PAYLOAD | set_payload
+
+        try:
+            r = httpx.post(f"{settings.TRACKER_HOST}/track", json=payload)
+            r.raise_for_status()
+            logger.info("Tracker sent")
+        except httpx.HTTPError as e:
+            logger.exception(e)
+            logger.warning("Failed to submit tracker")

@@ -1,5 +1,6 @@
 from lemarche.tracker.tracker import track
 
+
 IGNORE_FILTER = [
     "favicon",
     "static",
@@ -15,11 +16,9 @@ class TokenVisitMiddleware:
         token = request.GET.get("token", "0")
         page = request.path
 
-        # Don't log in dev
-        if settings.BITOUBI_ENV != "dev":
-            # We make sure no "filtered" keyword is in the path before tracking
-            if all([s not in page for s in IGNORE_FILTER]):
-                track(page, "load", meta={"token": token})
+        # We make sure no "filtered" keyword is in the path before tracking
+        if all([s not in page for s in IGNORE_FILTER]):
+            track(page, "load", meta={"token": token})
 
         response = self.get_response(request)
         return response
