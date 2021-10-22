@@ -1,5 +1,6 @@
+// custom form style
 .form-group > label {
-    font-weight: bold;
+  font-weight: bold;
 }
 .form-group-required > label::after,
 .form-group-required > div > label::after {
@@ -7,7 +8,6 @@
   font-weight: 900;
   font-size: 1rem;
 }
-
 .form-group > .checkbox > .checkbox-title {
   padding-bottom: 1rem;
 }
@@ -17,7 +17,7 @@
   font-size: 1rem;
 }
 
-/* Element is shown with JavaScript (see static > js > utils.js) */
+// Element is shown with JavaScript (see static > js > utils.js)
 .js-display-if-javascript-enabled {
   display: none;
 }
