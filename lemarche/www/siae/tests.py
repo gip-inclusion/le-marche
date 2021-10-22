@@ -4,10 +4,119 @@ from django.urls import reverse
 
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
+from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes.factories import SiaeFactory, SiaeOfferFactory
 from lemarche.siaes.models import Siae
 from lemarche.users.factories import UserFactory
 from lemarche.www.siae.forms import SiaeSearchForm
+
+
+class SiaeSearchFilterTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        SiaeFactory(is_active=True)
+        SiaeFactory(is_active=False)
+
+    def test_search_should_return_live_siaes(self):
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+
+
+class SiaeKindSearchFilterTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        SiaeFactory(kind=Siae.KIND_EI)
+        SiaeFactory(kind=Siae.KIND_AI)
+
+    def test_search_kind_empty(self):
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+
+    def test_search_kind_empty_string(self):
+        url = f"{reverse('siae:search_results')}?kind="
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+
+    def test_search_kind_should_filter(self):
+        url = f"{reverse('siae:search_results')}?kind={Siae.KIND_EI}"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+
+
+class SiaePrestaTypeSearchFilterTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        SiaeFactory(presta_type=[Siae.PRESTA_DISP])
+        SiaeFactory(presta_type=[Siae.PRESTA_DISP, Siae.PRESTA_BUILD])
+
+    def test_search_kind_empty(self):
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+
+    def test_search_kind_empty_string(self):
+        url = f"{reverse('siae:search_results')}?presta_type="
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+
+    def test_search_kind_should_filter(self):
+        url = f"{reverse('siae:search_results')}?presta_type={Siae.PRESTA_BUILD}"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        url = f"{reverse('siae:search_results')}?presta_type={Siae.PRESTA_DISP}"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1 + 1)
+
+
+class SiaeSectorSearchFilterTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        SiaeFactory()  # siae_without_sector
+        siae_with_one_sector = SiaeFactory()
+        siae_with_two_sectors = SiaeFactory()
+        siae_with_other_sector = SiaeFactory()
+        cls.sector_1 = SectorFactory()
+        cls.sector_2 = SectorFactory()
+        cls.sector_3 = SectorFactory()
+        siae_with_one_sector.sectors.add(cls.sector_1)
+        siae_with_two_sectors.sectors.add(cls.sector_1, cls.sector_2)
+        siae_with_other_sector.sectors.add(cls.sector_3)
+
+    def test_search_sector_empty(self):
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 4)
+
+    def test_search_kind_empty_string(self):
+        url = f"{reverse('siae:search_results')}?sectors="
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 4)
+
+    def test_search_kind_should_filter(self):
+        url = f"{reverse('siae:search_results')}?sectors={self.sector_1.slug}"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1 + 1)
+        url = f"{reverse('siae:search_results')}?sectors={self.sector_2.slug}"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        url = f"{reverse('siae:search_results')}?sectors={self.sector_1.slug}&sectors={self.sector_3.slug}"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2 + 1)  # OR
 
 
 class SiaePerimeterSearchFilterTest(TestCase):
