@@ -294,27 +294,43 @@
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
     // siae coords output as floats with commas. We need to transform them into floats.
+    const siaeName = "{{ siae.name }}";
+    const siaeBrand = "{{ siae.brand }}";
     const siaeLatitudeString = "{{ siae.coords.x }}";
     const siaeLongitudeString = "{{ siae.coords.y }}";
     const siaeLatitudeFloat = parseFloat(siaeLatitudeString.replace(',', '.'));
     const siaeLongitudeFloat = parseFloat(siaeLongitudeString.replace(',', '.'));
+    
     // init map
     var map = L.map('map-siae').setView([siaeLongitudeFloat, siaeLatitudeFloat], 13);
+    
     // map tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19,
         zoomControl: false,
     }).addTo(map);
+    
     // map zoom controls in the bottom right
     map.zoomControl.remove();
     L.control.zoom({ position: 'bottomright' }).addTo(map);
-    // map siae marker (with custom icons because of static url issues)
-    const icon = L.icon({
+    
+    // create custom marker (because of static url issues)
+    var customLeafletIcon = L.icon({
         'iconUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-icon.png' %}",
-        'shadowUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-shadow.png' %}"
+        'shadowUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-shadow.png' %}",
+        iconSize: [25,41],
+        iconAnchor: [12,41],
+        popupAnchor:[1,-34],
+        tooltipAnchor:[16,-28],
+        shadowSize:[41,41],
     });
-    L.marker([siaeLongitudeFloat, siaeLatitudeFloat], {icon: icon}).addTo(map);
+    
+    // add marker (with popup on click)
+    var siaeDisplayName = siaeBrand ? siaeBrand : siaeName;
+    L.marker([siaeLongitudeFloat, siaeLatitudeFloat], {icon: customLeafletIcon})
+    .bindPopup(`<p class="h6">${siaeDisplayName}</p></a>`)
+    .addTo(map);
 });
 </script>
 {% endblock %}
