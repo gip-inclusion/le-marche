@@ -4,12 +4,14 @@
 @import 'base/custom';
 
 // Components
+@import 'components/forms';
+@import 'components/breadcrumb';
 @import 'components/multiselect';
+@import 'components/autocomplete';
 @import 'components/maparea';
-@import 'components/jcf';
 
 // Sections
-@import 'sections/hp';
+@import 'sections/home';
 @import 'sections/inclusion';
 @import 'sections/siae';
 @import 'sections/filiere';

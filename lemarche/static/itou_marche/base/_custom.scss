@@ -1,66 +1,11 @@
-// custom form style
-.form-group > label {
-  font-weight: bold;
-}
-.form-group-required > label::after,
-.form-group-required > div > label::after {
-  content: " *";
-  font-weight: 900;
-  font-size: 1rem;
-}
-.form-group > .checkbox > .checkbox-title {
-  padding-bottom: 1rem;
-}
-// 'group-title' class added with Javascript (see static > js > utils.js)
-.form-group > .checkbox > .checkbox-title > .group-title {
-  font-weight: 900;
-  font-size: 1rem;
-}
-
 // Element is shown with JavaScript (see static > js > utils.js)
 .js-display-if-javascript-enabled {
-  display: none;
+    display: none;
 }
 
 .fake-link {
-  color: #3f3e62;
-  text-decoration: underline;
-  background-color: transparent;
-  cursor: pointer;
-}
-
-// bootstrap-multiselect
-button.multiselect {
-  cursor: default !important;
-  background-position: right 1rem center;
-  background-repeat: no-repeat;    
-  background-image: url('/static/images/dir_form_ico_shape.png');
-}
-.multiselect-group {
-  font-weight: 900;
-  font-size: 1rem;
-  padding-bottom: 0 !important;
-}
-.multiselect-option {
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-}
-// fix scrolling bug on mobile when maxHeight is set (https://github.com/davidstutz/bootstrap-multiselect/issues/1191)
-@media screen and (max-width:1023px){ 
-  .multiselect-container button.dropdown-item {
-    pointer-events:none;
-  }
-  .multiselect-container span.form-check input {
-    pointer-events: all;
-  }
-  .multiselect-container span.form-check label  {
-    pointer-events: none;
-  }
-}
-
-// alphagov-accessible-autocomplete
-.autocomplete__input {
-  background-position: right 1rem center;
-  background-repeat: no-repeat;
-  background-image: url('/static/images/dir_form_ico_map.png');
+    color: #3f3e62;
+    text-decoration: underline;
+    background-color: transparent;
+    cursor: pointer;
 }
