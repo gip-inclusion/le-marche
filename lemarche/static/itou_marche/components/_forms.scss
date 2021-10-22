@@ -1,0 +1,17 @@
+.form-group > label {
+    font-weight: bold;
+}
+.form-group-required > label::after,
+.form-group-required > div > label::after {
+    content: " *";
+    font-weight: 900;
+    font-size: 1rem;
+}
+.form-group > .checkbox > .checkbox-title {
+    padding-bottom: 1rem;
+}
+// 'group-title' class added with Javascript (see static > js > utils.js)
+.form-group > .checkbox > .checkbox-title > .group-title {
+    font-weight: 900;
+    font-size: 1rem;
+}
