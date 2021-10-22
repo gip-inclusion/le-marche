@@ -26,7 +26,7 @@
                             <legend class="h4">Contact et coordonnées de votre entreprise</legend>
                             {% bootstrap_field form.first_name %}
                             {% bootstrap_field form.last_name %}
-                            {% bootstrap_field form.phone %}
+                            {% bootstrap_field form.phone form_group_class="phone-form-group form-group" %}
                             {% bootstrap_field form.company_name form_group_class="company-name-form-group form-group form-group-required d-none" %}
                         </fieldset>
 
@@ -63,8 +63,16 @@
 
 {% block extra_js %}
 <script type="text/javascript">
-// show company form field if the user is not a SIAE
+/**
+ * Dynamic rules:
+ * - if the user is not a SIAE:
+ *      - show company form field
+ *      - add survey checkbox
+ * - if the user is BUYER: make phone number field required
+ */
 document.addEventListener('DOMContentLoaded', function() {
+    let phoneFormGroupDiv = document.getElementsByClassName('phone-form-group')[0];
+    let phoneInput = document.getElementById('id_phone');
     let companyNameFormGroupDiv = document.getElementsByClassName('company-name-form-group')[0];
     let companyNameInput = document.getElementById('id_company_name');
 
@@ -80,6 +88,14 @@ document.addEventListener('DOMContentLoaded', function() {
             companyNameFormGroupDiv.classList.add('d-none');
             companyNameInput.required = false;
             acceptSurveyFormGroupDiv.classList.add('d-none');
+        }
+
+        if (radio.value === 'BUYER') {
+            phoneFormGroupDiv.classList.add('form-group-required');
+            phoneInput.required = true;
+        } else {
+            phoneFormGroupDiv.classList.remove('form-group-required');
+            phoneInput.required = false;
         }
     }));
 });
