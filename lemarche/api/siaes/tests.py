@@ -7,6 +7,38 @@ from lemarche.siaes.models import Siae
 from lemarche.users.factories import UserFactory
 
 
+class SiaeListApiTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        SiaeFactory()
+        SiaeFactory()
+        UserFactory(api_key="admin")
+
+    def test_should_return_simple_siae_list_to_anonmyous_users(self):
+        url = reverse("api:siae-list")  # anonymous user
+        response = self.client.get(url)
+        self.assertEqual(response.data["count"], 2)
+        self.assertEqual(len(response.data["results"]), 2)
+        self.assertTrue("raisonSociale" in response.data["results"][0])
+        self.assertTrue("siret" in response.data["results"][0])
+        self.assertTrue("type" not in response.data["results"][0])
+        self.assertTrue("presta_type" not in response.data["results"][0])
+        self.assertTrue("departement" not in response.data["results"][0])
+        self.assertTrue("created_at" not in response.data["results"][0])
+
+    def test_should_return_detailed_siae_list_to_authenticated_users(self):
+        url = reverse("api:siae-list") + "?token=admin"
+        response = self.client.get(url)
+        self.assertEqual(response.data["count"], 2)
+        self.assertEqual(len(response.data["results"]), 2)
+        self.assertTrue("raisonSociale" in response.data["results"][0])
+        self.assertTrue("siret" in response.data["results"][0])
+        self.assertTrue("type" in response.data["results"][0])
+        self.assertTrue("presta_type" in response.data["results"][0])
+        self.assertTrue("departement" in response.data["results"][0])
+        self.assertTrue("created_at" in response.data["results"][0])
+
+
 class SiaeListFilterApiTest(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -31,45 +63,74 @@ class SiaeListFilterApiTest(TestCase):
 
     def test_should_filter_siae_list_by_kind(self):
         # single
-        url = f"{reverse('api:siae-list')}?kind={Siae.KIND_ETTI}"  # anonymous user
+        url = reverse("api:siae-list") + f"?kind={Siae.KIND_ETTI}"  # anonymous user
         response = self.client.get(url)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
         # multiple
-        url = f"{reverse('api:siae-list')}?kind={Siae.KIND_ETTI}&kind={Siae.KIND_ACI}"  # anonymous user
+        url = reverse("api:siae-list") + f"?kind={Siae.KIND_ETTI}&kind={Siae.KIND_ACI}"  # anonymous user
         response = self.client.get(url)
         self.assertEqual(response.data["count"], 1 + 1)
         self.assertEqual(len(response.data["results"]), 1 + 1)
 
     def test_should_filter_siae_list_by_presta_type(self):
         # single
-        url = f"{reverse('api:siae-list')}?presta_type={Siae.PRESTA_BUILD}"  # anonymous user
+        url = reverse("api:siae-list") + f"?presta_type={Siae.PRESTA_BUILD}"  # anonymous user
         response = self.client.get(url)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
         # multiple
-        url = f"{reverse('api:siae-list')}?presta_type={Siae.PRESTA_BUILD}&presta_type={Siae.PRESTA_PREST}"  # anonymous user  # noqa
+        url = (
+            reverse("api:siae-list") + f"?presta_type={Siae.PRESTA_BUILD}&presta_type={Siae.PRESTA_PREST}"
+        )  # anonymous user  # noqa
         response = self.client.get(url)
         self.assertEqual(response.data["count"], 1 + 1)
         self.assertEqual(len(response.data["results"]), 1 + 1)
 
     def test_should_filter_siae_list_by_department(self):
-        url = f"{reverse('api:siae-list')}?department=38"  # anonymous user
+        url = reverse("api:siae-list") + "?department=38"  # anonymous user
         response = self.client.get(url)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
 
     def test_should_filter_siae_list_by_sector(self):
         # single
-        url = f"{reverse('api:siae-list')}?sectors={self.sector_1.slug}"  # anonymous user
+        url = reverse("api:siae-list") + f"?sectors={self.sector_1.slug}"  # anonymous user
         response = self.client.get(url)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
         # multiple
-        url = f"{reverse('api:siae-list')}?sectors={self.sector_1.slug}&sectors={self.sector_2.slug}"  # anonymous user
+        url = (
+            reverse("api:siae-list") + f"?sectors={self.sector_1.slug}&sectors={self.sector_2.slug}"
+        )  # anonymous user
         response = self.client.get(url)
         self.assertEqual(response.data["count"], 1 + 1)
         self.assertEqual(len(response.data["results"]), 1 + 1)
+
+
+class SiaeDetailApiTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae = SiaeFactory()
+        UserFactory(api_key="admin")
+
+    def test_should_return_simple_siae_object_to_anonmyous_users(self):
+        url = reverse("api:siae-detail", args=[self.siae.id])  # anonymous user
+        response = self.client.get(url)
+        self.assertTrue("raisonSociale" in response.data)
+        self.assertTrue("siret" in response.data)
+        self.assertTrue("slug" not in response.data)
+        self.assertTrue("type" not in response.data)
+        self.assertTrue("presta_type" not in response.data)
+
+    def test_should_return_detailed_siae_object_to_authenticated_users(self):
+        url = reverse("api:siae-detail", args=[self.siae.id]) + "?token=admin"
+        response = self.client.get(url)
+        self.assertTrue("raisonSociale" in response.data)
+        self.assertTrue("siret" in response.data)
+        self.assertTrue("slug" in response.data)
+        self.assertTrue("type" in response.data)
+        self.assertTrue("presta_type" in response.data)
 
 
 class SiaeRetrieveBySiretApiTest(TestCase):
@@ -96,7 +157,7 @@ class SiaeRetrieveBySiretApiTest(TestCase):
         self.assertEqual(response.data["siret"], "12312312312345")
         self.assertTrue("slug" not in response.data)
 
-    def test_authenticated_user_should_get_full_siae_object(self):
+    def test_should_return_detailed_siae_object_to_authenticated_user(self):
         url = reverse("api:siae-retrieve-by-siret", args=["12312312312345"]) + "?token=admin"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)

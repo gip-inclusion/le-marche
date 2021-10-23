@@ -27,32 +27,36 @@ class PerimeterListFilterApiTest(TestCase):
         self.assertEqual(len(response.data["results"]), 3)
 
     def test_should_filter_perimeter_list_by_kind(self):
-        url = f"{reverse('api:perimeters-list')}?kind={Perimeter.KIND_CITY}"  # anonymous user
+        # single
+        url = reverse("api:perimeters-list") + f"?kind={Perimeter.KIND_CITY}"  # anonymous user
         response = self.client.get(url)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
-        url = f"{reverse('api:perimeters-list')}?kind={Perimeter.KIND_CITY}&kind={Perimeter.KIND_DEPARTMENT}"  # anonymous user  # noqa
+        # multiple
+        url = (
+            reverse("api:perimeters-list") + f"?kind={Perimeter.KIND_CITY}&kind={Perimeter.KIND_DEPARTMENT}"
+        )  # anonymous user  # noqa
         response = self.client.get(url)
         self.assertEqual(response.data["count"], 1 + 1)
         self.assertEqual(len(response.data["results"]), 1 + 1)
 
     def test_should_filter_perimeter_list_by_name(self):
-        url = f"{reverse('api:perimeters-list')}?name=grenob"  # anonymous user
+        url = reverse("api:perimeters-list") + "?name=grenob"  # anonymous user
         response = self.client.get(url)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
 
     def test_should_filter_perimeter_list_by_result_count(self):
-        url = f"{reverse('api:perimeters-list')}?results=1"  # anonymous user
+        url = reverse("api:perimeters-list") + "?results=1"  # anonymous user
         response = self.client.get(url)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
 
-    def test_perimeter_list_should_not_paginate(self):
-        url = f"{reverse('api:perimeters-list')}?results=1"  # anonymous user
-        response = self.client.get(url)
-        self.assertEqual(response.data["previous"], None)
-        self.assertEqual(response.data["next"], None)
+    # def test_perimeter_list_should_not_paginate_if_results_passed(self):
+    #     url = reverse("api:perimeters-list") + "?results=1"  # anonymous user
+    #     response = self.client.get(url)
+    #     self.assertEqual(response.data["previous"], None)
+    #     self.assertEqual(response.data["next"], None)
 
 
 class PerimeterChoicesApiTest(TestCase):
