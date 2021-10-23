@@ -35,3 +35,21 @@ class SiaeRetrieveBySiretApiTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["siret"], "12312312312345")
         self.assertEqual(response.data["slug"], "une-structure-38")
+
+
+class SiaeChoicesApiTest(TestCase):
+    def test_should_return_siae_kinds(self):
+        url = reverse("api:siae-kinds-list")
+        response = self.client.get(url)
+        self.assertEqual(response.data["count"], 8)
+        self.assertEqual(len(response.data["results"]), 8)
+        self.assertTrue("id" in response.data["results"][0])
+        self.assertTrue("name" in response.data["results"][0])
+
+    def test_should_return_siae_presta_types(self):
+        url = reverse("api:siae-presta-types-list")
+        response = self.client.get(url)
+        self.assertEqual(response.data["count"], 3)
+        self.assertEqual(len(response.data["results"]), 3)
+        self.assertTrue("id" in response.data["results"][0])
+        self.assertTrue("name" in response.data["results"][0])
