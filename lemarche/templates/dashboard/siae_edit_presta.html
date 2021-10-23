@@ -82,22 +82,29 @@
                         <div class="fieldset">
                             {% bootstrap_field form.id %}
                             {% bootstrap_field form.name %}
-                            <div class="form-group">
-                                {{ form.logo_url.as_hidden }}
-                                {% with "id_client_references-"|addstr:forloop.counter0|addstr:"-logo_form" as id_logo_form %}
-                                    <label for="{{ id_logo_form }}" class="js-display-if-javascript-enabled">Logo</label>
-                                    {% include "storage/s3_upload_form.html" with dropzone_form_id=id_logo_form %}
-                                {% endwith %}
-                            </div>
-                            <div class="form-group">
-                                <label>Logo actuel</label>
-                                {% if form.logo_url.value %}
-                                    <div>
-                                        <img class="img-fluid" src="{{ form.logo_url.value }}" />
+                            <!-- Logo -->
+                            <div class="row">
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        {{ form.logo_url.as_hidden }}
+                                        {% with "id_client_references-"|addstr:forloop.counter0|addstr:"-logo_form" as id_logo_form %}
+                                            <label for="{{ id_logo_form }}" class="js-display-if-javascript-enabled">Logo</label>
+                                            {% include "storage/s3_upload_form.html" with dropzone_form_id=id_logo_form %}
+                                        {% endwith %}
                                     </div>
-                                {% else %}
-                                    <span class="form-text text-muted">Aucun</span>
-                                {% endif %}
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Logo actuel</label>
+                                        {% if form.logo_url.value %}
+                                            <div>
+                                                <img class="img-fluid" src="{{ form.logo_url.value }}" />
+                                            </div>
+                                        {% else %}
+                                            <span class="form-text text-muted">Aucun</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
                             {% bootstrap_field form.DELETE %}
                         </div>

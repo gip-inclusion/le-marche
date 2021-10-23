@@ -77,20 +77,20 @@
                         <div class="s-cards-grid-01__col col d-sm-flex">
                             <div class="card c-card c-card--mini mb-3 w-100">
                                 <div class="card-body">
-                                    <p class="h4 lh-base">{{ siaeuser.siae.name }}</p>
-                                    <p title="{% get_verbose_name siaeuser.siae 'brand' %}" class="mb-0">
+                                    <h4>{{ siaeuser.siae.name }}</h4>
+                                    <p title="{% get_verbose_name siaeuser.siae 'brand' %}" class="mb-2">
                                         <strong>{% get_verbose_name siaeuser.siae 'brand' %} :</strong>
                                         {{ siaeuser.siae.brand }}
                                     </p>
-                                    <p title="{% get_verbose_name siaeuser.siae 'siret' %}" class="mb-0">
+                                    <p title="{% get_verbose_name siaeuser.siae 'siret' %}" class="mb-2">
                                         <strong>{% get_verbose_name siaeuser.siae 'siret' %} :</strong>
                                         {{ siaeuser.siae.siret_display }}
                                     </p>
-                                    <p title="{% get_verbose_name siaeuser.siae 'kind' %}" class="mb-0">
+                                    <p title="{% get_verbose_name siaeuser.siae 'kind' %}" class="mb-2">
                                         <strong>{% get_verbose_name siaeuser.siae 'kind' %} :</strong>
-                                        {{ siaeuser.siae.get_kind_display }}
+                                        {{ siaeuser.siae.get_kind_display }} ({{ siaeuser.siae.kind }})
                                     </p>
-                                    <p title="{% get_verbose_name siaeuser.siae 'nature' %}" class="mb-0">
+                                    <p title="{% get_verbose_name siaeuser.siae 'nature' %}" class="mb-2">
                                         <strong>{% get_verbose_name siaeuser.siae 'nature' %} :</strong>
                                         {{ siaeuser.siae.get_nature_display }}
                                     </p>
