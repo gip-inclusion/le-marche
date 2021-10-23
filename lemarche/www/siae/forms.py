@@ -13,7 +13,7 @@ EMPTY_CHOICE = (("", ""),)
 
 SECTOR_FORM_QUERYSET = (
     Sector.objects.select_related("group")
-    .exclude(group=None)
+    .exclude(group=None)  # sector must have a group !
     .annotate(sector_is_autre=NullIf("name", Value("Autre")))
     .order_by("group__id", "sector_is_autre")
 )
