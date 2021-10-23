@@ -227,6 +227,11 @@
                                         Non renseigné
                                     {% endif %}
                                 </div>
+                                {% if siae.is_cocontracting %}
+                                    <div>
+                                        <span class="badge badge-pill badge-success-outline">Ouvert à la co-traitance</span>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
