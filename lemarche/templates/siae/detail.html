@@ -54,27 +54,39 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-12 col-md-6 mb-3">
-                                <span class="prof_icon mr-1"><img src="{% static 'img/prof_siret.svg' %}" /></span>
-                                <span>Siret : {{ siae.siret_display }}</span>
+                            <div class="col-12 col-md-6">
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <span class="prof_icon mr-1"><img src="{% static 'img/prof_siret.svg' %}" /></span>
+                                        <span>Siret : {{ siae.siret_display }}</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <span class="prof_icon mr-1"><img src="{% static 'img/prof_workers.svg' %}" /></span>
+                                        <span>Salariés<sup>*</sup> : {% if siae.ig_employees %}{{ siae.ig_employees }}{% else %}non disponible{% endif %}</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <span class="prof_icon mr-1"><img src="{% static 'img/prof_calendar.svg' %}" /></span>
+                                        <span>Date de création<sup>*</sup> : {% if siae.ig_date_constitution %}{{ siae.ig_date_constitution|date:"Y" }}{% else %}non disponible{% endif %}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-12 col-md-6 mb-3">
-                                <span class="prof_icon mr-1"><img src="{% static 'img/prof_types.svg' %}" /></span>
-                                <span>{% array_choices_display siae 'presta_type' %}</span>
-                            </div>
-                            <div class="clearfix visible-md-block"></div>
-                            <div class="col-12 col-md-6 mb-3">
-                                <span class="prof_icon mr-1"><img src="{% static 'img/prof_workers.svg' %}" /></span>
-                                <span>Salariés<sup>*</sup> : {% if siae.ig_employees %}{{ siae.ig_employees }}{% else %}non disponible{% endif %}</span>
-                            </div>
-                            <div class="col-12 col-md-6 mb-3">
-                                <span class="prof_icon mr-1"><img src="{% static 'img/prof_nature.svg' %}" /></span>
-                                <span>{{ siae.get_kind_display }}</span>
-                            </div>
-                            <div class="clearfix visible-md-block"></div>
-                            <div class="col-12 col-md-6 mb-3">
-                                <span class="prof_icon mr-1"><img src="{% static 'img/prof_calendar.svg' %}" /></span>
-                                <span>Date de création<sup>*</sup> : {% if siae.ig_date_constitution %}{{ siae.ig_date_constitution|date:"d/m/Y" }}{% else %}non disponible{% endif %}</span>
+                            <div class="col-12 col-md-6">
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <span class="prof_icon mr-1"><img src="{% static 'img/prof_types.svg' %}" /></span>
+                                        <span>{% array_choices_display siae 'presta_type' %}</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <span class="prof_icon mr-1"><img src="{% static 'img/prof_nature.svg' %}" /></span>
+                                        <span>{{ siae.get_kind_display }} ({{ siae.kind }})</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -155,7 +167,7 @@
                 </aside>
 
                 <!-- profile-detail suite -->
-                <article id="user_detail" class="profile-detail mt-lg-4">
+                <article id="user_detail" class="profile-detail">
                     <!-- Second Row : Secteurs, Références -->
                     <div class="row">
                         <div class="col-sm-6 img-left mb-3">
