@@ -1,0 +1,49 @@
+# https://github.com/betagouv/itou/blob/master/.github/workflows/review-app-removal.yml
+name: 🔪 Review app removal
+
+# Run this pipeline when a pull request having the label "review-app" is closed.
+on:
+  pull_request:
+    types: [ unlabeled, closed ]
+
+env:
+  CLEVER_TOOLS_DOWNLOAD_URL: https://clever-tools.clever-cloud.com/releases/latest/clever-tools-latest_linux.tar.gz
+  CLEVER_TAR_FILE: clever-tools-latest_linux.tar.gz
+  CLEVER_CLI: clever-tools-latest_linux/clever
+  CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+  CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+  REVIEW_APPS_ORGANIZATION_NAME: ${{ secrets.CLEVER_REVIEW_APPS_ORG }}
+  BRANCH: ${{ github.head_ref }}
+
+
+jobs:
+  delete:
+    runs-on: ubuntu-latest
+    if: github.event.label.name == 'recette-jetable' || contains( github.event.pull_request.labels.*.name, 'recette-jetable')
+
+    steps:
+    - name: 📥 Checkout to the PR branch
+      uses: actions/checkout@v2
+
+    - name: 🏷 Set review app name
+      run:
+        echo "REVIEW_APP_NAME=`echo \"c4-review-$BRANCH\" | sed -r 's/[-;\\/._]+/-/g'`" >> $GITHUB_ENV
+
+    - name: 🏷 Set database addon name
+      run:
+        echo "REVIEW_APP_DB_NAME=`echo $REVIEW_APP_NAME | sed -r 's/-/_/g'`" >> $GITHUB_ENV
+
+    - name: 🤝 Find the application on Clever Cloud
+      run: |
+        curl $CLEVER_TOOLS_DOWNLOAD_URL > $CLEVER_TAR_FILE
+        tar -xvf $CLEVER_TAR_FILE
+        $CLEVER_CLI login --token $CLEVER_TOKEN --secret $CLEVER_SECRET
+        $CLEVER_CLI link $REVIEW_APP_NAME --org $REVIEW_APPS_ORGANIZATION_NAME
+
+    - name: 🗑 Delete the review app
+      run: |
+        $CLEVER_CLI delete --yes
+
+    - name: 🗑 Delete the review app database
+      run: |
+        $CLEVER_CLI addon delete $REVIEW_APP_DB_NAME --org $REVIEW_APPS_ORGANIZATION_NAME --yes

@@ -1,0 +1,121 @@
+# https://github.com/betagouv/itou/blob/master/.github/workflows/review-app-creation.yml
+# See https://developer.github.com/v3/
+# and https://help.github.com/en/actions
+name: 🕵 Review app
+
+# Run this pipeline when a label is added and when a push is made on this PR.
+# `types: [ synchronize ]` targets a push event made on a PR.
+on:
+  pull_request:
+    types: [ labeled, synchronize ]
+
+env:
+  CLEVER_TOOLS_DOWNLOAD_URL: https://clever-tools.clever-cloud.com/releases/latest/clever-tools-latest_linux.tar.gz
+  CLEVER_TAR_FILE: clever-tools-latest_linux.tar.gz
+  CLEVER_CLI: clever-tools-latest_linux/clever
+  CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+  CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+  REVIEW_APPS_ORGANIZATION_NAME: ${{ secrets.CLEVER_REVIEW_APPS_ORG }}
+  CONFIGURATION_ADDON: ${{ secrets.CLEVER_REVIEW_APPS_CONFIGURATION_ADDON }}
+  # S3_ADDON: ${{ secrets.CLEVER_REVIEW_APPS_S3_ADDON }}
+  BRANCH: ${{ github.head_ref }}
+
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'labeled' && github.event.label.name == 'recette-jetable'
+
+    steps:
+    - name: 📥 Checkout to the PR branch
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: 📥 Fetch git branches
+      run: git fetch --prune --unshallow
+
+    # Environment variables
+    - name: 🏷 Set review app name
+      run:
+        echo "REVIEW_APP_NAME=`echo \"c4-review-$BRANCH\" | sed -r 's/[-;\\/._]+/-/g'`" >> $GITHUB_ENV
+
+    - name: 🏷 Set database addon name
+      run:
+        echo "REVIEW_APP_DB_NAME=`echo $REVIEW_APP_NAME | sed -r 's/-/_/g'`" >> $GITHUB_ENV
+
+    - name: 🏷 Set deploy url
+      run:
+        echo "DEPLOY_URL=`echo \"$REVIEW_APP_NAME.cleverapps.io\"`" >> $GITHUB_ENV
+    # End of environment variables
+
+    - name: 🧫 Create a review app on Clever Cloud
+      run: |
+        curl $CLEVER_TOOLS_DOWNLOAD_URL > $CLEVER_TAR_FILE
+        tar -xvf $CLEVER_TAR_FILE
+        $CLEVER_CLI login --token $CLEVER_TOKEN --secret $CLEVER_SECRET
+        # Create a new application on Clever Cloud.
+        # -t: application type (Python).
+        # --org: organization name.
+        # --region: server location ("par" means Paris).
+        # --alias: custom application name, used to find it with the CLI.
+        $CLEVER_CLI create $REVIEW_APP_NAME -t python --org $REVIEW_APPS_ORGANIZATION_NAME --region par --alias $REVIEW_APP_NAME
+        $CLEVER_CLI domain add $DEPLOY_URL --alias $REVIEW_APP_NAME
+        $CLEVER_CLI link $REVIEW_APP_NAME --org $REVIEW_APPS_ORGANIZATION_NAME
+
+    - name: 🗃 Create database addon
+      run: |
+        $CLEVER_CLI addon create postgresql-addon $REVIEW_APP_DB_NAME --org $REVIEW_APPS_ORGANIZATION_NAME --plan xxs_sml --yes
+        $CLEVER_CLI service link-addon $REVIEW_APP_DB_NAME
+
+    # - name: 🤝 Link S3 addon
+    #   run: |
+    #     $CLEVER_CLI link $REVIEW_APP_NAME --org $REVIEW_APPS_ORGANIZATION_NAME
+    #     $CLEVER_CLI service link-addon $S3_ADDON
+
+    - name: 🗺 Add environment variables to the review app
+      run: |
+        $CLEVER_CLI link $REVIEW_APP_NAME --org $REVIEW_APPS_ORGANIZATION_NAME
+        $CLEVER_CLI service link-addon $CONFIGURATION_ADDON
+        $CLEVER_CLI env import-vars REVIEW_APP_DB_NAME
+        $CLEVER_CLI env import-vars DEPLOY_URL
+
+    - name: 🚀 Deploy to Clever Cloud
+      run: $CLEVER_CLI deploy --branch $BRANCH --force
+
+    - name: 🍻 Add link to pull request
+      uses: thollander/actions-comment-pull-request@main
+      with:
+        message: "🥁 La recette jetable est prête ! [👉 Je veux tester cette PR !](https://${{ env.DEPLOY_URL }})"
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+ 
+  redeploy:
+    runs-on: ubuntu-latest
+    # A push event targets a new deployment.
+    if: github.event.action == 'synchronize' && contains( github.event.pull_request.labels.*.name, 'recette-jetable')
+
+    steps:
+    - name: 📥 Checkout to the PR branch
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: 📥 Fetch git branches
+      run: git fetch --prune --unshallow
+
+    - name: 🏷 Set review app name
+      run:
+        echo "REVIEW_APP_NAME=`echo \"c4-review-$BRANCH\" | sed -r 's/[-;\\/._]+/-/g'`" >> $GITHUB_ENV
+
+    - name: 🤝 Find the application on Clever Cloud
+      run: |
+        curl $CLEVER_TOOLS_DOWNLOAD_URL > $CLEVER_TAR_FILE
+        tar -xvf $CLEVER_TAR_FILE
+        $CLEVER_CLI login --token $CLEVER_TOKEN --secret $CLEVER_SECRET
+        $CLEVER_CLI link $REVIEW_APP_NAME --org $REVIEW_APPS_ORGANIZATION_NAME
+
+    # - name: ⏭ Skip fixtures
+    #   run:
+    #     $CLEVER_CLI env set SKIP_FIXTURES true
+
+    - name: 🚀 Deploy to Clever Cloud
+      run: $CLEVER_CLI deploy --branch $BRANCH --force
