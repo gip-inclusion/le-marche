@@ -130,6 +130,7 @@ class Siae(models.Model):
     KIND_GEIQ = "GEIQ"
     KIND_EA = "EA"
     KIND_EATT = "EATT"
+    # KIND_ESAT = "ESAT"
 
     KIND_CHOICES = (
         (KIND_EI, "Entreprise d'insertion"),  # Regroupées au sein de la fédération des entreprises d'insertion.
@@ -141,6 +142,7 @@ class Siae(models.Model):
         (KIND_GEIQ, "Groupement d'employeurs pour l'insertion et la qualification"),
         (KIND_EA, "Entreprise adaptée"),
         (KIND_EATT, "Entreprise adaptée de travail temporaire"),
+        # (KIND_ESAT, "Etablissement et service d'aide par le travail"),
     )
     # KIND_CHOICES_WITH_EXTRA = ((key, f"{value} ({key})") for (key, value) in KIND_CHOICES)
     KIND_CHOICES_WITH_EXTRA = (
@@ -160,6 +162,7 @@ class Siae(models.Model):
     SOURCE_EA_EATT = "EA_EATT"
     SOURCE_USER_CREATED = "USER_CREATED"
     SOURCE_STAFF_CREATED = "STAFF_CREATED"
+    # SOURCE_ESAT = "ESAT"
 
     SOURCE_CHOICES = (
         (SOURCE_ASP, "Export ASP"),
@@ -167,6 +170,7 @@ class Siae(models.Model):
         (SOURCE_EA_EATT, "Export EA+EATT"),
         (SOURCE_USER_CREATED, "Utilisateur (Antenne)"),
         (SOURCE_STAFF_CREATED, "Staff Itou"),
+        # (SOURCE_ESAT, "Import ESAT"),
     )
 
     NATURE_HEAD_OFFICE = "HEAD_OFFICE"
@@ -288,11 +292,11 @@ class Siae(models.Model):
     ig_date_constitution = models.DateTimeField(blank=True, null=True)
 
     c1_id = models.IntegerField(blank=True, null=True)
-    c1_source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True, null=True)
     c4_id_old = models.IntegerField(blank=True, null=True)
-
     last_sync_date = models.DateTimeField(blank=True, null=True)
     sync_skip = models.BooleanField(blank=False, null=False, default=False)
+
+    c1_source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True, null=True)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)

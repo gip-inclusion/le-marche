@@ -3,45 +3,58 @@ from xml.etree import ElementTree
 
 from django.core.management.base import BaseCommand
 
+from lemarche.siaes.models import Siae
 
-FILE_PATH = os.path.dirname(os.path.realpath(__file__)) + "/" + "esat_handeco.xml"
+
+FILE_NAME = "esat_handeco.xml"
+FILE_PATH = os.path.dirname(os.path.realpath(__file__)) + "/" + FILE_NAME
+FIELD_NAME_LIST = [
+    "title",
+    "siret",
+    "zip",
+    "city",
+    "region",
+    "phone",
+    "mail",
+    "effectif",
+    # "type",
+    # "secteurs",
+]
+
+
+def read_xml():
+    esat_list = []
+
+    data_file = os.path.abspath(FILE_PATH)
+    xml_tree = ElementTree.parse(data_file)
+    xml_root = xml_tree.getroot()
+
+    for xml_elt in xml_root.findall("structure"):
+        esat = {}
+        for field in FIELD_NAME_LIST:
+            try:
+                esat[field] = xml_elt.find(field).text
+            except:  # noqa
+                esat[field] = ""
+        esat["secteurs"] = []
+        esat_sectors = xml_elt.find("secteurs")
+        for esat_sector in esat_sectors.findall("secteur"):
+            esat["secteurs"].append(
+                {"secteurnom": esat_sector.find("secteurnom").text, "activite": esat_sector.find("activite").text}
+            )
+        esat_list.append(esat)
+
+    return esat_list
 
 
 class Command(BaseCommand):
     """ """
 
     def handle(self, *args, **options):
-        self.read_xml()
+        esat_list = read_xml()
+        for esat in esat_list:
+            self.process_esat(esat)
 
-    def read_xml(self):
-        sector_list = list()
-        # data_file = os.path.abspath(FILE_NAME)
-        data_file = os.path.abspath(FILE_PATH)
-        xml_tree = ElementTree.parse(data_file)
-        xml_root = xml_tree.getroot()
-        for xml_elt in xml_root.findall("structure"):
-            print("==========")
-            print(xml_elt)
-            esat_sectors = xml_elt.find("secteurs")
-            for esat_sector in esat_sectors.findall("secteur"):
-                sector_nom = esat_sector.find("secteurnom").text
-                sector_activite = esat_sector.find("activite").text
-                print(sector_nom, sector_activite)
-                print(len(sector_list))
-                sector_index = next(
-                    (
-                        index
-                        for (index, s) in enumerate(sector_list)
-                        if ((s["nom"] == sector_nom) and (s["activite"] == sector_activite))
-                    ),
-                    None,
-                )
-                if sector_index is None:
-                    sector_list.append({"nom": sector_nom, "activite": sector_activite, "count": 1})
-                else:
-                    sector_list[sector_index]["count"] += 1
-
-        for sector in sector_list:
-            print(f"{sector['nom']};{sector['activite']};{sector['count']}")
-
-    # def process_esat(esat):
+    def process_esat(self, esat):
+        esat["kind"] = Siae.KIND_ESAT
+        esat["source"] = Siae.SOURCE_ESAT
