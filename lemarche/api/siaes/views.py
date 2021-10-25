@@ -4,13 +4,7 @@ from rest_framework import mixins, viewsets
 from rest_framework.response import Response
 
 from lemarche.api.siaes.filters import SiaeFilter
-from lemarche.api.siaes.serializers import (
-    SiaeAnonSerializer,
-    SiaeChoiceSerializer,
-    SiaeListAnonSerializer,
-    SiaeListSerializer,
-    SiaeSerializer,
-)
+from lemarche.api.siaes.serializers import SiaeAnonSerializer, SiaeChoiceSerializer, SiaeListSerializer, SiaeSerializer
 from lemarche.api.utils import ensure_user_permission
 from lemarche.siaes.models import Siae
 
@@ -35,7 +29,9 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     )
     def list(self, request, format=None):
         """
-        Liste exhaustive des structures d'insertion par l'activité économique (SIAE).
+        Liste exhaustive des structures d'insertion par l'activité économique (SIAE)
+
+        Un <strong>token</strong> est nécessaire pour l'accès complet à cette ressource.
         """
         if request.method == "GET":
 
@@ -44,8 +40,8 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
 
             token = request.GET.get("token", None)
             if not token:
-                serializer = SiaeListAnonSerializer(
-                    queryset[:10],
+                serializer = SiaeListSerializer(
+                    Siae.objects.all()[:10],
                     many=True,
                 )
             else:
@@ -67,6 +63,8 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     def retrieve(self, request, pk=None, format=None):
         """
         Détail d'une structure (par son id)
+
+        Un <strong>token</strong> est nécessaire pour l'accès complet à cette ressource.
         """
         queryset = get_object_or_404(self.get_queryset(), pk=pk)
         return self._retrieve_return(request, queryset, format)
@@ -81,6 +79,8 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     def retrieve_by_siret(self, request, siret=None, format=None):
         """
         Détail d'une structure (par son siret)
+
+        Un <strong>token</strong> est nécessaire pour l'accès complet à cette ressource.
         """
         queryset = get_object_or_404(self.get_queryset(), siret=siret)
         return self._retrieve_return(request, queryset, format)

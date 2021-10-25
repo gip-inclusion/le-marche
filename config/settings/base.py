@@ -314,9 +314,23 @@ REST_FRAMEWORK = {
 # ------------------------------------------------------------------------------
 SPECTACULAR_SETTINGS = {
     "TITLE": "Le marché de l'inclusion",
-    "DESCRIPTION": "Une initiative de la Plateforme de l'inclusion",
+    "DESCRIPTION": """
+[en construction]
+
+Une initiative de la Plateforme de l'inclusion
+
+Certaines ressources nécessitent un <strong>token</strong> pour accéder complètement à la donnée.
+Vous pouvez en faire la demande via notre formulaire de contact.
+    """,
     "VERSION": "0.1.0",
-    "CONTACT": "lemarche@inclusion.beta.gouv.fr",
+    "CONTACT": {
+        "name": "Une question ? Contactez-nous en cliquand ici",
+        "url": "https://lemarche.inclusion.beta.gouv.fr/contact/",
+    },
+    "ENUM_NAME_OVERRIDES": {
+        "kind": "lemarche.siaes.models.Siae.KIND_CHOICES",
+        "department": "lemarche.siaes.models.Siae.DEPARTMENT_CHOICES",
+    },
 }
 
 
