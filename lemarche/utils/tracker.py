@@ -29,15 +29,19 @@ DEFAULT_PAYLOAD = {
 }
 
 # TODO: add event trackers for
-# - directory_csv (csv download event)
-# - directory_list (directory page access event)
-# - directory_search (directory search event)
+# - directory_list (directory page access event) / duplicate with directory_search
 # Not used that much :
-# - adopt (adoption event)
-# - adopt_search (an adoption search event)
+# - adopt (adoption event) / already have adopt_search...
 
 
-def track(page: str, action: str, meta: dict = {}, session_id: str = None, client_context: dict = {}):  # noqa B006
+def track(
+    page: str,
+    action: str,
+    meta: dict = {},
+    session_id: str = None,
+    client_context: dict = {},
+    server_context: dict = {},
+):  # noqa B006
     # TODO: Make Async / non-blocking.
     # But unless the whole application becomes async,
     # the only way would be to use threads, which is another problem in itself.
@@ -45,7 +49,7 @@ def track(page: str, action: str, meta: dict = {}, session_id: str = None, clien
     # to the tracking database directly, which would be magnitudes faster.
 
     # Don't log in dev
-    if settings.BITOUBI_ENV != "dev":
+    if settings.BITOUBI_ENV != "devtest":
 
         set_meta = {"source": "bitoubi_api"}
 
@@ -62,6 +66,7 @@ def track(page: str, action: str, meta: dict = {}, session_id: str = None, clien
             "action": action,
             "meta": json.dumps(meta | set_meta),
             "client_context": client_context,
+            "server_context": server_context,
         }
 
         payload = DEFAULT_PAYLOAD | set_payload
@@ -80,6 +85,13 @@ TRACKER_IGNORE_LIST = [
     "api/perimeters",
 ]
 
+USER_KIND_MAPPING = {
+    "SIAE": "4",
+    "BUYER": "3",
+    "PARTNER": "6",
+    "ADMIN": "5",
+}
+
 
 class TrackerMiddleware:
     def __init__(self, get_response):
@@ -87,7 +99,6 @@ class TrackerMiddleware:
 
     def __call__(self, request):
         page = request.path
-        token = request.GET.get("token", "0")
         request_ua = request.META.get("HTTP_USER_AGENT", "")
 
         # Final checks before calling the track() function
@@ -96,7 +107,28 @@ class TrackerMiddleware:
         if all([s not in page for s in TRACKER_IGNORE_LIST]):
             is_crawler = crawler_detect.isCrawler(request_ua)
             if not is_crawler:
-                track(page, "load", meta={"token": token})
+                # build meta & co
+                meta = {
+                    "is_admin": request.COOKIES.get("isAdmin", "false"),
+                    "user_type": USER_KIND_MAPPING.get(request.user.kind) if request.user.id else None,
+                    "user_id": request.user.id if request.user.id else None,
+                    "token": request.GET.get("token", "0"),
+                    "user_cookie_type": request.COOKIES.get("leMarcheTypeUsagerV2", None),
+                    "cmp": request.GET.get("cmp", None),
+                }
+                session_id = request.COOKIES.get("session_id", None)
+                client_context = {"referer": request.META.get("HTTP_REFERER", ""), "user_agent": request_ua}
+                server_context = {
+                    "client_ip": request.META.get("HTTP_X_FORWARDED_FOR", ""),
+                }
+                track(
+                    page,
+                    "load",
+                    meta=meta,
+                    session_id=session_id,
+                    client_context=client_context,
+                    server_context=server_context,
+                )
 
         response = self.get_response(request)
         return response

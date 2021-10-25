@@ -162,6 +162,11 @@
         'ADMIN': '5',
     };
 
+    const USER_TYPE_MODAL_COOKIE_NAME = 'leMarcheTypeUsagerV2';
+    const IS_ADMIN_COOKIE_NAME = 'isAdmin';
+    const USER_TYPE_COOKIE_NAME = 'uType';
+
+    // set global variables
     var sessId = getCookieValueByName('sessionid');
     {% if user.is_authenticated %}
         var isAdmin = {% if user.kind == 'ADMIN' %}true{% else %}false{% endif %};
@@ -173,6 +178,10 @@
         var isAdmin = false;
         var uType = null;
     {% endif %}
+
+    // update cookie
+    document.cookie = `${IS_ADMIN_COOKIE_NAME}=${window.isAdmin}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
+    document.cookie = `${USER_TYPE_COOKIE_NAME}=${window.uType}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
 
     //export function track(page, action, meta={}) {
     async function track(page, action, meta={}) {
@@ -205,11 +214,9 @@
         const timeNow = new Date();
         // Optionnaly add meta data (in key/value pairs) from url query string
         const meta = Object.assign(metaIn, getUrlMeta());
-        meta['is_admin'] = window.isAdmin;
-        meta['user_type'] = window.uType;
-
-        const COOKIE_NAME = 'leMarcheTypeUsagerV2';
-        meta['user_cookie_type'] = getCookieValueByName(COOKIE_NAME);
+        meta['is_admin'] = getCookieValueByName(IS_ADMIN_COOKIE_NAME);
+        meta['user_type'] = getCookieValueByName(USER_TYPE_COOKIE_NAME);
+        meta['user_cookie_type'] = getCookieValueByName(USER_TYPE_MODAL_COOKIE_NAME);
 
         return {
             _v:VERSION,

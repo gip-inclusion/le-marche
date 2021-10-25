@@ -232,13 +232,13 @@
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function() {
         // show type user modal
-        const COOKIE_NAME = 'leMarcheTypeUsagerV2';
+        const USER_TYPE_MODAL_COOKIE_NAME = 'leMarcheTypeUsagerV2';
         $(document).on('shown.bs.modal', '.modal', function () {
             $('.modal-backdrop').before($(this));
         });
 
         // if (true) {
-        if (!document.cookie.split('; ').find(row => row.startsWith(COOKIE_NAME))) {
+        if (!document.cookie.split('; ').find(row => row.startsWith(USER_TYPE_MODAL_COOKIE_NAME))) {
             var modal = $("#user_modal");
             modal.find('.close').remove();
             modal.modal('show');
@@ -246,7 +246,7 @@
             modal.find('a').on('click', (e) => {
                 // Only set cookie if button clicked
                 let type = $(e.target).data('usr');
-                document.cookie = `${COOKIE_NAME}=${type}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
+                document.cookie = `${USER_TYPE_MODAL_COOKIE_NAME}=${type}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
 
                 if (typeof track === "function") {
                     track('', Steps.USER_TYPE, {'type': type});
