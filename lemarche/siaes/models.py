@@ -141,6 +141,18 @@ class Siae(models.Model):
         (KIND_EA, "Entreprise adaptée"),
         (KIND_EATT, "Entreprise adaptée de travail temporaire"),
     )
+    # KIND_CHOICES_WITH_EXTRA = ((key, f"{value} ({key})") for (key, value) in KIND_CHOICES)
+    KIND_CHOICES_WITH_EXTRA = (
+        (KIND_EI, "Entreprise d'insertion (EI)"),  # Regroupées au sein de la fédération des entreprises d'insertion.
+        (KIND_AI, "Association intermédiaire (AI)"),
+        (KIND_ACI, "Atelier chantier d'insertion (ACI)"),
+        # (KIND_ACIPHC, "Atelier chantier d'insertion premières heures en chantier (ACIPHC)"),
+        (KIND_ETTI, "Entreprise de travail temporaire d'insertion (ETTI)"),
+        (KIND_EITI, "Entreprise d'insertion par le travail indépendant (EITI)"),
+        (KIND_GEIQ, "Groupement d'employeurs pour l'insertion et la qualification (GEIQ)"),
+        (KIND_EA, "Entreprise adaptée (EA)"),
+        (KIND_EATT, "Entreprise adaptée de travail temporaire (EATT)"),
+    )
 
     SOURCE_ASP = "ASP"
     SOURCE_GEIQ = "GEIQ"
@@ -190,7 +202,9 @@ class Siae(models.Model):
     name = models.CharField(verbose_name="Raison sociale", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
     brand = models.CharField(verbose_name="Enseigne", max_length=255, blank=True, null=True)
-    kind = models.CharField(verbose_name="Type de structure", max_length=6, choices=KIND_CHOICES, default=KIND_EI)
+    kind = models.CharField(
+        verbose_name="Type de structure", max_length=6, choices=KIND_CHOICES_WITH_EXTRA, default=KIND_EI
+    )
     description = models.TextField(verbose_name="Description", blank=True)
     siret = models.CharField(verbose_name="Siret", validators=[validate_siret], max_length=14, db_index=True)
     siret_is_valid = models.BooleanField(verbose_name="Siret Valide", default=False)
