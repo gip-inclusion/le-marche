@@ -11,11 +11,19 @@
                 <h2 class="mb-3 mb-lg-5"><strong>Connexion</strong></h2>
 
                 <form method="POST" action="">
+                    {% if form.errors %}
+                    <div class="alert alert-success" role="alert">
+                        Le Marché de l'inclusion fait peau neuve !
+                        Pour accompagner les évolutions futures de la plateforme,
+                        nous vous invitons à <a href="{% url 'auth:password_reset' %}"><strong>redéfinir un nouveau mot de passe</strong> en cliquant ici</a>.
+                    </div>
+                    {% endif %}
                 
                     <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                         {% csrf_token %}
 
-                        {% bootstrap_form_errors form type="all" %}
+                        {# TODO: post-migration #}
+                        {# {% bootstrap_form_errors form type="all" %} #}
 
                         <fieldset>
                             {% bootstrap_field form.username %}
@@ -35,8 +43,9 @@
                             </button>
                         </div>
                     </div>
-                
                 </form>
+
+                <br />
 
                 <div class="row mt-3 mt-lg-5">
                     <div class="col-12 text-center text-lg-left">
