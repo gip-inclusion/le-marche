@@ -15,7 +15,6 @@ env:
   REVIEW_APPS_ORGANIZATION_NAME: ${{ secrets.CLEVER_REVIEW_APPS_ORG }}
   BRANCH: ${{ github.head_ref }}
 
-
 jobs:
   delete:
     runs-on: ubuntu-latest
