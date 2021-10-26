@@ -1,4 +1,4 @@
-{% if BITOUBI_ENV in "dev,staging,prod" %}
+{% if BITOUBI_ENV in "staging,prod" %}
 <!-- Tarteaucitron -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/tarteaucitronjs@1.9.3/tarteaucitron.min.js"></script> 
 <script type="text/javascript">
@@ -167,7 +167,7 @@
     const USER_TYPE_COOKIE_NAME = 'uType';
 
     // set global variables
-    var sessId = getCookieValueByName('sessionid');
+    var sessionId = getCookieValueByName('sessionid');
     {% if user.is_authenticated %}
         var isAdmin = {% if user.kind == 'ADMIN' %}true{% else %}false{% endif %};
         var uType = {% if user.is_authenticated %}"{{ user.kind }}"{% endif %};
@@ -219,7 +219,7 @@
         meta['user_cookie_type'] = getCookieValueByName(USER_TYPE_MODAL_COOKIE_NAME);
 
         return {
-            _v:VERSION,
+            _v: VERSION,
             timestamp: timeNow.toISOString(),
             order: ORDER += 1,
             env: '{{ BITOUBI_ENV }}',
@@ -250,8 +250,8 @@
                 SESSION_ID = (new URL(document.location)).searchParams.get('sid') || false;
             }
 
-            if (!SESSION_ID && window.sessId !== undefined) {
-                SESSION_ID = window.sessId;
+            if (!SESSION_ID && window.sessionId !== undefined) {
+                SESSION_ID = window.sessionId;
             } else {
                 SESSION_ID = uuidv4();
             }

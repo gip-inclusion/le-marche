@@ -246,6 +246,8 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 # https://docs.djangoproject.com/en/dev/ref/middleware/#http-strict-transport-security
 SECURE_HSTS_SECONDS = 30
 
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+
 SESSION_COOKIE_HTTPONLY = True
 
 SESSION_COOKIE_SECURE = True

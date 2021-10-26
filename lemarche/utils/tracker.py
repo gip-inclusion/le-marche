@@ -1,5 +1,6 @@
 import json
 import logging
+import uuid
 from datetime import datetime
 
 import httpx
@@ -49,17 +50,21 @@ def track(
     # to the tracking database directly, which would be magnitudes faster.
 
     # Don't log in dev
-    if settings.BITOUBI_ENV != "devtest":
+    if settings.BITOUBI_ENV != "dev":
 
         set_meta = {"source": "bitoubi_api"}
 
-        if not session_id:
+        if session_id:
+            # transform the django sessionid to a uuid
+            session_id = str(uuid.uuid3(uuid.NAMESPACE_OID, session_id))
+        else:
             # TODO: generate and use uuid4-style session_ids, unique to a user's session
             # https://data-flair.training/blogs/django-sessions/
             token = meta.get("token") or "0"
             session_id = f"{token.ljust(8,'0')}-1111-2222-AAAA-444444444444"
 
         set_payload = {
+            "_v": 1,
             "timestamp": datetime.now().isoformat(),
             "page": page,
             "session_id": session_id,
@@ -116,7 +121,7 @@ class TrackerMiddleware:
                     "user_cookie_type": request.COOKIES.get("leMarcheTypeUsagerV2", None),
                     "cmp": request.GET.get("cmp", None),
                 }
-                session_id = request.COOKIES.get("session_id", None)
+                session_id = request.COOKIES.get("sessionid", None)
                 client_context = {"referer": request.META.get("HTTP_REFERER", ""), "user_agent": request_ua}
                 server_context = {
                     "client_ip": request.META.get("HTTP_X_FORWARDED_FOR", ""),
