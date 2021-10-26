@@ -322,7 +322,7 @@ Une initiative de la Plateforme de l'inclusion
 Certaines ressources nécessitent un <strong>token</strong> pour accéder complètement à la donnée.
 Vous pouvez en faire la demande via notre formulaire de contact.
     """,
-    "VERSION": "0.1.0",
+    "VERSION": "0.11",
     "CONTACT": {
         "name": "Une question ? Contactez-nous en cliquand ici",
         "url": "https://lemarche.inclusion.beta.gouv.fr/contact/",
