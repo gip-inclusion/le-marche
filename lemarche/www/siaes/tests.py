@@ -8,7 +8,7 @@ from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes.factories import SiaeFactory, SiaeOfferFactory
 from lemarche.siaes.models import Siae
 from lemarche.users.factories import UserFactory
-from lemarche.www.siae.forms import SiaeSearchForm
+from lemarche.www.siaes.forms import SiaeSearchForm
 
 
 class SiaeSearchFilterTest(TestCase):

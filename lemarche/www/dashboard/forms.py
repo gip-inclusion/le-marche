@@ -5,7 +5,7 @@ from lemarche.networks.models import Network
 from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer
 from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
-from lemarche.www.siae.forms import SECTOR_FORM_QUERYSET
+from lemarche.www.siaes.forms import SECTOR_FORM_QUERYSET
 
 
 class ProfileEditForm(forms.ModelForm):
