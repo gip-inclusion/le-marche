@@ -1,3 +1,14 @@
+# TODO: add event trackers for
+# - directory_list (directory page access event) / duplicate with directory_search
+# Not used that much :
+# - adopt (adoption event) / already have adopt_search...
+
+# TODO: Make Async / non-blocking.
+# But unless the whole application becomes async,
+# the only way would be to use threads, which is another problem in itself.
+# However, nothing keeps the Django app from writing
+# to the tracking database directly, which would be magnitudes faster.
+
 import json
 import logging
 import uuid
@@ -16,75 +27,6 @@ crawler_detect = CrawlerDetect()
 
 VERSION = 1
 
-DEFAULT_PAYLOAD = {
-    "_v": VERSION,
-    "timestamp": None,
-    "order": 0,
-    "session_id": None,
-    "env": settings.BITOUBI_ENV,
-    "page": None,
-    "action": None,
-    "meta": {},
-    "client_context": {},
-    "server_context": {},
-}
-
-# TODO: add event trackers for
-# - directory_list (directory page access event) / duplicate with directory_search
-# Not used that much :
-# - adopt (adoption event) / already have adopt_search...
-
-
-def track(
-    page: str,
-    action: str,
-    meta: dict = {},
-    session_id: str = None,
-    client_context: dict = {},
-    server_context: dict = {},
-):  # noqa B006
-    # TODO: Make Async / non-blocking.
-    # But unless the whole application becomes async,
-    # the only way would be to use threads, which is another problem in itself.
-    # However, nothing keeps the Django app from writing
-    # to the tracking database directly, which would be magnitudes faster.
-
-    # Don't log in dev
-    if settings.BITOUBI_ENV != "dev":
-
-        set_meta = {"source": "bitoubi_api"}
-
-        if session_id:
-            # transform the django sessionid to a uuid
-            session_id = str(uuid.uuid3(uuid.NAMESPACE_OID, session_id))
-        else:
-            # TODO: generate and use uuid4-style session_ids, unique to a user's session
-            # https://data-flair.training/blogs/django-sessions/
-            token = meta.get("token") or "0"
-            session_id = f"{token.ljust(8,'0')}-1111-2222-AAAA-444444444444"
-
-        set_payload = {
-            "_v": 1,
-            "timestamp": datetime.now().isoformat(),
-            "page": page,
-            "session_id": session_id,
-            "action": action,
-            "meta": json.dumps(meta | set_meta),
-            "client_context": client_context,
-            "server_context": server_context,
-        }
-
-        payload = DEFAULT_PAYLOAD | set_payload
-
-        try:
-            r = httpx.post(f"{settings.TRACKER_HOST}/track", json=payload)
-            r.raise_for_status()
-            logger.info("Tracker sent")
-        except httpx.HTTPError as e:
-            logger.exception(e)
-            logger.warning("Failed to submit tracker")
-
-
 TRACKER_IGNORE_LIST = [
     "static/",
     "api/perimeters",
@@ -96,6 +38,72 @@ USER_KIND_MAPPING = {
     "PARTNER": "6",
     "ADMIN": "5",
 }
+
+DEFAULT_PAYLOAD = {
+    "_v": VERSION,
+    "timestamp": datetime.now().astimezone().isoformat(),
+    "order": 0,
+    "session_id": None,
+    "env": settings.BITOUBI_ENV,
+    "page": "",
+    "action": "load",
+    "meta": {"source": "bitoubi_api"},  # needs to be stringifyed...
+    "client_context": {},
+    "server_context": {},
+}
+
+
+def extract_meta_from_request(request):
+    return {
+        **request.GET,
+        "is_admin": request.COOKIES.get("isAdmin", "false") == "true",
+        "user_type": USER_KIND_MAPPING.get(request.user.kind) if request.user.id else "",
+        "user_id": request.user.id if request.user.id else None,
+        "token": request.GET.get("token", "0"),
+        "user_cookie_type": request.COOKIES.get("leMarcheTypeUsagerV2", ""),
+        "cmp": request.GET.get("cmp", ""),
+    }
+
+
+def track(
+    page: str,
+    action: str,
+    meta: dict = {},
+    session_id: str = None,
+    client_context: dict = {},
+):  # noqa B006
+
+    # Don't log in dev
+    if settings.BITOUBI_ENV != "dev":
+
+        # extract_sessionid_from_request
+        if session_id:
+            # transform the django sessionid to a uuid
+            session_id = str(uuid.uuid3(uuid.NAMESPACE_OID, session_id))
+        else:
+            # TODO: generate and use uuid4-style session_ids, unique to a user's session
+            # https://data-flair.training/blogs/django-sessions/
+            token = meta.get("token") or "0"
+            session_id = f"{token.ljust(8,'0')}-1111-2222-AAAA-444444444444"
+
+        set_payload = {
+            "timestamp": datetime.now().isoformat(),
+            "page": page,
+            "session_id": session_id,
+            "action": action,
+            "meta": json.dumps(meta | DEFAULT_PAYLOAD["meta"]),
+            "client_context": client_context,
+        }
+
+        payload = DEFAULT_PAYLOAD | set_payload
+
+        try:
+            r = httpx.post(f"{settings.TRACKER_HOST}/track", json=payload)
+            r.raise_for_status()
+            logger.info("Tracker sent")
+        except httpx.HTTPError as e:
+            logger.exception(e)
+            logger.warning("Failed to submit tracker")
 
 
 class TrackerMiddleware:
@@ -113,26 +121,15 @@ class TrackerMiddleware:
             is_crawler = crawler_detect.isCrawler(request_ua)
             if not is_crawler:
                 # build meta & co
-                meta = {
-                    "is_admin": request.COOKIES.get("isAdmin", "false"),
-                    "user_type": USER_KIND_MAPPING.get(request.user.kind) if request.user.id else None,
-                    "user_id": request.user.id if request.user.id else None,
-                    "token": request.GET.get("token", "0"),
-                    "user_cookie_type": request.COOKIES.get("leMarcheTypeUsagerV2", None),
-                    "cmp": request.GET.get("cmp", None),
-                }
+                meta = extract_meta_from_request(request)
                 session_id = request.COOKIES.get("sessionid", None)
                 client_context = {"referer": request.META.get("HTTP_REFERER", ""), "user_agent": request_ua}
-                server_context = {
-                    "client_ip": request.META.get("HTTP_X_FORWARDED_FOR", ""),
-                }
                 track(
-                    page,
-                    "load",
+                    page=page,
+                    action="load",
                     meta=meta,
                     session_id=session_id,
                     client_context=client_context,
-                    server_context=server_context,
                 )
 
         response = self.get_response(request)

@@ -8,7 +8,7 @@ from django.views.generic.edit import FormMixin
 
 from lemarche.siaes.models import Siae
 from lemarche.utils.s3 import S3Upload
-from lemarche.utils.tracker import track
+from lemarche.utils.tracker import extract_meta_from_request, track
 from lemarche.www.dashboard.forms import (
     ProfileEditForm,
     SiaeClientReferenceFormSet,
@@ -64,7 +64,12 @@ class SiaeSearchBySiretView(LoginRequiredMixin, SiaeUserRequiredMixin, FormMixin
 
     def get(self, request, *args, **kwargs):
         # Track adopt search event
-        track("backend", "adopt_search", meta=self.request.GET)
+        track(
+            "backend",
+            "adopt_search",
+            meta=extract_meta_from_request(self.request),
+            session_id=request.COOKIES.get("sessionid", None),
+        )
         return super().get(request, *args, **kwargs)
 
 
