@@ -12,6 +12,7 @@ from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
 
 from lemarche.siaes.models import Siae
+from lemarche.utils.tracker import track
 from lemarche.www.siaes.forms import SiaeSearchForm
 
 
@@ -56,6 +57,11 @@ class SiaeSearchResultsView(FormMixin, ListView):
         )
         return context
 
+    def get(self, request, *args, **kwargs):
+        # Track search event
+        track("backend", "directory_search", meta=self.request.GET)
+        return super().get(request, *args, **kwargs)
+
 
 class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
     http_method_names = ["get"]
@@ -67,6 +73,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         return results
 
     def get(self, request, *args, **kwargs):
+        """Build & return CSV."""
         siae_list = self.get_queryset()
 
         filename = f"liste_structures_{datetime.date.today()}.csv"
@@ -107,6 +114,9 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
                 else:
                     siae_row.append(getattr(siae, field_name, ""))
             writer.writerow(siae_row)
+
+        # Track download event
+        track("backend", "directory_csv", meta=self.request.GET)
 
         return response
 

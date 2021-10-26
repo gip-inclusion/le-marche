@@ -111,7 +111,6 @@ LOCAL_APPS = [
     "lemarche.sectors",
     "lemarche.networks",
     "lemarche.perimeters",
-    "lemarche.tracker",
     # Flatpages
     "lemarche.pages",
     # Api
@@ -130,8 +129,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Third-party Middlewares
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    # BITOUBI Middlewares
-    "lemarche.tracker.middlewares.TokenVisitMiddleware",
+    # Custom Middlewares
+    "lemarche.utils.tracker.TrackerMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -246,6 +245,8 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 # TODO: use a small value for testing, once confirmed that HSTS didn't break anything increase it.
 # https://docs.djangoproject.com/en/dev/ref/middleware/#http-strict-transport-security
 SECURE_HSTS_SECONDS = 30
+
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
 SESSION_COOKIE_HTTPONLY = True
 

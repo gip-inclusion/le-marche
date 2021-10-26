@@ -56,11 +56,6 @@
 
     {% block extra_css %}{% endblock %}
 
-    {% comment "migrate first" %}
-    {% include '@CocoricoCore/Frontend/Common/js/_itou_tracker_js.html.twig' only %}
-    {% include '@CocoricoCore/Frontend/Common/_cookie_consent_js.html.twig' only %}
-    {% endcomment %}
-
     {% block extra_head %}{% endblock %}
 </head>
 
@@ -134,6 +129,9 @@
     {% endcompress %}
     <script type="text/javascript" src="{% static 'js/utils.js'%}"></script>
     {% include "layouts/_trackers.html" %}
+    {% comment "migrate first" %}
+    {% include '@CocoricoCore/Frontend/Common/_cookie_consent_js.html.twig' only %}
+    {% endcomment %}
     <!-- Mailjet newsletter -->
     <data id="mj-w-res-data" data-token="429592182df918abbac72c697a97a0fd" class="mj-w-data" data-apikey="4guK" data-w-id="KAV" data-lang="fr_FR" data-base="https://app.mailjet.com" data-width="640" data-height="450" data-statics="statics"></data>
     <script type="text/javascript" type="text/javascript" src="https://app.mailjet.com/statics/js/widget.modal.js"></script>
