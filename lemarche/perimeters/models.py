@@ -8,7 +8,7 @@ from django.db import IntegrityError, models, transaction
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 
-from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS
+from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_WITH_IDENTICAL_DEPARTMENT_NAME
 
 
 class Perimeter(models.Model):
@@ -63,12 +63,14 @@ class Perimeter(models.Model):
     def __str__(self):
         return self.name_display
 
-    def set_slug(self, region_duplicate=False):
+    def set_slug(self, duplicate=False):
         if not self.id:
             if self.kind == self.KIND_CITY:
                 self.slug = slugify(f"{self.name}-{self.department_code}")
-            elif (self.kind == self.KIND_REGION) and region_duplicate:
-                self.slug = slugify(f"{self.name}-region")
+            elif self.kind == self.KIND_REGION:
+                self.slug = slugify(self.name)
+                if (self.name in REGIONS_WITH_IDENTICAL_DEPARTMENT_NAME) or duplicate:
+                    self.slug += "-region"
             else:
                 self.slug = slugify(self.name)
 
@@ -79,7 +81,7 @@ class Perimeter(models.Model):
             with transaction.atomic():
                 super().save(*args, **kwargs)
         except IntegrityError:
-            self.set_slug(region_duplicate=True)
+            self.set_slug(duplicate=True)
             super().save(*args, **kwargs)
 
     @property

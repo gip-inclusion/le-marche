@@ -8,9 +8,19 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 
 ## CONTENTS
 
+### [1.0] - (2021-10-26)
+
+- Migration de la prod Cocorico vers la prod Django 🚀
+
 ### [0.9] - (2021-10)
 
 - Ajout des pages espace utilisateur
+- Ajout du formulaire de modification d'une structure
+- Script de migration des images vers S3
+- Recherche géographique complète
+- Recherche par plusieurs secteurs
+- API : afficher les champs d'origine pour les Siae
+- Ajout des différents trackers et tierces parties Javascript
 
 ### [0.8] - (2021-09)
 
