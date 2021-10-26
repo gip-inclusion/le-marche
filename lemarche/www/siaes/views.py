@@ -12,14 +12,14 @@ from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
 
 from lemarche.siaes.models import Siae
-from lemarche.www.siae.forms import SiaeSearchForm
+from lemarche.www.siaes.forms import SiaeSearchForm
 
 
 CURRENT_SEARCH_QUERY_COOKIE_NAME = "current_search"
 
 
 class SiaeSearchResultsView(FormMixin, ListView):
-    template_name = "siae/search_results.html"
+    template_name = "siaes/search_results.html"
     form_class = SiaeSearchForm
     # queryset = Siae.objects.all()
     context_object_name = "siaes"
@@ -112,7 +112,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
 
 
 class SiaeDetailView(DetailView):
-    template_name = "siae/detail.html"
+    template_name = "siaes/detail.html"
     context_object_name = "siae"
     queryset = Siae.objects.prefetch_related("sectors")
 

@@ -9,7 +9,7 @@ from lemarche.pages.models import Page
 from lemarche.siaes.models import Siae
 from lemarche.www.pages.forms import ContactForm
 from lemarche.www.pages.tasks import send_contact_form_email
-from lemarche.www.siae.forms import SiaeSearchForm
+from lemarche.www.siaes.forms import SiaeSearchForm
 
 
 class HomeView(FormMixin, TemplateView):

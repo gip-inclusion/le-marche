@@ -14,7 +14,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("lemarche.api.urls")),
     path("accounts/", include("lemarche.www.auth.urls")),
-    path("prestataires/", include("lemarche.www.siae.urls")),
+    path("prestataires/", include("lemarche.www.siaes.urls")),
     path("profil/", include("lemarche.www.dashboard.urls")),
     path("", include("lemarche.www.pages.urls")),
 ]
