@@ -12,7 +12,7 @@ from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
 
 from lemarche.siaes.models import Siae
-from lemarche.utils.tracker import track
+from lemarche.utils.tracker import extract_meta_from_request, track
 from lemarche.www.siaes.forms import SiaeSearchForm
 
 
@@ -59,7 +59,12 @@ class SiaeSearchResultsView(FormMixin, ListView):
 
     def get(self, request, *args, **kwargs):
         # Track search event
-        track("backend", "directory_search", meta=self.request.GET)
+        track(
+            "backend",
+            "directory_search",
+            meta=extract_meta_from_request(self.request),
+            session_id=request.COOKIES.get("sessionid", None),
+        )
         return super().get(request, *args, **kwargs)
 
 
@@ -116,7 +121,12 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
             writer.writerow(siae_row)
 
         # Track download event
-        track("backend", "directory_csv", meta=self.request.GET)
+        track(
+            "backend",
+            "directory_csv",
+            meta=extract_meta_from_request(self.request),
+            session_id=request.COOKIES.get("sessionid", None),
+        )
 
         return response
 
