@@ -22,6 +22,8 @@ certifi==2021.10.8; python_version >= "3.6" and python_full_version < "3.0.0" or
 charset-normalizer==2.0.7; python_full_version >= "3.6.0" and python_version >= "3.5" \
     --hash=sha256:e019de665e2bcf9c2b64e2e5aa025fa991da8720daa3c1138cadd2fd1856aed0 \
     --hash=sha256:f7af805c321bfa1ce6714c51f254e0d5bb5e5834039bc17db7ebe3a4cec9492b
+crawlerdetect==0.1.4; python_version >= "3.4" and python_version < "4" \
+    --hash=sha256:81793d14796b0707539e62855d18c0eb4af83f97297ca64f64f67a788781a5a2
 django-anymail==8.4; python_version >= "3.5" \
     --hash=sha256:671a338de43b8e414d48c6d16aac1df54d2f24f916e1073f9f60aef5acffaf89 \
     --hash=sha256:2e8307e84f0a12f9283469017094a8246db9a0fc608ac17dd1027ee011ece986

@@ -208,6 +208,14 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
 toml = ["toml"]
 
 [[package]]
+name = "crawlerdetect"
+version = "0.1.4"
+description = "CrawlerDetect is a Python class for detecting bots/crawlers/spiders via the user agent."
+category = "main"
+optional = false
+python-versions = ">=3.4, <4"
+
+[[package]]
 name = "decorator"
 version = "5.1.0"
 description = "Decorators for Humans"
@@ -1197,7 +1205,7 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "53eec280254b2b921c925155fc36d7d27dd9a835480d1bc788d52bd826d5bb92"
+content-hash = "eab97b3a5a409ca83226c16d2576d3da374ba45832f9e91a453ee943492bb3fe"
 
 [metadata.files]
 anyio = [
@@ -1317,6 +1325,9 @@ coverage = [
     {file = "coverage-5.5-pp36-none-any.whl", hash = "sha256:f030f8873312a16414c0d8e1a1ddff2d3235655a2174e3648b4fa66b3f2f1079"},
     {file = "coverage-5.5-pp37-none-any.whl", hash = "sha256:2a3859cb82dcbda1cfd3e6f71c27081d18aa251d20a17d87d26d4cd216fb0af4"},
     {file = "coverage-5.5.tar.gz", hash = "sha256:ebe78fe9a0e874362175b02371bdfbee64d8edc42a044253ddf4ee7d3c15212c"},
+]
+crawlerdetect = [
+    {file = "crawlerdetect-0.1.4-py2.py3-none-any.whl", hash = "sha256:81793d14796b0707539e62855d18c0eb4af83f97297ca64f64f67a788781a5a2"},
 ]
 decorator = [
     {file = "decorator-5.1.0-py3-none-any.whl", hash = "sha256:7b12e7c3c6ab203a29e157335e9122cb03de9ab7264b137594103fd4a683b374"},
