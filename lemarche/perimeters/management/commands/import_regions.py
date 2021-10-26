@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand
 from django.template.defaultfilters import slugify
 
 from lemarche.perimeters.models import Perimeter
-from lemarche.siaes.constants import REGIONS, REGIONS_WITH_IDENTICAL_DEPARTMENT_NAME
+from lemarche.siaes.constants import REGIONS
 
 
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -66,9 +66,10 @@ class Command(BaseCommand):
 
                 slug = slugify(name)
 
-                # Special case: some regions have the same name as a department
-                if name in REGIONS_WITH_IDENTICAL_DEPARTMENT_NAME:
-                    slug = f"{slug}-region"
+                # # Special case: some regions have the same name as a department
+                # # managed in Perimeter.set_slug method
+                # if name in REGIONS_WITH_IDENTICAL_DEPARTMENT_NAME:
+                #     slug = f"{slug}-region"
 
                 self.logger.debug("-" * 80)
                 self.logger.debug(name)
