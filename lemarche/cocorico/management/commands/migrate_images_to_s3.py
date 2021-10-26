@@ -65,6 +65,7 @@ class Command(BaseCommand):
         ftp.cwd("users/images")
 
         users_with_images = User.objects.exclude(image_name="").exclude(image_name__isnull=True)
+        progress = 0
 
         for user in users_with_images:
             # Step 1: download image from FTP
@@ -90,6 +91,10 @@ class Command(BaseCommand):
             # Step 4: delete local image
             os.remove(user.image_name)
 
+            progress += 1
+            if (progress % 500) == 0:
+                print(f"{progress}...")
+
         print(f"Migrated {users_with_images.count()} user images !")
 
     def migrate_siae_logos(self):
@@ -105,6 +110,7 @@ class Command(BaseCommand):
         ftp.cwd("listings/images")
 
         siaes_with_logos = Siae.objects.exclude(image_name="").exclude(image_name__isnull=True)
+        progress = 0
 
         for siae in siaes_with_logos:
             # Step 1: download image from FTP
@@ -130,6 +136,10 @@ class Command(BaseCommand):
             # Step 4: delete local image
             os.remove(siae.image_name)
 
+            progress += 1
+            if (progress % 500) == 0:
+                print(f"{progress}...")
+
         print(f"Migrated {siaes_with_logos.count()} siae images !")
 
     def migrate_siae_client_reference_logos(self):
@@ -147,6 +157,7 @@ class Command(BaseCommand):
         client_references_with_logos = SiaeClientReference.objects.exclude(image_name="").exclude(
             image_name__isnull=True
         )
+        progress = 0
 
         for client_reference in client_references_with_logos:
             # Step 1: download image from FTP
@@ -175,5 +186,9 @@ class Command(BaseCommand):
 
             # Step 4: delete local image
             os.remove(client_reference.image_name)
+
+            progress += 1
+            if (progress % 500) == 0:
+                print(f"{progress}...")
 
         print(f"Migrated {client_references_with_logos.count()} client reference images !")

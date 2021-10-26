@@ -435,12 +435,17 @@ class Command(BaseCommand):
         cur.execute("SELECT * FROM directory_listing_category")
         resp = cur.fetchall()
 
+        progress = 0
+
         # Sometimes Siaes are linked to a SectorGroup instead of a Sector.
         # We ignore these cases
         for elem in resp:
             try:
                 siae = Siae.objects.get(pk=elem["directory_id"])
                 siae.sectors.add(elem["listing_category_id"])
+                progress += 1
+                if (progress % 500) == 0:
+                    print(f"{progress}...")
             except:  # noqa
                 # print(elem)
                 pass
