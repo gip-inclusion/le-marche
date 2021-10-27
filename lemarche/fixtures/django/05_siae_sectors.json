@@ -1,0 +1,58 @@
+[
+   {
+      "model": "siaes.siae_sectors",
+      "fields": {
+         "sector": 1,
+         "siae": 2653
+      }
+   },
+   {
+      "model": "siaes.siae_sectors",
+      "fields": {
+         "sector": 2,
+         "siae": 2653
+      }
+   },
+   {
+      "model": "siaes.siae_sectors",
+      "fields": {
+         "sector": 1,
+         "siae": 88
+      }
+   },
+   {
+      "model": "siaes.siae_sectors",
+      "fields": {
+         "sector": 1,
+         "siae": 89
+      }
+   },
+   {
+      "model": "siaes.siae_sectors",
+      "fields": {
+         "sector": 1,
+         "siae": 90
+      }
+   },
+   {
+      "model": "siaes.siae_sectors",
+      "fields": {
+         "sector": 1,
+         "siae": 91
+      }
+   },
+   {
+      "model": "siaes.siae_sectors",
+      "fields": {
+         "sector": 2,
+         "siae": 91
+      }
+   },
+   {
+      "model": "siaes.siae_sectors",
+      "fields": {
+         "sector": 1,
+         "siae": 2654
+      }
+   }
+]

@@ -1,9 +1,9 @@
 from django.conf import settings
-from django.contrib.sites.models import Site
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
 from lemarche.utils.emails import whitelist_recipient_list
+from lemarche.utils.urls import get_domain_url
 
 
 # TODO: make async (celery)
@@ -36,7 +36,7 @@ def send_signup_notification_email(user):
             "user_last_name": user.last_name,
             "user_first_name": user.first_name,
             "user_kind_display": user.get_kind_display(),
-            "domain": Site.objects.get_current().domain,
+            "domain": get_domain_url(),
         },
     )
 
