@@ -12,6 +12,8 @@ ALLOWED_HOSTS = [
     "staging.inclusion.beta.gouv.fr",
     "staging.lemarche.inclusion.beta.gouv.fr",
     "bitoubi-django-staging.cleverapps.io",
+    # for review apps
+    ".cleverapps.io",
 ]
 
 

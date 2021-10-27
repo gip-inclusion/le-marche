@@ -156,6 +156,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+# for review apps
+# if none, will use Site.objects.get_current().domain instead
+DEPLOY_URL = env.str("DEPLOY_URL", None)
+
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

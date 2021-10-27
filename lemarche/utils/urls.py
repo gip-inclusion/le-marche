@@ -1,7 +1,18 @@
 # https://github.com/betagouv/itou/blob/master/itou/utils/urls.py
 
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.utils.http import url_has_allowed_host_and_scheme
+
+
+def get_domain_url():
+    """
+    review apps have dynamic urls
+    TODO: find a way to update their Site.object instead
+    """
+    if settings.DEPLOY_URL:
+        return settings.DEPLOY_URL.split("https://")[1]
+    return Site.objects.get_current().domain
 
 
 def get_safe_url(request, param_name=None, fallback_url=None, url=None):
