@@ -1,5 +1,4 @@
 import factory
-from django.utils.text import slugify
 from factory.django import DjangoModelFactory
 
 from lemarche.networks.models import Network
