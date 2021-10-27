@@ -62,6 +62,26 @@ urlpatterns = [
                     name="old_page_contact",
                 ),
                 path(
+                    "identification/",
+                    RedirectView.as_view(pattern_name="auth:contact", permanent=True),
+                    name="old_signup",
+                ),
+                path(
+                    "identification",
+                    RedirectView.as_view(pattern_name="auth:login", permanent=True),
+                    name="old_login_without_slash",
+                ),
+                path(
+                    "inscription/",
+                    RedirectView.as_view(pattern_name="auth:login", permanent=True),
+                    name="old_login",
+                ),
+                path(
+                    "inscription",
+                    RedirectView.as_view(pattern_name="auth:signup", permanent=True),
+                    name="old_signup_without_slash",
+                ),
+                path(
                     "tableau-de-bord/profil-utilisateur/editer-a-propos-de-moi/",
                     RedirectView.as_view(pattern_name="dashboard:home", permanent=True),
                     name="old_dashboard_home",
