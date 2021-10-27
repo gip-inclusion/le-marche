@@ -12,7 +12,7 @@ def send_contact_form_email(contact_form_dict):
     send_mail(
         subject=email_subject,
         message=email_body,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[settings.NOTIFY_EMAIL],
+        from_email=contact_form_dict["email"],
+        recipient_list=[settings.CONTACT_EMAIL],
         fail_silently=False,
     )

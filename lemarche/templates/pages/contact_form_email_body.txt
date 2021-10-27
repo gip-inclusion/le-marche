@@ -5,15 +5,15 @@ Bonjour,
 
 Vous avez une nouvelle demande d'information via le formulaire de contact :
 
-- Prénom : {{ form_dict.first_name }}
-- Nom : {{ form_dict.last_name }}
+- Prénom : {{ form_dict.first_name|safe }}
+- Nom : {{ form_dict.last_name|safe }}
 - Email : {{ form_dict.email }}
 - Téléphone : {{ form_dict.phone }}
 - SIRET : {{ form_dict.siret }}
 
-- Sujet : {{ form_dict.subject }}
+- Sujet : {{ form_dict.subject|safe }}
 
-- Message : {{ form_dict.message }}
+- Message : {{ form_dict.message|safe }}
 
-	
+
 A bientôt,
