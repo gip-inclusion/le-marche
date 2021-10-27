@@ -98,10 +98,10 @@ class SiaeEditInfoContactForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Required & Disabled fields
+        # Disabled fields
         for field in Siae.READONLY_FIELDS_FROM_C1:
             if field in self.fields:
-                self.fields[field].required = True
+                # self.fields[field].required = True
                 self.fields[field].disabled = True
 
 
