@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# https://github.com/betagouv/itou/blob/master/clevercloud/review-app-after-success.sh
+
 ###################################################################
 ###################### Review apps entrypoint #####################
 ###################################################################
@@ -11,9 +13,11 @@ if [ "$SKIP_FIXTURES" = true ] ; then
 fi
 
 echo "Loading perimeters"
-./manage.py import_regions
-./manage.py import_departements
-# ./manage.py import_communes
+django-admin import_regions
+django-admin import_departements
+# django-admin import_communes
 
+# `ls $APP_HOME` does not work as the current user
+# does not have execution rights on the $APP_HOME directory.
 echo "Loading fixtures"
-# TODO
+ls -d $APP_HOME/lemarche/fixtures/django/* | xargs django-admin loaddata
