@@ -101,6 +101,11 @@ urlpatterns = [
                     RedirectView.as_view(pattern_name="siae:detail", permanent=True),
                     name="old_siae_detail_without_slash",
                 ),  # <int:pk>
+                path(
+                    "directory/<str:slug>/",
+                    RedirectView.as_view(pattern_name="siae:detail", permanent=True),
+                    name="old_siae_detail_without_show",
+                ),  # <int:pk>
             ]
         ),
     ),
