@@ -50,3 +50,35 @@
     */
     overflow: visible;
 }
+
+
+.s-hp-slider-partners {
+	padding-top: 1.5rem;
+	padding-bottom: 1.5rem;
+
+	@media (min-width:992px) {
+		padding-top: 3rem;
+		padding-bottom: 3rem;
+	}
+
+	&__col {
+		&--slider {
+
+			a {
+				text-decoration: none;
+
+				img {
+					filter: grayscale(1);
+					transition: all 0.3s ease;
+				}
+
+				&:hover, 
+				&:focus {
+					img {
+						filter: grayscale(0);
+					}
+				}
+			}
+		}
+	}
+}

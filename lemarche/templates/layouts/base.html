@@ -137,7 +137,40 @@
     <script type="text/javascript" type="text/javascript" src="https://app.mailjet.com/statics/js/widget.modal.js"></script>
     {% endblock %}
     
-    {% block extra_js %}{% endblock %}
+    {% block extra_js %}
+    <script type="text/javascript" src="//cdn.jsdelivr.net/npm/@accessible360/accessible-slick@1.0.1/slick/slick.min.js"></script>
+    <script>
+      $('#slickPartnersHP').slick({
+        infinite: false,
+        adaptiveHeight: true,
+        speed: 300,
+        slidesToShow: 5,
+        slidesToScroll: 1,
+        dots: false,
+        arrows: true,
+        responsive: [
+          {
+            breakpoint: 1200,
+            settings: {
+              slidesToShow: 4,
+              slidesToScroll: 1,
+              dots: true,
+              arrows: false
+            }
+          },
+          {
+            breakpoint: 768,
+            settings: {
+              slidesToShow: 2,
+              slidesToScroll: 1,
+              dots: true,
+              arrows: false
+            }
+          }
+        ]
+      });
+    </script>        
+    {% endblock %}
 
     {% bootstrap_messages %}
 </body>
