@@ -305,6 +305,7 @@ API_GEO_BASE_URL = "https://geo.api.gouv.fr"
 # Django REST Framework settings.
 # https://www.django-rest-framework.org/
 # ------------------------------------------------------------------------------
+
 REST_FRAMEWORK = {
     # YOUR SETTINGS
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
@@ -317,6 +318,7 @@ REST_FRAMEWORK = {
 # Spectacular settings.
 # https://drf-spectacular.readthedocs.io/en/latest/settings.html
 # ------------------------------------------------------------------------------
+
 SPECTACULAR_SETTINGS = {
     "TITLE": "Le marché de l'inclusion",
     "DESCRIPTION": """
@@ -341,6 +343,7 @@ Vous pouvez en faire la demande via notre formulaire de contact.
 
 # Trackers
 # ------------------------------------------------------------------------------
+
 TRACKER_HOST = env.str("TRACKER_HOST", "http://localhost")
 HOTJAR_ID = int(env.str("HOTJAR_ID", 0))
 MATOMO_SITE_ID = int(env.str("MATOMO_SITE_ID", 0))
@@ -365,6 +368,7 @@ BOOTSTRAP4 = {
 # Logging.
 # https://docs.djangoproject.com/en/dev/topics/logging
 # ------------------------------------------------------------------------------
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -395,6 +399,7 @@ LOGGING = {
 # django-ckeditor settings.
 # https://django-ckeditor.readthedocs.io/en/latest/#optional-customizing-ckeditor-editor
 # ------------------------------------------------------------------------------
+
 CKEDITOR_CONFIGS = {
     "default": {
         "toolbar": "Custom",
@@ -412,3 +417,11 @@ CKEDITOR_CONFIGS = {
         "entities": False,
     }
 }
+
+
+# External URLs
+# (if you need these settings in the template, add them to the settings_context_processor)
+# ------------------------------------------------------------------------------
+
+FACILITATOR_SLIDE = "https://docs.google.com/presentation/d/e/2PACX-1vRd5lfQWHNEiUNw8yQqBfBnkGyaud5g440IsBvZm9XLEuawQNOfG91MwBlP24Z66A/pub?start=false&loop=false&delayms=3000&slide=id.p1"  # noqa
+FACILITATOR_LIST = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRtavj-NHym5wjgDu9KRTIDPVZtujFlaSL9Z_BYQ7nWrmkcbGRuL12-VxiNctaOTsgdjQURuPLr57R/pubhtml"  # noqa

@@ -14,4 +14,6 @@ def expose_settings(request):
         "MATOMO_SITE_ID": settings.MATOMO_SITE_ID,
         "MATOMO_HOST": settings.MATOMO_HOST,
         "CRISP_ID": settings.CRISP_ID,
+        "FACILITATOR_SLIDE": settings.FACILITATOR_SLIDE,
+        "FACILITATOR_LIST": settings.FACILITATOR_LIST,
     }
