@@ -237,7 +237,7 @@
             $('.modal-backdrop').before($(this));
         });
 
-        // if (true) {
+        {% if not user.is_authenticated %}
         if (!document.cookie.split('; ').find(row => row.startsWith(USER_TYPE_MODAL_COOKIE_NAME))) {
             var modal = $("#user_modal");
             modal.find('.close').remove();
@@ -254,6 +254,7 @@
                 modal.modal('hide');
             })
         }
+        {% endif %}
 
         // Set listings markers on load
         const siaeList = {{ siaes_json|safe }};
