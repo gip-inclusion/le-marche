@@ -98,13 +98,13 @@ class SiaeSectorSearchFilterTest(TestCase):
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 4)
 
-    def test_search_kind_empty_string(self):
+    def test_search_sector_empty_string(self):
         url = reverse("siae:search_results") + "?sectors="
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 4)
 
-    def test_search_kind_should_filter(self):
+    def test_search_sector_should_filter(self):
         url = reverse("siae:search_results") + f"?sectors={self.sector_1.slug}"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
@@ -117,6 +117,12 @@ class SiaeSectorSearchFilterTest(TestCase):
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 2 + 1)  # OR
+
+    def test_search_sector_multiple_should_not_return_duplicates(self):
+        url = reverse("siae:search_results") + f"?sectors={self.sector_1.slug}&sectors={self.sector_2.slug}"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1 + 1)  # OR
 
 
 class SiaePerimeterSearchFilterTest(TestCase):
