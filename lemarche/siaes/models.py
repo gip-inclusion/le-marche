@@ -76,14 +76,15 @@ class SiaeQuerySet(models.QuerySet):
                 & Q(geo_range_custom_distance__lte=Distance("coords", kwargs["city_coords"]) / 1000)
             )
 
-    def in_range_of_point_or_in_department(self, **kwargs):
-        if "city_coords" in kwargs and "department_code" in kwargs:
+    def in_city_or_in_range_of_point_or_in_department(self, **kwargs):
+        if "city_name" in kwargs and "city_coords" in kwargs and "department_code" in kwargs:
             return self.filter(
-                (
+                (Q(city=kwargs["city_name"]) & Q(department=kwargs["department_code"]))
+                | (
                     Q(geo_range=GEO_RANGE_CUSTOM)
                     & Q(geo_range_custom_distance__gte=Distance("coords", kwargs["city_coords"]) / 1000)
                 )
-                | ((Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=kwargs["department_code"])))
+                | (Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=kwargs["department_code"]))
             )
 
     def within(self, point, distance_km=0):
