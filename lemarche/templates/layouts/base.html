@@ -123,9 +123,11 @@
     <script type="text/javascript" src="{% static 'vendor/bootstrap-multiselect-1.1.1/bootstrap-multiselect.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'vendor/leaflet-1.7.1/leaflet.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/accessible-slick-1.0.1/slick.min.js' %}"></script>
     <!-- custom javascript -->
     <script type="text/javascript" src="{% static 'js/sector_multiselect_field.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/home_partner_slider.js' %}"></script>
     {% endcompress %}
     <script type="text/javascript" src="{% static 'js/utils.js'%}"></script>
     {% include "layouts/_trackers.html" %}
@@ -135,41 +137,6 @@
     <!-- Mailjet newsletter -->
     <data id="mj-w-res-data" data-token="0d87cc6eac81c8037144017a95fdecdb" class="mj-w-data" data-apikey="4guK" data-w-id="KAV" data-lang="fr_FR" data-base="https://app.mailjet.com" data-width="640" data-height="450" data-statics="statics"></data>
     <script type="text/javascript" type="text/javascript" src="https://app.mailjet.com/statics/js/widget.modal.js"></script>
-    {% endblock %}
-    
-    {% block extra_js %}
-    <script type="text/javascript" src="//cdn.jsdelivr.net/npm/@accessible360/accessible-slick@1.0.1/slick/slick.min.js"></script>
-    <script>
-      $('#slickPartnersHP').slick({
-        infinite: false,
-        adaptiveHeight: true,
-        speed: 300,
-        slidesToShow: 5,
-        slidesToScroll: 1,
-        dots: false,
-        arrows: true,
-        responsive: [
-          {
-            breakpoint: 1200,
-            settings: {
-              slidesToShow: 4,
-              slidesToScroll: 1,
-              dots: true,
-              arrows: false
-            }
-          },
-          {
-            breakpoint: 768,
-            settings: {
-              slidesToShow: 2,
-              slidesToScroll: 1,
-              dots: true,
-              arrows: false
-            }
-          }
-        ]
-      });
-    </script>        
     {% endblock %}
 
     {% bootstrap_messages %}
