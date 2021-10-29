@@ -70,6 +70,7 @@ class SiaeSearchForm(forms.Form):
     def filter_queryset(self):
         """
         Method to filter the Siaes depending on the search filters.
+        We also make sure there are no duplicates.
         """
         qs = Siae.objects.prefetch_related("sectors", "networks", "users")
 
@@ -94,6 +95,9 @@ class SiaeSearchForm(forms.Form):
         presta_type = self.cleaned_data.get("presta_type", None)
         if presta_type:
             qs = qs.filter(presta_type__overlap=[presta_type])
+
+        # avoid duplicates
+        qs = qs.distinct()
 
         return qs
 
