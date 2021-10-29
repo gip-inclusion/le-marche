@@ -64,13 +64,13 @@
 	&__col {
 		&--slider {
 
+			img {
+				filter: grayscale(1);
+				transition: all 0.3s ease;
+			}
+
 			a {
 				text-decoration: none;
-
-				img {
-					filter: grayscale(1);
-					transition: all 0.3s ease;
-				}
 
 				&:hover, 
 				&:focus {
