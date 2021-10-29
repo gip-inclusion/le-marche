@@ -11,6 +11,7 @@ Ressources :
 - Début du changelog (premier sprint post-migration)
 - Lien vers la liste des facilitateurs (google doc) sur la page "C'est quoi l'inclusion"
 - Pouvoir faire des review apps à la volée sur des PR ouvertes (donnée de test grâce à des fixtures)
+- Mise en avant des partenaires sur la page d'accueil (carrousel)
 
 ### Modifié
 
