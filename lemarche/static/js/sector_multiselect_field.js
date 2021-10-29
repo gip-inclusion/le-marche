@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // reset button
             includeResetOption: true,
             includeResetDivider: true,
-            resetText: 'Réinitialiser',
+            resetText: 'Réinitialiser la sélection',
             // enableResetButton: true,
             // resetButtonText: 'Réinitialiser',
             // ability to select all group's child options in 1 click

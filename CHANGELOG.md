@@ -1,18 +1,37 @@
-CHANGELOG
-=========
+# Journal des modifications
 
-This changelog references the relevant changes done in this project.
+Ressources :
+- [Semantic Versioning](http://semver.org/) 
+- [CHANGELOG recommendations](http://keepachangelog.com/).
 
-This project adheres to [Semantic Versioning](http://semver.org/) 
-and to the [CHANGELOG recommendations](http://keepachangelog.com/).
+## [1.1] - 2021-11-05
 
-## CONTENTS
+### Ajouté
 
-### [1.0] - (2021-10-26)
+- Début du changelog (premier sprint post-migration)
+- Lien vers la liste des facilitateurs (google doc) sur la page "C'est quoi l'inclusion"
+- Pouvoir faire des review apps à la volée sur des PR ouvertes (donnée de test grâce à des fixtures)
+
+### Modifié
+
+- Recherche :
+    - Correctif pour ne pas afficher la modal pour les utilisateurs connectés
+    - Correctif pour éviter de renvoyer des doublons
+    - Modifié les résultats lorsqu'une ville est cherchée: les structures présentes dans la ville, mais avec périmètre d'intervention autre que Distance ou Département, sont quand même renvoyés
+    - Clarifié le nom du bouton de réinitialisation de la recherche par secteurs
+Inscription/connexion :
+    - réparé un bug lorsque le lien de réinitialisation du mot de passe était invalide (déjà cliqué)
+    - Redirections additionnelles pour les pages de connexion et d'inscription (Cocorico)
+Formulaire de contact :
+    - le reply-to est maintenant l'email fourni par l'utilisateur (pour faciliter la réponse sur Zammad)
+
+### Supprimé
+
+## [1.0] - 2021-10-26
 
 - Migration de la prod Cocorico vers la prod Django 🚀
 
-### [0.9] - (2021-10)
+## [0.9] - 2021-10
 
 - Ajout des pages espace utilisateur
 - Ajout du formulaire de modification d'une structure
@@ -22,7 +41,7 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 - API : afficher les champs d'origine pour les Siae
 - Ajout des différents trackers et tierces parties Javascript
 
-### [0.8] - (2021-09)
+## [0.8] - 2021-09
 
 - Premier script de migration pour récupérer la donnée des Siae, Réseaux, Secteurs, Prestations, Labels et Références
 - Ajout du modèle SiaeOffer
@@ -41,7 +60,7 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 - Màj homepage API
 - Correctif SASS Django pour developpement
 
-### [0.7] - (2021-08)
+## [0.7] - 2021-08
 
 - Correctifs docker pour déploiement prod
 - Bouge le modèle Siae dans sa propre app. Ajoute des champs manquants. Renomme les DateTimeFields.
@@ -51,7 +70,7 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 - API : préfixe les urls avec /api
 - Admin : premiers interfaces pour les modèles Siae et Sector
 
-### [0.6] - (2021-07)
+## [0.6] - 2021-07
 
 - Intégration bootstrap
 - Ajout flux de traitement SCSS/SASS
@@ -60,9 +79,9 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 - Première page & assets graphiques : c'est quoi l'inclusion
 - Compression par défaut des assets CSS & JS
 
-### [0.5] - (2021-07)
+## [0.5] - 2021-07
 
-- Écriture des vues simplifiée (ModelViewSet et Mixins)
+- Écriture des vues simplifiée (ModelViewSet et Mixins
 - Filtres sur certains champs
 - Wording et endpoint
 - Documentation revue
@@ -72,27 +91,27 @@ and to the [CHANGELOG recommendations](http://keepachangelog.com/).
 - Nouvelle page d'accueil
 - Recherche par plage de date de mise à jour
 
-### [0.4] - (2021-07)
+## [0.4] - 2021-07
 
 - Logging amélioré
 - Page d'accueil primitive
 - Ajout donnée QPV
 - Environnement Docker optimisé
 
-### [0.3.1] - (2021-06)
+## [0.3.1] - 2021-06
 
 - Correction de la publication des fichiers statiques quand le déboguage de django est désactivé
 
-### [0.3] - (2021-06)
+## [0.3] - 2021-06
 
 - Ajout intergiciel de tracking utilisateur
 
-### [0.2] - (2021-06)
+## [0.2] - 2021-06
 
-- Réorganisation du code (structure fichiers, config, ...)
+- Réorganisation du code (structure fichiers, config, ...
 - Utilisation de model.querysets pour les requêtes
 - Utilisation contexte du serializer pour "hasher" les identifiants
 
-### [0.1] - (2021-06)
+## [0.1] - 2021-06
 
 - Premiers pas
