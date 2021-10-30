@@ -10,7 +10,12 @@ class PerimeterListFilterApiTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.perimeter_city = PerimeterFactory(
-            name="Grenoble", kind=Perimeter.KIND_CITY, insee_code="38185", department_code="38", region_code="84"
+            name="Grenoble",
+            kind=Perimeter.KIND_CITY,
+            insee_code="38185",
+            department_code="38",
+            region_code="84",
+            post_codes=["38000", "38100", "38700"],
         )
         cls.perimeter_department = PerimeterFactory(
             name="Isère", kind=Perimeter.KIND_DEPARTMENT, insee_code="38", region_code="84"
@@ -40,11 +45,41 @@ class PerimeterListFilterApiTest(TestCase):
         self.assertEqual(response.data["count"], 1 + 1)
         self.assertEqual(len(response.data["results"]), 1 + 1)
 
-    def test_should_filter_perimeter_list_by_name(self):
-        url = reverse("api:perimeters-list") + "?name=grenob"  # anonymous user
+    def test_should_filter_perimeter_list_by_q_name(self):
+        url = reverse("api:perimeters-list") + "?q=grenob"  # anonymous user
         response = self.client.get(url)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
+
+    def test_should_filter_perimeter_list_by_q_code(self):
+        url = reverse("api:perimeters-list") + "?q=38"  # anonymous user
+        response = self.client.get(url)
+        self.assertEqual(response.data["count"], 1 + 1)
+        self.assertEqual(len(response.data["results"]), 1 + 1)
+        self.assertEqual(response.data["results"][0]["name"], "Isère")
+
+    def test_should_filter_perimeter_list_by_q_post_code(self):
+        url = reverse("api:perimeters-list") + "?q=38100"  # anonymous user
+        response = self.client.get(url)
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(len(response.data["results"]), 1)
+
+    def test_should_filter_perimeter_list_by_q_post_code_incomplete_success(self):
+        url = reverse("api:perimeters-list") + "?q=3800"  # anonymous user
+        response = self.client.get(url)
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(len(response.data["results"]), 1)
+
+    def test_should_filter_perimeter_list_by_q_post_code_incomplete_failure(self):
+        """
+        Edge case...
+        This search doesn't return any results because we only filter on the
+        first post_codes array item (when the post_code is incomplete)
+        """
+        url = reverse("api:perimeters-list") + "?q=3810"  # anonymous user
+        response = self.client.get(url)
+        self.assertEqual(response.data["count"], 0)
+        self.assertEqual(len(response.data["results"]), 0)
 
     def test_should_filter_perimeter_list_by_result_count(self):
         url = reverse("api:perimeters-list") + "?results=1"  # anonymous user

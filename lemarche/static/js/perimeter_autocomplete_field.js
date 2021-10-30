@@ -33,12 +33,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // https://github.com/alphagov/accessible-autocomplete/issues/210#issuecomment-549463974
   // function fetchSource(query, populateResults) {
-  //   return fetch(`http://127.0.0.1:8000/api/perimeters/?name=${query}&results=10`)
+  //   return fetch(`http://127.0.0.1:8000/api/perimeters/?q=${query}&results=10`)
   //     .then(r => r.json())
   //     .then(data => populateResults(data))
   // }
   async function fetchSource(query) {
-    const res = await fetch(`/api/perimeters/?name=${query}&results=10`);
+    const res = await fetch(`/api/perimeters/?q=${query}&results=10`);
     const data = await res.json();
     return data.results;
   }
