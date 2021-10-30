@@ -229,6 +229,7 @@
 {% endblock %}
 
 {% block extra_js %}
+{% if not user.is_authenticated %}
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function() {
         // show type user modal
@@ -237,7 +238,6 @@
             $('.modal-backdrop').before($(this));
         });
 
-        {% if not user.is_authenticated %}
         if (!document.cookie.split('; ').find(row => row.startsWith(USER_TYPE_MODAL_COOKIE_NAME))) {
             var modal = $("#user_modal");
             modal.find('.close').remove();
@@ -254,8 +254,11 @@
                 modal.modal('hide');
             })
         }
-        {% endif %}
-
+    });
+</script>
+{% endif %}
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function() {
         // Set listings markers on load
         const siaeList = {{ siaes_json|safe }};
 
