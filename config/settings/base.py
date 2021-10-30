@@ -431,5 +431,10 @@ FACILITATOR_LIST = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRtavj-NHym
 # ------------------------------------------------------------------------------
 
 # header env notice (not displayed in prod)
-ENV_COLOR_MAPPING = {"dev": "#dc3545", "staging": "#dc3545", "prod": ""}
+ENV_COLOR_MAPPING = {
+    "dev": "#dc3545",  # red
+    "review_app": "#fd7e14",  # orange
+    "staging": "#ffc107",  # yellow
+    "prod": "",
+}
 BITOUBI_ENV_COLOR = ENV_COLOR_MAPPING.get(BITOUBI_ENV, "")

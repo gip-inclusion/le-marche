@@ -16,15 +16,20 @@
     border-style: solid;
 }
 
-.navbar-migration {
+#header-env-notice {
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    text-align: center;
+    // background-color:
+}
+#header-notice {
     padding: 0.5em;
     text-align: center;
     background-color: #c3e6cb; // alert-success green // $marche-lightest;
 }
 
-
 .slick-list {
     .slick-loading & {
-      background: $white url('/static/itou/images/ajax-loader.gif') center center no-repeat;
+        background: $white url('/static/itou/images/ajax-loader.gif') center center no-repeat;
     }
-  }
+}
