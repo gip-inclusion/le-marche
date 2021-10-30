@@ -425,3 +425,11 @@ CKEDITOR_CONFIGS = {
 
 FACILITATOR_SLIDE = "https://docs.google.com/presentation/d/e/2PACX-1vRd5lfQWHNEiUNw8yQqBfBnkGyaud5g440IsBvZm9XLEuawQNOfG91MwBlP24Z66A/pub?start=false&loop=false&delayms=3000&slide=id.p1"  # noqa
 FACILITATOR_LIST = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRtavj-NHym5wjgDu9KRTIDPVZtujFlaSL9Z_BYQ7nWrmkcbGRuL12-VxiNctaOTsgdjQURuPLr57R/pubhtml"  # noqa
+
+
+# Misc
+# ------------------------------------------------------------------------------
+
+# header env notice (not displayed in prod)
+ENV_COLOR_MAPPING = {"dev": "#dc3545", "staging": "#dc3545", "prod": ""}
+BITOUBI_ENV_COLOR = ENV_COLOR_MAPPING.get(BITOUBI_ENV, "")
