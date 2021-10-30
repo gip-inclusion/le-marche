@@ -123,7 +123,8 @@ class TrackerMiddleware:
                 # build meta & co
                 meta = extract_meta_from_request(request)
                 session_id = request.COOKIES.get("sessionid", None)
-                client_context = {"referer": request.META.get("HTTP_REFERER", ""), "user_agent": request_ua}
+                request_referer = request.META.get("HTTP_REFERER", "")
+                client_context = {"referer": request_referer, "user_agent": request_ua}
                 track(
                     page=page,
                     action="load",

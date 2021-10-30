@@ -63,7 +63,7 @@ urlpatterns = [
                 ),
                 path(
                     "identification/",
-                    RedirectView.as_view(pattern_name="auth:contact", permanent=True),
+                    RedirectView.as_view(pattern_name="auth:login", permanent=True),
                     name="old_signup",
                 ),
                 path(
@@ -73,7 +73,7 @@ urlpatterns = [
                 ),
                 path(
                     "inscription/",
-                    RedirectView.as_view(pattern_name="auth:login", permanent=True),
+                    RedirectView.as_view(pattern_name="auth:signup", permanent=True),
                     name="old_login",
                 ),
                 path(
