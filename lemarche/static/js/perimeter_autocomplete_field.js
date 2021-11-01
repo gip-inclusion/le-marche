@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function() {
   async function fetchSource(query) {
     const res = await fetch(`/api/perimeters/autocomplete/?q=${query}&results=10`);
     const data = await res.json();
-    return data.results;
+    return data;  // data.results
   }
 
   function suggestion(result) {

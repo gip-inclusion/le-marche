@@ -15,7 +15,7 @@ fi
 echo "Loading perimeters"
 django-admin import_regions
 django-admin import_departements
-# django-admin import_communes
+django-admin import_communes
 
 # `ls $APP_HOME` does not work as the current user
 # does not have execution rights on the $APP_HOME directory.
