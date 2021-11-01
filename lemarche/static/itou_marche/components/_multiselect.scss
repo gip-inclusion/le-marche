@@ -4,27 +4,31 @@
 
 button.multiselect {
     cursor: default !important;
-    display: block;
-    text-align: left;
-    background-position: right 1rem center;
-    background-repeat: no-repeat;
-    // background-image: url('/static/itou/images/ico-file-list-2-line.svg');
-    background-image: url('/static/images/dir_form_ico_shape.png');
 }
 
-.multiselect-group {
-    font-weight: 900;
-    font-size: 1rem;
-    padding-bottom: 0 !important;
+#id_sectors_multiselect {
+    button.multiselect {
+        background-position: right 1rem center;
+        background-repeat: no-repeat;
+        // background-image: url('/static/itou/images/ico-file-list-2-line.svg');
+        background-image: url('/static/images/dir_form_ico_shape.png');
+    }
+
+    .multiselect-group {
+        font-weight: 900;
+        font-size: 1rem;
+        padding-bottom: 0 !important;
+    }
+    .multiselect-option {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
 }
-.multiselect-option {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-}
+
 // fix scrolling bug on mobile when maxHeight is set: https://github.com/davidstutz/bootstrap-multiselect/issues/1191
 @media screen and (max-width:1023px){ 
     .multiselect-container button.dropdown-item {
-        pointer-events:none;
+        pointer-events: none;
     }
     .multiselect-container span.form-check input {
         pointer-events: all;

@@ -21,7 +21,6 @@ SECTOR_FORM_QUERYSET = (
 
 
 class SiaeSearchForm(forms.Form):
-    FORM_KIND_CHOICES_WITH_EXTRA = EMPTY_CHOICE + Siae.KIND_CHOICES_WITH_EXTRA
     FORM_PRESTA_CHOICES = EMPTY_CHOICE + Siae.PRESTA_CHOICES
 
     sectors = GroupedModelMultipleChoiceField(
@@ -40,9 +39,9 @@ class SiaeSearchForm(forms.Form):
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "Région, département, ville"}),
     )
-    kind = forms.ChoiceField(
+    kind = forms.MultipleChoiceField(
         label="Type de structure",
-        choices=FORM_KIND_CHOICES_WITH_EXTRA,
+        choices=Siae.KIND_CHOICES_WITH_EXTRA,
         required=False,
     )
     presta_type = forms.ChoiceField(
@@ -98,7 +97,7 @@ class SiaeSearchForm(forms.Form):
 
         kind = self.cleaned_data.get("kind", None)
         if kind:
-            qs = qs.filter(kind=kind)
+            qs = qs.filter(kind__in=kind)
 
         presta_type = self.cleaned_data.get("presta_type", None)
         if presta_type:
