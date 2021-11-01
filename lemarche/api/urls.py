@@ -4,7 +4,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 from rest_framework import routers
 
 from lemarche.api.networks.views import NetworkViewSet
-from lemarche.api.perimeters.views import PerimeterKindViewSet, PerimeterViewSet
+from lemarche.api.perimeters.views import PerimeterAutocompleteViewSet, PerimeterKindViewSet, PerimeterViewSet
 from lemarche.api.sectors.views import SectorViewSet
 from lemarche.api.siaes.views import SiaeKindViewSet, SiaePrestaTypeViewSet, SiaeViewSet
 
@@ -19,6 +19,7 @@ router.register(r"siae", SiaeViewSet, basename="siae")
 router.register(r"sectors", SectorViewSet, basename="sectors")
 router.register(r"networks", NetworkViewSet, basename="networks")
 router.register(r"perimeters/kinds", PerimeterKindViewSet, basename="perimeter-kinds")
+router.register(r"perimeters/autocomplete", PerimeterAutocompleteViewSet, basename="perimeters-autocomplete")
 router.register(r"perimeters", PerimeterViewSet, basename="perimeters")
 
 urlpatterns = [

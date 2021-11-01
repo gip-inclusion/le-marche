@@ -1,4 +1,5 @@
 import django_filters
+from django.conf import settings
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import Q
 
@@ -6,18 +7,29 @@ from lemarche.perimeters.models import Perimeter
 
 
 class PerimeterFilter(django_filters.FilterSet):
-    q = django_filters.CharFilter(
-        label="Nom ou code postal du périmètre. Fragment de nom ou de code postal possible : lyon, gre, aix, 38100, 7500, 01…",  # noqa
-        method="name_autocomplete_search",
-    )
     kind = django_filters.MultipleChoiceFilter(label="Type(s) de périmètre", choices=Perimeter.KIND_CHOICES)
-    results = django_filters.NumberFilter(label="Nombre maximum de résultats", method="max_number_of_results")
 
     class Meta:
         model = Perimeter
-        fields = ["q", "kind", "results"]
+        fields = ["kind"]
 
-    def name_autocomplete_search(self, queryset, name, value):
+
+class PerimeterAutocompleteFilter(django_filters.FilterSet):
+    q = django_filters.CharFilter(
+        label="Nom ou code postal du périmètre. Fragment de nom ou de code postal possible : lyon, gre, aix, 38100, 7500, 01…",  # noqa
+        method="name_or_post_code_autocomplete_search",
+        required=True,
+    )
+    results = django_filters.NumberFilter(
+        label=f"Nombre maximum de résultats (choisir un chiffre inférieur à {settings.API_PERIMETER_AUTOCOMPLETE_MAX_RESULTS})",  # noqa
+        method="max_number_of_results",
+    )
+
+    class Meta:
+        model = Perimeter
+        fields = ["q", "results"]
+
+    def name_or_post_code_autocomplete_search(self, queryset, name, value):
         if not value:
             return queryset
         # department code or city post_code
