@@ -1,5 +1,6 @@
 import csv
 import datetime
+from urllib.parse import quote
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
@@ -47,6 +48,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         current_search_query = self.request.GET.urlencode()
         self.request.session[CURRENT_SEARCH_QUERY_COOKIE_NAME] = current_search_query
         context["current_search_query"] = self.request.session.get(CURRENT_SEARCH_QUERY_COOKIE_NAME, "")
+        context["current_search_query_escaped"] = quote(context["current_search_query"])
         # display p numbers only from p-4 to p+4 but don"t go <1 or >pages_count
         context["paginator_range"] = range(
             max(context["page_obj"].number - 4, 1), min(context["page_obj"].number + 4, context["paginator"].num_pages)
