@@ -47,11 +47,14 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-12 col-md-6 mt-lg-3 pr-md-0">
+                            <div class="col-12 col-md-4 mt-lg-3 pr-md-0">
                                 {% bootstrap_field form.kind %}
                             </div>
-                            <div class="col-12 col-md-6 mt-lg-3">
+                            <div class="col-12 col-md-4 mt-lg-3">
                                 {% bootstrap_field form.presta_type %}
+                            </div>
+                            <div class="col-12 col-md-4 mt-lg-3">
+                                {% bootstrap_field form.networks %}
                             </div>
                         </div>
                     </div>
@@ -86,7 +89,7 @@
                 <div class="col-12">
                     <div class="meta h2 mb-3 mb-md-6 mt-3 mt-3 font-weight-light text-center text-md-left">
                         {% with paginator.count as siae_count %}
-                            {{ siae_count }} structures correspondent à vos critères
+                            {{ siae_count }} structure{% if siae_count > 1 %}s{% endif %} correspond{% if siae_count > 1 %}ent{% endif %} à vos critères
                         {% endwith %}
                     </div>
                 </div>

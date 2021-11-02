@@ -1,4 +1,5 @@
 from django.db import models
+from django.template.defaultfilters import slugify
 from django.utils import timezone
 
 
@@ -16,3 +17,15 @@ class Network(models.Model):
 
     def __str__(self):
         return self.name
+
+    def set_slug(self):
+        """
+        The slug field should be unique.
+        """
+        # if not self.id:  # TODO: revert post-migration
+        self.slug = slugify(self.name)[:50]
+
+    def save(self, *args, **kwargs):
+        """Generate the slug field before saving."""
+        self.set_slug()
+        super().save(*args, **kwargs)
