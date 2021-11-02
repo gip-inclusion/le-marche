@@ -3,6 +3,7 @@ from django.contrib.gis.db.models.functions import Distance
 from django.db.models import BooleanField, Case, Exists, OuterRef, Value, When
 from django.db.models.functions import NullIf
 
+from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae, SiaeOffer
@@ -47,6 +48,13 @@ class SiaeSearchForm(forms.Form):
     presta_type = forms.ChoiceField(
         label="Type de prestation",
         choices=FORM_PRESTA_CHOICES,
+        required=False,
+    )
+    networks = forms.ModelChoiceField(
+        label="Réseau",
+        queryset=Network.objects.all().order_by("name"),
+        to_field_name="slug",
+        empty_label="",
         required=False,
     )
 
@@ -95,6 +103,10 @@ class SiaeSearchForm(forms.Form):
         presta_type = self.cleaned_data.get("presta_type", None)
         if presta_type:
             qs = qs.filter(presta_type__overlap=[presta_type])
+
+        network = self.cleaned_data.get("networks", None)
+        if network:
+            qs = qs.filter(networks__in=[network])
 
         # avoid duplicates
         qs = qs.distinct()

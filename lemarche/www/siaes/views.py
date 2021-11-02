@@ -101,21 +101,28 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
             "is_qpv",
             "sectors",
         ]
+        SIAE_CUSTOM_FIELDS = ["Active"]
 
         writer = csv.writer(response)
         # header
-        writer.writerow([Siae._meta.get_field(field_name).verbose_name for field_name in SIAE_FIELDS_TO_EXPORT])
+        writer.writerow(
+            [Siae._meta.get_field(field_name).verbose_name for field_name in SIAE_FIELDS_TO_EXPORT]
+            + SIAE_CUSTOM_FIELDS
+        )
         # values
         for siae in siae_list:
             siae_row = []
-            for field_name in SIAE_FIELDS_TO_EXPORT:
+            for field_name in SIAE_FIELDS_TO_EXPORT + SIAE_CUSTOM_FIELDS:
                 # Improve display of some fields: ChoiceFields, BooleanFields, ManyToManyFields
-                if field_name == "nature":
+                if field_name in ["nature"]:
                     siae_row.append(getattr(siae, f"get_{field_name}_display")())
                 elif field_name in ["is_qpv"]:
                     siae_row.append("Oui" if getattr(siae, field_name, None) else "Non")
                 elif field_name == "sectors":
                     siae_row.append(siae.sectors_list_to_string())
+                elif field_name == "Active":
+                    active = siae.users.exists()
+                    siae_row.append("Oui" if active else "Non")
                 else:
                     siae_row.append(getattr(siae, field_name, ""))
             writer.writerow(siae_row)
