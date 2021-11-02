@@ -25,7 +25,7 @@ class TrackerTest(TestCase):
 
     @mock.patch("lemarche.utils.tracker.track")
     def test_tracker_is_not_called_for_request_in_ignore_list(self, mock_track):
-        url = reverse("api:perimeters-list")
+        url = reverse("api:perimeters-autocomplete-list")
         self.client.get(url)
         self.assertEqual(mock_track.call_count, 0)
 
