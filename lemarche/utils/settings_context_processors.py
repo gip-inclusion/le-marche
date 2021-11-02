@@ -9,6 +9,7 @@ def expose_settings(request):
 
     return {
         "BITOUBI_ENV": settings.BITOUBI_ENV,
+        "BITOUBI_ENV_COLOR": settings.BITOUBI_ENV_COLOR,
         "TRACKER_HOST": settings.TRACKER_HOST,
         "HOTJAR_ID": settings.HOTJAR_ID,
         "MATOMO_SITE_ID": settings.MATOMO_SITE_ID,

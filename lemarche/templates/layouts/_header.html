@@ -1,11 +1,7 @@
 {% load static %}
 
-<div class="navbar-migration">
-    <p class="mb-0">
-        Le marché de l'inclusion <a href="/2021-10-06-le-marche-fait-peau-neuve/">fait peau neuve</a> !
-        N'hésitez pas à <a href="{% url 'pages:contact' %}">nous remonter</a> le moindre problème.
-    </p>
-</div>
+{% include "includes/_header_env_notice.html" %}
+{% include "includes/_header_notice.html" %}
 <header id="header" class="s-header s-header--marche sticky-top" role="banner">
     <section class="s-header__container container">
         <div class="s-header__row row">

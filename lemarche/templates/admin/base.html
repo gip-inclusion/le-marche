@@ -1,0 +1,33 @@
+<!-- https://github.com/django/django/blob/main/django/contrib/admin/templates/admin/base.html -->
+
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+<style>
+    #header-env-notice {
+        line-height: 1.5;
+        font-size: 1.5rem;
+        text-transform: uppercase;
+        text-align: center;
+        background-color: {{ BITOUBI_ENV_COLOR }};
+    }
+</style>
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+{% if BITOUBI_ENV not in "prod" %}
+<script>
+    const headerDiv = document.getElementById("header");
+
+    let envNoticeHeader = document.createElement("div");
+    envNoticeHeader.setAttribute("id", "header-env-notice");
+    envNoticeHeader.innerText = "{{ BITOUBI_ENV }}";
+
+    headerDiv.parentNode.insertBefore(envNoticeHeader, headerDiv);
+</script>
+{% endif %}
+{% endblock %}
