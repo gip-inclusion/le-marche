@@ -12,7 +12,7 @@ from lemarche.networks.models import Network
 from lemarche.sectors.models import Sector, SectorGroup
 from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer
 from lemarche.users.models import User
-from lemarche.utils.data import reset_app_sql_sequences
+from lemarche.utils.data import rename_dict_key, reset_app_sql_sequences
 
 
 DIRECTORY_EXTRA_KEYS = [
@@ -64,19 +64,16 @@ SECTOR_DATE_FIELDS = [field.name for field in Sector._meta.fields if type(field)
 USER_DATE_FIELDS = [field.name for field in User._meta.fields if type(field) == DateTimeField]
 
 
-def rename_field(elem, field_name_before, field_name_after):
-    elem[field_name_after] = elem[field_name_before]
-    elem.pop(field_name_before)
-
-
 def integer_to_boolean(elem):
     boolean_keys = list(set(DIRECTORY_BOOLEAN_FIELDS + USER_BOOLEAN_FIELDS))
     for key in boolean_keys:
         if key in elem:
             if elem[key] in [1, "1"]:
                 elem[key] = True
-            elif elem[key] in [0, "0", None]:
+            elif elem[key] in [0, "0"]:
                 elem[key] = False
+            elif elem[key] in [None]:
+                elem[key] = None  # will use field default
             else:
                 elem[key] = False
 
@@ -238,10 +235,10 @@ class Command(BaseCommand):
 
         for elem in resp:
             # rename fields
-            rename_field(elem, "geo_range", "geo_range_custom_distance")
-            rename_field(elem, "pol_range", "geo_range")
-            rename_field(elem, "c4_id", "c4_id_old")
-            rename_field(elem, "c1_source", "source")  # changed after the migration
+            rename_dict_key(elem, "geo_range", "geo_range_custom_distance")
+            rename_dict_key(elem, "pol_range", "geo_range")
+            rename_dict_key(elem, "c4_id", "c4_id_old")
+            rename_dict_key(elem, "c1_source", "source")  # changed after the migration
 
             # cleanup fields
             cleanup_date_field_names(elem)
@@ -467,7 +464,7 @@ class Command(BaseCommand):
 
         for elem in resp:
             # rename fields
-            rename_field(elem, "directory_id", "siae_id")
+            rename_dict_key(elem, "directory_id", "siae_id")
 
             # cleanup fields
             cleanup_date_field_names(elem)
@@ -495,7 +492,7 @@ class Command(BaseCommand):
 
         for elem in resp:
             # rename fields
-            rename_field(elem, "directory_id", "siae_id")
+            rename_dict_key(elem, "directory_id", "siae_id")
 
             # cleanup fields
             cleanup_date_field_names(elem)
@@ -527,10 +524,10 @@ class Command(BaseCommand):
             make_aware_dates(elem)
 
             # rename fields
-            rename_field(elem, "name", "image_name")
-            rename_field(elem, "description", "name")
-            rename_field(elem, "position", "order")
-            rename_field(elem, "directory_id", "siae_id")
+            rename_dict_key(elem, "name", "image_name")
+            rename_dict_key(elem, "description", "name")
+            rename_dict_key(elem, "position", "order")
+            rename_dict_key(elem, "directory_id", "siae_id")
 
             # remove useless keys
             [elem.pop(key) for key in ["id"]]
@@ -555,20 +552,20 @@ class Command(BaseCommand):
 
         for elem in resp:
             # rename fields
-            rename_field(elem, "enabled", "is_active")
-            rename_field(elem, "id", "c4_id")
-            rename_field(elem, "phone_prefix", "c4_phone_prefix")
-            rename_field(elem, "time_zone", "c4_time_zone")
-            rename_field(elem, "website", "c4_website")
-            rename_field(elem, "siret", "c4_siret")
-            rename_field(elem, "naf", "c4_naf")
-            rename_field(elem, "phone_verified", "c4_phone_verified")
-            rename_field(elem, "email_verified", "c4_email_verified")
-            rename_field(elem, "id_card_verified", "c4_id_card_verified")
-            # rename_field(elem, "accept_survey", "c4_accept_survey")
-            # rename_field(elem, "accept_rgpd", "c4_accept_rgpd")
-            rename_field(elem, "offers_for_pro_sector", "accept_offers_for_pro_sector")
-            rename_field(elem, "quote_promise", "accept_quote_promise")
+            rename_dict_key(elem, "enabled", "is_active")
+            rename_dict_key(elem, "id", "c4_id")
+            rename_dict_key(elem, "phone_prefix", "c4_phone_prefix")
+            rename_dict_key(elem, "time_zone", "c4_time_zone")
+            rename_dict_key(elem, "website", "c4_website")
+            rename_dict_key(elem, "siret", "c4_siret")
+            rename_dict_key(elem, "naf", "c4_naf")
+            rename_dict_key(elem, "phone_verified", "c4_phone_verified")
+            rename_dict_key(elem, "email_verified", "c4_email_verified")
+            rename_dict_key(elem, "id_card_verified", "c4_id_card_verified")
+            # rename_dict_key(elem, "accept_survey", "c4_accept_survey")
+            # rename_dict_key(elem, "accept_rgpd", "c4_accept_rgpd")
+            rename_dict_key(elem, "offers_for_pro_sector", "accept_offers_for_pro_sector")
+            rename_dict_key(elem, "quote_promise", "accept_quote_promise")
 
             # cleanup fields
             cleanup_date_field_names(elem)

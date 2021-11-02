@@ -1,7 +1,7 @@
 import csv
 import os
+import re
 import time
-from xml.etree import ElementTree
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
@@ -14,27 +14,30 @@ from lemarche.utils.apis.geocoding import get_geocoding_data
 from lemarche.utils.data import rename_dict_key, reset_app_sql_sequences
 
 
-FILE_NAME = "esat_handeco.xml"
+FILE_NAME = "esat_gesat_2.csv"
 FILE_PATH = os.path.dirname(os.path.realpath(__file__)) + "/" + FILE_NAME
 FIELD_NAME_LIST = [
-    "title",
-    "siret",
-    "zip",
-    "city",
-    "region",
-    "phone",
-    "mail",
-    "effectif",
-    "type",
-    # "secteurs",
-    # dateupdate
+    "Raison Sociale",
+    "Adresse",
+    "Lieudit/BP",
+    "Code Postal",
+    "Ville",
+    "Région",
+    "Tel",
+    "Email",
+    "Siret",
+    "Date d'ouverture",
+    "Denière date de MAJ",
+    "Capacité d'accueil (nombre de TH total)",
+    "Pôles de compétences",
+    "Domaine 1",  # ... Domaine 13
 ]
 
 
 SECTORS_DICT = {}
-SECTORS_MAPPING_CSV_PATH = os.path.dirname(os.path.realpath(__file__)) + "/handeco_sectors_mapping.csv"
-SOURCE_COLUMN_NAME = "Secteur Handeco"
-MARCHE_COLUMN_NAMES = ["Secteur Marche 1", "Secteur Marche 2"]
+SECTORS_MAPPING_CSV_PATH = os.path.dirname(os.path.realpath(__file__)) + "/gesat_sectors_mapping.csv"
+SOURCE_COLUMN_NAME = "Secteur Gesat"
+MARCHE_COLUMN_NAMES = ["Secteur Marche 1", "Secteur Marche 2", "Secteur Marche 3"]
 with open(SECTORS_MAPPING_CSV_PATH) as csv_file:
     csvreader = csv.DictReader(csv_file, delimiter=",")
     for index, row in enumerate(csvreader):
@@ -52,64 +55,84 @@ with open(SECTORS_MAPPING_CSV_PATH) as csv_file:
                     print("error or missing sector", row[column])
 
 
-def read_xml():
-    print("Reading XML file...")
-    esat_list = []
+def read_csv():
+    esat_list = list()
 
-    data_file = os.path.abspath(FILE_PATH)
-    xml_tree = ElementTree.parse(data_file)
-    xml_root = xml_tree.getroot()
+    with open(FILE_PATH) as csv_file:
+        csvreader = csv.DictReader(csv_file, delimiter=",")
+        for index, row in enumerate(csvreader):
+            esat_sectors_string = row["Pôles de compétences"]
+            esat_sectors_list = re.findall("[A-Z][^A-Z]*", esat_sectors_string)
 
-    for xml_elt in xml_root.findall("structure"):
-        esat = {}
-        for field in FIELD_NAME_LIST:
-            try:
-                esat[field] = xml_elt.find(field).text
-            except:  # noqa
-                esat[field] = ""
-        esat["secteurs"] = []
-        esat_sectors = xml_elt.find("secteurs")
-        for esat_sector in esat_sectors.findall("secteur"):
-            esat["secteurs"].append(
-                {"secteurnom": esat_sector.find("secteurnom").text, "activite": esat_sector.find("activite").text}
-            )
-        esat_list.append(esat)
+            row["Pôles de compétences list"] = list()
+            for esat_sector in esat_sectors_list:
+                if esat_sector.endswith(", "):
+                    esat_sector = esat_sector[:-2]
+                row["Pôles de compétences list"].append(esat_sector)
+            row.pop("Pôles de compétences")
+
+            row["Domaines list"] = list()
+            for i in range(1, 13 + 1):
+                if row[f"Domaine {i}"]:
+                    row["Domaines list"].append(row[f"Domaine {i}"])
+            [row.pop(key) for key in [f"Domaine {i}" for i in range(1, 13 + 1)]]
+
+            esat_list.append(row)
 
     return esat_list
 
 
+def extract_domaine_set(esat_list):
+    domaine_set = set()
+    for esat in esat_list:
+        for domaine in esat["Domaines list"]:
+            if domaine:
+                domaine_set.add(domaine)
+
+    print(len(domaine_set))
+    for domaine in sorted(domaine_set):
+        print(domaine)
+
+
+def extract_duplicates(esat_list):
+    esat_siret_list = list()
+    for esat in esat_list:
+        rename_dict_key(esat, "Raison Sociale", "name")
+        rename_dict_key(esat, "Siret", "siret")
+        if "siret" in esat:
+            esat["siret"] = esat["siret"].replace(" ", "")
+        esat_siret_index = next(
+            (index for (index, s) in enumerate(esat_siret_list) if s["siret"] == esat["siret"]), None
+        )
+        if esat_siret_index is None:
+            esat_siret_list.append({"name": esat["name"], "siret": esat["siret"]})
+        else:
+            print("===========")
+            print("Current", esat["name"], esat["siret"])
+            print("Duplicate", esat_siret_list[esat_siret_index]["name"], esat_siret_list[esat_siret_index]["siret"])
+
+
 class Command(BaseCommand):
     """
-    The source file is a .xml
-    We transform each Siae to a dict for easier processing
-
-    Usage: poetry run python manage.py import_esat_handeco
+    Usage: poetry run python manage.py import_esat_gesat
     """
 
     def handle(self, *args, **options):
         print("-" * 80)
+        Siae.objects.filter(kind=Siae.KIND_ESAT).delete()
         reset_app_sql_sequences("siaes")
-        esat_list = read_xml()
+        esat_list = read_csv()
 
-        old_esat_count = Siae.objects.filter(kind=Siae.KIND_ESAT).count()
+        # extract_domaine_set(esat_list)
+        # extract_duplicates(esat_list)
 
-        print("Importing Handeco (after GESAT)...")
-        for esat in esat_list:
-            if Siae.objects.filter(siret=esat["siret"]).exists():
-                print(
-                    f"SIRET already exists skipping,{Siae.objects.filter(siret=esat['siret']).count()},{esat['title']},{esat['siret']},{Siae.objects.filter(siret=esat['siret']).first().name}"  # noqa
-                )
-            else:
-                self.import_esat(esat)
-        # self.import_esat(esat_list[0])
-
-        new_esat_count = Siae.objects.filter(kind=Siae.KIND_ESAT).count()
-
-        print(f"Imported {new_esat_count - old_esat_count} additional ESAT siaes !")
+        print("Importing GESAT...")
+        for index, esat in enumerate(esat_list):
+            self.import_esat(esat)
 
     def import_esat(self, esat):
         # store raw dict
-        esat["import_source"] = "esat_handeco"
+        esat["import_source"] = "esat_gesat"
         esat["import_raw_object"] = esat.copy()
 
         # defaults
@@ -118,31 +141,36 @@ class Command(BaseCommand):
         esat["geo_range"] = Siae.GEO_RANGE_DEPARTMENT
 
         # basic fields
-        rename_dict_key(esat, "title", "name")
-        esat["name"].strip().replace("  ", " ")
+        rename_dict_key(esat, "Raison Sociale", "name")
+        esat["name"].strip()
+        esat["name"] = esat["name"].replace("  ", " ")
+        rename_dict_key(esat, "Siret", "siret")
         if "siret" in esat:
+            esat["siret"] = esat["siret"].replace(" ", "")
             esat["siret_is_valid"] = True
 
         # contact fields
-        rename_dict_key(esat, "mail", "email")
-        esat["contact_phone"] = esat["phone"]
+        rename_dict_key(esat, "Email", "email")
+        rename_dict_key(esat, "Tel", "phone")
+        esat["phone"].strip()
         esat["contact_email"] = esat["email"]
+        esat["contact_phone"] = esat["phone"]
 
         # geo fields
-        rename_dict_key(esat, "zip", "post_code")
+        rename_dict_key(esat, "Adresse", "address")
+        rename_dict_key(esat, "Code Postal", "post_code")
         if "post_code" in esat:
-            esat["post_code"] = esat["post_code"].replace(" ", "")  # sometimes formated '12 345'
+            esat["post_code"] = esat["post_code"].replace(" ", "")
             esat["department"] = department_from_postcode(esat["post_code"])
-        esat["city"] = esat["city"].strip()  # space at the beginning
-        esat["region"] = esat["region"].strip()  # just to be sure
+        rename_dict_key(esat, "Ville", "city")
+        rename_dict_key(esat, "Région", "region")
 
         # enrich with geocoding
-        geocoding_data = get_geocoding_data(esat["city"], post_code=esat["post_code"])
+        geocoding_data = get_geocoding_data(esat["address"] + " " + esat["city"], post_code=esat["post_code"])
         if geocoding_data:
             if esat["post_code"] != geocoding_data["post_code"]:
                 if esat["post_code"][:2] == geocoding_data["post_code"][:2]:
                     # update post_code as well
-                    esat["city"] = geocoding_data["city"]  # avoid uppercase
                     esat["coords"] = geocoding_data["coords"]
                     esat["post_code"] = geocoding_data["post_code"]
                 else:
@@ -150,7 +178,6 @@ class Command(BaseCommand):
                         f"Geocoding found a different place,{esat['name']},{esat['post_code']},{geocoding_data['post_code']}"  # noqa
                     )
             else:
-                esat["city"] = geocoding_data["city"]  # avoid uppercase
                 esat["coords"] = geocoding_data["coords"]
         else:
             print(f"Geocoding not found,{esat['name']},{esat['post_code']}")
@@ -176,11 +203,15 @@ class Command(BaseCommand):
 
         # sectors
         esat_sectors = []
-        for domaine in esat["secteurs"]:
-            esat_sectors.extend(SECTORS_DICT.get(domaine["secteurnom"], []))
+        for domaine in esat["Domaines list"]:
+            esat_sectors.extend(SECTORS_DICT.get(domaine, []))
+
+        # dates
+        [esat.pop(key) for key in ["Date d'ouverture", "Denière date de MAJ"]]
 
         # cleanup unused fields
-        [esat.pop(key) for key in ["type", "effectif", "secteurs", "import_source"]]
+        [esat.pop(key) for key in ["Domaines list", "Pôles de compétences list", "import_source"]]
+        [esat.pop(key) for key in ["Lieudit/BP", "Capacité d'accueil (nombre de TH total)"]]
 
         # create object
         try:
