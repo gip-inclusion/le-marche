@@ -9,6 +9,6 @@ class SectorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Sector.objects.all()
     serializer_class = SectorSerializer
 
-    @extend_schema(tags=[Sector._meta.verbose_name_plural])
+    @extend_schema(summary="Lister tous les secteurs d'activité", tags=[Sector._meta.verbose_name_plural])
     def list(self, request, *args, **kwargs):
         return super().list(request, args, kwargs)

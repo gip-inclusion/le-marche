@@ -29,7 +29,7 @@ VERSION = 1
 
 TRACKER_IGNORE_LIST = [
     "static/",
-    "api/perimeters",
+    "api/perimeters/autocomplete",
 ]
 
 USER_KIND_MAPPING = {

@@ -22,6 +22,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     filter_class = SiaeFilter
 
     @extend_schema(
+        summary="Lister toutes les structures",
         tags=[Siae._meta.verbose_name_plural],
         parameters=[
             OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
@@ -54,6 +55,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
             return self.get_paginated_response(serializer.data)
 
     @extend_schema(
+        summary="Détail d'une structure (par son id)",
         tags=[Siae._meta.verbose_name_plural],
         parameters=[
             OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
@@ -62,14 +64,13 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     )
     def retrieve(self, request, pk=None, format=None):
         """
-        Détail d'une structure (par son id)
-
         Un <strong>token</strong> est nécessaire pour l'accès complet à cette ressource.
         """
         queryset = get_object_or_404(self.get_queryset(), pk=pk)
         return self._retrieve_return(request, queryset, format)
 
     @extend_schema(
+        summary="Détail d'une structure (par son siret)",
         tags=[Siae._meta.verbose_name_plural],
         parameters=[
             OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
@@ -78,8 +79,6 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     )
     def retrieve_by_siret(self, request, siret=None, format=None):
         """
-        Détail d'une structure (par son siret)
-
         Un <strong>token</strong> est nécessaire pour l'accès complet à cette ressource.
         """
         queryset = get_object_or_404(self.get_queryset(), siret=siret)
@@ -110,7 +109,7 @@ class SiaeKindViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         siae_kinds = [{"id": id, "name": name} for (id, name) in Siae.KIND_CHOICES]
         return siae_kinds
 
-    @extend_schema(summary="Lister tous les choix de types de structures", tags=[Siae._meta.verbose_name_plural])
+    @extend_schema(summary="Lister tous les types de structures", tags=[Siae._meta.verbose_name_plural])
     def list(self, request, *args, **kwargs):
         return super().list(request, args, kwargs)
 
@@ -123,6 +122,6 @@ class SiaePrestaTypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         siae_kinds = [{"id": id, "name": name} for (id, name) in Siae.PRESTA_CHOICES]
         return siae_kinds
 
-    @extend_schema(summary="Lister tous les choix de types de prestations", tags=[Siae._meta.verbose_name_plural])
+    @extend_schema(summary="Lister tous les types de prestations", tags=[Siae._meta.verbose_name_plural])
     def list(self, request, *args, **kwargs):
         return super().list(request, args, kwargs)

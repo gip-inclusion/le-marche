@@ -294,6 +294,8 @@ STORAGE_UPLOAD_KINDS = {
 # APIs.
 # ------------------------------------------------------------------------------
 
+API_PERIMETER_AUTOCOMPLETE_MAX_RESULTS = 20
+
 # Base Adresse Nationale (BAN).
 # https://adresse.data.gouv.fr/faq
 API_BAN_BASE_URL = "https://api-adresse.data.gouv.fr"
@@ -329,7 +331,7 @@ Une initiative de la Plateforme de l'inclusion
 Certaines ressources nécessitent un <strong>token</strong> pour accéder complètement à la donnée.
 Vous pouvez en faire la demande via notre formulaire de contact.
     """,
-    "VERSION": "0.11",
+    "VERSION": "0.12",
     "CONTACT": {
         "name": "Une question ? Contactez-nous en cliquand ici",
         "url": "https://lemarche.inclusion.beta.gouv.fr/contact/",
