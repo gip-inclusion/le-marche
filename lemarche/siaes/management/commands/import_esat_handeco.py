@@ -107,7 +107,7 @@ class Command(BaseCommand):
 
         print(f"Imported {new_esat_count - old_esat_count} additional ESAT siaes !")
 
-    def import_esat(self, esat):
+    def import_esat(self, esat):  # noqa C901
         # store raw dict
         esat["import_source"] = "esat_handeco"
         esat["import_raw_object"] = esat.copy()

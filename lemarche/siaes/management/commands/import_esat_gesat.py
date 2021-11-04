@@ -130,7 +130,7 @@ class Command(BaseCommand):
         for index, esat in enumerate(esat_list):
             self.import_esat(esat)
 
-    def import_esat(self, esat):
+    def import_esat(self, esat):  # noqa C901
         # store raw dict
         esat["import_source"] = "esat_gesat"
         esat["import_raw_object"] = esat.copy()
