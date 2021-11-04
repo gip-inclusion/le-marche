@@ -16,72 +16,10 @@
 
 	#dir_form {
 		padding: 2rem;
-		background-color:$marche-lighter;
+		background-color: $marche-lighter;
 		border-radius: 0.5rem;
 	}
 
-	.jcf-select .jcf-select-opener:after {
-		content:"\2193";
-	}
-
-	.dir_form .first-row {
-		position: relative;
-	}
-
-	.dir_form .title {
-		font-weight:bold;
-		margin-bottom:3px;
-	}
-
-	#dir_form .label-container div  {
-		display: inline-block;
-	}
-
-	#dir_form .btn-group {
-		width:100%;
-	}
-
-
-	#dir_form #address {
-		background-image: url('/static/images/dir_form_ico_map.png');
-		background-repeat: no-repeat;
-		background-position: right 1rem center;
-	}
-
-	@media screen and (min-width: 767px) {
-		.dir_form .first-row button.multiselect {
-			border-top-right-radius: 0px !important;
-			border-bottom-right-radius: 0px !important;
-		}
-	}
-
-	@media screen and (min-width: 767px) {
-		.dir_form .first-row input.form-control {
-			border-top-left-radius: 0px !important;
-			border-bottom-left-radius: 0px !important;
-			border-left: none !important;
-		}
-	}
-
-	#dir_form button.multiselect {
-		display: block;
-		width: 100%;
-		text-align: left;
-		background-color: #fff;
-		color: $gray-900;
-		border: 1px solid $gray-600;
-		margin:0;
-		background-position: right 1rem center;
-		background-repeat: no-repeat;    
-		background-image: url('/static/images/dir_form_ico_shape.png');    
-	}
-
-	#dir_form ul.multiselect-container a {
-		text-decoration:none;
-		cursor: pointer;
-		display: block;
-	}
-	
 	#csv_form .jcf-checkbox {
 		display: none;
 	}

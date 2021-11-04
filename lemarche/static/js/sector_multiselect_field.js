@@ -51,10 +51,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // ability to select all group's child options in 1 click
             enableClickableOptGroups: true,
             // other
+            buttonContainer: '<div id="id_sectors_multiselect" class="btn-group" />',
+            widthSynchronizationMode: 'ifPopupIsSmaller',
             // enableHTML: true,
             // nonSelectedText: `<span class="text-muted">${sectorFormPlaceholder}</span>`,
             templates: {
-                resetButton: '<div class="multiselect-reset text-center p-2"><button type="button" class="btn btn-sm btn-block btn-outline-primary"></button></div>',
+                resetButton: '<div class="multiselect-reset p-2"><button type="button" class="btn btn-sm btn-block btn-outline-primary"></button></div>',
                 // buttonGroupReset: '<button type="button" class="multiselect-reset btn btn-outline-primary btn-block"></button>'
             }
         });
