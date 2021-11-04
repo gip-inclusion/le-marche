@@ -14,7 +14,7 @@ Ressources :
     - Mise en avant des partenaires sur la page d'accueil (carrousel)
 - Recherche :
     - Pouvoir filtrer par réseau
-Tech :
+- Tech :
     - Pouvoir faire des review apps à la volée sur des PR ouvertes (donnée de test grâce à des fixtures)
     - Afficher un bandeau pour différencier les environnements
 
@@ -31,13 +31,15 @@ Tech :
     - Clarifié le nom du bouton de réinitialisation de la recherche par secteurs
     - Certaines structures n'apparaissaient pas dans les résultats (is_active=False pendant la migration). C'est réparé. Cela concernait ~1000 structures
     - Réparé la redirection lorsqu'une personne non-connectée souhaite télécharger la liste des résultats
-Inscription/connexion :
+- Inscription/connexion :
     - réparé un bug lorsque le lien de réinitialisation du mot de passe était invalide (déjà cliqué)
     - Redirections additionnelles pour les pages de connexion et d'inscription (Cocorico)
-Formulaire de contact :
+- Formulaire de contact :
     - le reply-to est maintenant l'email fourni par l'utilisateur (pour faciliter la réponse sur Zammad)
-API :
-    - Réorganisé la documentation
+- API :
+    - Pouvoir filtrer les structures par réseau
+    - Renvoyer d'avantage d'information dans les détails d'une structure
+    - Réorganisation de la documentation
 
 ### Supprimé
 

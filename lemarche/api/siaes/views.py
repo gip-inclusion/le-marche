@@ -42,7 +42,6 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
                     many=True,
                 )
                 return Response(serializer.data)
-                # return self.get_paginated_response(serializer.data)
             else:
                 ensure_user_permission(token)
                 return super().list(request, format)
