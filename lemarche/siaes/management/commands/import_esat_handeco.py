@@ -94,12 +94,16 @@ class Command(BaseCommand):
         old_esat_count = Siae.objects.filter(kind=Siae.KIND_ESAT).count()
 
         print("Importing Handeco (after GESAT)...")
+        progress = 0
         for esat in esat_list:
             if Siae.objects.filter(siret=esat["siret"]).exists():
                 print(
                     f"SIRET already exists skipping,{Siae.objects.filter(siret=esat['siret']).count()},{esat['title']},{esat['siret']},{Siae.objects.filter(siret=esat['siret']).first().name}"  # noqa
                 )
             else:
+                progress += 1
+                if (progress % 50) == 0:
+                    print(f"{progress}...")
                 self.import_esat(esat)
         # self.import_esat(esat_list[0])
 

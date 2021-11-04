@@ -127,7 +127,11 @@ class Command(BaseCommand):
         # extract_duplicates(esat_list)
 
         print("Importing GESAT...")
+        progress = 0
         for index, esat in enumerate(esat_list):
+            progress += 1
+            if (progress % 50) == 0:
+                print(f"{progress}...")
             self.import_esat(esat)
 
     def import_esat(self, esat):  # noqa C901
