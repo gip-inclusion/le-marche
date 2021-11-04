@@ -277,7 +277,7 @@ class Siae(models.Model):
         "sectors.Sector", verbose_name="Secteurs d'activité", related_name="siaes", blank=True
     )
     networks = models.ManyToManyField("networks.Network", verbose_name="Réseaux", related_name="siaes", blank=True)
-    # ForeignKeys: offers, labels, client_references
+    # ForeignKeys: offers, client_references, labels
 
     is_qpv = models.BooleanField(verbose_name="Zone QPV", blank=False, null=False, default=False)
     qpv_name = models.CharField(max_length=255, blank=True, null=True)
@@ -451,23 +451,6 @@ class SiaeOffer(models.Model):
         return self.name
 
 
-class SiaeLabel(models.Model):
-    name = models.CharField(verbose_name="Nom", max_length=255)
-
-    siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", related_name="labels", on_delete=models.CASCADE)
-
-    created_at = models.DateTimeField("Date de création", default=timezone.now)
-    updated_at = models.DateTimeField("Date de modification", auto_now=True)
-
-    class Meta:
-        verbose_name = "Label & certification"
-        verbose_name_plural = "Labels & certifications"
-        # ordering = ["id"]
-
-    def __str__(self):
-        return self.name
-
-
 class SiaeClientReference(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255, blank=True, null=True)
     description = models.TextField(verbose_name="Description", blank=True)
@@ -489,3 +472,20 @@ class SiaeClientReference(models.Model):
     # def __str__(self):
     #     if self.name:
     #         return self.name
+
+
+class SiaeLabel(models.Model):
+    name = models.CharField(verbose_name="Nom", max_length=255)
+
+    siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", related_name="labels", on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField("Date de création", default=timezone.now)
+    updated_at = models.DateTimeField("Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Label & certification"
+        verbose_name_plural = "Labels & certifications"
+        # ordering = ["id"]
+
+    def __str__(self):
+        return self.name

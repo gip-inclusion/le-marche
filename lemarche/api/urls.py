@@ -1,5 +1,5 @@
 from django.urls import path
-from django.views.generic import TemplateView
+from django.views.generic import RedirectView, TemplateView
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework import routers
 
@@ -25,7 +25,12 @@ router.register(r"perimeters", PerimeterViewSet, basename="perimeters")
 urlpatterns = [
     path("", TemplateView.as_view(template_name="api/home.html"), name="home"),
     # Additional API endpoints
-    path("siaes/siret/<str:siret>/", SiaeViewSet.as_view({"get": "retrieve_by_siret"}), name="siae-retrieve-by-siret"),
+    path("siae/siret/<str:siret>/", SiaeViewSet.as_view({"get": "retrieve_by_siret"}), name="siae-retrieve-by-siret"),
+    path(
+        "siaes/siret/<str:siret>/",
+        RedirectView.as_view(pattern_name="api:siae-retrieve-by-siret", permanent=True),
+        name="old_api_siae_siret",
+    ),
     # Swagger / OpenAPI documentation
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path("docs/", SpectacularSwaggerView.as_view(url_name="api:schema"), name="swagger-ui"),

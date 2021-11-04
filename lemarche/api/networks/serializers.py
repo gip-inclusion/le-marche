@@ -12,3 +12,12 @@ class NetworkSerializer(serializers.ModelSerializer):
             "brand",
             "website",
         ]
+
+
+class NetworkSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Network
+        fields = [
+            "name",
+            "slug",
+        ]
