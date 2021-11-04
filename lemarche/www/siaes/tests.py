@@ -49,6 +49,12 @@ class SiaeKindSearchFilterTest(TestCase):
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 1)
 
+    def test_search_kind_multiple_should_filter(self):
+        url = reverse("siae:search_results") + f"?kind={Siae.KIND_EI}&kind={Siae.KIND_AI}"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1 + 1)
+
 
 class SiaePrestaTypeSearchFilterTest(TestCase):
     @classmethod
@@ -114,6 +120,8 @@ class SiaeSectorSearchFilterTest(TestCase):
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 1)
+
+    def test_search_sector_multiple_should_filter(self):
         url = reverse("siae:search_results") + f"?sectors={self.sector_1.slug}&sectors={self.sector_3.slug}"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
