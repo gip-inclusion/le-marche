@@ -23,68 +23,100 @@
 {% block content %}
 <section class="pt-4 pb-6 pb-lg-8">
     <div class="container container-max-lg">
-        <div class="jumbotron">
-            <h1>API marché de l'inclusion</h1>
-            <p class="lead">L'API du <a href="{% url 'pages:home' %}" target="_blank">marché de l'inclusion</a> met à disposition le répertoire qualifié des structures d'insertion par l'activité économique.</p>
-            <p class="text-muted">Version: 0.11</p>
+        <h1>API du marché de l'inclusion</h1>
+        <p class="lead">L'API met à disposition le répertoire qualifié des structures d'insertion par l'activité économique.</p>
+
+        <div class="alert alert-warning" role="alert">
+            Service en cours de co-construction.<br />
+            L'API devrait être finalisée et publiée sur <a href="https://api.gouv.fr/" target="_blank" rel="noopener">api.gouv.fr</a> d'ici à la fin de l'année !
         </div>
-        <div class="row">
-            <div class="col-12 bg-warning text-dark p-3">
-                Service en expérimentation et en construction...<br />
-                L'accès aux données complètes est limité pendant la période de construction du service.<br />
-                Si vous désirez obtenir un <strong>token</strong> (jeton) utilisateur, merci de nous adresser votre demande via le 
-                <a href="{% url 'pages:contact' %}" class="text-dark">formulaire de contact</a>.
-            </div>
-        </div>
+
         <div class="row mt-5">
             <div class="col-12">
-                <h3 class="mb-3">Dernières Nouveautés</h3>
-                <div class="container">
-                    <dl class="row">
-                        <dt class="col-sm-3">[v0.12] Perimeters autocomplete</dt>
-                        <dd class="col-sm-9">Nouvelle ressource dédiée à l'auto-complétion des périmètres.</dd>
-
-                        <dt class="col-sm-3">[v0.11] Préparation pour la v1</dt>
-                        <dd class="col-sm-9">Les champs sont basculés en anglais pour homogénéiser avec le schéma sous-jacent. L'url est maintenant finale (sans le sous-domaine 'api').</dd>
-
-                        <dt class="col-sm-3">[v0.10] Filtre secteur</dt>
-                        <dd class="col-sm-9">Pouvoir filtrer les Siae par un ou plusieurs secteurs d'activité</dd>
-
-                        <dt class="col-sm-3">[v0.9] Données "Type de structure" & "Type de prestation"</dt>
-                        <dd class="col-sm-9">2 nouveaux endpoints "/siae/kinds" & "/siaes/presta-types". Possible aussi de filtrer les structures par type de prestation</dd>
-
-                        <dt class="col-sm-3">Données "Réseau"</dt>
-                        <dd class="col-sm-9">Un nouvel endpoint "/networks" donne la liste des réseaux de l'inclusion</dd>
-
-                        <dt class="col-sm-3">Accès API déplacé</dt>
-                        <dd class="col-sm-9">L'accès à l'API est déplacé dans le sous-dossiers <a href="/api">/api</a></dd>
-
-                        <dt class="col-sm-3">Secteurs d'activité</dt>
-                        <dd class="col-sm-9">L'endpoint secteurs d'activité a été re-architecturé, les données sont désormais mieux représentées</dd>
-
-                        <dt class="col-sm-3">Migration du Marché</dt>
-                        <dd class="col-sm-9">Le site du marché de l'inclusion va rejoindre le socle technique de l'API</dd>
-                    </dl>
-                </div>
+                <h2>Documentation</h2>
+                <p>
+                    Une documentation est disponible pour explorer et tester les possibilités de l'API. Elle liste aussi les dernières nouveautés.
+                </p>
+                <p>
+                    <a href="{% url 'api:swagger-ui' %}" target="_blank" class="btn btn-outline-primary">📚 Accéder à la documentation</a>
+                </p>
             </div>
         </div>
-        <hr />
+
         <div class="row mt-5">
-            <div class="col-md-6">
-                <h2>Documentation OpenAPI</h2>
-                <p>Interface OpenAPI, aussi connue sous le nom de Swagger</p>
-                <p><a href="{% url 'api:swagger-ui' %}" target="_blank" class="btn btn-success">Ouvrir OpenAPI</a></p>
+            <div class="col-12">
+                <h2>Authentification</h2>
+
+                <p>Certaines données nécessitent un <strong>token</strong> (jeton utilisateur).</p>
+                <p>Si vous désirez en obtenir un, merci de nous adresser votre demande via le <a href="{% url 'pages:contact' %}" class="text-dark">formulaire de contact</a>.</p>
             </div>
-            <div class="col-md-6">
-                <h2>Documentation Redoc</h2>
-                <p>ReDoc est une interface REACT par-dessus la spécification OpenAPI</p>
-                <p><a href="{% url 'api:redoc' %}" target="_blank" class="btn btn-success">Ouvrir ReDoc</a></p>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-12">
+                <h2 class="mb-3">Dernières Nouveautés</h2>
+                <div class="container">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Version</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>02/11/2021</td>
+                                <td>0.12</td>
+                                <td>
+                                    - Nouvelle ressource <code>/perimeters/autocomplete</code> dédiée à l'auto-complétion des périmètres
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>27/10/2021</td>
+                                <td>0.11</td>
+                                <td>
+                                    - Migration du marché terminée (l'application et l'API partagent maintenant le même socle technique)<br />
+                                    - Les champs sont basculés en anglais pour homogénéiser avec le schéma sous-jacent<br />
+                                    - L'url est maintenant finale (sans le sous-domaine <code>api.</code>).
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>10/2021</td>
+                                <td>0.10</td>
+                                <td>
+                                    - Possibilité de filtrer les structures par secteur(s) d'activité
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>10/2021</td>
+                                <td>0.9</td>
+                                <td>
+                                    - Nouvelle ressource <code>/siae/kinds</code><br/>
+                                    - Nouvelle ressource <code>/siae/presta-types</code><br/>
+                                    - Possibilité de filtrer les structures par type de prestation
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>09/2021</td>
+                                <td>0.8</td>
+                                <td>
+                                    - Nouvelle ressource <code>/networks</code> pour récupérer la liste des réseaux de l'inclusion
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>09/2021</td>
+                                <td>0.7</td>
+                                <td>
+                                    - Le site du marché de l'inclusion va prochainement rejoindre le socle technique de l'API<br/>
+                                    - L'accès à l'API est déplacé dans le sous-dossiers <code>/api</code><br />
+                                    - La ressource secteurs d'activité a été re-architecturé (les données sont désormais mieux représentées)
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <!-- <div class="col-md-4">
-                <h2>DJango REST</h2>
-                <p>Interface REST Framework : une interface REST interactive </p>
-                <p><a href="{% url 'api:siae-list' %}" target="_blank" class="btn btn-success">Ouvrir DRF</a></p>
-            </div> -->
         </div>
     </div>
 </section>

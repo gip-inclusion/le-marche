@@ -1,7 +1,7 @@
 # Journal des modifications
 
 Ressources :
-- [Semantic Versioning](http://semver.org/) 
+- [Semantic Versioning](http://semver.org/)
 - [CHANGELOG recommendations](http://keepachangelog.com/).
 
 ## [1.1] - 2021-11-05
@@ -9,22 +9,35 @@ Ressources :
 ### Ajouté
 
 - Début du changelog (premier sprint post-migration)
-- Lien vers la liste des facilitateurs (google doc) sur la page "C'est quoi l'inclusion"
-- Pouvoir faire des review apps à la volée sur des PR ouvertes (donnée de test grâce à des fixtures)
-- Mise en avant des partenaires sur la page d'accueil (carrousel)
+- Pages :
+    - Lien vers la liste des facilitateurs (google doc) sur la page "C'est quoi l'inclusion"
+    - Mise en avant des partenaires sur la page d'accueil (carrousel)
+- Recherche :
+    - Pouvoir filtrer par réseau
+Tech :
+    - Pouvoir faire des review apps à la volée sur des PR ouvertes (donnée de test grâce à des fixtures)
+    - Afficher un bandeau pour différencier les environnements
 
 ### Modifié
 
+- Pages :
+    - Quelques mini changements sur la page d'accueil : typo, renommé le bouton Newsletter, meilleur affichage sur mobile
 - Recherche :
     - Correctif pour ne pas afficher la modal pour les utilisateurs connectés
     - Correctif pour éviter de renvoyer des doublons
     - Modifié les résultats lorsqu'une ville est cherchée: les structures présentes dans la ville, mais avec périmètre d'intervention autre que Distance ou Département, sont quand même renvoyés
+    - Pouvoir chercher par code postal
+    - Pouvoir chercher avec plusieurs types de structures à la fois
     - Clarifié le nom du bouton de réinitialisation de la recherche par secteurs
+    - Certaines structures n'apparaissaient pas dans les résultats (is_active=False pendant la migration). C'est réparé. Cela concernait ~1000 structures
+    - Réparé la redirection lorsqu'une personne non-connectée souhaite télécharger la liste des résultats
 Inscription/connexion :
     - réparé un bug lorsque le lien de réinitialisation du mot de passe était invalide (déjà cliqué)
     - Redirections additionnelles pour les pages de connexion et d'inscription (Cocorico)
 Formulaire de contact :
     - le reply-to est maintenant l'email fourni par l'utilisateur (pour faciliter la réponse sur Zammad)
+API :
+    - Réorganisé la documentation
 
 ### Supprimé
 

@@ -321,16 +321,18 @@ REST_FRAMEWORK = {
 # https://drf-spectacular.readthedocs.io/en/latest/settings.html
 # ------------------------------------------------------------------------------
 
+API_DESCRIPTION = """
+Une initiative de <a href="https://inclusion.beta.gouv.fr/" target="_blank" rel="noopener">
+la Plateforme de l'inclusion</a>
+
+Certaines ressources nécessitent un <strong>token</strong> pour accéder complètement à la donnée.<br />
+Vous pouvez en faire la demande via notre
+<a href="https://lemarche.inclusion.beta.gouv.fr/contact/" target="_blank">formulaire de contact</a>.
+"""
+
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Le marché de l'inclusion",
-    "DESCRIPTION": """
-[en construction]
-
-Une initiative de la Plateforme de l'inclusion
-
-Certaines ressources nécessitent un <strong>token</strong> pour accéder complètement à la donnée.
-Vous pouvez en faire la demande via notre formulaire de contact.
-    """,
+    "TITLE": "API du marché de l'inclusion",
+    "DESCRIPTION": API_DESCRIPTION,
     "VERSION": "0.12",
     "CONTACT": {
         "name": "Une question ? Contactez-nous en cliquand ici",
@@ -340,6 +342,7 @@ Vous pouvez en faire la demande via notre formulaire de contact.
         "kind": "lemarche.siaes.models.Siae.KIND_CHOICES",
         "department": "lemarche.siaes.models.Siae.DEPARTMENT_CHOICES",
     },
+    "SWAGGER_UI_SETTINGS": {"defaultModelsExpandDepth": -1},  # hide model schemas
 }
 
 
