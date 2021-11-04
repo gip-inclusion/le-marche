@@ -92,7 +92,7 @@
                 <!-- profile-detail sidebar -->
                 <aside id="sidebar">
                     <div class="profile mb-3">
-                        {% if not siae.website and not user %}
+                        {% if not siae.contact_website and not siae.user.count %}
                         <div class="row">
                             <div class="col-12 mb-3">
                                 <a id="contact" href="https://itou.typeform.com/to/nxG0HlYx#data={{ siae.id }}" class="btn btn-outline-primary btn-block">Être recontacté</a>
