@@ -17,7 +17,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     # ModelViewSet needs 'queryset' to be set otherwise the router won't be
     # able to derive the model Basename. To avoid loading data on object
     # initialisation we load an empty queryset.
-    queryset = Siae.objects.prefetch_related("sectors").all()
+    queryset = Siae.objects.prefetch_related("sectors", "networks").all()
     serializer_class = SiaeListSerializer
     filter_class = SiaeFilter
 
@@ -35,24 +35,16 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         Un <strong>token</strong> est nécessaire pour l'accès complet à cette ressource.
         """
         if request.method == "GET":
-
-            queryset = self.filter_queryset(self.get_queryset())
-            page = self.paginate_queryset(queryset)
-
             token = request.GET.get("token", None)
             if not token:
                 serializer = SiaeListSerializer(
                     Siae.objects.all()[:10],
                     many=True,
                 )
+                return Response(serializer.data)
             else:
                 ensure_user_permission(token)
-                serializer = SiaeListSerializer(
-                    page,
-                    many=True,
-                )
-
-            return self.get_paginated_response(serializer.data)
+                return super().list(request, format)
 
     @extend_schema(
         summary="Détail d'une structure (par son id)",
