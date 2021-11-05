@@ -6,22 +6,22 @@ button.multiselect {
     cursor: default !important;
 }
 
+.multiselect-group {
+    font-weight: 900;
+    font-size: 1rem;
+    padding-bottom: 0 !important;
+}
+.multiselect-option {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
 #id_sectors_multiselect {
     button.multiselect {
         background-position: right 1rem center;
         background-repeat: no-repeat;
         // background-image: url('/static/itou/images/ico-file-list-2-line.svg');
         background-image: url('/static/images/dir_form_ico_shape.png');
-    }
-
-    .multiselect-group {
-        font-weight: 900;
-        font-size: 1rem;
-        padding-bottom: 0 !important;
-    }
-    .multiselect-option {
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
     }
 }
 

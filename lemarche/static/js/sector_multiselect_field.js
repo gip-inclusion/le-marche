@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // });
 
         // hack to set the placeholder color to grey when there is no sector selected
-        const multiselectSelectedText = document.querySelector('.multiselect-selected-text');
+        const multiselectSelectedText = document.querySelector('#id_sectors_multiselect .multiselect-selected-text');
         if (multiselectSelectedText.innerText === sectorFormPlaceholder) {
             multiselectSelectedText.classList.add('text-muted');
         }

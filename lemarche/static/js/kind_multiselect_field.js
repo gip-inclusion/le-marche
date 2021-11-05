@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
      */
 
     const kindFormElement = document.querySelector('#search-form #id_kind');
-    const kindFormPlaceholder = '';
+    const kindFormPlaceholder = 'Insertion, handicap';
 
     const buttonTextAndTitle = function(options, select) {
         if (options.length === 0) {
@@ -38,14 +38,17 @@ document.addEventListener('DOMContentLoaded', function() {
             buttonTextAlignment: 'left',
             buttonText: buttonTextAndTitle,
             buttonTitle: buttonTextAndTitle,
+            // ability to select all group's child options in 1 click
+            enableClickableOptGroups: true,
             // other
+            buttonContainer: '<div id="id_kind_multiselect" class="btn-group" />',
             widthSynchronizationMode: 'ifPopupIsSmaller',
             // enableHTML: true,
             // nonSelectedText: `<span class="text-muted">${kindFormPlaceholder}</span>`,
         });
 
         // hack to set the placeholder color to grey when there is no kind selected
-        const multiselectSelectedText = document.querySelector('.multiselect-selected-text');
+        const multiselectSelectedText = document.querySelector('#id_kind_multiselect .multiselect-selected-text');
         if (multiselectSelectedText.innerText === kindFormPlaceholder) {
             multiselectSelectedText.classList.add('text-muted');
         }
