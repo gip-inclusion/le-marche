@@ -21,6 +21,10 @@ SECTOR_FORM_QUERYSET = (
 
 
 class SiaeSearchForm(forms.Form):
+    FORM_KIND_CHOICES_GROUPED = (
+        ("Insertion par l'activité économique", Siae.KIND_CHOICES_WITH_EXTRA_INSERTION),
+        ("Handicap", Siae.KIND_CHOICES_WITH_EXTRA_HANDICAP[:-1]),  # TODO ESAT: remove filter
+    )
     FORM_PRESTA_CHOICES = EMPTY_CHOICE + Siae.PRESTA_CHOICES
 
     sectors = GroupedModelMultipleChoiceField(
@@ -41,7 +45,7 @@ class SiaeSearchForm(forms.Form):
     )
     kind = forms.MultipleChoiceField(
         label="Type de structure",
-        choices=Siae.KIND_CHOICES_WITH_EXTRA[:-1],  # TODO ESAT: remove filter
+        choices=FORM_KIND_CHOICES_GROUPED,
         required=False,
     )
     presta_type = forms.ChoiceField(

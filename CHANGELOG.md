@@ -14,6 +14,8 @@ Ressources :
     - Mise en avant des partenaires sur la page d'accueil (carrousel)
 - Recherche :
     - Pouvoir filtrer par réseau
+- Données :
+    - Import des ESAT (1778 structures)
 - Tech :
     - Pouvoir faire des review apps à la volée sur des PR ouvertes (donnée de test grâce à des fixtures)
     - Afficher un bandeau pour différencier les environnements
@@ -31,6 +33,7 @@ Ressources :
     - Clarifié le nom du bouton de réinitialisation de la recherche par secteurs
     - Certaines structures n'apparaissaient pas dans les résultats (is_active=False pendant la migration). C'est réparé. Cela concernait ~1000 structures
     - Réparé la redirection lorsqu'une personne non-connectée souhaite télécharger la liste des résultats
+    - Groupé les types de structures par "Insertion" et "Handicap"
 - Inscription/connexion :
     - réparé un bug lorsque le lien de réinitialisation du mot de passe était invalide (déjà cliqué)
     - Redirections additionnelles pour les pages de connexion et d'inscription (Cocorico)
