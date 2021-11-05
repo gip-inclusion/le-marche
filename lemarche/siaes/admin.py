@@ -6,6 +6,7 @@ from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
 from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer, SiaeUser
+from lemarche.utils.fields import pretty_print_readonly_jsonfield
 
 
 class IsLiveFilter(admin.SimpleListFilter):
@@ -73,8 +74,11 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "nb_offers",
         "nb_labels",
         "nb_cient_references",
+        "coords_display",
         "logo_url",
         "logo_url_display",
+        # "import_raw_object",
+        "import_raw_object_display",
         "created_at",
         "updated_at",
     ]
@@ -104,6 +108,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "post_code",
                     "department",
                     "region",
+                    "coords_display",
                     "coords",
                 )
             },
@@ -154,6 +159,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                 )
             },
         ),
+        ("Si importé", {"fields": ("import_raw_object_display",)}),
         ("Autres", {"fields": ("created_at", "updated_at")}),
     ]
 
@@ -187,16 +193,30 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     nb_cient_references.short_description = "Nombre de réf. clients"
     nb_cient_references.admin_order_field = "client_reference_count"
 
-    def logo_url_display(self, instance):
-        if instance.logo_url:
+    def coords_display(self, siae):
+        if siae.coords:
+            return f"{siae.latitude} / {siae.longitude}"
+        return "-"
+
+    coords_display.short_description = "Coords (LAT / LNG)"
+
+    def logo_url_display(self, siae):
+        if siae.logo_url:
             return mark_safe(
-                f'<a href="{instance.logo_url}" target="_blank">'
-                f'<img src="{instance.logo_url}" title="{instance.logo_url}" style="max-height:300px" />'
+                f'<a href="{siae.logo_url}" target="_blank">'
+                f'<img src="{siae.logo_url}" title="{siae.logo_url}" style="max-height:300px" />'
                 f"</a>"
             )
         return mark_safe("<div>-</div>")
 
     logo_url_display.short_description = "Logo"
+
+    def import_raw_object_display(self, siae=None):
+        if siae:
+            return pretty_print_readonly_jsonfield(siae.import_raw_object)
+        return "-"
+
+    import_raw_object_display.short_description = "Donnée brute importée"
 
 
 @admin.register(SiaeOffer)

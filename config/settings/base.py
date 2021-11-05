@@ -299,9 +299,16 @@ API_PERIMETER_AUTOCOMPLETE_MAX_RESULTS = 20
 # Base Adresse Nationale (BAN).
 # https://adresse.data.gouv.fr/faq
 API_BAN_BASE_URL = "https://api-adresse.data.gouv.fr"
-
 # https://api.gouv.fr/api/api-geo.html#doc_tech
 API_GEO_BASE_URL = "https://geo.api.gouv.fr"
+
+# API Entreprise.
+# https://dashboard.entreprise.api.gouv.fr/login (login is done through auth.api.gouv.fr)
+# https://doc.entreprise.api.gouv.fr/
+API_ENTREPRISE_BASE_URL = "https://entreprise.api.gouv.fr/v2"
+API_ENTREPRISE_CONTEXT = "emplois.inclusion.beta.gouv.fr"
+API_ENTREPRISE_RECIPIENT = env.str("API_ENTREPRISE_RECIPIENT", "")
+API_ENTREPRISE_TOKEN = env.str("API_ENTREPRISE_TOKEN", "")
 
 
 # Django REST Framework settings.

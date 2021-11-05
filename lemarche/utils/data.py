@@ -18,3 +18,8 @@ def reset_app_sql_sequences(app_name):
         cursor.execute(sql)
     output.close()
     print("Reset complete !")
+
+
+def rename_dict_key(dict, key_name_before, key_name_after):
+    dict[key_name_after] = dict[key_name_before]
+    dict.pop(key_name_before)

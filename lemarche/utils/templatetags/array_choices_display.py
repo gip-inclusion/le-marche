@@ -21,5 +21,5 @@ def array_choices_display(obj, field):
     except:  # noqa
         keys = getattr(obj, field, [])
 
-    values = [force_str(choices_dict.get(key, "")) for key in keys]
+    values = [force_str(choices_dict.get(key, "")) for key in (keys or [])]
     return ", ".join(filter(None, values))

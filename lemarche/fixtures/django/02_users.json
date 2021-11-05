@@ -10,6 +10,7 @@
          "last_name": "",
          "is_staff": true,
          "is_active": true,
+         "kind": "ADMIN",
          "date_joined": "2019-09-30T13:30:45.639Z",
          "email": "admin@test.com",
          "phone": "",

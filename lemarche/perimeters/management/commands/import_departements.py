@@ -46,6 +46,8 @@ class Command(BaseCommand):
             self.logger.setLevel(logging.DEBUG)
 
     def handle(self, dry_run=False, **options):
+        self.stdout.write("-" * 80)
+        self.stdout.write("Importing Perimeters > departements...")
 
         self.set_logger(options.get("verbosity"))
 
@@ -114,5 +116,4 @@ class Command(BaseCommand):
                     },
                 )
 
-        self.stdout.write("-" * 80)
         self.stdout.write("Done.")

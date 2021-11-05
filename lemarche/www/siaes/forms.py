@@ -41,7 +41,7 @@ class SiaeSearchForm(forms.Form):
     )
     kind = forms.MultipleChoiceField(
         label="Type de structure",
-        choices=Siae.KIND_CHOICES_WITH_EXTRA,
+        choices=Siae.KIND_CHOICES_WITH_EXTRA[:-1],  # TODO ESAT: remove filter
         required=False,
     )
     presta_type = forms.ChoiceField(
@@ -79,7 +79,8 @@ class SiaeSearchForm(forms.Form):
         Method to filter the Siaes depending on the search filters.
         We also make sure there are no duplicates.
         """
-        qs = Siae.objects.prefetch_related("sectors", "networks", "users")
+        # TODO ESAT: remove filter
+        qs = Siae.objects.prefetch_related("sectors", "networks", "users").exclude(kind=Siae.KIND_ESAT)
 
         # we only display live Siae
         qs = qs.is_live()

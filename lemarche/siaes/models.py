@@ -103,6 +103,7 @@ class Siae(models.Model):
         "phone",
         "kind",
         "nature",
+        "address",
         "city",
         "post_code",
         "department",
@@ -114,9 +115,9 @@ class Siae(models.Model):
         "is_active",
         "siret_is_valid",
         "c1_id",
-        "c1_source",
         "c4_id_old",
         "last_sync_date",
+        "source",
     ]
     READONLY_FIELDS_FROM_QPV = ["is_qpv", "qpv_name", "qpv_code"]
     READONLY_FIELDS_FROM_APIGOUV = ["ig_employees", "ig_ca", "ig_date_constitution"]
@@ -130,6 +131,7 @@ class Siae(models.Model):
     KIND_GEIQ = "GEIQ"
     KIND_EA = "EA"
     KIND_EATT = "EATT"
+    KIND_ESAT = "ESAT"
 
     KIND_CHOICES = (
         (KIND_EI, "Entreprise d'insertion"),  # Regroupées au sein de la fédération des entreprises d'insertion.
@@ -141,6 +143,7 @@ class Siae(models.Model):
         (KIND_GEIQ, "Groupement d'employeurs pour l'insertion et la qualification"),
         (KIND_EA, "Entreprise adaptée"),
         (KIND_EATT, "Entreprise adaptée de travail temporaire"),
+        (KIND_ESAT, "Etablissement et service d'aide par le travail"),
     )
     # KIND_CHOICES_WITH_EXTRA = ((key, f"{value} ({key})") for (key, value) in KIND_CHOICES)
     KIND_CHOICES_WITH_EXTRA = (
@@ -153,6 +156,7 @@ class Siae(models.Model):
         (KIND_GEIQ, "Groupement d'employeurs pour l'insertion et la qualification (GEIQ)"),
         (KIND_EA, "Entreprise adaptée (EA)"),
         (KIND_EATT, "Entreprise adaptée de travail temporaire (EATT)"),
+        (KIND_ESAT, "Etablissement et service d'aide par le travail (ESAT)"),
     )
 
     SOURCE_ASP = "ASP"
@@ -160,6 +164,7 @@ class Siae(models.Model):
     SOURCE_EA_EATT = "EA_EATT"
     SOURCE_USER_CREATED = "USER_CREATED"
     SOURCE_STAFF_CREATED = "STAFF_CREATED"
+    SOURCE_ESAT = "ESAT"
 
     SOURCE_CHOICES = (
         (SOURCE_ASP, "Export ASP"),
@@ -167,6 +172,7 @@ class Siae(models.Model):
         (SOURCE_EA_EATT, "Export EA+EATT"),
         (SOURCE_USER_CREATED, "Utilisateur (Antenne)"),
         (SOURCE_STAFF_CREATED, "Staff Itou"),
+        (SOURCE_ESAT, "Import ESAT (GSAT, Handeco)"),
     )
 
     NATURE_HEAD_OFFICE = "HEAD_OFFICE"
@@ -223,6 +229,7 @@ class Siae(models.Model):
     website = models.URLField(verbose_name="Site internet", blank=True, null=True)
     email = models.EmailField(verbose_name="E-mail", blank=True, null=True)
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True, null=True)
+
     address = models.TextField(verbose_name="Adresse")
     city = models.CharField(verbose_name="Ville", max_length=255, blank=True, null=True)
     # department is a code
@@ -288,11 +295,12 @@ class Siae(models.Model):
     ig_date_constitution = models.DateTimeField(blank=True, null=True)
 
     c1_id = models.IntegerField(blank=True, null=True)
-    c1_source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True, null=True)
     c4_id_old = models.IntegerField(blank=True, null=True)
-
     last_sync_date = models.DateTimeField(blank=True, null=True)
     sync_skip = models.BooleanField(blank=False, null=False, default=False)
+
+    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True, null=True)
+    import_raw_object = models.JSONField("Donnée JSON brute", editable=False, null=True)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
@@ -316,10 +324,10 @@ class Siae(models.Model):
         Some SIAE have duplicate name, so we suffix the slug with their department.
         In some rare cases, name+department is not enough, so we add 4 random characters at the end.
         """
-        # if not self.id:  # TODO: revert post-migration
-        self.slug = f"{slugify(self.name)[:40]}-{str(self.department or '')}"
-        if with_uuid:
-            self.slug += f"-{str(uuid4())[:4]}"
+        if not self.id:
+            self.slug = f"{slugify(self.name)[:40]}-{str(self.department or '')}"
+            if with_uuid:
+                self.slug += f"-{str(uuid4())[:4]}"
 
     def save(self, *args, **kwargs):
         """Generate the slug field before saving."""
