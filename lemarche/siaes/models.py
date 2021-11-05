@@ -103,6 +103,7 @@ class Siae(models.Model):
         "phone",
         "kind",
         "nature",
+        "address",
         "city",
         "post_code",
         "department",

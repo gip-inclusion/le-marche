@@ -72,12 +72,14 @@
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <div class="row">
-                                    <div class="col-12 mb-3">
-                                        <span class="prof_icon mr-1"><img src="{% static 'img/prof_types.svg' %}" /></span>
-                                        <span>{% array_choices_display siae 'presta_type' %}</span>
+                                {% if siae.presta_type %}
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <span class="prof_icon mr-1"><img src="{% static 'img/prof_types.svg' %}" /></span>
+                                            <span>{% array_choices_display siae 'presta_type' %}</span>
+                                        </div>
                                     </div>
-                                </div>
+                                {% endif %}
                                 <div class="row">
                                     <div class="col-12 mb-3">
                                         <span class="prof_icon mr-1"><img src="{% static 'img/prof_nature.svg' %}" /></span>
@@ -92,15 +94,15 @@
                 <!-- profile-detail sidebar -->
                 <aside id="sidebar">
                     <div class="profile mb-3">
-                        {% if not siae.contact_website and not siae.user.count %}
+                        {% if not siae.contact_website and not siae.contact_email and not siae.contact_phone and not siae.user.count %}
                         <div class="row">
                             <div class="col-12 mb-3">
-                                <a id="contact" href="https://itou.typeform.com/to/nxG0HlYx#data={{ siae.id }}" class="btn btn-outline-primary btn-block">Être recontacté</a>
+                                <a id="contact" class="btn btn-outline-primary btn-block" href="https://itou.typeform.com/to/nxG0HlYx#data={{ siae.id }}" target="_blank" rel="nofollow noopener">Être recontacté</a>
                             </div>
                         </div>
                         {% endif %}
                         <div class="profile_capsule">
-                            {% if siae.contact_website or siae.users.count %}
+                            {% if siae.contact_website or siae.contact_email or siae.contact_phone or siae.users.count %}
                             <div class="map_coordonnees">
                                 <button class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-3" type="button" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
                                     <span>Afficher les coordonnées</span>
@@ -115,19 +117,19 @@
                                                 <a id="company_website" href="{{ siae.contact_website }}" target="_blank" rel="nofollow noopener">{{ siae.contact_website }}</a>
                                             </li>
                                         {% endif %}
+                                        {% if siae.contact_email %}
+                                            <li>
+                                                <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" /></span>
+                                                <span class="prof_email">{{ siae.contact_email }}</span>
+                                            </li>
+                                        {% endif %}
+                                        {% if siae.contact_phone %}
+                                            <li>
+                                                <span class="prof_icon"><img src="{% static 'img/profile-ico-phone.svg' %}" /></span>
+                                                <span>{{ siae.contact_phone }}</span>
+                                            </li>
+                                        {% endif %}
                                         {% if siae.users.count %}
-                                            {% if siae.contact_email %}
-                                                <li>
-                                                    <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" /></span>
-                                                    <span class="prof_email">{{ siae.contact_email }}</span>
-                                                </li>
-                                            {% endif %}
-                                            {% if siae.contact_phone %}
-                                                <li>
-                                                    <span class="prof_icon"><img src="{% static 'img/profile-ico-phone.svg' %}" /></span>
-                                                    <span>{{ siae.contact_phone }}</span>
-                                                </li>
-                                            {% endif %}
                                             {% if siae.contact_short_name %}
                                                 <li>
                                                     <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" /></span>
@@ -137,7 +139,7 @@
                                         {% endif %}
                                         <li>
                                             <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" /></span>
-                                            <span>{{ siae.post_code }} {{ siae.city }}</span>
+                                            <span>{{ siae.address }} {{ siae.post_code }} {{ siae.city }}</span>
                                         </li>
                                     </ul>
                                 </div>
@@ -297,7 +299,7 @@
         </div>
         <div class="row">
             <div class="col-12 my-5">
-                <small><sup>*</sup>source: <a href="https://entreprise.api.gouv.fr/" rel="nofollow" target="_blank">informations en provenance de https://entreprise.api.gouv.fr</a></small>
+                <small><sup>*</sup>source: informations en provenance d'<a href="https://entreprise.api.gouv.fr/" target="_blank" rel="nofollow noopener">entreprise.api.gouv.fr</a></small>
             </div>
         </div>
     </div>
@@ -309,7 +311,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     // siae coords output as floats with commas. We need to transform them into floats.
     const siaeName = "{{ siae.name }}";
-    const siaeBrand = "{{ siae.brand }}";
+    const siaeBrand = "{{ siae.brand|default:'' }}";
     const siaeLatitudeString = "{{ siae.coords.x }}";
     const siaeLongitudeString = "{{ siae.coords.y }}";
     const siaeLatitudeFloat = parseFloat(siaeLatitudeString.replace(',', '.'));

@@ -1,25 +1,146 @@
 [
-{
-   "model": "networks.network",
-   "pk": 1,
-   "fields": {
-      "name": "Union nationale des entreprises adaptées",
-      "slug": "union-nationale-des-entreprises-adaptees",
-      "brand": "UNEA",
-      "created_at": "2019-12-05T14:37:56.609Z",
-      "updated_at": "2020-12-18T10:38:52.329Z"
+   {
+      "model": "networks.network",
+      "pk": 1,
+      "fields": {
+         "name": "Union nationale des entreprises adaptées",
+         "slug": "union-nationale-des-entreprises-adaptees",
+         "brand": "UNEA",
+         "website": "https://www.unea.fr/",
+         "created_at": "2021-07-01T12:44:39Z",
+         "updated_at": "2021-10-26T22:26:47.569Z"
+      }
+   },
+   {
+      "model": "networks.network",
+      "pk": 2,
+      "fields": {
+         "name": "UNAPEI",
+         "slug": "unapei",
+         "brand": "UNAPEI",
+         "website": "https://www.unapei.org/",
+         "created_at": "2021-07-01T12:44:57Z",
+         "updated_at": "2021-10-26T22:26:47.574Z"
+      }
+   },
+   {
+      "model": "networks.network",
+      "pk": 3,
+      "fields": {
+         "name": "UNAI",
+         "slug": "unai",
+         "brand": "UNAI",
+         "website": "https://unai.fr",
+         "created_at": "2021-07-01T12:45:10Z",
+         "updated_at": "2021-10-26T22:26:47.578Z"
+      }
+   },
+   {
+      "model": "networks.network",
+      "pk": 4,
+      "fields": {
+         "name": "Tissons la solidarité",
+         "slug": "tissons-la-solidarite",
+         "brand": "Tissons la solidarité",
+         "website": "https://www.tissonslasolidarite.fr/",
+         "created_at": "2021-07-01T12:45:23Z",
+         "updated_at": "2021-10-26T22:26:47.581Z"
+      }
+   },
+   {
+      "model": "networks.network",
+      "pk": 5,
+      "fields": {
+         "name": "Réseau Envie",
+         "slug": "reseau-envie",
+         "brand": "Réseau Envie",
+         "website": "https://www.envie.org/",
+         "created_at": "2021-07-01T12:45:37Z",
+         "updated_at": "2021-10-26T22:26:47.583Z"
+      }
+   },
+   {
+      "model": "networks.network",
+      "pk": 6,
+      "fields": {
+         "name": "Réseau Cocagne",
+         "slug": "reseau-cocagne",
+         "brand": "Réseau Cocagne",
+         "website": "http://www.reseaucocagne.asso.fr/",
+         "created_at": "2021-07-01T12:45:49Z",
+         "updated_at": "2021-10-26T22:26:47.586Z"
+      }
+   },
+   {
+      "model": "networks.network",
+      "pk": 7,
+      "fields": {
+         "name": "Fédération française des GEIQ",
+         "slug": "federation-francaise-des-geiq",
+         "brand": "FFGeiq",
+         "website": "https://www.lesgeiq.fr/",
+         "created_at": "2021-07-01T12:46:04Z",
+         "updated_at": "2021-10-26T22:26:47.590Z"
+      }
+   },
+   {
+      "model": "networks.network",
+      "pk": 8,
+      "fields": {
+         "name": "Fédération des entreprises d'insertion",
+         "slug": "federation-des-entreprises-dinsertion",
+         "brand": "FEI",
+         "website": "http://www.lesentreprisesdinsertion.org/",
+         "created_at": "2021-07-01T12:46:18Z",
+         "updated_at": "2021-10-26T22:26:47.592Z"
+      }
+   },
+   {
+      "model": "networks.network",
+      "pk": 9,
+      "fields": {
+         "name": "Fédération des acteurs de la solidarité",
+         "slug": "federation-des-acteurs-de-la-solidarite",
+         "brand": "FAS",
+         "website": "https://www.federationsolidarite.org/",
+         "created_at": "2021-07-01T12:46:33Z",
+         "updated_at": "2021-10-26T22:26:47.596Z"
+      }
+   },
+   {
+      "model": "networks.network",
+      "pk": 10,
+      "fields": {
+         "name": "Coorace",
+         "slug": "coorace",
+         "brand": "Coorace",
+         "website": "http://www.coorace.org/",
+         "created_at": "2021-07-01T12:46:46Z",
+         "updated_at": "2021-10-26T22:26:47.598Z"
+      }
+   },
+   {
+      "model": "networks.network",
+      "pk": 11,
+      "fields": {
+         "name": "Comité national de liaison des régies de quartier",
+         "slug": "comite-national-de-liaison-des-regies-de-quartier",
+         "brand": "CNLRQ",
+         "website": "https://www.regiedequartier.org/",
+         "created_at": "2021-07-01T12:47:00Z",
+         "updated_at": "2021-10-26T22:26:47.601Z"
+      }
+   },
+   {
+      "model": "networks.network",
+      "pk": 13,
+      "fields": {
+         "name": "Chantier Ecole",
+         "slug": "chantier-ecole",
+         "brand": "Chantier Ecole",
+         "website": "http://www.chantierecole.org/",
+         "created_at": "2021-07-01T12:47:25Z",
+         "updated_at": "2021-10-26T22:26:47.604Z"
+      }
    }
-},
-{
-   "model": "networks.network",
-   "pk": 2,
-   "fields": {
-      "name": "Chantier Ecole",
-      "slug": "chantier-ecole",
-      "brand": "Chantier Ecole",
-      "website": "http://www.chantierecole.org/",
-      "created_at": "2019-12-05T14:37:56.609Z",
-      "updated_at": "2020-12-18T10:38:52.329Z"
-   }
-}
 ]

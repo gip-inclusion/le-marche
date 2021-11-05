@@ -70,10 +70,10 @@ class SiaeSearchAdoptConfirmForm(forms.ModelForm):
 
 
 class SiaeEditInfoContactForm(forms.ModelForm):
-    # slug =
-    kind = forms.CharField(label=Siae._meta.get_field("kind").verbose_name)
-    department = forms.CharField(label=Siae._meta.get_field("department").verbose_name)
-    region = forms.CharField(label=Siae._meta.get_field("region").verbose_name)
+    # # to avoid select widget
+    # kind = forms.CharField(label=Siae._meta.get_field("kind").verbose_name)
+    # department = forms.CharField(label=Siae._meta.get_field("department").verbose_name)
+    # region = forms.CharField(label=Siae._meta.get_field("region").verbose_name)
 
     class Meta:
         model = Siae
@@ -84,6 +84,7 @@ class SiaeEditInfoContactForm(forms.ModelForm):
             "kind",
             "email",
             "phone",
+            "address",
             "city",
             "post_code",
             "department",
@@ -95,6 +96,9 @@ class SiaeEditInfoContactForm(forms.ModelForm):
             "contact_website",
             "logo_url",
         ]
+        widgets = {
+            "address": forms.Textarea(attrs={"rows": 2}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
