@@ -1,8 +1,11 @@
+import json
 from functools import partial
 from itertools import groupby
 from operator import attrgetter
 
 from django.forms.models import ModelChoiceField, ModelChoiceIterator, ModelMultipleChoiceField
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
 
 
 # taken from https://simpleisbetterthancomplex.com/tutorial/2019/01/02/how-to-implement-grouped-model-choice-field.html
@@ -40,3 +43,17 @@ class GroupedModelMultipleChoiceField(ModelMultipleChoiceField):
             raise TypeError("choices_groupby must either be a str or a callable accepting a single argument")
         self.iterator = partial(GroupedModelChoiceIterator, groupby=choices_groupby)
         super().__init__(*args, **kwargs)
+
+
+def pretty_print_readonly_jsonfield(jsonfield_data):
+    """
+    Display a pretty readonly version of a JSONField
+    https://stackoverflow.com/a/60219265
+    """
+    result = ""
+
+    if jsonfield_data:
+        result = json.dumps(jsonfield_data, indent=4, ensure_ascii=False)
+        result = mark_safe(f"<pre>{escape(result)}</pre>")
+
+    return result

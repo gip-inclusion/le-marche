@@ -1,0 +1,202 @@
+[
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 1,
+        "fields": {
+            "name": "Espaces verts & extérieurs",
+            "slug": "espaces-verts-exterieurs-2",
+            "created_at": "2021-10-26T22:26:52.996Z",
+            "updated_at": "2021-10-26T22:26:52.997Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 2,
+        "fields": {
+            "name": "Medico-social",
+            "slug": "medico-social",
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 4,
+        "fields": {
+            "name": "Réparations & Dépannages",
+            "slug": "reparations-depannages-8",
+            "created_at": "2021-10-26T22:26:53.041Z",
+            "updated_at": "2021-10-26T22:26:53.041Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 10,
+        "fields": {
+            "name": "Entretien du linge",
+            "slug": "entretien-du-linge",
+            "created_at": "2021-10-26T22:26:53.058Z",
+            "updated_at": "2021-10-26T22:26:53.058Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 46,
+        "fields": {
+            "name": "Sécurité & Préventions",
+            "slug": "securite-preventions",
+            "created_at": "2021-10-26T22:26:53.316Z",
+            "updated_at": "2021-10-26T22:26:53.316Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 54,
+        "fields": {
+            "name": "Agro-Alimentaire",
+            "slug": "agro-alimentaire",
+            "created_at": "2021-10-26T22:26:53.354Z",
+            "updated_at": "2021-10-26T22:26:53.354Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 56,
+        "fields": {
+            "name": "Hygiène et Propreté",
+            "slug": "hygiene-et-proprete-64",
+            "created_at": "2021-10-26T22:26:53.017Z",
+            "updated_at": "2021-10-26T22:26:53.017Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 57,
+        "fields": {
+            "name": "Bâtiments et Travaux publics",
+            "slug": "batiments-et-travaux-publics-65",
+            "created_at": "2021-10-26T22:26:53.199Z",
+            "updated_at": "2021-10-26T22:26:53.199Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 59,
+        "fields": {
+            "name": "Assistance générale et administrative",
+            "slug": "assistance-generale-et-administrative-67",
+            "created_at": "2021-10-26T22:26:53.123Z",
+            "updated_at": "2021-10-26T22:26:53.124Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 61,
+        "fields": {
+            "name": "Prestations informatiques",
+            "slug": "prestations-informatiques",
+            "created_at": "2021-10-26T22:26:53.235Z",
+            "updated_at": "2021-10-26T22:26:53.235Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 63,
+        "fields": {
+            "name": "Restauration",
+            "slug": "restauration",
+            "created_at": "2021-10-26T22:26:53.151Z",
+            "updated_at": "2021-10-26T22:26:53.151Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 65,
+        "fields": {
+            "name": "Ameublement, déco, textile & Artisanat",
+            "slug": "ameublement-deco-textile-artisanat-73",
+            "created_at": "2021-10-26T22:26:53.077Z",
+            "updated_at": "2021-10-26T22:26:53.078Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 67,
+        "fields": {
+            "name": "Communication, Marketing",
+            "slug": "communication-marketing",
+            "created_at": "2021-10-26T22:26:53.178Z",
+            "updated_at": "2021-10-26T22:26:53.178Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 68,
+        "fields": {
+            "name": "Sous-traitance industrielle",
+            "slug": "sous-traitance-industrielle",
+            "created_at": "2021-10-26T22:26:53.289Z",
+            "updated_at": "2021-10-26T22:26:53.289Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 71,
+        "fields": {
+            "name": "Déménagements, Livraisons & Transports",
+            "slug": "demenagements-livraisons-transports-79",
+            "created_at": "2021-10-26T22:26:53.098Z",
+            "updated_at": "2021-10-26T22:26:53.098Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 80,
+        "fields": {
+            "name": "Collecte & Traitement des déchets",
+            "slug": "collecte-traitement-des-dechets",
+            "created_at": "2021-10-26T22:26:53.379Z",
+            "updated_at": "2021-10-26T22:26:53.379Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 85,
+        "fields": {
+            "name": "Recyclage, économie circulaire",
+            "slug": "recyclage-economie-circulaire",
+            "created_at": "2021-10-26T22:26:53.262Z",
+            "updated_at": "2021-10-26T22:26:53.263Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 90,
+        "fields": {
+            "name": "Culture, Divertissement et Tourisme",
+            "slug": "culture-divertissement-et-tourisme",
+            "created_at": "2021-10-26T22:26:53.331Z",
+            "updated_at": "2021-10-26T22:26:53.331Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 115,
+        "fields": {
+            "name": "Prestations intellectuelles",
+            "slug": "prestations-intellectuelles",
+            "created_at": "2021-10-26T22:26:53.413Z",
+            "updated_at": "2021-10-26T22:26:53.413Z"
+        }
+    },
+    {
+        "model": "sectors.sectorgroup",
+        "pk": 141,
+        "fields": {
+            "name": "Services à la personne",
+            "slug": "services-a-la-personne",
+            "created_at": "2021-10-26T22:26:53.430Z",
+            "updated_at": "2021-10-26T22:26:53.430Z"
+        }
+    }
+]

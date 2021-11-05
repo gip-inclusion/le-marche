@@ -11,6 +11,7 @@ class SectorGroup(models.Model):
     class Meta:
         verbose_name = "Groupe de secteurs d'activité"
         verbose_name_plural = "Groupes de secteurs d'activité"
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
@@ -33,6 +34,7 @@ class Sector(models.Model):
     class Meta:
         verbose_name = "Secteur d'activité"
         verbose_name_plural = "Secteurs d'activité"
+        ordering = ["name"]
 
     def __str__(self):
         return self.name

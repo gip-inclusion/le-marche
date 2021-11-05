@@ -80,7 +80,7 @@
                                     <h4>{{ siaeuser.siae.name }}</h4>
                                     <p title="{% get_verbose_name siaeuser.siae 'brand' %}" class="mb-2">
                                         <strong>{% get_verbose_name siaeuser.siae 'brand' %} :</strong>
-                                        {{ siaeuser.siae.brand }}
+                                        {{ siaeuser.siae.brand|default:'' }}
                                     </p>
                                     <p title="{% get_verbose_name siaeuser.siae 'siret' %}" class="mb-2">
                                         <strong>{% get_verbose_name siaeuser.siae 'siret' %} :</strong>
