@@ -13,7 +13,9 @@ class SignupForm(UserCreationForm):
     )
 
     kind = forms.ChoiceField(label="", widget=forms.RadioSelect, choices=KIND_CHOICES_FORM, required=True)
-    first_name = forms.CharField(label="Votre prénom", required=True)
+    first_name = forms.CharField(
+        label="Votre prénom", widget=forms.TextInput(attrs={"autofocus": "autofocus"}), required=True
+    )
     last_name = forms.CharField(label="Votre nom", required=True)
     phone = forms.CharField(
         label="Votre numéro de téléphone",
@@ -23,6 +25,11 @@ class SignupForm(UserCreationForm):
     # company_name is hidden by default in the frontend. Shown if the user choses kind BUYER or PARTNER
     company_name = forms.CharField(
         label="Le nom de votre structure",
+        required=False,
+    )
+    # position is hidden by default in the frontend. Shown if the user choses kind BUYER
+    position = forms.CharField(
+        label="Votre poste",
         required=False,
     )
     email = forms.EmailField(
