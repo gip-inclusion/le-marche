@@ -5,9 +5,9 @@
         <div class="card-header">
             <div class="d-flex align-items-center">
                 {% if siae.logo_url %}
-                    <img class="rounded-circle mr-2" height="40" src="{{ siae.logo_url }}" alt="Logo de la structure {{ siae.name }}" />
+                    <img src="{{ siae.logo_url }}" class="rounded-circle mr-2" height="40" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
                 {% else %}
-                    <img class="rounded-circle mr-2" height="40" src="{% static 'img/default-listing.png' %}" alt="{{ siae.name }}" />
+                    <img src="{% static 'img/default-listing.png' %}" class="rounded-circle mr-2" height="40" alt="{{ siae.name }}" loading="lazy" />
                 {% endif %}
                 <a href="{% url 'siae:detail' siae.slug %}" target="_blank" class="d-block font-weight-bold text-decoration-none lh-sm stretched-link">
                     {{ siae.name_display }}
