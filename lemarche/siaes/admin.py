@@ -94,7 +94,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
             },
         ),
         (
-            "Données C1",
+            "Données C1 (ou ESAT)",
             {
                 "fields": (
                     "name",
@@ -104,6 +104,10 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "naf",
                     "kind",
                     "c1_id",
+                    "website",
+                    "email",
+                    "phone",
+                    "address",
                     "city",
                     "post_code",
                     "department",
@@ -114,7 +118,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
             },
         ),
         ("Quartiers de la politique de la ville (QPV)", {"fields": Siae.READONLY_FIELDS_FROM_QPV}),
-        ("Données APIGouv", {"fields": Siae.READONLY_FIELDS_FROM_APIGOUV}),
+        ("Données API Entreprise", {"fields": Siae.READONLY_FIELDS_FROM_APIENTREPRISE}),
         (
             "Détails",
             {

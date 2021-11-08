@@ -105,8 +105,8 @@ class SiaeEditInfoContactForm(forms.ModelForm):
         # Disabled fields
         for field in Siae.READONLY_FIELDS_FROM_C1:
             if field in self.fields:
-                # self.fields[field].required = True
                 self.fields[field].disabled = True
+                self.fields[field].required = False  # to avoid form errors on submit
 
 
 class SiaeEditOfferForm(forms.ModelForm):
