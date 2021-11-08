@@ -181,7 +181,7 @@
                                     {% elif siae.sectors.count %}
                                         {% for sector in siae.sectors.all %}
                                             {% if forloop.counter0 < 7 %}
-                                                <li>{{ sector.name }}</li>
+                                                <li>{{ sector.name }} {% if sector.name == 'Autre' %}<small>({{ sector.group.name }})</small>{% endif %}</li>
                                             {% endif %}
                                         {% endfor %}
                                         {% if siae.sectors.count > 6 %}
