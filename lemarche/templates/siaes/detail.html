@@ -120,7 +120,7 @@
                                         {% if siae.contact_email %}
                                             <li>
                                                 <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" /></span>
-                                                <span class="prof_email">{{ siae.contact_email }}</span>
+                                                <a href="mailto:{{ siae.contact_email }}">{{ siae.contact_email }}</a>
                                             </li>
                                         {% endif %}
                                         {% if siae.contact_phone %}
