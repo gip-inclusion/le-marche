@@ -4,19 +4,33 @@ Ressources :
 - [Semantic Versioning](http://semver.org/)
 - [CHANGELOG recommendations](http://keepachangelog.com/).
 
+## [1.2] - 2021-11-19
+
+### Ajouté
+
+### Modifié
+
+- Pages
+    - Ajout du logo CNA (Conseil National des Achats) dans les partenaires
+- Fiche structure
+    - Clic sur l'adresse email ouvre son client email (mailto)
+    - Afficher le nom du groupe lorsque le secteur est "Autre"
+- Espace utilisateur
+    - Réparé le formulaire de modification de sa structure (lorsqu'un champ readonly était manquant)
+
 ## [1.1] - 2021-11-05
 
 ### Ajouté
 
 - Début du changelog (premier sprint post-migration)
-- Pages :
+- Pages
     - Lien vers la liste des facilitateurs (google doc) sur la page "C'est quoi l'inclusion"
     - Mise en avant des partenaires sur la page d'accueil (carrousel)
-- Recherche :
+- Recherche
     - Pouvoir filtrer par réseau
-- Données :
+- Données
     - Import des ESAT (1778 structures)
-- Tech :
+- Tech
     - Pouvoir faire des review apps à la volée sur des PR ouvertes (donnée de test grâce à des fixtures)
     - Afficher un bandeau pour différencier les environnements
 
@@ -24,22 +38,22 @@ Ressources :
 
 - Pages :
     - Quelques mini changements sur la page d'accueil : typo, renommé le bouton Newsletter, meilleur affichage sur mobile
-- Recherche :
+- Recherche
     - Correctif pour ne pas afficher la modal pour les utilisateurs connectés
     - Correctif pour éviter de renvoyer des doublons
     - Modifié les résultats lorsqu'une ville est cherchée: les structures présentes dans la ville, mais avec périmètre d'intervention autre que Distance ou Département, sont quand même renvoyés
     - Pouvoir chercher par code postal
     - Pouvoir chercher avec plusieurs types de structures à la fois
+    - Grouper les types de structures par "Insertion" et "Handicap"
     - Clarifié le nom du bouton de réinitialisation de la recherche par secteurs
     - Certaines structures n'apparaissaient pas dans les résultats (is_active=False pendant la migration). C'est réparé. Cela concernait ~1000 structures
     - Réparé la redirection lorsqu'une personne non-connectée souhaite télécharger la liste des résultats
-    - Groupé les types de structures par "Insertion" et "Handicap"
-- Inscription/connexion :
-    - réparé un bug lorsque le lien de réinitialisation du mot de passe était invalide (déjà cliqué)
+- Inscription/connexion
+    - Réparé un bug lorsque le lien de réinitialisation du mot de passe était invalide (déjà cliqué)
     - Redirections additionnelles pour les pages de connexion et d'inscription (Cocorico)
-- Formulaire de contact :
+- Formulaire de contact
     - le reply-to est maintenant l'email fourni par l'utilisateur (pour faciliter la réponse sur Zammad)
-- API :
+- API
     - Pouvoir filtrer les structures par réseau
     - Renvoyer d'avantage d'information dans les détails d'une structure
     - Réorganisation de la documentation
