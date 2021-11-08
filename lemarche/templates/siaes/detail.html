@@ -316,21 +316,21 @@ document.addEventListener("DOMContentLoaded", function() {
     const siaeLongitudeString = "{{ siae.coords.y }}";
     const siaeLatitudeFloat = parseFloat(siaeLatitudeString.replace(',', '.'));
     const siaeLongitudeFloat = parseFloat(siaeLongitudeString.replace(',', '.'));
-    
+
     // init map
     var map = L.map('map-siae').setView([siaeLongitudeFloat, siaeLatitudeFloat], 13);
-    
+
     // map tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19,
         zoomControl: false,
     }).addTo(map);
-    
+
     // map zoom controls in the bottom right
     map.zoomControl.remove();
     L.control.zoom({ position: 'bottomright' }).addTo(map);
-    
+
     // create custom marker (because of static url issues)
     var customLeafletIcon = L.icon({
         'iconUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-icon.png' %}",
@@ -341,7 +341,7 @@ document.addEventListener("DOMContentLoaded", function() {
         tooltipAnchor:[16,-28],
         shadowSize:[41,41],
     });
-    
+
     // add marker (with popup on click)
     var siaeDisplayName = siaeBrand ? siaeBrand : siaeName;
     L.marker([siaeLongitudeFloat, siaeLatitudeFloat], {icon: customLeafletIcon})

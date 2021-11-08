@@ -138,10 +138,8 @@
                 </div>
                 <div class="col-12 col-md-4 siae-info mt-6 mt-sm-0">
                     <div class="siae-info-sticky">
-                        <div class="maparea">
-                            <div class="map-holder">
-                                <div id="map-siae-list" class="map-canvas"></div>
-                            </div>
+                        <div class="map-holder mb-4">
+                            <div id="map-siae-list" class="map-canvas"></div>
                         </div>
                         <div class="si-separator"></div>
                         <div class="si-ideas">
@@ -234,73 +232,73 @@
 {% block extra_js %}
 {% if not user.is_authenticated %}
 <script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function() {
-        // show type user modal
-        const USER_TYPE_MODAL_COOKIE_NAME = 'leMarcheTypeUsagerV2';
-        $(document).on('shown.bs.modal', '.modal', function () {
-            $('.modal-backdrop').before($(this));
-        });
-
-        if (!document.cookie.split('; ').find(row => row.startsWith(USER_TYPE_MODAL_COOKIE_NAME))) {
-            var modal = $("#user_modal");
-            modal.find('.close').remove();
-            modal.modal('show');
-
-            modal.find('a').on('click', (e) => {
-                // Only set cookie if button clicked
-                let type = $(e.target).data('usr');
-                document.cookie = `${USER_TYPE_MODAL_COOKIE_NAME}=${type}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
-
-                if (typeof track === "function") {
-                    track('', Steps.USER_TYPE, {'type': type});
-                }
-                modal.modal('hide');
-            })
-        }
+document.addEventListener("DOMContentLoaded", function() {
+    // show type user modal
+    const USER_TYPE_MODAL_COOKIE_NAME = 'leMarcheTypeUsagerV2';
+    $(document).on('shown.bs.modal', '.modal', function () {
+        $('.modal-backdrop').before($(this));
     });
+
+    if (!document.cookie.split('; ').find(row => row.startsWith(USER_TYPE_MODAL_COOKIE_NAME))) {
+        var modal = $("#user_modal");
+        modal.find('.close').remove();
+        modal.modal('show');
+
+        modal.find('a').on('click', (e) => {
+            // Only set cookie if button clicked
+            let type = $(e.target).data('usr');
+            document.cookie = `${USER_TYPE_MODAL_COOKIE_NAME}=${type}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
+
+            if (typeof track === "function") {
+                track('', Steps.USER_TYPE, {'type': type});
+            }
+            modal.modal('hide');
+        })
+    }
+});
 </script>
 {% endif %}
 <script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function() {
-        // Set listings markers on load
-        const siaeList = {{ siaes_json|safe }};
+document.addEventListener("DOMContentLoaded", function() {
+    // Set listings markers on load
+    const siaeList = {{ siaes_json|safe }};
 
-        // init map
-        var map = L.map('map-siae-list').setView([47.08333, 2.4], 5);
+    // init map
+    var map = L.map('map-siae-list').setView([47.08333, 2.4], 5);
 
-        // map tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            maxZoom: 19,
-            zoomControl: false,
-        }).addTo(map);
+    // map tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19,
+        zoomControl: false,
+    }).addTo(map);
 
-        // map zoom controls in the bottom right
-        map.zoomControl.remove();
-        L.control.zoom({ position: 'bottomright' }).addTo(map);
+    // map zoom controls in the bottom right
+    map.zoomControl.remove();
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        // create custom marker (because of static url issues)
-        var customLeafletIcon = L.icon({
-            'iconUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-icon.png' %}",
-            'shadowUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-shadow.png' %}",
-            iconSize: [25,41],
-            iconAnchor: [12,41],
-            popupAnchor:[1,-34],
-            tooltipAnchor:[16,-28],
-            shadowSize:[41,41],
-        });
-
-        // add markers from geojson data (with popup on click)
-        var geojson = L.geoJSON(siaeList, {
-            pointToLayer: function(geoJsonPoint, latlng) {
-                return L.marker(latlng, {icon: customLeafletIcon});
-            },
-            onEachFeature: function (feature, layer) {
-                var featureDisplayName = feature.properties.brand ? feature.properties.brand : feature.properties.name;
-                layer.bindPopup(`<a href="/prestataires/${feature.properties.slug}/"><p class="h6">${featureDisplayName}</p></a>`);
-            }
-        }).addTo(map);
-        map.fitBounds(geojson.getBounds());
+    // create custom marker (because of static url issues)
+    var customLeafletIcon = L.icon({
+        'iconUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-icon.png' %}",
+        'shadowUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-shadow.png' %}",
+        iconSize: [25,41],
+        iconAnchor: [12,41],
+        popupAnchor:[1,-34],
+        tooltipAnchor:[16,-28],
+        shadowSize:[41,41],
     });
+
+    // add markers from geojson data (with popup on click)
+    var geojson = L.geoJSON(siaeList, {
+        pointToLayer: function(geoJsonPoint, latlng) {
+            return L.marker(latlng, {icon: customLeafletIcon});
+        },
+        onEachFeature: function (feature, layer) {
+            var featureDisplayName = feature.properties.brand ? feature.properties.brand : feature.properties.name;
+            layer.bindPopup(`<a href="/prestataires/${feature.properties.slug}/"><p class="h6">${featureDisplayName}</p></a>`);
+        }
+    }).addTo(map);
+    map.fitBounds(geojson.getBounds());
+});
 </script>
 {% endblock %}

@@ -86,13 +86,8 @@
 		flex-direction: row;
 	}
 
-	.siae-info .maparea .map-holder {
-		height:19rem
-	}
-
 	.si-separator {
-		padding:0 1rem 2rem;
-		border-bottom:5px solid $marche;
+		border-bottom: 5px solid $marche;
 	}
 
 	.si-ideas p {
@@ -237,11 +232,6 @@
 	}
 	.sc-profile li.sc-profile-town-work {
 		background-image: url('/static/images/siae_list_town_work.svg');
-	}
-
-	.si-separator {
-		padding:0 1rem 2rem;
-		border-bottom:5px solid $marche;
 	}
 
 	.si-ideas p {
@@ -466,11 +456,6 @@
 				display: none;
 			}
 		}
-	}
-
-	#sidebar .map-holder {
-		height:200px;
-		width:100%;
 	}
 
 	.profile-detail {

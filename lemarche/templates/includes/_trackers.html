@@ -2,308 +2,308 @@
 <!-- Tarteaucitron -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/tarteaucitronjs@1.9.3/tarteaucitron.min.js"></script> 
 <script type="text/javascript">
-    // Tarteaucitron's language is set according to the browser configuration
-    // but a lot of users don't know how to change it.
-    // This can be forced only by using a global `var` statement.
-    // https://github.com/AmauriC/tarteaucitron.js/blob/98b02b0bdda670bd953752d85443c3fd77dde724/tarteaucitron.js#L5
-    var tarteaucitronForceLanguage = "fr";
+// Tarteaucitron's language is set according to the browser configuration
+// but a lot of users don't know how to change it.
+// This can be forced only by using a global `var` statement.
+// https://github.com/AmauriC/tarteaucitron.js/blob/98b02b0bdda670bd953752d85443c3fd77dde724/tarteaucitron.js#L5
+var tarteaucitronForceLanguage = "fr";
 
-    tarteaucitron.init({
-        "privacyUrl": "", /* Privacy policy url */
-        "hashtag": "#tarteaucitron", /* Open the panel with this hashtag */
-        "cookieName": "tarteaucitron", /* Cookie name */
-        "orientation": "bottom", /* Banner position (top - bottom) */  // itou is 'top'
-        "groupServices": false, /* Group services by category */
-        "showAlertSmall": false, /* Show the small banner on bottom right */
-        "cookieslist": false, /* Show the cookie list */
-        "closePopup": false, /* Show a close X on the banner */
-        "showIcon": true, /* Show cookie icon to manage cookies */
-        //"iconSrc": "", /* Optionnal: URL or base64 encoded image */
-        "iconPosition": "BottomLeft", /* BottomRight, BottomLeft, TopRight and TopLeft */  // BottomLeft to match itou. BottomRight already has Crisp.
-        "adblocker": false, /* Show a Warning if an adblocker is detected */
-        "DenyAllCta" : true, /* Show the deny all button */
-        "AcceptAllCta" : true, /* Show the accept all button when highPrivacy on */
-        "highPrivacy": true, /* HIGHLY RECOMMANDED Disable auto consent */
-        "handleBrowserDNTRequest": false, /* If Do Not Track == 1, disallow all */
-        "removeCredit": true, /* Remove credit link */
-        "moreInfoLink": true, /* Show more info link */
-        "useExternalCss": true, /* If false, the tarteaucitron.css file will be loaded */
-        "useExternalJs": false, /* If false, the tarteaucitron.js file will be loaded */
-        //"cookieDomain": ".my-multisite-domaine.fr", /* Shared cookie for multisite */
-        "readmoreLink": "https://doc.inclusion.beta.gouv.fr/mentions/protection-des-donnees", /* Change the default readmore link */
-        "mandatory": true, /* Show a message about mandatory cookies */
-        "forceLanguage": "fr",
-    });
+tarteaucitron.init({
+    "privacyUrl": "", /* Privacy policy url */
+    "hashtag": "#tarteaucitron", /* Open the panel with this hashtag */
+    "cookieName": "tarteaucitron", /* Cookie name */
+    "orientation": "bottom", /* Banner position (top - bottom) */  // itou is 'top'
+    "groupServices": false, /* Group services by category */
+    "showAlertSmall": false, /* Show the small banner on bottom right */
+    "cookieslist": false, /* Show the cookie list */
+    "closePopup": false, /* Show a close X on the banner */
+    "showIcon": true, /* Show cookie icon to manage cookies */
+    //"iconSrc": "", /* Optionnal: URL or base64 encoded image */
+    "iconPosition": "BottomLeft", /* BottomRight, BottomLeft, TopRight and TopLeft */  // BottomLeft to match itou. BottomRight already has Crisp.
+    "adblocker": false, /* Show a Warning if an adblocker is detected */
+    "DenyAllCta" : true, /* Show the deny all button */
+    "AcceptAllCta" : true, /* Show the accept all button when highPrivacy on */
+    "highPrivacy": true, /* HIGHLY RECOMMANDED Disable auto consent */
+    "handleBrowserDNTRequest": false, /* If Do Not Track == 1, disallow all */
+    "removeCredit": true, /* Remove credit link */
+    "moreInfoLink": true, /* Show more info link */
+    "useExternalCss": true, /* If false, the tarteaucitron.css file will be loaded */
+    "useExternalJs": false, /* If false, the tarteaucitron.js file will be loaded */
+    //"cookieDomain": ".my-multisite-domaine.fr", /* Shared cookie for multisite */
+    "readmoreLink": "https://doc.inclusion.beta.gouv.fr/mentions/protection-des-donnees", /* Change the default readmore link */
+    "mandatory": true, /* Show a message about mandatory cookies */
+    "forceLanguage": "fr",
+});
 
-    // Google fonts
+// Google fonts
 
-    // Hotjar
-    tarteaucitron.user.hotjarId = {{ HOTJAR_ID }};
-    tarteaucitron.user.HotjarSv = 6;
-    (tarteaucitron.job = tarteaucitron.job || []).push('hotjar');
+// Hotjar
+tarteaucitron.user.hotjarId = {{ HOTJAR_ID }};
+tarteaucitron.user.HotjarSv = 6;
+(tarteaucitron.job = tarteaucitron.job || []).push('hotjar');
 
-    // Crisp (voir plus bas)
-    tarteaucitron.user.cripsWebsiteId = "{{ CRISP_ID }}";
-    tarteaucitron.user.cripsMore = function () {
-        // Ajouter ici les $crisp.push()
-    };
-    (tarteaucitron.job = tarteaucitron.job || []).push('crips');
+// Crisp (voir plus bas)
+tarteaucitron.user.cripsWebsiteId = "{{ CRISP_ID }}";
+tarteaucitron.user.cripsMore = function () {
+    // Ajouter ici les $crisp.push()
+};
+(tarteaucitron.job = tarteaucitron.job || []).push('crips');
 
-    // Matomo
-    tarteaucitron.user.matomoId = {{ MATOMO_SITE_ID }};
-    tarteaucitron.user.matomoHost = "{{ MATOMO_HOST }}";
-    (tarteaucitron.job = tarteaucitron.job || []).push('matomo');
+// Matomo
+tarteaucitron.user.matomoId = {{ MATOMO_SITE_ID }};
+tarteaucitron.user.matomoHost = "{{ MATOMO_HOST }}";
+(tarteaucitron.job = tarteaucitron.job || []).push('matomo');
 </script>
 
 <!-- Hotjar -->
 // <script type="text/javascript">
-//     (function(h,o,t,j,a,r){
-//         h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-//         //h._hjSettings={hjid:1932118,hjsv:6};
-//         h._hjSettings={hjid:{{ HOTJAR_ID }},hjsv:6};
-//         a=o.getElementsByTagName('head')[0];
-//         r=o.createElement('script');r.async=1;
-//         r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-//         a.appendChild(r);
-//     })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+// (function(h,o,t,j,a,r){
+//     h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+//     //h._hjSettings={hjid:1932118,hjsv:6};
+//     h._hjSettings={hjid:{{ HOTJAR_ID }},hjsv:6};
+//     a=o.getElementsByTagName('head')[0];
+//     r=o.createElement('script');r.async=1;
+//     r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+//     a.appendChild(r);
+// })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
 // </script>
 
 <!-- Crisp -->
 // <script type="text/javascript">
-//     window.$crisp=[];
-//     window.CRISP_WEBSITE_ID="{{ CRISP_ID }}";
-//     (function() {
-//         d=document;
-//         s=d.createElement("script");
-//         s.src="https://client.crisp.chat/l.js";
-//         s.async=1;
-//         d.getElementsByTagName("head")[0].appendChild(s);
-//     })();
+// window.$crisp=[];
+// window.CRISP_WEBSITE_ID="{{ CRISP_ID }}";
+// (function() {
+//     d=document;
+//     s=d.createElement("script");
+//     s.src="https://client.crisp.chat/l.js";
+//     s.async=1;
+//     d.getElementsByTagName("head")[0].appendChild(s);
+// })();
 // </script>
 
 <!-- Matomo -->
 // <script type="text/javascript">
-//     console.log('matomo script')
-//     var _paq = window._paq || [];
-//     /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-//     _paq.push(['trackPageView']);
-//     _paq.push(['enableLinkTracking']);
-//     (function() {
-//         var u="{{ MATOMO_HOST }}";
-//         _paq.push(['setTrackerUrl', u+'piwik.php']);
-//         _paq.push(['setSiteId', '{{ MATOMO_SITE_ID }}']);
-//         var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-//         g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-//     })();
+// console.log('matomo script')
+// var _paq = window._paq || [];
+// /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+// _paq.push(['trackPageView']);
+// _paq.push(['enableLinkTracking']);
+// (function() {
+//     var u="{{ MATOMO_HOST }}";
+//     _paq.push(['setTrackerUrl', u+'piwik.php']);
+//     _paq.push(['setSiteId', '{{ MATOMO_SITE_ID }}']);
+//     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+//     g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+// })();
 // </script>
 
 <!-- Ajouter manuellement Crisp à tarteaucitron : https://github.com/AmauriC/tarteaucitron.js/pull/281 -->
-<script>
-    tarteaucitron.services.crips = {
-    "key": "crips",
-    "type": "support",
-    "name": "Crips",
-    "uri": "https://crisp.chat/fr/privacy/",
-    "needConsent": true,
-    "cookies": [],
-    "js": function () {
-        "use strict";
-        if (tarteaucitron.user.cripsWebsiteId === undefined) {
-            return;
-        }
-        window.$crisp = [];
-
-        window.CRISP_WEBSITE_ID = tarteaucitron.user.cripsWebsiteId;
-
-        tarteaucitron.addScript('https://client.crisp.chat/l.js');
-
-        // waiting for crips to be ready to check first party cookies
-        var interval = setInterval(function () {
-            if (typeof $crisp === 'undefined') return
-
-            clearInterval(interval);
-
-            // looping throught cookies
-            var theCookies = document.cookie.split(';');
-            for (var i = 1 ; i <= theCookies.length; i++) {
-                var cookie = theCookies[i - 1].split('=');
-                var cookieName = cookie[0].trim();
-
-                // if cookie starts like a piwik one, register it
-                if (cookieName.indexOf('crisp-client') === 0) {
-                    tarteaucitron.services.crips.cookies.push(cookieName);
-                }
-            }
-        }, 100)
-
-        if (typeof tarteaucitron.user.cripsMore === 'function') {
-            tarteaucitron.user.cripsMore();
-        }
+<script type="text/javascript">
+tarteaucitron.services.crips = {
+"key": "crips",
+"type": "support",
+"name": "Crips",
+"uri": "https://crisp.chat/fr/privacy/",
+"needConsent": true,
+"cookies": [],
+"js": function () {
+    "use strict";
+    if (tarteaucitron.user.cripsWebsiteId === undefined) {
+        return;
     }
+    window.$crisp = [];
+
+    window.CRISP_WEBSITE_ID = tarteaucitron.user.cripsWebsiteId;
+
+    tarteaucitron.addScript('https://client.crisp.chat/l.js');
+
+    // waiting for crips to be ready to check first party cookies
+    var interval = setInterval(function () {
+        if (typeof $crisp === 'undefined') return
+
+        clearInterval(interval);
+
+        // looping throught cookies
+        var theCookies = document.cookie.split(';');
+        for (var i = 1 ; i <= theCookies.length; i++) {
+            var cookie = theCookies[i - 1].split('=');
+            var cookieName = cookie[0].trim();
+
+            // if cookie starts like a piwik one, register it
+            if (cookieName.indexOf('crisp-client') === 0) {
+                tarteaucitron.services.crips.cookies.push(cookieName);
+            }
+        }
+    }, 100)
+
+    if (typeof tarteaucitron.user.cripsMore === 'function') {
+        tarteaucitron.user.cripsMore();
+    }
+}
 };
 </script>
 
 <!-- itou tracker -->
-<script>
-    function getCookieValueByName(cookieName) {
-        if (document.cookie.split('; ').find(row => row.startsWith(cookieName))) {
-            return document.cookie.split('; ').find(row => row.startsWith(`${cookieName}=`)).split('=')[1];
+<script type="text/javascript">
+function getCookieValueByName(cookieName) {
+    if (document.cookie.split('; ').find(row => row.startsWith(cookieName))) {
+        return document.cookie.split('; ').find(row => row.startsWith(`${cookieName}=`)).split('=')[1];
+    }
+}
+
+var ORDER = 1;
+var SESSION_ID = "";
+var VERSION = 1;
+
+const uTypeMapping = {
+    'SIAE': '4',
+    'BUYER': '3',
+    'PARTNER': '6',
+    'ADMIN': '5',
+};
+
+const USER_TYPE_MODAL_COOKIE_NAME = 'leMarcheTypeUsagerV2';
+const IS_ADMIN_COOKIE_NAME = 'isAdmin';
+const USER_TYPE_COOKIE_NAME = 'uType';
+
+// set global variables
+var sessionId = getCookieValueByName('sessionid');
+{% if user.is_authenticated %}
+    var isAdmin = {% if user.kind == 'ADMIN' %}true{% else %}false{% endif %};
+    var uType = {% if user.is_authenticated %}"{{ user.kind }}"{% endif %};
+    if (uType) {
+        uType = uTypeMapping[uType];
+    }
+{% else %}
+    var isAdmin = false;
+    var uType = "";
+{% endif %}
+
+// update cookie
+document.cookie = `${IS_ADMIN_COOKIE_NAME}=${window.isAdmin}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
+document.cookie = `${USER_TYPE_COOKIE_NAME}=${window.uType}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
+
+//export function track(page, action, meta={}) {
+async function track(page, action, meta={}) {
+    const body = computeRequestBody(page, action, meta);
+    
+    if (typeof window !== 'undefined') {
+        await fetch('{{ TRACKER_HOST }}/track', {
+        method: 'POST',
+        headers: {
+            // 'Content-Type': 'application/json',
+            'Content-Type': 'text/plain',
+        },
+        body: JSON.stringify(body),
+        });
+    }
+}
+
+
+// export const Steps = {
+const Steps = {
+    LOAD: 'load',
+    CLICK: 'click',
+    SCROLL: 'scroll',
+    INSCRIPTION: 'inscription',
+    NEW_LISTING: 'new_listing',
+    USER_TYPE: 'user_type',
+}
+
+function computeRequestBody(page, action, metaIn) {
+    const timeNow = new Date();
+    // Optionnaly add meta data (in key/value pairs) from url query string
+    const meta = Object.assign(metaIn, getUrlMeta());
+    meta['is_admin'] = getCookieValueByName(IS_ADMIN_COOKIE_NAME) == 'true';
+    meta['user_type'] = getCookieValueByName(USER_TYPE_COOKIE_NAME);
+    meta['user_cookie_type'] = getCookieValueByName(USER_TYPE_MODAL_COOKIE_NAME);
+
+    return {
+        _v: VERSION,
+        timestamp: timeNow.toISOString(),
+        order: ORDER += 1,
+        env: '{{ BITOUBI_ENV }}',
+        session_id: getSessionId(),
+        page: page,
+        action: action,
+        meta: JSON.stringify(meta),
+        client_context: {},
+        server_context: {},
+    }
+}
+
+
+function uuidv4() {
+try {
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ ( crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)
+    );
+} catch {
+    return 'ANONYMOUS';
+}
+}
+
+// export function getSessionId() {
+function getSessionId() {
+    if (SESSION_ID === "") {
+        if (typeof document !== `undefined`) {
+            SESSION_ID = (new URL(document.location)).searchParams.get('sid') || false;
+        }
+
+        if (!SESSION_ID && window.sessionId !== undefined) {
+            SESSION_ID = window.sessionId;
+        } else {
+            SESSION_ID = uuidv4();
         }
     }
+    return SESSION_ID;
+}
 
-    var ORDER = 1;
-    var SESSION_ID = "";
-    var VERSION = 1;
-
-    const uTypeMapping = {
-        'SIAE': '4',
-        'BUYER': '3',
-        'PARTNER': '6',
-        'ADMIN': '5',
-    };
-
-    const USER_TYPE_MODAL_COOKIE_NAME = 'leMarcheTypeUsagerV2';
-    const IS_ADMIN_COOKIE_NAME = 'isAdmin';
-    const USER_TYPE_COOKIE_NAME = 'uType';
-
-    // set global variables
-    var sessionId = getCookieValueByName('sessionid');
-    {% if user.is_authenticated %}
-        var isAdmin = {% if user.kind == 'ADMIN' %}true{% else %}false{% endif %};
-        var uType = {% if user.is_authenticated %}"{{ user.kind }}"{% endif %};
-        if (uType) {
-            uType = uTypeMapping[uType];
-        }
-    {% else %}
-        var isAdmin = false;
-        var uType = "";
-    {% endif %}
-
-    // update cookie
-    document.cookie = `${IS_ADMIN_COOKIE_NAME}=${window.isAdmin}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
-    document.cookie = `${USER_TYPE_COOKIE_NAME}=${window.uType}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
-
-    //export function track(page, action, meta={}) {
-    async function track(page, action, meta={}) {
-        const body = computeRequestBody(page, action, meta);
-        
-        if (typeof window !== 'undefined') {
-            await fetch('{{ TRACKER_HOST }}/track', {
-            method: 'POST',
-            headers: {
-                // 'Content-Type': 'application/json',
-                'Content-Type': 'text/plain',
-            },
-            body: JSON.stringify(body),
-            });
-        }
-    }
-
-
-    // export const Steps = {
-    const Steps = {
-        LOAD: 'load',
-        CLICK: 'click',
-        SCROLL: 'scroll',
-        INSCRIPTION: 'inscription',
-        NEW_LISTING: 'new_listing',
-        USER_TYPE: 'user_type',
-    }
-
-    function computeRequestBody(page, action, metaIn) {
-        const timeNow = new Date();
-        // Optionnaly add meta data (in key/value pairs) from url query string
-        const meta = Object.assign(metaIn, getUrlMeta());
-        meta['is_admin'] = getCookieValueByName(IS_ADMIN_COOKIE_NAME) == 'true';
-        meta['user_type'] = getCookieValueByName(USER_TYPE_COOKIE_NAME);
-        meta['user_cookie_type'] = getCookieValueByName(USER_TYPE_MODAL_COOKIE_NAME);
-
-        return {
-            _v: VERSION,
-            timestamp: timeNow.toISOString(),
-            order: ORDER += 1,
-            env: '{{ BITOUBI_ENV }}',
-            session_id: getSessionId(),
-            page: page,
-            action: action,
-            meta: JSON.stringify(meta),
-            client_context: {},
-            server_context: {},
-        }
-    }
-
-
-    function uuidv4() {
+function getUrlMeta() {
+    // Avoid using JSON and interpreting user-provided values
+    var meta = {};
+    const doc = typeof document !== `undefined` ? document : null;
     try {
-        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-            (c ^ ( crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)
-        );
-    } catch {
-        return 'ANONYMOUS';
-    }
-    }
-
-    // export function getSessionId() {
-    function getSessionId() {
-        if (SESSION_ID === "") {
-            if (typeof document !== `undefined`) {
-                SESSION_ID = (new URL(document.location)).searchParams.get('sid') || false;
-            }
-
-            if (!SESSION_ID && window.sessionId !== undefined) {
-                SESSION_ID = window.sessionId;
-            } else {
-                SESSION_ID = uuidv4();
-            }
+        const check = (new URL(doc.location)).searchParams.get('t');
+        const split1 = check.split(';');
+        for (var tuple of split1) {
+            const keyval = tuple.split(':');
+            const key = keyval[0].replace(/[^\-_0-9a-zA-Z]/g,'');
+            const val = keyval[1].replace(/[^\-_0-9a-zA-Z]/g,'');
+            meta[key] = val;
         }
-        return SESSION_ID;
+    } finally {
+        return meta;
     }
+}
 
-    function getUrlMeta() {
-        // Avoid using JSON and interpreting user-provided values
-        var meta = {};
-        const doc = typeof document !== `undefined` ? document : null;
-        try {
-            const check = (new URL(doc.location)).searchParams.get('t');
-            const split1 = check.split(';');
-            for (var tuple of split1) {
-                const keyval = tuple.split(':');
-                const key = keyval[0].replace(/[^\-_0-9a-zA-Z]/g,'');
-                const val = keyval[1].replace(/[^\-_0-9a-zA-Z]/g,'');
-                meta[key] = val;
-            }
-        } finally {
-            return meta;
+document.addEventListener('DOMContentLoaded', () => {
+    track(window.location.pathname, Steps.LOAD);
+}, false);
+
+document.addEventListener('click', async (event) => {
+    event = event || window.event;
+    var target = event.target || event.srcElement;
+
+    var loops = 3;
+    var meta = {}
+    while (target && loops > 0) {
+    if (target instanceof HTMLAnchorElement) {
+        meta = {
+            'href': target.getAttribute('href'),
+            'id' : target.id,
+            'class': target.className
         }
     }
+    target = target.parentNode;
+    loops -= 1;
+    }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        track(window.location.pathname, Steps.LOAD);
-    }, false);
-
-    document.addEventListener('click', async (event) => {
-        event = event || window.event;
-        var target = event.target || event.srcElement;
-
-        var loops = 3;
-        var meta = {}
-        while (target && loops > 0) {
-        if (target instanceof HTMLAnchorElement) {
-            meta = {
-                'href': target.getAttribute('href'),
-                'id' : target.id,
-                'class': target.className
-            }
-        }
-        target = target.parentNode;
-        loops -= 1;
-        }
-
-        await track(
-            window.location.pathname,
-            Steps.CLICK,
-            meta
-        );
-    }, false);
+    await track(
+        window.location.pathname,
+        Steps.CLICK,
+        meta
+    );
+}, false);
 </script>
 {% endif %}
