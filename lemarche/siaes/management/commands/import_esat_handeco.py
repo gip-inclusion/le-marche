@@ -165,7 +165,7 @@ class Command(BaseCommand):
         )
         if etablissement:
             esat["nature"] = Siae.NATURE_HEAD_OFFICE if etablissement["is_head_office"] else Siae.NATURE_ANTENNA
-            esat["is_active"] = False if not etablissement["is_closed"] else True
+            # esat["is_active"] = False if not etablissement["is_closed"] else True
             esat["ig_employees"] = etablissement["employees"]
             if etablissement["date_constitution"]:
                 esat["ig_date_constitution"] = timezone.make_aware(etablissement["date_constitution"])
