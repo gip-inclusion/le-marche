@@ -120,8 +120,8 @@ class Siae(models.Model):
         "source",
     ]
     READONLY_FIELDS_FROM_QPV = ["is_qpv", "qpv_name", "qpv_code"]
-    READONLY_FIELDS_FROM_APIGOUV = ["ig_employees", "ig_ca", "ig_date_constitution"]
-    READONLY_FIELDS = READONLY_FIELDS_FROM_C1 + READONLY_FIELDS_FROM_QPV + READONLY_FIELDS_FROM_APIGOUV
+    READONLY_FIELDS_FROM_APIENTREPRISE = ["ig_employees", "ig_ca", "ig_date_constitution"]
+    READONLY_FIELDS = READONLY_FIELDS_FROM_C1 + READONLY_FIELDS_FROM_QPV + READONLY_FIELDS_FROM_APIENTREPRISE
 
     KIND_EI = "EI"
     KIND_AI = "AI"
