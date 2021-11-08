@@ -82,26 +82,26 @@
 
 {% block extra_js %}
 <script type="text/javascript">
-    /**
-     * Add formset items dynamically
-     */
-    const prefixRegex = new RegExp('__prefix__', 'g');
+/**
+ * Add formset items dynamically
+ */
+const prefixRegex = new RegExp('__prefix__', 'g');
 
-    // label formset
-    const totalLabelFormset = document.getElementById('id_labels-TOTAL_FORMS');
-    const labelFormsetEmptyForm = document.getElementById('label-formset-empty-form');
-    const labelFormsetAddMoreButton = document.getElementById('label-formset-add-more');
+// label formset
+const totalLabelFormset = document.getElementById('id_labels-TOTAL_FORMS');
+const labelFormsetEmptyForm = document.getElementById('label-formset-empty-form');
+const labelFormsetAddMoreButton = document.getElementById('label-formset-add-more');
 
-    labelFormsetAddMoreButton.addEventListener('click', function(e) {
-        if (e) { e.preventDefault(); }
-        // add new form
-        const copyLabelFormsetEmptyForm = labelFormsetEmptyForm.cloneNode(true);
-        copyLabelFormsetEmptyForm.innerHTML = copyLabelFormsetEmptyForm.innerHTML.replace(prefixRegex, totalLabelFormset.value);
-        copyLabelFormsetEmptyForm.childNodes.forEach(node => {
-            labelFormsetEmptyForm.parentNode.insertBefore(node, labelFormsetEmptyForm);
-        });
-        // update total forms count
-        totalLabelFormset.setAttribute('value', parseInt(totalLabelFormset.getAttribute('value'), 10) + 1);
+labelFormsetAddMoreButton.addEventListener('click', function(e) {
+    if (e) { e.preventDefault(); }
+    // add new form
+    const copyLabelFormsetEmptyForm = labelFormsetEmptyForm.cloneNode(true);
+    copyLabelFormsetEmptyForm.innerHTML = copyLabelFormsetEmptyForm.innerHTML.replace(prefixRegex, totalLabelFormset.value);
+    copyLabelFormsetEmptyForm.childNodes.forEach(node => {
+        labelFormsetEmptyForm.parentNode.insertBefore(node, labelFormsetEmptyForm);
     });
+    // update total forms count
+    totalLabelFormset.setAttribute('value', parseInt(totalLabelFormset.getAttribute('value'), 10) + 1);
+});
 </script>
 {% endblock %}

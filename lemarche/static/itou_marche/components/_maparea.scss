@@ -1,29 +1,27 @@
 /* maparea */
-.map-canvas,
-#map-canvas {
-	width:100%;
-	height:100%;
+.map-canvas {
+	width: 100%;
+	height: 100%;
 }
 
-.maparea .map-holder {
-	height: 1111px;
-	overflow: hidden;
-	position: relative;
+// defaults
+.map-holder {
+	height: 150px;
+	width: 100%;
+}
+
+// #map-siae-list
+.siae-info-sticky .map-holder {
+	height: 19rem;
 	border-radius: 5px;
 	border: $gray-500 solid 1px;
 }
 
-.maparea iframe {
-	border: 0;
-	overflow: hidden;
+// #map-siae
+#sidebar .map-holder {
+	height: 200px;
 	width: 100%;
-	height: 1130px;
 }
 
-.maparea .holder {
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	position: absolute;
-}
+// #map-siae-edit
+// see defaults
