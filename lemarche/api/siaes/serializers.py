@@ -32,7 +32,7 @@ class SiaeLabelSimpleSerializer(serializers.ModelSerializer):
         ]
 
 
-class SiaeSerializer(serializers.ModelSerializer):
+class SiaeDetailSerializer(serializers.ModelSerializer):
     sectors = SectorSimpleSerializer(many=True)
     networks = NetworkSimpleSerializer(many=True)
     offers = SiaeOfferSimpleSerializer(many=True)
@@ -42,6 +42,7 @@ class SiaeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Siae
         fields = [
+            "id",
             "name",
             "brand",
             "slug",
@@ -69,26 +70,11 @@ class SiaeSerializer(serializers.ModelSerializer):
         ]
 
 
-class SiaeAnonSerializer(SiaeSerializer):
+class SiaeListSerializer(SiaeDetailSerializer):
     class Meta:
         model = Siae
         fields = [
-            "name",
-            "brand",
-            # "slug"
-            "siret",
-            "city",
-            "post_code",
-            "department",
-            "region",
-            "created_at",
-        ]
-
-
-class SiaeListSerializer(SiaeSerializer):
-    class Meta:
-        model = Siae
-        fields = [
+            "id",
             "name",
             "brand",
             "slug",

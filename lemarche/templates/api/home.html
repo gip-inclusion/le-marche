@@ -22,7 +22,7 @@
 
 {% block content %}
 <section class="pt-4 pb-6 pb-lg-8">
-    <div class="container container-max-lg">
+    <div class="container">
         <h1>API du marché de l'inclusion</h1>
         <p class="lead">L'API met à disposition le répertoire qualifié des structures d'insertion par l'activité économique.</p>
 
@@ -65,6 +65,15 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <tr>
+                                <td>09/11/2021</td>
+                                <td>0.13</td>
+                                <td>
+                                    - Nouvelle ressource <code>/siae/slug/&lt;slug&gt;</code> pour avoir les détails d'une structure par son slug (champ unique)<br />
+                                    - Modifié la ressource <code>/siae/siret/&lt;siret&gt;</code> pour gérer le cas de plusieurs structures partageant le même siret (renvoie une liste dans ce cas là)<br />
+                                    - Rajouté le champ <code>id</code> dans les réponses des ressources <code>/siae</code>
+                                </td>
+                            </tr>
                             <tr>
                                 <td>02/11/2021</td>
                                 <td>0.12</td>
