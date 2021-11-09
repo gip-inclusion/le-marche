@@ -97,7 +97,7 @@ class SiaeEditInfoContactForm(forms.ModelForm):
             "logo_url",
         ]
         widgets = {
-            "address": forms.Textarea(attrs={"rows": 2}),
+            "address": forms.Textarea(attrs={"rows": 3}),
         }
 
     def __init__(self, *args, **kwargs):

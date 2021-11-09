@@ -169,71 +169,71 @@
 {{ s3_form_values|json_script:"s3-form-values" }}
 {{ s3_upload_config|json_script:"s3-upload-config" }}
 <script type="text/javascript">
-    // loop on each dropzone
-    Array.from(document.querySelectorAll(".dropzone")).forEach(function(element) {
-        s3UploadInit({
-            dropzoneSelector: `#${element.id}`,
-            callbackLocationSelector: `#${element.id.replace('logo_form', 'logo_url')}`,
-            s3FormValuesId: "s3-form-values",
-            s3UploadConfigId: "s3-upload-config",
-            // Not really nice
-            sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
-            sentryCsrfToken: "{{ csrf_token }}"
-        });
-    })
+// loop on each dropzone
+Array.from(document.querySelectorAll(".dropzone")).forEach(function(element) {
+    s3UploadInit({
+        dropzoneSelector: `#${element.id}`,
+        callbackLocationSelector: `#${element.id.replace('logo_form', 'logo_url')}`,
+        s3FormValuesId: "s3-form-values",
+        s3UploadConfigId: "s3-upload-config",
+        // Not really nice
+        sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
+        sentryCsrfToken: "{{ csrf_token }}"
+    });
+})
 </script>
 <script type="text/javascript">
-    /**
-     * Add formset items dynamically
-     */
-    const prefixRegex = new RegExp('__prefix__', 'g');
+/**
+ * Add formset items dynamically
+ */
+const prefixRegex = new RegExp('__prefix__', 'g');
 
-    // offer formset
-    const totalOfferFormset = document.getElementById('id_offers-TOTAL_FORMS');
-    const offerFormsetEmptyForm = document.getElementById('offer-formset-empty-form');
-    const offerFormsetAddMoreButton = document.getElementById('offer-formset-add-more');
+// offer formset
+const totalOfferFormset = document.getElementById('id_offers-TOTAL_FORMS');
+const offerFormsetEmptyForm = document.getElementById('offer-formset-empty-form');
+const offerFormsetAddMoreButton = document.getElementById('offer-formset-add-more');
 
-    offerFormsetAddMoreButton.addEventListener('click', function(e) {
-        if (e) { e.preventDefault(); }
-        // add new form
-        const copyOfferFormsetEmptyForm = offerFormsetEmptyForm.cloneNode(true);
-        copyOfferFormsetEmptyForm.innerHTML = copyOfferFormsetEmptyForm.innerHTML.replace(prefixRegex, totalOfferFormset.value);
-        copyOfferFormsetEmptyForm.childNodes.forEach(node => {
-            offerFormsetEmptyForm.parentNode.insertBefore(node, offerFormsetEmptyForm);
-        });
-        // update total forms count
-        totalOfferFormset.setAttribute('value', parseInt(totalOfferFormset.getAttribute('value'), 10) + 1);
+offerFormsetAddMoreButton.addEventListener('click', function(e) {
+    if (e) { e.preventDefault(); }
+    // add new form
+    const copyOfferFormsetEmptyForm = offerFormsetEmptyForm.cloneNode(true);
+    copyOfferFormsetEmptyForm.innerHTML = copyOfferFormsetEmptyForm.innerHTML.replace(prefixRegex, totalOfferFormset.value);
+    copyOfferFormsetEmptyForm.childNodes.forEach(node => {
+        offerFormsetEmptyForm.parentNode.insertBefore(node, offerFormsetEmptyForm);
     });
+    // update total forms count
+    totalOfferFormset.setAttribute('value', parseInt(totalOfferFormset.getAttribute('value'), 10) + 1);
+});
 
-    // client reference formset
-    const totalClientReferenceFormset = document.getElementById('id_client_references-TOTAL_FORMS');
-    const clientReferenceFormsetEmptyForm = document.getElementById('client-reference-formset-empty-form');
-    const clientReferenceFormsetAddMoreButton = document.getElementById('client-reference-formset-add-more');
+// client reference formset
+const totalClientReferenceFormset = document.getElementById('id_client_references-TOTAL_FORMS');
+const clientReferenceFormsetEmptyForm = document.getElementById('client-reference-formset-empty-form');
+const clientReferenceFormsetAddMoreButton = document.getElementById('client-reference-formset-add-more');
 
-    clientReferenceFormsetAddMoreButton.addEventListener('click', function(e) {
-        if (e) { e.preventDefault(); }
-        // add new form
-        const copyClientReferenceFormsetEmptyForm = clientReferenceFormsetEmptyForm.cloneNode(true);
-        copyClientReferenceFormsetEmptyForm.innerHTML = copyClientReferenceFormsetEmptyForm.innerHTML.replace(prefixRegex, totalClientReferenceFormset.value);
-        // copyClientReferenceFormsetEmptyForm.childNodes.forEach(node => {
-        //     clientReferenceFormsetEmptyForm.parentNode.insertBefore(node, clientReferenceFormsetEmptyForm);
-        // });
-        copyClientReferenceFormsetEmptyForm.setAttribute('id', '');
-        copyClientReferenceFormsetEmptyForm.setAttribute('class', '');
-        clientReferenceFormsetEmptyForm.parentNode.insertBefore(copyClientReferenceFormsetEmptyForm, clientReferenceFormsetEmptyForm);
-        console.log(totalClientReferenceFormset.value)
-        // add dropzone
-        s3UploadInit({
-            dropzoneSelector: `#id_client_references-${totalClientReferenceFormset.value}-logo_form`,
-            callbackLocationSelector: `#id_client_references-${totalClientReferenceFormset.value}-logo_url`,
-            s3FormValuesId: "s3-form-values",
-            s3UploadConfigId: "s3-upload-config",
-            // Not really nice
-            sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
-            sentryCsrfToken: "{{ csrf_token }}"
-        });
-        // update total forms count
-        totalClientReferenceFormset.setAttribute('value', parseInt(totalClientReferenceFormset.getAttribute('value'), 10) + 1);
+clientReferenceFormsetAddMoreButton.addEventListener('click', function(e) {
+    if (e) { e.preventDefault(); }
+    // add new form
+    const copyClientReferenceFormsetEmptyForm = clientReferenceFormsetEmptyForm.cloneNode(true);
+    copyClientReferenceFormsetEmptyForm.innerHTML = copyClientReferenceFormsetEmptyForm.innerHTML.replace(prefixRegex, totalClientReferenceFormset.value);
+    // copyClientReferenceFormsetEmptyForm.childNodes.forEach(node => {
+    //     clientReferenceFormsetEmptyForm.parentNode.insertBefore(node, clientReferenceFormsetEmptyForm);
+    // });
+    copyClientReferenceFormsetEmptyForm.setAttribute('id', '');
+    copyClientReferenceFormsetEmptyForm.setAttribute('class', '');
+    clientReferenceFormsetEmptyForm.parentNode.insertBefore(copyClientReferenceFormsetEmptyForm, clientReferenceFormsetEmptyForm);
+    console.log(totalClientReferenceFormset.value)
+    // add dropzone
+    s3UploadInit({
+        dropzoneSelector: `#id_client_references-${totalClientReferenceFormset.value}-logo_form`,
+        callbackLocationSelector: `#id_client_references-${totalClientReferenceFormset.value}-logo_url`,
+        s3FormValuesId: "s3-form-values",
+        s3UploadConfigId: "s3-upload-config",
+        // Not really nice
+        sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
+        sentryCsrfToken: "{{ csrf_token }}"
     });
+    // update total forms count
+    totalClientReferenceFormset.setAttribute('value', parseInt(totalClientReferenceFormset.getAttribute('value'), 10) + 1);
+});
 </script>
 {% endblock %}

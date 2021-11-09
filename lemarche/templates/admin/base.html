@@ -7,20 +7,20 @@
 {{ block.super }}
 <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
 <style>
-    #header-env-notice {
-        line-height: 1.5;
-        font-size: 1.5rem;
-        text-transform: uppercase;
-        text-align: center;
-        background-color: {{ BITOUBI_ENV_COLOR }};
-    }
+#header-env-notice {
+    line-height: 1.5;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    text-align: center;
+    background-color: {{ BITOUBI_ENV_COLOR }};
+}
 </style>
 {% endblock %}
 
 {% block footer %}
 {{ block.super }}
 {% if BITOUBI_ENV not in "prod" %}
-<script>
+<script type="text/javascript">
     const headerDiv = document.getElementById("header");
 
     let envNoticeHeader = document.createElement("div");
