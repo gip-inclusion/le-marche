@@ -102,12 +102,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (radio.value === 'BUYER') {
             positionFormGroupDiv.classList.remove('d-none');
-            positionFormGroupDiv.required = true;
+            positionInput.required = true;
             phoneFormGroupDiv.classList.add('form-group-required');
             phoneInput.required = true;
         } else {
             positionFormGroupDiv.classList.add('d-none');
-            positionFormGroupDiv.required = false;
+            positionInput.required = false;
             phoneFormGroupDiv.classList.remove('form-group-required');
             phoneInput.required = false;
         }

@@ -118,9 +118,11 @@ jobs:
 
       #----------------------------------------------
       # run tests
+      # collectstatic needed for selenium tests
       #----------------------------------------------
       - name: 🤹‍ Run Tests
         run: |
           source .venv/bin/activate
+          python manage.py collectstatic --no-input
           coverage run --source='./lemarche' ./manage.py test
           coverage report
