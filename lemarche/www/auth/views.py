@@ -6,12 +6,13 @@ from django.views.generic import CreateView
 
 from lemarche.users.models import User
 from lemarche.utils.urls import get_safe_url
-from lemarche.www.auth.forms import PasswordResetForm, SignupForm
+from lemarche.www.auth.forms import LoginForm, PasswordResetForm, SignupForm
 from lemarche.www.auth.tasks import send_signup_notification_email, send_welcome_email
 
 
 class LoginView(auth_views.LoginView):
     template_name = "auth/login.html"
+    form_class = LoginForm
     redirect_authenticated_user = True
     # success_url = settings.LOGIN_REDIRECT_URL  # see get_success_url() below
 
