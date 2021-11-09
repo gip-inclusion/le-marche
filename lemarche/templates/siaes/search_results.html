@@ -47,18 +47,18 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-12 col-md-4 mt-lg-3 pr-md-0">
+                            <div class="col-12 col-md-4 mt-lg-2 pr-md-0">
                                 {% bootstrap_field form.kind %}
                             </div>
-                            <div class="col-12 col-md-4 mt-lg-3">
+                            <div class="col-12 col-md-4 mt-lg-2 pr-md-0">
                                 {% bootstrap_field form.presta_type %}
                             </div>
-                            <div class="col-12 col-md-4 mt-lg-3">
+                            <div class="col-12 col-md-4 mt-lg-2">
                                 {% bootstrap_field form.networks %}
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-6 col-lg-2 mt-3 pr-md-0 pr-lg-2">
+                    <div class="col-12 col-sm-6 col-lg-2 mt-3 mt-3 mt-md-0 mt-lg-3 pr-sm-0 pr-lg-2">
                         <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
                         <button id="filter-submit" class="btn btn-primary btn-block btn-ico" type="submit">
                             <span>Rechercher</span>
@@ -67,7 +67,7 @@
                             </svg>
                         </button>
                     </div>
-                    <div class="col-12 col-sm-6 col-lg-2 mt-3 pl-lg-2">
+                    <div class="col-12 col-sm-6 col-lg-2 mt-3  mt-3 mt-md-0 mt-lg-3 pl-lg-2">
                         <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
                         <a href="{% url 'siae:search_results' %}" class="btn btn-outline-primary btn-block reset btn-ico">
                             <span>Réinitialiser</span>
@@ -87,7 +87,7 @@
         <div id="dir_list">
             <div class="row">
                 <div class="col-12">
-                    <div class="meta h2 mb-3 mb-md-6 mt-3 mt-3 font-weight-light text-center text-md-left">
+                    <div class="meta h3 mb-3 mb-md-5 font-weight-bold text-center text-md-left">
                         {% with paginator.count as siae_count %}
                             {{ siae_count }} structure{% if siae_count > 1 %}s{% endif %} correspond{% if siae_count > 1 %}ent{% endif %} à vos critères
                         {% endwith %}
@@ -145,22 +145,26 @@
                         <div class="si-ideas">
                             <h3 class="h3 my-3">Idées reçues</h3>
                             <p>
-                                <img src="{% static 'img/check.svg' %}" style="height:22px" /> 
-                                <span>La structure est trop petite pour répondre à mon besoin...
-                                <b>Mais elle est sûrement ouverte à la co-traitance.</b>
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" fill="currentColor" /></svg>
                                 </span>
+                                <span class="ml-2">La structure est trop petite pour répondre à mon besoin... <b>Mais elle est sûrement ouverte à la co-traitance.</b></span>
                             </p>
                             <p>
-                                <img src="{% static 'img/check.svg' %}" style="height:22px" />
-                                <span>Son chiffre d’affaire est trop bas et je ne veux pas être
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" fill="currentColor" /></svg>
+                                </span>
+                                <span class="ml-2">Son chiffre d’affaire est trop bas et je ne veux pas être
                                 son seul client... <b>Mais Vous pouvez commencer par lui confier
                                 un marché de plus faible périmètre, sans prendre de risque,
                                 puis faire grandir ce partenariat si vous en êtes satisfait.</b>
                                 </span>
                             </p>
                             <p>
-                                <img src="{% static 'img/check.svg' %}" style="height:22px" />
-                                <span>L'offre ne correspond pas exactement à ce que je cherche...
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" fill="currentColor" /></svg>
+                                </span>
+                                <span class="ml-2">L'offre ne correspond pas exactement à ce que je cherche...
                                 <b>Heureusement les entreprises sociales inclusives sont très
                                 innovantes et s'adaptent à vos besoins.</b>
                                 </span>
