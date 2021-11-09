@@ -1,10 +1,6 @@
 .s-siae-01 {
-	padding-top: 1.5rem;
-	padding-bottom: 1.5rem;
-
-	@media (min-width:992px) {
-		padding-top: 2rem;
-	}
+	padding-top: 1rem;
+	padding-bottom: 1rem;
 
 	#csv_get {
 		margin-top:3rem;
@@ -85,7 +81,6 @@
 		}
 	}
 
-
 	.sc-fav {
 		position: absolute;
 		display: block;
@@ -106,16 +101,6 @@
 	.sc-fav:hover,
 	.sc-fav.is-active {
 		background-image: url('/static/images/sc-fav-star-active.svg');
-	}
-
-	.si-separator {
-		padding:0 1rem 2rem;
-		border-bottom:5px solid $marche;
-	}
-
-	.si-ideas p {
-		display:flex;
-		flex-direction:row;
 	}
 
 	@media screen and (max-width:576px) {
