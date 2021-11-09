@@ -13,8 +13,8 @@ SIAE = {
     "phone": "012345678",  # not required
     # "company_name": "",  # not asked here
     "email": "siae@example.com",
-    "password1": "password",
-    "password2": "password",
+    "password1": "Erls92#32",
+    "password2": "Erls92#32",
     # "id_accept_rgpd"  # required
 }
 
@@ -26,8 +26,8 @@ BUYER = {
     "company_name": "Ma boite",
     "position": "Role important",
     "email": "buyer@example.com",
-    "password1": "password",
-    "password2": "password",
+    "password1": "Erls92#32",
+    "password2": "Erls92#32",
     # "id_accept_rgpd"  # required
     # "id_accept_survey"  # not required
 }
@@ -39,8 +39,8 @@ PARTNER = {
     "phone": "012345678",  # not required
     "company_name": "Ma boite",
     "email": "partner@example.com",
-    "password1": "password",
-    "password2": "password",
+    "password1": "Erls92#32",
+    "password2": "Erls92#32",
     # "id_accept_rgpd"  # required
     # "id_accept_survey"  # not required
 }
@@ -50,12 +50,13 @@ class SignupFormTest(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user_count = User.objects.count()
-        # selenium browser  # TODO: make it app-wide
-        opts = Options()
-        opts.headless = True
-        cls.driver = webdriver.Firefox(options=opts)
+        # selenium browser  # TODO: make it test-wide
+        options = Options()
+        options.headless = True
+        cls.driver = webdriver.Firefox(options=options)
         cls.driver.implicitly_wait(1)
+        # other init
+        cls.user_count = User.objects.count()
 
     def test_siae_submits_signup_form_success(self):
         driver = self.driver
@@ -63,14 +64,13 @@ class SignupFormTest(StaticLiveServerTestCase):
 
         driver.find_element_by_css_selector("input#id_kind_0").click()
         for key in SIAE:
-            driver.find_element_by_css_selector(f"input#id_{key}").send_keys(BUYER[key])
+            driver.find_element_by_css_selector(f"input#id_{key}").send_keys(SIAE[key])
         driver.find_element_by_css_selector("input#id_accept_rgpd").click()
 
         driver.find_element_by_css_selector("form button").click()
 
-        # should create User
+        # should create User & redirect to home
         self.assertEqual(User.objects.count(), self.user_count + 1)
-        # should redirect to home
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('pages:home')}")
 
     def test_siae_submits_signup_form_error(self):
@@ -80,7 +80,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         driver.find_element_by_css_selector("input#id_kind_0").click()
         for key in SIAE:
             if key not in ["last_name"]:
-                driver.find_element_by_css_selector(f"input#id_{key}").send_keys(BUYER[key])
+                driver.find_element_by_css_selector(f"input#id_{key}").send_keys(SIAE[key])
         driver.find_element_by_css_selector("input#id_accept_rgpd").click()
 
         driver.find_element_by_css_selector("form button").click()
@@ -99,9 +99,8 @@ class SignupFormTest(StaticLiveServerTestCase):
 
         driver.find_element_by_css_selector("form button").click()
 
-        # should create User
+        # should create User & redirect to home
         self.assertEqual(User.objects.count(), self.user_count + 1)
-        # should redirect to home
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('pages:home')}")
 
     def test_buyer_submits_signup_form_error(self):
@@ -125,14 +124,13 @@ class SignupFormTest(StaticLiveServerTestCase):
 
         driver.find_element_by_css_selector("input#id_kind_2").click()
         for key in PARTNER:
-            driver.find_element_by_css_selector(f"input#id_{key}").send_keys(BUYER[key])
+            driver.find_element_by_css_selector(f"input#id_{key}").send_keys(PARTNER[key])
         driver.find_element_by_css_selector("input#id_accept_rgpd").click()
 
         driver.find_element_by_css_selector("form button").click()
 
-        # should create User
+        # should create User & redirect to home
         self.assertEqual(User.objects.count(), self.user_count + 1)
-        # should redirect to home
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('pages:home')}")
 
     def test_partner_submits_signup_form_error(self):
@@ -142,7 +140,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         driver.find_element_by_css_selector("input#id_kind_2").click()
         for key in PARTNER:
             if key not in ["company_name"]:
-                driver.find_element_by_css_selector(f"input#id_{key}").send_keys(BUYER[key])
+                driver.find_element_by_css_selector(f"input#id_{key}").send_keys(PARTNER[key])
         driver.find_element_by_css_selector("input#id_accept_rgpd").click()
 
         driver.find_element_by_css_selector("form button").click()

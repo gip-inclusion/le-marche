@@ -8,7 +8,7 @@ from .base import *  # noqa
 logging.disable(logging.CRITICAL)
 
 # `ManifestStaticFilesStorage` (used in base settings) requires `collectstatic` to be run.
-# STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 COMPRESS_OFFLINE = False
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

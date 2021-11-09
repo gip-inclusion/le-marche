@@ -71,9 +71,11 @@
 /**
  * Dynamic rules:
  * - if the user is not a SIAE:
- *      - show company form field
+ *      - show company_name field (and make it required)
  *      - add survey checkbox
- * - if the user is BUYER: make phone number field required
+ * - if the user is BUYER:
+ *      - make phone field required
+ *      - add position field (and make it required)
  */
 document.addEventListener('DOMContentLoaded', function() {
     let phoneFormGroupDiv = document.getElementsByClassName('phone-form-group')[0];
