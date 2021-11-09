@@ -157,7 +157,6 @@
 		color: $gray-900;
 	}
 
-
 	.deflist {
 		padding: 0;
 			margin: 0;
@@ -336,9 +335,8 @@
 	}
 	
 	.img-left .il-l img {
-		height:auto;
-		max-width:100%;
-		margin-right:0.5rem;
+		margin-top: 0.25rem;
+		margin-right: 0.5rem;
 	}
 
 	.img-left span.il-l {
@@ -372,7 +370,7 @@
 	}
 
 	#user_profile {
-		background-color: $marche-lighter;
+		background-color: $gray-400;
 		padding: 1.5rem;
 		margin: 0;
 		border-radius: 0.5rem;
