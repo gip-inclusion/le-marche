@@ -340,7 +340,7 @@ Vous pouvez en faire la demande via notre
 SPECTACULAR_SETTINGS = {
     "TITLE": "API du marché de l'inclusion",
     "DESCRIPTION": API_DESCRIPTION,
-    "VERSION": "0.12",
+    "VERSION": "0.13",
     "CONTACT": {
         "name": "Une question ? Contactez-nous en cliquand ici",
         "url": "https://lemarche.inclusion.beta.gouv.fr/contact/",
