@@ -4,7 +4,6 @@
 
 	@media (min-width:992px) {
 		padding-top: 2rem;
-		padding-bottom: 3rem;
 	}
 
 	#csv_get {
@@ -14,20 +13,20 @@
 		margin-right:auto;
 	}
 
-	#dir_form {
-		padding: 2rem;
-		background-color: $marche-lighter;
-		border-radius: 0.5rem;
-	}
-
 	#csv_form .jcf-checkbox {
 		display: none;
 	}
-
 }
 
 .s-siae-02 {
-	padding-bottom: 3rem;
+	background-color: $gray-400;
+	padding-top: 1.5rem;
+	padding-bottom: 1.5rem;
+
+	@media (min-width:992px) {
+		padding-top: 2rem;
+		padding-bottom: 5rem;
+	}
 
 	#dir_list {
 		display:flex;
@@ -57,34 +56,6 @@
 		font-weight:300;
 	}
 
-	.siae-card-container {
-		text-decoration:none;
-		display:block;
-		border-radius:.5rem;
-		margin-bottom:2rem;
-		padding:1rem;
-		box-shadow: 0 2px 19px 0 rgba(56,56,56,.1) !important;
-		transition: all 0.3s ease-in-out;
-	}
-
-	.siae-card-container:hover {
-		text-decoration:none;
-		color:$gray-900;
-		display:block;
-		box-shadow: 0 2px 19px 0 rgba(56,56,56,.3) !important;
-	}
-
-	.siae-card-container:active,
-	.siae-card-container:focus {
-		text-decoration:none;
-		color:$gray-900;
-		border-color:transparent;
-	}
-
-	.siae-card {
-		display:flex;
-		flex-direction: row;
-	}
 
 	.siae-info .maparea .map-holder {
 		height:19rem
@@ -99,60 +70,26 @@
 		display:flex;
 		flex-direction:row;
 	}
-	.si-ideas span {
-		display:block;
-		padding-left:.4rem;
-	}
-
-	.siae-card-container {
-		text-decoration:none;
-		display:block;
-		border: 2px solid transparent;
-		border-radius:9px;
-		box-shadow: 0px 9px 9px -8px rgba(0,0,0,0.2);
-		margin-bottom:2rem;
-		padding:1rem;
-	}
-
-	.siae-card-container:hover {
-		text-decoration:none;
-		color:$gray-900;
-		display:block;
-		box-shadow: 0px 3px 11px 7px rgba(0,0,0,0.2);
-	}
-
-	.siae-card-container:active,
-	.siae-card-container:focus {
-		text-decoration:none;
-		color:$gray-900;
-		border-color:transparent;
-	}
 
 	.siae-card {
-		display:flex;
-		flex-direction: row;
+		margin-bottom: 1.5rem;
+		border-bottom-width: 5px !important;
+
+		.sc-img {
+			width: 90px;
+		}
+
+		.btn-link {
+			z-index: 10;
+		}
+
+		.card-footer {
+			background-color: $gray-400 !important;
+			margin: 0;
+			padding-left: 106px;
+		}
 	}
 
-	.siae-info {
-		font-family:roboto;
-	}
-
-
-	.sc-img {
-		width: 70px;
-	}
-
-	.sc-main {
-		display:flex;
-		flex-direction: column;
-		color: $gray-900;
-		flex: 1;
-	}
-
-	.sc-head {
-		position: relative;
-		padding-right: 40px;
-	}
 
 	.sc-fav {
 		position: absolute;
@@ -176,69 +113,6 @@
 		background-image: url('/static/images/sc-fav-star-active.svg');
 	}
 
-	.sc-main h3 {
-		margin:0;
-		padding:0;
-		font-size:1.25rem;
-		margin-bottom:1rem;
-	}
-
-	.sc-body li {
-		margin-bottom:1rem;
-	}
-
-	.sc-body ul {
-		list-style-type: none;
-		margin:0;
-		padding:0;
-	}
-
-	.sc-body li img {
-		width:20px;
-		margin-right:.7rem;
-	}
-
-	.sc-body li span {
-		flex-grow:1;
-		display:block;
-	}
-
-	@media screen and (min-width: 960px) {
-		.sc-profile ul {
-			display: grid;
-			grid-template-columns: repeat(2, 1fr);
-			grid-template-rows: repeat(3, 1fr);
-		}
-	}
-
-	.sc-profile li {
-		padding-left: 2rem;
-		min-height:25px;
-		background-position: left top;
-		background-repeat: no-repeat;
-	}
-
-	.sc-profile li.sc-profile-kind {
-		background-image: url('/static/images/siae_list_kind.svg');
-	}
-	.sc-profile li.sc-profile-type {
-		background-image: url('/static/images/siae_list_type.svg');
-	}
-	.sc-profile li.sc-profile-sectors {
-		background-image: url('/static/images/siae_list_sectors.svg');
-		grid-area: 2 / 1 / 4 / 2; 
-	}
-	.sc-profile li.sc-profile-sectors-empty {
-		grid-area: 2 / 1 / 4 / 2;
-	}
-
-	.sc-profile li.sc-profile-town {
-		background-image: url('/static/images/siae_list_town.svg');
-	}
-	.sc-profile li.sc-profile-town-work {
-		background-image: url('/static/images/siae_list_town_work.svg');
-	}
-
 	.si-separator {
 		padding:0 1rem 2rem;
 		border-bottom:5px solid $marche;
@@ -248,36 +122,15 @@
 		display:flex;
 		flex-direction:row;
 	}
-	.si-ideas span {
-		display:block;
-		padding-left:.4rem;
-	}
-
-	.siae-card .sc-profile ul {
-		line-height: 1.4;
-	}
-
 
 	@media screen and (max-width:576px) {
-		.siae-card .sc-profile ul {
-			flex-direction:column;
-			flex-wrap:wrap;
-		}
-
-		.siae-card .sc-body li {
-			margin-bottom:1rem;
-			width:100%;
-			display:flex;
-			flex-direction:row;
-
-		}
-		.siae-card {
-			flex-direction: column !important;
-		}
-
 		.siae-card .sc-img {
 			display: none !important;
 		}
+
+		.siae-card .card-footer {
+			padding-left: 16px;
+		}		
 	}
 
 
@@ -286,28 +139,6 @@
 			position: sticky;
 			top: 150px;
 			z-index: 1;
-		}
-	}
-
-	@media screen and (max-width:576px) {
-		.siae-card .sc-profile ul {
-			flex-direction:column;
-			flex-wrap:wrap;
-		}
-
-		.siae-card .sc-body li {
-			margin-bottom:1rem;
-			width:100%;
-			display:flex;
-			flex-direction:row;
-
-		}
-		.siae-card {
-			flex-direction: column !important;
-		}
-
-		.siae-card .sc-img {
-			display: none !important;
 		}
 	}
 }
