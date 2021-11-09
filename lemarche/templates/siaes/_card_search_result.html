@@ -1,41 +1,62 @@
 {% load static m2m_list_display %}
 
-<a href="{% url 'siae:detail' siae.slug %}" class="siae-card-container card">
-    <div class="siae-card">
-        <div class="sc-img mr-5">
-            {% if siae.logo_url %}
-                <img class="img-fluid" src="{{ siae.logo_url }}" alt="Logo de la structure {{ siae.name }}" />
-            {% else %}
-                <img class="img-fluid" src="{% static 'img/default-listing.png' %}" alt="{{ siae.name }}" />
-            {% endif %}
+<div class="card c-card c-card--marche siae-card">
+    <div class="row no-gutters">
+        <div class="col-auto sc-img">
+            <a href="{% url 'siae:detail' siae.slug %}" class="text-decoration-none stretched-link p-3 d-inline-block">
+                {% if siae.logo_url %}
+                    <img class="img-fluid" src="{{ siae.logo_url }}" alt="Logo de la structure {{ siae.name }}" />
+                {% else %}
+                    <img class="img-fluid" src="{% static 'img/default-listing.png' %}" alt="{{ siae.name }}" />
+                {% endif %}
+            </a>
         </div>
-        <div class="sc-main">
-            <div class="sc-head">
-                <h3>
-                    {{ siae.name_display }}
-                    {% if not siae.users.count %}
-                        <small class="text-muted">(bientôt inscrite sur le marché)</small>
-                    {% endif %}
-                </h3>
-            </div>
-
-            <div class="sc-body">
-                <div class="sc-profile">
-                    <ul>
-                        {% if siae.kind %}
-                            <li class="sc-profile-kind">{{ siae.presta_type_display }}</li>
+        <div class="col">
+            <div class="card-body">
+                <a href="{% url 'siae:detail' siae.slug %}" class="text-decoration-none stretched-link">
+                    <h3 class="mb-3 d-flex justify-content-between align-items-start">
+                        {{ siae.name_display }}
+                        {% if not siae.users.count %}
+                            <small class="text-muted">(bientôt inscrite sur le marché)</small>
                         {% endif %}
-                        <li class="sc-profile-type">{{ siae.get_kind_display }}</li>
+                        <!-- <button class="btn btn-link pt-0 pr-0">
+                            <img src="{% static 'itou/images/ico-star-line.svg' %}" height="24" alt="Mettre en favori" />
+                        </button> -->
+                    </h3>
+                    <ul class="list-unstyled m-0 lh-sm row no-gutters">
+                        <li class="sc-profile-type col-12 col-lg-6 pl-lg-2 d-flex">
+                            <img src="{% static 'itou/images/ico-briefcase-4-line.svg' %}" height="16" alt="" />
+                            <span class="ml-1">{{ siae.get_kind_display }}</span>
+                        </li>
                         {% if siae.sectors %}
-                            <li class="sc-profile-sectors">{% m2m_list_display siae 'sectors' 3 %}</li>
-                        {% else %}
-                            <li class="sc-profile-sectors-empty"> </li>
+                        <li class="sc-profile-sectors col-12 col-lg-6 pr-lg-2 mb-3 mb-lg-0 d-flex">
+                            <img src="{% static 'itou/images/ico-service-line.svg' %}" height="16" alt="" />
+                            <span class="ml-1">{% m2m_list_display siae 'sectors' 3 %}</span>
+                        </li>
                         {% endif %}
-                        <li class="sc-profile-town">Situé à {{ siae.city }}</li>
-                        <li class="sc-profile-town-work" title="{{ siae.geo_range_pretty_title }}">Intervient sur : {{ siae.geo_range_pretty_display }}</li>
                     </ul>
-                </div>
+                </a>
             </div>
         </div>
     </div>
-</a>
+    <div class="card-footer">
+        <a href="{% url 'siae:detail' siae.slug %}" class="text-decoration-none stretched-link">
+            <ul class="list-unstyled m-0 lh-sm fs-sm row no-gutters">
+                <li class="sc-profile-town col-12 col-md-4 pr-lg-2 mb-3 mb-md-0 d-flex" title="Situé à {{ siae.city }}">
+                    <img src="{% static 'itou/images/ico-map-pin-line.svg' %}" height="16" alt="" />
+                    <span class="ml-1">{{ siae.city }}</span>
+                </li>
+                <li class="sc-profile-town-work col-12 col-md-4 px-lg-2 mb-3 mb-md-0 d-flex" title="Intervient sur : {{ siae.geo_range_pretty_title }}">
+                    <img src="{% static 'itou/images/ico-compass-line.svg' %}" height="16" alt="" />
+                    <span class="ml-1">{{ siae.geo_range_pretty_display }}</span>
+                </li>
+                {% if siae.kind %}
+                    <li class="sc-profile-kind col-12 col-md-4 pl-lg-2 d-flex">
+                        <img src="{% static 'itou/images/ico-building-4-line.svg' %}" height="16" alt="" />
+                        <span class="ml-1">{{ siae.presta_type_display }}</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </a>
+    </div>
+  </div>
