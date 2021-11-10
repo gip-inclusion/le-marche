@@ -327,10 +327,10 @@ class Siae(models.Model):
         Some SIAE have duplicate name, so we suffix the slug with their department.
         In some rare cases, name+department is not enough, so we add 4 random characters at the end.
         """
-        if not self.id:
+        if not self.slug:
             self.slug = f"{slugify(self.name)[:40]}-{str(self.department or '')}"
-            if with_uuid:
-                self.slug += f"-{str(uuid4())[:4]}"
+        if with_uuid:
+            self.slug += f"-{str(uuid4())[:4]}"
 
     def save(self, *args, **kwargs):
         """Generate the slug field before saving."""
