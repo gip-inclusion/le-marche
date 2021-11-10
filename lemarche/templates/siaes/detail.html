@@ -93,7 +93,7 @@
 
                 <!-- profile-detail sidebar -->
                 <aside id="sidebar">
-                    <div class="profile mb-3">
+                    <div class="profile mb-4">
                         {% if not siae.contact_website and not siae.contact_email and not siae.contact_phone and not siae.user.count %}
                         <div class="row">
                             <div class="col-12 mb-3">
@@ -162,6 +162,11 @@
                             </div>
                         </div>
                         <hr class="mt-5 d-block d-lg-none">
+                    </div>
+                    <div class="partners d-none d-lg-block">
+                        <div class="si-separator"></div>
+                        <h3 class="h4 my-3">Vous avez besoin d'être accompagné dans vos achats inclusifs par des partenaires reconnus ?</h3>
+                        <a href="{% url 'pages:partenaires' %}" class="btn btn-outline-primary">Découvrez-les maintenant</a>
                     </div>
                 </aside>
 
@@ -295,6 +300,13 @@
                     </div>
                     {% endif %}
                 </article>
+            </div>
+        </div>
+        <div class="row partners-md d-lg-none">
+            <div class="col-12">
+                <hr />
+                <h3 class="h4 my-3">Vous avez besoin d'être accompagné dans vos achats inclusifs par des partenaires reconnus ?</h3>
+                <a href="{% url 'pages:partenaires' %}" class="btn btn-outline-primary">Découvrez-les maintenant</a>
             </div>
         </div>
         <div class="row">

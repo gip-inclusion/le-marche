@@ -52,11 +52,6 @@
 		font-weight:300;
 	}
 
-
-	.si-separator {
-		border-bottom: 5px solid $marche;
-	}
-
 	.si-ideas p {
 		display:flex;
 		flex-direction:row;
@@ -290,6 +285,11 @@
 			flex: 1;
 		}
 	}
+
+	.partners {
+		position: sticky;
+		top: 600px;
+	}
 	
 	#content {
 		display: grid;
@@ -404,4 +404,8 @@
 		max-height: 100px;
 		max-width: 100px;
 	}
+}
+
+.si-separator {
+	border-bottom: 5px solid $marche;
 }
