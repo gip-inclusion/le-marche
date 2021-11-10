@@ -44,12 +44,12 @@
                                 <div class="row">
                                     <div class="form-group col">
                                         <label>Structure</label>
-                                        <input class="form-control" value="{{ user.company_name }}" disabled />
+                                        <input class="form-control" value="{{ user.company_name|default:'' }}" disabled />
                                     </div>
                                     {% if user.kind == 'BUYER' %}
                                         <div class="form-group col">
                                             <label>Poste</label>
-                                            <input class="form-control" value="{{ user.position }}" disabled />
+                                            <input class="form-control" value="{{ user.position|default:'' }}" disabled />
                                         </div>
                                     {% endif %}
                                 </div>

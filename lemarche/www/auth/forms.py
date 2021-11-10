@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import PasswordResetForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, UserCreationForm
 
 from lemarche.users.models import User
 from lemarche.utils.password_validation import CnilCompositionPasswordValidator
@@ -68,6 +68,12 @@ class SignupForm(UserCreationForm):
     def clean_email(self):
         email = self.cleaned_data["email"]
         return email.lower()
+
+
+class LoginForm(AuthenticationForm):
+    def clean_username(self):
+        username = self.cleaned_data["username"]
+        return username.lower()
 
 
 class PasswordResetForm(PasswordResetForm):
