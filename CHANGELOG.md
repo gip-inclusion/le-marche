@@ -8,15 +8,27 @@ Ressources :
 
 ### Ajouté
 
+- Inscription / Connexion
+    - Ajout d'un champ "Votre poste" pour les acheteurs
+- API
+    - Nouvelle url /siae/slug/{slug}/ pour trouver une structure par son slug
+
 ### Modifié
 
 - Pages
     - Ajout du logo CNA (Conseil National des Achats) dans les partenaires
-- Fiche structure
+    - Lazy loading des images sur la page d'accueil pour améliorer les performances
+- Recherche / Fiche
     - Clic sur l'adresse email ouvre son client email (mailto)
     - Afficher le nom du groupe lorsque le secteur est "Autre"
+    - Reduction des espacements et nouvelle "card" sur la page de résultats
 - Espace utilisateur
     - Réparé le formulaire de modification de sa structure (lorsqu'un champ readonly était manquant)
+    - Afficher une petite carte à coté des de l'adresse de la structure (formulaire de modification)
+- Inscription / Connexion
+    - Enlevé les liens vers les webinaires dans l'email post-inscription
+- API
+    - Renvoyer le champ "id" des structures
 
 ## [1.1] - 2021-11-05
 
@@ -26,7 +38,7 @@ Ressources :
 - Pages
     - Lien vers la liste des facilitateurs (google doc) sur la page "C'est quoi l'inclusion"
     - Mise en avant des partenaires sur la page d'accueil (carrousel)
-- Recherche
+- Recherche / Fiche
     - Pouvoir filtrer par réseau
 - Données
     - Import des ESAT (1778 structures)
@@ -36,9 +48,9 @@ Ressources :
 
 ### Modifié
 
-- Pages :
+- Pages
     - Quelques mini changements sur la page d'accueil : typo, renommé le bouton Newsletter, meilleur affichage sur mobile
-- Recherche
+- Recherche / Fiche
     - Correctif pour ne pas afficher la modal pour les utilisateurs connectés
     - Correctif pour éviter de renvoyer des doublons
     - Modifié les résultats lorsqu'une ville est cherchée: les structures présentes dans la ville, mais avec périmètre d'intervention autre que Distance ou Département, sont quand même renvoyés
@@ -48,7 +60,7 @@ Ressources :
     - Clarifié le nom du bouton de réinitialisation de la recherche par secteurs
     - Certaines structures n'apparaissaient pas dans les résultats (is_active=False pendant la migration). C'est réparé. Cela concernait ~1000 structures
     - Réparé la redirection lorsqu'une personne non-connectée souhaite télécharger la liste des résultats
-- Inscription/connexion
+- Inscription / Connexion
     - Réparé un bug lorsque le lien de réinitialisation du mot de passe était invalide (déjà cliqué)
     - Redirections additionnelles pour les pages de connexion et d'inscription (Cocorico)
 - Formulaire de contact
