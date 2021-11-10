@@ -83,12 +83,13 @@
 
         {% block messages %}
         {% if messages %}
-        <section class="mt-3 mt-lg-5">
+        <section class="mt-3">
             <div class="container">
                 <div class="messages fr-container fr-my-5w">
                     {% for message in messages %}
-                        <div role="alert" class="alert alert-{{ message.tags|default:'info' }}">
-                            <div>{{ message|safe }}</div>
+                        <div role="alert" class="alert alert-{{ message.tags|default:'info' }} alert-dismissible">
+                            <button class="close" type="button" data-dismiss="alert" aria-label="close">×</button>
+                            {{ message|safe }}
                         </div>
                     {% endfor %}
                 </div>

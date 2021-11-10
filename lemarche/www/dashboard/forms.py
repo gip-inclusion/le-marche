@@ -82,6 +82,7 @@ class SiaeEditInfoContactForm(forms.ModelForm):
             "brand",
             "siret",
             "kind",
+            "website",
             "email",
             "phone",
             "address",
@@ -91,9 +92,9 @@ class SiaeEditInfoContactForm(forms.ModelForm):
             "region",
             "contact_first_name",
             "contact_last_name",
+            "contact_website",
             "contact_email",
             "contact_phone",
-            "contact_website",
             "logo_url",
         ]
         widgets = {

@@ -229,9 +229,9 @@ class Siae(models.Model):
         null=True,
     )
 
-    website = models.URLField(verbose_name="Site internet", blank=True, null=True)
     email = models.EmailField(verbose_name="E-mail", blank=True, null=True)
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True, null=True)
+    website = models.URLField(verbose_name="Site internet", blank=True, null=True)
 
     address = models.TextField(verbose_name="Adresse")
     city = models.CharField(verbose_name="Ville", max_length=255, blank=True, null=True)
