@@ -22,7 +22,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="pt-4 pt-lg-6 pb-6 pb-lg-8">
+<section class="pt-4 pb-6">
     <div class="container">
         <div class="row">
             <div class="col-12 col-lg-8">
@@ -78,8 +78,8 @@
                                 <div role="alert" class="alert alert-warning">
                                     <p>
                                         <strong>Rejoindre cette structure</strong><br />
-                                        <i>{{ siae.users.first.full_name }}</i> a déjà activé cette structure sur le marché.
-                                        Si vous souhaitez rejoindre la structure, <strong><a href="{% url 'pages:contact' %}">contactez le support</a></strong>.
+                                        <i>{{ siae.users.first.full_name }}</i> a déjà activé cette structure sur le marché.<br />
+                                        Si vous souhaitez aussi rejoindre cette structure, <strong><a href="{% url 'pages:contact' %}">contactez le support</a></strong> (indiquez le SIRET pour nous aider à retrouver votre structure).
                                     </p>
                                 </div>
                             {% else %}

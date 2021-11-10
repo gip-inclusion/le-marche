@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, views as auth_views
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
 from lemarche.users.models import User
@@ -40,28 +40,34 @@ class LoginView(auth_views.LoginView):
 class SignupView(SuccessMessageMixin, CreateView):
     template_name = "auth/signup.html"
     form_class = SignupForm
-    success_url = reverse("pages:home")
+    # success_url = reverse_lazy("pages:home")  # see get_success_url() below
     success_message = "Inscription validée !"  # see get_success_message() below
 
     def form_valid(self, form):
         """
-        - login the user automatically
         - send a welcome email to the user
         - send a notification email to the staff
+        - login the user automatically
         """
         user = form.save()
         send_welcome_email(user)
         send_signup_notification_email(user)
-        user = authenticate(email=form.cleaned_data["email"], password=form.cleaned_data["password1"])
+        user = authenticate(username=form.cleaned_data["email"], password=form.cleaned_data["password1"])
         login(self.request, user)
-        # return super().form_valid(form)
-        return HttpResponseRedirect(self.get_success_url)
+        messages.add_message(self.request, messages.SUCCESS, self.get_success_message(form.cleaned_data))
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        """Redirect to dashboard if SIAE."""
+        if self.request.POST.get("kind") == User.KIND_SIAE:
+            return reverse_lazy("dashboard:home")
+        return reverse_lazy("pages:home")
 
     def get_success_message(self, cleaned_data):
+        """Show detailed welcome message to SIAE."""
         success_message = super().get_success_message(cleaned_data)
-        success_message += f" Vous pouvez maintenant vous <a href=\"{reverse_lazy('auth:login')}\">connecter</a>."
         if cleaned_data["kind"] == User.KIND_SIAE:
-            success_message += " L'ajout de votre structure se fera ensuite dans votre espace utilisateur."
+            success_message += f"<br />Vous pouvez maintenant ajouter votre structure en cliquant sur <a href=\"{reverse_lazy('dashboard:siae_search_by_siret')}\">Ajouter une structure</a>."  # noqa
         return success_message
 
 

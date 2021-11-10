@@ -23,7 +23,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="pt-4 pt-lg-6 pb-6 pb-lg-8">
+<section class="pt-4 pb-6">
     <div class="container">
         <div class="row">
             <div class="col-12 col-lg-8">
@@ -33,7 +33,7 @@
                     Vérifiez si ces données correspondent bien à votre structure.
                 </p>
                 <p class="mb- mb-lg-5">
-                   Données fixes provenant de l'ASP.
+                   <i>Données fixes provenant de {% if siae.kind == 'ESAT' %}GESAT/Handeco{% else %}l'ASP{% endif %}.</i>
                 </p>
                 
                 <hr>
