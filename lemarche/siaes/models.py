@@ -305,6 +305,14 @@ class Siae(models.Model):
     source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True, null=True)
     import_raw_object = models.JSONField("Donnée JSON brute", editable=False, null=True)
 
+    # stats
+    user_count = models.IntegerField(default=0)
+    sector_count = models.IntegerField(default=0)
+    network_count = models.IntegerField(default=0)
+    offer_count = models.IntegerField(default=0)
+    client_reference_count = models.IntegerField(default=0)
+    label_count = models.IntegerField(default=0)
+
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
 
@@ -332,8 +340,21 @@ class Siae(models.Model):
         if with_uuid:
             self.slug += f"-{str(uuid4())[:4]}"
 
+    def set_stats(self):
+        if self.id:
+            self.user_count = self.users.count()
+            self.sector_count = self.sectors.count()
+            self.network_count = self.networks.count()
+            self.offer_count = self.offers.count()
+            self.client_reference_count = self.client_references.count()
+            self.label_count = self.labels.count()
+
     def save(self, *args, **kwargs):
-        """Generate the slug field before saving."""
+        """
+        - update the object stats
+        - generate the slug field
+        """
+        self.set_stats()
         try:
             self.set_slug()
             with transaction.atomic():

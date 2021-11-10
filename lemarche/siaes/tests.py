@@ -67,6 +67,16 @@ class SiaeModelTest(TestCase):
         )
         self.assertEqual(siae_custom_empty.geo_range_pretty_display, "non disponible")
 
+    def test_stats(self):
+        siae = SiaeFactory()
+        user = UserFactory()
+        siae.users.add(user.id)
+        self.assertEqual(siae.users.count(), 1)
+        # self.assertEqual(siae.user_count, 1)  # won't work, need to call save() method to update stat fields
+        siae.save()
+        self.assertEqual(siae.user_count, 1)
+        self.assertEqual(siae.sector_count, 0)
+
 
 class SiaeModelQuerysetTest(TestCase):
     def setUp(self):
