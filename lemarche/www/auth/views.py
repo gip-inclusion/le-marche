@@ -25,6 +25,16 @@ class LoginView(auth_views.LoginView):
             messages.add_message(request, messages.INFO, "Vous devez être connecté pour télécharger la liste.")
         return super().get(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        """Show post-migration message to existing users (they need to reset their password)."""
+        context = super().get_context_data(**kwargs)
+        email = self.request.POST.get("username", "")
+        if email:
+            user = User.objects.filter(email=email).first()
+            if user:
+                context["email_exists_password_empty"] = True if not getattr(user, "password", "") else False
+        return context
+
     def get_success_url(self):
         """Redirect to next_url if there is a next param."""
         success_url = super().get_success_url()

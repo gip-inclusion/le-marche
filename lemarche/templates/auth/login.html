@@ -11,8 +11,8 @@
                 <h2 class="mb-3 mb-lg-5"><strong>Connexion</strong></h2>
 
                 <form method="POST" action="">
-                    {% if form.errors %}
-                    <div class="alert alert-success" role="alert">
+                    {% if email_exists_password_empty %}
+                    <div id="post-migration-login-message" class="alert alert-success" role="alert">
                         ❗ Le marché de l'inclusion fait peau neuve !
                         Pour accompagner les évolutions futures de la plateforme,
                         nous vous invitons à <a href="{% url 'auth:password_reset' %}"><strong>redéfinir un nouveau mot de passe</strong></a>.
@@ -23,7 +23,9 @@
                         {% csrf_token %}
 
                         <!-- TODO: post-migration -->
-                        {# {% bootstrap_form_errors form type="all" %} #}
+                        {% if not email_exists_password_empty %}
+                        {% bootstrap_form_errors form type="all" %}
+                        {% endif %}
 
                         <fieldset>
                             {% bootstrap_field form.username %}
