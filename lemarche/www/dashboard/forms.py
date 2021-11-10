@@ -11,7 +11,7 @@ from lemarche.www.siaes.forms import SECTOR_FORM_QUERYSET
 class ProfileEditForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "phone"]
+        fields = ["first_name", "last_name", "phone", "email"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -118,6 +118,7 @@ jobs:
 
       #----------------------------------------------
       # run tests
+      # collectstatic needed for selenium tests
       #----------------------------------------------
       - name: 🤹‍ Run Tests
         run: |

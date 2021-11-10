@@ -102,6 +102,8 @@ class User(AbstractUser):
     kind = models.CharField(verbose_name="Type", max_length=20, choices=KIND_CHOICES_WITH_ADMIN, blank=True, null=True)
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True, null=True)
     company_name = models.CharField(verbose_name="Nom de l'entreprise", max_length=255, blank=True, null=True)
+    position = models.CharField(verbose_name="Poste", max_length=255, blank=True, null=True)
+
     api_key = models.CharField(verbose_name="Clé API", max_length=128, unique=True, blank=True, null=True)
 
     accept_rgpd = models.BooleanField(help_text="J'accepte les conditions d'utilisation du service", default=False)

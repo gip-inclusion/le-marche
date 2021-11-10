@@ -24,9 +24,10 @@
 {% block content %}
 <section class="pt-4 pt-lg-6 pb-6 pb-lg-8">
     <div class="container">
+        <h2 class="mb-3 mb-lg-5"><strong>Modifier mon profil</strong></h2>
         <div class="row">
             <div class="col-12 col-lg-8">
-                <h2 class="mb-3 mb-lg-5"><strong>Modifier mon profil</strong></h2>
+                
                 
                 <form method="POST" action="" class="mb-3 mb-lg-5">
 
@@ -38,13 +39,27 @@
                         <fieldset>
                             {% bootstrap_field form.first_name %}
                             {% bootstrap_field form.last_name %}
+                            {% bootstrap_field form.phone %}
+                            {% if user.kind != 'SIAE' %}
+                                <div class="row">
+                                    <div class="form-group col">
+                                        <label>Structure</label>
+                                        <input class="form-control" value="{{ user.company_name }}" disabled />
+                                    </div>
+                                    {% if user.kind == 'BUYER' %}
+                                        <div class="form-group col">
+                                            <label>Poste</label>
+                                            <input class="form-control" value="{{ user.position }}" disabled />
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            <br />
                             {% bootstrap_field form.email form_group_class="form-group mb-0" %}
                             <small class="form-text text-muted mb-3">
                                 Vous souhaitez mettre à jour votre adresse e-mail ?<br />
                                 Veuillez nous <a href="{% url 'pages:contact' %}">contacter</a>.
-                                {% if user.kind == 'SIAE' %}<br />A noter que chaque structure a maintenant ses propres champs contact (E-mail, Téléphone, Site internet, ...){% endif %}
                             </small>
-                            {% bootstrap_field form.phone %}
                             <div class="form-group">
                                 <label class="mb-0">Mot de passe</label>
                                 <small class="form-text text-muted">
@@ -70,6 +85,17 @@
 
                 </form>
             </div>
+            {% if user.kind == 'SIAE' %}
+            <div class="col-12 col-lg-4">
+                <div role="alert" class="alert alert-info mt-3 mt-lg-0">
+                    <p>
+                        <strong>Vous souhaitez changer les champs "contact" de votre structure ?</strong><br />
+                        Ca se passe maintenant directement sur la page de modification de votre structure<br />
+                        (E-mail, Téléphone, Site internet, ...)
+                    </p>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </section>
