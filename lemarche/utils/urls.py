@@ -11,7 +11,7 @@ def get_domain_url():
     TODO: find a way to update their Site.object instead
     """
     if settings.DEPLOY_URL:
-        return settings.DEPLOY_URL.split("https://")[1]
+        return settings.DEPLOY_URL
     return Site.objects.get_current().domain
 
 
