@@ -82,6 +82,7 @@ class UserAdmin(UserAdmin):
                     "kind",
                     "phone",
                     "company_name",
+                    "position",
                 )
             },
         ),

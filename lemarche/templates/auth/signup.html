@@ -33,6 +33,7 @@
                                     Une fois votre compte créé, vous pourrez ajouter et modifier votre structure.
                                 </div>
                             </div>
+                            {% bootstrap_field form.position form_group_class="position-form-group form-group form-group-required d-none" %}
                         </fieldset>
 
                         <fieldset>
@@ -70,16 +71,20 @@
 /**
  * Dynamic rules:
  * - if the user is not a SIAE:
- *      - show company form field
+ *      - show company_name field (and make it required)
  *      - add survey checkbox
- * - if the user is BUYER: make phone number field required
+ * - if the user is BUYER:
+ *      - make phone field required
+ *      - add position field (and make it required)
  */
 document.addEventListener('DOMContentLoaded', function() {
     let phoneFormGroupDiv = document.getElementsByClassName('phone-form-group')[0];
     let phoneInput = document.getElementById('id_phone');
     let companyNameSiaeFormGroupDiv = document.getElementsByClassName('company-name-siae-form-group')[0];
     let companyNameFormGroupDiv = document.getElementsByClassName('company-name-form-group')[0];
+    let positionFormGroupDiv = document.getElementsByClassName('position-form-group')[0];
     let companyNameInput = document.getElementById('id_company_name');
+    let positionInput = document.getElementById('id_position');
 
     let acceptSurveyFormGroupDiv = document.getElementsByClassName('accept-survey-form-group')[0];
 
@@ -98,9 +103,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (radio.value === 'BUYER') {
+            positionFormGroupDiv.classList.remove('d-none');
+            positionInput.required = true;
             phoneFormGroupDiv.classList.add('form-group-required');
             phoneInput.required = true;
         } else {
+            positionFormGroupDiv.classList.add('d-none');
+            positionInput.required = false;
             phoneFormGroupDiv.classList.remove('form-group-required');
             phoneInput.required = false;
         }
