@@ -69,9 +69,13 @@ class SignupFormTest(StaticLiveServerTestCase):
 
         driver.find_element_by_css_selector("form button").click()
 
-        # should create User & redirect to home
+        # should create User
         self.assertEqual(User.objects.count(), self.user_count + 1)
+        # should redirect to home
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('pages:home')}")
+        # user should be logged in
+        header = driver.find_element_by_css_selector("header#header")
+        self.assertTrue("Connexion" not in header.text)
 
     def test_siae_submits_signup_form_error(self):
         driver = self.driver
@@ -88,65 +92,65 @@ class SignupFormTest(StaticLiveServerTestCase):
         # should not submit form (last_name field is required)
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
-    def test_buyer_submits_signup_form_success(self):
-        driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:signup')}")
+    # def test_buyer_submits_signup_form_success(self):
+    #     driver = self.driver
+    #     driver.get(f"{self.live_server_url}{reverse('auth:signup')}")
 
-        driver.find_element_by_css_selector("input#id_kind_1").click()
-        for key in BUYER:
-            driver.find_element_by_css_selector(f"input#id_{key}").send_keys(BUYER[key])
-        driver.find_element_by_css_selector("input#id_accept_rgpd").click()
+    #     driver.find_element_by_css_selector("input#id_kind_1").click()
+    #     for key in BUYER:
+    #         driver.find_element_by_css_selector(f"input#id_{key}").send_keys(BUYER[key])
+    #     driver.find_element_by_css_selector("input#id_accept_rgpd").click()
 
-        driver.find_element_by_css_selector("form button").click()
+    #     driver.find_element_by_css_selector("form button").click()
 
-        # should create User & redirect to home
-        self.assertEqual(User.objects.count(), self.user_count + 1)
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('pages:home')}")
+    #     # should create User & redirect to home
+    #     self.assertEqual(User.objects.count(), self.user_count + 1)
+    #     self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('pages:home')}")
 
-    def test_buyer_submits_signup_form_error(self):
-        driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:signup')}")
+    # def test_buyer_submits_signup_form_error(self):
+    #     driver = self.driver
+    #     driver.get(f"{self.live_server_url}{reverse('auth:signup')}")
 
-        driver.find_element_by_css_selector("input#id_kind_1").click()
-        for key in BUYER:
-            if key not in ["position"]:
-                driver.find_element_by_css_selector(f"input#id_{key}").send_keys(BUYER[key])
-        driver.find_element_by_css_selector("input#id_accept_rgpd").click()
+    #     driver.find_element_by_css_selector("input#id_kind_1").click()
+    #     for key in BUYER:
+    #         if key not in ["position"]:
+    #             driver.find_element_by_css_selector(f"input#id_{key}").send_keys(BUYER[key])
+    #     driver.find_element_by_css_selector("input#id_accept_rgpd").click()
 
-        driver.find_element_by_css_selector("form button").click()
+    #     driver.find_element_by_css_selector("form button").click()
 
-        # should not submit form (position field is required)
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+    #     # should not submit form (position field is required)
+    #     self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
-    def test_partner_submits_signup_form_success(self):
-        driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:signup')}")
+    # def test_partner_submits_signup_form_success(self):
+    #     driver = self.driver
+    #     driver.get(f"{self.live_server_url}{reverse('auth:signup')}")
 
-        driver.find_element_by_css_selector("input#id_kind_2").click()
-        for key in PARTNER:
-            driver.find_element_by_css_selector(f"input#id_{key}").send_keys(PARTNER[key])
-        driver.find_element_by_css_selector("input#id_accept_rgpd").click()
+    #     driver.find_element_by_css_selector("input#id_kind_2").click()
+    #     for key in PARTNER:
+    #         driver.find_element_by_css_selector(f"input#id_{key}").send_keys(PARTNER[key])
+    #     driver.find_element_by_css_selector("input#id_accept_rgpd").click()
 
-        driver.find_element_by_css_selector("form button").click()
+    #     driver.find_element_by_css_selector("form button").click()
 
-        # should create User & redirect to home
-        self.assertEqual(User.objects.count(), self.user_count + 1)
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('pages:home')}")
+    #     # should create User & redirect to home
+    #     self.assertEqual(User.objects.count(), self.user_count + 1)
+    #     self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('pages:home')}")
 
-    def test_partner_submits_signup_form_error(self):
-        driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:signup')}")
+    # def test_partner_submits_signup_form_error(self):
+    #     driver = self.driver
+    #     driver.get(f"{self.live_server_url}{reverse('auth:signup')}")
 
-        driver.find_element_by_css_selector("input#id_kind_2").click()
-        for key in PARTNER:
-            if key not in ["company_name"]:
-                driver.find_element_by_css_selector(f"input#id_{key}").send_keys(PARTNER[key])
-        driver.find_element_by_css_selector("input#id_accept_rgpd").click()
+    #     driver.find_element_by_css_selector("input#id_kind_2").click()
+    #     for key in PARTNER:
+    #         if key not in ["company_name"]:
+    #             driver.find_element_by_css_selector(f"input#id_{key}").send_keys(PARTNER[key])
+    #     driver.find_element_by_css_selector("input#id_accept_rgpd").click()
 
-        driver.find_element_by_css_selector("form button").click()
+    #     driver.find_element_by_css_selector("form button").click()
 
-        # should not submit form (company_name field is required)
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+    #     # should not submit form (company_name field is required)
+    #     self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
     @classmethod
     def tearDownClass(cls):

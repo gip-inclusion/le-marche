@@ -1,7 +1,8 @@
 from django.contrib import messages
-from django.contrib.auth import views as auth_views
+from django.contrib.auth import authenticate, login, views as auth_views
 from django.contrib.messages.views import SuccessMessageMixin
-from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
+from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView
 
 from lemarche.users.models import User
@@ -39,18 +40,22 @@ class LoginView(auth_views.LoginView):
 class SignupView(SuccessMessageMixin, CreateView):
     template_name = "auth/signup.html"
     form_class = SignupForm
-    success_url = reverse_lazy("pages:home")
+    success_url = reverse("pages:home")
     success_message = "Inscription validée !"  # see get_success_message() below
 
     def form_valid(self, form):
         """
+        - login the user automatically
         - send a welcome email to the user
         - send a notification email to the staff
         """
         user = form.save()
         send_welcome_email(user)
         send_signup_notification_email(user)
-        return super().form_valid(form)
+        user = authenticate(email=form.cleaned_data["email"], password=form.cleaned_data["password1"])
+        login(self.request, user)
+        # return super().form_valid(form)
+        return HttpResponseRedirect(self.get_success_url)
 
     def get_success_message(self, cleaned_data):
         success_message = super().get_success_message(cleaned_data)
