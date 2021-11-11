@@ -1,6 +1,7 @@
 from django.test import TestCase
 
-from lemarche.siaes.factories import SiaeFactory
+from lemarche.sectors.factories import SectorFactory
+from lemarche.siaes.factories import SiaeFactory, SiaeLabelFactory, SiaeOfferFactory
 from lemarche.siaes.models import Siae
 from lemarche.users.factories import UserFactory
 
@@ -8,26 +9,6 @@ from lemarche.users.factories import UserFactory
 class SiaeModelTest(TestCase):
     def setUp(self):
         pass
-
-    def test_slug_field(self):
-        siae = SiaeFactory(name="L'Insertion par le HAUT", department="01")
-        self.assertEqual(siae.slug, "linsertion-par-le-haut-01")
-        siae = SiaeFactory(name="Structure sans département", department=None)
-        self.assertEqual(siae.slug, "structure-sans-departement-")
-        siae = SiaeFactory(name="Structure sans département 2", department="")
-        self.assertEqual(siae.slug, "structure-sans-departement-2-")
-        siae_doublon_1 = SiaeFactory(name="Structure doublon", department="01")
-        siae_doublon_2 = SiaeFactory(name="Structure doublon", department="15")
-        siae_doublon_3 = SiaeFactory(name="Structure doublon", department="15")
-        self.assertEqual(siae_doublon_1.slug, "structure-doublon-01")
-        self.assertEqual(siae_doublon_2.slug, "structure-doublon-15")
-        self.assertTrue(siae_doublon_3.slug.startswith("structure-doublon-15-"))  # uuid4 at the end
-        self.assertTrue(len(siae_doublon_2.slug) < len(siae_doublon_3.slug))
-        siae_doublon_10 = SiaeFactory(name="Structure doublon sans departement", department="")
-        siae_doublon_11 = SiaeFactory(name="Structure doublon sans departement", department="")
-        self.assertEqual(siae_doublon_10.slug, "structure-doublon-sans-departement-")
-        self.assertTrue(siae_doublon_11.slug.startswith("structure-doublon-sans-departement--"))  # uuid4 at the end
-        self.assertTrue(len(siae_doublon_10.slug) < len(siae_doublon_11.slug))
 
     def test_str(self):
         siae = SiaeFactory(name="Ma boite")
@@ -67,7 +48,49 @@ class SiaeModelTest(TestCase):
         )
         self.assertEqual(siae_custom_empty.geo_range_pretty_display, "non disponible")
 
-    def test_stats(self):
+    def test_is_missing_content_property(self):
+        siae_missing = SiaeFactory(name="Ma boite")
+        self.assertTrue(siae_missing.is_missing_content)
+        siae_full = SiaeFactory(
+            name="Ma boite",
+            contact_website="https://example.com",
+            contact_email="email@domain.com",
+            contact_phone="0000000000",
+            description="test",
+        )
+        sector = SectorFactory()
+        siae_full.sectors.add(sector)
+        SiaeOfferFactory(siae=siae_full)
+        SiaeLabelFactory(siae=siae_full)
+        siae_full.save()  # to update stats
+        self.assertFalse(siae_full.is_missing_content)
+
+
+class SiaeModelSaveTest(TestCase):
+    def setUp(self):
+        pass
+
+    def test_slug_field_on_save(self):
+        siae = SiaeFactory(name="L'Insertion par le HAUT", department="01")
+        self.assertEqual(siae.slug, "linsertion-par-le-haut-01")
+        siae = SiaeFactory(name="Structure sans département", department=None)
+        self.assertEqual(siae.slug, "structure-sans-departement-")
+        siae = SiaeFactory(name="Structure sans département 2", department="")
+        self.assertEqual(siae.slug, "structure-sans-departement-2-")
+        siae_doublon_1 = SiaeFactory(name="Structure doublon", department="01")
+        siae_doublon_2 = SiaeFactory(name="Structure doublon", department="15")
+        siae_doublon_3 = SiaeFactory(name="Structure doublon", department="15")
+        self.assertEqual(siae_doublon_1.slug, "structure-doublon-01")
+        self.assertEqual(siae_doublon_2.slug, "structure-doublon-15")
+        self.assertTrue(siae_doublon_3.slug.startswith("structure-doublon-15-"))  # uuid4 at the end
+        self.assertTrue(len(siae_doublon_2.slug) < len(siae_doublon_3.slug))
+        siae_doublon_10 = SiaeFactory(name="Structure doublon sans departement", department="")
+        siae_doublon_11 = SiaeFactory(name="Structure doublon sans departement", department="")
+        self.assertEqual(siae_doublon_10.slug, "structure-doublon-sans-departement-")
+        self.assertTrue(siae_doublon_11.slug.startswith("structure-doublon-sans-departement--"))  # uuid4 at the end
+        self.assertTrue(len(siae_doublon_10.slug) < len(siae_doublon_11.slug))
+
+    def test_stats_on_save(self):
         siae = SiaeFactory()
         user = UserFactory()
         siae.users.add(user.id)

@@ -445,6 +445,21 @@ class Siae(models.Model):
                 return f"{self.geo_range_pretty_display} de {self.city}"
         return self.geo_range_pretty_display
 
+    @property
+    def is_missing_content(self):
+        return not all(
+            getattr(self, field)
+            for field in [
+                "contact_website",
+                "contact_email",
+                "contact_phone",
+                "sector_count",
+                "description",
+                "offer_count",
+                "label_count",
+            ]
+        )
+
     def sectors_list_to_string(self):
         return ", ".join(self.sectors.all().values_list("name", flat=True))
 

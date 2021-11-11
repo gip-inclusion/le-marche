@@ -3,7 +3,7 @@ import string
 import factory.fuzzy
 from factory.django import DjangoModelFactory
 
-from lemarche.siaes.models import Siae, SiaeOffer
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer
 
 
 class SiaeFactory(DjangoModelFactory):
@@ -26,5 +26,19 @@ class SiaeFactory(DjangoModelFactory):
 class SiaeOfferFactory(DjangoModelFactory):
     class Meta:
         model = SiaeOffer
+
+    name = factory.Faker("name")
+
+
+class SiaeClientReferenceFactory(DjangoModelFactory):
+    class Meta:
+        model = SiaeClientReference
+
+    name = factory.Faker("name")
+
+
+class SiaeLabelFactory(DjangoModelFactory):
+    class Meta:
+        model = SiaeLabel
 
     name = factory.Faker("name")
