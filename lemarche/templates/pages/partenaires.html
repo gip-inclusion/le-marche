@@ -36,7 +36,7 @@
 <section class="s-article-picture-01 s-article-picture-01--marche">
     <div class="s-article-picture-01__container container">
         <div class="s-article-picture-01__row row">
-            <div class="s-article-picture-01__col s-article-picture-01__col--article col-12 col-lg-7 d-flex align-items-center">
+            <div class="s-article-picture-01__col s-article-picture-01__col--article col-12 col-lg-6 d-flex align-items-center">
                 <article>
                     <h2 class="s-article-picture-01__col--article__title h2">Acheter auprès des structures de handicap</h2>
                     <p>
@@ -53,11 +53,9 @@
                     </p>
                 </article>
             </div>
-            <div class="s-article-picture-01__col s-article-picture-01__col--picture col-12 col-lg-5 d-flex align-items-center px-lg-4">
+            <div class="s-article-picture-01__col s-article-picture-01__col--picture col-12 col-lg-6 d-flex align-items-center px-lg-4">
                 <picture class="w-100">
-                    <a href="" target="_blank" rel="noopener">
-                        <img src="" class="img-fluid img-fitcover" alt="">
-                    </a>
+                    <img src="{% static 'images/restaurant-cuisiniers.min.jpg' %}" class="img-fluid img-fitcover" alt="Des cuisiniers dans un restaurant" />
                 </picture>
             </div>
         </div>
@@ -116,14 +114,12 @@
 <section class="s-article-picture-01 s-article-picture-01--marche">
     <div class="s-article-picture-01__container container">
         <div class="s-article-picture-01__row row">
-            <div class="s-article-picture-01__col s-article-picture-01__col--picture col-12 col-lg-5 d-flex align-items-center px-lg-4">
+            <div class="s-article-picture-01__col s-article-picture-01__col--picture col-12 col-lg-6 d-flex align-items-center px-lg-4">
                 <picture class="w-100">
-                    <a href="" target="_blank" rel="noopener">
-                        <img src="" class="img-fluid img-fitcover" alt="">
-                    </a>
+                    <img src="{% static 'images/reparation-velo.min.jpg' %}" class="img-fluid img-fitcover" alt="Des réparateurs de vélo" />
                 </picture>
             </div>
-            <div class="s-article-picture-01__col s-article-picture-01__col--article col-12 col-lg-7 d-flex align-items-center">
+            <div class="s-article-picture-01__col s-article-picture-01__col--article col-12 col-lg-6 d-flex align-items-center">
                 <article>
                     <h2 class="s-article-picture-01__col--article__title h2">Acheter auprès des structures de l'insertion</h2>
                     <p>
@@ -147,6 +143,28 @@
             <div class="s-cards-grid-01__col col mb-3 mb-md-5">
                 <div class="card c-card h-100 w-100 c-card--marche">
                     <div class="card-header">
+                        <img src="{% static 'images/logo-partners-facilitateurs-cropped.min.jpg' %}" class="card-img-top" alt="Logo des GEIQ" loading="lazy" />
+                    </div>
+                    <div class="card-body">
+                        <p class="h4 lh-base">Les Facilitateurs</p>
+                        <p>
+                            Vous êtes une entreprise attributaire d'un marché public ?
+                            Les facilitateurs sont des experts qui vous accompagnent à la bonne mise en œuvre des clauses sociales.
+                        </p>
+                    </div>
+                    <div class="card-footer text-right">
+                        <a href="{{ FACILITATOR_LIST }}" class="btn btn-outline-primary btn-ico" target="_blank" rel="noopener">
+                            <span>Liste des facilitateurs</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19">
+                                <path fill="currentColor" d="M8.66517015,2.82577407 C8.34562066,3.18534827 8.34130426,3.73389577 8.67429909,4.0990571 L11.359,7.039 L1.46428571,7.03948778 C0.93400271,7.03948778 0.5,7.46464861 0.5,7.99431466 L0.506519822,8.10609811 C0.562491613,8.58254879 0.971880067,8.94914154 1.46428571,8.94914154 L11.354,8.949 L8.64311662,11.8995038 C8.28105469,12.2965343 8.31618249,12.9073498 8.7191121,13.2599671 C9.11604213,13.6073339 9.72177649,13.5739032 10.0771295,13.184224 L14.2544508,8.63732099 L14.3103844,8.56958432 L14.3728703,8.47818478 L14.4352531,8.3399089 L14.4491817,8.28987794 L14.462,8.193 L14.4705425,8.17556014 C14.4890266,8.12237865 14.5,8.06201568 14.5,7.99431466 L14.5,7.84422179 L14.4816817,7.71012206 L14.4677531,7.6600911 L14.4094639,7.52822311 L14.3908925,7.49865936 L14.3296866,7.41519605 L10.1084913,2.81453208 C9.75427649,2.42609678 9.14854213,2.39266615 8.7516121,2.74003295 L8.66517015,2.82577407 Z" transform="rotate(-45 10.56 5.732)"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="s-cards-grid-01__col col mb-3 mb-md-5">
+                <div class="card c-card h-100 w-100 c-card--marche">
+                    <div class="card-header">
                         <img src="{% static 'images/logo-partners-les-geiq.min.png' %}" class="card-img-top" alt="Logo des GEIQ" loading="lazy" />
                     </div>
                     <div class="card-body">
@@ -156,7 +174,7 @@
                         </p>
                     </div>
                     <div class="card-footer text-right">
-                        <a href="" class="btn btn-outline-primary btn-ico" target="_blank" rel="noopener">
+                        <a href="https://www.lesgeiq.fr/" class="btn btn-outline-primary btn-ico" target="_blank" rel="noopener">
                             <span>En savoir plus</span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19">
                                 <path fill="currentColor" d="M8.66517015,2.82577407 C8.34562066,3.18534827 8.34130426,3.73389577 8.67429909,4.0990571 L11.359,7.039 L1.46428571,7.03948778 C0.93400271,7.03948778 0.5,7.46464861 0.5,7.99431466 L0.506519822,8.10609811 C0.562491613,8.58254879 0.971880067,8.94914154 1.46428571,8.94914154 L11.354,8.949 L8.64311662,11.8995038 C8.28105469,12.2965343 8.31618249,12.9073498 8.7191121,13.2599671 C9.11604213,13.6073339 9.72177649,13.5739032 10.0771295,13.184224 L14.2544508,8.63732099 L14.3103844,8.56958432 L14.3728703,8.47818478 L14.4352531,8.3399089 L14.4491817,8.28987794 L14.462,8.193 L14.4705425,8.17556014 C14.4890266,8.12237865 14.5,8.06201568 14.5,7.99431466 L14.5,7.84422179 L14.4816817,7.71012206 L14.4677531,7.6600911 L14.4094639,7.52822311 L14.3908925,7.49865936 L14.3296866,7.41519605 L10.1084913,2.81453208 C9.75427649,2.42609678 9.14854213,2.39266615 8.7516121,2.74003295 L8.66517015,2.82577407 Z" transform="rotate(-45 10.56 5.732)"></path>
@@ -177,7 +195,7 @@
                         </p>
                     </div>
                     <div class="card-footer text-right">
-                        <a href="" class="btn btn-outline-primary btn-ico" target="_blank" rel="noopener">
+                        <a href="http://www.coorace.org/" class="btn btn-outline-primary btn-ico" target="_blank" rel="noopener">
                             <span>En savoir plus</span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19">
                                 <path fill="currentColor" d="M8.66517015,2.82577407 C8.34562066,3.18534827 8.34130426,3.73389577 8.67429909,4.0990571 L11.359,7.039 L1.46428571,7.03948778 C0.93400271,7.03948778 0.5,7.46464861 0.5,7.99431466 L0.506519822,8.10609811 C0.562491613,8.58254879 0.971880067,8.94914154 1.46428571,8.94914154 L11.354,8.949 L8.64311662,11.8995038 C8.28105469,12.2965343 8.31618249,12.9073498 8.7191121,13.2599671 C9.11604213,13.6073339 9.72177649,13.5739032 10.0771295,13.184224 L14.2544508,8.63732099 L14.3103844,8.56958432 L14.3728703,8.47818478 L14.4352531,8.3399089 L14.4491817,8.28987794 L14.462,8.193 L14.4705425,8.17556014 C14.4890266,8.12237865 14.5,8.06201568 14.5,7.99431466 L14.5,7.84422179 L14.4816817,7.71012206 L14.4677531,7.6600911 L14.4094639,7.52822311 L14.3908925,7.49865936 L14.3296866,7.41519605 L10.1084913,2.81453208 C9.75427649,2.42609678 9.14854213,2.39266615 8.7516121,2.74003295 L8.66517015,2.82577407 Z" transform="rotate(-45 10.56 5.732)"></path>
@@ -199,7 +217,7 @@
                         </p>
                     </div>
                     <div class="card-footer text-right">
-                        <a href="" class="btn btn-outline-primary btn-ico" target="_blank" rel="noopener">
+                        <a href="https://unai.fr/" class="btn btn-outline-primary btn-ico" target="_blank" rel="noopener">
                             <span>En savoir plus</span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19">
                                 <path fill="currentColor" d="M8.66517015,2.82577407 C8.34562066,3.18534827 8.34130426,3.73389577 8.67429909,4.0990571 L11.359,7.039 L1.46428571,7.03948778 C0.93400271,7.03948778 0.5,7.46464861 0.5,7.99431466 L0.506519822,8.10609811 C0.562491613,8.58254879 0.971880067,8.94914154 1.46428571,8.94914154 L11.354,8.949 L8.64311662,11.8995038 C8.28105469,12.2965343 8.31618249,12.9073498 8.7191121,13.2599671 C9.11604213,13.6073339 9.72177649,13.5739032 10.0771295,13.184224 L14.2544508,8.63732099 L14.3103844,8.56958432 L14.3728703,8.47818478 L14.4352531,8.3399089 L14.4491817,8.28987794 L14.462,8.193 L14.4705425,8.17556014 C14.4890266,8.12237865 14.5,8.06201568 14.5,7.99431466 L14.5,7.84422179 L14.4816817,7.71012206 L14.4677531,7.6600911 L14.4094639,7.52822311 L14.3908925,7.49865936 L14.3296866,7.41519605 L10.1084913,2.81453208 C9.75427649,2.42609678 9.14854213,2.39266615 8.7516121,2.74003295 L8.66517015,2.82577407 Z" transform="rotate(-45 10.56 5.732)"></path>
