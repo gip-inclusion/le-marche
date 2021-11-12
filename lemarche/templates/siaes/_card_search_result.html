@@ -24,12 +24,12 @@
                         </button> -->
                     </h3>
                     <ul class="list-unstyled m-0 lh-sm row no-gutters">
-                        <li class="sc-profile-type col-12 col-lg-6 pl-lg-2 d-flex">
+                        <li class="sc-profile-type col-12 col-lg-6 pl-lg-2 d-flex" title="Type(s) de prestation">
                             <img src="{% static 'itou/images/ico-briefcase-4-line.svg' %}" height="16" alt="" />
-                            <span class="ml-1">{{ siae.get_kind_display }}</span>
+                            <span class="ml-1">{{ siae.presta_type_display }}</span>
                         </li>
                         {% if siae.sectors %}
-                        <li class="sc-profile-sectors col-12 col-lg-6 pr-lg-2 mb-3 mb-lg-0 d-flex">
+                        <li class="sc-profile-sectors col-12 col-lg-6 pr-lg-2 mb-3 mb-lg-0 d-flex" title="Secteur(s) d'activité">
                             <img src="{% static 'itou/images/ico-service-line.svg' %}" height="16" alt="" />
                             <span class="ml-1">{% m2m_list_display siae 'sectors' 3 %}</span>
                         </li>
@@ -51,9 +51,9 @@
                     <span class="ml-1">{{ siae.geo_range_pretty_display }}</span>
                 </li>
                 {% if siae.kind %}
-                    <li class="sc-profile-kind col-12 col-md-4 pl-lg-2 d-flex">
+                    <li class="sc-profile-kind col-12 col-md-4 pl-lg-2 d-flex" title="Type de structure : {{ siae.get_kind_display }}">
                         <img src="{% static 'itou/images/ico-building-4-line.svg' %}" height="16" alt="" />
-                        <span class="ml-1">{{ siae.presta_type_display }}</span>
+                        <span class="ml-1">{{ siae.get_kind_display }}</span>
                     </li>
                 {% endif %}
             </ul>
