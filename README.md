@@ -1,80 +1,69 @@
-[![Generic badge](https://img.shields.io/badge/ITOU-Oh_Oui-lightgreen.svg)](https://shields.io/)
-[![Generic badge](https://img.shields.io/badge/État-En_Construction-yellow.svg)](https://shields.io/)
-
 # Itou - Le marché de l'inclusion
 
 > Le marché de l'inclusion est un service numérique permettant de trouver un prestataire sociale inclusif
 > proposant des produits ou services professionnels.
 
-**Ce dépôt est en cours de construction.**
-
 ## Installation
 
 Étapes d'une installation en local à des fins de développement.
-L'environnement fourni permet de fonctionner de 3 manières différentes:
+L'environnement fourni permet de fonctionner de 3 manières différentes :
 
-1. Poetry (et Postgres existant)
-2. Dockerfile (et Postgres existant)
+1. Poetry + Postgres (sans Docker)
+2. Dockerfile + Postgres
 3. docker-compose (installe tout l'environnement nécessaire)
 
-### Configuration
+### Poetry (sans Docker)
 
-Les variables d'environnement sont listées dans le fichier [env.default.sh](env.default.sh).
+#### Configuration
 
-Pour un déploiement local **hors docker**, renommez le fichier en `env.local.sh` et apportez-y les modifications nécessaires.
+Pour un déploiement local **sans Docker**, dupliquez le fichier `env.default.sh` en `env.local.sh` et apportez-y les modifications nécessaires.
+
 ```bash
 $ cp env.default.sh env.local.sh
 # Préparation de l'environnement local
 $ source ./env.local.sh
 ```
 
-Pour un déploiement local **sous docker**, renommez le fichier `env.docker_default.local` en `env.docker.local` et apportez-y les modifications nécessaires (bien que la plupart des paramètres devraient fonctionner _hors de la boîte_).
-
-> :information_source: **Accès données MySQL** : L'api lit les données de la BD du marché [itou-cocorico](https://github.com/betagouv/itou-cocorico/). Pour pouvoir fonctionner pleinement en local, cela signifie que le marché doit tourner également en local (le fichier de configuration [env.docker_default.local](./env.docker_default.local) est d'ailleurs prévu à cet effet).
-
-### Poetry
+#### Installation & lancement
 
 Prérequis :
 - packets python à installer : poetry, python3.9, python3.9-dev, default-libmysqlclient-dev
-- initialiser une db Postgres pour pour itou-marche-api (ne pas oublier l'extension PostGIS)
-- avoir une db MariaDB qui tourne (voir itou-cocorico)
+- initialiser une db Postgres pour itou-marche-api (ne pas oublier l'extension PostGIS)
 
 Installation et exécution :
+
 ```bash
-> Installation environnement python
+> Installation environnement Python
 $ poetry install
 
 > Configuration environnement
 $ source ./env.local.sh
 
-> Exécution 
+> Exécution
 $ poetry run python manage.py runserver
 $ poetry run python manage.py [COMMANDES]
 
 > Avec surcharge `PYTHONPATH` (à résoudre)
 $ env PYTHONPATH=./lemarche:./lemarche/c4_directory poetry run python manage.py [COMMANDES]
-
-> Avoir le MariaDB de itou-cocorico qui tourne
 ```
 
 ### Docker
 
-L'API utilise un dockerfile multistage, permettant de fonctionner en "Dev" et "Prod" avec le même [Dockerfile](./Dockerfile).
+L'application utilise un Dockerfile multistage, permettant de fonctionner en "Dev" et "Prod" avec le même [Dockerfile](./Dockerfile).
 
 Pour l'environnement de développement, un `docker-compose` est fourni (voir ci-dessous).
 
-Pour la configuration django, vérifiez le fichier (config/settings/dev.py)[./config/settings/dev.py].
+Pour la configuration Django, vérifiez le fichier [config/settings/dev.py](./config/settings/dev.py).
 
 #### Configuration Docker
 
-Pour un déploiement local **sous Docker**, renommez le fichier `env.docker_default.local` en `env.docker.local` et apportez-y les modifications nécessaires (bien que la plupart des paramètres devraient fonctionner _hors de la boîte_).
+Pour un déploiement local **avec Docker**, dupliquez le fichier `env.docker_default.local` en `env.docker.local` et apportez-y les modifications nécessaires (bien que la plupart des paramètres devraient fonctionner _hors de la boîte_).
 
 > :information_source: pour accéder à l'environnemnt depuis une autre machine, pensez à définir la variable d'environnemnt `CURRENT_HOST` dans le fichier d'environnement
 
-
 #### Lancement docker-compose
 
-Après création du fichier `env.docker.local`,
+Après création du fichier `env.docker.local` :
 
 ```bash
  # Démarrage
@@ -129,22 +118,20 @@ Poetry utilise le fichier `poetry.lock`, et génère également un fichier `requ
 ```bash
 # Mise à jour dépendances
 $ poetry update
-# Mise à jour requirements.txt
+# Mise à jour requirements/staging.txt
 $ poetry run poe export
+# Mise à jour requirements/dev.txt
+$ poetry run poe export_dev
 ```
 
 ### Migrations
 
-Si l'environnement est neuf ou n'est plus à jour, appliquez les migrations nécessaires
+Si l'environnement est neuf ou n'est plus à jour, appliquez les migrations nécessaires :
 
 ```bash
 # Avec manage.py
 $ poetry run python manage.py makemigrations
 $ poetry run python manage.py migrate
-# Avec poe, dans le shell poetry (ou directement dans le docker - poe, pas poetry)
-$ poetry shell
-$ poe makemigrations
-$ poe migrate
 ```
 
 ## Développement
@@ -170,22 +157,13 @@ $ poe clean_code
 
 ### Testing
 
-PyTest est utilisé pour ce projet. Les tests se trouvent dans le répertoire [tests](tests),
-un sous-répertoire par app django.
+PyTest & Selenium sont utilisés pour ce projet.
+Les tests se trouvent dans les fichiers `tests.py` ou les répertoires [tests](tests) (un sous-répertoire par app django)
 
-### TODO List
+Pour lancer les tests :
 
-- Dockerfile pour développement
-- Logging
-- Monitoring
-- Tracking
-
-### Ressources et inspirations
-
-- https://www.django-rest-framework.org/topics/rest-hypermedia-hateoas/
-- https://realpython.com/django-rest-framework-quick-start/
-- https://www.django-rest-framework.org/tutorial/5-relationships-and-hyperlinked-apis/
-- https://github.com/wsvincent/awesome-django
-- https://dev.to/sherlockcodes/pytest-with-django-rest-framework-from-zero-to-hero-8c4
-- https://hannylicious.com/blog/testing-django/
-- https://flowfx.de/blog/populate-your-django-test-database-with-pytest-fixtures/
+```bash
+poetry run python manage.py test
+# pour lancer un lot de tests en particulier
+poetry run python manage.py test -- lemarche.api.siaes.tests.SiaeListApiTest
+```
