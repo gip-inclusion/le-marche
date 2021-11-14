@@ -589,3 +589,24 @@ class SiaeLabel(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class SiaeImage(models.Model):
+    name = models.CharField(verbose_name="Nom", max_length=255, blank=True, null=True)
+    description = models.TextField(verbose_name="Description", blank=True)
+    image_name = models.CharField(verbose_name="Nom de l'image", max_length=255)
+    image_url = models.URLField(verbose_name="Lien vers l'image", max_length=500, blank=True, null=True)
+    order = models.PositiveIntegerField(verbose_name="Ordre", blank=False, default=1)
+
+    siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", related_name="images", on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField("Date de création", default=timezone.now)
+    updated_at = models.DateTimeField("Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Image"
+        verbose_name_plural = "Images"
+
+    # def __str__(self):
+    #     if self.name:
+    #         return self.name
