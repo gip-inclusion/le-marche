@@ -43,10 +43,11 @@ def build_image_url(endpoint, bucket_name, image_key):
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        self.clean_bucket()
-        self.migrate_user_images()
-        self.migrate_siae_logos()
-        self.migrate_siae_client_reference_logos()
+        # self.clean_bucket()
+        # self.migrate_user_images()
+        # self.migrate_siae_logos()
+        # self.migrate_siae_client_reference_logos()
+        self.migrate_siae_images()
 
     def clean_bucket(self):
         bucket.objects.delete()
@@ -192,3 +193,8 @@ class Command(BaseCommand):
                 print(f"{progress}...")
 
         print(f"Migrated {client_references_with_logos.count()} client reference images !")
+
+    def migrate_siae_images(self):
+        """ """
+        print("-" * 80)
+        print("Migrating Siae images...")
