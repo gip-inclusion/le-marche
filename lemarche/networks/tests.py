@@ -4,9 +4,12 @@ from lemarche.networks.factories import NetworkFactory
 
 
 class NetworkModelTest(TestCase):
-    def setUp(self):
-        pass
+    @classmethod
+    def setUpTestData(cls):
+        cls.network = NetworkFactory(name="Mon réseau")
+
+    def test_slug_field(self):
+        self.assertEqual(self.network.slug, "mon-reseau")
 
     def test_str(self):
-        network = NetworkFactory(name="Mon réseau")
-        self.assertEqual(str(network), "Mon réseau")
+        self.assertEqual(str(self.network), "Mon réseau")

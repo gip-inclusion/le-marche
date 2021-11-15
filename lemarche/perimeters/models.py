@@ -64,7 +64,7 @@ class Perimeter(models.Model):
         return self.name_display
 
     def set_slug(self, duplicate=False):
-        if not self.id:
+        if not self.slug:
             if self.kind == self.KIND_CITY:
                 self.slug = slugify(f"{self.name}-{self.department_code}")
             elif self.kind == self.KIND_REGION:

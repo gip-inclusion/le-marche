@@ -33,3 +33,9 @@
         background: $white url('/static/itou/images/ajax-loader.gif') center center no-repeat;
     }
 }
+
+.alert > .prof_icon,
+.alert > p > .prof_icon {
+    max-width: 20px;
+    vertical-align: bottom;
+}

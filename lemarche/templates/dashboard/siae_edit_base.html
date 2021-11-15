@@ -1,4 +1,5 @@
 {% extends "layouts/base.html" %}
+{% load static %}
 
 {% block title %}Modifier ma structure{{ block.super }}{% endblock %}
 
@@ -27,8 +28,31 @@
 {% endblock %}
 
 {% block content %}
-<section class="pt-4 pt-lg-6 pb-6 pb-lg-8">
+<section class="pt-4 pb-6">
     <div class="container">
+        <!-- Nudge to fill SIAE -->
+        {% if siae.is_missing_content %}
+        <div class="alert alert-warning mb-4" role="alert">
+            <p class="mb-1">
+                <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                <strong>Votre fiche n'est pas complète, et donc moins visible par les acheteurs.</strong>
+            </p>
+            <ol class="mb-0">
+                {% if not siae.contact_website or not siae.contact_email or not siae.contact_phone %}
+                    <li><a href="{% url 'dashboard:siae_edit_info_contact' siae.slug %}">Complétez vos informations & contact</a></li>
+                {% endif %}
+                {% if not siae.sector_count %}
+                    <li><a href="{% url 'dashboard:siae_edit_offer' siae.slug %}">Ajoutez un ou plusieurs secteurs d'activité</a></li>
+                {% endif %}
+                {% if not siae.description or not siae.offer_count %}
+                    <li><a href="{% url 'dashboard:siae_edit_presta' siae.slug %}">Ajoutez une description & au moins une offre de prestation</a></li>
+                {% endif %}
+                {% if not siae.label_count %}
+                    <li><a href="{% url 'dashboard:siae_edit_other' siae.slug %}">Ajoutez des labels & certifications</a></li>
+                {% endif %}
+            </ol>
+        </div>
+        {% endif %}
 
         <!-- Navigation -->
         <div class="row mb-3 mb-lg-5">
