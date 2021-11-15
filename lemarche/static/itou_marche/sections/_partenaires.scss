@@ -1,0 +1,49 @@
+.s-partenaires-01 {
+	padding-bottom: 3rem;
+
+	@media (min-width:992px) {
+		padding-bottom: 5rem;
+	}
+
+	&__col {
+
+		.card {
+			position: relative;
+
+			@media (min-width:992px) {
+				background-image: url('/static/images/partenaires-illu-01.png');
+				background-repeat: no-repeat;
+				background-position: right center;
+				background-size: auto 100%;
+			}			
+		}
+
+		.card-footer {
+			background-color: transparent !important;
+		}
+	}
+} 
+
+
+
+.s-partenaires-slider {
+	padding-bottom: 1.5rem;
+
+	@media (min-width:992px) {
+		padding-bottom: 3rem;
+	}
+
+	&__col {
+		&--slider {
+			
+			.slick-slide {
+				height: auto !important;
+				display: inline-flex !important;
+			}
+
+			.card {
+				display: flex !important;
+			}
+		}
+	}
+}
