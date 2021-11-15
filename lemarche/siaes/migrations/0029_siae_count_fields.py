@@ -13,31 +13,31 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="siae",
             name="client_reference_count",
-            field=models.IntegerField(default=0),
+            field=models.IntegerField(default=0, verbose_name="Nombre de références clients"),
         ),
         migrations.AddField(
             model_name="siae",
             name="label_count",
-            field=models.IntegerField(default=0),
+            field=models.IntegerField(default=0, verbose_name="Nombre de labels"),
         ),
         migrations.AddField(
             model_name="siae",
             name="network_count",
-            field=models.IntegerField(default=0),
+            field=models.IntegerField(default=0, verbose_name="Nombre de réseaux"),
         ),
         migrations.AddField(
             model_name="siae",
             name="offer_count",
-            field=models.IntegerField(default=0),
+            field=models.IntegerField(default=0, verbose_name="Nombre de prestations"),
         ),
         migrations.AddField(
             model_name="siae",
             name="sector_count",
-            field=models.IntegerField(default=0),
+            field=models.IntegerField(default=0, verbose_name="Nombre de secteurs d'activité"),
         ),
         migrations.AddField(
             model_name="siae",
             name="user_count",
-            field=models.IntegerField(default=0),
+            field=models.IntegerField(default=0, verbose_name="Nombre d'utilisateurs"),
         ),
     ]
