@@ -58,12 +58,24 @@ class SiaeModelTest(TestCase):
             contact_phone="0000000000",
             description="test",
         )
+        siae_full_2 = SiaeFactory(
+            name="Ma boite",
+            contact_website="https://example.com",
+            # contact_email="email@domain.com",
+            # contact_phone="0000000000",
+            description="test",
+        )
         sector = SectorFactory()
         siae_full.sectors.add(sector)
         SiaeOfferFactory(siae=siae_full)
         SiaeLabelFactory(siae=siae_full)
         siae_full.save()  # to update stats
         self.assertFalse(siae_full.is_missing_content)
+        siae_full_2.sectors.add(sector)
+        SiaeOfferFactory(siae=siae_full_2)
+        SiaeLabelFactory(siae=siae_full_2)
+        siae_full_2.save()  # to update stats
+        self.assertFalse(siae_full_2.is_missing_content)
 
 
 class SiaeModelSaveTest(TestCase):

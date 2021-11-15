@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.contrib.gis import admin as gis_admin
-from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
@@ -71,6 +70,8 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     autocomplete_fields = ["sectors", "networks"]
     # inlines = [SiaeUserInline]
     readonly_fields = [field for field in Siae.READONLY_FIELDS if field not in ("coords")] + [
+        "sector_count",
+        "network_count",
         "nb_offers",
         "nb_labels",
         "nb_cient_references",
@@ -114,6 +115,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "region",
                     "coords_display",
                     "coords",
+                    "source",
                 )
             },
         ),
@@ -125,7 +127,9 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                 "fields": (
                     "description",
                     "sectors",
+                    "sector_count",
                     "networks",
+                    "network_count",
                     "nb_offers",
                     "nb_labels",
                     "nb_cient_references",
@@ -169,11 +173,6 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = (
-            qs.annotate(offer_count=Count("offers", distinct=True))
-            .annotate(label_count=Count("labels", distinct=True))
-            .annotate(client_reference_count=Count("client_references", distinct=True))
-        )
         return qs
 
     def nb_offers(self, siae):
