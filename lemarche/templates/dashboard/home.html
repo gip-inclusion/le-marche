@@ -110,14 +110,6 @@
                                 </div>
                                 <div class="card-footer">
                                     <div class="row justify-content-end">
-                                        {% if siaeuser.siae.is_missing_content %}
-                                        <div class="col-6 col-md-auto pr-2">
-                                            <div class="alert alert-warning px-2 py-1 mb-0" role="alert">
-                                                <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
-                                                fiche incomplète
-                                            </div>
-                                        </div>
-                                        {% endif %}
                                         <div class="col-6 col-md-auto pr-2">
                                             <a href="{% url 'dashboard:siae_edit' siaeuser.siae.slug %}" class="btn btn-outline-primary btn-sm btn-block btn-ico">
                                                 <span>Modifier</span>
