@@ -541,7 +541,7 @@ class Command(BaseCommand):
 
         print(f"Created {SiaeClientReference.objects.count()} client references !")
 
-    def migrate_siae_image(self, cur):
+    def migrate_siae_image(self, cur):  # noqa C901
         """
         Migrate SiaeImage data
         - first get list from 'listing'

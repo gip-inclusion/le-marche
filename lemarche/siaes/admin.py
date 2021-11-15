@@ -1,10 +1,11 @@
 from django.contrib import admin
 from django.contrib.gis import admin as gis_admin
 from django.urls import reverse
+from django.db.models import Count
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
-from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer, SiaeUser
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeImage, SiaeLabel, SiaeOffer, SiaeUser
 from lemarche.utils.fields import pretty_print_readonly_jsonfield
 
 
@@ -63,6 +64,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "nb_offers",
         "nb_labels",
         "nb_cient_references",
+        "nb_images",
         "created_at",
     ]
     list_filter = [IsLiveFilter, "is_first_page", HasUserFilter, "kind", "networks", "sectors", "geo_range"]
@@ -77,6 +79,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "nb_labels",
         "nb_cient_references",
         "nb_users",
+        "nb_images",
         "coords_display",
         "logo_url",
         "logo_url_display",
@@ -135,6 +138,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "nb_offers",
                     "nb_labels",
                     "nb_cient_references",
+                    "nb_images",
                 )
             },
         ),
@@ -176,6 +180,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
+        qs = qs.annotate(image_count=Count("images", distinct=True))
         return qs
 
     def nb_users(self, siae):
@@ -206,6 +211,13 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
 
     nb_cient_references.short_description = "Nombre de réf. clients"
     nb_cient_references.admin_order_field = "client_reference_count"
+
+    def nb_images(self, siae):
+        url = reverse("admin:siaes_siaeimage_changelist") + f"?siae__id__exact={siae.id}"
+        return format_html(f'<a href="{url}">{siae.image_count}</a>')
+
+    nb_images.short_description = "Nombre d'images"
+    nb_images.admin_order_field = "image_count"
 
     def coords_display(self, siae):
         if siae.coords:
@@ -242,9 +254,9 @@ class SiaeOfferAdmin(admin.ModelAdmin):
     autocomplete_fields = ["siae"]
     readonly_fields = ["source", "created_at", "updated_at"]
 
-    def siae_with_link(self, offer):
-        url = reverse("admin:siaes_siae_change", args=[offer.siae_id])
-        return format_html(f'<a href="{url}">{offer.siae}</a>')
+    def siae_with_link(self, instance):
+        url = reverse("admin:siaes_siae_change", args=[instance.siae_id])
+        return format_html(f'<a href="{url}">{instance.siae}</a>')
 
     siae_with_link.short_description = "Structure"
     siae_with_link.admin_order_field = "siae"
@@ -258,9 +270,9 @@ class SiaeLabelAdmin(admin.ModelAdmin):
     autocomplete_fields = ["siae"]
     readonly_fields = ["created_at", "updated_at"]
 
-    def siae_with_link(self, label):
-        url = reverse("admin:siaes_siae_change", args=[label.siae_id])
-        return format_html(f'<a href="{url}">{label.siae}</a>')
+    def siae_with_link(self, instance):
+        url = reverse("admin:siaes_siae_change", args=[instance.siae_id])
+        return format_html(f'<a href="{url}">{instance.siae}</a>')
 
     siae_with_link.short_description = "Structure"
     siae_with_link.admin_order_field = "siae"
@@ -272,11 +284,11 @@ class SiaeClientReferenceAdmin(admin.ModelAdmin):
     search_fields = ["id", "name", "siae__id"]
 
     autocomplete_fields = ["siae"]
-    readonly_fields = ["logo_url", "logo_url_display", "created_at", "updated_at"]
+    readonly_fields = ["image_name", "logo_url", "logo_url_display", "created_at", "updated_at"]
 
-    def siae_with_link(self, client_reference):
-        url = reverse("admin:siaes_siae_change", args=[client_reference.siae_id])
-        return format_html(f'<a href="{url}">{client_reference.siae}</a>')
+    def siae_with_link(self, instance):
+        url = reverse("admin:siaes_siae_change", args=[instance.siae_id])
+        return format_html(f'<a href="{url}">{instance.siae}</a>')
 
     siae_with_link.short_description = "Structure"
     siae_with_link.admin_order_field = "siae"
@@ -291,3 +303,30 @@ class SiaeClientReferenceAdmin(admin.ModelAdmin):
         return mark_safe("<div>-</div>")
 
     logo_url_display.short_description = "Logo"
+
+
+@admin.register(SiaeImage)
+class SiaeImageAdmin(admin.ModelAdmin):
+    list_display = ["id", "name", "siae_with_link", "created_at"]
+    search_fields = ["id", "name", "siae__id"]
+
+    autocomplete_fields = ["siae"]
+    readonly_fields = ["image_name", "image_url", "image_url_display", "created_at", "updated_at"]
+
+    def siae_with_link(self, instance):
+        url = reverse("admin:siaes_siae_change", args=[instance.siae_id])
+        return format_html(f'<a href="{url}">{instance.siae}</a>')
+
+    siae_with_link.short_description = "Structure"
+    siae_with_link.admin_order_field = "siae"
+
+    def image_url_display(self, instance):
+        if instance.image_url:
+            return mark_safe(
+                f'<a href="{instance.image_url}" target="_blank">'
+                f'<img src="{instance.image_url}" title="{instance.image_url}" style="max-height:300px" />'
+                f"</a>"
+            )
+        return mark_safe("<div>-</div>")
+
+    image_url_display.short_description = "Image"
