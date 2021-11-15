@@ -305,6 +305,14 @@ class Siae(models.Model):
     source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True, null=True)
     import_raw_object = models.JSONField("Donnée JSON brute", editable=False, null=True)
 
+    # stats
+    user_count = models.IntegerField(default=0)
+    sector_count = models.IntegerField(default=0)
+    network_count = models.IntegerField(default=0)
+    offer_count = models.IntegerField(default=0)
+    client_reference_count = models.IntegerField(default=0)
+    label_count = models.IntegerField(default=0)
+
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
 
@@ -327,13 +335,26 @@ class Siae(models.Model):
         Some SIAE have duplicate name, so we suffix the slug with their department.
         In some rare cases, name+department is not enough, so we add 4 random characters at the end.
         """
-        if not self.id:
+        if not self.slug:
             self.slug = f"{slugify(self.name)[:40]}-{str(self.department or '')}"
-            if with_uuid:
-                self.slug += f"-{str(uuid4())[:4]}"
+        if with_uuid:
+            self.slug += f"-{str(uuid4())[:4]}"
+
+    def set_stats(self):
+        if self.id:
+            self.user_count = self.users.count()
+            self.sector_count = self.sectors.count()
+            self.network_count = self.networks.count()
+            self.offer_count = self.offers.count()
+            self.client_reference_count = self.client_references.count()
+            self.label_count = self.labels.count()
 
     def save(self, *args, **kwargs):
-        """Generate the slug field before saving."""
+        """
+        - update the object stats
+        - generate the slug field
+        """
+        self.set_stats()
         try:
             self.set_slug()
             with transaction.atomic():
@@ -423,6 +444,21 @@ class Siae(models.Model):
             if self.geo_range_custom_distance:
                 return f"{self.geo_range_pretty_display} de {self.city}"
         return self.geo_range_pretty_display
+
+    @property
+    def is_missing_content(self):
+        return not all(
+            getattr(self, field)
+            for field in [
+                "contact_website",
+                "contact_email",
+                "contact_phone",
+                "sector_count",
+                "description",
+                "offer_count",
+                "label_count",
+            ]
+        )
 
     def sectors_list_to_string(self):
         return ", ".join(self.sectors.all().values_list("name", flat=True))

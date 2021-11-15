@@ -1,4 +1,5 @@
 from django.db import models
+from django.template.defaultfilters import slugify
 from django.utils import timezone
 
 
@@ -15,6 +16,18 @@ class SectorGroup(models.Model):
 
     def __str__(self):
         return self.name
+
+    def set_slug(self):
+        """
+        The slug field should be unique.
+        """
+        if not self.slug:
+            self.slug = slugify(self.name)[:50]
+
+    def save(self, *args, **kwargs):
+        """Generate the slug field before saving."""
+        self.set_slug()
+        super().save(*args, **kwargs)
 
 
 class Sector(models.Model):
@@ -38,3 +51,17 @@ class Sector(models.Model):
 
     def __str__(self):
         return self.name
+
+    def set_slug(self):
+        """
+        The slug field should be unique.
+        """
+        if not self.slug:
+            self.slug = slugify(self.name)[:50]
+            if self.name == "Autre":
+                self.slug += f"-{slugify(self.group.name)[:50]}"
+
+    def save(self, *args, **kwargs):
+        """Generate the slug field before saving."""
+        self.set_slug()
+        super().save(*args, **kwargs)

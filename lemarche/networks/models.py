@@ -22,8 +22,8 @@ class Network(models.Model):
         """
         The slug field should be unique.
         """
-        # if not self.id:  # TODO: revert post-migration
-        self.slug = slugify(self.name)[:50]
+        if not self.slug:
+            self.slug = slugify(self.name)[:50]
 
     def save(self, *args, **kwargs):
         """Generate the slug field before saving."""
