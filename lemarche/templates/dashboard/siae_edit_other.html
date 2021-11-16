@@ -1,5 +1,5 @@
 {% extends "dashboard/siae_edit_base.html" %}
-{% load static bootstrap4 %}
+{% load static bootstrap4 addstr %}
 
 {% block content_siae_form %}
 <form method="POST" action="" class="mb-3 mb-lg-5">
@@ -75,6 +75,91 @@
         </div>
     </div>
 
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h4">Réalisations</legend>
+                    {% bootstrap_formset_errors image_formset %}
+                    {% if image_formset.errors %}
+                        <div class="alert alert-danger" role="alert">{{ image_formset.errors }}</div>
+                    {% endif %}
+
+                    {{ image_formset.management_form }}
+
+                    {% for form in image_formset %}
+                        <div class="fieldset">
+                            {% bootstrap_field form.id %}
+                            {% bootstrap_field form.name %}
+                            <!-- Image -->
+                            <div class="row">
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        {{ form.image_url.as_hidden }}
+                                        {% with "id_images-"|addstr:forloop.counter0|addstr:"-image_form" as id_image_form %}
+                                            <label for="{{ id_image_form }}" class="js-display-if-javascript-enabled">Image</label>
+                                            {% include "storage/s3_upload_form.html" with dropzone_form_id=id_image_form %}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Image actuelle</label>
+                                        {% if form.image_url.value %}
+                                            <div>
+                                                <img class="img-fluid" src="{{ form.image_url.value }}" />
+                                            </div>
+                                        {% else %}
+                                            <span class="form-text text-muted">Aucun</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% bootstrap_field form.DELETE %}
+                        </div>
+                        <hr />
+                    {% endfor %}
+
+                    <div id="image-formset-empty-form" class="d-none">
+                        <div class="form-group">
+                            <label for="id_images-__prefix__-name">Nom</label>
+                            <input type="text" name="images-__prefix__-name" maxlength="255" class="form-control" title="" id="id_images-__prefix__-name">
+                        </div>
+                        <div class="form-group">
+                            <!-- <label for="id_images-__prefix__-image_url">Lien vers l'image</label> -->
+                            <input type="hidden" name="images-__prefix__-image_url" maxlength="500" class="form-control" title="" id="id_images-__prefix__-image_url">
+                            <label for="id_images-__prefix__-image_form" class="js-display-if-javascript-enabled">Image</label>
+                            {% include "storage/s3_upload_form.html" with dropzone_form_id="id_images-__prefix__-image_form" %}
+                        </div>
+                        <input type="hidden" name="images-__prefix__-id" id="id_images-__prefix__-id">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" name="images-__prefix__-DELETE" class="form-check-input" id="id_images-__prefix__-DELETE">
+                                <label class="form-check-label" for="id_images-__prefix__-DELETE">Supprimer</label>
+                            </div>
+                        </div>
+                        <input type="hidden" name="images-__prefix__-siae" id="id_images-__prefix__-siae">
+                    </div>
+                    <button id="image-formset-add-more" class="btn btn-outline-primary btn-sm btn-ico float-right" type="button">
+                        <span>Ajouter une image</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></svg>
+                    </button>
+                </fieldset>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div role="alert" class="alert alert-info mt-3 mt-lg-0">
+                <p class="mb-1">
+                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                    <strong>Réalisations</strong>
+                </p>
+                <p class="mb-0">
+                    Ces images s'afficheront tout en bas de votre fiche structure.
+                </p>
+            </div>
+        </div>
+    </div>
+
     <div class="row mt-3 mt-lg-5 justify-content-end">
         <div class="col-12 col-lg-auto px-5 px-lg-6">
             <button type="submit" class="btn btn-primary btn-block">
@@ -87,6 +172,24 @@
 {% endblock %}
 
 {% block extra_js %}
+<script type="text/javascript" src="{% static 'vendor/dropzone-5.9.3/dropzone.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/s3_upload.js' %}"></script>
+{{ s3_form_values|json_script:"s3-form-values" }}
+{{ s3_upload_config|json_script:"s3-upload-config" }}
+<script type="text/javascript">
+// loop on each dropzone
+Array.from(document.querySelectorAll(".dropzone")).forEach(function(element) {
+    s3UploadInit({
+        dropzoneSelector: `#${element.id}`,
+        callbackLocationSelector: `#${element.id.replace('image_form', 'image_url')}`,
+        s3FormValuesId: "s3-form-values",
+        s3UploadConfigId: "s3-upload-config",
+        // Not really nice
+        sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
+        sentryCsrfToken: "{{ csrf_token }}"
+    });
+})
+</script>
 <script type="text/javascript">
 /**
  * Add formset items dynamically
@@ -108,6 +211,37 @@ labelFormsetAddMoreButton.addEventListener('click', function(e) {
     });
     // update total forms count
     totalLabelFormset.setAttribute('value', parseInt(totalLabelFormset.getAttribute('value'), 10) + 1);
+});
+
+// image formset
+const totalImageFormset = document.getElementById('id_images-TOTAL_FORMS');
+const imageFormsetEmptyForm = document.getElementById('image-formset-empty-form');
+const imageFormsetAddMoreButton = document.getElementById('image-formset-add-more');
+
+imageFormsetAddMoreButton.addEventListener('click', function(e) {
+    if (e) { e.preventDefault(); }
+    // add new form
+    const copyImageFormsetEmptyForm = imageFormsetEmptyForm.cloneNode(true);
+    copyImageFormsetEmptyForm.innerHTML = copyImageFormsetEmptyForm.innerHTML.replace(prefixRegex, totalImageFormset.value);
+    // copyImageFormsetEmptyForm.childNodes.forEach(node => {
+    //     imageFormsetEmptyForm.parentNode.insertBefore(node, imageFormsetEmptyForm);
+    // });
+    copyImageFormsetEmptyForm.setAttribute('id', '');
+    copyImageFormsetEmptyForm.setAttribute('class', '');
+    imageFormsetEmptyForm.parentNode.insertBefore(copyImageFormsetEmptyForm, imageFormsetEmptyForm);
+    console.log(totalImageFormset.value)
+    // add dropzone
+    s3UploadInit({
+        dropzoneSelector: `#id_images-${totalImageFormset.value}-image_form`,
+        callbackLocationSelector: `#id_images-${totalImageFormset.value}-image_url`,
+        s3FormValuesId: "s3-form-values",
+        s3UploadConfigId: "s3-upload-config",
+        // Not really nice
+        sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
+        sentryCsrfToken: "{{ csrf_token }}"
+    });
+    // update total forms count
+    totalImageFormset.setAttribute('value', parseInt(totalImageFormset.getAttribute('value'), 10) + 1);
 });
 </script>
 {% endblock %}

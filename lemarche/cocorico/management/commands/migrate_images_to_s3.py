@@ -21,10 +21,6 @@ ftp = FTP(
 bucket_name = settings.S3_STORAGE_BUCKET_NAME
 resource = boto3.resource("s3", **API_CONNECTION_DICT)
 bucket = resource.Bucket(bucket_name)
-USER_IMAGE_FOLDER_NAME = "user_image"
-SIAE_LOGO_FOLDER_NAME = "siae_logo"
-SIAE_CLIENT_REFERENCE_LOGO_FOLDER_NAME = "client_reference_logo"
-SIAE_IMAGE_FOLDER_NAME = "siae_image"
 
 # Content-Type file mapping
 CONTENT_TYPE_MAPPING = {
@@ -77,7 +73,7 @@ class Command(BaseCommand):
             image_extension = user.image_name.split(".")[1]
             if image_extension in CONTENT_TYPE_MAPPING:
                 # Step 2: upload image to S3
-                s3_image_key = USER_IMAGE_FOLDER_NAME + "/" + user.image_name
+                s3_image_key = settings.USER_IMAGE_FOLDER_NAME + "/" + user.image_name
                 bucket.upload_file(
                     user.image_name,
                     s3_image_key,
@@ -122,7 +118,7 @@ class Command(BaseCommand):
             image_extension = siae.image_name.split(".")[1]
             if image_extension in CONTENT_TYPE_MAPPING:
                 # Step 2: upload image to S3
-                s3_image_key = SIAE_LOGO_FOLDER_NAME + "/" + siae.image_name
+                s3_image_key = settings.SIAE_LOGO_FOLDER_NAME + "/" + siae.image_name
                 bucket.upload_file(
                     siae.image_name,
                     s3_image_key,
@@ -169,7 +165,7 @@ class Command(BaseCommand):
             image_extension = client_reference.image_name.split(".")[1]
             if image_extension in CONTENT_TYPE_MAPPING:
                 # Step 2: upload image to S3
-                s3_image_key = SIAE_CLIENT_REFERENCE_LOGO_FOLDER_NAME + "/" + client_reference.image_name
+                s3_image_key = settings.SIAE_CLIENT_REFERENCE_LOGO_FOLDER_NAME + "/" + client_reference.image_name
                 bucket.upload_file(
                     client_reference.image_name,
                     s3_image_key,
@@ -218,7 +214,7 @@ class Command(BaseCommand):
             image_extension = siae_image.image_name.split(".")[1]
             if image_extension in CONTENT_TYPE_MAPPING:
                 # Step 2: upload image to S3
-                s3_image_key = SIAE_IMAGE_FOLDER_NAME + "/" + siae_image.image_name
+                s3_image_key = settings.SIAE_IMAGE_FOLDER_NAME + "/" + siae_image.image_name
                 bucket.upload_file(
                     siae_image.image_name,
                     s3_image_key,

@@ -16,6 +16,7 @@ from lemarche.www.dashboard.forms import (
     SiaeEditOfferForm,
     SiaeEditOtherForm,
     SiaeEditPrestaForm,
+    SiaeImageFormSet,
     SiaeLabelFormSet,
     SiaeOfferFormSet,
     SiaeSearchAdoptConfirmForm,
@@ -187,30 +188,43 @@ class SiaeEditOtherView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessa
     success_message = "Vos modifications ont bien été prises en compte."
 
     def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
+        """
+        - init forms
+        - pass s3 upload config
+        """
+        context = super().get_context_data(**kwargs)
         if self.request.POST:
-            data["label_formset"] = SiaeLabelFormSet(self.request.POST, instance=self.object)
+            context["label_formset"] = SiaeLabelFormSet(self.request.POST, instance=self.object)
+            context["image_formset"] = SiaeImageFormSet(self.request.POST, instance=self.object)
         else:
-            data["label_formset"] = SiaeLabelFormSet(instance=self.object)
-        return data
+            context["label_formset"] = SiaeLabelFormSet(instance=self.object)
+            context["image_formset"] = SiaeImageFormSet(instance=self.object)
+        s3_upload = S3Upload(kind="siae_image")
+        context["s3_form_values"] = s3_upload.form_values
+        context["s3_upload_config"] = s3_upload.config
+        return context
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         label_formset = SiaeLabelFormSet(self.request.POST, instance=self.object)
-        if form.is_valid() and label_formset.is_valid():
-            return self.form_valid(form, label_formset)
+        image_formset = SiaeImageFormSet(self.request.POST, instance=self.object)
+        if form.is_valid() and label_formset.is_valid() and image_formset.is_valid():
+            return self.form_valid(form, label_formset, image_formset)
         else:
-            return self.form_invalid(form, label_formset)
+            return self.form_invalid(form, label_formset, image_formset)
 
-    def form_valid(self, form, label_formset):
+    def form_valid(self, form, label_formset, image_formset):
         self.object = form.save()
         label_formset.instance = self.object
         label_formset.save()
+        image_formset.instance = self.object
+        image_formset.save()
+        print(image_formset)
         return super().form_valid(form)
 
-    def form_invalid(self, form, label_formset):
+    def form_invalid(self, form, label_formset, image_formset):
         return self.render_to_response(self.get_context_data())
 
     def get_success_url(self):
