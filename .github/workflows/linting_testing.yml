@@ -78,7 +78,7 @@ jobs:
 
       - name: Install System dependencies
         run: |
-          sudo apt-get -y install gdal-bin
+          sudo apt-get -y install gdal-bin graphviz-dev
 
       #----------------------------------------------
       # install your root project
