@@ -70,14 +70,14 @@ RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && cat /etc/issue && cat /etc/motd' \
     >> /etc/bash.bashrc \
     ; echo "\
 ===================================================================\n\
-= Bitoubi API Dev Docker container                                =\n\
+= Bitoubi Dev Docker container                                =\n\
 ===================================================================\n\
 \n\
 (c) plateforme de l'Inclusion\n\
 \n\
 Source directory is /app \n\
 
-Run API with :\n\
+Run App with :\n\
 > python ./manage.py runserver \$HOST:\$PORT\n\
 \n\
 "\

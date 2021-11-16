@@ -120,7 +120,7 @@ class Siae(models.Model):
         "source",
     ]
     READONLY_FIELDS_FROM_QPV = ["is_qpv", "qpv_name", "qpv_code"]
-    READONLY_FIELDS_FROM_APIENTREPRISE = ["ig_employees", "ig_ca", "ig_date_constitution"]
+    READONLY_FIELDS_FROM_APIENTREPRISE = ["ig_date_constitution", "ig_employees", "ig_ca"]
     READONLY_FIELDS = READONLY_FIELDS_FROM_C1 + READONLY_FIELDS_FROM_QPV + READONLY_FIELDS_FROM_APIENTREPRISE
 
     KIND_EI = "EI"
@@ -293,9 +293,9 @@ class Siae(models.Model):
     qpv_name = models.CharField(max_length=255, blank=True, null=True)
     qpv_code = models.CharField(max_length=16, blank=True, null=True)
 
+    ig_date_constitution = models.DateTimeField(blank=True, null=True)
     ig_employees = models.CharField(max_length=255, blank=True, null=True)
     ig_ca = models.IntegerField(blank=True, null=True)
-    ig_date_constitution = models.DateTimeField(blank=True, null=True)
 
     c1_id = models.IntegerField(blank=True, null=True)
     c4_id_old = models.IntegerField(blank=True, null=True)
@@ -304,6 +304,14 @@ class Siae(models.Model):
 
     source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True, null=True)
     import_raw_object = models.JSONField("Donnée JSON brute", editable=False, null=True)
+
+    # stats
+    user_count = models.IntegerField("Nombre d'utilisateurs", default=0)
+    sector_count = models.IntegerField("Nombre de secteurs d'activité", default=0)
+    network_count = models.IntegerField("Nombre de réseaux", default=0)
+    offer_count = models.IntegerField("Nombre de prestations", default=0)
+    client_reference_count = models.IntegerField("Nombre de références clients", default=0)
+    label_count = models.IntegerField("Nombre de labels", default=0)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
@@ -327,13 +335,26 @@ class Siae(models.Model):
         Some SIAE have duplicate name, so we suffix the slug with their department.
         In some rare cases, name+department is not enough, so we add 4 random characters at the end.
         """
-        if not self.id:
+        if not self.slug:
             self.slug = f"{slugify(self.name)[:40]}-{str(self.department or '')}"
-            if with_uuid:
-                self.slug += f"-{str(uuid4())[:4]}"
+        if with_uuid:
+            self.slug += f"-{str(uuid4())[:4]}"
+
+    def set_stats(self):
+        if self.id:
+            self.user_count = self.users.count()
+            self.sector_count = self.sectors.count()
+            self.network_count = self.networks.count()
+            self.offer_count = self.offers.count()
+            self.client_reference_count = self.client_references.count()
+            self.label_count = self.labels.count()
 
     def save(self, *args, **kwargs):
-        """Generate the slug field before saving."""
+        """
+        - update the object stats
+        - generate the slug field
+        """
+        self.set_stats()
         try:
             self.set_slug()
             with transaction.atomic():
@@ -423,6 +444,22 @@ class Siae(models.Model):
             if self.geo_range_custom_distance:
                 return f"{self.geo_range_pretty_display} de {self.city}"
         return self.geo_range_pretty_display
+
+    @property
+    def is_missing_content(self):
+        has_contact_field = any(
+            getattr(self, field) for field in ["contact_website", "contact_email", "contact_phone"]
+        )
+        has_other_fields = all(
+            getattr(self, field)
+            for field in [
+                "sector_count",
+                "description",
+                "offer_count",
+                "label_count",
+            ]
+        )
+        return not has_contact_field and not has_other_fields
 
     def sectors_list_to_string(self):
         return ", ".join(self.sectors.all().values_list("name", flat=True))

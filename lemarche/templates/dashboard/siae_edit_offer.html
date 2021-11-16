@@ -1,5 +1,5 @@
 {% extends "dashboard/siae_edit_base.html" %}
-{% load bootstrap4 %}
+{% load static bootstrap4 %}
 
 {% block content_siae_form %}
 <form method="POST" action="" class="mb-3 mb-lg-5">
@@ -18,8 +18,11 @@
         </div>
         <div class="col-12 col-lg-4">
             <div role="alert" class="alert alert-info mt-3 mt-lg-0">
-                <p>
-                    <strong>Type de prestation</strong><br />
+                <p class="mb-1">
+                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                    <strong>Type de prestation</strong>
+                </p>
+                <p class="mb-0">
                     Vous pourrez ensuite détailler vos prestations à la prochaine étape.
                 </p>
             </div>
@@ -38,8 +41,11 @@
         </div>
         <div class="col-12 col-lg-4">
             <div role="alert" class="alert alert-info mt-3 mt-lg-0">
-                <p>
-                    <strong>Périmètre d'intervention</strong><br />
+                <p class="mb-1">
+                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                    <strong>Périmètre d'intervention</strong>
+                </p>
+                <p class="mb-0">
                     Le périmètre d'intervention est un critère essentiel dans le choix des acheteurs.
                     Il est nécessaire de bien le renseigner.
                 </p>
@@ -58,8 +64,11 @@
         </div>
         <div class="col-12 col-lg-4">
             <div role="alert" class="alert alert-info mt-3 mt-lg-0">
-                <p>
-                    <strong>Secteurs d'activité</strong><br />
+                <p class="mb-1">
+                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                    <strong>Secteurs d'activité</strong>
+                </p>
+                <p class="mb-0">
                     Le choix des secteurs d'activité va déterminer ce que trouvent les acheteurs lors de leur recherche.
                 </p>
             </div>

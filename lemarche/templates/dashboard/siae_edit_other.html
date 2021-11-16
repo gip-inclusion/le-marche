@@ -1,5 +1,5 @@
 {% extends "dashboard/siae_edit_base.html" %}
-{% load bootstrap4 %}
+{% load static bootstrap4 %}
 
 {% block content_siae_form %}
 <form method="POST" action="" class="mb-3 mb-lg-5">
@@ -18,8 +18,11 @@
         </div>
         <div class="col-12 col-lg-4">
             <div role="alert" class="alert alert-info mt-3 mt-lg-0">
-                <p>
-                    <strong>Qu'est-ce que la co-traitance ?</strong><br />
+                <p class="mb-1">
+                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                    <strong>Qu'est-ce que la co-traitance ?</strong>
+                </p>
+                <p class="mb-0">
                     En signalant que vous êtes ouvert à la co-traitance vous indiquez être prêt à répondre à un marché en groupement
                     avec d'autres structure pour mutualiser vos moyens professionels, techniques et financiers.
                 </p>
@@ -60,8 +63,11 @@
         </div>
         <div class="col-12 col-lg-4">
             <div role="alert" class="alert alert-info mt-3 mt-lg-0">
-                <p>
-                    <strong>Pourquoi mettre des labels ?</strong><br />
+                <p class="mb-1">
+                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                    <strong>Pourquoi mettre des labels ?</strong>
+                </p>
+                <p class="mb-0">
                     Certains labels sont recherchés par nos acheteurs, c'est donc un plus de les rendre visible rapidement.<br />
                     Exemples : RSEI, ISO 14001, Ecocert…
                 </p>

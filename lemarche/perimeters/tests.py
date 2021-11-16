@@ -17,6 +17,17 @@ class PerimeterModelTest(TestCase):
             name="Auvergne-Rhône-Alpes", kind=Perimeter.KIND_REGION, insee_code="R84"
         )
 
+    def test_slug_field(self):
+        self.assertEqual(self.perimeter_city.slug, "grenoble-38")
+        self.assertEqual(self.perimeter_department.slug, "isere")
+        perimeter_department_2 = PerimeterFactory(
+            name="Guadeloupe", kind=Perimeter.KIND_DEPARTMENT, insee_code="971", region_code="01"
+        )
+        self.assertEqual(perimeter_department_2.slug, "guadeloupe")
+        self.assertEqual(self.perimeter_region.slug, "auvergne-rhone-alpes")
+        perimeter_region_2 = PerimeterFactory(name="Guadeloupe", kind=Perimeter.KIND_REGION, insee_code="R01")
+        self.assertEqual(perimeter_region_2.slug, "guadeloupe-region")
+
     def test_name_display_property(self):
         self.assertEqual(str(self.perimeter_city), "Grenoble (38)")
         self.assertEqual(str(self.perimeter_department), "Isère")

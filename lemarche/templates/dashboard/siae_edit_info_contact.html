@@ -48,8 +48,11 @@
         </div>
         <div class="col-12 col-lg-4">
             <div role="alert" class="alert alert-info mt-3 mt-lg-0">
+                <p class="mb-1">
+                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                    <strong>Contact commercial</strong>
+                </p>
                 <p class="mb-0">
-                    <strong>Contact commercial</strong><br />
                     Les informations de contact seront mis à disposition des acheteurs afin de leur permettre de vous contacter facilement.
                 </p>
             </div>
@@ -84,6 +87,20 @@
                     {% bootstrap_field form.department %}
                     {% bootstrap_field form.region %}
                 </fieldset>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div role="alert" class="alert alert-info mt-3 mt-lg-0">
+                <p class="mb-1">
+                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                    <strong>Données source</strong>
+                </p>
+                <p class="mb-1">
+                    Les informations reçues concernant votre structure.
+                </p>
+                <p class="mb-0">
+                    Si vous souhaitez mettre à jour vos informations de contact, vous pouvez le faire à l'aide du formulaire ci-dessus.
+                </p>
             </div>
         </div>
     </div>

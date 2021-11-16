@@ -79,7 +79,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3">
+                    <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2">
                         {% for siaeuser in user.siaeuser_set.all %}
                         <div class="s-cards-grid-01__col col d-sm-flex">
                             <div class="card c-card c-card--mini mb-3 w-100">
@@ -101,6 +101,12 @@
                                         <strong>{% get_verbose_name siaeuser.siae 'nature' %} :</strong>
                                         {{ siaeuser.siae.get_nature_display }}
                                     </p>
+                                    {% if siaeuser.siae.is_missing_content %}
+                                    <div class="alert alert-warning mt-3 mb-0" role="alert">
+                                        <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                                        Votre fiche n'est pas complète.
+                                    </div>
+                                    {% endif %}
                                 </div>
                                 <div class="card-footer">
                                     <div class="row justify-content-end">
