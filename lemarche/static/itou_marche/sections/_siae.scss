@@ -322,23 +322,24 @@
 		grid-row-gap: 16px;
 		grid-template-columns: 1fr; 
 		grid-template-rows: auto;
-		
+				
 		@media (min-width:992px) {
 			grid-template-columns: 66% 33%;
+			grid-template-rows: auto 1fr;
 
 			#user_profile {
-				grid-column: 1;
-				grid-row: 1;
+				grid-column: 1 / 1;
+				grid-row: 1 / 1;
 			}
 			
 			#sidebar {
-				grid-column: 2;
+				grid-column: 2 / 2;
 				grid-row: 1 / 3;
 			}
 			
 			#user_detail {
-				grid-column: 1;
-				grid-row: 2;
+				grid-column: 1 / 1;
+				grid-row: 2 / 2;
 			}
 		}
 
