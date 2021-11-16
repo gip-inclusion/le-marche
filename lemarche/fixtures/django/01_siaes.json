@@ -21,6 +21,7 @@
             "website": "http://www.baluchon.fr",
             "description": "",
             "source": "ASP",
+            "is_first_page": true,
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:40:16.387Z",
             "slug": "baluchon-a-table-citoyens-93"
@@ -48,6 +49,7 @@
             "website": "",
             "description": "",
             "source": "ASP",
+            "is_first_page": true,
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:38:30.255Z",
             "slug": "la-collecterie-93"

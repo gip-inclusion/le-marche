@@ -54,5 +54,26 @@
          "sector": 1,
          "siae": 2654
       }
+   },
+   {
+      "model": "siaes.siae_sectors",
+      "fields": {
+         "sector": 1,
+         "siae": 3850
+      }
+   },
+   {
+      "model": "siaes.siae_sectors",
+      "fields": {
+         "sector": 2,
+         "siae": 3850
+      }
+   },
+   {
+      "model": "siaes.siae_sectors",
+      "fields": {
+         "sector": 1,
+         "siae": 3853
+      }
    }
 ]
