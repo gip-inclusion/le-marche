@@ -326,12 +326,13 @@ class Siae(models.Model):
     import_raw_object = models.JSONField(verbose_name="Donnée JSON brute", editable=False, null=True)
 
     # stats
-    user_count = models.IntegerField(verbose_name="Nombre d'utilisateurs", default=0)
-    sector_count = models.IntegerField(verbose_name="Nombre de secteurs d'activité", default=0)
-    network_count = models.IntegerField(verbose_name="Nombre de réseaux", default=0)
-    offer_count = models.IntegerField(verbose_name="Nombre de prestations", default=0)
-    client_reference_count = models.IntegerField(verbose_name="Nombre de références clients", default=0)
-    label_count = models.IntegerField(verbose_name="Nombre de labels", default=0)
+    user_count = models.IntegerField("Nombre d'utilisateurs", default=0)
+    sector_count = models.IntegerField("Nombre de secteurs d'activité", default=0)
+    network_count = models.IntegerField("Nombre de réseaux", default=0)
+    offer_count = models.IntegerField("Nombre de prestations", default=0)
+    client_reference_count = models.IntegerField("Nombre de références clients", default=0)
+    label_count = models.IntegerField("Nombre de labels", default=0)
+    image_count = models.IntegerField("Nombre d'images", default=0)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
@@ -365,6 +366,7 @@ class Siae(models.Model):
             self.offer_count = self.offers.count()
             self.client_reference_count = self.client_references.count()
             self.label_count = self.labels.count()
+            self.image_count = self.images.count()
 
     def save(self, *args, **kwargs):
         """
@@ -470,8 +472,8 @@ class Siae(models.Model):
         has_other_fields = all(
             getattr(self, field)
             for field in [
-                "sector_count",
                 "description",
+                "sector_count",
                 "offer_count",
                 "label_count",
             ]

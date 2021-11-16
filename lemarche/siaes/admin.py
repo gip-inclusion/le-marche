@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.gis import admin as gis_admin
 from django.urls import reverse
-from django.db.models import Count
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
@@ -178,10 +177,10 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         ("Autres", {"fields": ("created_at", "updated_at")}),
     ]
 
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        qs = qs.annotate(image_count=Count("images", distinct=True))
-        return qs
+    # def get_queryset(self, request):
+    #     qs = super().get_queryset(request)
+    #     qs = qs.annotate(image_count=Count("images", distinct=True))
+    #     return qs
 
     def nb_users(self, siae):
         # url = reverse("admin:users_user_changelist") + f"?siae__id__exact={siae.id}"
