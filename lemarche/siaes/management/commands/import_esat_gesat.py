@@ -168,6 +168,8 @@ class Command(BaseCommand):
             esat["department"] = department_from_postcode(esat["post_code"])
         rename_dict_key(esat, "Ville", "city")
         rename_dict_key(esat, "Région", "region")
+        esat["region"].strip()
+        # manually fix some regions
 
         # enrich with geocoding
         geocoding_data = get_geocoding_data(esat["address"] + " " + esat["city"], post_code=esat["post_code"])
