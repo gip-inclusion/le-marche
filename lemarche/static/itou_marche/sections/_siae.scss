@@ -227,32 +227,6 @@
 		border-bottom: 1px solid $gray-300;
 	}
 
-	.profile_capsule #show_data {
-		display: flex;
-		padding-bottom:10px;
-		
-		.prof_icon {
-			min-width: 20px
-		}
-
-		&.is-open .prof_icon img {
-			transform: rotate(90deg);
-		}
-	}
-
-	.profile_capsule #show_data,
-	.profile_capsule #show_data:focus,
-	.profile_capsule #show_data:active {
-		color: $gray-900;
-		text-decoration:none;
-		font-weight:bold;
-	}
-
-	.profile_capsule #show_data:hover {
-		color:$gray-800;
-		background-color:#fff;
-	}
-
 	.map_capsule .deflist,
 	.profile_capsule .deflist {
 		padding: 0;

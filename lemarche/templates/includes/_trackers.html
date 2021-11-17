@@ -288,15 +288,15 @@ document.addEventListener('click', async (event) => {
     var loops = 3;
     var meta = {}
     while (target && loops > 0) {
-    if (target instanceof HTMLAnchorElement) {
-        meta = {
-            'href': target.getAttribute('href'),
-            'id' : target.id,
-            'class': target.className
+        if (target instanceof HTMLAnchorElement || target instanceof HTMLButtonElement) {
+            meta = {
+                'href': target.getAttribute('href'),
+                'id' : target.id,
+                'class': target.className
+            }
         }
-    }
-    target = target.parentNode;
-    loops -= 1;
+        target = target.parentNode;
+        loops -= 1;
     }
 
     await track(
