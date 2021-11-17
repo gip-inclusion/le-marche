@@ -182,7 +182,7 @@ class Siae(models.Model):
     NATURE_ANTENNA = "ANTENNA"
 
     NATURE_CHOICES = (
-        (NATURE_HEAD_OFFICE, "Conventionné avec la Direccte"),
+        (NATURE_HEAD_OFFICE, "Conventionné par la DREETS"),
         (NATURE_ANTENNA, "Rattaché à un autre conventionnement"),
     )
 
