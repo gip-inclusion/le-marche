@@ -26,7 +26,9 @@
                     <ul class="list-unstyled m-0 lh-sm row no-gutters">
                         <li class="sc-profile-type col-12 col-lg-6 pr-lg-2 d-flex" title="Type(s) de prestation">
                             <img src="{% static 'itou/images/ico-briefcase-4-line.svg' %}" height="16" alt="" />
+                            {% if siae.presta_type %}
                             <span class="ml-1">{{ siae.presta_type_display }}</span>
+                            {% endif %}
                         </li>
                         {% if siae.sectors %}
                         <li class="sc-profile-sectors col-12 col-lg-6 pl-lg-2 mb-3 mb-lg-0 d-flex" title="Secteur(s) d'activité">
