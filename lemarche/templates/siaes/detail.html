@@ -104,7 +104,7 @@
                         <div class="profile_capsule">
                             {% if siae.contact_website or siae.contact_email or siae.contact_phone or siae.users.count %}
                             <div class="map_coordonnees">
-                                <button class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-3" type="button" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
+                                <button id="show_data" class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-3" type="button" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
                                     <span>Afficher les coordonnées</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-up"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 8l6 6H6z"/></svg>
@@ -166,7 +166,7 @@
                     <div class="partners d-none d-lg-block">
                         <div class="si-separator"></div>
                         <h3 class="h4 my-3">Vous avez besoin d'être accompagné dans vos achats inclusifs par des partenaires reconnus ?</h3>
-                        <a href="{% url 'pages:partenaires' %}" class="btn btn-outline-primary">Découvrez-les maintenant</a>
+                        <a href="{% url 'pages:partenaires' %}" id="track_siae_detail_partners" class="btn btn-outline-primary">Découvrez-les maintenant</a>
                     </div>
                 </aside>
 
@@ -306,7 +306,7 @@
             <div class="col-12">
                 <hr />
                 <h3 class="h4 my-3">Vous avez besoin d'être accompagné dans vos achats inclusifs par des partenaires reconnus ?</h3>
-                <a href="{% url 'pages:partenaires' %}" class="btn btn-outline-primary">Découvrez-les maintenant</a>
+                <a href="{% url 'pages:partenaires' %}" id="track_siae_detail_partners" class="btn btn-outline-primary">Découvrez-les maintenant</a>
             </div>
         </div>
         <div class="row">
