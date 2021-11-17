@@ -139,6 +139,7 @@ class Command(BaseCommand):
             esat["department"] = department_from_postcode(esat["post_code"])
         esat["city"] = esat["city"].strip()  # space at the beginning
         esat["region"] = esat["region"].strip()  # just to be sure
+        # manually fix region="DOM"
 
         # enrich with geocoding
         geocoding_data = get_geocoding_data(esat["city"], post_code=esat["post_code"])

@@ -75,11 +75,11 @@
                         </p>
                         <div class="mt-3">
                             {% if siae.users.count %}
-                                <div role="alert" class="alert alert-warning">
+                                <div class="alert alert-warning" role="alert">
                                     <p>
                                         <strong>Rejoindre cette structure</strong><br />
                                         <i>{{ siae.users.first.full_name }}</i> a déjà activé cette structure sur le marché.<br />
-                                        Si vous souhaitez aussi rejoindre cette structure, <strong><a href="{% url 'pages:contact' %}">contactez le support</a></strong> (indiquez le SIRET pour nous aider à retrouver votre structure).
+                                        Si vous souhaitez aussi rejoindre cette structure, <strong><a href="{% url 'pages:contact' %}?siret={{ siae.siret }}">contactez le support</a></strong> (indiquez le SIRET pour nous aider à retrouver votre structure).
                                     </p>
                                 </div>
                             {% else %}
@@ -93,7 +93,7 @@
                 {% if not siaes and form.is_valid %}
                     <div class="alert alert-danger mb-3 mb-lg-5" role="alert">
                         Nous n'avons pas retrouvé votre numéro de SIRET. Merci de vérifier votre numéro.<br />
-                        Dans le cas où le problème persiste, contactez <a href="{url 'pages:contact'}">notre support</a>.
+                        Dans le cas où le problème persiste, contactez <a href="{% url 'pages:contact' %}">notre support</a>.
                     </div>
                 {% endif %}
             </div>

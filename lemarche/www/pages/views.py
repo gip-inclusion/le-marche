@@ -46,6 +46,7 @@ class ContactView(SuccessMessageMixin, FormView):
             initial["first_name"] = self.request.user.first_name
             initial["last_name"] = self.request.user.last_name
             initial["email"] = self.request.user.email
+        initial["siret"] = self.request.GET.get("siret", None)
         return initial
 
     def form_valid(self, form):
