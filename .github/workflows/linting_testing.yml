@@ -78,7 +78,7 @@ jobs:
 
       - name: Install System dependencies
         run: |
-          sudo apt-get -y install gdal-bin graphviz-dev
+          sudo apt-get -y install gdal-bin
 
       #----------------------------------------------
       # install your root project
@@ -123,5 +123,6 @@ jobs:
       - name: 🤹‍ Run Tests
         run: |
           source .venv/bin/activate
+          python manage.py collectstatic
           coverage run --source='./lemarche' ./manage.py test
           coverage report

@@ -26,6 +26,11 @@ urlpatterns = [
         TemplateView.as_view(template_name="pages/decouvrir-inclusion.html"),
         name="decouvrir_inclusion",
     ),
+    path(
+        "partenaires/",
+        TemplateView.as_view(template_name="pages/partenaires.html"),
+        name="partenaires",
+    ),
     # Sentry endpoint for frontend errors
     path("sentry-debug/", trigger_error, name="sentry_debug"),
     # Redirection urls post-migration
