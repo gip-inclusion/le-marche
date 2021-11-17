@@ -23,7 +23,7 @@ SECTOR_FORM_QUERYSET = (
 class SiaeSearchForm(forms.Form):
     FORM_KIND_CHOICES_GROUPED = (
         ("Insertion par l'activité économique", Siae.KIND_CHOICES_WITH_EXTRA_INSERTION),
-        ("Handicap", Siae.KIND_CHOICES_WITH_EXTRA_HANDICAP[:-1]),  # TODO ESAT: remove filter
+        ("Handicap", Siae.KIND_CHOICES_WITH_EXTRA_HANDICAP),
     )
     FORM_PRESTA_CHOICES = EMPTY_CHOICE + Siae.PRESTA_CHOICES
 
@@ -83,8 +83,7 @@ class SiaeSearchForm(forms.Form):
         Method to filter the Siaes depending on the search filters.
         We also make sure there are no duplicates.
         """
-        # TODO ESAT: remove filter
-        qs = Siae.objects.prefetch_related("sectors", "networks", "users").exclude(kind=Siae.KIND_ESAT)
+        qs = Siae.objects.prefetch_related("sectors", "networks", "users").all()
 
         # we only display live Siae
         qs = qs.is_live()
