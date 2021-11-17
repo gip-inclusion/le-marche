@@ -10,6 +10,8 @@ class DashboardHomeViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = UserFactory()
+        cls.user_buyer = UserFactory(kind=User.KIND_BUYER)
+        cls.user_with_api_token = UserFactory(api_key="admin")
 
     def test_anonymous_user_cannot_access_profile(self):
         url = reverse("dashboard:home")
@@ -22,6 +24,20 @@ class DashboardHomeViewTest(TestCase):
         url = reverse("dashboard:index")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+    def user_buyer_should_not_have_siae_section(self):
+        self.client.login(email=self.user_buyer.email, password=DEFAULT_PASSWORD)
+        url = reverse("dashboard:index")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue("Mes structures" in response.body)
+
+    def user_with_api_key_should_have_api_section(self):
+        self.client.login(email=self.user_with_api_token.email, password=DEFAULT_PASSWORD)
+        url = reverse("dashboard:index")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue("Accès API" in response.body)
 
 
 class SiaeSearchAdoptViewTest(TestCase):

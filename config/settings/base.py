@@ -333,8 +333,7 @@ Une initiative de <a href="https://inclusion.beta.gouv.fr/" target="_blank" rel=
 la Plateforme de l'inclusion</a>
 
 Certaines ressources nécessitent un <strong>token</strong> pour accéder complètement à la donnée.<br />
-Vous pouvez en faire la demande via notre
-<a href="https://lemarche.inclusion.beta.gouv.fr/contact/" target="_blank">formulaire de contact</a>.
+Plus de détails pour l'obtenir <a href="https://lemarche.inclusion.beta.gouv.fr/api/">ici</a>.
 """
 
 SPECTACULAR_SETTINGS = {
@@ -342,7 +341,7 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": API_DESCRIPTION,
     "VERSION": "0.13",
     "CONTACT": {
-        "name": "Une question ? Contactez-nous en cliquand ici",
+        "name": "Une question ? Contactez-nous via notre formulaire",
         "url": "https://lemarche.inclusion.beta.gouv.fr/contact/",
     },
     "ENUM_NAME_OVERRIDES": {

@@ -25,7 +25,9 @@
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <h2 id="profil" class="mb-3 mb-lg-5"><strong>Mon profil</strong></h2>
+                <h2 id="profil" class="mb-3 mb-lg-5">
+                    <strong>Mon profil</strong>
+                </h2>
                 <div class="s-cards-grid-01__row row mb-3 mb-md-5">
                     <div class="s-cards-grid-01__col col">
                         <div class="card c-card c-card--marche h-100 w-100">
@@ -68,7 +70,7 @@
                     <hr class="mb-3 mb-lg-5">
                     <div class="row justify-content-end mb-3 mb-lg-5">
                         <div class="col-12 col-lg">
-                            <h2 id="structures">
+                            <h2 id="structures" class="mb-0">
                                 <strong>{% if user.siaes.count > 1 %}Mes structures{% else %}Ma structure{% endif %}</strong>
                             </h2>
                         </div>
@@ -128,7 +130,35 @@
                         </div>
                         {% endfor %}
                     </div>
+                {% endif %}
 
+                {% if user.api_key %}
+                    <hr class="mb-3 mb-lg-5">
+                    <div class="row justify-content-end mb-3 mb-lg-5">
+                        <div class="col-12 col-lg">
+                            <h2 id="api" class="mb-0">
+                                <strong>Accès API</strong>
+                            </h2>
+                        </div>
+                        <div class="col-12 col-md-auto">
+                            <a href="{% url 'api:home' %}" class="btn btn-outline-primary btn-block btn-ico">
+                                <span>📚 Tous les détails sur l'API</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label>Votre token</label>
+                                <div class="input-group">
+                                    <input type="text" id="user-api-key" class="form-control" value="{{ user.api_key }}" readonly />
+                                    <div class="input-group-append">
+                                        <button id="user-api-key-copy-button" class="btn btn-primary" type="button" id="button-addon2">Copier</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 {% endif %}
 
                 <!-- <h2 class="mb-3 mb-lg-5">Mes favoris</h2> -->
@@ -136,4 +166,20 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+const copyToClipboard = str => {
+    console.log("copyToClipboard")
+    const el = document.getElementById('user-api-key');
+    el.select();
+    document.execCommand('copy');
+};
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById('user-api-key-copy-button').addEventListener('click', function(e) {
+        copyToClipboard();
+    });
+});
+</script>
 {% endblock %}
