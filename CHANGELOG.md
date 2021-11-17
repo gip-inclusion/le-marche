@@ -8,6 +8,10 @@ Ressources :
 
 ### Ajouté
 
+- Pages
+    - Ajout de la page /partenaires/
+- Espace utilisateur
+    - Indiquer à l'utilisateur la "complétude" de sa fiche
 - Inscription / Connexion
     - Ajout d'un champ "Votre poste" pour les acheteurs
 - API
@@ -22,11 +26,15 @@ Ressources :
     - Clic sur l'adresse email ouvre son client email (mailto)
     - Afficher le nom du groupe lorsque le secteur est "Autre"
     - Reduction des espacements et nouvelle "card" sur la page de résultats
+    - Rendre les ESAT visibles
 - Espace utilisateur
-    - Réparé le formulaire de modification de sa structure (lorsqu'un champ readonly était manquant)
+    - Réparé le formulaire de modification de sa structure (lorsqu'un champ readonly était manquant ; sur les références clients ; sur certains départements & régions mal importés)
     - Afficher une petite carte à coté des de l'adresse de la structure (formulaire de modification)
 - Inscription / Connexion
     - Enlevé les liens vers les webinaires dans l'email post-inscription
+    - Garder l'utilisateur connecté juste après son inscription
+    - Eviter les erreurs de connexion à cause de majuscules dans l'email
+    - Afficher un message spécifique aux utilisateurs devant réinitialiser leur mot de passe (post-migration)
 - API
     - Renvoyer le champ "id" des structures
 
