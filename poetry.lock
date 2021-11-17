@@ -916,14 +916,6 @@ optional = false
 python-versions = ">=3.5"
 
 [[package]]
-name = "pygraphviz"
-version = "1.7"
-description = "Python interface to Graphviz"
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-
-[[package]]
 name = "pymysql"
 version = "1.0.2"
 description = "Pure Python MySQL Driver"
@@ -1354,7 +1346,7 @@ h11 = ">=0.9.0,<1"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "a83611e003d6d088244a8ae3e9edbc9fc02c2b820ec377307f4a83c2ee5ae5db"
+content-hash = "bd7cae6c5c591e1e3a5752876a59a1ddb5dc642eba685b8e3efd1a7894abe9e6"
 
 [metadata.files]
 anyio = [
@@ -1828,9 +1820,6 @@ pyflakes = [
 pygments = [
     {file = "Pygments-2.10.0-py3-none-any.whl", hash = "sha256:b8e67fe6af78f492b3c4b3e2970c0624cbf08beb1e493b2c99b9fa1b67a20380"},
     {file = "Pygments-2.10.0.tar.gz", hash = "sha256:f398865f7eb6874156579fdf36bc840a03cab64d1cde9e93d68f46a425ec52c6"},
-]
-pygraphviz = [
-    {file = "pygraphviz-1.7.zip", hash = "sha256:a7bec6609f37cf1e64898c59f075afd659106cf9356c5f387cecaa2e0cdb2304"},
 ]
 pymysql = [
     {file = "PyMySQL-1.0.2-py3-none-any.whl", hash = "sha256:41fc3a0c5013d5f039639442321185532e3e2c8924687abe6537de157d403641"},

@@ -3,18 +3,18 @@
 <div class="card c-card c-card--marche siae-card">
     <div class="row no-gutters">
         <div class="col-auto sc-img">
-            <a href="{% url 'siae:detail' siae.slug %}" class="text-decoration-none stretched-link p-3 d-inline-block">
+            <span class="p-3 d-inline-block">
                 {% if siae.logo_url %}
-                    <img class="img-fluid" src="{{ siae.logo_url }}" alt="Logo de la structure {{ siae.name }}" />
+                <img class="img-fluid" src="{{ siae.logo_url }}" alt="Logo de la structure {{ siae.name }}" />
                 {% else %}
-                    <img class="img-fluid" src="{% static 'img/default-listing.png' %}" alt="{{ siae.name }}" />
+                <img class="img-fluid" src="{% static 'img/default-listing.png' %}" alt="{{ siae.name }}" />
                 {% endif %}
-            </a>
+            </span>
         </div>
         <div class="col">
             <div class="card-body">
-                <a href="{% url 'siae:detail' siae.slug %}" class="text-decoration-none stretched-link">
-                    <h3 class="mb-3 d-flex justify-content-between align-items-start">
+                <h3 class="mb-3 d-flex justify-content-between align-items-start">
+                    <a href="{% url 'siae:detail' siae.slug %}" class="text-decoration-none stretched-link">
                         {{ siae.name_display }}
                         {% if not siae.users.count %}
                             <small class="text-muted">(bientôt inscrite sur le marché)</small>
@@ -24,12 +24,12 @@
                         </button> -->
                     </h3>
                     <ul class="list-unstyled m-0 lh-sm row no-gutters">
-                        <li class="sc-profile-type col-12 col-lg-6 pl-lg-2 d-flex" title="Type(s) de prestation">
+                        <li class="sc-profile-type col-12 col-lg-6 pr-lg-2 d-flex" title="Type(s) de prestation">
                             <img src="{% static 'itou/images/ico-briefcase-4-line.svg' %}" height="16" alt="" />
                             <span class="ml-1">{{ siae.presta_type_display }}</span>
                         </li>
                         {% if siae.sectors %}
-                        <li class="sc-profile-sectors col-12 col-lg-6 pr-lg-2 mb-3 mb-lg-0 d-flex" title="Secteur(s) d'activité">
+                        <li class="sc-profile-sectors col-12 col-lg-6 pl-lg-2 mb-3 mb-lg-0 d-flex" title="Secteur(s) d'activité">
                             <img src="{% static 'itou/images/ico-service-line.svg' %}" height="16" alt="" />
                             <span class="ml-1">{% m2m_list_display siae 'sectors' 3 %}</span>
                         </li>

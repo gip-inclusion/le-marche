@@ -59,7 +59,7 @@
     {% block extra_head %}{% endblock %}
 </head>
 
-<body id="top" class="loading">
+<body id="top" class="{% block body_class %}{% endblock %}">
     <!-- allow a user to go to the main content of the page -->
     <noscript>
         <div class="alert alert-danger" role="alert">
