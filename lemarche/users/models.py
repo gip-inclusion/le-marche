@@ -97,8 +97,8 @@ class User(AbstractUser):
 
     username = None
     email = models.EmailField(verbose_name="Adresse e-mail", unique=True)
-    first_name = models.CharField("Prénom", max_length=150)
-    last_name = models.CharField("Nom", max_length=150)
+    first_name = models.CharField(verbose_name="Prénom", max_length=150)
+    last_name = models.CharField(verbose_name="Nom", max_length=150)
     kind = models.CharField(verbose_name="Type", max_length=20, choices=KIND_CHOICES_WITH_ADMIN, blank=True, null=True)
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True, null=True)
     company_name = models.CharField(verbose_name="Nom de l'entreprise", max_length=255, blank=True, null=True)

@@ -6,8 +6,8 @@ from django.utils import timezone
 class SectorGroup(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
-    created_at = models.DateTimeField("Date de création", default=timezone.now)
-    updated_at = models.DateTimeField("Date de modification", auto_now=True)
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
     class Meta:
         verbose_name = "Groupe de secteurs d'activité"
@@ -41,8 +41,8 @@ class Sector(models.Model):
         null=True,
         blank=True,
     )
-    created_at = models.DateTimeField("Date de création", default=timezone.now)
-    updated_at = models.DateTimeField("Date de modification", auto_now=True)
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
     class Meta:
         verbose_name = "Secteur d'activité"

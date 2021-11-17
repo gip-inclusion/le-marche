@@ -119,6 +119,43 @@
         </div>
     </div>
 
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h4">Données tierces</legend>
+                    {% bootstrap_field form.ig_date_constitution %} <!-- |date:"d/m/Y" -->
+                    {% bootstrap_field form.ig_employees %}
+                </fieldset>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                <p class="mb-1">
+                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                    <strong>D'où viennent ces données ?</strong>
+                </p>
+                <p class="mb-0">
+                    Elles ont été récupérées en requêtant <a href="https://entreprise.api.gouv.fr/" target="_blank" rel="noopener">l'API Entreprise</a> avec votre SIRET.
+                </p>
+            </div>
+            {% if not siae.department or not siae.region or not siae.coords %}
+            <div class="alert alert-warning mt-3 mt-lg-0" role="alert">
+                <p class="mb-1">
+                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                    <strong>Localisation incomplète</strong>
+                </p>
+                <p class="mb-1">
+                    Il semblerait que les données de localisation (département, région, coordonnées GPS...) de votre structure soient incomplètes.
+                </p>
+                <p class="mb-0">
+                    Si vous voyez des erreurs, aidez-nous à les réparer en <a href="{% url 'pages:contact' %}?siret={{ siae.siret }}">nous contactant</a>.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
     <div class="row mt-3 mt-lg-5 justify-content-end">
         <div class="col-12 col-lg-auto px-5 px-lg-6">
             <button type="submit" class="btn btn-primary btn-block">

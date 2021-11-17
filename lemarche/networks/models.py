@@ -8,8 +8,8 @@ class Network(models.Model):
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
     brand = models.CharField(verbose_name="Enseigne", max_length=255, blank=True)
     website = models.URLField(verbose_name="Site web", blank=True)
-    created_at = models.DateTimeField("Date de création", default=timezone.now)
-    updated_at = models.DateTimeField("Date de modification", auto_now=True)
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
     class Meta:
         verbose_name = "Réseau"
