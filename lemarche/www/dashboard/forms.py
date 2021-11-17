@@ -96,6 +96,9 @@ class SiaeEditInfoContactForm(forms.ModelForm):
             "contact_email",
             "contact_phone",
             "logo_url",
+            "ig_date_constitution",
+            "ig_employees",
+            # "ig_ca",
         ]
         widgets = {
             "address": forms.Textarea(attrs={"rows": 3}),
@@ -104,7 +107,7 @@ class SiaeEditInfoContactForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Disabled fields
-        for field in Siae.READONLY_FIELDS_FROM_C1:
+        for field in Siae.READONLY_FIELDS:
             if field in self.fields:
                 self.fields[field].disabled = True
                 self.fields[field].required = False  # to avoid form errors on submit

@@ -290,12 +290,16 @@ class Siae(models.Model):
     # ForeignKeys: offers, client_references, labels
 
     is_qpv = models.BooleanField(verbose_name="Zone QPV", blank=False, null=False, default=False)
-    qpv_name = models.CharField(max_length=255, blank=True, null=True)
-    qpv_code = models.CharField(max_length=16, blank=True, null=True)
+    qpv_name = models.CharField(verbose_name="Nom de la zone QPV", max_length=255, blank=True, null=True)
+    qpv_code = models.CharField(verbose_name="Code de la zone QPV", max_length=16, blank=True, null=True)
 
-    ig_date_constitution = models.DateTimeField(blank=True, null=True)
-    ig_employees = models.CharField(max_length=255, blank=True, null=True)
-    ig_ca = models.IntegerField(blank=True, null=True)
+    ig_date_constitution = models.DateTimeField(
+        verbose_name="Date de création (API Entreprise)", blank=True, null=True
+    )
+    ig_employees = models.CharField(
+        verbose_name="Nombre de salariés (API Entreprise)", max_length=255, blank=True, null=True
+    )
+    ig_ca = models.IntegerField(verbose_name="Chiffre d'affaire (API Entreprise)", blank=True, null=True)
 
     c1_id = models.IntegerField(blank=True, null=True)
     c4_id_old = models.IntegerField(blank=True, null=True)
@@ -303,15 +307,15 @@ class Siae(models.Model):
     sync_skip = models.BooleanField(blank=False, null=False, default=False)
 
     source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True, null=True)
-    import_raw_object = models.JSONField("Donnée JSON brute", editable=False, null=True)
+    import_raw_object = models.JSONField(verbose_name="Donnée JSON brute", editable=False, null=True)
 
     # stats
-    user_count = models.IntegerField("Nombre d'utilisateurs", default=0)
-    sector_count = models.IntegerField("Nombre de secteurs d'activité", default=0)
-    network_count = models.IntegerField("Nombre de réseaux", default=0)
-    offer_count = models.IntegerField("Nombre de prestations", default=0)
-    client_reference_count = models.IntegerField("Nombre de références clients", default=0)
-    label_count = models.IntegerField("Nombre de labels", default=0)
+    user_count = models.IntegerField(verbose_name="Nombre d'utilisateurs", default=0)
+    sector_count = models.IntegerField(verbose_name="Nombre de secteurs d'activité", default=0)
+    network_count = models.IntegerField(verbose_name="Nombre de réseaux", default=0)
+    offer_count = models.IntegerField(verbose_name="Nombre de prestations", default=0)
+    client_reference_count = models.IntegerField(verbose_name="Nombre de références clients", default=0)
+    label_count = models.IntegerField(verbose_name="Nombre de labels", default=0)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
@@ -472,8 +476,8 @@ class SiaeUser(models.Model):
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Utilisateur", on_delete=models.CASCADE)
 
-    created_at = models.DateTimeField("Date de création", default=timezone.now)
-    updated_at = models.DateTimeField("Date de modification", auto_now=True)
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
     class Meta:
         verbose_name = "Gestionnaire"
@@ -488,8 +492,8 @@ class SiaeOffer(models.Model):
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", related_name="offers", on_delete=models.CASCADE)
     source = models.CharField(verbose_name="Source", max_length=20, blank=True, null=True)  # "listing_import"
 
-    created_at = models.DateTimeField("Date de création", default=timezone.now)
-    updated_at = models.DateTimeField("Date de modification", auto_now=True)
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
     class Meta:
         verbose_name = "Prestation"
@@ -510,8 +514,8 @@ class SiaeClientReference(models.Model):
         "siaes.Siae", verbose_name="Structure", related_name="client_references", on_delete=models.CASCADE
     )
 
-    created_at = models.DateTimeField("Date de création", default=timezone.now)
-    updated_at = models.DateTimeField("Date de modification", auto_now=True)
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
     class Meta:
         verbose_name = "Référence client"
@@ -527,8 +531,8 @@ class SiaeLabel(models.Model):
 
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", related_name="labels", on_delete=models.CASCADE)
 
-    created_at = models.DateTimeField("Date de création", default=timezone.now)
-    updated_at = models.DateTimeField("Date de modification", auto_now=True)
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
     class Meta:
         verbose_name = "Label & certification"

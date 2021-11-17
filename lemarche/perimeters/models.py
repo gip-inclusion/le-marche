@@ -47,8 +47,8 @@ class Perimeter(models.Model):
         verbose_name="Région (code)", choices=REGION_CHOICES, max_length=2, blank=True, null=True
     )
 
-    created_at = models.DateTimeField("Date de création", default=timezone.now)
-    updated_at = models.DateTimeField("Date de modification", auto_now=True)
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
     class Meta:
         verbose_name = "Périmètre"
