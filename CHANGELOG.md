@@ -16,6 +16,7 @@ Ressources :
     - Ajout d'un champ "Votre poste" pour les acheteurs
 - API
     - Nouvelle url /siae/slug/{slug}/ pour trouver une structure par son slug
+    - Afficher le token dans l'espace utilisateur (si il a été généré)
 
 ### Modifié
 
@@ -37,6 +38,7 @@ Ressources :
     - Afficher un message spécifique aux utilisateurs devant réinitialiser leur mot de passe (post-migration)
 - API
     - Renvoyer le champ "id" des structures
+    - Amélioré la documentation concernant la demande de token
 
 ## [1.1] - 2021-11-05
 

@@ -28,7 +28,7 @@
 
         <div class="alert alert-warning" role="alert">
             Service en cours de co-construction.<br />
-            L'API devrait être finalisée et publiée sur <a href="https://api.gouv.fr/" target="_blank" rel="noopener">api.gouv.fr</a> d'ici à la fin de l'année !
+            L'API devrait être finalisée et publiée sur <a href="https://api.gouv.fr/" target="_blank" rel="noopener">api.gouv.fr</a> d'ici à la fin de l'année 2021 !
         </div>
 
         <div class="row mt-5">
@@ -48,7 +48,22 @@
                 <h2>Authentification</h2>
 
                 <p>Certaines données nécessitent un <strong>token</strong> (jeton utilisateur).</p>
-                <p>Si vous désirez en obtenir un, merci de nous adresser votre demande via le <a href="{% url 'pages:contact' %}" class="text-dark">formulaire de contact</a>.</p>
+                
+                <h3>Comment obtenir un token ?</h3>
+                <ol>
+                    <li><a href="{% url 'auth:signup' %}" class="text-dark">Créez-vous un compte</a> sur le marché de l'inclusion</li>
+                    <li>Puis rendez-vous sur le <a href="{% url 'pages:contact' %}" class="text-dark">formulaire de contact</a> pour nous en faire la demande</li>
+                    <li>Une fois généré, le token apparaîtra dans votre espace utilisateur</li>
+                </ol>
+
+                <h3>Comment se servir du token ?</h3>
+
+                <p>Rien de plus simple, il suffit de rajouter <code>token=&lt;VOTRE-TOKEN&gt;</code> dans l'URL de vos requêtes API</p>
+                <p>
+                    Exemples :<br />
+                    - <code>https://lemarche.inclusion.beta.gouv.fr/api/siae/?token=test</code><br />
+                    - <code>https://lemarche.inclusion.beta.gouv.fr/api/siae/?department=38&kind=ESAT&token=test</code>
+                </p>
             </div>
         </div>
 
@@ -126,6 +141,16 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                    Une remarque ? Une question ? Vous souhaitez accéder à d'avantage de données ?<br />
+                    N'hésitez-pas à <a href="{% url 'pages:contact' %}" class="text-dark">nous contacter</a>.
                 </div>
             </div>
         </div>
