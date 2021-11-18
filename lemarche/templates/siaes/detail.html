@@ -61,13 +61,13 @@
                                 <div class="row">
                                     <div class="col-12 mb-3">
                                         <span class="prof_icon mr-1"><img src="{% static 'img/prof_workers.svg' %}" alt=""/></span>
-                                        <span>Salariés<sup>*</sup> : {% if siae.ig_employees %}{{ siae.ig_employees }}{% else %}non disponible{% endif %}</span>
+                                        <span>Salariés<sup>*</sup> : {% if siae.api_entreprise_employees %}{{ siae.api_entreprise_employees }}{% else %}non disponible{% endif %}</span>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-12 mb-3">
                                         <span class="prof_icon mr-1"><img src="{% static 'img/prof_calendar.svg' %}" alt="" /></span>
-                                        <span>Date de création<sup>*</sup> : {% if siae.ig_date_constitution %}{{ siae.ig_date_constitution|date:"Y" }}{% else %}non disponible{% endif %}</span>
+                                        <span>Date de création<sup>*</sup> : {% if siae.api_entreprise_date_constitution %}{{ siae.api_entreprise_date_constitution|date:"Y" }}{% else %}non disponible{% endif %}</span>
                                     </div>
                                 </div>
                             </div>

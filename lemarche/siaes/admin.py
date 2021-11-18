@@ -120,7 +120,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
             },
         ),
         ("Quartiers de la politique de la ville (QPV)", {"fields": Siae.READONLY_FIELDS_FROM_QPV}),
-        ("Données API Entreprise", {"fields": Siae.READONLY_FIELDS_FROM_APIENTREPRISE}),
+        ("Données API Entreprise", {"fields": Siae.READONLY_FIELDS_FROM_API_ENTREPRISE}),
         (
             "Détails",
             {
