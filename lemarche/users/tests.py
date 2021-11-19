@@ -10,8 +10,8 @@ class UserModelTest(TestCase):
         pass
 
     def test_str(self):
-        user = UserFactory(email="coucou@domain.com")
-        self.assertEqual(str(user), "coucou@domain.com")
+        user = UserFactory(email="coucou@example.com")
+        self.assertEqual(str(user), "coucou@example.com")
 
     def test_full_name(self):
         user = UserFactory(first_name="Paul", last_name="Anploi")

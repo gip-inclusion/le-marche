@@ -371,3 +371,11 @@ class SiaeSearchOrderTest(TestCase):
         self.assertEqual(siaes[0].name, "ZZ GEO Grenoble")
         self.assertEqual(siaes[1].name, "ZZ GEO La Tronche")
         self.assertEqual(siaes[2].name, "ZZ GEO Pontcharra")
+
+
+class SiaeDetailTest(TestCase):
+    def test_should_display_contact_fields(self):
+        siae = SiaeFactory(name="Ma boite", contact_email="contact@example.com")
+        url = reverse("siae:detail", args=[siae.slug])
+        response = self.client.get(url)
+        self.assertContains(response, siae.contact_email)

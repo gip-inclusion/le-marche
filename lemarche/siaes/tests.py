@@ -54,14 +54,14 @@ class SiaeModelTest(TestCase):
         siae_full = SiaeFactory(
             name="Ma boite",
             contact_website="https://example.com",
-            contact_email="email@domain.com",
+            contact_email="email@example.com",
             contact_phone="0000000000",
             description="test",
         )
         siae_full_2 = SiaeFactory(
             name="Ma boite",
             contact_website="https://example.com",
-            # contact_email="email@domain.com",
+            # contact_email="email@example.com",
             # contact_phone="0000000000",
             description="test",
         )

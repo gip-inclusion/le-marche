@@ -30,14 +30,14 @@ class DashboardHomeViewTest(TestCase):
         url = reverse("dashboard:index")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue("Mes structures" in response.body)
+        self.assertContains(response, "Mes structures")
 
     def user_with_api_key_should_have_api_section(self):
         self.client.login(email=self.user_with_api_token.email, password=DEFAULT_PASSWORD)
         url = reverse("dashboard:index")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue("Accès API" in response.body)
+        self.assertContains(response, "Accès API")
 
 
 class SiaeSearchAdoptViewTest(TestCase):

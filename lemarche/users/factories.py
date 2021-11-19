@@ -16,7 +16,7 @@ class UserFactory(DjangoModelFactory):
 
     first_name = factory.Sequence("first_name{0}".format)
     last_name = factory.Sequence("last_name{0}".format)
-    email = factory.Sequence("email{0}@domain.com".format)
+    email = factory.Sequence("email{0}@example.com".format)
     password = factory.PostGenerationMethodCall("set_password", DEFAULT_PASSWORD)
     phone = factory.fuzzy.FuzzyText(length=10, chars=string.digits)
     kind = User.KIND_SIAE

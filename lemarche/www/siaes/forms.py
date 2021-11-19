@@ -83,7 +83,7 @@ class SiaeSearchForm(forms.Form):
         Method to filter the Siaes depending on the search filters.
         We also make sure there are no duplicates.
         """
-        qs = Siae.objects.prefetch_related("sectors", "networks", "users").all()
+        qs = Siae.objects.prefetch_related("sectors", "networks").all()
 
         # we only display live Siae
         qs = qs.is_live()

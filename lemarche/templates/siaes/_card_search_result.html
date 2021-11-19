@@ -16,7 +16,7 @@
                 <h3 class="mb-3 d-flex justify-content-between align-items-start">
                     <a href="{% url 'siae:detail' siae.slug %}" class="text-decoration-none stretched-link">
                         {{ siae.name_display }}
-                        {% if not siae.users.count %}
+                        {% if not siae.user_count %}
                             <small class="text-muted">(bientôt inscrite sur le marché)</small>
                         {% endif %}
                         <!-- <button class="btn btn-link pt-0 pr-0">
