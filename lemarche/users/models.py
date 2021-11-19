@@ -99,10 +99,10 @@ class User(AbstractUser):
     email = models.EmailField(verbose_name="Adresse e-mail", unique=True)
     first_name = models.CharField(verbose_name="Prénom", max_length=150)
     last_name = models.CharField(verbose_name="Nom", max_length=150)
-    kind = models.CharField(verbose_name="Type", max_length=20, choices=KIND_CHOICES_WITH_ADMIN, blank=True, null=True)
-    phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True, null=True)
-    company_name = models.CharField(verbose_name="Nom de l'entreprise", max_length=255, blank=True, null=True)
-    position = models.CharField(verbose_name="Poste", max_length=255, blank=True, null=True)
+    kind = models.CharField(verbose_name="Type", max_length=20, choices=KIND_CHOICES_WITH_ADMIN, blank=True)
+    phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True)
+    company_name = models.CharField(verbose_name="Nom de l'entreprise", max_length=255, blank=True)
+    position = models.CharField(verbose_name="Poste", max_length=255, blank=True)
 
     api_key = models.CharField(verbose_name="Clé API", max_length=128, unique=True, blank=True, null=True)
 
@@ -120,15 +120,15 @@ class User(AbstractUser):
         default=False,
     )
 
-    image_name = models.CharField(verbose_name="Nom de l'image", max_length=255, blank=True, null=True)
-    image_url = models.URLField(verbose_name="Lien vers l'image", max_length=500, blank=True, null=True)
+    image_name = models.CharField(verbose_name="Nom de l'image", max_length=255, blank=True)
+    image_url = models.URLField(verbose_name="Lien vers l'image", max_length=500, blank=True)
 
     c4_id = models.IntegerField(blank=True, null=True)
-    c4_phone_prefix = models.CharField(verbose_name="Indicatif international", max_length=20, blank=True, null=True)
-    c4_time_zone = models.CharField(verbose_name="Fuseau", max_length=150, blank=True, null=True)
-    c4_website = models.URLField(verbose_name="Site web", blank=True, null=True)
-    c4_siret = models.CharField(verbose_name="Siret ou Siren", max_length=14, blank=True, null=True)
-    c4_naf = models.CharField(verbose_name="Naf", max_length=5, blank=True, null=True)
+    c4_phone_prefix = models.CharField(verbose_name="Indicatif international", max_length=20, blank=True)
+    c4_time_zone = models.CharField(verbose_name="Fuseau", max_length=150, blank=True)
+    c4_website = models.URLField(verbose_name="Site web", blank=True)
+    c4_siret = models.CharField(verbose_name="Siret ou Siren", max_length=14, blank=True)
+    c4_naf = models.CharField(verbose_name="Naf", max_length=5, blank=True)
     c4_phone_verified = models.BooleanField(default=False)
     c4_email_verified = models.BooleanField(default=False)
     c4_id_card_verified = models.BooleanField(default=False)

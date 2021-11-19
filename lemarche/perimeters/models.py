@@ -36,16 +36,14 @@ class Perimeter(models.Model):
     # Latitude and longitude coordinates.
     # https://docs.djangoproject.com/en/2.2/ref/contrib/gis/model-api/#pointfield
     coords = gis_models.PointField(geography=True, blank=True, null=True)
-    post_codes = ArrayField(models.CharField(max_length=5), verbose_name="Codes postaux", blank=True, null=True)
+    post_codes = ArrayField(models.CharField(max_length=5), verbose_name="Codes postaux", blank=True, default=list)
     department_code = models.CharField(
-        verbose_name="Département (code)", choices=DEPARTMENT_CHOICES, max_length=3, blank=True, null=True
+        verbose_name="Département (code)", choices=DEPARTMENT_CHOICES, max_length=3, blank=True
     )
     population = models.IntegerField(verbose_name="Population", blank=True, null=True)
 
     # only for cities & departments
-    region_code = models.CharField(
-        verbose_name="Région (code)", choices=REGION_CHOICES, max_length=2, blank=True, null=True
-    )
+    region_code = models.CharField(verbose_name="Région (code)", choices=REGION_CHOICES, max_length=2, blank=True)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)

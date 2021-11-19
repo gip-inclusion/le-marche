@@ -85,10 +85,8 @@ class SiaeModelSaveTest(TestCase):
     def test_slug_field_on_save(self):
         siae = SiaeFactory(name="L'Insertion par le HAUT", department="01")
         self.assertEqual(siae.slug, "linsertion-par-le-haut-01")
-        siae = SiaeFactory(name="Structure sans département", department=None)
+        siae = SiaeFactory(name="Structure sans département", department="")
         self.assertEqual(siae.slug, "structure-sans-departement-")
-        siae = SiaeFactory(name="Structure sans département 2", department="")
-        self.assertEqual(siae.slug, "structure-sans-departement-2-")
         siae_doublon_1 = SiaeFactory(name="Structure doublon", department="01")
         siae_doublon_2 = SiaeFactory(name="Structure doublon", department="15")
         siae_doublon_3 = SiaeFactory(name="Structure doublon", department="15")
