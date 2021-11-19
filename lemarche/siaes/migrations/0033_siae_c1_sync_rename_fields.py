@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("siaes", "0031_siae_add_verbose_names"),
+        ("siaes", "0032_avoid_null_on_charfields"),
     ]
 
     operations = [

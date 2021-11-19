@@ -1,16 +1,23 @@
 import os
 import re
+from datetime import datetime, timedelta
 
 import psycopg2
 import psycopg2.extras
 from django.contrib.gis.geos import GEOSGeometry
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from stdnum.fr import siret
 
 from lemarche.siaes.constants import DEPARTMENT_TO_REGION
 from lemarche.siaes.models import Siae
 from lemarche.utils.data import rename_dict_key
+
+
+UPDATE_FIELDS = [
+    "is_delisted",
+    "c1_last_sync_date",
+]
 
 
 def map_siae_presta_type(siae_kind):
@@ -32,6 +39,14 @@ def map_siae_nature(siae_source):
 
 class Command(BaseCommand):
     """
+    What does the script do?
+    It syncs the list of siae (creates new, updates existing) from C1 to C4.
+
+    Steps:
+    1. First we fetch all the siae from C1
+    2. Then we loop on each of them, to create or update it (if siae with c1_id already exists)
+    3. Don't forget to delist the siae who were not updated or inactive
+
     Usage:
     - poetry run python manage.py sync_c1_c4 --dry-run
     - poetry run python manage.py sync_c1_c4
@@ -41,27 +56,42 @@ class Command(BaseCommand):
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Dry run, no writes")
 
     def handle(self, dry_run=False, **options):
+        if not os.environ.get("C1_DSN"):
+            raise CommandError("Missing C1_DSN in env")
+
         self.stdout.write("-" * 80)
         self.stdout.write("Sync script between C1 & C4...")
 
+        self.stdout.write("-" * 80)
         self.stdout.write("Step 1: fetching C1 data")
         c1_list = self.c1_export()
 
+        self.stdout.write("-" * 80)
         self.stdout.write("Step 2: update C4 data")
         # count before
         siae_total_before = Siae.objects.all().count()
         siae_active_before = Siae.objects.filter(is_active=True).count()
         siae_delisted_before = Siae.objects.filter(is_delisted=True).count()
+
         self.c4_update(c1_list, dry_run)
+        self.c4_delist_old_siae(dry_run)
 
         # count after
         siae_total_after = Siae.objects.all().count()
         siae_active_after = Siae.objects.filter(is_active=True).count()
         siae_delisted_after = Siae.objects.filter(is_delisted=True).count()
 
-        print("Siae total (before / after):", siae_total_before, siae_total_after)
-        print("Siae active (before / after):", siae_active_before, siae_active_after)
-        print("Siae delisted (before / after):", siae_delisted_before, siae_delisted_after)
+        self.stdout.write("-" * 80)
+        self.stdout.write("Done ! Some stats...")
+        created_count = siae_total_after - siae_total_before
+        updated_count = len(c1_list) - created_count
+        self.stdout.write(f"Siae total: before {siae_total_before} / after {siae_total_after} / +{created_count}")
+        self.stdout.write(f"Siae updated: {updated_count}")
+        self.stdout.write(f"Siae active: before {siae_active_before} / after {siae_active_after}")
+        self.stdout.write(
+            f"Siae inactive: before {siae_total_before - siae_active_before} / after {siae_total_after - siae_active_after}"  # noqa
+        )
+        self.stdout.write(f"Siae delisted: before {siae_delisted_before} / after {siae_delisted_after}")
 
     def c1_export(self):
         sql = """
@@ -113,7 +143,7 @@ class Command(BaseCommand):
 
         # clean fields
         c1_list_cleaned = list()
-        for c1_siae in c1_list_temp[:1]:
+        for c1_siae in c1_list_temp:
             c1_list_cleaned.append(
                 {
                     **c1_siae,
@@ -125,11 +155,13 @@ class Command(BaseCommand):
                 }
             )
 
-        print(c1_list_cleaned)
-
+        self.stdout.write(f"Found {len(c1_list_cleaned)} Siae in C1")
         return c1_list_cleaned
 
     def c4_update(self, c1_list, dry_run):
+        """
+        Loop on c1_list and figure out if each siae needs to be created OR already exists (update)
+        """
         for c1_siae in c1_list:
             # if force_siret and c1['siret'] != force_siret:
             #     continue
@@ -146,6 +178,8 @@ class Command(BaseCommand):
         rename_dict_key(c1_siae, "id", "c1_id")
         c1_siae["description"] = ""
         c1_siae["phone"] = re.sub("[^0-9]", "", c1_siae["phone"])
+
+        # create address
         c1_siae["address"] = c1_siae["address_line_1"] + " " + c1_siae["address_line_2"]
         del c1_siae["address_line_1"]
         del c1_siae["address_line_2"]
@@ -171,8 +205,8 @@ class Command(BaseCommand):
 
         # create object
         if not dry_run:
-            Siae.objects.create(**c1_siae)
-            self.stdout.write("New Siae created")
+            siae = Siae.objects.create(**c1_siae)
+            self.stdout.write(f"New Siae created / {siae.id} / {siae.siret}")
 
     def c4_update_siae(self, c1_siae, c4_siae, dry_run):
         self.stdout.write("Updating Siae...")
@@ -180,15 +214,26 @@ class Command(BaseCommand):
         if dry_run:
             return
 
-        # clean fields
-        rename_dict_key(c1_siae, "id", "c1_id")
-
-        # TODO...
-
         # other fields
         c1_siae["is_delisted"] = True if not c1_siae["is_active"] else False
         c1_siae["c1_last_sync_date"] = timezone.now()
 
+        # keep only certain fields for update
+        [c1_siae.pop(key) for key in c1_siae if key not in UPDATE_FIELDS]
+
         if not dry_run:
-            # Siae.objects.update()  # avoid updated_at change
-            self.stdout.write("Siae updated")
+            Siae.objects.filter(c1_id=c4_siae.c1_id).update(**c1_siae)  # avoid updated_at change
+            self.stdout.write(f"Siae updated / {c4_siae.id} / {c4_siae.siret}")
+
+    def c4_delist_old_siae(self, dry_run):
+        """
+        Which Siae should we delist?
+        - the existing ones who haven't been updated
+        - all the ones who have is_active as False
+        """
+        if not dry_run:
+            yesterday = datetime.now() - timedelta(days=1)
+            Siae.objects.exclude(c1_sync_skip=True).filter(
+                c1_last_sync_date__lt=timezone.make_aware(yesterday)
+            ).update(is_delisted=True)
+            Siae.objects.filter(is_active=False).update(is_delisted=True)
