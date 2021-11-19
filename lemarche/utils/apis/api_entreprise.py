@@ -11,20 +11,6 @@ from django.utils.http import urlencode
 logger = logging.getLogger(__name__)
 
 
-# @dataclass
-# class Etablissement:
-#     # name: str
-#     # address_line_1: str
-#     # address_line_2: str
-#     # post_code: str
-#     # city: str
-#     # department: str
-#     is_head_office: bool
-#     is_closed: bool
-#     employees: str
-#     date_constitution: datetime
-
-
 def etablissement_get_or_error(siret, reason="Inscription au marché de l'inclusion"):
     """
     Obtain company data from entreprises.api.gouv.fr
@@ -81,10 +67,14 @@ def etablissement_get_or_error(siret, reason="Inscription au marché de l'inclus
         # post_code=address["code_postal"],
         # city=address["localite"],
         # department=department_from_postcode(address["code_postal"]),
+        "naf": data["etablissement"]["naf"],
         "is_closed": data["etablissement"]["etat_administratif"]["value"] == "F",
         "is_head_office": data["etablissement"].get("siege_social", False),
         "employees": data["etablissement"]["tranche_effectif_salarie_etablissement"]["intitule"],
-        "date_constitution": datetime.fromtimestamp(data["etablissement"]["date_creation_etablissement"]),
+        "employees_date_reference": data["etablissement"]["tranche_effectif_salarie_etablissement"]["date_reference"],
+        "date_constitution": datetime.fromtimestamp(
+            data["etablissement"]["date_creation_etablissement"]
+        ),  # 1108594800
     }
 
     return etablissement, None
@@ -94,6 +84,8 @@ def exercice_get_or_error(siret, reason="Inscription au marché de l'inclusion")
     """
     Obtain company data from entreprises.api.gouv.fr
     documentation: https://entreprise.api.gouv.fr/catalogue/#a-exercices
+
+    Often returns errors: 404, 422, 502
     """
     data = None
     exercice = None
@@ -131,7 +123,6 @@ def exercice_get_or_error(siret, reason="Inscription au marché de l'inclusion")
         error = "Le format de la réponse API Entreprise est non valide."
         return None, error
 
-    print(data)
     exercice = data["exercices"][0]
 
     return exercice, None

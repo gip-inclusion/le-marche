@@ -126,7 +126,7 @@ class Siae(models.Model):
         "api_entreprise_ca",
         "api_entreprise_last_sync_date",
     ]
-    READONLY_FIELDS = READONLY_FIELDS_FROM_C1 + READONLY_FIELDS_FROM_QPV + READONLY_FIELDS_FROM_API_ENTREPRISE
+    READONLY_FIELDS = []  # READONLY_FIELDS_FROM_C1 + READONLY_FIELDS_FROM_QPV + READONLY_FIELDS_FROM_API_ENTREPRISE
 
     KIND_EI = "EI"
     KIND_AI = "AI"
@@ -298,9 +298,18 @@ class Siae(models.Model):
     api_entreprise_employees = models.CharField(
         verbose_name="Nombre de salariés (API Entreprise)", max_length=255, blank=True
     )
+    api_entreprise_employees_year_reference = models.CharField(
+        verbose_name="Année de référence du nombre de salariés (API Entreprise)", max_length=4, blank=True
+    )
+    api_entreprise_etablissement_last_sync_date = models.DateTimeField(
+        "Date de dernière synchronisation (API Entreprise /etablissements)", blank=True, null=True
+    )
     api_entreprise_ca = models.IntegerField(verbose_name="Chiffre d'affaire (API Entreprise)", blank=True, null=True)
-    api_entreprise_last_sync_date = models.DateTimeField(
-        "Date de dernière synchronisation (API Entreprise)", blank=True, null=True
+    api_entreprise_ca_date_fin_exercice = models.DateField(
+        verbose_name="Date de fin de l'exercice (API Entreprise)", blank=True, null=True
+    )
+    api_entreprise_exercice_last_sync_date = models.DateTimeField(
+        "Date de dernière synchronisation (API Entreprise /exercices)", blank=True, null=True
     )
 
     c1_id = models.IntegerField(blank=True, null=True)

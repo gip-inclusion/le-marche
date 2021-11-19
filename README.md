@@ -28,7 +28,7 @@ $ source ./env.local.sh
 
 Prérequis :
 - packets python à installer : poetry, python3.9, python3.9-dev, default-libmysqlclient-dev
-- initialiser une db Postgres pour itou-marche-api (ne pas oublier l'extension PostGIS)
+- initialiser une db Postgres (ne pas oublier l'extension PostGIS)
 
 Installation et exécution :
 
