@@ -94,7 +94,7 @@
                 <!-- profile-detail sidebar -->
                 <aside id="sidebar">
                     <div class="profile mb-4">
-                        {% if not siae.contact_website and not siae.contact_email and not siae.contact_phone and not siae.user.count %}
+                        {% if not siae.contact_website and not siae.contact_email and not siae.contact_phone and not siae.user_count %}
                         <!-- <div class="row">
                             <div class="col-12 mb-3">
                                 <a id="contact" class="btn btn-outline-primary btn-block" href="https://itou.typeform.com/to/nxG0HlYx#data={{ siae.id }}" target="_blank" rel="nofollow noopener">Être recontacté</a>
@@ -102,7 +102,7 @@
                         </div> -->
                         {% endif %}
                         <div class="profile_capsule">
-                            {% if siae.contact_website or siae.contact_email or siae.contact_phone or siae.users.count %}
+                            {% if siae.contact_website or siae.contact_email or siae.contact_phone or siae.user_count %}
                             <div class="map_coordonnees">
                                 <button id="show_data" class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-3" type="button" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
                                     <span>Afficher les coordonnées</span>
@@ -129,7 +129,7 @@
                                                 <span>{{ siae.contact_phone }}</span>
                                             </li>
                                         {% endif %}
-                                        {% if siae.users.count %}
+                                        {% if siae.user_count %}
                                             {% if siae.contact_short_name %}
                                                 <li>
                                                     <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" alt="" /></span>
@@ -181,25 +181,25 @@
                             <div class="il-r">
                                 <h3 class="h3 mb-1 mt-1">Secteurs d'activité</h3>
                                 <ul>
-                                    {% if siae.kind == 'ETTI' and siae.sectors.count > 3 %}
+                                    {% if siae.kind == 'ETTI' and siae.sector_count > 3 %}
                                         <li>Multisectoriel</li>
-                                    {% elif siae.sectors.count %}
+                                    {% elif siae.sector_count %}
                                         {% for sector in siae.sectors.all %}
                                             {% if forloop.counter0 < 7 %}
                                                 <li>{{ sector.name }} {% if sector.name == 'Autre' %}<small>({{ sector.group.name }})</small>{% endif %}</li>
                                             {% endif %}
                                         {% endfor %}
-                                        {% if siae.sectors.count > 6 %}
+                                        {% if siae.sector_count > 6 %}
                                             <li>…</li>
                                         {% endif %}
                                     {% endif %}
                                 </ul>
-                                {% if not siae.sectors.count %}
+                                {% if not siae.sector_count %}
                                     <p>Non renseigné</p>
                                 {% endif %}
                             </div>
                         </div>
-                        {% if siae.client_references.count %}
+                        {% if siae.client_reference_count %}
                         <div class="col-sm-6 img-left mb-3">
                             <div class="il-l">
                                 <img src="{% static 'itou/images/ico-bicro-marche-ref-clients.svg' %}" alt="" height="32" />
@@ -216,7 +216,7 @@
                         {% endif %}
                     </div>
                     <!-- Third row : Description -->
-                    {% if siae.users.count %}
+                    {% if siae.user_count %}
                     <div class="row">
                         <div class="col-sm-12 img-left mb-3">
                             <div class="il-l">
@@ -241,7 +241,7 @@
                     </div>
                     {% endif %}
                     <!-- Fourth Row : Prestations -->
-                    {% if siae.offers.count %}
+                    {% if siae.offer_count %}
                     <div class="row">
                         <div class="col-sm-12 img-left mb-3">
                             <div class="il-l">
@@ -251,7 +251,7 @@
                                 <h3 class="h3 mb-1 mt-1">Les prestations proposées</h3>
                                 <div class="row">
                                 {% for offer in siae.offers.all %}
-                                    <article class="prests-post col-12 {% if siae.offers.count > 1 %}col-lg-6{% endif %} mt-2">
+                                    <article class="prests-post col-12 {% if siae.offer_count > 1 %}col-lg-6{% endif %} mt-2">
                                         <img class="cell_icon" src="{% static 'img/prof_dot.png' %}" alt="" />
                                         <h4>{{ offer.name }}</h4>
                                         <div>
@@ -265,9 +265,9 @@
                     </div>
                     {% endif %}
                     <!-- Fifth Row : Réseaux, Labels -->
-                    {% if siae.networks.count or siae.labels.count %}
+                    {% if siae.network_count or siae.label_count %}
                     <div class="row">
-                        {% if siae.networks.count %}
+                        {% if siae.network_count %}
                             <div class="col-12 col-md-6 img-left mb-3">
                                 <div class="il-l">
                                     <img src="{% static 'itou/images/ico-bicro-reseaux.svg' %}" alt="" height="32" />
@@ -282,7 +282,7 @@
                                 </div>
                             </div>
                         {% endif %}
-                        {% if siae.labels.count %}
+                        {% if siae.label_count %}
                             <div class="col-12 col-md-6 img-left mb-3">
                                 <div class="il-l">
                                     <img src="{% static 'itou/images/ico-bicro-labels.svg' %}" alt="" height="32" />

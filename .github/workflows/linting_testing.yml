@@ -21,7 +21,7 @@ jobs:
       POSTGRESQL_ADDON_PASSWORD: postgres
       CELLAR_ADDON_KEY_ID: TheMeaningOfLife
       CELLAR_ADDON_KEY_SECRET: "42"
-      CELLAR_ADDON_HOST: domain.com
+      CELLAR_ADDON_HOST: example.com
 
     services:
       postgres:
