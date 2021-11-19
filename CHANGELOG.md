@@ -28,9 +28,11 @@ Ressources :
     - Afficher le nom du groupe lorsque le secteur est "Autre"
     - Reduction des espacements et nouvelle "card" sur la page de résultats
     - Rendre les ESAT visibles
+    - Renommé "Conventionné avec la Direccte" par "Conventionné par la DREETS"
 - Espace utilisateur
     - Réparé le formulaire de modification de sa structure (lorsqu'un champ readonly était manquant ; sur les références clients ; sur certains départements & régions mal importés)
     - Afficher une petite carte à coté des de l'adresse de la structure (formulaire de modification)
+    - Afficher en lecture seule les données d'API Entreprise (formulaire de modification)
 - Inscription / Connexion
     - Enlevé les liens vers les webinaires dans l'email post-inscription
     - Garder l'utilisateur connecté juste après son inscription
@@ -39,6 +41,8 @@ Ressources :
 - API
     - Renvoyer le champ "id" des structures
     - Amélioré la documentation concernant la demande de token
+- Tech
+    - Eviter les valeurs "null" sur les champs texte (base de donnée)
 
 ## [1.1] - 2021-11-05
 
