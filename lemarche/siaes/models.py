@@ -211,17 +211,15 @@ class Siae(models.Model):
 
     name = models.CharField(verbose_name="Raison sociale", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
-    brand = models.CharField(verbose_name="Enseigne", max_length=255, blank=True, null=True)
+    brand = models.CharField(verbose_name="Enseigne", max_length=255, blank=True)
     kind = models.CharField(
         verbose_name="Type de structure", max_length=6, choices=KIND_CHOICES_WITH_EXTRA, default=KIND_EI
     )
     description = models.TextField(verbose_name="Description", blank=True)
     siret = models.CharField(verbose_name="Siret", validators=[validate_siret], max_length=14, db_index=True)
     siret_is_valid = models.BooleanField(verbose_name="Siret Valide", default=False)
-    naf = models.CharField(verbose_name="Naf", validators=[validate_naf], max_length=5, blank=True, null=True)
-    nature = models.CharField(
-        verbose_name="Établissement", max_length=20, choices=NATURE_CHOICES, blank=True, null=True
-    )
+    naf = models.CharField(verbose_name="Naf", validators=[validate_naf], max_length=5, blank=True)
+    nature = models.CharField(verbose_name="Établissement", max_length=20, choices=NATURE_CHOICES, blank=True)
     presta_type = ArrayField(
         verbose_name="Type de prestation",
         base_field=models.CharField(max_length=20, choices=PRESTA_CHOICES),
@@ -229,42 +227,38 @@ class Siae(models.Model):
         null=True,
     )
 
-    email = models.EmailField(verbose_name="E-mail", blank=True, null=True)
-    phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True, null=True)
-    website = models.URLField(verbose_name="Site internet", blank=True, null=True)
+    website = models.URLField(verbose_name="Site internet", blank=True)
+    email = models.EmailField(verbose_name="E-mail", blank=True)
+    phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True)
 
     address = models.TextField(verbose_name="Adresse")
-    city = models.CharField(verbose_name="Ville", max_length=255, blank=True, null=True)
+    city = models.CharField(verbose_name="Ville", max_length=255, blank=True)
     # department is a code
-    department = models.CharField(
-        verbose_name="Département", max_length=255, choices=DEPARTMENT_CHOICES, blank=True, null=True
-    )
+    department = models.CharField(verbose_name="Département", max_length=255, choices=DEPARTMENT_CHOICES, blank=True)
     # region is a name
-    region = models.CharField(verbose_name="Région", max_length=255, choices=REGION_CHOICES, blank=True, null=True)
+    region = models.CharField(verbose_name="Région", max_length=255, choices=REGION_CHOICES, blank=True)
     # post_code or insee_code ?
-    post_code = models.CharField(
-        verbose_name="Code Postal", validators=[validate_post_code], max_length=5, blank=True, null=True
-    )
+    post_code = models.CharField(verbose_name="Code Postal", validators=[validate_post_code], max_length=5, blank=True)
     # Latitude and longitude coordinates.
     # https://docs.djangoproject.com/en/2.2/ref/contrib/gis/model-api/#pointfield
     coords = gis_models.PointField(geography=True, blank=True, null=True)
     geo_range = models.CharField(
-        verbose_name="Périmètre d'intervention", max_length=20, choices=GEO_RANGE_CHOICES, blank=True, null=True
+        verbose_name="Périmètre d'intervention", max_length=20, choices=GEO_RANGE_CHOICES, blank=True
     )
     geo_range_custom_distance = models.IntegerField(
         verbose_name="Distance en kilomètres (périmètre d'intervention)", blank=True, null=True
     )
 
-    contact_first_name = models.CharField(verbose_name="Prénom", max_length=150, blank=True, null=True)
-    contact_last_name = models.CharField(verbose_name="Nom", max_length=150, blank=True, null=True)
+    contact_first_name = models.CharField(verbose_name="Prénom", max_length=150, blank=True)
+    contact_last_name = models.CharField(verbose_name="Nom", max_length=150, blank=True)
     contact_website = models.URLField(
-        verbose_name="Site internet", help_text="Doit commencer par http:// ou https://", blank=True, null=True
+        verbose_name="Site internet", help_text="Doit commencer par http:// ou https://", blank=True
     )
-    contact_email = models.EmailField(verbose_name="E-mail", blank=True, null=True)
-    contact_phone = models.CharField(verbose_name="Téléphone", max_length=150, blank=True, null=True)
+    contact_email = models.EmailField(verbose_name="E-mail", blank=True)
+    contact_phone = models.CharField(verbose_name="Téléphone", max_length=150, blank=True)
 
-    image_name = models.CharField(verbose_name="Nom de l'image", max_length=255, blank=True, null=True)
-    logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True, null=True)
+    image_name = models.CharField(verbose_name="Nom de l'image", max_length=255, blank=True)
+    logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True)
 
     is_consortium = models.BooleanField(verbose_name="Consortium", default=False)
     is_cocontracting = models.BooleanField(verbose_name="Co-traitance", default=False)
@@ -273,8 +267,8 @@ class Siae(models.Model):
     is_delisted = models.BooleanField(verbose_name="Masquée", default=False)
     is_first_page = models.BooleanField(verbose_name="A la une", default=False)
 
-    admin_name = models.CharField(max_length=255, blank=True, null=True)
-    admin_email = models.EmailField(max_length=255, blank=True, null=True)
+    admin_name = models.CharField(max_length=255, blank=True)
+    admin_email = models.EmailField(max_length=255, blank=True)
 
     users = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
@@ -290,15 +284,13 @@ class Siae(models.Model):
     # ForeignKeys: offers, client_references, labels
 
     is_qpv = models.BooleanField(verbose_name="Zone QPV", blank=False, null=False, default=False)
-    qpv_name = models.CharField(verbose_name="Nom de la zone QPV", max_length=255, blank=True, null=True)
-    qpv_code = models.CharField(verbose_name="Code de la zone QPV", max_length=16, blank=True, null=True)
+    qpv_name = models.CharField(verbose_name="Nom de la zone QPV", max_length=255, blank=True)
+    qpv_code = models.CharField(verbose_name="Code de la zone QPV", max_length=16, blank=True)
 
     ig_date_constitution = models.DateTimeField(
         verbose_name="Date de création (API Entreprise)", blank=True, null=True
     )
-    ig_employees = models.CharField(
-        verbose_name="Nombre de salariés (API Entreprise)", max_length=255, blank=True, null=True
-    )
+    ig_employees = models.CharField(verbose_name="Nombre de salariés (API Entreprise)", max_length=255, blank=True)
     ig_ca = models.IntegerField(verbose_name="Chiffre d'affaire (API Entreprise)", blank=True, null=True)
 
     c1_id = models.IntegerField(blank=True, null=True)
@@ -306,7 +298,7 @@ class Siae(models.Model):
     last_sync_date = models.DateTimeField(blank=True, null=True)
     sync_skip = models.BooleanField(blank=False, null=False, default=False)
 
-    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True, null=True)
+    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True)
     import_raw_object = models.JSONField(verbose_name="Donnée JSON brute", editable=False, null=True)
 
     # stats
@@ -490,7 +482,7 @@ class SiaeOffer(models.Model):
     description = models.TextField(verbose_name="Description", blank=True)
 
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", related_name="offers", on_delete=models.CASCADE)
-    source = models.CharField(verbose_name="Source", max_length=20, blank=True, null=True)  # "listing_import"
+    source = models.CharField(verbose_name="Source", max_length=20, blank=True)  # "listing_import"
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
@@ -504,10 +496,10 @@ class SiaeOffer(models.Model):
 
 
 class SiaeClientReference(models.Model):
-    name = models.CharField(verbose_name="Nom", max_length=255, blank=True, null=True)
+    name = models.CharField(verbose_name="Nom", max_length=255, blank=True)
     description = models.TextField(verbose_name="Description", blank=True)
     image_name = models.CharField(verbose_name="Nom de l'image", max_length=255)
-    logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True, null=True)
+    logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True)
     order = models.PositiveIntegerField(verbose_name="Ordre", blank=False, default=1)
 
     siae = models.ForeignKey(
