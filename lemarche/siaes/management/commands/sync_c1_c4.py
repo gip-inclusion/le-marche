@@ -25,7 +25,7 @@ def map_siae_presta_type(siae_kind):
         if siae_kind in ["ETTI", "AI"]:
             return [Siae.PRESTA_DISP]
         return [Siae.PRESTA_PREST, Siae.PRESTA_BUILD]
-    return None
+    return []
 
 
 def map_siae_nature(siae_source):
@@ -34,7 +34,34 @@ def map_siae_nature(siae_source):
             return Siae.NATURE_HEAD_OFFICE
         if siae_source == "USER_CREATED":
             return Siae.NATURE_ANTENNA
-    return None
+    return ""
+
+
+def set_is_active(siae):
+    """
+    C1 field
+    Most Siae have a convention (AI, ACI, EI, ETTI, EITI)
+    We consider the Siae as active if "having a convention" + "this convention is active".
+
+    Some Siae do not have a convention: e.g. GEIQ, EA, EATT
+    If the Siae does not have a convention, we consider the Siae as active
+    """
+    # Siae with convention
+    if siae["kind"] in ["AI", "ACI", "EI", "ETTI", "EITI"]:
+        if ("is_active" in siae) and siae["is_active"]:
+            return True
+        return False
+    # Siae without convention
+    return True
+
+
+def set_is_delisted(siae):
+    """
+    C4 field
+    Helps to track the number of Siae who were set from active to inactive during a sync.
+    """
+    is_active = set_is_active(siae)
+    return not is_active
 
 
 class Command(BaseCommand):
@@ -150,8 +177,11 @@ class Command(BaseCommand):
                     "region": DEPARTMENT_TO_REGION.get(c1_siae["department"], None),
                     "presta_type": map_siae_presta_type(c1_siae["kind"]),
                     "nature": map_siae_nature(c1_siae["source"]),
-                    # "is_delisted": c1_siae["is_active"] != False,
+                    "is_active": set_is_active(c1_siae),
+                    "is_delisted": set_is_delisted(c1_siae),
                     "siret_is_valid": siret.is_valid(c1_siae["siret"]),
+                    "admin_name": c1_siae["admin_name"] or "",
+                    "admin_email": c1_siae["admin_email"] or "",
                 }
             )
 
@@ -162,14 +192,18 @@ class Command(BaseCommand):
         """
         Loop on c1_list and figure out if each siae needs to be created OR already exists (update)
         """
+        progress = 0
         for c1_siae in c1_list:
+            progress += 1
+            if (progress % 100) == 0:
+                print(f"{progress}...")
             # if force_siret and c1['siret'] != force_siret:
             #     continue
             try:
                 c4_siae = Siae.objects.get(c1_id=c1_siae["id"])
                 self.c4_update_siae(c1_siae, c4_siae, dry_run)
             except Siae.DoesNotExist:
-                self.c4_create_siae(c1_siae)
+                self.c4_create_siae(c1_siae, dry_run)
 
     def c4_create_siae(self, c1_siae, dry_run):
         self.stdout.write("Creating Siae...")
@@ -206,24 +240,28 @@ class Command(BaseCommand):
         # create object
         if not dry_run:
             siae = Siae.objects.create(**c1_siae)
-            self.stdout.write(f"New Siae created / {siae.id} / {siae.siret}")
+            self.stdout.write(f"New Siae created / {siae.id} / {siae.name} / {siae.siret}")
 
     def c4_update_siae(self, c1_siae, c4_siae, dry_run):
-        self.stdout.write("Updating Siae...")
+        # self.stdout.write("Updating Siae...")
 
         if dry_run:
             return
 
+        # TODO: more update fields?
+
         # other fields
-        c1_siae["is_delisted"] = True if not c1_siae["is_active"] else False
+        # c1_siae["is_delisted"] = True if not c1_siae["is_active"] else False
         c1_siae["c1_last_sync_date"] = timezone.now()
 
         # keep only certain fields for update
-        [c1_siae.pop(key) for key in c1_siae if key not in UPDATE_FIELDS]
+        c1_siae_filtered = dict()
+        for key in UPDATE_FIELDS:
+            c1_siae_filtered[key] = c1_siae[key]
 
         if not dry_run:
-            Siae.objects.filter(c1_id=c4_siae.c1_id).update(**c1_siae)  # avoid updated_at change
-            self.stdout.write(f"Siae updated / {c4_siae.id} / {c4_siae.siret}")
+            Siae.objects.filter(c1_id=c4_siae.c1_id).update(**c1_siae_filtered)  # avoid updated_at change
+            # self.stdout.write(f"Siae updated / {c4_siae.id} / {c4_siae.siret}")
 
     def c4_delist_old_siae(self, dry_run):
         """
