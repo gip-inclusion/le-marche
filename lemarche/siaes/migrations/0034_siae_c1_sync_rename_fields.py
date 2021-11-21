@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("siaes", "0032_avoid_null_on_charfields"),
+        ("siaes", "0033_alter_siae_contact_email"),
     ]
 
     operations = [
