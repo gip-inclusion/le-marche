@@ -126,6 +126,8 @@
                     <legend class="h4">Données tierces</legend>
                     {% bootstrap_field form.api_entreprise_date_constitution %} <!-- |date:"d/m/Y" -->
                     {% bootstrap_field form.api_entreprise_employees %}
+                    {% bootstrap_field form.api_entreprise_ca %}
+                    {% bootstrap_field form.api_entreprise_ca_date_fin_exercice %}
                 </fieldset>
             </div>
         </div>
@@ -135,8 +137,11 @@
                     <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
                     <strong>D'où viennent ces données ?</strong>
                 </p>
-                <p class="mb-0">
+                <p class="mb-1">
                     Elles ont été récupérées en requêtant <a href="https://entreprise.api.gouv.fr/" target="_blank" rel="noopener">l'API Entreprise</a> avec votre SIRET.
+                </p>
+                <p class="mb-0">
+                    Date de dernière mise à jour : <strong>{{ siae.api_entreprise_etablissement_last_sync_date|date:"d/m/Y" }}</strong>
                 </p>
             </div>
             {% if not siae.department or not siae.region or not siae.coords %}

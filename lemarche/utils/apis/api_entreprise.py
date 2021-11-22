@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 API_ENTREPRISE_REASON = "Mise à jour donnéés Marché de la plateforme de l'Inclusion"
+TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S"  # "2016-12-31T00:00:00+01:00"  # timezone not managed
 
 
 def etablissement_get_or_error(siret, reason="Inscription au marché de l'inclusion"):
@@ -165,7 +166,9 @@ def siae_update_exercice(siae):
         if exercice["ca"]:
             update_data["api_entreprise_ca"] = exercice["ca"]
         if exercice["date_fin_exercice"]:
-            update_data["api_entreprise_ca_date_fin_exercice"] = exercice["date_fin_exercice"]
+            update_data["api_entreprise_ca_date_fin_exercice"] = datetime.strptime(
+                exercice["date_fin_exercice"][:-6], TIMESTAMP_FORMAT
+            )
         update_data["api_entreprise_exercice_last_sync_date"] = timezone.now()
         Siae.objects.filter(id=siae.id).update(**update_data)
         return 1

@@ -123,10 +123,13 @@ class Siae(models.Model):
     READONLY_FIELDS_FROM_API_ENTREPRISE = [
         "api_entreprise_date_constitution",
         "api_entreprise_employees",
+        "api_entreprise_employees_year_reference",
+        "api_entreprise_etablissement_last_sync_date",
         "api_entreprise_ca",
-        "api_entreprise_last_sync_date",
+        "api_entreprise_ca_date_fin_exercice",
+        "api_entreprise_exercice_last_sync_date",
     ]
-    READONLY_FIELDS = []  # READONLY_FIELDS_FROM_C1 + READONLY_FIELDS_FROM_QPV + READONLY_FIELDS_FROM_API_ENTREPRISE
+    READONLY_FIELDS = READONLY_FIELDS_FROM_C1 + READONLY_FIELDS_FROM_QPV + READONLY_FIELDS_FROM_API_ENTREPRISE
 
     KIND_EI = "EI"
     KIND_AI = "AI"

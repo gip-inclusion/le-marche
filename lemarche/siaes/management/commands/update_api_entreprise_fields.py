@@ -21,7 +21,7 @@ class Command(BaseCommand):
         self.stdout.write("-" * 80)
         self.stdout.write("Populating API Entreprise fields...")
 
-        siae_list = list(Siae.objects.all()[:10])
+        siae_list = list(Siae.objects.all()[:100])
 
         success_count = {"etablissement": 0, "exercice": 0}
 
