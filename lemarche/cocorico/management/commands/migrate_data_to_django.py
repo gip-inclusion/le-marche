@@ -665,4 +665,6 @@ class Command(BaseCommand):
 
             siae.save()
 
+        # TODO: init contact_website, contact_email & contact_phone for Siae without users as well
+
         print(f"Updated {Siae.objects.has_user().count()} SIAE !")
