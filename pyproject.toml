@@ -30,6 +30,7 @@ boto3 = "^1.18.61"
 django-fieldsets-with-inlines = "^0.6"
 crawlerdetect = "^0.1.4"
 selenium = "^4.0.0"
+python-stdnum = "^1.17"
 
 [tool.poetry.dev-dependencies]
 isort = "^5.8.0"

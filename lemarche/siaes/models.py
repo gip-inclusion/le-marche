@@ -116,7 +116,7 @@ class Siae(models.Model):
         "siret_is_valid",
         "c1_id",
         "c4_id_old",
-        "last_sync_date",
+        "c1_last_sync_date",
         "source",
     ]
     READONLY_FIELDS_FROM_QPV = ["is_qpv", "qpv_name", "qpv_code"]
@@ -295,8 +295,8 @@ class Siae(models.Model):
 
     c1_id = models.IntegerField(blank=True, null=True)
     c4_id_old = models.IntegerField(blank=True, null=True)
-    last_sync_date = models.DateTimeField(blank=True, null=True)
-    sync_skip = models.BooleanField(blank=False, null=False, default=False)
+    c1_last_sync_date = models.DateTimeField(blank=True, null=True)
+    c1_sync_skip = models.BooleanField(blank=False, null=False, default=False)
 
     source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True)
     import_raw_object = models.JSONField(verbose_name="Donnée JSON brute", editable=False, null=True)
