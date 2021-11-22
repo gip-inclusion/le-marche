@@ -15,6 +15,25 @@ from lemarche.utils.data import rename_dict_key
 
 
 UPDATE_FIELDS = [
+    # "name",  # what happens to the slug if the name is updated?
+    # "brand",
+    # "kind"
+    "siret",
+    "siret_is_valid",
+    "naf",
+    "phone",
+    "email",
+    "website",
+    "address",
+    "post_code",
+    "city",
+    "department",
+    "region",
+    "coords",
+    "source",
+    "admin_name",
+    "admin_email",
+    "is_active",
     "is_delisted",
     "c1_last_sync_date",
 ]
@@ -171,19 +190,47 @@ class Command(BaseCommand):
         # clean fields
         c1_list_cleaned = list()
         for c1_siae in c1_list_temp:
-            c1_list_cleaned.append(
-                {
-                    **c1_siae,
-                    "region": DEPARTMENT_TO_REGION.get(c1_siae["department"], None),
-                    "presta_type": map_siae_presta_type(c1_siae["kind"]),
-                    "nature": map_siae_nature(c1_siae["source"]),
-                    "is_active": set_is_active(c1_siae),
-                    "is_delisted": set_is_delisted(c1_siae),
-                    "siret_is_valid": siret.is_valid(c1_siae["siret"]),
-                    "admin_name": c1_siae["admin_name"] or "",
-                    "admin_email": c1_siae["admin_email"] or "",
-                }
-            )
+            c1_siae_cleaned = {
+                **c1_siae,
+                "siret_is_valid": siret.is_valid(c1_siae["siret"]),
+                "presta_type": map_siae_presta_type(c1_siae["kind"]),
+                "nature": map_siae_nature(c1_siae["source"]),
+                "phone": re.sub("[^0-9]", "", c1_siae["phone"]),
+                "email": c1_siae["email"] or "",
+                "website": c1_siae["website"] or "",
+                # "address"
+                "post_code": c1_siae["post_code"],
+                "city": c1_siae["city"],
+                "department": c1_siae["department"],
+                "region": DEPARTMENT_TO_REGION.get(c1_siae["department"], ""),
+                # "coords"
+                "admin_name": c1_siae["admin_name"] or "",
+                "admin_email": c1_siae["admin_email"] or "",
+                "source": c1_siae["source"],
+                "is_active": set_is_active(c1_siae),
+                "is_delisted": set_is_delisted(c1_siae),
+                "c1_last_sync_date": timezone.now(),
+            }
+
+            # set coords from latitude & longitude
+            c1_siae_cleaned["address"] = c1_siae_cleaned["address_line_1"]
+            if c1_siae_cleaned["address_line_2"]:
+                c1_siae_cleaned["address"] += c1_siae_cleaned["address_line_2"]
+            del c1_siae_cleaned["address_line_1"]
+            del c1_siae_cleaned["address_line_2"]
+
+            # set coords from latitude & longitude
+            if "latitude" in c1_siae_cleaned and "longitude" in c1_siae_cleaned:
+                if c1_siae_cleaned["latitude"] and c1_siae_cleaned["longitude"]:
+                    coords = {
+                        "type": "Point",
+                        "coordinates": [float(c1_siae["longitude"]), float(c1_siae_cleaned["latitude"])],
+                    }
+                    c1_siae_cleaned["coords"] = GEOSGeometry(f"{coords}")  # Feed `GEOSGeometry` with GeoJSON.
+                del c1_siae_cleaned["latitude"]
+                del c1_siae_cleaned["longitude"]
+
+            c1_list_cleaned.append(c1_siae_cleaned)
 
         self.stdout.write(f"Found {len(c1_list_cleaned)} Siae in C1")
         return c1_list_cleaned
@@ -205,28 +252,19 @@ class Command(BaseCommand):
             except Siae.DoesNotExist:
                 self.c4_create_siae(c1_siae, dry_run)
 
+        self.c4_delist_old_siae(dry_run)
+
     def c4_create_siae(self, c1_siae, dry_run):
+        """
+        Here we create a new Siae with C1 data
+        """
         self.stdout.write("Creating Siae...")
 
         # clean fields
         rename_dict_key(c1_siae, "id", "c1_id")
+
+        # init fields
         c1_siae["description"] = ""
-        c1_siae["phone"] = re.sub("[^0-9]", "", c1_siae["phone"])
-
-        # create address
-        c1_siae["address"] = c1_siae["address_line_1"] + " " + c1_siae["address_line_2"]
-        del c1_siae["address_line_1"]
-        del c1_siae["address_line_2"]
-
-        # create coords from latitude & longitude
-        if "latitude" in c1_siae and "longitude" in c1_siae:
-            if c1_siae["latitude"] and c1_siae["longitude"]:
-                coords = {"type": "Point", "coordinates": [float(c1_siae["longitude"]), float(c1_siae["latitude"])]}
-                c1_siae["coords"] = GEOSGeometry(f"{coords}")  # Feed `GEOSGeometry` with GeoJSON.
-            del c1_siae["latitude"]
-            del c1_siae["longitude"]
-
-        # init contact fields
         c1_siae["contact_website"] = c1_siae["website"]
         c1_siae["contact_email"] = c1_siae["email"]
         c1_siae["contact_phone"] = c1_siae["phone"]
@@ -235,7 +273,6 @@ class Command(BaseCommand):
 
         # other fields
         c1_siae["is_delisted"] = False
-        c1_siae["c1_last_sync_date"] = timezone.now()
 
         # create object
         if not dry_run:
@@ -243,21 +280,22 @@ class Command(BaseCommand):
             self.stdout.write(f"New Siae created / {siae.id} / {siae.name} / {siae.siret}")
 
     def c4_update_siae(self, c1_siae, c4_siae, dry_run):
+        """
+        Here we update an existing Siae with a subset of C1 data
+        """
         # self.stdout.write("Updating Siae...")
 
         if dry_run:
             return
 
-        # TODO: more update fields?
-
         # other fields
         # c1_siae["is_delisted"] = True if not c1_siae["is_active"] else False
-        c1_siae["c1_last_sync_date"] = timezone.now()
 
         # keep only certain fields for update
         c1_siae_filtered = dict()
         for key in UPDATE_FIELDS:
-            c1_siae_filtered[key] = c1_siae[key]
+            if key in c1_siae:
+                c1_siae_filtered[key] = c1_siae[key]
 
         if not dry_run:
             Siae.objects.filter(c1_id=c4_siae.c1_id).update(**c1_siae_filtered)  # avoid updated_at change
