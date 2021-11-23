@@ -195,15 +195,15 @@ class Command(BaseCommand):
         if etablissement:
             esat["nature"] = Siae.NATURE_HEAD_OFFICE if etablissement["is_head_office"] else Siae.NATURE_ANTENNA
             # esat["is_active"] = False if not etablissement["is_closed"] else True
-            esat["ig_employees"] = etablissement["employees"]
+            esat["api_entreprise_employees"] = etablissement["employees"]
             if etablissement["date_constitution"]:
-                esat["ig_date_constitution"] = timezone.make_aware(etablissement["date_constitution"])
+                esat["api_entreprise_date_constitution"] = timezone.make_aware(etablissement["date_constitution"])
         # else:
         #     print(error)
         # TODO: if 404, siret_is_valid = False
         # exercice, error = exercice_get_or_error(esat["siret"], reason="Mise à jour donnéés Marché de la plateforme de l'Inclusion")  # noqa
         # if exercice:
-        #     esat["ig_ca"] = exercice["ca"]
+        #     esat["api_entreprise_ca"] = exercice["ca"]
         # # else:
         # #     print(error)
 
