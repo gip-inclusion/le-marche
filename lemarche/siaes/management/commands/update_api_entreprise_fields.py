@@ -10,20 +10,32 @@ class Command(BaseCommand):
     """
     Usage: poetry run python manage.py update_api_entreprise_fields
     Usage: poetry run python manage.py update_api_entreprise_fields --scope etablissement
+    Usage: poetry run python manage.py update_api_entreprise_fields --siret 01234567891011
+    Usage: poetry run python manage.py update_api_entreprise_fields --limit 100
     """
 
     def add_arguments(self, parser):
         parser.add_argument(
             "--scope", type=str, default="all", help="Options are 'etablissement', 'exercice', or 'all'"
         )
+        parser.add_argument("--siret", type=str, default=None, help="Lancer sur un Siret spécifique")
+        parser.add_argument("--limit", type=int, default=None, help="Limiter le nombre de structures à processer")
 
     def handle(self, *args, **options):
         self.stdout.write("-" * 80)
         self.stdout.write("Populating API Entreprise fields...")
 
-        siae_list = list(Siae.objects.all()[:100])
+        if options["siret"]:
+            siae_list = list(Siae.objects.filter(siret=options["siret"]))
+        else:
+            siae_list = list(Siae.objects.all())
+
+        if options["limit"]:
+            siae_list = siae_list[: options["limit"]]
 
         success_count = {"etablissement": 0, "exercice": 0}
+
+        self.stdout.write(f"Found {len(siae_list)} Siae")
 
         for siae in siae_list:
             self.stdout.write("-" * 80)

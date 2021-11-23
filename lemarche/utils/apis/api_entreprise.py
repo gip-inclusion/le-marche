@@ -22,6 +22,12 @@ def etablissement_get_or_error(siret, reason="Inscription au marché de l'inclus
     """
     Obtain company data from entreprises.api.gouv.fr
     documentation: https://doc.entreprise.api.gouv.fr/?json#etablissements-v2
+
+    Format info:
+    - "date_mise_a_jour": 1449183600
+    - "date_reference": "2014"
+    - "date_creation_etablissement": 1108594800
+    - "date_fermeture": 1315173600
     """
     data = None
     etablissement = None
@@ -79,9 +85,7 @@ def etablissement_get_or_error(siret, reason="Inscription au marché de l'inclus
         "is_head_office": data["etablissement"].get("siege_social", False),
         "employees": data["etablissement"]["tranche_effectif_salarie_etablissement"]["intitule"],
         "employees_date_reference": data["etablissement"]["tranche_effectif_salarie_etablissement"]["date_reference"],
-        "date_constitution": datetime.fromtimestamp(
-            data["etablissement"]["date_creation_etablissement"]
-        ),  # 1108594800
+        "date_constitution": datetime.fromtimestamp(data["etablissement"]["date_creation_etablissement"]),
     }
 
     return etablissement, None
