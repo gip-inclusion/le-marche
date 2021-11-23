@@ -120,8 +120,16 @@ class Siae(models.Model):
         "source",
     ]
     READONLY_FIELDS_FROM_QPV = ["is_qpv", "qpv_name", "qpv_code"]
-    READONLY_FIELDS_FROM_APIENTREPRISE = ["ig_date_constitution", "ig_employees", "ig_ca"]
-    READONLY_FIELDS = READONLY_FIELDS_FROM_C1 + READONLY_FIELDS_FROM_QPV + READONLY_FIELDS_FROM_APIENTREPRISE
+    READONLY_FIELDS_FROM_API_ENTREPRISE = [
+        "api_entreprise_date_constitution",
+        "api_entreprise_employees",
+        "api_entreprise_employees_year_reference",
+        "api_entreprise_etablissement_last_sync_date",
+        "api_entreprise_ca",
+        "api_entreprise_ca_date_fin_exercice",
+        "api_entreprise_exercice_last_sync_date",
+    ]
+    READONLY_FIELDS = READONLY_FIELDS_FROM_C1 + READONLY_FIELDS_FROM_QPV + READONLY_FIELDS_FROM_API_ENTREPRISE
 
     KIND_EI = "EI"
     KIND_AI = "AI"
@@ -287,11 +295,25 @@ class Siae(models.Model):
     qpv_name = models.CharField(verbose_name="Nom de la zone QPV", max_length=255, blank=True)
     qpv_code = models.CharField(verbose_name="Code de la zone QPV", max_length=16, blank=True)
 
-    ig_date_constitution = models.DateTimeField(
+    api_entreprise_date_constitution = models.DateField(
         verbose_name="Date de création (API Entreprise)", blank=True, null=True
     )
-    ig_employees = models.CharField(verbose_name="Nombre de salariés (API Entreprise)", max_length=255, blank=True)
-    ig_ca = models.IntegerField(verbose_name="Chiffre d'affaire (API Entreprise)", blank=True, null=True)
+    api_entreprise_employees = models.CharField(
+        verbose_name="Nombre de salariés (API Entreprise)", max_length=255, blank=True
+    )
+    api_entreprise_employees_year_reference = models.CharField(
+        verbose_name="Année de référence du nombre de salariés (API Entreprise)", max_length=4, blank=True
+    )
+    api_entreprise_etablissement_last_sync_date = models.DateTimeField(
+        "Date de dernière synchronisation (API Entreprise /etablissements)", blank=True, null=True
+    )
+    api_entreprise_ca = models.IntegerField(verbose_name="Chiffre d'affaire (API Entreprise)", blank=True, null=True)
+    api_entreprise_ca_date_fin_exercice = models.DateField(
+        verbose_name="Date de fin de l'exercice (API Entreprise)", blank=True, null=True
+    )
+    api_entreprise_exercice_last_sync_date = models.DateTimeField(
+        "Date de dernière synchronisation (API Entreprise /exercices)", blank=True, null=True
+    )
 
     c1_id = models.IntegerField(blank=True, null=True)
     c4_id_old = models.IntegerField(blank=True, null=True)

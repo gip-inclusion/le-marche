@@ -9,7 +9,7 @@ Vous avez une nouvelle demande d'information via le formulaire de contact :
 - Nom : {{ form_dict.last_name|safe }}
 - Email : {{ form_dict.email }}
 - Téléphone : {{ form_dict.phone }}
-- SIRET : {{ form_dict.siret }}
+- Siret : {{ form_dict.siret }}
 
 - Sujet : {{ form_dict.subject|safe }}
 
