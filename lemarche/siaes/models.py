@@ -594,11 +594,13 @@ class SiaeLabel(models.Model):
 
 
 class SiaeImage(models.Model):
-    name = models.CharField(verbose_name="Nom", max_length=255, blank=True, null=True)
+    name = models.CharField(verbose_name="Nom", max_length=255, blank=True)
     description = models.TextField(verbose_name="Description", blank=True)
     image_name = models.CharField(verbose_name="Nom de l'image", max_length=255)
-    image_url = models.URLField(verbose_name="Lien vers l'image", max_length=500, blank=True, null=True)
+    image_url = models.URLField(verbose_name="Lien vers l'image", max_length=500, blank=True)
     order = models.PositiveIntegerField(verbose_name="Ordre", blank=False, default=1)
+
+    c4_listing_id = models.IntegerField(blank=True, null=True)
 
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", related_name="images", on_delete=models.CASCADE)
 

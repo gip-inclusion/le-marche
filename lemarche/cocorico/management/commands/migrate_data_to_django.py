@@ -546,19 +546,21 @@ class Command(BaseCommand):
         Migrate SiaeImage data
         - first get list from 'listing'
         - enrich with 'listing_translation'
-        - finally get the first image from 'listing_image'
+        - finally get all the images from 'listing_image'
+
+        User -- Listing(s) -- Image(s)
         """
         print("-" * 80)
         print("Migrating SiaeImage...")
 
         SiaeImage.objects.all().delete()
 
-        siae_image_list = list()
+        siae_listing_list = list()
 
         cur.execute("SELECT * FROM listing")
         resp = cur.fetchall()
 
-        print(f"Found {len(resp)} Siae images...")
+        print(f"Found {len(resp)} Siae listings...")
 
         for elem in resp:
             # cleanup dates
@@ -570,8 +572,9 @@ class Command(BaseCommand):
 
             # remove useless keys
             elem_thin = {key: elem[key] for key in ["listing_id", "user_id", "created_at", "updated_at"]}
+            elem_thin["images"] = list()
 
-            siae_image_list.append(elem_thin)
+            siae_listing_list.append(elem_thin)
 
         cur.execute("SELECT * FROM listing_translation")
         resp = cur.fetchall()
@@ -583,70 +586,75 @@ class Command(BaseCommand):
             # remove useless keys
             elem_thin = {key: elem[key] for key in ["translatable_id", "name", "description"]}  # "rules"
 
-            # find corresponding siae_image item, and enrich it
-            siae_image_index = next(
+            # find corresponding siae_listing item, and enrich it
+            siae_listing_index = next(
                 (
                     index
-                    for (index, si) in enumerate(siae_image_list)
+                    for (index, si) in enumerate(siae_listing_list)
                     if si["listing_id"] == elem_thin["translatable_id"]
                 ),
                 None,
             )
-            if siae_image_index:
-                siae_image_list[siae_image_index] |= elem_thin
+            if siae_listing_index:
+                siae_listing_list[siae_listing_index] |= elem_thin
 
         cur.execute("SELECT * FROM listing_image")
         resp = cur.fetchall()
 
+        print(f"Found {len(resp)} Siae images...")
+
         for elem in resp:
-            # only take the first image...
-            if elem["position"] == 1:
-                # rename fields
-                rename_dict_key(elem, "name", "image_name")
+            # rename fields
+            rename_dict_key(elem, "name", "image_name")
 
-                # remove useless keys
-                elem_thin = {key: elem[key] for key in ["listing_id", "image_name"]}
+            # remove useless keys
+            elem_thin = {key: elem[key] for key in ["listing_id", "image_name", "position"]}
 
-                # find corresponding siae_image item, and enrich it
-                siae_image_index = next(
-                    (
-                        index
-                        for (index, si) in enumerate(siae_image_list)
-                        if si["listing_id"] == elem_thin["listing_id"]
-                    ),
-                    None,
-                )
-                if siae_image_index:
-                    siae_image_list[siae_image_index] |= elem_thin
+            # find corresponding siae_listing item, and enrich it
+            siae_listing_index = next(
+                (index for (index, si) in enumerate(siae_listing_list) if si["listing_id"] == elem_thin["listing_id"]),
+                None,
+            )
+            if siae_listing_index:
+                siae_listing_list[siae_listing_index]["images"].append(elem_thin)
 
-        error_count = {"missing_data": 0, "missing_user": 0, "user_no_siae": 0, "user_multiple_siae": 0}
-        for siae_image in siae_image_list:
-            if ("translatable_id" not in siae_image) or ("image_name" not in siae_image):
-                # print("translatable_id or image_name missing", siae_image)
-                error_count["missing_data"] += 1
+        error_count = {"listing_without_image": 0, "user_not_found": 0, "user_no_siae": 0, "user_multiple_siae": 0}
+        for siae_listing in siae_listing_list:
+            if not len(siae_listing["images"]):
+                # print("images missing", siae_listing)
+                error_count["listing_without_image"] += 1
             else:
-                # remove useless keys
-                [siae_image.pop(key) for key in ["listing_id", "translatable_id"]]
+                for (index, siae_image) in enumerate(siae_listing["images"]):
+                    siae_image_dict = siae_listing.copy() | siae_image
 
-                users = User.objects.prefetch_related("siaes").filter(c4_id=siae_image["user_id"])
-                if users.count() == 0:
-                    # print("missing user...", siae_image)
-                    error_count["missing_user"] += 1
-                else:
-                    if users.first().siaes.count() > 1:
-                        # print("which siae?", siae_image)
-                        error_count["user_multiple_siae"] += 1
-                    elif users.first().siaes.count() == 0:
-                        # print("no siae...", siae_image)
-                        error_count["user_no_siae"] += 1
-                    else:  # count == 1
-                        # get siae_id
-                        siae = users.first().siaes.first()
-                        siae_image["siae_id"] = siae.id
-                        del siae_image["user_id"]
+                    # rename fields
+                    rename_dict_key(siae_image_dict, "listing_id", "c4_listing_id")
+                    rename_dict_key(siae_image_dict, "position", "order")
 
-                        # create object
-                        SiaeImage.objects.create(**siae_image)
+                    users = User.objects.prefetch_related("siaes").filter(c4_id=siae_image_dict["user_id"])
+                    if users.count() == 0:
+                        # print("missing user...", siae_image_dict)
+                        error_count["user_not_found"] += 1
+                    else:
+                        if users.first().siaes.count() > 1:
+                            # print("which siae?", siae_image_dict)
+                            error_count["user_multiple_siae"] += 1
+                        elif users.first().siaes.count() == 0:
+                            # print("no siae...", siae_image_dict)
+                            error_count["user_no_siae"] += 1
+                        else:  # count == 1
+                            # get siae_id
+                            siae = users.first().siaes.first()
+                            siae_image_dict["siae_id"] = siae.id
+
+                            # we want to group the images by their listing (by updating their order)
+                            # listing_count = Siae
+
+                            # remove useless keys
+                            [siae_image_dict.pop(key) for key in ["translatable_id", "user_id", "images"]]
+
+                            # create object
+                            SiaeImage.objects.create(**siae_image_dict)
 
         print(f"Created {SiaeImage.objects.count()} siae images !")
         print("Errors", error_count)

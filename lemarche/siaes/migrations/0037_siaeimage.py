@@ -16,14 +16,15 @@ class Migration(migrations.Migration):
             name="SiaeImage",
             fields=[
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
-                ("name", models.CharField(blank=True, max_length=255, null=True, verbose_name="Nom")),
+                ("name", models.CharField(blank=True, max_length=255, verbose_name="Nom")),
                 ("description", models.TextField(blank=True, verbose_name="Description")),
                 ("image_name", models.CharField(max_length=255, verbose_name="Nom de l'image")),
                 (
                     "image_url",
-                    models.URLField(blank=True, max_length=500, null=True, verbose_name="Lien vers l'image"),
+                    models.URLField(blank=True, max_length=500, verbose_name="Lien vers l'image"),
                 ),
                 ("order", models.PositiveIntegerField(default=1, verbose_name="Ordre")),
+                ("c4_listing_id", models.IntegerField(blank=True, null=True)),
                 (
                     "created_at",
                     models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date de création"),
