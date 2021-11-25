@@ -5,12 +5,16 @@ from lemarche.users.models import User
 from lemarche.utils.password_validation import CnilCompositionPasswordValidator
 
 
+EMPTY_CHOICE = (("", ""),)
+
+
 class SignupForm(UserCreationForm):
     KIND_CHOICES_FORM = (
         (User.KIND_SIAE, "Une entreprise sociale inclusive (SIAE ou structure du handicap, GEIQ)"),
         (User.KIND_BUYER, "Un acheteur"),
         (User.KIND_PARTNER, "Un partenaire (réseaux, facilitateurs)"),
     )
+    FORM_PARTNER_KIND_CHOICES = EMPTY_CHOICE + User.PARTNER_KIND_CHOICES
 
     kind = forms.ChoiceField(label="", widget=forms.RadioSelect, choices=KIND_CHOICES_FORM, required=True)
     first_name = forms.CharField(
@@ -32,6 +36,11 @@ class SignupForm(UserCreationForm):
         label="Votre poste",
         required=False,
     )
+    # partner_kind is hidden by default in the frontend. Shown if the user choses kind PARTNER
+    partner_kind = forms.ChoiceField(
+        label=User._meta.get_field("partner_kind").verbose_name, choices=FORM_PARTNER_KIND_CHOICES, required=False
+    )
+
     email = forms.EmailField(
         label="Votre adresse e-mail",
         widget=forms.TextInput(attrs={"placeholder": "Merci de bien vérifier l'adresse saisie."}),
@@ -53,6 +62,7 @@ class SignupForm(UserCreationForm):
             "last_name",
             "phone",
             "company_name",
+            "partner_kind",
             "email",
             "password1",
             "password2",
