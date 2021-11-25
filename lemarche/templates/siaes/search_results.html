@@ -264,6 +264,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 track('', Steps.USER_TYPE, {'type': type});
             }
             modal.modal('hide');
+
+            // show header-notice if buyer or actor
+            // if ((type === "buyer") || (type === "actor")) {
+            //     document.getElementById("header-notice").setAttribute('class', '');
+            // }
         })
     }
 });
