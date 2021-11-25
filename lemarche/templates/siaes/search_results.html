@@ -266,9 +266,12 @@ document.addEventListener("DOMContentLoaded", function() {
             modal.modal('hide');
 
             // show header-notice if buyer or actor
-            // if ((type === "buyer") || (type === "actor")) {
-            //     document.getElementById("header-notice").setAttribute('class', '');
-            // }
+            if ((type === "buyer") || (type === "actor")) {
+                const headerNotice = document.getElementById("header-notice");
+                if (headerNotice) {
+                    headerNotice.setAttribute('class', '');
+                }
+            }
         })
     }
 });
