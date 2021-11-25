@@ -126,7 +126,7 @@
                                         {% if siae.contact_phone %}
                                             <li>
                                                 <span class="prof_icon"><img src="{% static 'img/profile-ico-phone.svg' %}" alt="" /></span>
-                                                <span>{{ siae.contact_phone }}</span>
+                                                <a href="tel:{{ siae.contact_phone }}">{{ siae.contact_phone }}</a>
                                             </li>
                                         {% endif %}
                                         {% if siae.user_count %}
