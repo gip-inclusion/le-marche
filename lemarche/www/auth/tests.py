@@ -39,6 +39,7 @@ PARTNER = {
     "last_name": "Nom",
     "phone": "012345678",  # not required
     "company_name": "Ma boite",
+    # "partner_kind": "RESEAU_IAE",
     "email": "partner@example.com",
     "password1": "Erls92#32",
     "password2": "Erls92#32",
@@ -142,6 +143,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         driver.find_element_by_css_selector("input#id_kind_2").click()
         for key in PARTNER:
             driver.find_element_by_css_selector(f"input#id_{key}").send_keys(PARTNER[key])
+        driver.find_element_by_xpath("//select[@id='id_partner_kind']/option[text()='Réseaux IAE']").click()
         driver.find_element_by_css_selector("input#id_accept_rgpd").click()
 
         driver.find_element_by_css_selector("form button").click()

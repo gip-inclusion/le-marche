@@ -34,6 +34,7 @@
                                 </div>
                             </div>
                             {% bootstrap_field form.position form_group_class="position-form-group form-group form-group-required d-none" %}
+                            {% bootstrap_field form.partner_kind form_group_class="partner-kind-form-group form-group form-group-required d-none" %}
                         </fieldset>
 
                         <fieldset>
@@ -83,8 +84,10 @@ document.addEventListener('DOMContentLoaded', function() {
     let companyNameSiaeFormGroupDiv = document.getElementsByClassName('company-name-siae-form-group')[0];
     let companyNameFormGroupDiv = document.getElementsByClassName('company-name-form-group')[0];
     let positionFormGroupDiv = document.getElementsByClassName('position-form-group')[0];
+    let partnerKindFormGroupDiv = document.getElementsByClassName('partner-kind-form-group')[0];
     let companyNameInput = document.getElementById('id_company_name');
     let positionInput = document.getElementById('id_position');
+    let partnerKindInput = document.getElementById('id_partner_kind');
 
     let acceptSurveyFormGroupDiv = document.getElementsByClassName('accept-survey-form-group')[0];
 
@@ -112,6 +115,14 @@ document.addEventListener('DOMContentLoaded', function() {
             positionInput.required = false;
             phoneFormGroupDiv.classList.remove('form-group-required');
             phoneInput.required = false;
+        }
+
+        if (radio.value === 'PARTNER') {
+            partnerKindFormGroupDiv.classList.remove('d-none');
+            partnerKindInput.required = true;
+        } else {
+            partnerKindFormGroupDiv.classList.add('d-none');
+            partnerKindInput.required = false;
         }
     }));
 });
