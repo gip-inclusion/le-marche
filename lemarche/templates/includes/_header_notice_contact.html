@@ -1,0 +1,26 @@
+{% if not user.is_authenticated %}
+<div id="header-notice" class="d-none">
+    <p class="mb-0">
+        {{ window.type }}
+        Vous voulez en savoir plus sur le marché de l'inclusion ?
+        Contactez Sofiane : <a href="mailto:sofiane.zekri@beta.gouv.fr">sofiane.zekri@beta.gouv.fr</a> / <a href="tel:0612634544">06 12 63 45 44</a>
+    </p>
+</div>
+{% endif %}
+
+<script>
+    const USER_TYPE_MODAL_COOKIE_NAME = 'leMarcheTypeUsagerV2';
+    function getCookieValueByName(cookieName) {
+        if (document.cookie.split('; ').find(row => row.startsWith(cookieName))) {
+            return document.cookie.split('; ').find(row => row.startsWith(`${cookieName}=`)).split('=')[1];
+        }
+    }
+    // show header-notice if buyer or actor
+    user_cookie_type = getCookieValueByName(USER_TYPE_MODAL_COOKIE_NAME);
+    if ((user_cookie_type === "buyer") || (user_cookie_type === "actor")) {
+        const headerNotice = document.getElementById("header-notice");
+        if (headerNotice) {
+            headerNotice.setAttribute('class', '');
+        }
+    }
+</script>
