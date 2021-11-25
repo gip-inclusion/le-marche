@@ -2,6 +2,7 @@ import csv
 import datetime
 from urllib.parse import quote
 
+import xlwt
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.core.serializers import serialize
@@ -13,6 +14,7 @@ from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
 
 from lemarche.siaes.models import Siae
+from lemarche.utils.export import SIAE_HEADER, generate_siae_row
 from lemarche.utils.tracker import extract_meta_from_request, track
 from lemarche.www.siaes.forms import SiaeSearchForm
 
@@ -80,54 +82,54 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         return results
 
     def get(self, request, *args, **kwargs):
-        """Build & return CSV."""
+        """Build and return a CSV or XLS."""
         siae_list = self.get_queryset()
 
-        filename = f"liste_structures_{datetime.date.today()}.csv"
-        response = HttpResponse(content_type="text/csv", charset="utf-8")
-        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+        format = self.request.GET.get("format", "xls")
 
-        SIAE_FIELDS_TO_EXPORT = [
-            "name",
-            "brand",
-            "siret",  # siret_pretty ?
-            "nature",
-            "kind",
-            # "contact_email",
-            # "contact_phone",
-            # "contact_website",
-            "city",
-            "department",
-            "region",
-            "post_code",
-            "is_qpv",
-            "sectors",
-        ]
-        SIAE_CUSTOM_FIELDS = ["Active"]
+        if format == "csv":
+            filename = f"liste_structures_{datetime.date.today()}.csv"
+            response = HttpResponse(content_type="text/csv", charset="utf-8")
+            response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
 
-        writer = csv.writer(response)
-        # header
-        writer.writerow(
-            [Siae._meta.get_field(field_name).verbose_name for field_name in SIAE_FIELDS_TO_EXPORT]
-            + SIAE_CUSTOM_FIELDS
-        )
-        # values
-        for siae in siae_list:
-            siae_row = []
-            for field_name in SIAE_FIELDS_TO_EXPORT + SIAE_CUSTOM_FIELDS:
-                # Improve display of some fields: ChoiceFields, BooleanFields, ManyToManyFields
-                if field_name in ["nature"]:
-                    siae_row.append(getattr(siae, f"get_{field_name}_display")())
-                elif field_name in ["is_qpv"]:
-                    siae_row.append("Oui" if getattr(siae, field_name, None) else "Non")
-                elif field_name == "sectors":
-                    siae_row.append(siae.sectors_list_to_string())
-                elif field_name == "Active":
-                    active = siae.users.exists()
-                    siae_row.append("Oui" if active else "Non")
-                else:
-                    siae_row.append(getattr(siae, field_name, ""))
-            writer.writerow(siae_row)
+            writer = csv.writer(response)
+
+            # header
+            writer.writerow(SIAE_HEADER)
+
+            # rows
+            for siae in siae_list:
+                siae_row = generate_siae_row(siae)
+                writer.writerow(siae_row)
+
+        else:  # "xls"
+            filename = f"liste_structures_{datetime.date.today()}.xls"
+            response = HttpResponse(content_type="application/ms-excel")
+            response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+
+            wb = xlwt.Workbook(encoding="utf-8")
+            ws = wb.add_sheet("Structures")
+
+            row_number = 0
+
+            # header
+            font_style = xlwt.XFStyle()
+            font_style.font.bold = True
+            for (index, header_item) in enumerate(SIAE_HEADER):
+                ws.write(row_number, index, header_item, font_style)
+                # set column width
+                # ws.col(col_num).width = HEADER[col_num][1]
+
+            # rows
+            font_style = xlwt.XFStyle()
+            font_style.alignment.wrap = 1
+            for siae in siae_list:
+                row_number += 1
+                siae_row = generate_siae_row(siae)
+                for (index, row_item) in enumerate(siae_row):
+                    ws.write(row_number, index, row_item, font_style)
+
+            wb.save(response)
 
         # Track download event
         track(
