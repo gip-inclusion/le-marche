@@ -31,6 +31,7 @@ django-fieldsets-with-inlines = "^0.6"
 crawlerdetect = "^0.1.4"
 selenium = "^4.0.0"
 python-stdnum = "^1.17"
+xlwt = "^1.3.0"
 
 [tool.poetry.dev-dependencies]
 isort = "^5.8.0"
