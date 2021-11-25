@@ -95,6 +95,17 @@ class User(AbstractUser):
 
     KIND_CHOICES_WITH_ADMIN = KIND_CHOICES + ((KIND_ADMIN, "Administrateur"),)  # Administrateur.trice
 
+    PARTNER_KIND_CHOICES = (
+        ("FACILITATEUR", "Facilitateur des clauses sociales"),
+        ("RESEAU_IAE", "Réseaux IAE"),
+        ("RESEAU_HANDICAP", "Réseau secteur Handicap"),
+        ("DREETS", "DREETS / DDETS"),
+        ("PRESCRIPTEUR", "Prescripteur"),
+        ("PUBLIC", "Organisme public"),
+        ("PRIVE", "Organisme privé"),
+        ("AUTRE", "Autre"),
+    )
+
     username = None
     email = models.EmailField(verbose_name="Adresse e-mail", unique=True)
     first_name = models.CharField(verbose_name="Prénom", max_length=150)
@@ -103,6 +114,9 @@ class User(AbstractUser):
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True)
     company_name = models.CharField(verbose_name="Nom de l'entreprise", max_length=255, blank=True)
     position = models.CharField(verbose_name="Poste", max_length=255, blank=True)
+    partner_kind = models.CharField(
+        verbose_name="Type de partenaire", max_length=20, choices=PARTNER_KIND_CHOICES, blank=True
+    )
 
     api_key = models.CharField(verbose_name="Clé API", max_length=128, unique=True, blank=True, null=True)
 
