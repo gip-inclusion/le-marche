@@ -4,6 +4,31 @@ Ressources :
 - [Semantic Versioning](http://semver.org/)
 - [CHANGELOG recommendations](http://keepachangelog.com/).
 
+## [1.3] - 2021-12-03
+
+### Ajouté
+
+- Pages
+    - Afficher un bandeau temporairement pour certains type d'utilisateurs (acheteur, partenaires) pour les inciter à échanger avec nous
+    - Ajout d'un nouveau logo de partenaire
+- Recherche / Fiche
+    - Permettre le téléchargement au format XLS
+- Données
+    - Script de synchronisation des structures avec le C1
+    - Script de synchronisation avec les données d'API Entreprise
+
+### Modifié
+
+- Inscription / Connexion
+    - Demander le type de partenaire lors de l'inscription
+- Recherche / Fiche
+    - Rendre les numéro de téléphone cliquable (`href="tel:`)
+
+### Supprimé
+
+- Pages
+    - Enlevé le bandeau concernant la migration
+
 ## [1.2] - 2021-11-19
 
 ### Ajouté
