@@ -1,0 +1,36 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block title %}Mesurer vos achats{{ block.super }}{% endblock %}
+{% block body_class %}{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Mesurer vos achats</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="s-page-menu-01 s-page-menu-01--marche has-illustration-bg-01">
+    <div class="s-page-menu-01__container container">
+        <div class="s-page-menu-01__row row align-items-center">
+            <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-lg-10">
+                <h1 class="h1">
+                    <strong>Mesurer, objectiver<br class="d-none d-lg-inline">et valoriser vos achats.</strong>
+                </h1>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -31,6 +31,11 @@ urlpatterns = [
         TemplateView.as_view(template_name="pages/partenaires.html"),
         name="partenaires",
     ),
+    path(
+        "mesurer-achats/",
+        TemplateView.as_view(template_name="pages/mesurer-achats.html"),
+        name="mesurer_achats",
+    ),
     # Sentry endpoint for frontend errors
     path("sentry-debug/", trigger_error, name="sentry_debug"),
     # Redirection urls post-migration
