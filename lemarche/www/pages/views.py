@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404, HttpResponsePermanentRedirect
@@ -55,6 +56,18 @@ class ContactView(SuccessMessageMixin, FormView):
         form_dict = form.cleaned_data
         send_contact_form_email(form_dict)
         return response
+
+
+class StatsView(TemplateView):
+    template_name = "pages/stats.html"
+
+    def get_context_data(self, **kwargs):
+        """
+        - add iframe data
+        """
+        context = super().get_context_data(**kwargs)
+        context["METABASE_PUBLIC_DASHBOARD_URL"] = settings.METABASE_PUBLIC_DASHBOARD_URL
+        return context
 
 
 class PageView(DetailView):

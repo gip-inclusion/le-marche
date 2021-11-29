@@ -1,7 +1,7 @@
 from django.urls import include, path
 from django.views.generic import RedirectView, TemplateView
 
-from lemarche.www.pages.views import ContactView, HomeView, PageView, trigger_error
+from lemarche.www.pages.views import ContactView, HomeView, PageView, StatsView, trigger_error
 
 
 # https://docs.djangoproject.com/en/dev/topics/http/urls/#url-namespaces-and-included-urlconfs
@@ -31,6 +31,7 @@ urlpatterns = [
         TemplateView.as_view(template_name="pages/partenaires.html"),
         name="partenaires",
     ),
+    path("stats/", StatsView.as_view(), name="stats"),
     # Sentry endpoint for frontend errors
     path("sentry-debug/", trigger_error, name="sentry_debug"),
     # Redirection urls post-migration

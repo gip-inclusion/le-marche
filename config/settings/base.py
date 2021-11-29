@@ -362,6 +362,14 @@ MATOMO_HOST = env.str("MATOMO_HOST", "")
 CRISP_ID = env.str("CRISP_ID", "")
 
 
+# Metabase
+# ------------------------------------------------------------------------------
+
+METABASE_PUBLIC_DASHBOARD_URL = (
+    "https://stats.inclusion.beta.gouv.fr/embed/dashboard/fdf2580a-aeea-441c-98fe-ef2c27e79d6b#titled=false"
+)
+
+
 # django-bootstrap4.
 # https://django-bootstrap4.readthedocs.io/en/latest/settings.html
 # ------------------------------------------------------------------------------
