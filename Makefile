@@ -13,3 +13,9 @@ shell_on_django_container_as_root:
 shell_on_postgres_container:
 	docker exec -ti bitoubi_postgres /bin/bash
 
+
+# Itou theme
+# =============================================================================
+
+update_itou_theme: scripts/upload_itou_theme.sh
+	docker exec bitoubi_django /bin/sh -c "./scripts/upload_itou_theme.sh"
