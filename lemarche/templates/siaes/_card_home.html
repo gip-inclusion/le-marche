@@ -1,4 +1,5 @@
 {% load static %}
+{% load theme_inclusion %}
 
 <div class="s-cards-grid-01__col col mb-3 mb-md-5">
     <div class="card c-card c-card--mini h-100">
@@ -17,12 +18,12 @@
         <div class="card-body">
             <ul class="list-unstyled">
             <li class="d-flex lh-sm mb-2">
-                <img src="{% static 'itou/images/ico-bicro-marche-geo.svg' %}" alt="" class="mr-2" height="25">
+                <img src="{% static_theme_images 'ico-bicro-marche-geo.svg' %}" alt="" class="mr-2" height="25">
                 <span>Situé à {{ siae.city }}</span>
             </li>
             {% if siae.kind %}
                 <li class="d-flex lh-sm mb-2">
-                    <img src="{% static 'itou/images/ico-bicro-marche-secteur.svg' %}" alt="" class="mr-2" height="25">
+                    <img src="{% static_theme_images 'ico-bicro-marche-secteur.svg' %}" alt="" class="mr-2" height="25">
                     {% if siae.presta_type %}
                     <span>{{ siae.presta_type_display }}</span>
                     {% endif %}

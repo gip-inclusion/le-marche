@@ -1,4 +1,5 @@
 {% load static %}
+{% load theme_inclusion %}
 
 {% include "includes/_header_env_notice.html" %}
 {% include "includes/_header_notice_contact.html" %}
@@ -13,7 +14,7 @@
             </div>
             <div class="s-header__col s-header__col--logo col-auto d-flex align-items-center px-0 px-md-3">
                 <a href="{% url 'pages:home' %}" />
-                    <img src="{% static 'itou/images/logo-marche-inclusion.svg' %}" alt="Le marché de l'inclusion">
+                    <img src="{% static_theme_images 'logo-marche-inclusion.svg' %}" alt="Le marché de l'inclusion">
                 </a>
             </div>
             <!-- Visible only on large screens -->
@@ -48,7 +49,7 @@
                         <li>
                             <a href="{% url 'auth:login' %}" id="h_login" rel="noopener">
                                 <span>Connexion</span>
-                                <span class="ml-1"><img src="{% static 'itou/images/ico-user.svg' %}" alt="Utilisateur"></span>
+                                <span class="ml-1"><img src="{% static_theme_images 'ico-user.svg' %}" alt="Utilisateur"></span>
                             </a>
                         </li>
                         <li>
@@ -65,8 +66,8 @@
             </div>
             <!-- Visible only on small screens -->
             <div class="s-header__col s-header__col--burger col d-flex align-items-center justify-content-end d-xl-none" data-toggle="burger">
-                <span id="burger"><img src="{% static 'itou/images/picto-burger.svg' %}" alt="Menu" /></span>
-                <span id="close"><img src="{% static 'itou/images/picto-close.svg' %}" alt="Fermer" /></span>
+                <span id="burger"><img src="{% static_theme_images 'picto-burger.svg' %}" alt="Menu" /></span>
+                <span id="close"><img src="{% static_theme_images 'picto-close.svg' %}" alt="Fermer" /></span>
             </div>
             <div id="burgerNav">
                 <nav role="navigation">
@@ -103,7 +104,7 @@
                         <li>
                             <a href="{% url 'auth:login' %}" id="h_login" rel="noopener">
                                 <span>Connexion</span>
-                                <span class="ml-1"><img src="{% static 'itou/images/ico-user.svg' %}" alt="Utilisateur"></span>
+                                <span class="ml-1"><img src="{% static_theme_images 'ico-user.svg' %}" alt="Utilisateur"></span>
                             </a>
                         </li>
                         <li>

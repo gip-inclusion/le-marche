@@ -1,5 +1,6 @@
 {% extends "layouts/base.html" %}
 {% load static bootstrap4 %}
+{% load theme_inclusion %}
 
 {% block title %}Accueil{{ block.super }}{% endblock %}
 {% block meta_twitter_title %}Accueil - {{ block.super }}{% endblock %}
@@ -153,7 +154,7 @@
             <div class="s-cards-grid-01__col col mb-3 mb-md-5">
                 <div class="card c-card h-100 w-100 c-card--marche">
                     <div class="card-header text-center">
-                        <img height="80" src="{% static 'itou/images/ico-bicro-marche-local.svg' %}" alt="" />
+                        <img height="80" src="{% static_theme_images 'ico-bicro-marche-local.svg' %}" alt="" />
                     </div>
                     <div class="card-body">
                         <p class="h4 lh-base">Participez à la dynamique économique et sociale de votre territoire avec des partenaires de proximité</p>
@@ -164,7 +165,7 @@
             <div class="s-cards-grid-01__col col mb-3 mb-md-5">
                 <div class="card c-card h-100 w-100 c-card--marche">
                     <div class="card-header text-center">
-                        <img height="80" src="{% static 'itou/images/ico-bicro-marche-recyclage.svg' %}" alt="" />
+                        <img height="80" src="{% static_theme_images 'ico-bicro-marche-recyclage.svg' %}" alt="" />
                     </div>
                     <div class="card-body">
                         <p class="h4 lh-base">Mesurer vos achats inclusifs, renforcez votre politique d’achats responsables et valorisez votre image d’entreprise.</p>
@@ -175,7 +176,7 @@
             <div class="s-cards-grid-01__col col mb-3 mb-md-5">
                 <div class="card c-card h-100 w-100 c-card--marche">
                     <div class="card-header text-center">
-                        <img height="80" src="{% static 'itou/images/ico-bicro-marche-ouvrier.svg' %}" alt="" />
+                        <img height="80" src="{% static_theme_images 'ico-bicro-marche-ouvrier.svg' %}" alt="" />
                     </div>
                     <div class="card-body">
                         <p class="h4 lh-base">Trouvez des prestataires et palliez efficacement vos besoins de main-d'œuvre, métiers en tension, et vos besoins de services.</p>
