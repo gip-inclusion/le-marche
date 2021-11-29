@@ -67,9 +67,15 @@
         </div>
     </noscript>
 
-    <div class="sr-only sr-only-focusable">
-        <a tabindex="1" href="#main">aller au contenu</a>
-    </div>
+    <nav role="navigation" aria-label="Accès rapide" tabindex="1" class="sr-only">
+        <ul>
+            <li><a href="#nav-primary">Aller au menu principal</a></li>
+            <li><a href="#main">Aller au contenu principal</a></li>
+            {% if request.path == "/prestataires/" %} 
+                <li><a href="#search-form">Aller à la recherche de structures de l’insertion et du handicap</a></li>
+            {% endif %}
+        </ul>
+    </nav>
 
     {% block header %}
       {% include "layouts/_header.html" %}

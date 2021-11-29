@@ -24,7 +24,7 @@
 <section class="s-siae-01">
     <div class="container">
         <div id="dir_form" class="dir_form">
-            <form method="GET" action="{% url 'siae:search_results' %}" id="search-form">
+            <form method="GET" action="{% url 'siae:search_results' %}" id="search-form" aria-label="Rechercher des structures de l’insertion et du handicap" role="search">
                 {% if form.errors %}
                     <div class="alert alert-danger" role="alert">{{ form.errors|show_first_form_error_message }}</div>
                 {% endif %}
