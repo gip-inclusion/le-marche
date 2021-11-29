@@ -6,66 +6,26 @@
 {% block body_class %}p-homepage{{ block.super }}{% endblock %}
 
 {% block content %}
-<section class="s-article-picture-01 s-article-picture-01--marche s-hp-01 has-illustration-bg-01 py-sm-6">
-    <div class="s-article-picture-01__container container">
-        <div class="s-article-picture-01__row row">
-            <div class="s-article-picture-01__col s-article-picture-01__col--article col-12 col-lg-6 d-flex align-items-center">
-                <article>
-                    <h1 class="h3">Bienvenue sur le marché de l’inclusion</h1>
-                    <h2 class="s-article-picture-01__col--article__title h1"><strong>Vos prestataires, socialement engagés et locaux</strong></h2>
-                </article>
-            </div>
-            <div class="s-article-picture-01__col col-12 col-lg-6 pl-lg-6">
-                <form method="GET" action="{% url 'siae:search_results' %}" id="search-form" class="s-hp-01__form bg-white w-100 rounded-lg shadow-lg p-3 p-lg-5">
-                    <fieldset>
-                        <legend class="s-hp-01__form__legend ff-extra-01">Que cherchez-vous&nbsp;?</legend>
-                        <p class="h4 mb-3 mb-lg-5">
-                            Trouvez ici toutes les structures de l’insertion et du handicap
-                        </p>
-                        {% bootstrap_field form.sectors %}
-                        {% bootstrap_field form.perimeter %}
-                        <div id="dir_form_perimeter_name" class="form-group">
-                            <label for="perimeter_name">{{ form.perimeter_name.label }}</label>
-                            <div>
-                                {# {{ form.perimeter_name }} #}
-                            </div>
-                        </div>
-                        <p class="text-center mb-0 mt-5">
-                            <button type="submit" class="btn btn-primary btn-ico">
-                                <span>Recherche</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none">
-                                    <path d="M12.523 10.963l3.213 3.211-1.062 1.062-3.211-3.213A6.72 6.72 0 017.25 13.5 6.752 6.752 0 01.5 6.75 6.752 6.752 0 017.25 0 6.752 6.752 0 0114 6.75a6.72 6.72 0 01-1.477 4.213zm-1.504-.557A5.233 5.233 0 0012.5 6.75c0-2.901-2.35-5.25-5.25-5.25A5.248 5.248 0 002 6.75C2 9.65 4.349 12 7.25 12a5.233 5.233 0 003.656-1.481l.113-.113z" fill="currentColor" />
-                                </svg>
-                            </button>
-                        </p>
-                    </fieldset>
-                </form>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="s-article-picture-01 p-0">
-    <div class="s-article-picture-01__container container container-max-lg">
-        <div class="s-article-picture-01__row row">
-            <div class="s-article-picture-01__col s-article-picture-01__col--picture col-12 col-md-5 d-none d-md-flex align-items-center px-lg-4">
-                <picture>
-                    <img src="{% static 'img/hp-02-illustration-01.min.png' %}" class="img-fluid" alt="" loading="lazy" />
-                </picture>
-            </div>
-            <div class="s-article-picture-01__col s-article-picture-01__col--article col-12 col-md-7 d-flex align-items-center">
-                <article>
-                    <h2 class="h2 mb-3 mb-lg-5"><strong>Vous recherchez un prestataire&nbsp;?</strong></h2>
-                    <h3 class="h4 mb-3 mb-lg-5">Nous diffuserons votre besoin auprès de nos partenaires et structures socialement inclusives.</h3>
-                    <p class="s-article-picture-01__col--article__cta">
-                        <a href="https://itou.typeform.com/to/nxG0HlYx" class="btn btn-primary btn-ico" target="_blank" rel="noopener">
-                            <span>Contactez-nous</span>
-                            <svg width="17" height="15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M16.5 13.505a.75.75 0 01-.744.745H2.244a.745.745 0 01-.744-.745v-.755H15V3.975l-6 5.4-7.5-6.75V1.5a.75.75 0 01.75-.75h13.5a.75.75 0 01.75.75v12.005zM3.325 2.25L9 7.357l5.675-5.107H3.325zM0 9.75h6v1.5H0v-1.5zM0 6h3.75v1.5H0V6z" fill="currentColor"></path>
-                            </svg>
-                        </a>
-                    </p>
-                </article>
+<section class="s-page-menu-01 s-page-menu-01--marche p-0">
+    <div class="s-page-menu-01__container container">
+        <div class="s-page-menu-01__row row py-5 pb-md-8 pt-md-7">
+            <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-md-8">
+                <h1 class="h1"><strong>Achetez socialement <br class="d-none d-lg-inline">responsable<br class="d-none d-lg-inline"></strong></h1>
+                <h2 class="h3">Retrouvez toutes les structures d'insertion et du handicap. <br class="d-none d-lg-inline">Une démarche 100% ESS.</h2>
+                <p class="mb-0 mt-5">
+                    <a href="{% url 'siae:search_results' %}" class="btn btn-primary btn-ico d-block d-md-inline-block">
+                        <span>Rechercher un prestataire</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <path d="M12.523 10.963l3.213 3.211-1.062 1.062-3.211-3.213A6.72 6.72 0 017.25 13.5 6.752 6.752 0 01.5 6.75 6.752 6.752 0 017.25 0 6.752 6.752 0 0114 6.75a6.72 6.72 0 01-1.477 4.213zm-1.504-.557A5.233 5.233 0 0012.5 6.75c0-2.901-2.35-5.25-5.25-5.25A5.248 5.248 0 002 6.75C2 9.65 4.349 12 7.25 12a5.233 5.233 0 003.656-1.481l.113-.113z" fill="currentColor" />
+                        </svg>
+                    </a>
+                    <a href="https://itou.typeform.com/to/KWViHaph?typeform-source=trello.com#data=xxxxx" class="btn btn-outline-primary btn-ico d-block d-md-inline-block ml-md-2 mt-3 mt-md-0" target="_blank" rel="noopener">
+                        <span>Publier un besoin d’achat</span>
+                        <svg width="17" height="15" viewBox="0 0 17 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M16.5 13.505a.75.75 0 01-.744.745H2.244a.745.745 0 01-.744-.745v-.755H15V3.975l-6 5.4-7.5-6.75V1.5a.75.75 0 01.75-.75h13.5a.75.75 0 01.75.75v12.005zM3.325 2.25L9 7.357l5.675-5.107H3.325zM0 9.75h6v1.5H0v-1.5zM0 6h3.75v1.5H0V6z" fill="currentColor"></path>
+                        </svg>
+                    </a>
+                </p>                
             </div>
         </div>
     </div>
@@ -83,7 +43,7 @@
                 <div id="slickSolutionsHP" class="align-slide-stretch">
                     <div class="card c-card h-100 w-100 c-card--marche">
                         <div class="card-header">
-                            <img src="{% static 'img/hp-02-photo-03.min.jpg' %}" class="card-img-top" alt="" loading="lazy" />
+                            <img src="{% static 'img/hp-02-photo-03.min.jpg' %}" class="card-img-top" alt="" />
                         </div>
                         <div class="card-body">
                             <p class="h4 lh-base">Être acteur de l’inclusion dans l’emploi</p>
@@ -103,7 +63,7 @@
                     </div>
                     <div class="card c-card h-100 w-100 c-card--marche">
                         <div class="card-header">
-                            <img src="{% static 'img/hp-02-photo-04.min.jpg' %}" class="card-img-top" alt="" loading="lazy" />
+                            <img src="{% static 'img/hp-02-photo-04.min.jpg' %}" class="card-img-top" alt="" />
                         </div>
                         <div class="card-body">
                             <p class="h4 lh-base">Vous souhaitez être accompagné dans vos achats</p>
@@ -123,7 +83,7 @@
                     </div>
                     <div class="card c-card h-100 w-100 c-card--marche">
                         <div class="card-header">
-                            <img src="{% static 'img/hp-02-photo-02.min.jpg' %}" class="card-img-top" alt="" loading="lazy" />
+                            <img src="{% static 'img/hp-02-photo-02.min.jpg' %}" class="card-img-top" alt="" />
                         </div>
                         <div class="card-body">
                             <p class="h4 lh-base">Acheteurs, alliez impact social et environnemental !</p>
@@ -142,7 +102,7 @@
                     </div>
                       <div class="card c-card h-100 w-100 c-card--marche">
                         <div class="card-header">
-                            <img src="{% static 'img/hp-02-photo-01.min.jpg' %}" class="card-img-top" alt="" loading="lazy" />
+                            <img src="{% static 'img/hp-02-photo-01.min.jpg' %}" class="card-img-top" alt="" />
                         </div>
                         <div class="card-body">
                             <p class="h4 lh-base">Restaurants, trouvez des renforts de personnel ?</p>
@@ -239,37 +199,37 @@
                 <div id="slickPartnersHP" class="align-slide-center">
                     <div>
                         <a href="https://www.lesentreprises-sengagent.gouv.fr" target="_blank" rel="noopener">
-                            <img src="{% static 'images/logo-partners-les-entreprises-sengagent.svg' %}" class="img-fluid" alt="Les entreprises s'engagent" title="Les entreprises s'engagent" loading="lazy" />
+                            <img src="{% static 'images/logo-partners-les-entreprises-sengagent.svg' %}" class="img-fluid" alt="Les entreprises s'engagent" title="Les entreprises s'engagent" />
                         </a>
                     </div>
                     <div>
                         <a href="https://www.cna-asso.fr/" target="_blank" rel="noopener">
-                            <img src="{% static 'images/logo-partners-cna.min.png' %}" class="img-fluid" alt="Conseil National des Achats" title="Conseil National des Achats" loading="lazy" />
+                            <img src="{% static 'images/logo-partners-cna.min.png' %}" class="img-fluid" alt="Conseil National des Achats" title="Conseil National des Achats" />
                         </a>
                     </div>
                     <div>
                         <a href="https://www.reseau-gesat.com" target="_blank" rel="noopener">
-                            <img src="{% static 'images/logo-partners-reseau-gesat-square.min.png' %}" class="img-fluid" alt="Développer vos achats responsables auprès du STPA (ESAT & EA)" title="Réseau GSAT" loading="lazy" />
+                            <img src="{% static 'images/logo-partners-reseau-gesat-square.min.png' %}" class="img-fluid" alt="Développer vos achats responsables auprès du STPA (ESAT & EA)" title="Réseau GSAT" />
                         </a>
                     </div>
                     <div>
                         <a href="https://handeco.org" target="_blank" rel="noopener">
-                            <img src="{% static 'images/logo-partners-handeco.min.png' %}" class="img-fluid" alt="Handeco - Le partenaire économique des acteurs solidaires" title="Handeco" loading="lazy" />
+                            <img src="{% static 'images/logo-partners-handeco.min.png' %}" class="img-fluid" alt="Handeco - Le partenaire économique des acteurs solidaires" title="Handeco" />
                         </a>
                     </div>
                     <div>
                         <a href="https://ess2024.org" target="_blank" rel="noopener">
-                            <img src="{% static 'images/logo-partners-ess-2024.min.png' %}" class="img-fluid" alt="ESS 2024 La plateforme solidaire" title="ESS 2024 La plateforme solidaire" loading="lazy" />
+                            <img src="{% static 'images/logo-partners-ess-2024.min.png' %}" class="img-fluid" alt="ESS 2024 La plateforme solidaire" title="ESS 2024 La plateforme solidaire" />
                         </a>
                     </div>
                     <div>
                         <a href="https://campus-inclusion.fr" target="_blank" rel="noopener">
-                            <img src="{% static 'images/logo-partners-le-campus-de-linclusion.min.png' %}" class="img-fluid" alt="Campus de l'inclusion : Dirigeants, passez à l'action !" title="Campus de l'inclusion" loading="lazy" />
+                            <img src="{% static 'images/logo-partners-le-campus-de-linclusion.min.png' %}" class="img-fluid" alt="Campus de l'inclusion : Dirigeants, passez à l'action !" title="Campus de l'inclusion" />
                         </a>
                     </div>
                     <div>
                         <span>
-                            <img src="{% static 'images/logo-partners-agence-des-economies-solidaires.min.jpg' %}" class="img-fluid" alt="" title="Agence des Economies Solidaires" loading="lazy" />
+                            <img src="{% static 'images/logo-partners-agence-des-economies-solidaires.min.jpg' %}" class="img-fluid" alt="" title="Agence des Economies Solidaires" />
                         </span>
                     </div>
                 </div>

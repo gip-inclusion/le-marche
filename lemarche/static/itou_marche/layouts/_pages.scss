@@ -5,6 +5,71 @@
 } 
 
 .p-homepage {
+	.s-page-menu-01__container {
+		position: relative;
+		
+		&::before {
+			content: '';
+			position: absolute;
+			z-index: -1;
+			width: 82px;
+			height: 131px;
+			background-image: url('/static/img/hp-bg-02.png');
+			background-position: center;
+			background-repeat: no-repeat;
+			background-size: cover;
+			display: none;
+			top: 4rem;
+			left: -10rem;
+			
+			@media (min-width:1500px) {
+				display: block;
+			}			
+		}
+
+		&::after {
+			content: '';
+			position: absolute;
+			z-index: -1;
+			width: 174px;
+			height: 280px;
+			background-image: url('/static/img/hp-bg-03.png');
+			background-position: center;
+			background-repeat: no-repeat;
+			background-size: cover;
+			display: none;
+			top: 6rem;
+			right: -6rem;
+			
+			@media (min-width:1500px) {
+				display: block;
+			}				
+		}
+	}
+
+	.s-page-menu-01__row {
+			position: relative;
+
+			&::after {
+				content: '';
+				position: absolute;
+				z-index: -1;
+				width: 40%;
+				height: 110%;
+				background-image: url('/static/img/hp-bg-01.png');
+				background-position: right center;
+				background-repeat: no-repeat;
+				background-size: 100% auto;
+				display: none;
+				top: 0;
+				right: 0;
+				
+				@media (min-width:768px) {
+					display: block;
+				}				
+			}			
+		}
+	
 	.align-slide-stretch {
 		.slick-slide {
 			display: flex !important;
