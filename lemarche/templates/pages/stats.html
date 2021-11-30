@@ -1,0 +1,51 @@
+{% extends "layouts/base.html" %}
+{% load bootstrap4 %}
+
+{% block title %}Contact{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Statistiques</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="s-page-menu-01 s-page-menu-01--marche has-illustration-bg-01">
+    <div class="s-page-menu-01__container container">
+        <div class="s-page-menu-01__row row align-items-center">
+            <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-lg-10">
+                <h1 class="h1">
+                    <strong>Statistiques</strong>
+                </h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="pt-4 pb-6">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <script src="https://stats.inclusion.beta.gouv.fr/app/iframeResizer.js"></script>
+                <iframe
+                    src="{{ METABASE_PUBLIC_DASHBOARD_URL }}"
+                    width="100%"
+                    height="1000"
+                    onload="iFrameResize({}, this)"
+                    frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
