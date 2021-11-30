@@ -27,7 +27,7 @@
                             <a href="{% url 'pages:decouvrir_inclusion' %}">
                                 Découvrir l’inclusion
                             </a>
-                        </li>                           
+                        </li>
                         {% if user.is_authenticated %}
                         <li>
                             <div class="dropdown">
@@ -70,7 +70,7 @@
             </div>
             <div id="burgerNav">
                 <nav role="navigation">
-                    <ul>                      
+                    <ul>
                         <li>
                             {% include "includes/_newsletter_button.html" with custom_class="p-0" %}
                         </li>
@@ -78,7 +78,7 @@
                             <a href="{% url 'pages:decouvrir_inclusion' %}">
                                 Découvrir l’inclusion
                             </a>
-                        </li>                           
+                        </li>
                         {% comment 'hidden' %}
                         <li>
                             <a href="#" rel="noopener" id="h_fav">
