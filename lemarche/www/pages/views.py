@@ -4,18 +4,15 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404, HttpResponsePermanentRedirect
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, FormView, TemplateView
-from django.views.generic.edit import FormMixin
 
 from lemarche.pages.models import Page
 from lemarche.siaes.models import Siae
 from lemarche.www.pages.forms import ContactForm
 from lemarche.www.pages.tasks import send_contact_form_email
-from lemarche.www.siaes.forms import SiaeSearchForm
 
 
-class HomeView(FormMixin, TemplateView):
+class HomeView(TemplateView):
     template_name = "pages/home.html"
-    form_class = SiaeSearchForm
 
     def get(self, request, *args, **kwargs):
         """Check if there is any custom message to display."""
