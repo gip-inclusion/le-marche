@@ -312,9 +312,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div id="image-grid" class="row">
                         {% for image in siae.images.all %}
-                            <div class="col-4"> <!-- 3 per row -->
+                            <div class="col-sm-4"> <!-- 3 per row -->
                                 <img src="{{ image.image_url }}" class="img-fluid" title="{{ image.name|default:'' }}" loading="lazy" />
                             </div>
                         {% endfor %}
