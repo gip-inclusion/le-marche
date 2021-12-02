@@ -1,5 +1,7 @@
 """
 https://docs.djangoproject.com/en/dev/howto/custom-template-tags/
+Exist also in the base code of C1 :
+    https://github.com/betagouv/itou/blob/master/itou/utils/templatetags/theme_inclusion.py
 """
 from django import template
 from django.templatetags.static import static
