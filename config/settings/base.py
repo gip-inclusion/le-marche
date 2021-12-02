@@ -112,6 +112,7 @@ LOCAL_APPS = [
     "lemarche.sectors",
     "lemarche.networks",
     "lemarche.perimeters",
+    "lemarche.favorites",
     # Flatpages
     "lemarche.pages",
     # Api
