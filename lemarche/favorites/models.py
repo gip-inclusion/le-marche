@@ -13,6 +13,13 @@ class FavoriteList(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, verbose_name="Utilisateur", related_name="favorite_lists", on_delete=models.CASCADE
     )
+    siaes = models.ManyToManyField(
+        "siaes.Siae",
+        through="favorites.FavoriteItem",
+        verbose_name="Structures en favoris",
+        related_name="siaes",
+        blank=True,
+    )
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
@@ -35,3 +42,18 @@ class FavoriteList(models.Model):
         """Generate the slug field before saving."""
         self.set_slug()
         super().save(*args, **kwargs)
+
+
+class FavoriteItem(models.Model):
+    siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
+    favorite_list = models.ForeignKey(
+        "favorites.FavoriteList", verbose_name="Liste de favoris", on_delete=models.CASCADE
+    )
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Structure en favoris"
+        verbose_name_plural = "Structures en favoris"
+        ordering = ["-created_at"]
