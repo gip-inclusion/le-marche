@@ -371,8 +371,9 @@ class Siae(models.Model):
         - update the object stats (only related fields: for M2M, see m2m_changed signal)
         - generate the slug field
         """
+        self.set_related_counts()
         try:
-            self.set_related_counts()
+            self.set_slug()
             with transaction.atomic():
                 super().save(*args, **kwargs)
         except IntegrityError as e:
@@ -484,6 +485,17 @@ class Siae(models.Model):
         return reverse("siae:detail", kwargs={"slug": self.slug})
 
 
+@receiver(m2m_changed, sender=Siae.users.through)
+def siae_users_changed(sender, instance, action, **kwargs):
+    """
+    Why do we need this? (looks like a duplicate of siae_users_changed)
+    Will be called if we do something like `siae.users.add(user)`
+    """
+    if action in ("post_add", "post_remove", "post_clear"):
+        instance.user_count = instance.users.count()
+        instance.save()
+
+
 @receiver(m2m_changed, sender=Siae.sectors.through)
 def siae_sectors_changed(sender, instance, action, **kwargs):
     if action in ("post_add", "post_remove", "post_clear"):
@@ -513,7 +525,10 @@ class SiaeUser(models.Model):
 
 @receiver(post_save, sender=SiaeUser)
 @receiver(post_delete, sender=SiaeUser)
-def siae_users_changed(sender, instance, **kwargs):
+def siae_siaeusers_changed(sender, instance, **kwargs):
+    """
+    Will be called when we update the Siae form in the admin
+    """
     instance.siae.user_count = instance.siae.users.count()
     instance.siae.save()
 
