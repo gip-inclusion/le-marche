@@ -59,6 +59,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "siret",
         "kind",
         "city",
+        "nb_users",
         "nb_offers",
         "nb_labels",
         "nb_cient_references",
@@ -75,6 +76,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "nb_offers",
         "nb_labels",
         "nb_cient_references",
+        "nb_users",
         "coords_display",
         "logo_url",
         "logo_url_display",
@@ -145,7 +147,6 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                 )
             },
         ),
-        SiaeUserInline,
         (
             "Contact",
             {
@@ -155,9 +156,11 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "contact_email",
                     "contact_phone",
                     "contact_website",
+                    "nb_users",
                 )
             },
         ),
+        SiaeUserInline,
         (
             "Logo",
             {
@@ -174,6 +177,14 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs
+
+    def nb_users(self, siae):
+        # url = reverse("admin:users_user_changelist") + f"?siae__id__exact={siae.id}"
+        # return format_html(f'<a href="{url}">{siae.user_count}</a>')
+        return siae.user_count
+
+    nb_users.short_description = "Nombre d'utilisateurs"
+    nb_users.admin_order_field = "user_count"
 
     def nb_offers(self, siae):
         url = reverse("admin:siaes_siaeoffer_changelist") + f"?siae__id__exact={siae.id}"
