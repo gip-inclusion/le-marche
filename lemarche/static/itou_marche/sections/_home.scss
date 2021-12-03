@@ -17,7 +17,7 @@
 
 			@media (min-width:992px) {
 				display: inline-block;
-			}			
+			}
 		}
 
 		&__legend {
@@ -28,7 +28,7 @@
 			right: 50%;
 			bottom: -80px;
 			font-size: 27px;
-			background-image: url('/static/itou/images/ico-hand-arrow-up.svg');
+			background-image: url('/static/vendor/theme-inclusion/images/ico-hand-arrow-up.svg');
 			background-repeat: no-repeat;
 			background-position: center right;
 			padding-right: 60px;
@@ -38,10 +38,19 @@
 
 			@media (min-width:576px) {
 				display: inline-block;
-			}					
+			}
 		}
 	}
 }
+
+#main .s-article-picture-01.has-illustration-bg-01 {
+    /*
+        Force overide theme setting to avoid negative
+        effect on homepage sector dropdown
+    */
+    overflow: visible;
+}
+
 
 .s-hp-slider-partners {
 	padding-top: 1.5rem;
@@ -63,7 +72,7 @@
 			a {
 				text-decoration: none;
 
-				&:hover, 
+				&:hover,
 				&:focus {
 					img {
 						filter: grayscale(0);
