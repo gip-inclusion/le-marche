@@ -7,6 +7,8 @@ from django.contrib.gis.measure import D
 from django.contrib.postgres.fields import ArrayField
 from django.db import IntegrityError, models, transaction
 from django.db.models import Q
+from django.db.models.signals import m2m_changed, post_delete, post_save
+from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_str
@@ -358,21 +360,18 @@ class Siae(models.Model):
         if with_uuid:
             self.slug += f"-{str(uuid4())[:4]}"
 
-    def set_stats(self):
+    def set_related_counts(self):
         if self.id:
-            self.user_count = self.users.count()
-            self.sector_count = self.sectors.count()
-            self.network_count = self.networks.count()
             self.offer_count = self.offers.count()
             self.client_reference_count = self.client_references.count()
             self.label_count = self.labels.count()
 
     def save(self, *args, **kwargs):
         """
-        - update the object stats
+        - update the object stats (only related fields: for M2M, see m2m_changed signal)
         - generate the slug field
         """
-        self.set_stats()
+        self.set_related_counts()
         try:
             self.set_slug()
             with transaction.atomic():
@@ -486,6 +485,31 @@ class Siae(models.Model):
         return reverse("siae:detail", kwargs={"slug": self.slug})
 
 
+@receiver(m2m_changed, sender=Siae.users.through)
+def siae_users_changed(sender, instance, action, **kwargs):
+    """
+    Why do we need this? (looks like a duplicate of siae_users_changed)
+    Will be called if we do something like `siae.users.add(user)`
+    """
+    if action in ("post_add", "post_remove", "post_clear"):
+        instance.user_count = instance.users.count()
+        instance.save()
+
+
+@receiver(m2m_changed, sender=Siae.sectors.through)
+def siae_sectors_changed(sender, instance, action, **kwargs):
+    if action in ("post_add", "post_remove", "post_clear"):
+        instance.sector_count = instance.sectors.count()
+        instance.save()
+
+
+@receiver(m2m_changed, sender=Siae.networks.through)
+def siae_networks_changed(sender, instance, action, **kwargs):
+    if action in ("post_add", "post_remove", "post_clear"):
+        instance.network_count = instance.networks.count()
+        instance.save()
+
+
 class SiaeUser(models.Model):
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Utilisateur", on_delete=models.CASCADE)
@@ -497,6 +521,16 @@ class SiaeUser(models.Model):
         verbose_name = "Gestionnaire"
         verbose_name_plural = "Gestionnaires"
         ordering = ["-created_at"]
+
+
+@receiver(post_save, sender=SiaeUser)
+@receiver(post_delete, sender=SiaeUser)
+def siae_siaeusers_changed(sender, instance, **kwargs):
+    """
+    Will be called when we update the Siae form in the admin
+    """
+    instance.siae.user_count = instance.siae.users.count()
+    instance.siae.save()
 
 
 class SiaeOffer(models.Model):

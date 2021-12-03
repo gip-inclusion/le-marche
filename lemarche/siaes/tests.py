@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes.factories import SiaeFactory, SiaeLabelFactory, SiaeOfferFactory
-from lemarche.siaes.models import Siae
+from lemarche.siaes.models import Siae, SiaeUser
 from lemarche.users.factories import UserFactory
 
 
@@ -100,14 +100,41 @@ class SiaeModelSaveTest(TestCase):
         self.assertTrue(siae_doublon_11.slug.startswith("structure-doublon-sans-departement--"))  # uuid4 at the end
         self.assertTrue(len(siae_doublon_10.slug) < len(siae_doublon_11.slug))
 
-    def test_stats_on_save(self):
+    def test_update_related_count_on_save(self):
+        siae = SiaeFactory()
+        SiaeOfferFactory(siae=siae)
+        self.assertEqual(siae.offers.count(), 1)
+        # self.assertEqual(siae.offer_count, 1)  # won't work, need to call save() method to update stat fields
+        siae.save()
+        self.assertEqual(siae.offer_count, 1)
+        self.assertEqual(siae.user_count, 0)
+        self.assertEqual(siae.sector_count, 0)
+
+    def test_update_m2m_count_on_save(self):
+        siae = SiaeFactory()
+        sector = SectorFactory()
+        siae.sectors.add(sector)
+        self.assertEqual(siae.sectors.count(), 1)
+        # siae.save()  # no need to run save(), m2m_changed signal was triggered above
+        self.assertEqual(siae.offer_count, 0)
+        self.assertEqual(siae.sector_count, 1)
+        self.assertEqual(siae.user_count, 0)
+
+    def test_update_m2m_through_count_on_save(self):
         siae = SiaeFactory()
         user = UserFactory()
-        siae.users.add(user.id)
+        siae.users.add(user)
         self.assertEqual(siae.users.count(), 1)
-        # self.assertEqual(siae.user_count, 1)  # won't work, need to call save() method to update stat fields
-        siae.save()
+        # siae.save()  # no need to run save(), m2m_changed signal was triggered above
+        self.assertEqual(siae.offer_count, 0)
         self.assertEqual(siae.user_count, 1)
+        self.assertEqual(siae.sector_count, 0)
+        user_2 = UserFactory()
+        siaeuser = SiaeUser(siae=siae, user=user_2)
+        siaeuser.save()
+        self.assertEqual(siae.users.count(), 1 + 1)
+        self.assertEqual(siae.offer_count, 0)
+        self.assertEqual(siae.user_count, 1 + 1)
         self.assertEqual(siae.sector_count, 0)
 
 
