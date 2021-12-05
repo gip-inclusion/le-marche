@@ -300,6 +300,26 @@
                         {% endif %}
                     </div>
                     {% endif %}
+                    <!-- Sixth Row : Réalisations -->
+                    {% if siae.images.count %}
+                    <div class="row">
+                        <div class="col-12 img-left">
+                            <div class="il-l">
+                                <img src="{% static_theme_images 'ico-bicro-realisation.svg' %}" alt="" height="32" />
+                            </div>
+                            <div class="il-r">
+                                <h3 class="h3 mb-1 mt-1">Nos réalisations</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="image-grid" class="row">
+                        {% for image in siae.images.all %}
+                            <div class="col-sm-4"> <!-- 3 per row -->
+                                <img src="{{ image.image_url }}" class="img-fluid" title="{{ image.name|default:'' }}" loading="lazy" />
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </article>
             </div>
         </div>

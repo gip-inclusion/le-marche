@@ -406,6 +406,20 @@
 		max-height: 100px;
 		max-width: 100px;
 	}
+
+	#image-grid {
+		.col-sm-4 {
+			padding-top: 8px;
+			padding-bottom: 8px;
+		}
+
+		@media (min-width:576px) {
+			.col-sm-4 {
+				padding-top: 16px;
+				padding-bottom: 16px;
+			}
+		}
+	}
 }
 
 .si-separator {

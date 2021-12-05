@@ -10,7 +10,7 @@ from django.utils.text import slugify
 
 from lemarche.networks.models import Network
 from lemarche.sectors.models import Sector, SectorGroup
-from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeImage, SiaeLabel, SiaeOffer
 from lemarche.users.models import User
 from lemarche.utils.data import rename_dict_key, reset_app_sql_sequences
 
@@ -166,17 +166,20 @@ class Command(BaseCommand):
     """
     Migrate from Symphony/MariaDB to Django/PostgreSQL
 
-    |--------------------------|---------------------------|
-    |directory                 |Siae                       |
-    |network                   |Network                    |
-    |directory_network         |M2M between Siae & Network |
-    |listing_category & listing_category_translation | Sector|
-    |directory_listing_category|M2M between Siae & Sector  |
-    |directory_label           |SiaeLabel ("Labels & certifications") + OneToMany between Siae & Label|
-    |directory_offer           |SiaeOffer ("Prestations proposées") + OneToMany between Siae & Offer|
-    |directory_client_image    |SiaeClientReference ("Références clients") + OneToMany between Siae & SiaeClientReference|  # noqa
-    |user                      |User                       |
-    |directory_user            |M2M between Siae & User    |
+    |---------------------------|---------------------------|
+    |directory                  |Siae                       |
+    |network                    |Network                    |
+    |directory_network          |M2M between Siae & Network |
+    |listing_category & listing_category_translation |Sector|
+    |directory_listing_category |M2M between Siae & Sector  |
+    |directory_label            |SiaeLabel ("Labels & certifications") + OneToMany between Siae & Label|
+    |directory_offer            |SiaeOffer ("Prestations proposées") + OneToMany between Siae & Offer|
+    |directory_client_image     |SiaeClientReference ("Références clients") + OneToMany between Siae & SiaeClientReference|  # noqa
+    |directory_image            |Siae.image_name            |
+    |listing & listing_image & listing_translation |SiaeImage|
+    |user                       |User                       |
+    |directory_user             |M2M between Siae & User    |
+    |user_image                 |User.image_name            |
 
     Usage: poetry run python manage.py migrate_data_to_django
     """
@@ -193,19 +196,20 @@ class Command(BaseCommand):
 
         try:
             with connMy.cursor() as cur:
-                self.migrate_siae(cur)
+                # self.migrate_siae(cur)
+                # self.migrate_siae_logo(cur)
+                # self.migrate_network(cur)
+                # self.migrate_siae_network(cur)
+                # self.migrate_sector(cur)
+                # self.migrate_siae_sector(cur)
+                # self.migrate_siae_offer(cur)
+                # self.migrate_siae_label(cur)
+                # self.migrate_siae_client_reference_logo(cur)
                 self.migrate_siae_image(cur)
-                self.migrate_network(cur)
-                self.migrate_siae_network(cur)
-                self.migrate_sector(cur)
-                self.migrate_siae_sector(cur)
-                self.migrate_siae_offer(cur)
-                self.migrate_siae_label(cur)
-                self.migrate_siae_client_reference(cur)
-                self.migrate_user(cur)
-                self.migrate_user_image(cur)
-                self.migrate_siae_user(cur)
-                self.update_siae_contact()
+                # self.migrate_user(cur)
+                # self.migrate_user_image(cur)
+                # self.migrate_siae_user(cur)
+                # self.update_siae_contact()
         except Exception as e:
             # logger.exception(e)
             # print(e)
@@ -274,7 +278,7 @@ class Command(BaseCommand):
 
         print(f"Created {Siae.objects.count()} siaes !")
 
-    def migrate_siae_image(self, cur):
+    def migrate_siae_logo(self, cur):
         """
         Migrate Siae.image_name data.
         We only take the first one (position == 1)
@@ -506,7 +510,7 @@ class Command(BaseCommand):
 
         print(f"Created {SiaeLabel.objects.count()} labels !")
 
-    def migrate_siae_client_reference(self, cur):
+    def migrate_siae_client_reference_logo(self, cur):
         """
         Migrate SiaeClientReference data
         """
@@ -536,6 +540,124 @@ class Command(BaseCommand):
             SiaeClientReference.objects.create(**elem)
 
         print(f"Created {SiaeClientReference.objects.count()} client references !")
+
+    def migrate_siae_image(self, cur):  # noqa C901
+        """
+        Migrate SiaeImage data
+        - first get list from 'listing'
+        - enrich with 'listing_translation'
+        - finally get all the images from 'listing_image'
+
+        User -- Listing(s) -- Image(s)
+        """
+        print("-" * 80)
+        print("Migrating SiaeImage...")
+
+        SiaeImage.objects.all().delete()
+
+        siae_listing_list = list()
+
+        cur.execute("SELECT * FROM listing")
+        resp = cur.fetchall()
+
+        print(f"Found {len(resp)} Siae listings...")
+
+        for elem in resp:
+            # cleanup dates
+            cleanup_date_field_names(elem)
+            make_aware_dates(elem)
+
+            # rename fields
+            rename_dict_key(elem, "id", "listing_id")
+
+            # remove useless keys
+            elem_thin = {key: elem[key] for key in ["listing_id", "user_id", "created_at", "updated_at"]}
+            elem_thin["images"] = list()
+
+            siae_listing_list.append(elem_thin)
+
+        cur.execute("SELECT * FROM listing_translation")
+        resp = cur.fetchall()
+
+        for elem in resp:
+            # rename fields
+            rename_dict_key(elem, "title", "name")
+
+            # remove useless keys
+            elem_thin = {key: elem[key] for key in ["translatable_id", "name", "description"]}  # "rules"
+
+            # find corresponding siae_listing item, and enrich it
+            siae_listing_index = next(
+                (
+                    index
+                    for (index, si) in enumerate(siae_listing_list)
+                    if si["listing_id"] == elem_thin["translatable_id"]
+                ),
+                None,
+            )
+            if siae_listing_index:
+                siae_listing_list[siae_listing_index] |= elem_thin
+
+        cur.execute("SELECT * FROM listing_image")
+        resp = cur.fetchall()
+
+        print(f"Found {len(resp)} Siae images...")
+
+        for elem in resp:
+            # rename fields
+            rename_dict_key(elem, "name", "image_name")
+
+            # remove useless keys
+            elem_thin = {key: elem[key] for key in ["listing_id", "image_name", "position"]}
+
+            # find corresponding siae_listing item, and enrich it
+            siae_listing_index = next(
+                (index for (index, si) in enumerate(siae_listing_list) if si["listing_id"] == elem_thin["listing_id"]),
+                None,
+            )
+            if siae_listing_index:
+                siae_listing_list[siae_listing_index]["images"].append(elem_thin)
+
+        error_count = {"listing_without_image": 0, "user_not_found": 0, "user_no_siae": 0, "user_multiple_siae": 0}
+        for siae_listing in siae_listing_list:
+            if not len(siae_listing["images"]):
+                # print("images missing", siae_listing)
+                error_count["listing_without_image"] += 1
+            else:
+                for (index, siae_image) in enumerate(siae_listing["images"]):
+                    siae_image_dict = siae_listing.copy() | siae_image
+
+                    # rename fields
+                    rename_dict_key(siae_image_dict, "listing_id", "c4_listing_id")
+                    rename_dict_key(siae_image_dict, "position", "order")
+
+                    users = User.objects.prefetch_related("siaes").filter(c4_id=siae_image_dict["user_id"])
+                    if users.count() == 0:
+                        # print("missing user...", siae_image_dict)
+                        error_count["user_not_found"] += 1
+                    else:
+                        if users.first().siaes.count() > 1:
+                            # print("which siae?", siae_image_dict)
+                            error_count["user_multiple_siae"] += 1
+                        elif users.first().siaes.count() == 0:
+                            # print("no siae...", siae_image_dict)
+                            error_count["user_no_siae"] += 1
+                        else:  # count == 1
+                            # get siae_id
+                            siae = users.first().siaes.first()
+                            siae_image_dict["siae_id"] = siae.id
+
+                            # we want to group the images by their listing (by updating their order)
+                            # listing_count = Siae
+
+                            # remove useless keys
+                            [siae_image_dict.pop(key) for key in ["translatable_id", "user_id", "images"]]
+
+                            # create object
+                            SiaeImage.objects.create(**siae_image_dict)
+
+        print(f"Created {SiaeImage.objects.count()} siae images !")
+        print("Errors", error_count)
 
     def migrate_user(self, cur):
         """

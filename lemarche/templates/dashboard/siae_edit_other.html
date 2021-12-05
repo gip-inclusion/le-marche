@@ -1,5 +1,5 @@
 {% extends "dashboard/siae_edit_base.html" %}
-{% load static bootstrap4 %}
+{% load static bootstrap4 addstr %}
 
 {% block content_siae_form %}
 <form method="POST" action="" class="mb-3 mb-lg-5">
@@ -87,6 +87,24 @@
 {% endblock %}
 
 {% block extra_js %}
+<script type="text/javascript" src="{% static 'vendor/dropzone-5.9.3/dropzone.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/s3_upload.js' %}"></script>
+{{ s3_form_values|json_script:"s3-form-values" }}
+{{ s3_upload_config|json_script:"s3-upload-config" }}
+<script type="text/javascript">
+// loop on each dropzone
+Array.from(document.querySelectorAll(".dropzone")).forEach(function(element) {
+    s3UploadInit({
+        dropzoneSelector: `#${element.id}`,
+        callbackLocationSelector: `#${element.id.replace('image_form', 'image_url')}`,
+        s3FormValuesId: "s3-form-values",
+        s3UploadConfigId: "s3-upload-config",
+        // Not really nice
+        sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
+        sentryCsrfToken: "{{ csrf_token }}",
+    });
+})
+</script>
 <script type="text/javascript">
 /**
  * Add formset items dynamically
