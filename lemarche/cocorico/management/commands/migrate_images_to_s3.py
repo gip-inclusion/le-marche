@@ -5,7 +5,7 @@ import boto3
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from lemarche.siaes.models import Siae, SiaeClientReference
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeImage
 from lemarche.users.models import User
 from lemarche.utils.s3 import API_CONNECTION_DICT
 
@@ -21,9 +21,6 @@ ftp = FTP(
 bucket_name = settings.S3_STORAGE_BUCKET_NAME
 resource = boto3.resource("s3", **API_CONNECTION_DICT)
 bucket = resource.Bucket(bucket_name)
-USER_IMAGE_FOLDER_NAME = "user_image"
-SIAE_LOGO_FOLDER_NAME = "siae_logo"
-SIAE_CLIENT_REFERENCE_LOGO_FOLDER_NAME = "client_reference_logo"
 
 # Content-Type file mapping
 CONTENT_TYPE_MAPPING = {
@@ -43,10 +40,11 @@ def build_image_url(endpoint, bucket_name, image_key):
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        self.clean_bucket()
-        self.migrate_user_images()
-        self.migrate_siae_logos()
-        self.migrate_siae_client_reference_logos()
+        # self.clean_bucket()
+        # self.migrate_user_images()
+        # self.migrate_siae_logos()
+        # self.migrate_siae_client_reference_logos()
+        self.migrate_siae_images()
 
     def clean_bucket(self):
         bucket.objects.delete()
@@ -75,7 +73,7 @@ class Command(BaseCommand):
             image_extension = user.image_name.split(".")[1]
             if image_extension in CONTENT_TYPE_MAPPING:
                 # Step 2: upload image to S3
-                s3_image_key = USER_IMAGE_FOLDER_NAME + "/" + user.image_name
+                s3_image_key = settings.USER_IMAGE_FOLDER_NAME + "/" + user.image_name
                 bucket.upload_file(
                     user.image_name,
                     s3_image_key,
@@ -92,7 +90,7 @@ class Command(BaseCommand):
             os.remove(user.image_name)
 
             progress += 1
-            if (progress % 500) == 0:
+            if (progress % 100) == 0:
                 print(f"{progress}...")
 
         print(f"Migrated {users_with_images.count()} user images !")
@@ -120,7 +118,7 @@ class Command(BaseCommand):
             image_extension = siae.image_name.split(".")[1]
             if image_extension in CONTENT_TYPE_MAPPING:
                 # Step 2: upload image to S3
-                s3_image_key = SIAE_LOGO_FOLDER_NAME + "/" + siae.image_name
+                s3_image_key = settings.SIAE_LOGO_FOLDER_NAME + "/" + siae.image_name
                 bucket.upload_file(
                     siae.image_name,
                     s3_image_key,
@@ -137,7 +135,7 @@ class Command(BaseCommand):
             os.remove(siae.image_name)
 
             progress += 1
-            if (progress % 500) == 0:
+            if (progress % 100) == 0:
                 print(f"{progress}...")
 
         print(f"Migrated {siaes_with_logos.count()} siae images !")
@@ -167,7 +165,7 @@ class Command(BaseCommand):
             image_extension = client_reference.image_name.split(".")[1]
             if image_extension in CONTENT_TYPE_MAPPING:
                 # Step 2: upload image to S3
-                s3_image_key = SIAE_CLIENT_REFERENCE_LOGO_FOLDER_NAME + "/" + client_reference.image_name
+                s3_image_key = settings.SIAE_CLIENT_REFERENCE_LOGO_FOLDER_NAME + "/" + client_reference.image_name
                 bucket.upload_file(
                     client_reference.image_name,
                     s3_image_key,
@@ -181,14 +179,61 @@ class Command(BaseCommand):
                 client_reference.save()
             else:
                 print(
-                    f"Image extension error / Client reference {client_reference.id} / Image name {client_reference.image_name}"  # noqa
+                    f"Image extension error / SiaeClientReference {client_reference.id} / Image name {client_reference.image_name}"  # noqa
                 )
 
             # Step 4: delete local image
             os.remove(client_reference.image_name)
 
             progress += 1
-            if (progress % 500) == 0:
+            if (progress % 100) == 0:
                 print(f"{progress}...")
 
         print(f"Migrated {client_references_with_logos.count()} client reference images !")
+
+    def migrate_siae_images(self):
+        """ """
+        print("-" * 80)
+        print("Migrating Siae images...")
+
+        ftp = FTP(
+            host=os.environ.get("COCORICO_FTP_HOST"),
+            user=os.environ.get("COCORICO_FTP_USER"),
+            passwd=os.environ.get("COCORICO_FTP_PASSWORD"),
+        )
+        ftp.cwd("listings/images")
+
+        siae_images = SiaeImage.objects.exclude(image_name="").exclude(image_name__isnull=True)
+        progress = 0
+
+        for siae_image in siae_images:
+            # Step 1: download image from FTP
+            with open(siae_image.image_name, "wb") as f:
+                ftp.retrbinary("RETR " + siae_image.image_name, f.write)
+
+            image_extension = siae_image.image_name.split(".")[1]
+            if image_extension in CONTENT_TYPE_MAPPING:
+                # Step 2: upload image to S3
+                s3_image_key = settings.SIAE_IMAGE_FOLDER_NAME + "/" + siae_image.image_name
+                bucket.upload_file(
+                    siae_image.image_name,
+                    s3_image_key,
+                    ExtraArgs={"ACL": "public-read", "ContentType": CONTENT_TYPE_MAPPING[image_extension]},
+                )
+
+                # Step 3: update object
+                siae_image.image_url = build_image_url(API_CONNECTION_DICT["endpoint_url"], bucket_name, s3_image_key)
+                siae_image.save()
+            else:
+                print(
+                    f"Image extension error / SiaeImage {siae_image.id} / Image name {siae_image.image_name}"  # noqa
+                )
+
+            # Step 4: delete local image
+            os.remove(siae_image.image_name)
+
+            progress += 1
+            if (progress % 100) == 0:
+                print(f"{progress}...")
+
+        print(f"Migrated {siae_images.count()} siae images !")

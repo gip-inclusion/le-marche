@@ -2,7 +2,7 @@ from django import forms
 from django.forms.models import inlineformset_factory
 
 from lemarche.networks.models import Network
-from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeImage, SiaeLabel, SiaeOffer
 from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.www.siaes.forms import SECTOR_FORM_QUERYSET
@@ -228,3 +228,12 @@ class SiaeLabelForm(forms.ModelForm):
 
 
 SiaeLabelFormSet = inlineformset_factory(Siae, SiaeLabel, form=SiaeLabelForm, extra=0, can_delete=True)
+
+
+class SiaeImageForm(forms.ModelForm):
+    class Meta:
+        model = SiaeImage
+        fields = ["name", "image_url"]  # TODO: make name mandatory ?
+
+
+SiaeImageFormSet = inlineformset_factory(Siae, SiaeImage, form=SiaeImageForm, extra=0, can_delete=True)

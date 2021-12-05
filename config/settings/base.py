@@ -270,6 +270,11 @@ S3_STORAGE_ENDPOINT_DOMAIN = env.str("CELLAR_ADDON_HOST", "")
 S3_STORAGE_BUCKET_NAME = env.str("S3_STORAGE_BUCKET_NAME", "")
 S3_STORAGE_BUCKET_REGION = env.str("S3_STORAGE_BUCKET_REGION", "")
 
+SIAE_LOGO_FOLDER_NAME = "siae_logo"
+SIAE_IMAGE_FOLDER_NAME = "siae_image"
+SIAE_CLIENT_REFERENCE_LOGO_FOLDER_NAME = "client_reference_logo"
+USER_IMAGE_FOLDER_NAME = "user_image"
+
 STORAGE_UPLOAD_KINDS = {
     "default": {
         "allowed_mime_types": ["image/png", "image/svg+xml", "image/gif", "image/jpg", "image/jpeg"],  # ["image/*"] ?
@@ -280,13 +285,16 @@ STORAGE_UPLOAD_KINDS = {
         "timeout": 20000,  # in ms
     },
     "siae_logo": {
-        "key_path": "siae_logo",
+        "key_path": SIAE_LOGO_FOLDER_NAME,
+    },
+    "siae_image": {
+        "key_path": SIAE_IMAGE_FOLDER_NAME,
     },
     "client_reference_logo": {
-        "key_path": "client_reference_logo",
+        "key_path": SIAE_CLIENT_REFERENCE_LOGO_FOLDER_NAME,
     },
     "user_image": {
-        "key_path": "user_image",
+        "key_path": USER_IMAGE_FOLDER_NAME,
     },
 }
 
