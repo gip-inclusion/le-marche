@@ -78,8 +78,14 @@
 			}
 		}
 
-		.btn-link {
+		.btn-favorite {
 			z-index: 10;
+			position: absolute;
+			// top: 1rem;
+			// right: 1rem;
+			// padding: 0;
+			top: 0;
+			right: 0;
 		}
 
 		.card-footer {
@@ -209,15 +215,6 @@
 				padding: 1rem;
 				box-shadow: 0 2px 9px 0 rgba(56,56,56,.1) !important;
 			}
-	}
-
-	.profile .btn-link {
-		text-align: left !important;
-	}
-
-	.profile .btn-link:hover i::before,
-	.profile .btn-link.is-active i::before {
-		content:'\e81f';
 	}
 
 	.profile_capsule h3 {

@@ -195,8 +195,9 @@
 </section>
 {% endblock %}
 
-{% block modal %}
-{% include "includes/_user_type_modal.html" with paginator_count=paginator.count %}
+{% block modals %}
+    {% include "includes/_user_type_modal.html" with search_results_count=paginator.count %}
+    {% include "siaes/_favorite_modal.html" %}
 {% endblock %}
 
 {% block extra_js %}
@@ -243,4 +244,22 @@ document.addEventListener("DOMContentLoaded", function() {
     map.fitBounds(geojson.getBounds());
 });
 </script>
+{% if user.is_authenticated %}
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    $('#favorite_modal').on('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        var button = $(event.relatedTarget);
+        // Extract info from data-* attributes
+        var siaeId = button.data('siae-id');
+        var siaeNameDisplay = button.data('siae-name-display');
+        // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+        // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+        var modal = $(this)
+        modal.find('#siae-name-display').text(siaeNameDisplay);
+        // modal.find('.modal-body input').val(recipient)
+    });
+});
+</script>
+{% endif %}
 {% endblock %}
