@@ -49,6 +49,15 @@
                         <div class="row">
                             <div class="col-sm-12">
                                 <h3 class="h3 mb-3 mt-1">{{ siae.name_display }}</h3>
+                                {% if user.is_authenticated %}
+                                    <a href="#" id="favorite-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_modal">
+                                        <img src="{% static_theme_images 'ico-star-line.svg' %}" height="24" alt="Mettre en favori" />
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'auth:login' %}?message=login-to-favorite&next={% url 'siae:detail' siae.slug %}" class="btn btn-favorite p-0">
+                                        <img src="{% static_theme_images 'ico-star-line.svg' %}" height="24" alt="Mettre en favori" />
+                                    </a>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="row">
@@ -358,6 +367,10 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block modals %}
+    {% include "siaes/_favorite_modal.html" with siae=siae %}
 {% endblock %}
 
 {% block extra_js %}

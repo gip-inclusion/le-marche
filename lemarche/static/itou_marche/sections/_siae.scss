@@ -78,16 +78,6 @@
 			}
 		}
 
-		.btn-favorite {
-			z-index: 10;
-			position: absolute;
-			// top: 1rem;
-			// right: 1rem;
-			// padding: 0;
-			top: 0;
-			right: 0;
-		}
-
 		.card-footer {
 			background-color: $gray-400 !important;
 			margin: 0;
@@ -428,4 +418,14 @@
 
 .si-separator {
 	border-bottom: 5px solid $marche;
+}
+
+.btn-favorite {
+	z-index: 10;
+	position: absolute;
+	// top: 1rem;
+	// right: 1rem;
+	// padding: 0;
+	top: 0;
+	right: 0;
 }

@@ -3,11 +3,12 @@ import datetime
 from urllib.parse import quote
 
 import xlwt
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.core.serializers import serialize
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -180,10 +181,16 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeFavoriteForm
     context_object_name = "siae"
     queryset = Siae.objects.prefetch_related("favorite_lists").all()
-    success_message = "La structure a été ajouté à votre liste d'achat"
+    success_message = "La structure a été ajouté à votre liste d'achat."
     success_url = reverse_lazy("siae:search_results")
 
     def form_valid(self, form):
+        """
+        We need to:
+        - add the Siae to the corresponding FavoriteLists
+        - remove the Siae of some FavoriteLists if needed
+        - keep track of addition & removal for the success_message
+        """
         siae = form.save(commit=False)
         siae_favorite_lists_form = list()
 
@@ -199,12 +206,9 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             )
             siae_favorite_lists_form.append(new_favorite_list.id)
 
-        print("siae_favorite_lists_form", siae_favorite_lists_form)
         # we want to get the list of favorite_lists that were added & removed from the siae
         siae_favorite_lists_before = list(siae.favorite_lists.values_list("id", flat=True))
         siae_favorite_lists_added = list(set(siae_favorite_lists_form).difference(siae_favorite_lists_before))
-        print("siae_favorite_lists_before", siae_favorite_lists_before)
-        print("siae_favorite_lists_added", siae_favorite_lists_added)
         user_favorite_lists = list(self.request.user.favorite_lists.values_list("id", flat=True))
         siae_favorite_lists_absent = list(set(user_favorite_lists).difference(siae_favorite_lists_form))
         siae_favorite_lists_removed = list(set(siae_favorite_lists_absent).intersection(siae_favorite_lists_before))
@@ -215,4 +219,27 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         for list_id in siae_favorite_lists_removed:
             siae.favorite_lists.remove(list_id)
 
-        return super().form_valid(form)
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            self.get_success_message(form.cleaned_data, siae, siae_favorite_lists_added, siae_favorite_lists_removed),
+        )
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        """Redirect to the previous page."""
+        request_referer = self.request.META.get("HTTP_REFERER", "")
+        if request_referer:
+            return request_referer
+        return super().get_success_url()
+
+    def get_success_message(self, cleaned_data, siae, siae_favorite_lists_added, siae_favorite_lists_removed):
+        """Dynamic success message depending if siae was added or removed from favorite lists."""
+        success_message = ""
+        if len(siae_favorite_lists_added) or len(siae_favorite_lists_removed):
+            success_message = f"La structure <strong>{siae.name_display}</strong> a été"
+            if len(siae_favorite_lists_added):
+                success_message += f" ajoutée à {len(siae_favorite_lists_added)} de vos listes d'achats."
+            else:
+                success_message += f" supprimée de {len(siae_favorite_lists_removed)} de vos listes d'achats."
+        return success_message
