@@ -2,15 +2,45 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <strong class="title">
-                    Liste d'achat
-                </strong>
+                <h3>Liste d'achat : ajouter <strong id="siae-name-display"></strong></h3>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body home-content-body">
-                <p>Ajouter <strong id="siae-name-display"></strong> à vos favoris</p>
+                {% if siae.slug %}
+                <form method="POST" action="{% url 'siae:favorite_lists' siae.slug %}">
+                {% else %}
+                <form method="POST" action="{% url 'siae:favorite_lists' 'siae-slug-to-replace' %}">
+                {% endif %}
+                    {% csrf_token %}
+                    {% if user.favorite_lists.count %}
+                    <div id="form-group-favorite-lists">
+                        <ul id="id_favorite_lists">
+                            {% for list in user.favorite_lists.all %}
+                            <li>
+                                <input type="checkbox" name="favorite_lists" value="{{ list.id }}" id="{{ list.id }}">
+                                <label for="{{ list.id }}" class="fr-label">{{ list.name }}</label>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info" role="alert">
+                        Vous n'avez pas encore créé de liste
+                    </div>
+                    {% endif %}
+                    <div class="form-group">
+                        <label for="id_new_favorite_list" class="fr-label">Ajouter cette structure à une nouvelle liste</label>
+                        <input type="text" name="new_favorite_list" id="id_new_favorite_list" class="form-control" placeholder="Nom de la liste">
+                    </div>
+                    <br />
+                    <footer>
+                        <button class="btn btn-primary" type="submit">
+                            Ajouter cette structure
+                        </button>
+                    </footer>
+                </form>
             </div>
             <!-- <div class="modal-footer"></div> -->
         </div>

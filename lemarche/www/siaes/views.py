@@ -4,19 +4,21 @@ from urllib.parse import quote
 
 import xlwt
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.core.serializers import serialize
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
+from lemarche.favorites.models import FavoriteList
 from lemarche.siaes.models import Siae
 from lemarche.utils.export import SIAE_HEADER, generate_siae_row
 from lemarche.utils.tracker import extract_meta_from_request, track
-from lemarche.www.siaes.forms import SiaeSearchForm
+from lemarche.www.siaes.forms import SiaeFavoriteForm, SiaeSearchForm
 
 
 CURRENT_SEARCH_QUERY_COOKIE_NAME = "current_search"
@@ -170,3 +172,47 @@ class SiaeDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context["current_search_query"] = self.request.session.get(CURRENT_SEARCH_QUERY_COOKIE_NAME, "")
         return context
+
+
+class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    http_method_names = ["post"]
+    template_name = "siaes/_favorite_modal.html"
+    form_class = SiaeFavoriteForm
+    context_object_name = "siae"
+    queryset = Siae.objects.prefetch_related("favorite_lists").all()
+    success_message = "La structure a été ajouté à votre liste d'achat"
+    success_url = reverse_lazy("siae:search_results")
+
+    def form_valid(self, form):
+        siae = form.save(commit=False)
+        siae_favorite_lists_form = list()
+
+        if self.request.POST.getlist("favorite_lists"):
+            for list_id_str in self.request.POST.getlist("favorite_lists"):
+                siae_favorite_lists_form.append(int(list_id_str))
+
+        # new favorite_list? create it
+        if self.request.POST.get("new_favorite_list"):
+            new_favorite_list = FavoriteList.objects.create(
+                name=self.request.POST.get("new_favorite_list"),
+                user=self.request.user,
+            )
+            siae_favorite_lists_form.append(new_favorite_list.id)
+
+        print("siae_favorite_lists_form", siae_favorite_lists_form)
+        # we want to get the list of favorite_lists that were added & removed from the siae
+        siae_favorite_lists_before = list(siae.favorite_lists.values_list("id", flat=True))
+        siae_favorite_lists_added = list(set(siae_favorite_lists_form).difference(siae_favorite_lists_before))
+        print("siae_favorite_lists_before", siae_favorite_lists_before)
+        print("siae_favorite_lists_added", siae_favorite_lists_added)
+        user_favorite_lists = list(self.request.user.favorite_lists.values_list("id", flat=True))
+        siae_favorite_lists_absent = list(set(user_favorite_lists).difference(siae_favorite_lists_form))
+        siae_favorite_lists_removed = list(set(siae_favorite_lists_absent).intersection(siae_favorite_lists_before))
+
+        # update siae.favorite_lists if added & removed
+        for list_id in siae_favorite_lists_added:
+            siae.favorite_lists.add(list_id)
+        for list_id in siae_favorite_lists_removed:
+            siae.favorite_lists.remove(list_id)
+
+        return super().form_valid(form)

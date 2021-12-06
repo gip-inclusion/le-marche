@@ -17,7 +17,7 @@ class FavoriteList(models.Model):
         "siaes.Siae",
         through="favorites.FavoriteItem",
         verbose_name="Structures en favoris",
-        related_name="siaes",
+        related_name="favorite_lists",
         blank=True,
     )
 
