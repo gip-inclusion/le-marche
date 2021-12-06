@@ -34,11 +34,17 @@ class SiaeSearchResultsView(FormMixin, ListView):
     paginator_class = Paginator
 
     def get_queryset(self):
-        """Filter results."""
+        """
+        Filter results.
+        - filter and order using the SiaeSearchForm
+        - if the user is authenticated, annotate with favorite info
+        """
         filter_form = SiaeSearchForm(data=self.request.GET)
         perimeter = filter_form.get_perimeter()
         results = filter_form.filter_queryset(perimeter)
         results_ordered = filter_form.order_queryset(results, perimeter)
+        if self.request.user.is_authenticated:
+            results_ordered = results_ordered.annotate_with_user_favorite_lists_count(self.request.user)
         return results_ordered
 
     def get_context_data(self, **kwargs):
@@ -165,6 +171,15 @@ class SiaeDetailView(DetailView):
                 return redirect(reverse_lazy("siae:detail", args=[siae.slug]))
             except:  # noqa
                 raise Http404
+
+    def get_queryset(self):
+        """
+        If the user is authenticated, annotate with favorite info
+        """
+        qs = super().get_queryset()
+        if self.request.user.is_authenticated:
+            qs = qs.annotate_with_user_favorite_lists_count(self.request.user)
+        return qs
 
     def get_context_data(self, **kwargs):
         """

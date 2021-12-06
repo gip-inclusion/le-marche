@@ -6,7 +6,7 @@ from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django.contrib.postgres.fields import ArrayField
 from django.db import IntegrityError, models, transaction
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
 from django.urls import reverse
@@ -103,6 +103,14 @@ class SiaeQuerySet(models.QuerySet):
 
     def within(self, point, distance_km=0):
         return self.filter(coords__dwithin=(point, D(km=distance_km)))
+
+    def annotate_with_user_favorite_lists_count(self, user):
+        """
+        Enrich each Siae with the number of occurences in the user's favorite lists
+        """
+        return self.prefetch_related("favorite_lists").annotate(
+            in_user_favorite_lists_count=Count("favorite_lists", filter=Q(favorite_lists__user=user))
+        )
 
 
 class Siae(models.Model):
