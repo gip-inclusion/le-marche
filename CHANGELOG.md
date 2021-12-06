@@ -11,18 +11,32 @@ Ressources :
 - Pages
     - Afficher un bandeau temporairement pour certains type d'utilisateurs (acheteur, partenaires) pour les inciter à échanger avec nous
     - Ajout d'un nouveau logo de partenaire
+    - Ajout d'une page `/stats` qui pointe vers notre dashboard Metabase public
 - Recherche / Fiche
     - Permettre le téléchargement au format XLS
 - Données
     - Script de synchronisation des structures avec le C1
     - Script de synchronisation avec les données d'API Entreprise
+    - Importé ~1200 images de "réalisations" des structures depuis Cocorico
 
 ### Modifié
 
+- Pages
+    - Refonte de la page d'accueil (2 boutons actions à la place de la recherche)
+    - Améliorations de l'accessibilité de la page d'accueil (navigation avec le clavier)
 - Inscription / Connexion
     - Demander le type de partenaire lors de l'inscription
 - Recherche / Fiche
     - Rendre les numéro de téléphone cliquable (`href="tel:`)
+    - Afficher les images des "réalisations" des structures
+- Espace utilisateur
+    - Permettre de rajouter des "réalisations" à sa structure
+- Données
+    - Réparé la mise à jour en temps réel des champs `_count` de chaque structure
+    - Ajout manuel de ~200 liens utilisateur-structure (source : mailing)
+- Tech
+    - Le thème est maintenant synchronisé directement depuis son repo github (comme le C1)
+    - Ajout d'un Makefile
 
 ### Supprimé
 
