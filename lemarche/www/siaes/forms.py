@@ -62,6 +62,10 @@ class SiaeSearchForm(forms.Form):
         required=False,
     )
 
+    favorite_list = forms.ModelChoiceField(
+        queryset=FavoriteList.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
+    )
+
     def clean(self):
         """
         We override the clean method to manage 2 edge cases:
@@ -108,6 +112,10 @@ class SiaeSearchForm(forms.Form):
         network = self.cleaned_data.get("networks", None)
         if network:
             qs = qs.filter(networks__in=[network])
+
+        favorite_list = self.cleaned_data.get("favorite_list", None)
+        if favorite_list:
+            qs = qs.filter(favorite_lists__in=[favorite_list])
 
         # avoid duplicates
         qs = qs.distinct()
