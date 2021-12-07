@@ -407,19 +407,26 @@
 		max-width: 100px;
 	}
 
-	#image-grid {
-		.col-sm-4 {
-			padding-top: 8px;
-			padding-bottom: 8px;
-		}
-
-		@media (min-width:576px) {
-			.col-sm-4 {
-				padding-top: 16px;
-				padding-bottom: 16px;
+	#user_update_cta {
+	
+		.col-12 {
+	
+			.card {
+				position: relative;
+	
+				@media (min-width:992px) {
+					background-image: url('/static/images/partenaires-illu-01.png');
+					background-repeat: no-repeat;
+					background-position: right center;
+					background-size: auto 100%;
+				}			
+			}
+	
+			.card-footer {
+				background-color: transparent !important;
 			}
 		}
-	}
+	} 	
 }
 
 .si-separator {
