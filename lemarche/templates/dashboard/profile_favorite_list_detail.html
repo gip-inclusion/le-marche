@@ -1,0 +1,44 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Mes listes d'achats{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}#favoris">Mes listes d'achats</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ favorite_list.name }}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="pt-4 pb-6">
+    <div class="container">
+        <h2 class="mb-3 mb-lg-5">
+            <strong>{{ favorite_list.name }}</strong>
+        </h2>
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                {% if favorite_list.siaes.count == 0 %}
+                <div class="alert alert-info" role="alert">
+                    Vous n'avez pas encore ajouté de structures à cette liste !
+                </div>
+                {% endif %}
+                {% for siae in favorite_list.siaes.all %}
+                    {% include "siaes/_card_search_result.html" with siae=siae %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

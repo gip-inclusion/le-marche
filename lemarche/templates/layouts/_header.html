@@ -35,6 +35,12 @@
                                 Valoriser vos achats
                             </a>
                         </li>
+                        <li>
+                            <a href="{% url 'dashboard:home' %}#favoris">
+                                <span class="ml-1"><img src="{% static_theme_images 'ico-star-line.svg' %}" alt="Utilisateur"></span>
+                                Listes d'achats ({{ user.favorite_lists.count }})
+                            </a>
+                        </li>
                         {% if user.is_authenticated %}
                         <li>
                             <div class="dropdown">

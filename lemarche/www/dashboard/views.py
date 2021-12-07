@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
+from lemarche.favorites.models import FavoriteList
 from lemarche.siaes.models import Siae
 from lemarche.utils.s3 import S3Upload
 from lemarche.utils.tracker import extract_meta_from_request, track
@@ -22,7 +23,7 @@ from lemarche.www.dashboard.forms import (
     SiaeSearchAdoptConfirmForm,
     SiaeSearchBySiretForm,
 )
-from lemarche.www.dashboard.mixins import SiaeOwnerRequiredMixin, SiaeUserRequiredMixin
+from lemarche.www.dashboard.mixins import FavoriteListOwnerRequiredMixin, SiaeOwnerRequiredMixin, SiaeUserRequiredMixin
 
 
 class DashboardHomeView(LoginRequiredMixin, DetailView):
@@ -43,10 +44,17 @@ class ProfileEditView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return self.request.user
 
 
+class ProfileFavoriteDetailView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin, DetailView):
+    template_name = "dashboard/profile_favorite_list_detail.html"
+    context_object_name = "favorite_list"
+    queryset = FavoriteList.objects.prefetch_related("siaes").all()
+
+
 class SiaeSearchBySiretView(LoginRequiredMixin, SiaeUserRequiredMixin, FormMixin, ListView):
     form_class = SiaeSearchBySiretForm
     template_name = "dashboard/siae_search_by_siret.html"
     context_object_name = "siaes"
+    # queryset =
 
     def get_queryset(self):
         """Filter results."""
