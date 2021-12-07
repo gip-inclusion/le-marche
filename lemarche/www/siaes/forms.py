@@ -1,12 +1,11 @@
 from django import forms
-from django.contrib.gis.db.models.functions import Distance
 from django.db.models import BooleanField, Case, Exists, OuterRef, Value, When
 from django.db.models.functions import NullIf
 
 from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
-from lemarche.siaes.models import Siae, SiaeOffer
+from lemarche.siaes.models import Siae
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
@@ -162,15 +161,6 @@ class SiaeSearchForm(forms.Form):
         - if the search is on a CITY perimeter, we order by coordinates first
         """
         ORDER_BY_FIELDS = ["-has_offer", "-has_description", "-has_user", "name"]
-        # annotate on distance to siae if CITY searched
-        # TODO: avoid this second Perimeter query...
-        search_perimeter = self.cleaned_data.get("perimeter", None)
-        if search_perimeter:
-            perimeter = Perimeter.objects.get(slug=search_perimeter)
-            if perimeter and perimeter.kind == Perimeter.KIND_CITY:
-                qs = qs.annotate(distance=Distance("coords", perimeter.coords)).order_by("distance")
-                # ORDER_BY_FIELDS = ["-has_offer", "-has_description", "distance", "-has_user", "name"]
-                # ORDER_BY_FIELDS = ["distance"] + ORDER_BY_FIELDS
         # annotate on SiaeOffer FK exists
         qs = qs.annotate(
             has_offer=Case(
