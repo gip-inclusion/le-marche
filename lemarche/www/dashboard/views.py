@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, ListView, UpdateView
+from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
 from lemarche.favorites.models import FavoriteList
@@ -48,6 +48,15 @@ class ProfileFavoriteDetailView(LoginRequiredMixin, FavoriteListOwnerRequiredMix
     template_name = "dashboard/profile_favorite_list_detail.html"
     context_object_name = "favorite_list"
     queryset = FavoriteList.objects.prefetch_related("siaes").all()
+
+
+class ProfileFavoriteDeleteView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin, SuccessMessageMixin, DeleteView):
+    template_name = "dashboard/profile_favorite_list_delete.html"
+    # context_object_name = "favorite_list"
+    model = FavoriteList
+    # queryset = FavoriteList.objects.prefetch_related("siaes").all()
+    success_message = "Votre liste d'achat a été supprimée avec succès."
+    success_url = reverse_lazy("dashboard:home")
 
 
 class SiaeSearchBySiretView(LoginRequiredMixin, SiaeUserRequiredMixin, FormMixin, ListView):

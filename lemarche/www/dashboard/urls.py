@@ -4,6 +4,7 @@ from django.views.generic.base import RedirectView
 from lemarche.www.dashboard.views import (
     DashboardHomeView,
     ProfileEditView,
+    ProfileFavoriteDeleteView,
     ProfileFavoriteDetailView,
     SiaeEditInfoContactView,
     SiaeEditOfferView,
@@ -21,6 +22,7 @@ urlpatterns = [
     path("", DashboardHomeView.as_view(), name="home"),
     path("modifier/", ProfileEditView.as_view(), name="profile_edit"),
     path("favoris/<str:slug>/", ProfileFavoriteDetailView.as_view(), name="profile_favorite_list_detail"),
+    path("favoris/<str:slug>/supprimer/", ProfileFavoriteDeleteView.as_view(), name="profile_favorite_list_delete"),
     path("prestataires/rechercher/", SiaeSearchBySiretView.as_view(), name="siae_search_by_siret"),
     path("prestataires/<str:slug>/adopter/", SiaeSearchAdoptConfirmView.as_view(), name="siae_search_adopt_confirm"),
     path(

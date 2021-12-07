@@ -43,6 +43,10 @@
 
         <div class="row">
             <div class="col-12 col-lg-8">
+                <a href="#" class="btn btn-outline-primary" data-toggle="modal" data-target="#favorite_list_delete_modal">
+                    Supprimer la liste
+                </a>
+                {% if favorite_list.siaes.count > 0 %}
                 <div class="btn-group">
                     <a href="{% url 'siae:search_results_download' %}?favorite_list={{ favorite_list.slug }}&format=xls" id="csv-submit" class="btn btn-block btn-outline-primary" target="_blank">
                         Télécharger la liste (.xls)
@@ -56,8 +60,13 @@
                         </a>
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block modals %}
+    {% include "siaes/_favorite_list_delete_modal.html" with favorite_list=favorite_list %}
 {% endblock %}
