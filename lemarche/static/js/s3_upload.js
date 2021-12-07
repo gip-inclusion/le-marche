@@ -53,6 +53,7 @@ window.s3UploadInit = function s3UploadInit({
     timeout: uploadConfig["timeout"], // default 3000, in ms
     maxFiles: uploadConfig["max_files"],
     acceptedFiles: uploadConfig["allowed_mime_types"],
+    // UI config
     addRemoveLinks: true,
     // translations
     dictFallbackMessage: "Ce navigateur n'est pas compatible",

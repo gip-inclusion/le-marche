@@ -7,6 +7,8 @@ from django.contrib.gis.measure import D
 from django.contrib.postgres.fields import ArrayField
 from django.db import IntegrityError, models, transaction
 from django.db.models import Q
+from django.db.models.signals import m2m_changed, post_delete, post_save
+from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_str
@@ -324,12 +326,13 @@ class Siae(models.Model):
     import_raw_object = models.JSONField(verbose_name="Donnée JSON brute", editable=False, null=True)
 
     # stats
-    user_count = models.IntegerField(verbose_name="Nombre d'utilisateurs", default=0)
-    sector_count = models.IntegerField(verbose_name="Nombre de secteurs d'activité", default=0)
-    network_count = models.IntegerField(verbose_name="Nombre de réseaux", default=0)
-    offer_count = models.IntegerField(verbose_name="Nombre de prestations", default=0)
-    client_reference_count = models.IntegerField(verbose_name="Nombre de références clients", default=0)
-    label_count = models.IntegerField(verbose_name="Nombre de labels", default=0)
+    user_count = models.IntegerField("Nombre d'utilisateurs", default=0)
+    sector_count = models.IntegerField("Nombre de secteurs d'activité", default=0)
+    network_count = models.IntegerField("Nombre de réseaux", default=0)
+    offer_count = models.IntegerField("Nombre de prestations", default=0)
+    client_reference_count = models.IntegerField("Nombre de références clients", default=0)
+    label_count = models.IntegerField("Nombre de labels", default=0)
+    image_count = models.IntegerField("Nombre d'images", default=0)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
@@ -358,21 +361,19 @@ class Siae(models.Model):
         if with_uuid:
             self.slug += f"-{str(uuid4())[:4]}"
 
-    def set_stats(self):
+    def set_related_counts(self):
         if self.id:
-            self.user_count = self.users.count()
-            self.sector_count = self.sectors.count()
-            self.network_count = self.networks.count()
             self.offer_count = self.offers.count()
             self.client_reference_count = self.client_references.count()
             self.label_count = self.labels.count()
+            self.image_count = self.images.count()
 
     def save(self, *args, **kwargs):
         """
-        - update the object stats
+        - update the object stats (only related fields: for M2M, see m2m_changed signal)
         - generate the slug field
         """
-        self.set_stats()
+        self.set_related_counts()
         try:
             self.set_slug()
             with transaction.atomic():
@@ -471,8 +472,8 @@ class Siae(models.Model):
         has_other_fields = all(
             getattr(self, field)
             for field in [
-                "sector_count",
                 "description",
+                "sector_count",
                 "offer_count",
                 "label_count",
             ]
@@ -486,6 +487,31 @@ class Siae(models.Model):
         return reverse("siae:detail", kwargs={"slug": self.slug})
 
 
+@receiver(m2m_changed, sender=Siae.users.through)
+def siae_users_changed(sender, instance, action, **kwargs):
+    """
+    Why do we need this? (looks like a duplicate of siae_users_changed)
+    Will be called if we do something like `siae.users.add(user)`
+    """
+    if action in ("post_add", "post_remove", "post_clear"):
+        instance.user_count = instance.users.count()
+        instance.save()
+
+
+@receiver(m2m_changed, sender=Siae.sectors.through)
+def siae_sectors_changed(sender, instance, action, **kwargs):
+    if action in ("post_add", "post_remove", "post_clear"):
+        instance.sector_count = instance.sectors.count()
+        instance.save()
+
+
+@receiver(m2m_changed, sender=Siae.networks.through)
+def siae_networks_changed(sender, instance, action, **kwargs):
+    if action in ("post_add", "post_remove", "post_clear"):
+        instance.network_count = instance.networks.count()
+        instance.save()
+
+
 class SiaeUser(models.Model):
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Utilisateur", on_delete=models.CASCADE)
@@ -497,6 +523,16 @@ class SiaeUser(models.Model):
         verbose_name = "Gestionnaire"
         verbose_name_plural = "Gestionnaires"
         ordering = ["-created_at"]
+
+
+@receiver(post_save, sender=SiaeUser)
+@receiver(post_delete, sender=SiaeUser)
+def siae_siaeusers_changed(sender, instance, **kwargs):
+    """
+    Will be called when we update the Siae form in the admin
+    """
+    instance.siae.user_count = instance.siae.users.count()
+    instance.siae.save()
 
 
 class SiaeOffer(models.Model):
@@ -555,3 +591,26 @@ class SiaeLabel(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class SiaeImage(models.Model):
+    name = models.CharField(verbose_name="Nom", max_length=255, blank=True)
+    description = models.TextField(verbose_name="Description", blank=True)
+    image_name = models.CharField(verbose_name="Nom de l'image", max_length=255)
+    image_url = models.URLField(verbose_name="Lien vers l'image", max_length=500, blank=True)
+    order = models.PositiveIntegerField(verbose_name="Ordre", blank=False, default=1)
+
+    c4_listing_id = models.IntegerField(blank=True, null=True)
+
+    siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", related_name="images", on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField("Date de création", default=timezone.now)
+    updated_at = models.DateTimeField("Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Image"
+        verbose_name_plural = "Images"
+
+    # def __str__(self):
+    #     if self.name:
+    #         return self.name
