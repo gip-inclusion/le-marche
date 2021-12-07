@@ -44,6 +44,7 @@ class ContactView(SuccessMessageMixin, FormView):
             initial["first_name"] = self.request.user.first_name
             initial["last_name"] = self.request.user.last_name
             initial["email"] = self.request.user.email
+            initial["kind"] = self.request.user.kind
         initial["siret"] = self.request.GET.get("siret", None)
         return initial
 
