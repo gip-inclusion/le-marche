@@ -7,13 +7,13 @@ from django.contrib.gis.measure import D
 from django.contrib.postgres.fields import ArrayField
 from django.db import IntegrityError, models, transaction
 from django.db.models import Q
+from django.db.models.functions import Lower
 from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_str
 from django.utils.text import slugify
-
 from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY, get_department_code_from_name
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
 
@@ -78,16 +78,9 @@ class SiaeQuerySet(models.QuerySet):
                 & Q(geo_range_custom_distance__lte=Distance("coords", kwargs["city_coords"]) / 1000)
             )
 
-    def in_city_or_in_range_of_point_or_in_department(self, **kwargs):
-        if "city_name" in kwargs and "city_coords" in kwargs and "department_code" in kwargs:
-            return self.filter(
-                (Q(city=kwargs["city_name"]) & Q(department=kwargs["department_code"]))
-                | (
-                    Q(geo_range=GEO_RANGE_CUSTOM)
-                    & Q(geo_range_custom_distance__gte=Distance("coords", kwargs["city_coords"]) / 1000)
-                )
-                | (Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=kwargs["department_code"]))
-            )
+    def in_city(self, perimeter):
+        qs = self.annotate(city_lower=Lower("city"))
+        return qs.filter(city_lower=perimeter.name.lower())
 
     def within(self, point, distance_km=0):
         return self.filter(coords__dwithin=(point, D(km=distance_km)))

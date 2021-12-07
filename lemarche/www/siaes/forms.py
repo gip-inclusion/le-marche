@@ -141,9 +141,7 @@ class SiaeSearchForm(forms.Form):
 
         if perimeter.kind == Perimeter.KIND_CITY:
             # qs = qs.in_range_of_point(city_coords=perimeter.coords)
-            qs = qs.in_city_or_in_range_of_point_or_in_department(
-                city_name=perimeter.name, city_coords=perimeter.coords, department_code=perimeter.department_code
-            )
+            qs = qs.in_city(perimeter=perimeter)
         elif perimeter.kind == Perimeter.KIND_DEPARTMENT:
             qs = qs.in_department(department_code=perimeter.insee_code)
         elif perimeter.kind == Perimeter.KIND_REGION:
@@ -170,10 +168,18 @@ class SiaeSearchForm(forms.Form):
         if search_perimeter:
             perimeter = Perimeter.objects.get(slug=search_perimeter)
             if perimeter and perimeter.kind == Perimeter.KIND_CITY:
-                qs = qs.annotate(distance=Distance("coords", perimeter.coords))
-                ORDER_BY_FIELDS = ["distance"] + ORDER_BY_FIELDS
+                qs = qs.annotate(distance=Distance("coords", perimeter.coords)).order_by("distance")
+                # ORDER_BY_FIELDS = ["-has_offer", "-has_description", "distance", "-has_user", "name"]
+                # ORDER_BY_FIELDS = ["distance"] + ORDER_BY_FIELDS
         # annotate on SiaeOffer FK exists
-        qs = qs.annotate(has_offer=Exists(SiaeOffer.objects.filter(siae_id=OuterRef("pk"))))
+        qs = qs.annotate(
+            has_offer=Case(
+                When(offers__gte=1, then=Value(True)),
+                default=Value(False),
+                output_field=BooleanField(),
+            )
+        )
+
         # annotate on description presence: https://stackoverflow.com/a/65014409/4293684
         # qs = qs.annotate(has_description=Exists(F("description")))  # doesn't work
         qs = qs.annotate(
