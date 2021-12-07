@@ -250,16 +250,30 @@ document.addEventListener("DOMContentLoaded", function() {
     $('#favorite_modal').on('show.bs.modal', function (event) {
         // Button that triggered the modal
         var button = $(event.relatedTarget);
+
         // Extract info from data-* attributes
         var siaeId = button.data('siae-id');
         var siaeSlug = button.data('siae-slug');
         var siaeNameDisplay = button.data('siae-name-display');
-        // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-        // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-        var modal = $(this)
-        modal.find('#siae-name-display').text(siaeNameDisplay);
-        var formActionUrl = modal.find('form').attr('action');
-        modal.find('form').attr('action', formActionUrl.replace('siae-slug-to-replace', siaeSlug))
+        var siaeUserFavoriteListids = button.data('siae-user-favorite-list-ids');
+
+        // Update the modal's content
+        // - siae name display
+        // - check favorite lists that already contain the siae
+        // - edit the form action url
+        var modal = document.querySelector('#favorite_modal');
+        var modalForm = modal.querySelector('form');
+        var modalFormfavoriteListRadios = modal.querySelectorAll('input[type=radio][name="favorite_list"]');
+        modal.querySelector('#siae-name-display').textContent = siaeNameDisplay;
+        console.log(siaeUserFavoriteListids);
+        modalFormfavoriteListRadios.forEach(radio => {
+            radio.removeAttribute('checked');
+            if (siaeUserFavoriteListids.indexOf(parseInt(radio.getAttribute('value'), 10)) >= 0) {
+                radio.setAttribute('checked', true);
+            }
+        })
+        var formActionUrl = modalForm.getAttribute('action');
+        modalForm.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', siaeSlug));
     });
 });
 </script>

@@ -14,26 +14,29 @@
                 <form method="POST" action="{% url 'siae:favorite_lists' 'siae-slug-to-replace' %}">
                 {% endif %}
                     {% csrf_token %}
-                    {% if user.favorite_lists.count %}
-                    <div class="form-group">
-                        <label>Vos listes d'achats</label>
-                        {% for list in user.favorite_lists.all %}
-                        <div class="form-check pl-0">
-                            <input type="checkbox" name="favorite_lists" value="{{ list.id }}" id="{{ list.id }}" {% if siae in list.siaes.all %}checked{% endif %}>
-                            <label for="{{ list.id }}">{{ list.name }} <small>({{ list.siaes.count }})</small></label>
+                    <fieldset>
+                        {% if user.favorite_lists.count %}
+                        <div class="form-group">
+                            <label>Vos listes d'achats</label>
+                            <div class="radio radio-success">
+                                {% for favorite_list in user.favorite_lists.all %}
+                                <div class="form-check">
+                                    <input type="radio" name="favorite_list" value="{{ favorite_list.id }}" id="{{ favorite_list.id }}" {% if siae in favorite_list.siaes.all %}checked{% endif %}>
+                                    <label class="form-check-label" for="{{ favorite_list.id }}">{{ favorite_list.name }} <small>({{ favorite_list.siaes.count }})</small></label>
+                                </div>
+                                {% endfor %}
+                            </div>
                         </div>
-                        {% endfor %}
-                        </ul>
-                    </div>
-                    {% else %}
-                    <div class="alert alert-info" role="alert">
-                        Vous n'avez pas encore créé de liste
-                    </div>
-                    {% endif %}
-                    <div class="form-group">
-                        <label for="id_new_favorite_list">Ajouter la structure à une nouvelle liste</label>
-                        <input type="text" name="new_favorite_list" id="id_new_favorite_list" class="form-control" placeholder="Nom de la liste d'achat">
-                    </div>
+                        {% else %}
+                        <div class="alert alert-info" role="alert">
+                            Vous n'avez pas encore créé de liste
+                        </div>
+                        {% endif %}
+                        <div class="form-group">
+                            <label for="id_new_favorite_list">Ajouter la structure à une nouvelle liste</label>
+                            <input type="text" name="new_favorite_list" id="id_new_favorite_list" class="form-control" placeholder="Nom de la liste d'achat">
+                        </div>
+                    </fieldset>
                     <br />
                     <footer>
                         <button class="btn btn-primary" type="submit">

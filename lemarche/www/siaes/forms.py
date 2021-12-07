@@ -198,10 +198,10 @@ class SiaeSearchForm(forms.Form):
 
 
 class SiaeFavoriteForm(forms.ModelForm):
-    favorite_lists = forms.ModelMultipleChoiceField(
+    favorite_lists = forms.ModelChoiceField(
         label="Liste à associer",
         queryset=FavoriteList.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.RadioSelect,
         required=False,
     )
 

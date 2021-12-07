@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.contrib.postgres.fields import ArrayField
 from django.db import IntegrityError, models, transaction
 from django.db.models import Count, Q
@@ -110,6 +111,14 @@ class SiaeQuerySet(models.QuerySet):
         """
         return self.prefetch_related("favorite_lists").annotate(
             in_user_favorite_lists_count=Count("favorite_lists", filter=Q(favorite_lists__user=user))
+        )
+
+    def annotate_with_user_favorite_list_ids(self, user):
+        """
+        Enrich each Siae with the list of occurences in the user's favorite lists
+        """
+        return self.prefetch_related("favorite_lists").annotate(
+            in_user_favorite_list_ids=ArrayAgg("favorite_lists__pk", filter=Q(favorite_lists__user=user))
         )
 
 

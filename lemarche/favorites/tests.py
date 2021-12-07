@@ -42,11 +42,12 @@ class FavoriteListModelQuerysetTest(TestCase):
         # -created_at ordering (added last shown first)
         self.assertEqual(favorite_list.favoriteitem_set.first().siae, self.siae_1)
 
-    def test_siae_annotate_with_user_favorite_lists_count(self):
+    def test_siae_annotate_with_user_favorite_list_ids(self):
         favorite_list_1 = FavoriteListFactory(user=self.user)
         favorite_list_1.siaes.add(self.siae_1)
         favorite_list_2 = FavoriteListFactory(user=self.user)
         favorite_list_2.siaes.add(self.siae_1)
-        qs = Siae.objects.annotate_with_user_favorite_lists_count(self.user)
-        self.assertEqual(qs.get(id=self.siae_1.id).in_user_favorite_lists_count, 2)
-        self.assertEqual(qs.get(id=self.siae_2.id).in_user_favorite_lists_count, 0)
+        qs = Siae.objects.annotate_with_user_favorite_list_ids(self.user)
+        self.assertEqual(len(qs.get(id=self.siae_1.id).in_user_favorite_list_ids), 2)
+        self.assertEqual(qs.get(id=self.siae_1.id).in_user_favorite_list_ids[0], favorite_list_1.id)
+        self.assertEqual(len(qs.get(id=self.siae_2.id).in_user_favorite_list_ids), 0)

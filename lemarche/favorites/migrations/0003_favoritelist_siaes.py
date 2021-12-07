@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             name="siaes",
             field=models.ManyToManyField(
                 blank=True,
-                related_name="siaes",
+                related_name="favorite_lists",
                 through="favorites.FavoriteItem",
                 to="siaes.Siae",
                 verbose_name="Structures en favoris",

@@ -15,5 +15,5 @@ urlpatterns = [
     path("", SiaeSearchResultsView.as_view(), name="search_results"),
     path("download/", SiaeSearchResultsDownloadView.as_view(), name="search_results_download"),
     path("<str:slug>/", SiaeDetailView.as_view(), name="detail"),
-    path("<str:slug>/favorite-lists/", SiaeFavoriteView.as_view(), name="favorite_lists"),
+    path("<str:slug>/favoris/", SiaeFavoriteView.as_view(), name="favorite_lists"),
 ]

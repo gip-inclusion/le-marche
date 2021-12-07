@@ -159,5 +159,5 @@ class SiaeModelQuerysetTest(TestCase):
         self.assertEqual(Siae.objects.count(), 2)
         self.assertEqual(Siae.objects.has_user().count(), 1)
 
-    # def test_annotate_with_user_favorite_lists_count(self):
+    # def test_annotate_with_user_favorite_list_ids(self):
     # see favorites > tests.py

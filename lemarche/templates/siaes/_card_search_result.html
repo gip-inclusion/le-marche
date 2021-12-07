@@ -16,7 +16,7 @@
             <div class="card-body">
                 <a href="{% url 'siae:detail' siae.slug %}" class="text-decoration-none stretched-link">
                     <h3 class="mb-3 d-flex justify-content-between align-items-start">
-                        {{ siae.name_display }} // {{ siae.favorite_lists.count }} // {{ siae.is_in_user_favorites }}
+                        {{ siae.name_display }}
                         {% if not siae.user_count %}
                             <small class="text-muted">(bientôt inscrite sur le marché)</small>
                         {% endif %}
@@ -34,9 +34,9 @@
                         {% endif %}
                     </ul>
                     {% if user.is_authenticated %}
-                        <a href="#" id="favorite-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_modal" data-siae-id="{{ siae.id }}" data-siae-slug="{{ siae.slug }}" data-siae-name-display="{{ siae.name_display }}">
-                            {% if siae.in_user_favorite_lists_count %}
-                            <img src="{% static_theme_images 'ico-star-fill.svg' %}" height="24" alt="Dans vos liste d'achats" title="Dans {{ siae.in_user_favorite_lists_count }} de vos liste d'achats" />
+                        <a href="#" id="favorite-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_modal" data-siae-id="{{ siae.id }}" data-siae-slug="{{ siae.slug }}" data-siae-name-display="{{ siae.name_display }}" data-siae-user-favorite-list-ids="{{ siae.in_user_favorite_list_ids }}">
+                            {% if siae.in_user_favorite_list_ids|length %}
+                            <img src="{% static_theme_images 'ico-star-fill.svg' %}" height="24" alt="Dans vos liste d'achats" title="Dans {{ siae.in_user_favorite_list_ids|length }} de vos liste d'achats" />
                             {% else %}
                             <img src="{% static_theme_images 'ico-star-line.svg' %}" height="24" alt="Ajouter à vos liste d'achats" title="Ajouter à vos liste d'achats" />
                             {% endif %}
