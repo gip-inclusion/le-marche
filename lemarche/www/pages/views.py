@@ -8,7 +8,7 @@ from django.views.generic import DetailView, FormView, TemplateView
 from lemarche.pages.models import Page
 from lemarche.siaes.models import Siae
 from lemarche.www.pages.forms import ContactForm
-from lemarche.www.pages.tasks import send_contact_form_email
+from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
 
 
 class HomeView(TemplateView):
@@ -34,7 +34,9 @@ class HomeView(TemplateView):
 class ContactView(SuccessMessageMixin, FormView):
     template_name = "pages/contact.html"
     form_class = ContactForm
-    success_message = "Votre message a bien été envoyé, merci !"
+    success_message = (
+        "Votre message a bien été envoyé, merci ! Notre délai de traitement est en moyenne de 3 jours ouvrés."
+    )
     success_url = reverse_lazy("pages:home")
 
     def get_initial(self):
@@ -49,10 +51,15 @@ class ContactView(SuccessMessageMixin, FormView):
         return initial
 
     def form_valid(self, form):
-        """Send the content of the form via email."""
+        """
+        - send the content of the form via email to our support
+        - also send a receipt to some users
+        """
         response = super().form_valid(form)
         form_dict = form.cleaned_data
         send_contact_form_email(form_dict)
+        if form_dict["kind"] == "SIAE":
+            send_contact_form_receipt(form_dict)
         return response
 
 
