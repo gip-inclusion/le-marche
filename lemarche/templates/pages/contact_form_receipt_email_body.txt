@@ -1,0 +1,8 @@
+Bonjour {{ form_dict.first_name|safe }},
+
+Votre demande "{{ form_dict.subject|safe }}" a bien été enregistrée par l'équipe Support du Marché de l'inclusion. Notre délai de traitement est en moyenne de 3 jours ouvrés.
+
+En attendant, pour améliorer votre visibilité sur le Marché de l'inclusion, nous vous invitons à compléter votre fiche sur : https://lemarche.inclusion.beta.gouv.fr/profil/
+
+Merci et à très vite,
+L'équipe du Marché de l'inclusion

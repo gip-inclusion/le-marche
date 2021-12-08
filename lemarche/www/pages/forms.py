@@ -1,7 +1,16 @@
 from django import forms
 
 
+EMPTY_CHOICE = (("", ""),)
+
+
 class ContactForm(forms.Form):
+    KIND_CHOICES = EMPTY_CHOICE + (
+        ("SIAE", "Entreprise sociale inclusive (SIAE, EA, GEIQ, ESAT)"),
+        ("BUYER", "Acheteurs privés ou publics"),
+        ("PARTNER", "Facilitateurs des clauses sociales"),
+        ("OTHER", "Autre"),
+    )
     first_name = forms.CharField(
         label="Prénom",
         widget=forms.TextInput(attrs={"autofocus": "autofocus"}),
@@ -14,12 +23,13 @@ class ContactForm(forms.Form):
         max_length=16,
         required=False,
     )
+    kind = forms.ChoiceField(label="Type d'utilisateur", widget=forms.Select, choices=KIND_CHOICES, required=True)
     siret = forms.CharField(
         label="SIRET",
         required=False,
     )
 
-    # ChoiceField + choices=SUBJECT_CHOICES ?
+    # subject = ChoiceField + choices=SUBJECT_CHOICES ?
     subject = forms.CharField(label="Sujet", max_length=150, required=True)
 
     message = forms.CharField(label="Message", widget=forms.Textarea(), required=True)
