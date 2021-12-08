@@ -8,6 +8,7 @@ Vous avez une nouvelle demande d'information via le formulaire de contact :
 - Prénom : {{ form_dict.first_name|safe }}
 - Nom : {{ form_dict.last_name|safe }}
 - Email : {{ form_dict.email }}
+- Type : {{ form_dict.kind }}
 - Téléphone : {{ form_dict.phone }}
 - Siret : {{ form_dict.siret }}
 
