@@ -24,9 +24,18 @@
 {% block content %}
 <section class="pt-4 pb-6">
     <div class="container">
-        <h2 class="mb-3 mb-lg-5">
-            <strong>{{ favorite_list.name }}</strong>
-        </h2>
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                <h2 class="mb-3 mb-lg-5">
+                    <strong>Liste d'achat : {{ favorite_list.name }}</strong>
+                </h2>
+            </div>
+            <div class="col-12 col-lg-2 my-auto mb-3 mb-lg-5" style="text-align:right">
+                <a href="#" data-toggle="modal" data-target="#favorite_list_edit_modal">
+                    Modifier
+                </a>
+            </div>
+        </div>
 
         <div class="row">
             <div class="col-12 col-lg-8">
@@ -41,17 +50,14 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row justify-content-center">
             <div class="col-12 col-lg-8">
-                <a href="#" class="btn btn-outline-primary" data-toggle="modal" data-target="#favorite_list_delete_modal">
-                    Supprimer la liste
-                </a>
                 {% if favorite_list.siaes.count > 0 %}
                 <div class="btn-group">
-                    <a href="{% url 'siae:search_results_download' %}?favorite_list={{ favorite_list.slug }}&format=xls" id="csv-submit" class="btn btn-block btn-outline-primary" target="_blank">
+                    <a href="{% url 'siae:search_results_download' %}?favorite_list={{ favorite_list.slug }}&format=xls" id="csv-submit" class="btn btn-block btn-primary" target="_blank">
                         Télécharger la liste (.xls)
                     </a>
-                    <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="sr-only">Plus d'options de téléchargement</span>
                     </button>
                     <div class="dropdown-menu dropdown-menu-right">
@@ -63,10 +69,21 @@
                 {% endif %}
             </div>
         </div>
+
+        <br />
+
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                <a href="#" data-toggle="modal" data-target="#favorite_list_delete_modal">
+                    Supprimer la liste
+                </a>
+            </div>
+        </div>
     </div>
 </section>
 {% endblock %}
 
 {% block modals %}
+    {% include "siaes/_favorite_list_edit_modal.html" with favorite_list=favorite_list %}
     {% include "siaes/_favorite_list_delete_modal.html" with favorite_list=favorite_list %}
 {% endblock %}

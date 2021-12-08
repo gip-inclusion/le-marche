@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
@@ -12,6 +13,7 @@ from lemarche.utils.s3 import S3Upload
 from lemarche.utils.tracker import extract_meta_from_request, track
 from lemarche.www.dashboard.forms import (
     ProfileEditForm,
+    ProfileFavoriteEditForm,
     SiaeClientReferenceFormSet,
     SiaeEditInfoContactForm,
     SiaeEditOfferForm,
@@ -50,8 +52,21 @@ class ProfileFavoriteDetailView(LoginRequiredMixin, FavoriteListOwnerRequiredMix
     queryset = FavoriteList.objects.prefetch_related("siaes").all()
 
 
+class ProfileFavoriteEditView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
+    form_class = ProfileFavoriteEditForm
+    template_name = "siaes/_favorite_list_edit_modal.html"
+    success_message = "Votre liste d'achat a été modifiée avec succès."
+    # success_url = reverse_lazy("dashboard:profile_favorite_list_detail")
+
+    def get_object(self):
+        return get_object_or_404(FavoriteList, slug=self.kwargs.get("slug"))
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard:profile_favorite_list_detail", args=[self.kwargs.get("slug")])
+
+
 class ProfileFavoriteDeleteView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin, SuccessMessageMixin, DeleteView):
-    template_name = "dashboard/profile_favorite_list_delete.html"
+    template_name = "siaes/_favorite_list_delete_modal.html"
     # context_object_name = "favorite_list"
     model = FavoriteList
     # queryset = FavoriteList.objects.prefetch_related("siaes").all()

@@ -1,6 +1,7 @@
 from django import forms
 from django.forms.models import inlineformset_factory
 
+from lemarche.favorites.models import FavoriteList
 from lemarche.networks.models import Network
 from lemarche.siaes.models import Siae, SiaeClientReference, SiaeImage, SiaeLabel, SiaeOffer
 from lemarche.users.models import User
@@ -22,6 +23,17 @@ class ProfileEditForm(forms.ModelForm):
 
         # Disabled fields
         self.fields["email"].disabled = True
+
+
+class ProfileFavoriteEditForm(forms.ModelForm):
+    class Meta:
+        model = FavoriteList
+        fields = ["name"]
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     # Mandatory fields.
+    #     self.fields["name"].required = True
 
 
 class SiaeSearchBySiretForm(forms.Form):
