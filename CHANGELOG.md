@@ -4,6 +4,26 @@ Ressources :
 - [Semantic Versioning](http://semver.org/)
 - [CHANGELOG recommendations](http://keepachangelog.com/).
 
+## [1.4] - 2021-12-17
+
+### Ajouté
+
+- Contact
+    - Demander le type d'utilisateur dans le formulaire
+    - Envoi un e-mail de confirmation aux utilisateurs de type "SIAE" (avec CTA)
+
+### Modifié
+
+- Pages
+    - Améliore le scroll vers une section donnée (évite que le header cache le haut de la section)
+    - Réparle le meta title de la page Statistique
+- Contact
+    - Ajoute du texte pour rediriger les demandes "Emplois" vers l'outil d'assistance
+- Tech
+    - Mise à jour de Django à la version 3.2.10
+
+### Supprimé
+
 ## [1.3] - 2021-12-03
 
 ### Ajouté
