@@ -30,11 +30,6 @@ class ProfileFavoriteEditForm(forms.ModelForm):
         model = FavoriteList
         fields = ["name"]
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     # Mandatory fields.
-    #     self.fields["name"].required = True
-
 
 class SiaeSearchBySiretForm(forms.Form):
     siret = forms.CharField(

@@ -1,13 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
-from lemarche.favorites.models import FavoriteList
+from lemarche.favorites.models import FavoriteItem, FavoriteList
 from lemarche.siaes.models import Siae
 from lemarche.utils.s3 import S3Upload
 from lemarche.utils.tracker import extract_meta_from_request, track
@@ -46,13 +46,13 @@ class ProfileEditView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return self.request.user
 
 
-class ProfileFavoriteDetailView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin, DetailView):
+class ProfileFavoriteListDetailView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin, DetailView):
     template_name = "dashboard/profile_favorite_list_detail.html"
     context_object_name = "favorite_list"
     queryset = FavoriteList.objects.prefetch_related("siaes").all()
 
 
-class ProfileFavoriteEditView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
+class ProfileFavoriteListEditView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = ProfileFavoriteEditForm
     template_name = "siaes/_favorite_list_edit_modal.html"
     success_message = "Votre liste d'achat a été modifiée avec succès."
@@ -65,13 +65,47 @@ class ProfileFavoriteEditView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin
         return reverse_lazy("dashboard:profile_favorite_list_detail", args=[self.kwargs.get("slug")])
 
 
-class ProfileFavoriteDeleteView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin, SuccessMessageMixin, DeleteView):
+class ProfileFavoriteListDeleteView(
+    LoginRequiredMixin, FavoriteListOwnerRequiredMixin, SuccessMessageMixin, DeleteView
+):
     template_name = "siaes/_favorite_list_delete_modal.html"
-    # context_object_name = "favorite_list"
     model = FavoriteList
-    # queryset = FavoriteList.objects.prefetch_related("siaes").all()
     success_message = "Votre liste d'achat a été supprimée avec succès."
     success_url = reverse_lazy("dashboard:home")
+
+    def delete(self, request, *args, **kwargs):
+        """success_message doesn't work on DeleteView."""
+        messages.success(self.request, self.success_message)
+        return super().delete(request, *args, **kwargs)
+
+
+class ProfileFavoriteItemDeleteView(
+    LoginRequiredMixin, FavoriteListOwnerRequiredMixin, SuccessMessageMixin, DeleteView
+):
+    template_name = "siaes/_favorite_list_item_remove_modal.html"
+    model = FavoriteItem
+    # success_message = "La structure a été supprimée de votre liste d'achat avec succès."
+    # success_url = reverse_lazy("dashboard:profile_favorite_list_detail")
+
+    def get_object(self):
+        try:
+            favorite_list = FavoriteList.objects.get(slug=self.kwargs.get("slug"))
+            siae = Siae.objects.get(slug=self.kwargs.get("siae_slug"))
+            return get_object_or_404(FavoriteItem, favorite_list=favorite_list, siae=siae)
+        except:  # noqa
+            raise Http404
+
+    def delete(self, request, *args, **kwargs):
+        """success_message doesn't work on DeleteView."""
+        favorite_item = self.get_object()
+        messages.success(self.request, self.get_success_message(favorite_item))
+        return super().delete(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard:profile_favorite_list_detail", args=[self.kwargs.get("slug")])
+
+    def get_success_message(self, favorite_item):
+        return f"La structure <strong>{favorite_item.siae.name}</strong> a été supprimée de votre liste d'achat avec succès."  # noqa
 
 
 class SiaeSearchBySiretView(LoginRequiredMixin, SiaeUserRequiredMixin, FormMixin, ListView):

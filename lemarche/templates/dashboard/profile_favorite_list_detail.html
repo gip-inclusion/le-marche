@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Mes listes d'achats{{ block.super }}{% endblock %}
+{% block title %}{{ favorite_list.name }} - Liste d'achat{{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
 <section>
@@ -45,7 +45,7 @@
                 </div>
                 {% endif %}
                 {% for siae in favorite_list.siaes.all %}
-                    {% include "siaes/_card_search_result.html" with siae=siae %}
+                    {% include "siaes/_card_search_result.html" with siae=siae from_profile="true" %}
                 {% endfor %}
             </div>
         </div>
@@ -84,6 +84,33 @@
 {% endblock %}
 
 {% block modals %}
+    {% include "siaes/_favorite_list_item_remove_modal.html" with favorite_list=favorite_list %}
     {% include "siaes/_favorite_list_edit_modal.html" with favorite_list=favorite_list %}
     {% include "siaes/_favorite_list_delete_modal.html" with favorite_list=favorite_list %}
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    $('#favorite_list_item_remove_modal').on('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        var button = $(event.relatedTarget);
+
+        // Extract info from data-* attributes
+        var siaeId = button.data('siae-id');
+        var siaeSlug = button.data('siae-slug');
+        var siaeNameDisplay = button.data('siae-name-display');
+
+        // Update the modal's content
+        // - siae name display
+        // - check favorite lists that already contain the siae
+        // - edit the form action url
+        var modal = document.querySelector('#favorite_list_item_remove_modal');
+        var modalForm = modal.querySelector('form');
+        modal.querySelector('#siae-name-display').textContent = siaeNameDisplay;
+        var formActionUrl = modalForm.getAttribute('action');
+        modalForm.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', siaeSlug));
+    });
+});
+</script>
 {% endblock %}

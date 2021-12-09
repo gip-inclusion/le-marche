@@ -34,7 +34,7 @@
                         {% endif %}
                     </ul>
                     {% if user.is_authenticated %}
-                        {% if siae.in_user_favorite_list_count %}
+                        {% if siae.in_user_favorite_list_count or from_profile %}
                         <a href="#" id="favorite-modal-btn" class="btn btn-favorite">
                             <img src="{% static_theme_images 'ico-star-fill.svg' %}" height="24" alt="Dans votre liste d'achat" title="Dans votre liste d'achat" />
                         </a>
