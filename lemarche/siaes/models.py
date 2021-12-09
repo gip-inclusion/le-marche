@@ -79,8 +79,15 @@ class SiaeQuerySet(models.QuerySet):
             )
 
     def in_city(self, perimeter):
-        qs = self.annotate(city_lower=Lower("city"))
-        return qs.filter(city_lower=perimeter.name.lower())
+        return self.filter(
+            Q(post_code__in=perimeter.post_codes)
+            | (
+                Q(geo_range=GEO_RANGE_CUSTOM)
+                # pourquoi / 1000 ?
+                & Q(geo_range_custom_distance__gte=Distance("coords", perimeter.coords) / 1000)
+            )
+            | (Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=perimeter.department_code))
+        )
 
     def within(self, point, distance_km=0):
         return self.filter(coords__dwithin=(point, D(km=distance_km)))
