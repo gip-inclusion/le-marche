@@ -23,6 +23,7 @@ app_name = "dashboard"
 urlpatterns = [
     path("", DashboardHomeView.as_view(), name="home"),
     path("modifier/", ProfileEditView.as_view(), name="profile_edit"),
+    path("favoris/", RedirectView.as_view(url="/profil/#favoris", permanent=True), name="profile_favorite_list"),
     path("favoris/<str:slug>/", ProfileFavoriteListDetailView.as_view(), name="profile_favorite_list_detail"),
     path(
         "favoris/<slug:slug>/prestataires/<slug:siae_slug>/",
