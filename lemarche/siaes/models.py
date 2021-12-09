@@ -7,7 +7,6 @@ from django.contrib.gis.measure import D
 from django.contrib.postgres.fields import ArrayField
 from django.db import IntegrityError, models, transaction
 from django.db.models import Q
-from django.db.models.functions import Lower
 from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
 from django.urls import reverse
