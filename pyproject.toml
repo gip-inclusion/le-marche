@@ -1,10 +1,6 @@
 [tool.poetry]
 name = "lemarche"
-version = "0.5"
-description = "API du marché de l'Inclusion"
-authors = ["pmontens <pieterjan@montens.net>"]
-packages = [
-]
+description = "Marché de l'inclusion"
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -83,8 +79,8 @@ DJANGO_SETTINGS_MODULE = "lemarche.settings.test"
 [tool.poe.tasks]
 export = { shell = "poetry export --without-hashes --output requirements/staging.txt" }
 export_dev = { shell = "poetry export --without-hashes --dev --output requirements/dev.txt" }
-flake8 = { shell = "pflake8 lemarche"}
-isort = { shell = "isort ./lemarche/*.py"}
-black = { shell = "black lemarche"}
+flake8 = { shell = "pflake8 lemarche" }
+isort = { shell = "isort ./lemarche/*.py" }
+black = { shell = "black lemarche" }
 clean_code = ["isort", "black"]
 clean = { shell = "rm -r __pycache__/" }
