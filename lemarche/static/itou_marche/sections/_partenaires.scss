@@ -23,3 +23,18 @@
 		}
 	}
 } 
+
+.s-partenaires-02 {
+	.card-header {
+		text-align: center;
+		
+		@media (min-width:768px) {
+			min-height: 125px;
+		}		
+
+		img {
+			display: inline-block;
+			max-height: 100px;
+		}
+	} 
+}
