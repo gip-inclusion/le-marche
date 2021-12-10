@@ -77,12 +77,12 @@ class SiaeQuerySet(models.QuerySet):
                 & Q(geo_range_custom_distance__lte=Distance("coords", kwargs["city_coords"]) / 1000)
             )
 
-    def in_city(self, perimeter):
+    def in_city_area(self, perimeter):
         return self.filter(
             Q(post_code__in=perimeter.post_codes)
             | (
                 Q(geo_range=GEO_RANGE_CUSTOM)
-                # w / 1000 ? convert from m to km
+                # why distance / 1000 ? because convert from meter to km
                 & Q(geo_range_custom_distance__gte=Distance("coords", perimeter.coords) / 1000)
             )
             | (Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=perimeter.department_code))

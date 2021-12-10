@@ -120,7 +120,7 @@ class SiaeSearchForm(forms.Form):
         Depending on the type of Perimeter that was chosen, different cases arise:
 
         **CITY**
-        return the Siae in ths city+department
+        return the Siae with the post code in Perimeter.post_codes+department
         OR the Siae with geo_range=GEO_RANGE_CUSTOM and a perimeter radius that overlaps with the search_perimeter
         OR the Siae with geo_range=GEO_RANGE_DEPARTMENT and a department equal to the search_perimeter's
 
@@ -138,7 +138,7 @@ class SiaeSearchForm(forms.Form):
 
         if perimeter.kind == Perimeter.KIND_CITY:
             # qs = qs.in_range_of_point(city_coords=perimeter.coords)
-            qs = qs.in_city(perimeter=perimeter)
+            qs = qs.in_city_area(perimeter=perimeter)
         elif perimeter.kind == Perimeter.KIND_DEPARTMENT:
             qs = qs.in_department(department_code=perimeter.insee_code)
         elif perimeter.kind == Perimeter.KIND_REGION:
