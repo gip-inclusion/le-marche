@@ -44,7 +44,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         results = filter_form.filter_queryset(perimeter)
         results_ordered = filter_form.order_queryset(results, perimeter)
         if self.request.user.is_authenticated:
-            results_ordered = results_ordered.annotate_with_user_favorite_list_ids(self.request.user)
+            results_ordered = results_ordered.annotate_with_user_favorite_list_count(self.request.user)
         return results_ordered
 
     def get_context_data(self, **kwargs):
@@ -178,7 +178,7 @@ class SiaeDetailView(DetailView):
         """
         qs = super().get_queryset()
         if self.request.user.is_authenticated:
-            qs = qs.annotate_with_user_favorite_list_ids(self.request.user)
+            qs = qs.annotate_with_user_favorite_list_count(self.request.user)
         return qs
 
     def get_context_data(self, **kwargs):
@@ -209,15 +209,17 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         siae = form.save(commit=False)
         favorite_list = None
 
-        if self.request.POST.get("favorite_list"):
-            favorite_list = FavoriteList.objects.get(id=self.request.POST.get("favorite_list"))
+        if self.request.POST.get("action") == "add":
+            if self.request.POST.get("favorite_list"):
+                favorite_list = FavoriteList.objects.get(id=self.request.POST.get("favorite_list"))
 
         # new favorite_list? create it
-        elif self.request.POST.get("new_favorite_list"):
-            favorite_list = FavoriteList.objects.create(
-                name=self.request.POST.get("new_favorite_list"),
-                user=self.request.user,
-            )
+        elif self.request.POST.get("action") == "create":
+            if self.request.POST.get("new_favorite_list"):
+                favorite_list = FavoriteList.objects.create(
+                    name=self.request.POST.get("new_favorite_list"),
+                    user=self.request.user,
+                )
 
         siae.favorite_lists.add(favorite_list)
 

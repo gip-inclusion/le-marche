@@ -255,25 +255,18 @@ document.addEventListener("DOMContentLoaded", function() {
         var siaeId = button.data('siae-id');
         var siaeSlug = button.data('siae-slug');
         var siaeNameDisplay = button.data('siae-name-display');
-        var siaeUserFavoriteListids = button.data('siae-user-favorite-list-ids');
 
         // Update the modal's content
         // - siae name display
         // - check favorite lists that already contain the siae
         // - edit the form action url
         var modal = document.querySelector('#favorite_modal');
-        var modalForm = modal.querySelector('form');
-        var modalFormfavoriteListRadios = modal.querySelectorAll('input[type=radio][name="favorite_list"]');
+        var modalForms = modal.querySelectorAll('form');
         modal.querySelector('#siae-name-display').textContent = siaeNameDisplay;
-        console.log(siaeUserFavoriteListids);
-        modalFormfavoriteListRadios.forEach(radio => {
-            radio.removeAttribute('checked');
-            if (siaeUserFavoriteListids.indexOf(parseInt(radio.getAttribute('value'), 10)) >= 0) {
-                radio.setAttribute('checked', true);
-            }
-        })
-        var formActionUrl = modalForm.getAttribute('action');
-        modalForm.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', siaeSlug));
+        modalForms.forEach(form => {
+            var formActionUrl = form.getAttribute('action');
+            form.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', siaeSlug));
+        });
     });
 });
 </script>

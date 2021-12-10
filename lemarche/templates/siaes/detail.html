@@ -51,15 +51,15 @@
                                 <h3 class="h3 mb-3 mt-1">{{ siae.name_display }}</h3>
                                 {% if user.is_authenticated %}
                                     <a href="#" id="favorite-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_modal">
-                                        {% if siae.in_user_favorite_list_ids|length %}
-                                        <img src="{% static_theme_images 'ico-star-fill.svg' %}" height="24" alt="Dans vos liste d'achats" title="Dans {{ siae.in_user_favorite_list_ids|length }} de vos liste d'achats" />
+                                        {% if siae.in_user_favorite_list_count %}
+                                        <img src="{% static_theme_images 'ico-star-fill.svg' %}" height="24" alt="Dans votre liste d'achat" title="Dans votre liste d'achat" />
                                         {% else %}
-                                        <img src="{% static_theme_images 'ico-star-line.svg' %}" height="24" alt="Ajouter à vos liste d'achats" title="Ajouter à vos liste d'achats" />
+                                        <img src="{% static_theme_images 'ico-star-line.svg' %}" height="24" alt="Ajouter à votre liste d'achat" title="Ajouter à votre liste d'achat" />
                                         {% endif %}
                                     </a>
                                 {% else %}
                                     <a href="{% url 'auth:login' %}?message=login-to-favorite&next={% url 'siae:detail' siae.slug %}" class="btn btn-favorite p-0">
-                                        <img src="{% static_theme_images 'ico-star-line.svg' %}" height="24" alt="Ajouter à vos liste d'achats" title="Ajouter à vos liste d'achats" />
+                                        <img src="{% static_theme_images 'ico-star-line.svg' %}" height="24" alt="Ajouter à votre liste d'achat" title="Ajouter à votre liste d'achat" />
                                     </a>
                                 {% endif %}
                             </div>

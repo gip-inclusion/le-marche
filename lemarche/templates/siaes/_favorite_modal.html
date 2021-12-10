@@ -8,41 +8,35 @@
                 </button>
             </div>
             <div class="modal-body home-content-body">
-                {% if siae %}
-                <form method="POST" action="{% url 'siae:favorite_lists' siae.slug %}">
-                {% else %}
-                <form method="POST" action="{% url 'siae:favorite_lists' 'siae-slug-to-replace' %}">
-                {% endif %}
+                {% if user.favorite_lists.count %}
+                <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
                     {% csrf_token %}
-                    <fieldset>
-                        {% if user.favorite_lists.count %}
-                        <div class="form-group">
-                            <label>Vos listes d'achats</label>
-                            <div class="radio radio-success">
-                                {% for favorite_list in user.favorite_lists.all %}
-                                <div class="form-check">
-                                    <input type="radio" name="favorite_list" value="{{ favorite_list.id }}" id="{{ favorite_list.id }}" {% if siae in favorite_list.siaes.all %}checked{% endif %}>
-                                    <label class="form-check-label" for="{{ favorite_list.id }}">{{ favorite_list.name }} <small>({{ favorite_list.siaes.count }})</small></label>
-                                </div>
-                                {% endfor %}
+                    <div class="form-group">
+                        <label>Choisir une liste existante</label>
+                        <div class="radio radio-success">
+                            {% for favorite_list in user.favorite_lists.all %}
+                            <div class="form-check">
+                                <input type="radio" name="favorite_list" value="{{ favorite_list.id }}" id="{{ favorite_list.id }}" required>
+                                <label class="form-check-label" for="{{ favorite_list.id }}">{{ favorite_list.name }} <small>({{ favorite_list.siaes.count }})</small></label>
                             </div>
+                            {% endfor %}
                         </div>
-                        {% else %}
-                        <div class="alert alert-info" role="alert">
-                            Vous n'avez pas encore créé de liste
-                        </div>
-                        {% endif %}
-                        <div class="form-group">
-                            <label for="id_new_favorite_list">Ajouter la structure à une nouvelle liste</label>
-                            <input type="text" name="new_favorite_list" id="id_new_favorite_list" class="form-control" placeholder="Nom de la liste d'achat">
-                        </div>
-                    </fieldset>
-                    <br />
-                    <footer>
-                        <button class="btn btn-primary" type="submit">
-                            Ajouter la structure
-                        </button>
-                    </footer>
+                    </div>
+                    <button class="btn btn-primary" type="submit" name="action" value="add">
+                        Enregistrer
+                    </button>
+                </form>
+                <hr />
+                {% endif %}
+                <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="id_new_favorite_list">Créer une nouvelle liste</label>
+                        <input type="text" name="new_favorite_list" id="id_new_favorite_list" class="form-control" placeholder="Nom de la liste d'achat" required>
+                    </div>
+                    <button class="btn btn-primary" type="submit" name="action" value="create">
+                        Créer la liste
+                    </button>
                 </form>
             </div>
             <!-- <div class="modal-footer"></div> -->

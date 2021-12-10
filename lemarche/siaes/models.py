@@ -105,12 +105,12 @@ class SiaeQuerySet(models.QuerySet):
     def within(self, point, distance_km=0):
         return self.filter(coords__dwithin=(point, D(km=distance_km)))
 
-    def annotate_with_user_favorite_lists_count(self, user):
+    def annotate_with_user_favorite_list_count(self, user):
         """
         Enrich each Siae with the number of occurences in the user's favorite lists
         """
         return self.prefetch_related("favorite_lists").annotate(
-            in_user_favorite_lists_count=Count("favorite_lists", filter=Q(favorite_lists__user=user))
+            in_user_favorite_list_count=Count("favorite_lists", filter=Q(favorite_lists__user=user))
         )
 
     def annotate_with_user_favorite_list_ids(self, user):
