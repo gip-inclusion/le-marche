@@ -77,7 +77,7 @@ class SiaeSearchForm(forms.Form):
             self.cleaned_data["perimeter"] = ""
             return self.cleaned_data
 
-    def filter_queryset(self):
+    def filter_queryset(self, perimeter):
         """
         Method to filter the Siaes depending on the search filters.
         We also make sure there are no duplicates.
@@ -92,7 +92,6 @@ class SiaeSearchForm(forms.Form):
         if sectors:
             qs = qs.filter(sectors__in=sectors)
 
-        perimeter = self.cleaned_data.get("perimeter", None)
         if perimeter:
             qs = self.perimeter_filter(qs, perimeter)
 
@@ -113,7 +112,15 @@ class SiaeSearchForm(forms.Form):
 
         return qs
 
-    def perimeter_filter(self, qs, search_perimeter):
+    def get_perimeter(self):
+        try:
+            search_perimeter = self.data.get("perimeter", None)
+            perimeter = Perimeter.objects.get(slug=search_perimeter)
+        except Perimeter.DoesNotExist:
+            perimeter = None
+        return perimeter
+
+    def perimeter_filter(self, qs, perimeter):
         """
         Method to filter the Siaes depending on the perimeter filter.
         The search_perimeter should be a Perimeter slug.
@@ -130,12 +137,9 @@ class SiaeSearchForm(forms.Form):
         **REGION**
         return only the Siae in this region
         """
-        try:
-            perimeter = Perimeter.objects.get(slug=search_perimeter)
-        except Perimeter.DoesNotExist:
-            perimeter = None
-            return qs
 
+        if not perimeter:
+            return qs
         if perimeter.kind == Perimeter.KIND_CITY:
             # qs = qs.in_range_of_point(city_coords=perimeter.coords)
             qs = qs.in_city_area(perimeter=perimeter)
@@ -148,7 +152,7 @@ class SiaeSearchForm(forms.Form):
             pass
         return qs
 
-    def order_queryset(self, qs):
+    def order_queryset(self, qs, perimeter):
         """
         Method to order the search results (can depend on the search filters).
 
@@ -167,10 +171,7 @@ class SiaeSearchForm(forms.Form):
             )
         )
         # annotate on distance to siae if CITY searched
-        # TODO: avoid this second Perimeter query...
-        search_perimeter = self.cleaned_data.get("perimeter", None)
-        if search_perimeter:
-            perimeter = Perimeter.objects.get(slug=search_perimeter)
+        if perimeter:
             if perimeter and perimeter.kind == Perimeter.KIND_CITY:
                 qs = qs.annotate(
                     distance=Case(
