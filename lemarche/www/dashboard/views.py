@@ -46,6 +46,17 @@ class ProfileEditView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return self.request.user
 
 
+class ProfileFavoriteListView(LoginRequiredMixin, ListView):
+    template_name = "dashboard/profile_favorite_list.html"
+    queryset = FavoriteList.objects.all()
+    context_object_name = "favorite_lists"
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.by_user(user=self.request.user)
+        return qs
+
+
 class ProfileFavoriteListDetailView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin, DetailView):
     template_name = "dashboard/profile_favorite_list_detail.html"
     context_object_name = "favorite_list"

@@ -1,0 +1,63 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ favorite_list.name }} - Liste d'achat{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Mes listes d'achats</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="pt-4 pb-6">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                <h2 class="mb-3 mb-lg-5">
+                    <strong>Mes listes d'achats</strong>
+                </h2>
+            </div>
+        </div>
+
+        <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2">
+            {% for favorite_list in favorite_lists.all %}
+            <div class="s-cards-grid-01__col col d-sm-flex">
+                <div class="card c-card c-card--mini mb-3 w-100">
+                    <div class="card-body">
+                        <a href="{% url 'dashboard:profile_favorite_list_detail' favorite_list.slug %}" class="text-decoration-none">
+                            <h4>{{ favorite_list.name }}</h4>
+                            <p title="" class="mb-2">
+                                <strong>{{ favorite_list.siaes.count }}</strong> structure{% if favorite_list.siaes.count > 1 %}s{% endif %}
+                            </p>
+                        </a>
+                    </div>
+                    </a>
+                    <div class="card-footer">
+                        <div class="row justify-content-end">
+                            <div class="col-6 col-md-auto pl-2">
+                                <a href="{% url 'dashboard:profile_favorite_list_detail' favorite_list.slug %}" class="btn btn-outline-primary btn-sm btn-block btn-ico">
+                                    <span>Voir</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M1.181 12C2.121 6.88 6.608 3 12 3c5.392 0 9.878 3.88 10.819 9-.94 5.12-5.427 9-10.819 9-5.392 0-9.878-3.88-10.819-9zM12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0-2a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

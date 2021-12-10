@@ -8,6 +8,7 @@ from lemarche.www.dashboard.views import (
     ProfileFavoriteListDeleteView,
     ProfileFavoriteListDetailView,
     ProfileFavoriteListEditView,
+    ProfileFavoriteListView,
     SiaeEditInfoContactView,
     SiaeEditOfferView,
     SiaeEditOtherView,
@@ -23,16 +24,20 @@ app_name = "dashboard"
 urlpatterns = [
     path("", DashboardHomeView.as_view(), name="home"),
     path("modifier/", ProfileEditView.as_view(), name="profile_edit"),
-    path("favoris/", RedirectView.as_view(url="/profil/#favoris", permanent=True), name="profile_favorite_list"),
-    path("favoris/<str:slug>/", ProfileFavoriteListDetailView.as_view(), name="profile_favorite_list_detail"),
+    path("listes-dachats/", ProfileFavoriteListView.as_view(), name="profile_favorite_list"),
+    path("listes-dachats/<str:slug>/", ProfileFavoriteListDetailView.as_view(), name="profile_favorite_list_detail"),
     path(
-        "favoris/<slug:slug>/prestataires/<slug:siae_slug>/",
+        "listes-dachats/<slug:slug>/prestataires/<slug:siae_slug>/",
         ProfileFavoriteItemDeleteView.as_view(),
         name="profile_favorite_item_delete",
     ),
-    path("favoris/<str:slug>/modifier/", ProfileFavoriteListEditView.as_view(), name="profile_favorite_list_edit"),
     path(
-        "favoris/<str:slug>/supprimer/", ProfileFavoriteListDeleteView.as_view(), name="profile_favorite_list_delete"
+        "listes-dachats/<str:slug>/modifier/", ProfileFavoriteListEditView.as_view(), name="profile_favorite_list_edit"
+    ),
+    path(
+        "listes-dachats/<str:slug>/supprimer/",
+        ProfileFavoriteListDeleteView.as_view(),
+        name="profile_favorite_list_delete",
     ),
     path("prestataires/rechercher/", SiaeSearchBySiretView.as_view(), name="siae_search_by_siret"),
     path("prestataires/<str:slug>/adopter/", SiaeSearchAdoptConfirmView.as_view(), name="siae_search_adopt_confirm"),
