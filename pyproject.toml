@@ -1,6 +1,8 @@
 [tool.poetry]
 name = "lemarche"
 description = "Marché de l'inclusion"
+version = "1.0"
+authors = []
 
 [tool.poetry.dependencies]
 python = "^3.9"
