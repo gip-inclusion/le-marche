@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import Http404, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
@@ -90,21 +90,26 @@ class ProfileFavoriteListDeleteView(
         return super().delete(request, *args, **kwargs)
 
 
-class ProfileFavoriteItemDeleteView(
-    LoginRequiredMixin, FavoriteListOwnerRequiredMixin, SuccessMessageMixin, DeleteView
-):
-    template_name = "siaes/_favorite_list_item_remove_modal.html"
+class ProfileFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    # FavoriteListOwnerRequiredMixin
+    template_name = "siaes/_favorite_item_remove_modal.html"
     model = FavoriteItem
     # success_message = "La structure a été supprimée de votre liste d'achat avec succès."
     # success_url = reverse_lazy("dashboard:profile_favorite_list_detail")
 
     def get_object(self):
-        try:
-            favorite_list = FavoriteList.objects.get(slug=self.kwargs.get("slug"))
-            siae = Siae.objects.get(slug=self.kwargs.get("siae_slug"))
-            return get_object_or_404(FavoriteItem, favorite_list=favorite_list, siae=siae)
-        except:  # noqa
-            raise Http404
+        """
+        - there should theoretically be only 1 Siae per user's lists (an Siae cannot belong to other list)
+        - in the future it could be possible to add an Siae to multiple user lists
+        """
+        # try:
+        #     favorite_list = FavoriteList.objects.get(slug=self.kwargs.get("slug"))
+        #     siae = Siae.objects.get(slug=self.kwargs.get("siae_slug"))
+        #     return get_object_or_404(FavoriteItem, favorite_list=favorite_list, siae=siae)
+        # except:  # noqa
+        #     raise Http404
+        siae = Siae.objects.get(slug=self.kwargs.get("siae_slug"))
+        return get_object_or_404(FavoriteItem, favorite_list__user=self.request.user, siae=siae)
 
     def delete(self, request, *args, **kwargs):
         """success_message doesn't work on DeleteView."""
@@ -113,7 +118,11 @@ class ProfileFavoriteItemDeleteView(
         return super().delete(request, *args, **kwargs)
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:profile_favorite_list_detail", args=[self.kwargs.get("slug")])
+        """Redirect to the previous page."""
+        request_referer = self.request.META.get("HTTP_REFERER", "")
+        if request_referer:
+            return request_referer
+        return super().get_success_url()
 
     def get_success_message(self, favorite_item):
         return f"La structure <strong>{favorite_item.siae.name}</strong> a été supprimée de votre liste d'achat avec succès."  # noqa

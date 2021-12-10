@@ -1,4 +1,4 @@
-<div class="modal fade modal-siae" id="favorite_list_item_remove_modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="z-index:3000">
+<div class="modal fade modal-siae" id="favorite_item_remove_modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="z-index:3000">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -7,8 +7,8 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body home-content-body">
-                <form method="POST" action="{% url 'dashboard:profile_favorite_item_delete' favorite_list.slug 'siae-slug-to-replace' %}">
+            <div class="modal-body">
+                <form method="POST" action="{% url 'dashboard:profile_favorite_item_delete' favorite_list.slug|default:'favorite-list-slug' 'siae-slug-to-replace' %}">
                     {% csrf_token %}
                     <p>
                         La structure <strong id="siae-name-display"></strong> sera supprimée de votre liste d'achat.

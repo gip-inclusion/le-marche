@@ -22,7 +22,6 @@ from lemarche.www.dashboard.views import (
 app_name = "dashboard"
 
 urlpatterns = [
-    path("", DashboardHomeView.as_view(), name="home"),
     path("modifier/", ProfileEditView.as_view(), name="profile_edit"),
     path("listes-dachats/", ProfileFavoriteListView.as_view(), name="profile_favorite_list"),
     path("listes-dachats/<str:slug>/", ProfileFavoriteListDetailView.as_view(), name="profile_favorite_list_detail"),
@@ -67,4 +66,5 @@ urlpatterns = [
         RedirectView.as_view(pattern_name="dashboard:siae_search_by_siret", permanent=False),
         name="siae_search",
     ),
+    path("", DashboardHomeView.as_view(), name="home"),
 ]
