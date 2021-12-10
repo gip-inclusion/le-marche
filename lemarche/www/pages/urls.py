@@ -32,9 +32,9 @@ urlpatterns = [
         name="partenaires",
     ),
     path(
-        "mesurer-achats/",
-        TemplateView.as_view(template_name="pages/mesurer-achats.html"),
-        name="mesurer_achats",
+        "valoriser-achats/",
+        TemplateView.as_view(template_name="pages/valoriser-achats.html"),
+        name="valoriser_achats",
     ),
     path("stats/", StatsView.as_view(), name="stats"),
     # Sentry endpoint for frontend errors

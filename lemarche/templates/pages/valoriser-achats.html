@@ -1,0 +1,157 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block title %}Valoriser vos achats{{ block.super }}{% endblock %}
+{% block body_class %}p-valoriser-achats{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Valoriser vos achats</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="s-page-menu-01 s-page-menu-01--marche pb-5 pb-lg-7">
+    <div class="s-page-menu-01__container container">
+        <div class="s-page-menu-01__row row align-items-center">
+            <div class="s-page-menu-01__col s-page-menu-01__col--title col-12">
+                <h1 class="h1">
+                    <strong>Mesurer, objectiver <br class="d-none d-lg-inline">et valoriser vos achats.</strong>
+                </h1>
+                <h2 class="mb-5 mb-lg-7">
+                    Il se peut que vous travaillez déjà avec des entreprises sociales inclusives (insertion / handicap) sans le savoir.
+                </h2>
+            </div>
+            <div class="s-page-menu-01__col s-page-menu-01__col--cta col-12 text-center">
+                <span class="ff-extra-01">créer votre compte et</span>
+                <a href="{% url 'siae:search_results' %}" class="btn btn-primary btn-ico d-block d-md-inline-block">
+                    <span>Télécharger la liste complète</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill="none" d="M0 0h24v24H0z" />
+                        <path d="M13 13v5.585l1.828-1.828 1.415 1.415L12 22.414l-4.243-4.242 1.415-1.415L11 18.585V13h2zM12 2a7.001 7.001 0 0 1 6.954 6.194 5.5 5.5 0 0 1-.953 10.784v-2.014a3.5 3.5 0 1 0-1.112-6.91 5 5 0 1 0-9.777 0 3.5 3.5 0 0 0-1.292 6.88l.18.03v2.014a5.5 5.5 0 0 1-.954-10.784A7 7 0 0 1 12 2z" fill="currentColor" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="s-valoriser-01 bg-gray-400">
+    <div class="s-valoriser-01__container container">
+        <div class="s-valoriser-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3">
+            <div class="col mb-3 mb-md-4">
+                <div class="card c-card c-card--marche h-100">
+                    <div class="card-header mb-0">
+                        <p class="h1 m-0 text-center"><strong>1</strong></p>
+                    </div>
+                    <div class="card-body pb-5">
+                        <p class="h4">Téléchargez la liste complète des structures d’insertion et entreprises adaptées.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col mb-3 mb-md-4">
+                <div class="card c-card c-card--marche h-100">
+                    <div class="card-header mb-0">
+                        <p class="h1 m-0 text-center"><strong>2</strong></p>
+                    </div>
+                    <div class="card-body pb-5">
+                        <p class="h4">Découvrez et valorisez en résultat chiffré vos collaborations existantes.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col mb-3 mb-md-4">
+                <div class="card c-card c-card--marche h-100">
+                    <div class="card-header mb-0">
+                        <p class="h1 m-0 text-center"><strong>3</strong></p>
+                    </div>
+                    <div class="card-body pb-5">
+                        <p class="h4">Suivez votre progression.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="s-articles-cols-01 s-articles-cols-01--marche">
+    <div class="s-articles-cols-01__container container">
+        <div class="s-articles-cols-01__row row">
+            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12 col-lg-4">
+                <article>
+                    <h3 class="h2">Qu’allez-vous <br class="d-none d-lg-inline">retrouver <br class="d-none d-lg-inline"> dans la liste ?</h3>
+                </article>
+            </div>
+            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12 col-lg-4">
+                <article>
+                    <h4 class="h3">
+                        Quels types de structures vous allez retrouver sur la liste ?
+                    </h4>
+                    <p class="m-0">
+                        Sur la liste, vous trouverez la liste complète des SIAE (structures de l'insertion
+                        par l'activité économique), les EATT (Enterprises adaptées de travail temporaire), GEIQ
+                        (Enterprises adaptées de travail temporaire) et les EA (Entreprises adaptées).
+                    </p>
+                </article>
+            </div>
+            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12 col-lg-4">
+                <article>
+                    <h4 class="h3">
+                        Quelles informations sont disponibles sur les structures ?
+                    </h4>
+                    <p class="m-0">
+                        Vous trouverez dans cette liste de quoi faire une comparaison :<br />
+                        Raison sociale ; Enseigne ; Siret ; Établissement ; Type ; Secteur ; Ville ; Département ; Région ; Code postal ; zone QPV ou non.
+                    </p>
+                </article>
+            </div>
+        </div>
+        <div class="s-articles-cols-01__row row">
+            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12">
+                <hr class="mb-5">
+            </div>
+            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12 col-lg-4">
+                <article>
+                    <h3 class="h2">
+                        Pourquoi entrer <br class="d-none d-lg-inline"> dès aujourd’hui <br class="d-none d-lg-inline"> dans une démarche <br class="d-none d-lg-inline">d’achat mesuré ?
+                    </h3>
+                </article>
+            </div>
+            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12 col-lg-4">
+                <article>
+                    <h4 class="h3">
+                        Mesurer pour exister
+                    </h4>
+                    <p class="m-0">
+                        La mesure des achats inclusifs permet de mettre en place de nouveaux indicateurs et
+                        ainsi d’avoir de nouveaux objectifs ambitieux en terme d’impact social et de ses achats.
+                    </p>
+                </article>
+            </div>
+            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12 col-lg-4">
+                <article>
+                    <h4 class="h3">
+                        Anticiper
+                    </h4>
+                    <p class="m-0">
+                        La régulation européenne est en marche depuis le 21 avril 2021, à travers la
+                        discussion sur la performance extra-financière. Dans les années à venir, les entreprises
+                        européennes de plus de 250 salariés auront l’obligation de transparence sur leurs indicateurs E,
+                        S et G, soit : Environnementaux, Sociaux et de Gouvernance.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
