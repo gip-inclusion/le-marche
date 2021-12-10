@@ -1,0 +1,63 @@
+.s-mesurer-01 {
+	padding-top: 2rem;
+	padding-bottom: 1.5rem;
+
+	@media (min-width:992px) {
+		padding-top: 4rem;
+		padding-bottom: 3rem;
+	}
+
+	@media (min-width:1200px) {
+		overflow: hidden;	
+	}
+
+	p.h1 {
+		position: relative;
+
+		&::before {
+			content: '';
+			display: block;
+			position: absolute;
+			top: 20px;
+			z-index: 0;
+			left: 50%;
+			width: 30px;
+			height: 30px;
+			background-color: $marche-light;
+			border-radius: 50%;
+		}
+
+		strong	{
+			position: relative;
+			z-index: 1;
+		}
+	}
+
+	&__container {
+		position: relative;
+
+		&::after {
+			content: '';
+			position: absolute;
+			z-index: 0;
+			width: 174px;
+			height: 280px;
+			background-image: url('/static/img/hp-bg-03.png');
+			background-position: center;
+			background-repeat: no-repeat;
+			background-size: cover;
+			display: none;
+			top: 0;
+			right: -4rem;
+			
+			@media (min-width:1200px) {
+				display: block;
+			}				
+		}
+	}
+
+	&__row {
+		position: relative;
+		z-index: 1;
+	}
+} 
