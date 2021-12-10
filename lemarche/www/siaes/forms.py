@@ -1,7 +1,7 @@
 from django import forms
-from django.db.models import BooleanField, Case, Exists, OuterRef, Value, When
+from django.contrib.gis.db.models.functions import Distance
+from django.db.models import BooleanField, Case, Value, When
 from django.db.models.functions import NullIf
-
 from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
@@ -82,10 +82,8 @@ class SiaeSearchForm(forms.Form):
         Method to filter the Siaes depending on the search filters.
         We also make sure there are no duplicates.
         """
-        qs = Siae.objects.prefetch_related("sectors", "networks").all()
-
         # we only display live Siae
-        qs = qs.is_live()
+        qs = Siae.objects.prefetch_related("sectors", "networks").is_live()
 
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
@@ -160,16 +158,7 @@ class SiaeSearchForm(forms.Form):
         - if a Siae has a a SiaeOffer, or a description, or a User, then it is "boosted"
         - if the search is on a CITY perimeter, we order by coordinates first
         """
-        ORDER_BY_FIELDS = ["-has_offer", "-has_description", "-has_user", "name"]
-        # annotate on SiaeOffer FK exists
-        qs = qs.annotate(
-            has_offer=Case(
-                When(offers__gte=1, then=Value(True)),
-                default=Value(False),
-                output_field=BooleanField(),
-            )
-        )
-
+        ORDER_BY_FIELDS = ["-offer_count", "-has_description", "-user_count", "name"]
         # annotate on description presence: https://stackoverflow.com/a/65014409/4293684
         # qs = qs.annotate(has_description=Exists(F("description")))  # doesn't work
         qs = qs.annotate(
@@ -177,8 +166,21 @@ class SiaeSearchForm(forms.Form):
                 When(description__gte=1, then=Value(True)), default=Value(False), output_field=BooleanField()
             )
         )
-        # annotation on User M2M exists: https://stackoverflow.com/a/58641475/4293684
-        qs = qs.annotate(has_user=Exists(Siae.users.through.objects.filter(siae_id=OuterRef("pk"))))
+        # annotate on distance to siae if CITY searched
+        # TODO: avoid this second Perimeter query...
+        search_perimeter = self.cleaned_data.get("perimeter", None)
+        if search_perimeter:
+            perimeter = Perimeter.objects.get(slug=search_perimeter)
+            if perimeter and perimeter.kind == Perimeter.KIND_CITY:
+                qs = qs.annotate(
+                    distance=Case(
+                        # if it's in the same city we set the distance at 0
+                        When(post_code__in=perimeter.post_codes, then=Distance("coords", "coords")),
+                        default=Distance("coords", perimeter.coords),
+                    )
+                )
+                ORDER_BY_FIELDS = ["distance"] + ORDER_BY_FIELDS
+
         # final ordering
         qs = qs.order_by(*ORDER_BY_FIELDS)
         return qs
