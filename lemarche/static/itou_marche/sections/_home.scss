@@ -62,21 +62,20 @@
 	}
 
 	&__col {
-		&--slider {
+		padding-top: 1rem;
 
-			img {
-				filter: grayscale(1);
-				transition: all 0.3s ease;
-			}
+		img {
+			filter: grayscale(1);
+			transition: all 0.3s ease;
+		}
 
-			a {
-				text-decoration: none;
+		a {
+			text-decoration: none;
 
-				&:hover,
-				&:focus {
-					img {
-						filter: grayscale(0);
-					}
+			&:hover,
+			&:focus {
+				img {
+					filter: grayscale(0);
 				}
 			}
 		}
