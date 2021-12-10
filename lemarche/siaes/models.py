@@ -82,7 +82,7 @@ class SiaeQuerySet(models.QuerySet):
             Q(post_code__in=perimeter.post_codes)
             | (
                 Q(geo_range=GEO_RANGE_CUSTOM)
-                # pourquoi / 1000 ?
+                # w / 1000 ? convert from m to km
                 & Q(geo_range_custom_distance__gte=Distance("coords", perimeter.coords) / 1000)
             )
             | (Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=perimeter.department_code))
