@@ -8,10 +8,10 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form method="POST" action="{% url 'dashboard:profile_favorite_item_delete' favorite_list.slug|default:'favorite-list-slug' 'siae-slug-to-replace' %}">
+                <form method="POST" action="{% url 'dashboard:profile_favorite_item_delete' favorite_list.slug|default:'favorite-list-slug' siae.slug|default:'siae-slug-to-replace' %}">
                     {% csrf_token %}
                     <p>
-                        La structure <strong id="siae-name-display"></strong> sera supprimée de votre liste d'achat.
+                        La structure <strong>{% if siae %}{{ siae.name_display }}{% else %}<span id="siae-name-display"></span>{% endif %}</strong> sera supprimée de votre liste d'achat.
                     </p>
                     <div class="row justify-content-center">
                         <div class="col">

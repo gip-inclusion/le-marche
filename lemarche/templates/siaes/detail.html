@@ -2,13 +2,13 @@
 {% load static array_choices_display m2m_list_display %}
 {% load theme_inclusion %}
 
-{% block title %}{{ siae.name }}{{ block.super }}{% endblock %}
+{% block title %}{{ siae.name_display }}{{ block.super }}{% endblock %}
 
 {% block extra_head %}
 <meta property="og:url" content="{{ request.build_absolute_uri }}" />
-<meta property="og:title" content="{{ siae.name }}" />
+<meta property="og:title" content="{{ siae.name_display }}" />
 <meta property="twitter:url" content="{{ request.build_absolute_uri }}" />
-<meta property="twitter:title" content="{{ siae.name }}" />
+<meta property="twitter:title" content="{{ siae.name_display }}" />
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -20,7 +20,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'siae:search_results' %}?{{ current_search_query }}" title="Revenir aux résultats de recherche">Recherche</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ siae.name }}</li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ siae.name_display }}</li>
                     </ol>
                 </nav>
             </div>
@@ -377,7 +377,7 @@
 
 {% block modals %}
     {% include "siaes/_favorite_modal.html" with siae=siae %}
-    {% include "siaes/_favorite_item_remove_modal.html" %}
+    {% include "siaes/_favorite_item_remove_modal.html" with siae=siae %}
 {% endblock %}
 
 {% block extra_js %}

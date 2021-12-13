@@ -14,7 +14,9 @@ document.addEventListener("DOMContentLoaded", function() {
         // - edit the form action url
         var modal = document.querySelector('#favorite_item_remove_modal');
         var modalForm = modal.querySelector('form');
-        modal.querySelector('#siae-name-display').textContent = siaeNameDisplay;
+        if (modal.querySelector('#siae-name-display')) {
+            modal.querySelector('#siae-name-display').textContent = siaeNameDisplay;
+        }
         var formActionUrl = modalForm.getAttribute('action');
         modalForm.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', siaeSlug));
     });

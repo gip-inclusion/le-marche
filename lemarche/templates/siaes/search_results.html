@@ -263,7 +263,9 @@ document.addEventListener("DOMContentLoaded", function() {
         // - edit the form action url
         var modal = document.querySelector('#favorite_modal');
         var modalForms = modal.querySelectorAll('form');
-        modal.querySelector('#siae-name-display').textContent = siaeNameDisplay;
+        if (modal.querySelector('#siae-name-display')) {
+            modal.querySelector('#siae-name-display').textContent = siaeNameDisplay;
+        }
         modalForms.forEach(form => {
             var formActionUrl = form.getAttribute('action');
             form.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', siaeSlug));
