@@ -28,6 +28,12 @@ class SiaeQuerySet(models.QuerySet):
     def is_not_live(self):
         return self.filter(Q(is_active=False) | Q(is_delisted=True))
 
+    def search_query_set(self):
+        return self.is_live().prefetch_related("sectors", "networks", "offers")
+
+    def filter_sectors(self, sectors):
+        return self.filter(sectors__in=sectors)
+
     def has_user(self):
         """Only return siaes who have at least 1 User."""
         return self.filter(users__isnull=False).distinct()

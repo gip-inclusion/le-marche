@@ -1,11 +1,11 @@
 from django import forms
 from django.contrib.gis.db.models.functions import Distance
-from django.db.models import BooleanField, Case, Exists, OuterRef, Value, When
+from django.db.models import BooleanField, Case, Value, When
 from django.db.models.functions import NullIf
 from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
-from lemarche.siaes.models import Siae, SiaeOffer
+from lemarche.siaes.models import Siae
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
@@ -83,14 +83,14 @@ class SiaeSearchForm(forms.Form):
         We also make sure there are no duplicates.
         """
         # we only display live Siae
-        qs = Siae.objects.prefetch_related("sectors", "networks").is_live()
+        qs = Siae.objects.search_query_set()
 
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
 
         sectors = self.cleaned_data.get("sectors", None)
         if sectors:
-            qs = qs.filter(sectors__in=sectors)
+            qs = qs.filter_sectors(sectors)
 
         if perimeter:
             qs = self.perimeter_filter(qs, perimeter)
@@ -170,8 +170,12 @@ class SiaeSearchForm(forms.Form):
                 When(description__gte=1, then=Value(True)), default=Value(False), output_field=BooleanField()
             )
         )
-        qs = qs.annotate(has_offer=Exists(SiaeOffer.objects.filter(siae_id=OuterRef("pk"))))
-        qs = qs.annotate(has_user=Exists(Siae.users.through.objects.filter(siae_id=OuterRef("pk"))))
+        qs = qs.annotate(
+            has_offer=Case(When(offers__gte=1, then=Value(True)), default=Value(False), output_field=BooleanField())
+        )
+        qs = qs.annotate(
+            has_user=Case(When(users__gte=1, then=Value(True)), default=Value(False), output_field=BooleanField())
+        )
 
         # annotate on distance to siae if CITY searched
         if perimeter:
