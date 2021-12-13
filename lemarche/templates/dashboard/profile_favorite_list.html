@@ -31,6 +31,7 @@
             </div>
         </div>
 
+        {% if favorite_lists.count %}
         <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2">
             {% for favorite_list in favorite_lists.all %}
             <div class="s-cards-grid-01__col col d-sm-flex">
@@ -58,6 +59,11 @@
             </div>
             {% endfor %}
         </div>
+        {% else %}
+        <div class="alert alert-info" role="alert">
+            Vous n'avez pas encore créé de listes !
+        </div>
+        {% endif %}
     </div>
 </section>
 {% endblock %}

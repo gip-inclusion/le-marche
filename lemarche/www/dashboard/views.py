@@ -82,7 +82,7 @@ class ProfileFavoriteListDeleteView(
     template_name = "siaes/_favorite_list_delete_modal.html"
     model = FavoriteList
     success_message = "Votre liste d'achat a été supprimée avec succès."
-    success_url = reverse_lazy("dashboard:home")
+    success_url = reverse_lazy("dashboard:profile_favorite_list")
 
     def delete(self, request, *args, **kwargs):
         """success_message doesn't work on DeleteView."""
@@ -125,7 +125,7 @@ class ProfileFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, Del
         return super().get_success_url()
 
     def get_success_message(self, favorite_item):
-        return f"La structure <strong>{favorite_item.siae.name}</strong> a été supprimée de votre liste d'achat avec succès."  # noqa
+        return f"La structure <strong>{favorite_item.siae.name_display}</strong> a été supprimée de votre liste d'achat avec succès."  # noqa
 
 
 class SiaeSearchBySiretView(LoginRequiredMixin, SiaeUserRequiredMixin, FormMixin, ListView):
