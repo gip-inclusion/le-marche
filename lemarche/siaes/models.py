@@ -13,7 +13,6 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_str
 from django.utils.text import slugify
-
 from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY, get_department_code_from_name
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
 
@@ -28,6 +27,12 @@ class SiaeQuerySet(models.QuerySet):
 
     def is_not_live(self):
         return self.filter(Q(is_active=False) | Q(is_delisted=True))
+
+    def search_query_set(self):
+        return self.is_live().prefetch_related("sectors", "networks", "offers")
+
+    def filter_sectors(self, sectors):
+        return self.filter(sectors__in=sectors)
 
     def has_user(self):
         """Only return siaes who have at least 1 User."""
@@ -78,16 +83,16 @@ class SiaeQuerySet(models.QuerySet):
                 & Q(geo_range_custom_distance__lte=Distance("coords", kwargs["city_coords"]) / 1000)
             )
 
-    def in_city_or_in_range_of_point_or_in_department(self, **kwargs):
-        if "city_name" in kwargs and "city_coords" in kwargs and "department_code" in kwargs:
-            return self.filter(
-                (Q(city=kwargs["city_name"]) & Q(department=kwargs["department_code"]))
-                | (
-                    Q(geo_range=GEO_RANGE_CUSTOM)
-                    & Q(geo_range_custom_distance__gte=Distance("coords", kwargs["city_coords"]) / 1000)
-                )
-                | (Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=kwargs["department_code"]))
+    def in_city_area(self, perimeter):
+        return self.filter(
+            Q(post_code__in=perimeter.post_codes)
+            | (
+                Q(geo_range=GEO_RANGE_CUSTOM)
+                # why distance / 1000 ? because convert from meter to km
+                & Q(geo_range_custom_distance__gte=Distance("coords", perimeter.coords) / 1000)
             )
+            | (Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=perimeter.department_code))
+        )
 
     def within(self, point, distance_km=0):
         return self.filter(coords__dwithin=(point, D(km=distance_km)))

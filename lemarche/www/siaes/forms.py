@@ -1,12 +1,11 @@
 from django import forms
 from django.contrib.gis.db.models.functions import Distance
-from django.db.models import BooleanField, Case, Exists, OuterRef, Value, When
+from django.db.models import BooleanField, Case, Value, When
 from django.db.models.functions import NullIf
-
 from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
-from lemarche.siaes.models import Siae, SiaeOffer
+from lemarche.siaes.models import Siae
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
@@ -78,24 +77,21 @@ class SiaeSearchForm(forms.Form):
             self.cleaned_data["perimeter"] = ""
             return self.cleaned_data
 
-    def filter_queryset(self):
+    def filter_queryset(self, perimeter):
         """
         Method to filter the Siaes depending on the search filters.
         We also make sure there are no duplicates.
         """
-        qs = Siae.objects.prefetch_related("sectors", "networks").all()
-
         # we only display live Siae
-        qs = qs.is_live()
+        qs = Siae.objects.search_query_set()
 
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
 
         sectors = self.cleaned_data.get("sectors", None)
         if sectors:
-            qs = qs.filter(sectors__in=sectors)
+            qs = qs.filter_sectors(sectors)
 
-        perimeter = self.cleaned_data.get("perimeter", None)
         if perimeter:
             qs = self.perimeter_filter(qs, perimeter)
 
@@ -116,14 +112,22 @@ class SiaeSearchForm(forms.Form):
 
         return qs
 
-    def perimeter_filter(self, qs, search_perimeter):
+    def get_perimeter(self):
+        try:
+            search_perimeter = self.data.get("perimeter", None)
+            perimeter = Perimeter.objects.get(slug=search_perimeter)
+        except Perimeter.DoesNotExist:
+            perimeter = None
+        return perimeter
+
+    def perimeter_filter(self, qs, perimeter):
         """
         Method to filter the Siaes depending on the perimeter filter.
         The search_perimeter should be a Perimeter slug.
         Depending on the type of Perimeter that was chosen, different cases arise:
 
         **CITY**
-        return the Siae in ths city+department
+        return the Siae with the post code in Perimeter.post_codes+department
         OR the Siae with geo_range=GEO_RANGE_CUSTOM and a perimeter radius that overlaps with the search_perimeter
         OR the Siae with geo_range=GEO_RANGE_DEPARTMENT and a department equal to the search_perimeter's
 
@@ -133,17 +137,12 @@ class SiaeSearchForm(forms.Form):
         **REGION**
         return only the Siae in this region
         """
-        try:
-            perimeter = Perimeter.objects.get(slug=search_perimeter)
-        except Perimeter.DoesNotExist:
-            perimeter = None
-            return qs
 
+        if not perimeter:
+            return qs
         if perimeter.kind == Perimeter.KIND_CITY:
             # qs = qs.in_range_of_point(city_coords=perimeter.coords)
-            qs = qs.in_city_or_in_range_of_point_or_in_department(
-                city_name=perimeter.name, city_coords=perimeter.coords, department_code=perimeter.department_code
-            )
+            qs = qs.in_city_area(perimeter=perimeter)
         elif perimeter.kind == Perimeter.KIND_DEPARTMENT:
             qs = qs.in_department(department_code=perimeter.insee_code)
         elif perimeter.kind == Perimeter.KIND_REGION:
@@ -153,7 +152,7 @@ class SiaeSearchForm(forms.Form):
             pass
         return qs
 
-    def order_queryset(self, qs):
+    def order_queryset(self, qs, perimeter):
         """
         Method to order the search results (can depend on the search filters).
 
@@ -164,16 +163,6 @@ class SiaeSearchForm(forms.Form):
         - if the search is on a CITY perimeter, we order by coordinates first
         """
         ORDER_BY_FIELDS = ["-has_offer", "-has_description", "-has_user", "name"]
-        # annotate on distance to siae if CITY searched
-        # TODO: avoid this second Perimeter query...
-        search_perimeter = self.cleaned_data.get("perimeter", None)
-        if search_perimeter:
-            perimeter = Perimeter.objects.get(slug=search_perimeter)
-            if perimeter and perimeter.kind == Perimeter.KIND_CITY:
-                qs = qs.annotate(distance=Distance("coords", perimeter.coords))
-                ORDER_BY_FIELDS = ["distance"] + ORDER_BY_FIELDS
-        # annotate on SiaeOffer FK exists
-        qs = qs.annotate(has_offer=Exists(SiaeOffer.objects.filter(siae_id=OuterRef("pk"))))
         # annotate on description presence: https://stackoverflow.com/a/65014409/4293684
         # qs = qs.annotate(has_description=Exists(F("description")))  # doesn't work
         qs = qs.annotate(
@@ -181,8 +170,25 @@ class SiaeSearchForm(forms.Form):
                 When(description__gte=1, then=Value(True)), default=Value(False), output_field=BooleanField()
             )
         )
-        # annotation on User M2M exists: https://stackoverflow.com/a/58641475/4293684
-        qs = qs.annotate(has_user=Exists(Siae.users.through.objects.filter(siae_id=OuterRef("pk"))))
+        qs = qs.annotate(
+            has_offer=Case(When(offers__gte=1, then=Value(True)), default=Value(False), output_field=BooleanField())
+        )
+        qs = qs.annotate(
+            has_user=Case(When(users__gte=1, then=Value(True)), default=Value(False), output_field=BooleanField())
+        )
+
+        # annotate on distance to siae if CITY searched
+        if perimeter:
+            if perimeter and perimeter.kind == Perimeter.KIND_CITY:
+                qs = qs.annotate(
+                    distance=Case(
+                        # if it's in the same city we set the distance at 0
+                        When(post_code__in=perimeter.post_codes, then=Distance("coords", "coords")),
+                        default=Distance("coords", perimeter.coords),
+                    )
+                )
+                ORDER_BY_FIELDS = ["distance"] + ORDER_BY_FIELDS
+
         # final ordering
         qs = qs.order_by(*ORDER_BY_FIELDS)
         return qs
