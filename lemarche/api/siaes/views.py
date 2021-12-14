@@ -18,7 +18,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     # ModelViewSet needs 'queryset' to be set otherwise the router won't be
     # able to derive the model Basename. To avoid loading data on object
     # initialisation we load an empty queryset.
-    queryset = Siae.objects.prefetch_related("sectors", "networks").all()
+    queryset = Siae.objects.prefetch_many_to_many()
     serializer_class = SiaeListSerializer
     filter_class = SiaeFilter
 
@@ -59,8 +59,9 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         """
         <i>Un <strong>token</strong> est nécessaire pour l'accès complet à cette ressource.</i>
         """
-        queryset = get_object_or_404(self.get_queryset(), pk=pk)
-        return self._retrieve_return(request, queryset, format)
+        queryset = self.get_queryset().prefetch_many_to_one()
+        queryset_or_404 = get_object_or_404(queryset, pk=pk)
+        return self._retrieve_return(request, queryset_or_404, format)
 
     @extend_schema(
         summary="Détail d'une structure (par son slug)",
@@ -75,8 +76,9 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         Note : le slug est un champ unique.<br /><br />
         <i>Un <strong>token</strong> est nécessaire pour l'accès complet à cette ressource.</i>
         """
-        queryset = get_object_or_404(self.get_queryset(), slug=slug)
-        return self._retrieve_return(request, queryset, format)
+        queryset = self.get_queryset().prefetch_many_to_one()
+        queryset_or_404 = get_object_or_404(queryset, slug=slug)
+        return self._retrieve_return(request, queryset_or_404, format)
 
     @extend_schema(
         summary="Détail d'une structure (par son siret)",
@@ -91,7 +93,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         Note : le siret n'est pas nécessairement unique, il peut y avoir plusieurs structures retournées.<br /><br />
         <i>Un <strong>token</strong> est nécessaire pour l'accès complet à cette ressource.</i>
         """
-        queryset = self.get_queryset().filter(siret=siret)
+        queryset = self.get_queryset().prefetch_many_to_one().filter(siret=siret)
         queryset_count = queryset.count()
         if queryset_count == 0:
             raise Http404
