@@ -79,7 +79,8 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
     def get_queryset(self):
         """Filter results."""
         filter_form = SiaeSearchForm(data=self.request.GET)
-        results = filter_form.filter_queryset()
+        perimeter = filter_form.get_perimeter()
+        results = filter_form.filter_queryset(perimeter)
         return results
 
     def get(self, request, *args, **kwargs):
