@@ -359,6 +359,7 @@ class SiaeSearchOrderTest(TestCase):
     def test_should_bring_the_siae_with_offers_to_the_top(self):
         siae_with_offer = SiaeFactory(name="ZZ ESI 3")
         SiaeOfferFactory(siae=siae_with_offer)
+        siae_with_offer.save()  # to update the siae count fields
         url = reverse("siae:search_results", kwargs={})
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
