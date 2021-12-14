@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.gis.db.models.functions import Distance
 from django.db.models import BooleanField, Case, Value, When
 from django.db.models.functions import NullIf
+
 from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
@@ -137,7 +138,6 @@ class SiaeSearchForm(forms.Form):
         **REGION**
         return only the Siae in this region
         """
-
         if not perimeter:
             return qs
         if perimeter.kind == Perimeter.KIND_CITY:
@@ -171,10 +171,12 @@ class SiaeSearchForm(forms.Form):
             )
         )
         qs = qs.annotate(
-            has_offer=Case(When(offers__gte=1, then=Value(True)), default=Value(False), output_field=BooleanField())
+            has_offer=Case(
+                When(offer_count__gte=1, then=Value(True)), default=Value(False), output_field=BooleanField()
+            )
         )
         qs = qs.annotate(
-            has_user=Case(When(users__gte=1, then=Value(True)), default=Value(False), output_field=BooleanField())
+            has_user=Case(When(user_count__gte=1, then=Value(True)), default=Value(False), output_field=BooleanField())
         )
 
         # annotate on distance to siae if CITY searched
