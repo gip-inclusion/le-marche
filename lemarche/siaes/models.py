@@ -29,8 +29,14 @@ class SiaeQuerySet(models.QuerySet):
     def is_not_live(self):
         return self.filter(Q(is_active=False) | Q(is_delisted=True))
 
+    def prefetch_many_to_many(self):
+        return self.prefetch_related("sectors", "networks")
+
+    def prefetch_many_to_one(self):
+        return self.prefetch_related("offers", "client_references", "labels", "images")
+
     def search_query_set(self):
-        return self.is_live().prefetch_related("sectors", "networks", "offers")
+        return self.is_live().prefetch_many_to_many()
 
     def filter_sectors(self, sectors):
         return self.filter(sectors__in=sectors)

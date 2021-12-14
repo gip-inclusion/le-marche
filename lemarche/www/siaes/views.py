@@ -147,9 +147,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
 class SiaeDetailView(DetailView):
     template_name = "siaes/detail.html"
     context_object_name = "siae"
-    queryset = Siae.objects.prefetch_related(
-        "sectors", "sectors__group", "networks", "offers", "client_references", "labels", "images"
-    )
+    queryset = Siae.objects.prefetch_many_to_many().prefetch_many_to_one().prefetch_related("sectors__group")
 
     def get(self, request, *args, **kwargs):
         """
