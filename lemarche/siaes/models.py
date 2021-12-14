@@ -423,9 +423,10 @@ class Siae(models.Model):
             return "Intérim"
         if self.kind == Siae.KIND_AI:
             return "Mise à disposition du personnel"
-        # return array_choices_display(self, "presta_type")
-        presta_type_values = [force_str(dict(Siae.PRESTA_CHOICES).get(key, "")) for key in self.presta_type]
-        return ", ".join(filter(None, presta_type_values))
+        if self.presta_type:
+            presta_type_values = [force_str(dict(Siae.PRESTA_CHOICES).get(key, "")) for key in self.presta_type]
+            return ", ".join(filter(None, presta_type_values))
+        return ""
 
     @property
     def siret_display(self):
