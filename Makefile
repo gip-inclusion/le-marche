@@ -20,3 +20,10 @@ shell_on_postgres_container:
 # Itou theme
 update_itou_theme: scripts/upload_itou_theme.sh
 	docker exec bitoubi_django /bin/sh -c "./scripts/upload_itou_theme.sh"
+
+
+# Deployment
+# =============================================================================
+
+deploy_prod: scripts/deploy_prod.sh
+	./scripts/deploy_prod.sh
