@@ -65,6 +65,7 @@ class SiaeDetailSerializer(serializers.ModelSerializer):
             "offers",
             "client_references",
             "labels",
+            # "images",
             "created_at",
             "updated_at",
         ]
@@ -81,7 +82,9 @@ class SiaeListSerializer(SiaeDetailSerializer):
             "siret",
             "kind",
             "presta_type",
-            # contact stuff available in detail
+            "contact_website",
+            # extra contact stuff available in detail
+            "address",
             "city",
             "post_code",
             "department",
