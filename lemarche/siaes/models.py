@@ -13,6 +13,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_str
 from django.utils.text import slugify
+
 from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY, get_department_code_from_name
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
 
@@ -296,7 +297,7 @@ class Siae(models.Model):
         "sectors.Sector", verbose_name="Secteurs d'activité", related_name="siaes", blank=True
     )
     networks = models.ManyToManyField("networks.Network", verbose_name="Réseaux", related_name="siaes", blank=True)
-    # ForeignKeys: offers, client_references, labels
+    # ForeignKeys: offers, client_references, labels, images
 
     is_qpv = models.BooleanField(verbose_name="Zone QPV", blank=False, null=False, default=False)
     qpv_name = models.CharField(verbose_name="Nom de la zone QPV", max_length=255, blank=True)
