@@ -177,7 +177,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
             post_codes=[38000, 38100, 38700],
             coords=Point(5.7301, 45.1825),
         )
-        chambrousse_perimeter = PerimeterFactory(
+        chamrousse_perimeter = PerimeterFactory(
             name="Chamrousse",
             kind=Perimeter.KIND_CITY,
             insee_code="38567",
@@ -229,7 +229,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
         )
         # Chamrousse is a city located further away from Grenoble
         SiaeFactory(
-            city=chambrousse_perimeter.name,
+            city=chamrousse_perimeter.name,
             department="38",
             region=auvergne_rhone_alpes.name,
             geo_range=Siae.GEO_RANGE_CUSTOM,
