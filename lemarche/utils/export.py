@@ -18,7 +18,7 @@ SIAE_FIELDS_TO_EXPORT = [
     "is_qpv",
     "sectors",
 ]
-SIAE_CUSTOM_FIELDS = ["Active"]
+SIAE_CUSTOM_FIELDS = ["Inscrite"]
 SIAE_HEADER = [
     Siae._meta.get_field(field_name).verbose_name for field_name in SIAE_FIELDS_TO_EXPORT
 ] + SIAE_CUSTOM_FIELDS
@@ -34,9 +34,8 @@ def generate_siae_row(siae: Siae):
             siae_row.append("Oui" if getattr(siae, field_name, None) else "Non")
         elif field_name == "sectors":
             siae_row.append(siae.sectors_list_to_string())
-        elif field_name == "Active":
-            active = siae.users.exists()
-            siae_row.append("Oui" if active else "Non")
+        elif field_name == "Inscrite":
+            siae_row.append("Oui" if siae.user_count else "Non")
         else:
             siae_row.append(getattr(siae, field_name, ""))
     return siae_row
