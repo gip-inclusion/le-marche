@@ -44,13 +44,14 @@
                             {% bootstrap_field form.password2 %}
                         </fieldset>
                     </div>
-                    
+
                     <div class="row mt-3 mt-lg-5 justify-content-end">
                         <div class="col-12 px-5 px-lg-6">
                             {% bootstrap_field form.accept_rgpd %}
-                            {% bootstrap_field form.accept_survey form_group_class="accept-survey-form-group d-none" %}
+                            {% bootstrap_field form.accept_newsletter_buyer form_group_class="form-group d-none" %}
+                            {% bootstrap_field form.accept_survey form_group_class="form-group accept-survey-form-group d-none" %}
                         </div>
-                        
+
                         <div class="col-12 col-lg-auto px-5 px-lg-6">
                             <button type="submit" class="btn btn-primary btn-block btn-ico">
                                 <span>Valider</span>
@@ -88,41 +89,59 @@ document.addEventListener('DOMContentLoaded', function() {
     let companyNameInput = document.getElementById('id_company_name');
     let positionInput = document.getElementById('id_position');
     let partnerKindInput = document.getElementById('id_partner_kind');
+    let acceptNewsletterBuyerInput = document.getElementById('id_accept_newsletter_buyer');
 
-    let acceptSurveyFormGroupDiv = document.getElementsByClassName('accept-survey-form-group')[0];
+    let acceptSurveyInput = document.getElementById('id_accept_survey');
+
+    let toggleRequiredClasses = (toggle, element) => {
+        element.required = required;
+        elementToToggle = element.parentNode.classList.contains("form-group") ? element.parentNode : element.parentNode.parentNode;
+        if (required) {
+            elementToToggle.classList.add('form-group-required');
+        } else {
+            elementToToggle.classList.remove('form-group-required');
+        }
+    };
+
+    let toggleElement = (toggle, element, required=undefined) => {
+        // function usefull to find element form-group of bootstrap forms
+        elementToToggle = element.parentNode.classList.contains("form-group") ? element.parentNode : element.parentNode.parentNode;
+        if (toggle) {
+            elementToToggle.classList.remove('d-none');
+        } else {
+            elementToToggle.classList.add('d-none');
+        }
+        if (required != undefined) {
+            toggleRequiredClasses(required, element);
+        }
+    }
 
     let kindRadios = document.querySelectorAll('input[type=radio][name="kind"]');
     kindRadios.forEach(radio => radio.addEventListener('change', () => {
-        if (radio.value !== 'SIAE') {
-            companyNameSiaeFormGroupDiv.classList.add('d-none');
-            companyNameFormGroupDiv.classList.remove('d-none');
-            companyNameInput.required = true;
-            acceptSurveyFormGroupDiv.classList.remove('d-none');
-        } else {
+        if (radio.value === 'SIAE') {
             companyNameSiaeFormGroupDiv.classList.remove('d-none');
-            companyNameFormGroupDiv.classList.add('d-none');
-            companyNameInput.required = false;
-            acceptSurveyFormGroupDiv.classList.add('d-none');
+            toggleElement(false, element=companyNameInput, required=false);
+            toggleElement(false, element=acceptSurveyInput);
+        } else {
+            companyNameSiaeFormGroupDiv.classList.add('d-none');
+            toggleElement(true, element=companyNameInput, required=true);
+            toggleElement(true, element=acceptSurveyInput);
         }
 
         if (radio.value === 'BUYER') {
-            positionFormGroupDiv.classList.remove('d-none');
-            positionInput.required = true;
-            phoneFormGroupDiv.classList.add('form-group-required');
-            phoneInput.required = true;
+            toggleElement(true, element=positionInput, required=true);
+            toggleElement(true, element=phoneInput, required=true);
+            toggleElement(true, acceptNewsletterBuyerInput)
         } else {
-            positionFormGroupDiv.classList.add('d-none');
-            positionInput.required = false;
-            phoneFormGroupDiv.classList.remove('form-group-required');
-            phoneInput.required = false;
+            toggleElement(false, element=positionInput, required=false);
+            toggleElement(false, element=phoneInput, required=false);
+            toggleElement(false, acceptNewsletterBuyerInput)
         }
 
         if (radio.value === 'PARTNER') {
-            partnerKindFormGroupDiv.classList.remove('d-none');
-            partnerKindInput.required = true;
+            toggleElement(true, element=partnerKindInput, required=true);
         } else {
-            partnerKindFormGroupDiv.classList.add('d-none');
-            partnerKindInput.required = false;
+            toggleElement(false, element=partnerKindInput, required=false);
         }
     }));
 });
