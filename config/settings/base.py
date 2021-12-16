@@ -318,6 +318,10 @@ API_ENTREPRISE_CONTEXT = "emplois.inclusion.beta.gouv.fr"
 API_ENTREPRISE_RECIPIENT = env.str("API_ENTREPRISE_RECIPIENT", "")
 API_ENTREPRISE_TOKEN = env.str("API_ENTREPRISE_TOKEN", "")
 
+# API QPV
+# API_QPV_RELATIVE_DAYS_TO_UPDATE is used to check last modification of SIAE.is_QPV
+#   if SIAE.is_QPV was update after `today-API_QPV_RELATIVE_DAYS_TO_UPDATE`, we call the API to QPV
+API_QPV_RELATIVE_DAYS_TO_UPDATE = env.int("API_QPV_RELATIVE_DAYS_TO_UPDATE", 60)
 
 # Django REST Framework settings.
 # https://www.django-rest-framework.org/

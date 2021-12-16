@@ -1,38 +1,49 @@
-import logging
-import time
-from datetime import datetime, timedelta
+from datetime import timedelta
 
-from django.db.models import Q
+import httpx
+from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.db.models import Q
 from django.utils import timezone
 
 from lemarche.siaes.models import Siae
-from lemarche.utils.apis.api_qpv import is_in_qpv, IS_QPV_KEY, QPV_CODE_KEY, QPV_NAME_KEY
+from lemarche.utils.apis.api_qpv import IS_QPV_KEY, QPV_CODE_KEY, QPV_NAME_KEY, get_default_client, is_in_qpv
 
 
 class Command(BaseCommand):
     """
-    Populates API Entreprise fields
+    Populates API QPV
 
-    Note: Only on Siae who have api_entreprise_*_last_sync_date as None
-
-    TODO: filter only on Siae not updated since a certain date?
+    Note: Only on Siae who have coords, filter only on Siae not updated by the API since a two months
 
     Usage: poetry run python manage.py update_siaes_is_in_qpv
     Usage: poetry run python manage.py update_siaes_is_in_qpv --limit 10
     """
+
+    def __init__(self, stdout=None, stderr=None, no_color=False):
+        super().__init__(stdout, stderr, no_color)
+        self.success_count = {"etablissement": 0, "etablissement_qpv": 0}
 
     FIELDS_TO_BULK_UPDATE = ["is_qpv", "api_qpv_last_sync_date", "qpv_code", "qpv_name"]
 
     def add_arguments(self, parser):
         parser.add_argument("--limit", type=int, default=None, help="Limiter le nombre de structures à processer")
 
+    def stdout_success(self, message):
+        return self.stdout.write(self.style.SUCCESS(message))
+
+    def stdout_error(self, message):
+        return self.stdout.write(self.style.ERROR(message))
+
+    def stdout_info(self, message):
+        return self.stdout.write(self.style.HTTP_INFO(message))
+
     def handle(self, *args, **options):
-        self.stdout.write("-" * 80)
-        self.stdout.write("Populating API QPV...")
-        two_months_ago = datetime.now() - timedelta(days=60)
+        self.stdout_info("-" * 80)
+        self.stdout_info("Populating API QPV...")
+        two_months_ago = timezone.now() - timedelta(days=settings.API_QPV_RELATIVE_DAYS_TO_UPDATE)
         siae_list = Siae.objects.filter(
-            (Q(api_qpv_last_sync_date__gte=two_months_ago) | Q(api_qpv_last_sync_date__isnull=True))
+            (Q(api_qpv_last_sync_date__lte=two_months_ago) | Q(api_qpv_last_sync_date__isnull=True))
             & Q(coords__isnull=False)
         ).order_by("id")
 
@@ -40,56 +51,44 @@ class Command(BaseCommand):
             siae_list = siae_list[: options["limit"]]
 
         progress = 0
-        success_count = {"etablissement": 0, "etablissement_qpv": 0}
+        self.stdout_info(f"Found {len(siae_list)} Siae")
+        client = get_default_client()
+        try:
+            siaes_to_update = []
+            for siae in siae_list:
+                if (progress % 50) == 0:
+                    self.stdout_info(f"{progress}...")
+                siae = self.update_siae(client, siae)
+                progress += 1
+                siaes_to_update.append(siae)
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 429:
+                # the real exceed request error have code=10005, with the api
+                # but httpx send error code 429 "Unknown Status Code"
+                self.stdout_error("exceeded the requests limit for today (5000/per day)")
+        finally:
+            client.close()
+            Siae.objects.bulk_update(siaes_to_update, self.FIELDS_TO_BULK_UPDATE)
 
-        self.stdout.write(f"Found {len(siae_list)} Siae")
+        self.stdout_success("-" * 80)
+        self.stdout_success(f"Done! Processed {len(siaes_to_update)}/{len(siae_list)} siaes")
+        self.stdout_success(
+            f"/etablissements success count: {self.success_count['etablissement']}/{len(siaes_to_update)}"
+        )
+        self.stdout_success(
+            f"/Etablissements QPV success count: {self.success_count['etablissement_qpv']}/{len(siae_list)}"
+        )
 
-        for siae in siae_list:
-            progress += 1
-            if (progress % 50) == 0:
-                self.stdout.write(f"{progress}...")
-
-            result_is_in_qpv = is_in_qpv(siae.latitude, siae.longitude)
-            success_count["etablissement"] += 1
-            siae.is_qpv = result_is_in_qpv[IS_QPV_KEY]
-            siae.api_qpv_last_sync_date = timezone.now()
-            if siae.is_qpv:
-                siae.qpv_code = result_is_in_qpv[QPV_CODE_KEY]
-                siae.qpv_name = result_is_in_qpv[QPV_NAME_KEY]
-                success_count["etablissement_qpv"] += 1
-            else:
-                siae.qpv_code = ""
-                siae.qpv_name = ""
-            # small delay to avoid going above the API limitation
-            # "max. 250 requêtes/min/jeton cumulées sur tous les endpoints"
-            time.sleep(0.5)
-
-        Siae.objects.bulk_update(siae_list, self.FIELDS_TO_BULK_UPDATE)
-
-        self.stdout.write("-" * 80)
-        self.stdout.write(f"Done! Processed {len(siae_list)} siae")
-        self.stdout.write(f"/etablissements success count: {success_count['etablissement']}/{len(siae_list)}")
-        self.stdout.write(f"/exercices success count: {success_count['etablissement_qpv']}/{len(siae_list)}")
-
-    # def siae_update_etablissement(siae):
-    #     etablissement, error = Siae.objects.get()
-
-    #     update_data = dict()
-
-    #     if etablissement:
-    #         # update_data"nature"] = Siae.NATURE_HEAD_OFFICE if etablissement["is_head_office"] else Siae.NATURE_ANTENNA  # noqa
-    #         # update_data"is_active"] = False if not etablissement["is_closed"] else True
-    #         if etablissement["employees"]:
-    #             update_data["api_entreprise_employees"] = etablissement["employees"]
-    #         if etablissement["employees_date_reference"]:
-    #             update_data["api_entreprise_employees_year_reference"] = etablissement["employees_date_reference"]
-    #         if etablissement["date_constitution"]:
-    #             update_data["api_entreprise_date_constitution"] = etablissement["date_constitution"]
-    #     # else:
-    #     #     self.stdout.write(error)
-    #     # TODO: if 404, siret_is_valid = False ?
-
-    #     update_data["api_entreprise_etablissement_last_sync_date"] = timezone.now()
-    #     Siae.objects.filter(id=siae.id).update(**update_data)
-
-    #     return 1 if etablissement else 0
+    def update_siae(self, client, siae):
+        result_is_in_qpv = is_in_qpv(siae.latitude, siae.longitude, client=client)
+        self.success_count["etablissement"] += 1
+        siae.is_qpv = result_is_in_qpv[IS_QPV_KEY]
+        siae.api_qpv_last_sync_date = timezone.now()
+        if siae.is_qpv:
+            siae.qpv_code = result_is_in_qpv[QPV_CODE_KEY]
+            siae.qpv_name = result_is_in_qpv[QPV_NAME_KEY]
+            self.success_count["etablissement_qpv"] += 1
+        else:
+            siae.qpv_code = ""
+            siae.qpv_name = ""
+        return siae

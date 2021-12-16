@@ -1,13 +1,8 @@
 # https://github.com/betagouv/itou/blob/master/itou/utils/apis/api_entreprise.py
 
 import logging
-from datetime import date, datetime
 
 import httpx
-from django.utils import timezone
-from django.utils.http import urlencode
-
-from lemarche.siaes.models import Siae
 
 
 logger = logging.getLogger(__name__)
@@ -25,14 +20,24 @@ QPV_NAME_KEY = "qpv_name"
 QPV_CODE_KEY = "qpv_code"
 
 
-def get_client():
-    pass
+def get_default_params():
+    return {"dataset": DATASET_QPV}
+
+
+def get_default_client(params={}):
+    params |= get_default_params()
+    client = httpx.Client(params=params)
+    return client
 
 
 def is_in_qpv(latitude, longitude, distance=DISTANCE_TO_VALIDATE_QPV, client=None):
+    # API is limited to 5000 calls per day
     # we pass the client to manage the case of many requests
-    client = httpx if not client else client
-    params = {"dataset": DATASET_QPV, "geofilter.distance": f"{latitude},{longitude},{distance}"}
+    # client provide default params
+    params = {"geofilter.distance": f"{latitude},{longitude},{distance}"}
+
+    if not client:
+        client = get_default_client()
 
     try:
         r = client.get(BASE_URL, params=params)
