@@ -29,38 +29,34 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--limit", type=int, default=None, help="Limiter le nombre de structures à processer")
 
-    def stdout_success(self, message):
-        return self.stdout.write(self.style.SUCCESS(message))
-
-    def stdout_error(self, message):
-        return self.stdout.write(self.style.ERROR(message))
-
-    def stdout_info(self, message):
-        return self.stdout.write(self.style.HTTP_INFO(message))
-
-    def handle(self, *args, **options):
-        self.stdout_info("-" * 80)
-        self.stdout_info("Populating API QPV...")
+    def get_query_set(self, **options):
         two_months_ago = timezone.now() - timedelta(days=settings.API_QPV_RELATIVE_DAYS_TO_UPDATE)
-        siae_list = Siae.objects.filter(
+        siaes_queryset = Siae.objects.filter(
             (Q(api_qpv_last_sync_date__lte=two_months_ago) | Q(api_qpv_last_sync_date__isnull=True))
             & Q(coords__isnull=False)
         ).order_by("id")
 
         if options["limit"]:
-            siae_list = siae_list[: options["limit"]]
+            siaes_queryset = siaes_queryset[: options["limit"]]
+        return siaes_queryset
 
-        progress = 0
-        self.stdout_info(f"Found {len(siae_list)} Siae")
+    def handle(self, *args, **options):
+        siae_list = self.get_query_set(**options)
+        self.stdout_messages_info(["Populating API QPV...", f"Found {len(siae_list)} Siae"])
+
+        count_siae_to_update = 0
         client = get_default_client()
         try:
             siaes_to_update = []
             for siae in siae_list:
-                if (progress % 50) == 0:
-                    self.stdout_info(f"{progress}...")
+                # update siae from API
                 siae = self.update_siae(client, siae)
-                progress += 1
                 siaes_to_update.append(siae)
+                # log progress
+                count_siae_to_update = len(siaes_to_update)
+                if (count_siae_to_update % 50) == 0:
+                    self.stdout_info(f"{count_siae_to_update}...")
+
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 429:
                 # the real exceed request error have code=10005, with the api
@@ -68,18 +64,19 @@ class Command(BaseCommand):
                 self.stdout_error("exceeded the requests limit for today (5000/per day)")
         finally:
             client.close()
+            # we still save siaes qpv status
             Siae.objects.bulk_update(siaes_to_update, self.FIELDS_TO_BULK_UPDATE)
 
-        self.stdout_success("-" * 80)
-        self.stdout_success(f"Done! Processed {len(siaes_to_update)}/{len(siae_list)} siaes")
-        self.stdout_success(
-            f"/etablissements success count: {self.success_count['etablissement']}/{len(siaes_to_update)}"
-        )
-        self.stdout_success(
-            f"/Etablissements QPV success count: {self.success_count['etablissement_qpv']}/{len(siae_list)}"
+        self.stdout_messages_sucess(
+            [
+                f"Done! Processed {len(siaes_to_update)}/{len(siae_list)} siaes",
+                f"/Etablissements success count: {self.success_count['etablissement']}/{len(siaes_to_update)}",
+                f"/Etablissements QPV success count: {self.success_count['etablissement_qpv']}/{len(siae_list)}",
+            ]
         )
 
     def update_siae(self, client, siae):
+        # call api is in qpv
         result_is_in_qpv = is_in_qpv(siae.latitude, siae.longitude, client=client)
         self.success_count["etablissement"] += 1
         siae.is_qpv = result_is_in_qpv[IS_QPV_KEY]
@@ -92,3 +89,24 @@ class Command(BaseCommand):
             siae.qpv_code = ""
             siae.qpv_name = ""
         return siae
+
+    def stdout_success(self, message):
+        return self.stdout.write(self.style.SUCCESS(message))
+
+    def stdout_error(self, message):
+        return self.stdout.write(self.style.ERROR(message))
+
+    def stdout_info(self, message):
+        return self.stdout.write(self.style.HTTP_INFO(message))
+
+    def stdout_messages_info(self, messages):
+        self.stdout_info("-" * 80)
+        for message in messages:
+            self.stdout_info(message)
+        self.stdout_info("-" * 80)
+
+    def stdout_messages_sucess(self, messages):
+        self.stdout_success("-" * 80)
+        for message in messages:
+            self.stdout_success(message)
+        self.stdout_success("-" * 80)
