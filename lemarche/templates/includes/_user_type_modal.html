@@ -3,14 +3,24 @@
         <div class="modal-content">
             <div class="modal-header">
                 <strong class="title">
+                    {% if paginator_count %} <!-- Siae search -->
                     Plus de {{ paginator_count }} prestataires inclusifs répondent à votre recherche.
+                    {% else %}
+                    Vous y êtes presque !
+                    {% endif %}
                 </strong>
                 <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button> -->
             </div>
             <div class="modal-body home-content-body">
-                <p class="mt-2">Pour accéder aux résultats, dites-nous si vous êtes :
+                <p>
+                    {% if paginator_count %} <!-- Siae search -->
+                    Pour accéder aux résultats, dites-nous si vous êtes :
+                    {% else %}
+                    Pour accéder à cette page, dites-nous si vous êtes :
+                    {% endif %}
+                </p>
                 <ul style="padding-left:0;list-style:none;">
                     <li><a href="#" data-usr="buyer" class="btn btn-outline-primary btn-block mb-2" style="text-align:left;">Une entreprise ou une institution qui souhaite augmenter ses achats inclusifs</a></li>
                     <li><a href="#" data-usr="siae" class="btn btn-outline-primary btn-block mb-2" style="text-align:left;">Une structure d'insertion ou du handicap</a></li>
@@ -33,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     if (!document.cookie.split('; ').find(row => row.startsWith(USER_TYPE_MODAL_COOKIE_NAME))) {
-        var modal = $("#user_type_modal");
+        var modal = $('#user_type_modal');
         // modal.find('.close').remove();
         modal.modal('show');
 
@@ -42,16 +52,16 @@ document.addEventListener("DOMContentLoaded", function() {
             let type = $(e.target).data('usr');
             document.cookie = `${USER_TYPE_MODAL_COOKIE_NAME}=${type}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
 
-            if (typeof track === "function") {
+            if (typeof track === 'function') {
                 track('', Steps.USER_TYPE, {'type': type});
             }
             modal.modal('hide');
 
             // show _header_notice_contact.html if buyer or actor
-            if ((type === "buyer") || (type === "actor")) {
-                const headerNotice = document.getElementById("header-notice");
+            if ((type === 'buyer') || (type === 'actor')) {
+                const headerNotice = document.getElementById('header-notice');
                 if (headerNotice) {
-                    headerNotice.setAttribute('class', '');
+                    headerNotice.classList.remove('d-none');
                 }
             }
         })
