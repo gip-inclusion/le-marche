@@ -161,8 +161,7 @@ document.addEventListener('click', async (event) => {
     );
 }, false);
 
-// _header_notice_contact.html
-// show header-notice if buyer or actor
+// show _header_notice_contact.html if buyer or actor
 user_cookie_type = getCookieValueByName(USER_TYPE_MODAL_COOKIE_NAME);
 if ((user_cookie_type === 'buyer') || (user_cookie_type === 'actor')) {
     const headerNotice = document.getElementById('header-notice');

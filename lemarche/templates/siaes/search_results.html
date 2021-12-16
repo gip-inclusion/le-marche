@@ -196,68 +196,10 @@
 {% endblock %}
 
 {% block modal %}
-<div class="modal fade modal-siae" id="user_modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="z-index:3000">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <strong class="title">
-                    Plus de {{ paginator.count }} prestataires inclusifs répondent à votre recherche.
-                </strong>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body home-content-body">
-                <p class="mt-2">Pour accéder aux résultats, dites-nous si vous êtes :
-                <ul style="padding-left:0;list-style:none;">
-                    <li><a href="#" data-usr="buyer" class="btn btn-outline-primary btn-block mb-2" style="text-align:left;">Une entreprise ou une institution qui souhaite augmenter ses achats inclusifs</a></li>
-                    <li><a href="#" data-usr="siae" class="btn btn-outline-primary btn-block mb-2" style="text-align:left;">Une structure d’insertion ou du handicap</a></li>
-                    <li><a href="#" data-usr="actor" class="btn btn-outline-primary btn-block mb-2" style="text-align:left;">Un acteur de l’inclusion (facilitateurs, réseaux…)</a></li>
-                </ul>
-            </div>
-            <!-- <div class="modal-footer"></div> -->
-        </div>
-    </div>
-</div>
+{% include "includes/_user_type_modal.html" with paginator_count=paginator.count %}
 {% endblock %}
 
 {% block extra_js %}
-{% if not user.is_authenticated %}
-<script type="text/javascript">
-document.addEventListener("DOMContentLoaded", function() {
-    // show type user modal
-    const USER_TYPE_MODAL_COOKIE_NAME = 'leMarcheTypeUsagerV2';
-    $(document).on('shown.bs.modal', '.modal', function () {
-        $('.modal-backdrop').before($(this));
-    });
-
-    if (!document.cookie.split('; ').find(row => row.startsWith(USER_TYPE_MODAL_COOKIE_NAME))) {
-        var modal = $("#user_modal");
-        modal.find('.close').remove();
-        modal.modal('show');
-
-        modal.find('a').on('click', (e) => {
-            // Only set cookie if button clicked
-            let type = $(e.target).data('usr');
-            document.cookie = `${USER_TYPE_MODAL_COOKIE_NAME}=${type}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
-
-            if (typeof track === "function") {
-                track('', Steps.USER_TYPE, {'type': type});
-            }
-            modal.modal('hide');
-
-            // show header-notice if buyer or actor
-            if ((type === "buyer") || (type === "actor")) {
-                const headerNotice = document.getElementById("header-notice");
-                if (headerNotice) {
-                    headerNotice.setAttribute('class', '');
-                }
-            }
-        })
-    }
-});
-</script>
-{% endif %}
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
     // Set listings markers on load
