@@ -9,18 +9,5 @@
 {% endif %}
 
 <script>
-    const USER_TYPE_MODAL_COOKIE_NAME = 'leMarcheTypeUsagerV2';
-    function getCookieValueByName(cookieName) {
-        if (document.cookie.split('; ').find(row => row.startsWith(cookieName))) {
-            return document.cookie.split('; ').find(row => row.startsWith(`${cookieName}=`)).split('=')[1];
-        }
-    }
-    // show header-notice if buyer or actor
-    user_cookie_type = getCookieValueByName(USER_TYPE_MODAL_COOKIE_NAME);
-    if ((user_cookie_type === "buyer") || (user_cookie_type === "actor")) {
-        const headerNotice = document.getElementById("header-notice");
-        if (headerNotice) {
-            headerNotice.setAttribute('class', '');
-        }
-    }
+    // see _tracker_itou.html
 </script>
