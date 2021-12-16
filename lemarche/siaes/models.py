@@ -133,7 +133,7 @@ class Siae(models.Model):
         "c1_last_sync_date",
         "source",
     ]
-    READONLY_FIELDS_FROM_QPV = ["is_qpv", "qpv_name", "qpv_code"]
+    READONLY_FIELDS_FROM_QPV = ["is_qpv", "api_qpv_last_sync_date", "qpv_name", "qpv_code"]
     READONLY_FIELDS_FROM_API_ENTREPRISE = [
         "api_entreprise_date_constitution",
         "api_entreprise_employees",

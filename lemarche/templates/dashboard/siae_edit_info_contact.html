@@ -10,7 +10,7 @@
     {% csrf_token %}
 
     {% bootstrap_form_errors form type="all" %}
-    
+
     <div class="row mb-3 mb-lg-5">
         <div class="col-12 col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
@@ -58,7 +58,7 @@
             </div>
         </div>
     </div>
-   
+
     <div class="row mb-3 mb-lg-5">
         <div class="col-12 col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
@@ -81,7 +81,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     {% bootstrap_field form.city %}
                     {% bootstrap_field form.post_code %}
                     {% bootstrap_field form.department %}
@@ -128,6 +128,10 @@
                     {% bootstrap_field form.api_entreprise_employees %}
                     {% bootstrap_field form.api_entreprise_ca %}
                     {% bootstrap_field form.api_entreprise_ca_date_fin_exercice %}
+                    {% bootstrap_field form.is_qpv %}
+                    {% bootstrap_field form.api_qpv_last_sync_date %}
+                    {% bootstrap_field form.qpv_name %}
+                    {% bootstrap_field form.qpv_code %}
                 </fieldset>
             </div>
         </div>
