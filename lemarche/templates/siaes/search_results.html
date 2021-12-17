@@ -123,7 +123,7 @@
                                     </div>
                                 </div>
                             {% else %}
-                                <a href="{% url 'auth:login' %}?message=login-to-download&next={% url 'siae:search_results' %}?{{ current_search_query_escaped }}" id="siae-export-anon" class="btn btn-block btn-outline-primary">
+                                <a href="#" id="csv-submit-modal-btn" class="btn btn-block btn-outline-primary" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}">
                                     Télécharger la liste
                                 </a>
                             {% endif %}
@@ -198,6 +198,7 @@
 
 {% block modals %}
     {% include "includes/_user_type_modal.html" with search_results_count=paginator.count %}
+    {% include "auth/_login_or_signup_modal.html" %}
     {% include "siaes/_favorite_modal.html" %}
     {% include "siaes/_favorite_item_remove_modal.html" %}
 {% endblock %}
