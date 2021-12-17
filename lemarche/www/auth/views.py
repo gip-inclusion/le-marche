@@ -48,14 +48,14 @@ class LoginView(auth_views.LoginView):
         if next_url:
             safe_url = get_safe_url(self.request, param_name="next")
             if safe_url:
-                success_url = safe_url
+                return safe_url
         return success_url
 
 
 class SignupView(SuccessMessageMixin, CreateView):
     template_name = "auth/signup.html"
     form_class = SignupForm
-    # success_url = reverse_lazy("pages:home")  # see get_success_url() below
+    # success_url = reverse_lazy("pages:home")  # # doesn't work + see get_success_url() below
     success_message = "Inscription validée !"  # see get_success_message() below
 
     def form_valid(self, form):
@@ -73,10 +73,21 @@ class SignupView(SuccessMessageMixin, CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        """Redirect to dashboard if SIAE."""
-        if self.request.POST.get("kind") == User.KIND_SIAE:
+        """
+        Redirect to:
+        - next_url if there is a next param
+        - or dashboard if SIAE
+        """
+        success_url = reverse_lazy("pages:home")
+        next_url = self.request.GET.get("next", None)
+        # sanitize next_url
+        if next_url:
+            safe_url = get_safe_url(self.request, param_name="next")
+            if safe_url:
+                return safe_url
+        elif self.request.POST.get("kind") == User.KIND_SIAE:
             return reverse_lazy("dashboard:home")
-        return reverse_lazy("pages:home")
+        return success_url
 
     def get_success_message(self, cleaned_data):
         """Show detailed welcome message to SIAE."""

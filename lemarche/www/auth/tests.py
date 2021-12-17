@@ -47,6 +47,20 @@ PARTNER = {
     # "id_accept_survey"  # not required
 }
 
+PARTNER_2 = {
+    # "id_kind": 2  # required
+    "first_name": "Prenom",
+    "last_name": "Nom",
+    "phone": "012345678",  # not required
+    "company_name": "Ma boite",
+    # "partner_kind": "RESEAU_IAE",
+    "email": "partner2@example.com",
+    "password1": "Erls92#32",
+    "password2": "Erls92#32",
+    # "id_accept_rgpd"  # required
+    # "id_accept_survey"  # not required
+}
+
 
 class SignupFormTest(StaticLiveServerTestCase):
     @classmethod
@@ -174,6 +188,30 @@ class SignupFormTest(StaticLiveServerTestCase):
 
         # should not submit form (company_name field is required)
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+
+    def test_user_submits_signup_form_with_next_param_success_and_redirect(self):
+        driver = self.driver
+        driver.get(f"{self.live_server_url}{reverse('auth:signup')}?next=/prestataires/?kind=ESAT")
+
+        driver.find_element_by_css_selector("input#id_kind_2").click()
+        for key in PARTNER:
+            driver.find_element_by_css_selector(f"input#id_{key}").send_keys(PARTNER[key])
+        driver.find_element_by_xpath("//select[@id='id_partner_kind']/option[text()='Réseaux IAE']").click()
+        driver.find_element_by_css_selector("input#id_accept_rgpd").click()
+
+        driver.find_element_by_css_selector("form button").click()
+
+        # should create User
+        self.assertEqual(User.objects.count(), self.user_count + 1)
+        # user should be automatically logged in
+        header = driver.find_element_by_css_selector("header#header")
+        self.assertTrue("Mon compte" in header.text)
+        self.assertTrue("Connexion" not in header.text)
+        # should redirect to next url
+        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('siae:search_results')}?kind=ESAT")
+        # message should be displayed
+        messages = driver.find_element_by_css_selector("div.messages")
+        self.assertTrue("Inscription validée" in messages.text)
 
     @classmethod
     def tearDownClass(cls):
