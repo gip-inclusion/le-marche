@@ -17,17 +17,7 @@
 </style>
 {% endblock %}
 
-{% block footer %}
+{% block header %}
+{% include "includes/_header_env_notice.html" %}
 {{ block.super }}
-{% if BITOUBI_ENV not in "prod" %}
-<script type="text/javascript">
-    const headerDiv = document.getElementById("header");
-
-    let envNoticeHeader = document.createElement("div");
-    envNoticeHeader.setAttribute("id", "header-env-notice");
-    envNoticeHeader.innerText = "{{ BITOUBI_ENV }}";
-
-    headerDiv.parentNode.insertBefore(envNoticeHeader, headerDiv);
-</script>
-{% endif %}
 {% endblock %}
