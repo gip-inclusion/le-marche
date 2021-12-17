@@ -78,20 +78,18 @@
  * - if the user is BUYER:
  *      - make phone field required
  *      - add position field (and make it required)
+ *      - add survey checkbox for newsletter
  */
 document.addEventListener('DOMContentLoaded', function() {
-    let phoneFormGroupDiv = document.getElementsByClassName('phone-form-group')[0];
+    // get all usefull elements
     let phoneInput = document.getElementById('id_phone');
     let companyNameSiaeFormGroupDiv = document.getElementsByClassName('company-name-siae-form-group')[0];
-    let companyNameFormGroupDiv = document.getElementsByClassName('company-name-form-group')[0];
-    let positionFormGroupDiv = document.getElementsByClassName('position-form-group')[0];
-    let partnerKindFormGroupDiv = document.getElementsByClassName('partner-kind-form-group')[0];
     let companyNameInput = document.getElementById('id_company_name');
     let positionInput = document.getElementById('id_position');
     let partnerKindInput = document.getElementById('id_partner_kind');
     let acceptNewsletterBuyerInput = document.getElementById('id_accept_newsletter_buyer');
-
     let acceptSurveyInput = document.getElementById('id_accept_survey');
+
 
     let toggleRequiredClasses = (toggle, element) => {
         element.required = required;
@@ -103,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    let toggleElement = (toggle, element, required=undefined) => {
+    let toggleInputElement = (toggle, element, required=undefined) => {
         // function usefull to find element form-group of bootstrap forms
         elementToToggle = element.parentNode.classList.contains("form-group") ? element.parentNode : element.parentNode.parentNode;
         if (toggle) {
@@ -120,28 +118,28 @@ document.addEventListener('DOMContentLoaded', function() {
     kindRadios.forEach(radio => radio.addEventListener('change', () => {
         if (radio.value === 'SIAE') {
             companyNameSiaeFormGroupDiv.classList.remove('d-none');
-            toggleElement(false, element=companyNameInput, required=false);
-            toggleElement(false, element=acceptSurveyInput);
+            toggleInputElement(false, element=companyNameInput, required=false);
+            toggleInputElement(false, element=acceptSurveyInput);
         } else {
             companyNameSiaeFormGroupDiv.classList.add('d-none');
-            toggleElement(true, element=companyNameInput, required=true);
-            toggleElement(true, element=acceptSurveyInput);
+            toggleInputElement(true, element=companyNameInput, required=true);
+            toggleInputElement(true, element=acceptSurveyInput);
         }
 
         if (radio.value === 'BUYER') {
-            toggleElement(true, element=positionInput, required=true);
-            toggleElement(true, element=phoneInput, required=true);
-            toggleElement(true, acceptNewsletterBuyerInput)
+            toggleInputElement(true, element=positionInput, required=true);
+            toggleInputElement(true, element=phoneInput, required=true);
+            toggleInputElement(true, acceptNewsletterBuyerInput)
         } else {
-            toggleElement(false, element=positionInput, required=false);
-            toggleElement(false, element=phoneInput, required=false);
-            toggleElement(false, acceptNewsletterBuyerInput)
+            toggleInputElement(false, element=positionInput, required=false);
+            toggleInputElement(false, element=phoneInput, required=false);
+            toggleInputElement(false, acceptNewsletterBuyerInput)
         }
 
         if (radio.value === 'PARTNER') {
-            toggleElement(true, element=partnerKindInput, required=true);
+            toggleInputElement(true, element=partnerKindInput, required=true);
         } else {
-            toggleElement(false, element=partnerKindInput, required=false);
+            toggleInputElement(false, element=partnerKindInput, required=false);
         }
     }));
 });
