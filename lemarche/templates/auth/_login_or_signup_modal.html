@@ -1,0 +1,86 @@
+<div class="modal fade modal-siae" id="login_or_signup_modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="z-index:3000">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="mb-0 mx-auto">Profitez du Marché en totalité</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body home-content-body">
+                <p>
+                    Ce ne sera pas long !
+                    Inscrivez-vous et accédez à toutes les fonctionnalités du marché.
+                </p>
+
+                <div class="si-ideas">
+                    <p>
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" fill="currentColor" /></svg>
+                        </span>
+                        <span class="ml-2">
+                            <b>Téléchargez la liste complète des structures figurant sur le marché.</b>
+                        </span>
+                    </p>
+                    <p>
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" fill="currentColor" /></svg>
+                        </span>
+                        <span class="ml-2">
+                            <b>Créez des listes d'achat et sauvegardez vous structures favorites.</b>
+                        </span>
+                    </p>
+                    <p>
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" fill="currentColor" /></svg>
+                        </span>
+                        <span class="ml-2">
+                            <b>Accédez aux informations complètes des structures pour un sourcing qualifié.</b>
+                        </span>
+                    </p>
+                    <p>
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" fill="currentColor" /></svg>
+                        </span>
+                        <span class="ml-2">
+                            <b>Accédez aux coordonnées des structures.</b>
+                        </span>
+                    </p>
+                </div>
+
+                <div style="text-align:center">
+                    <a href="{% url 'auth:signup' %}?next=next-params-to-replace" id="auth-link" class="btn btn-primary">
+                        Se connecter
+                    </a>
+                </div>
+
+                <hr />
+
+                <div style="text-align:center">
+                    <p class="mb-1">Vous n'avez pas de compte ?</p>
+                    <a href="{% url 'auth:login' %}?next=next-params-to-replace" id="auth-link" style="font-weight:bold">Créer un compte</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    $('#login_or_signup_modal').on('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        var button = $(event.relatedTarget);
+
+        // Extract info from data-* attributes
+        var nextParams = button.data('next-params');
+
+        // Update the modal's content
+        // - replace next param for login & signup
+        var modal = document.querySelector('#login_or_signup_modal');
+        modal.querySelectorAll('#auth-link').forEach(link => {
+            var linkUrl = link.getAttribute('href');
+            link.setAttribute('href', linkUrl.replace('next-params-to-replace', nextParams));
+        });
+    });
+});
+</script>
