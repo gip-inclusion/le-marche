@@ -74,7 +74,11 @@ class SignupView(SuccessMessageMixin, CreateView):
         - login the user automatically
         - track signup
         """
+
         user = form.save()
+        if form.cleaned_data.get("accept_newsletter_buyer"):
+            # add to newsletter
+            pass
         # welcome email
         send_welcome_email(user)
         send_signup_notification_email(user)

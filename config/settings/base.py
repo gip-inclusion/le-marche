@@ -224,10 +224,11 @@ SITE_ID = 1
 
 # Emails
 # ------------------------------------------------------------------------------
-
+MAILJET_API_KEY = env.str("MAILJET_API_KEY", "")
+MAILJET_API_SECRET = env.str("MAILJET_API_SECRET", "")
 ANYMAIL = {
-    "MAILJET_API_KEY": env.str("MAILJET_API_KEY", ""),
-    "MAILJET_SECRET_KEY": env.str("MAILJET_API_SECRET", ""),
+    "MAILJET_API_KEY": MAILJET_API_KEY,
+    "MAILJET_SECRET_KEY": MAILJET_API_SECRET,
     # "WEBHOOK_SECRET": env.str("MAILJET_WEBHOOK_SECRET", ""),
 }
 
