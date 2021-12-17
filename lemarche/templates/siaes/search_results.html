@@ -190,35 +190,6 @@
                     </div>
                 </div>
             </div>
-    
-            {% comment "hidden" %}
-            {{ form_start(dlform) }}
-            <div id="csv_form" class="row dir_form mb-5 align-items-end">
-                {{ form_widget(dlform.sector, {'attr': {'style': 'display:none', 'class': 'jcf-ignore'}}) }}
-                {#
-                {{ form_widget(dlform.withAntenna, {'attr': {'style': 'display:none'}}) }}
-                {{ form_widget(dlform.withRange, {'attr': {'style': 'display:none'}}) }}
-                #}
-                {{ form_widget(dlform.prestaType, {'attr': {'style': 'display:none'}}) }}
-                {{ form_widget(dlform.structureType, {'attr': {'style': 'display:none', 'class': 'jcf-ignore'}}) }}
-                {% do dlform.structureType.setRendered() %}
-                {% do dlform.address.setRendered() %}
-                <div class="col-12 col-md-3 offset-md-1 mt-lg-3">
-                    <div class="title d-block font-weight-bold mb-2">Format d'export</div>
-                    <div class="field-holder">
-                        {{form_widget(dlform.format,{
-                            'id': 'format'
-                        })}}
-                    </div>
-                </div>
-                <div class="col-12 col-md-3">
-                    <button id="csv-submit" type="submit" class="btn btn-block btn-outline-primary">
-                        Télécharger la liste
-                    </button>
-                </div>
-            </div>
-            {{ form_end(dlform) }}
-            {% endcomment %}
         </div>
     </div>
 </section>
