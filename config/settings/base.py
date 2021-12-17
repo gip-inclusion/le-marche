@@ -230,6 +230,7 @@ ANYMAIL = {
 }
 
 MAILJET_API_URL = "https://api.mailjet.com/v3.1"
+MAILJET_NEWSLETTER_CONTACT_LIST_BUYER_ID = env.int("MAILJET_NEWSLETTER_CONTACT_LIST_BUYER_ID", 0)
 
 EMAIL_BACKEND = "anymail.backends.mailjet.EmailBackend"
 
