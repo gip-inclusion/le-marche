@@ -59,7 +59,11 @@ class SignupView(SuccessMessageMixin, CreateView):
         - send a notification email to the staff
         - login the user automatically
         """
+
         user = form.save()
+        if form.cleaned_data.get("accept_newsletter_buyer"):
+            # add to newsletter
+            pass
         send_welcome_email(user)
         send_signup_notification_email(user)
         user = authenticate(username=form.cleaned_data["email"], password=form.cleaned_data["password1"])
