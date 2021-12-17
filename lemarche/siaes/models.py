@@ -133,7 +133,7 @@ class Siae(models.Model):
         "c1_last_sync_date",
         "source",
     ]
-    READONLY_FIELDS_FROM_QPV = ["is_qpv", "qpv_name", "qpv_code"]
+    READONLY_FIELDS_FROM_QPV = ["is_qpv", "api_qpv_last_sync_date", "qpv_name", "qpv_code"]
     READONLY_FIELDS_FROM_API_ENTREPRISE = [
         "api_entreprise_date_constitution",
         "api_entreprise_employees",
@@ -305,10 +305,14 @@ class Siae(models.Model):
     networks = models.ManyToManyField("networks.Network", verbose_name="Réseaux", related_name="siaes", blank=True)
     # ForeignKeys: offers, client_references, labels, images
 
-    is_qpv = models.BooleanField(verbose_name="Zone QPV", blank=False, null=False, default=False)
-    qpv_name = models.CharField(verbose_name="Nom de la zone QPV", max_length=255, blank=True)
-    qpv_code = models.CharField(verbose_name="Code de la zone QPV", max_length=16, blank=True)
+    # API QPV
+    is_qpv = models.BooleanField(verbose_name="Zone QPV (API QPV)", blank=False, null=False, default=False)
+    # To avoid QPV zones synchro problematics, we take the choice to duplicate names and codes of QPV
+    qpv_name = models.CharField(verbose_name="Nom de la zone QPV (API QPV)", max_length=255, blank=True)
+    qpv_code = models.CharField(verbose_name="Code de la zone QPV (API QPV)", max_length=16, blank=True)
+    api_qpv_last_sync_date = models.DateTimeField("Date de dernière synchronisation (API QPV)", blank=True, null=True)
 
+    # API Entreprise
     api_entreprise_date_constitution = models.DateField(
         verbose_name="Date de création (API Entreprise)", blank=True, null=True
     )
