@@ -1,8 +1,14 @@
 {% load static %}
 {% load theme_inclusion %}
 
+{% if BITOUBI_ENV not in "prod" %}
 {% include "includes/_header_env_notice.html" %}
+{% endif %}
+
+{% if not user.is_authenticated %}
 {% include "includes/_header_notice_contact.html" %}
+{% endif %}
+
 <header id="header" class="s-header s-header--marche sticky-top" role="banner">
     <section class="s-header__container container">
         <div class="s-header__row row">
