@@ -6,7 +6,7 @@ const getCookieValueByName = function(cookieName) {
 }
 
 var ORDER = 1;
-var SESSION_ID = "";
+var SESSION_ID = '';
 var VERSION = 1;
 
 const uTypeMapping = {
@@ -25,13 +25,13 @@ const SESSION_ID_COOKIE_NAME = 'sessionid';
 var sessionId = getCookieValueByName(SESSION_ID_COOKIE_NAME);
 {% if user.is_authenticated %}
     var isAdmin = {% if user.kind == 'ADMIN' %}true{% else %}false{% endif %};
-    var uType = {% if user.is_authenticated %}"{{ user.kind }}"{% endif %};
+    var uType = {% if user.is_authenticated %}'{{ user.kind }}'{% endif %};
     if (uType) {
         uType = uTypeMapping[uType];
     }
 {% else %}
     var isAdmin = false;
-    var uType = "";
+    var uType = '';
 {% endif %}
 
 // update cookie
@@ -100,7 +100,7 @@ try {
 
 // export function getSessionId() {
 function getSessionId() {
-    if (SESSION_ID === "") {
+    if (SESSION_ID === '') {
         if (typeof document !== `undefined`) {
             SESSION_ID = (new URL(document.location)).searchParams.get('sid') || false;
         }
@@ -164,10 +164,10 @@ document.addEventListener('click', async (event) => {
 // _header_notice_contact.html
 // show header-notice if buyer or actor
 user_cookie_type = getCookieValueByName(USER_TYPE_MODAL_COOKIE_NAME);
-if ((user_cookie_type === "buyer") || (user_cookie_type === "actor")) {
-    const headerNotice = document.getElementById("header-notice");
+if ((user_cookie_type === 'buyer') || (user_cookie_type === 'actor')) {
+    const headerNotice = document.getElementById('header-notice');
     if (headerNotice) {
-        headerNotice.removeAttribute('class');
+        headerNotice.classList.remove('d-none');
     }
 }
 </script>
