@@ -10,7 +10,7 @@
     {% csrf_token %}
 
     {% bootstrap_form_errors form type="all" %}
-    
+
     <div class="row mb-3 mb-lg-5">
         <div class="col-12 col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
@@ -58,7 +58,7 @@
             </div>
         </div>
     </div>
-   
+
     <div class="row mb-3 mb-lg-5">
         <div class="col-12 col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
@@ -81,7 +81,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     {% bootstrap_field form.city %}
                     {% bootstrap_field form.post_code %}
                     {% bootstrap_field form.department %}
@@ -128,20 +128,34 @@
                     {% bootstrap_field form.api_entreprise_employees %}
                     {% bootstrap_field form.api_entreprise_ca %}
                     {% bootstrap_field form.api_entreprise_ca_date_fin_exercice %}
+                    {% bootstrap_field form.is_qpv %}
+                    {% bootstrap_field form.qpv_name %}
+                    {% bootstrap_field form.qpv_code %}
                 </fieldset>
             </div>
         </div>
         <div class="col-12 col-lg-4">
             <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-                <p class="mb-1">
+                <p class="mt-2 mb-1">
                     <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
                     <strong>D'où viennent ces données ?</strong>
                 </p>
+                <h5 class="mb-1">API Entreprise</h5>
                 <p class="mb-1">
                     Elles ont été récupérées en requêtant <a href="https://entreprise.api.gouv.fr/" target="_blank" rel="noopener">l'API Entreprise</a> avec votre Siret.
                 </p>
                 <p class="mb-0">
                     Date de dernière mise à jour : <strong>{{ siae.api_entreprise_etablissement_last_sync_date|date:"d/m/Y" }}</strong>
+                </p>
+                <h5 class="mt-2 mb-1">API QPV</h5>
+                <p class="mb-1">
+                    Elles ont été récupérées en requêtant
+                    <a href="https://equipements.sports.gouv.fr/api/v1/console/records/1.0/search/?dataset=quartiers-prioritaires-de-la-politique-de-la-ville-qpv" target="_blank" rel="noopener">
+                        l'API QPV</a>
+                    avec les données de géolocalisation de votre structure.
+                </p>
+                <p class="mb-0">
+                    Date de dernière mise à jour : <strong>{{ siae.api_qpv_last_sync_date|date:"d/m/Y" }}</strong>
                 </p>
             </div>
             {% if not siae.department or not siae.region or not siae.coords %}

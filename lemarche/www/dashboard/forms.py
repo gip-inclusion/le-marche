@@ -103,6 +103,10 @@ class SiaeEditInfoContactForm(forms.ModelForm):
             "api_entreprise_ca",
             "api_entreprise_ca_date_fin_exercice",
             "api_entreprise_exercice_last_sync_date",
+            "is_qpv",
+            "api_qpv_last_sync_date",
+            "qpv_name",
+            "qpv_code",
         ]
         widgets = {
             "address": forms.Textarea(attrs={"rows": 3}),
