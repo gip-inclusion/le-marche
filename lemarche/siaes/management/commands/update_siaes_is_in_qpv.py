@@ -1,3 +1,4 @@
+import argparse
 from datetime import timedelta
 
 import httpx
@@ -18,6 +19,8 @@ class Command(BaseCommand):
 
     Usage: poetry run python manage.py update_siaes_is_in_qpv
     Usage: poetry run python manage.py update_siaes_is_in_qpv --limit 10
+    Usage: poetry run python manage.py update_siaes_is_in_qpv --force
+    Usage: poetry run python manage.py update_siaes_is_in_qpv --limit 100 --no-force
     """
 
     def __init__(self, stdout=None, stderr=None, no_color=False):
@@ -27,14 +30,25 @@ class Command(BaseCommand):
     FIELDS_TO_BULK_UPDATE = ["is_qpv", "api_qpv_last_sync_date", "qpv_code", "qpv_name"]
 
     def add_arguments(self, parser):
-        parser.add_argument("--limit", type=int, default=None, help="Limiter le nombre de structures à processer")
+        parser.add_argument(
+            "-L", "--limit", type=int, default=None, help="Limiter le nombre de structures à processer"
+        )
+        parser.add_argument(
+            "-F",
+            "--force",
+            action=argparse.BooleanOptionalAction,
+            default=None,
+            help="Forcer l'update sans la vérification de la dernière mise à jour",
+        )
 
     def get_query_set(self, **options):
-        two_months_ago = timezone.now() - timedelta(days=settings.API_QPV_RELATIVE_DAYS_TO_UPDATE)
-        siaes_queryset = Siae.objects.filter(
-            (Q(api_qpv_last_sync_date__lte=two_months_ago) | Q(api_qpv_last_sync_date__isnull=True))
-            & Q(coords__isnull=False)
-        ).order_by("id")
+        siaes_queryset = Siae.objects.filter(Q(coords__isnull=False)).order_by("id")
+
+        if not options["force"]:
+            since_last_date_limit = timezone.now() - timedelta(days=settings.API_QPV_RELATIVE_DAYS_TO_UPDATE)
+            siaes_queryset = siaes_queryset.filter(
+                (Q(api_qpv_last_sync_date__lte=since_last_date_limit) | Q(api_qpv_last_sync_date__isnull=True))
+            )
 
         if options["limit"]:
             siaes_queryset = siaes_queryset[: options["limit"]]
