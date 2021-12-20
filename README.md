@@ -76,7 +76,7 @@ Après création du fichier `env.docker.local` :
  # Re-création de l'environnement (en cas de modification)
  > docker-compose down
  > docker-compose build --no-cache
- > docker-compose up --force-recreate    
+ > docker-compose up --force-recreate
 ```
 
 #### Lancement Dockerfile
@@ -167,3 +167,13 @@ poetry run python manage.py test
 # pour lancer un lot de tests en particulier
 poetry run python manage.py test -- lemarche.api.siaes.tests.SiaeListApiTest
 ```
+
+## Celery
+### Setup
+#### RabbitMQ
+Gestionnaire de taches :
+
+`docker compose up rabbitmq`
+
+#### Lancer en local
+`celery -A config worker -l INFO`

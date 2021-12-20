@@ -434,6 +434,17 @@ beautifulsoup4 = ">=4.8.0"
 Django = ">=2.2"
 
 [[package]]
+name = "django-celery-results"
+version = "2.2.0"
+description = "Celery result backends for Django."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+celery = ">=5.0,<6.0"
+
+[[package]]
 name = "django-ckeditor"
 version = "6.2.0"
 description = "Django admin CKEditor integration."
@@ -1513,7 +1524,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "2a871d80f41a5dc669557e2fc64df1a17b951c2942c6831b8664528801a7dae7"
+content-hash = "26ecbca47db46b16d0607719ecd42bbfb955453a5e24686cd7ea9f8b311b7c16"
 
 [metadata.files]
 amqp = [
@@ -1763,6 +1774,10 @@ django-appconf = [
 django-bootstrap4 = [
     {file = "django-bootstrap4-3.0.1.tar.gz", hash = "sha256:c5c97fb473bb56e3a91b4f4be52b74a3fc384ec3baae50dd0807fa922a55ec2b"},
     {file = "django_bootstrap4-3.0.1-py3-none-any.whl", hash = "sha256:aa8a9cb5ab27cfae52a27d377a0401af268d0e4b91a5f8e660546464582cc010"},
+]
+django-celery-results = [
+    {file = "django_celery_results-2.2.0-py2.py3-none-any.whl", hash = "sha256:d5f83fad9091e52cd6dbb3ca80632153ad14b6cdac4d73258e040f92717237cb"},
+    {file = "django_celery_results-2.2.0.tar.gz", hash = "sha256:cc0285090a306f97f1d4b7929ed98af0475bf6db2568976b3387de4fbe812edc"},
 ]
 django-ckeditor = [
     {file = "django-ckeditor-6.2.0.tar.gz", hash = "sha256:df64dc9e62790ef824f609605d31be847bdbce1cc7aa94e49bd5ca60d7aa79bb"},

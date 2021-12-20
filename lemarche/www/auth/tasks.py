@@ -1,3 +1,4 @@
+from celery import shared_task
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -12,12 +13,10 @@ def send_welcome_email(user):
     email_subject = email_subject_prefix + f"Bienvenue {user.first_name} !"
     email_body = render_to_string("auth/signup_welcome_email_body.txt", {})
 
-    send_mail(
-        subject=email_subject,
-        message=email_body,
-        from_email=settings.DEFAULT_FROM_EMAIL,
+    task_send_mail.delay(
+        email_subject=email_subject,
+        email_body=email_body,
         recipient_list=whitelist_recipient_list([user.email]),
-        fail_silently=False,
     )
 
 
@@ -40,10 +39,25 @@ def send_signup_notification_email(user):
         },
     )
 
+    task_send_mail.delay(
+        email_subject=email_subject,
+        email_body=email_body,
+        recipient_list=[settings.NOTIFY_EMAIL],
+    )
+
+
+@shared_task
+def task_send_mail(
+    email_subject,
+    email_body,
+    recipient_list,
+    from_email=settings.DEFAULT_FROM_EMAIL,
+    fail_silently=False,
+):
     send_mail(
         subject=email_subject,
         message=email_body,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[settings.NOTIFY_EMAIL],
-        fail_silently=False,
+        from_email=from_email,
+        recipient_list=recipient_list,
+        fail_silently=fail_silently,
     )
