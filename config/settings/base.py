@@ -265,11 +265,18 @@ X_FRAME_OPTIONS = "DENY"
 
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
+    # local
     "http://127.0.0.1:8000",
     "http://localhost:8000",
     # "https://lemarche.inclusion.beta.gouv.fr"
 ]
-CORS_ALLOWED_ORIGIN_REGEXES = [r"^https://\w+\.cleverapps\.io$", r"^https://\w+\.inclusion\.beta\.gouv\.fr$"]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    # deployed
+    r"^https://\w+\.cleverapps\.io$",
+    r"^https://\w+\.inclusion\.beta\.gouv\.fr$",
+    # API swagger
+    r"^https://\w+\.swagger\.io$",
+]
 
 
 # S3 uploads
