@@ -470,3 +470,8 @@ ENV_COLOR_MAPPING = {
     "prod": "",
 }
 BITOUBI_ENV_COLOR = ENV_COLOR_MAPPING.get(BITOUBI_ENV, "")
+
+# controls how many objects are updated in a single query
+# avoid timeout exception
+# https://docs.djangoproject.com/en/4.0/ref/models/querysets/#bulk-update
+BATCH_SIZE_BULK_UPDATE = env.int("BATCH_SIZE_BULK_UPDATE", 200)
