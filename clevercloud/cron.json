@@ -1,4 +1,5 @@
 [
-    "0 12 * * 3 $ROOT/clevercloud/siaes_sync_c1_c4.sh",
-    "30 12 * * 3 $ROOT/clevercloud/siaes_update_api_entreprise_fields.sh"
+    "0 9 * * 1 $ROOT/clevercloud/siaes_sync_c1_c4.sh",
+    "20 9 * * 1 $ROOT/clevercloud/siaes_update_api_entreprise_fields.sh",
+    "40 9 * * 1 $ROOT/clevercloud/siaes_update_api_qpv_fields.sh"
 ]
