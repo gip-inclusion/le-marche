@@ -242,8 +242,8 @@ class Command(BaseCommand):
         progress = 0
         for c1_siae in c1_list:
             progress += 1
-            if (progress % 100) == 0:
-                print(f"{progress}...")
+            if (progress % 1000) == 0:
+                self.stdout.write(f"{progress}...")
             # if force_siret and c1['siret'] != force_siret:
             #     continue
             try:

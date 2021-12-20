@@ -17,10 +17,10 @@ class Command(BaseCommand):
 
     Note: Only on Siae who have coords, filter only on Siae not updated by the API since a two months
 
-    Usage: poetry run python manage.py update_siaes_is_in_qpv
-    Usage: poetry run python manage.py update_siaes_is_in_qpv --limit 10
-    Usage: poetry run python manage.py update_siaes_is_in_qpv --force
-    Usage: poetry run python manage.py update_siaes_is_in_qpv --limit 100 --no-force
+    Usage: poetry run python manage.py update_api_qpv_fields
+    Usage: poetry run python manage.py update_api_qpv_fields --limit 10
+    Usage: poetry run python manage.py update_api_qpv_fields --force
+    Usage: poetry run python manage.py update_api_qpv_fields --limit 100 --no-force
     """
 
     def __init__(self, stdout=None, stderr=None, no_color=False):
