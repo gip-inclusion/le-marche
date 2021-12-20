@@ -18,6 +18,11 @@ services:
     ports:
       - "${POSTGRESQL_PORT:-5432}:5432"
 
+  rabbitmq:
+    image: "rabbitmq"
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
   bitoubi:
     container_name: bitoubi_django
     restart: always
