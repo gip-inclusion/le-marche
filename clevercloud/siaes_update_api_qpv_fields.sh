@@ -19,4 +19,4 @@ fi
 # $APP_HOME is set by default by clever cloud.
 cd $APP_HOME
 
-django-admin update_siaes_is_in_qpv
+django-admin update_api_qpv_fields
