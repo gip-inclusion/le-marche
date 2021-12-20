@@ -98,6 +98,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "drf_spectacular",
     "compressor",
+    "corsheaders",  # django-cors-headers
     "ckeditor",  # django-ckeditor
     "fieldsets_with_inlines",  # django-fieldsets-with-inlines
 ]
@@ -122,6 +123,7 @@ INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -261,6 +263,14 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 X_FRAME_OPTIONS = "DENY"
 
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    # "https://lemarche.inclusion.beta.gouv.fr"
+]
+CORS_ALLOWED_ORIGIN_REGEXES = [r"^https://\w+\.cleverapps\.io$", r"^https://\w+\.inclusion\.beta\.gouv\.fr$"]
+
 
 # S3 uploads
 # ------------------------------------------------------------------------------
@@ -322,6 +332,7 @@ API_ENTREPRISE_TOKEN = env.str("API_ENTREPRISE_TOKEN", "")
 # API_QPV_RELATIVE_DAYS_TO_UPDATE is used to check last modification of SIAE.is_QPV
 #   if SIAE.is_QPV was update after `today-API_QPV_RELATIVE_DAYS_TO_UPDATE`, we call the API to QPV
 API_QPV_RELATIVE_DAYS_TO_UPDATE = env.int("API_QPV_RELATIVE_DAYS_TO_UPDATE", 60)
+
 
 # Django REST Framework settings.
 # https://www.django-rest-framework.org/
