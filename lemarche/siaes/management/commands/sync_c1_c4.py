@@ -1,4 +1,3 @@
-import logging
 import os
 import re
 from datetime import datetime, timedelta
@@ -102,35 +101,19 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Dry run, no writes")
 
-    def set_logger(self, verbosity):
-        """
-        Set logger level based on the verbosity option.
-        """
-        handler = logging.StreamHandler(self.stdout)
-
-        self.logger = logging.getLogger(__name__)
-        self.logger.propagate = False
-        self.logger.addHandler(handler)
-
-        self.logger.setLevel(logging.INFO)
-        if verbosity > 1:
-            self.logger.setLevel(logging.DEBUG)
-
     def handle(self, dry_run=False, **options):
         if not os.environ.get("C1_DSN"):
             raise CommandError("Missing C1_DSN in env")
 
-        self.set_logger(options.get("verbosity"))
+        self.stdout.write("-" * 80)
+        self.stdout.write("Sync script between C1 & C4...")
 
-        self.logger.debug("-" * 80)
-        self.logger.debug("Sync script between C1 & C4...")
-
-        self.logger.debug("-" * 80)
-        self.logger.debug("Step 1: fetching C1 data")
+        self.stdout.write("-" * 80)
+        self.stdout.write("Step 1: fetching C1 data")
         c1_list = self.c1_export()
 
-        self.logger.debug("-" * 80)
-        self.logger.debug("Step 2: update C4 data")
+        self.stdout.write("-" * 80)
+        self.stdout.write("Step 2: update C4 data")
         # count before
         siae_total_before = Siae.objects.all().count()
         siae_active_before = Siae.objects.filter(is_active=True).count()
@@ -144,17 +127,17 @@ class Command(BaseCommand):
         siae_active_after = Siae.objects.filter(is_active=True).count()
         siae_delisted_after = Siae.objects.filter(is_delisted=True).count()
 
-        self.logger.debug("-" * 80)
-        self.logger.debug("Done ! Some stats...")
+        self.stdout.write("-" * 80)
+        self.stdout.write("Done ! Some stats...")
         created_count = siae_total_after - siae_total_before
         updated_count = len(c1_list) - created_count
-        self.logger.debug(f"Siae total: before {siae_total_before} / after {siae_total_after} / +{created_count}")
-        self.logger.debug(f"Siae updated: {updated_count}")
-        self.logger.debug(f"Siae active: before {siae_active_before} / after {siae_active_after}")
-        self.logger.debug(
+        self.stdout.write(f"Siae total: before {siae_total_before} / after {siae_total_after} / +{created_count}")
+        self.stdout.write(f"Siae updated: {updated_count}")
+        self.stdout.write(f"Siae active: before {siae_active_before} / after {siae_active_after}")
+        self.stdout.write(
             f"Siae inactive: before {siae_total_before - siae_active_before} / after {siae_total_after - siae_active_after}"  # noqa
         )
-        self.logger.debug(f"Siae delisted: before {siae_delisted_before} / after {siae_delisted_after}")
+        self.stdout.write(f"Siae delisted: before {siae_delisted_before} / after {siae_delisted_after}")
 
     def c1_export(self):
         sql = """
@@ -249,7 +232,7 @@ class Command(BaseCommand):
 
             c1_list_cleaned.append(c1_siae_cleaned)
 
-        self.logger.debug(f"Found {len(c1_list_cleaned)} Siae in C1")
+        self.stdout.write(f"Found {len(c1_list_cleaned)} Siae in C1")
         return c1_list_cleaned
 
     def c4_update(self, c1_list, dry_run):
@@ -259,8 +242,8 @@ class Command(BaseCommand):
         progress = 0
         for c1_siae in c1_list:
             progress += 1
-            if (progress % 100) == 0:
-                print(f"{progress}...")
+            if (progress % 1000) == 0:
+                self.stdout.write(f"{progress}...")
             # if force_siret and c1['siret'] != force_siret:
             #     continue
             try:
@@ -275,7 +258,7 @@ class Command(BaseCommand):
         """
         Here we create a new Siae with C1 data
         """
-        self.logger.debug("Creating Siae...")
+        self.stdout.write("Creating Siae...")
 
         # clean fields
         rename_dict_key(c1_siae, "id", "c1_id")
@@ -294,13 +277,13 @@ class Command(BaseCommand):
         # create object
         if not dry_run:
             siae = Siae.objects.create(**c1_siae)
-            self.logger.debug(f"New Siae created / {siae.id} / {siae.name} / {siae.siret}")
+            self.stdout.write(f"New Siae created / {siae.id} / {siae.name} / {siae.siret}")
 
     def c4_update_siae(self, c1_siae, c4_siae, dry_run):
         """
         Here we update an existing Siae with a subset of C1 data
         """
-        # self.logger.debug("Updating Siae...")
+        # self.stdout.write("Updating Siae...")
 
         if dry_run:
             return
@@ -316,7 +299,7 @@ class Command(BaseCommand):
 
         if not dry_run:
             Siae.objects.filter(c1_id=c4_siae.c1_id).update(**c1_siae_filtered)  # avoid updated_at change
-            # self.logger.debug(f"Siae updated / {c4_siae.id} / {c4_siae.siret}")
+            # self.stdout.write(f"Siae updated / {c4_siae.id} / {c4_siae.siret}")
 
     def c4_delist_old_siae(self, dry_run):
         """

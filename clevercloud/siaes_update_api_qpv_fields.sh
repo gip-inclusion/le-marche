@@ -4,6 +4,7 @@
 
 # Do not run if this env var is not set:
 if [[ -z "$CRON_UPDATE_API_QPV_FIELDS_ENABLED" ]]; then
+    echo "CRON_UPDATE_API_QPV_FIELDS_ENABLED not set. Exiting..."
     exit 0
 fi
 

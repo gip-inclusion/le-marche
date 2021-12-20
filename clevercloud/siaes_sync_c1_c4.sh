@@ -4,6 +4,7 @@
 
 # Do not run if this env var is not set:
 if [[ -z "$CRON_SYNC_C1_C4_ENABLED" ]]; then
+    echo "CRON_SYNC_C1_C4_ENABLED not set. Exiting..."
     exit 0
 fi
 
