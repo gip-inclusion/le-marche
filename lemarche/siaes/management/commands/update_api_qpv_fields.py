@@ -79,7 +79,9 @@ class Command(BaseCommand):
         finally:
             client.close()
             # we still save siaes qpv status
-            Siae.objects.bulk_update(siaes_to_update, self.FIELDS_TO_BULK_UPDATE)
+            Siae.objects.bulk_update(
+                siaes_to_update, self.FIELDS_TO_BULK_UPDATE, batch_size=settings.BATCH_SIZE_BULK_UPDATE
+            )
 
         self.stdout_messages_sucess(
             [
