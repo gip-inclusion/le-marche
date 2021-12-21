@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
-from django.views.generic.edit import FormMixin
+from django.views.generic.edit import CreateView, FormMixin
 
 from lemarche.favorites.models import FavoriteItem, FavoriteList
 from lemarche.siaes.models import Siae
@@ -47,6 +47,7 @@ class ProfileEditView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
 
 class ProfileFavoriteListView(LoginRequiredMixin, ListView):
+    # form_class = ProfileFavoriteEditForm
     template_name = "dashboard/profile_favorite_list.html"
     queryset = FavoriteList.objects.all()
     context_object_name = "favorite_lists"
@@ -55,6 +56,31 @@ class ProfileFavoriteListView(LoginRequiredMixin, ListView):
         qs = super().get_queryset()
         qs = qs.by_user(user=self.request.user)
         return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = ProfileFavoriteEditForm()
+        return context
+
+
+class ProfileFavoriteListCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    form_class = ProfileFavoriteEditForm
+    success_message = "Votre liste d'achat a été crée avec succès."
+    success_url = reverse_lazy("dashboard:profile_favorite_list")
+
+    def form_valid(self, form):
+        """Add the User to the FavoriteList."""
+        favorite_list = form.save(commit=False)
+        favorite_list.user = self.request.user
+        favorite_list.save()
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            self.get_success_message(form.cleaned_data),
+        )
+        # return HttpResponseRedirect(self.get_success_url())  # doesn't work...
+        return HttpResponseRedirect(reverse_lazy("dashboard:profile_favorite_list"))
 
 
 class ProfileFavoriteListDetailView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin, DetailView):

@@ -1,4 +1,5 @@
 {% extends "layouts/base.html" %}
+{% load bootstrap4 %}
 
 {% block title %}{{ favorite_list.name }} - Liste d'achat{{ block.super }}{% endblock %}
 
@@ -31,6 +32,21 @@
             </div>
         </div>
 
+        <!-- New list -->
+        <h3>Nouvelle liste</h3>
+        <p class="mb-1">Créer une {% if favorite_lists.count %}nouvelle {% endif %}liste</p>
+        <form method="POST" action="{% url 'dashboard:profile_favorite_list_create' %}" class="form-inline">
+            {% csrf_token %}
+            {% bootstrap_form_errors form type="all" %}
+            {% bootstrap_field form.name show_label=False %}
+            <button class="btn {% if user.favorite_lists.count %}btn-outline-primary{% else %}btn-primary{% endif %}" type="submit" name="action" value="create">
+                Créer
+            </button>
+        </form>
+
+        <br />
+
+        <!-- Existing list(s) -->
         {% if favorite_lists.count %}
         <h3>{{ favorite_lists.count }} liste{% if favorite_lists.count > 1 %}s{% endif %} existante{% if favorite_lists.count > 1 %}s{% endif %}</h3>
         <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2">

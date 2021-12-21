@@ -20,9 +20,9 @@
                     </button>
                 </form>
 
+                <!-- Existing list(s) -->
                 {% if user.favorite_lists.count %}
                 <hr />
-                <!-- Existing lists -->
                 <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
                     {% csrf_token %}
                     <div class="form-group">
