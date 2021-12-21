@@ -18,6 +18,8 @@
 {% endblock %}
 
 {% block header %}
+{% if BITOUBI_ENV not in "prod" %}
 {% include "includes/_header_env_notice.html" %}
+{% endif %}
 {{ block.super }}
 {% endblock %}
