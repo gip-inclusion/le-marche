@@ -11,7 +11,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Mes listes d'achats</li>
+                        <li class="breadcrumb-item active" aria-current="page">Liste d'achat favoris</li>
                     </ol>
                 </nav>
             </div>
@@ -26,12 +26,13 @@
         <div class="row">
             <div class="col-12 col-lg-8">
                 <h2 class="mb-3 mb-lg-5">
-                    <strong>Mes listes d'achats</strong>
+                    <strong>Liste d'achat favoris</strong>
                 </h2>
             </div>
         </div>
 
         {% if favorite_lists.count %}
+        <h3>{{ favorite_lists.count }} liste{% if favorite_lists.count > 1 %}s{% endif %} existante{% if favorite_lists.count > 1 %}s{% endif %}</h3>
         <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2">
             {% for favorite_list in favorite_lists.all %}
             <div class="s-cards-grid-01__col col d-sm-flex">
