@@ -350,6 +350,17 @@ rcssmin = "1.1.0"
 rjsmin = "1.2.0"
 
 [[package]]
+name = "django-cors-headers"
+version = "3.10.1"
+description = "django-cors-headers is a Django application for handling the server headers required for Cross-Origin Resource Sharing (CORS)."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+Django = ">=2.2"
+
+[[package]]
 name = "django-debug-toolbar"
 version = "3.2.3"
 description = "A configurable set of panels that display various debug information about the current request/response."
@@ -1358,7 +1369,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "ef64aa69fb5f0202829d78df9956c42221a34b027c311bb5ac4456f11e5c305c"
+content-hash = "2a871d80f41a5dc669557e2fc64df1a17b951c2942c6831b8664528801a7dae7"
 
 [metadata.files]
 anyio = [
@@ -1592,6 +1603,10 @@ django-ckeditor = [
 django-compressor = [
     {file = "django_compressor-3.0-py2.py3-none-any.whl", hash = "sha256:12958fd95b4135cae7b704deeeb5c26da12692b85a2765f1bd30a70c05d5825c"},
     {file = "django_compressor-3.0.tar.gz", hash = "sha256:68955b7baffc3607a4dc44523dcff622238121b307f46fecddaeb8de986ca086"},
+]
+django-cors-headers = [
+    {file = "django-cors-headers-3.10.1.tar.gz", hash = "sha256:b5a874b492bcad99f544bb76ef679472259eb41ee5644ca62d1a94ddb26b7f6e"},
+    {file = "django_cors_headers-3.10.1-py3-none-any.whl", hash = "sha256:1390b5846e9835b0911e2574409788af87cd9154246aafbdc8ec546c93698fe6"},
 ]
 django-debug-toolbar = [
     {file = "django-debug-toolbar-3.2.3.tar.gz", hash = "sha256:95880677ea846ba1077d02305fd5e2b25e1da096e1d4a735b665e3340fa2ae79"},

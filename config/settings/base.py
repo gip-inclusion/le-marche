@@ -98,6 +98,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "drf_spectacular",
     "compressor",
+    "corsheaders",  # django-cors-headers
     "ckeditor",  # django-ckeditor
     "fieldsets_with_inlines",  # django-fieldsets-with-inlines
 ]
@@ -122,6 +123,7 @@ INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -179,7 +181,7 @@ DATABASES = {
 }
 
 
-# Authentication.
+# Authentication
 # ------------------------------------------------------------------------------
 
 # Password validation
@@ -202,7 +204,7 @@ LOGOUT_REDIRECT_URL = "pages:home"
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 # ------------------------------------------------------------------------------
 
-# API is in french
+# App is in french
 LANGUAGE_CODE = "fr-fr"
 
 # France timezone
@@ -217,7 +219,7 @@ USE_TZ = True
 SITE_ID = 1
 
 
-# Emails.
+# Emails
 # ------------------------------------------------------------------------------
 
 ANYMAIL = {
@@ -235,7 +237,7 @@ CONTACT_EMAIL = env("CONTACT_EMAIL", default="contact@example.com")
 NOTIFY_EMAIL = env("NOTIFY_EMAIL", default="notif@example.com")
 
 
-# Security.
+# Security
 # ------------------------------------------------------------------------------
 
 CSRF_COOKIE_HTTPONLY = True
@@ -260,6 +262,22 @@ SESSION_COOKIE_SECURE = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 X_FRAME_OPTIONS = "DENY"
+
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    # local
+    r"^http://localhost:[0-9]*$",
+    r"^http://127.0.0.1:[0-9]*$",
+    # deployed
+    r"^https://\w+\.cleverapps\.io$",
+    r"^https://\w+\.inclusion\.beta\.gouv\.fr$",
+    r"^https://\w+\.beta\.gouv\.fr$",
+    # API Swagger
+    r"^https://\w+\.swagger\.io$",
+    # API Gouv
+    r"^https://\w+\.api\.gouv\.fr$",
+    r"^https://\w+\.gouv\.fr$",
+]
 
 
 # S3 uploads
@@ -299,7 +317,7 @@ STORAGE_UPLOAD_KINDS = {
 }
 
 
-# APIs.
+# APIs
 # ------------------------------------------------------------------------------
 
 API_PERIMETER_AUTOCOMPLETE_MAX_RESULTS = 20
@@ -323,7 +341,8 @@ API_ENTREPRISE_TOKEN = env.str("API_ENTREPRISE_TOKEN", "")
 #   if SIAE.is_QPV was update after `today-API_QPV_RELATIVE_DAYS_TO_UPDATE`, we call the API to QPV
 API_QPV_RELATIVE_DAYS_TO_UPDATE = env.int("API_QPV_RELATIVE_DAYS_TO_UPDATE", 60)
 
-# Django REST Framework settings.
+
+# Django REST Framework (DRF)
 # https://www.django-rest-framework.org/
 # ------------------------------------------------------------------------------
 
@@ -336,7 +355,7 @@ REST_FRAMEWORK = {
 }
 
 
-# Spectacular settings.
+# DRF Spectacular
 # https://drf-spectacular.readthedocs.io/en/latest/settings.html
 # ------------------------------------------------------------------------------
 
@@ -383,7 +402,7 @@ METABASE_PUBLIC_DASHBOARD_UUID = "fdf2580a-aeea-441c-98fe-ef2c27e79d6b"
 METABASE_PUBLIC_DASHBOARD_URL = f"{METABASE_SITE_URL}/embed/dashboard/{METABASE_PUBLIC_DASHBOARD_UUID}#titled=false"
 
 
-# django-bootstrap4.
+# django-bootstrap4
 # https://django-bootstrap4.readthedocs.io/en/latest/settings.html
 # ------------------------------------------------------------------------------
 
@@ -397,7 +416,7 @@ BOOTSTRAP4 = {
 }
 
 
-# Logging.
+# Logging
 # https://docs.djangoproject.com/en/dev/topics/logging
 # ------------------------------------------------------------------------------
 
@@ -428,7 +447,7 @@ LOGGING = {
 }
 
 
-# django-ckeditor settings.
+# django-ckeditor
 # https://django-ckeditor.readthedocs.io/en/latest/#optional-customizing-ckeditor-editor
 # ------------------------------------------------------------------------------
 
