@@ -238,4 +238,4 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return super().get_success_url()
 
     def get_success_message(self, cleaned_data, siae, favorite_list):
-        return f"La structure <strong>{siae.name_display}</strong> a été ajoutée à votre liste d'achat <strong>{favorite_list.name}</strong>."  # noqa
+        return f"<strong>{siae.name_display}</strong> a été ajoutée à votre liste d'achat <strong>{favorite_list.name}</strong>."  # noqa
