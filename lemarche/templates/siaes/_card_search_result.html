@@ -14,11 +14,11 @@
         </div>
         <div class="col">
             <div class="card-body">
-                <a href="{% url 'siae:detail' siae.slug %}" class="text-decoration-none stretched-link">
-                    <h3 class="mb-3 d-flex justify-content-between align-items-start">
+                <a href="{% url 'siae:detail' siae.slug %}" class="text-decoration-none stretched -link">
+                    <h3 class="mb-3 mr-5">                   
                         {{ siae.name_display }}
                         {% if not siae.user_count %}
-                            <small class="text-muted">(bientôt inscrite sur le marché)</small>
+                        <span class="fs-sm font-weight-normal">(bientôt inscrite sur le marché)</span>
                         {% endif %}
                     </h3>
                     <ul class="list-unstyled m-0 lh-sm row no-gutters">
