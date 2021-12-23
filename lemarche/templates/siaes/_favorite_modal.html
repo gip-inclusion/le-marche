@@ -1,29 +1,33 @@
-<div class="modal fade modal-siae" id="favorite_modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="z-index:3000">
+<div class="modal fade modal-siae" id="favorite_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="modalTitle">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="mb-0">Liste d'achat favoris : <small>ajouter <strong>{% if siae %}{{ siae.name_display }}{% else %}<span id="siae-name-display"></span>{% endif %}</strong></small></h3>
-                <!-- <h3 class="mb-0">Liste d'achat favoris</h3> -->
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h3 class="modal-title" id="modalTitle">Liste d'achat favoris</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body home-content-body">
-                <!-- New list -->
-                <p class="mb-1">Créer une {% if user.favorite_lists.count %}nouvelle {% endif %}liste</p>
-                <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}" class="form-inline">
+            <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
+                <div class="modal-body home-content-body">
+                    <p>Pour ajouter <strong>{% if siae %}{{ siae.name_display }}{% else %}<span id="siae-name-display"></span>{% endif %}</strong></p>
+                    <!-- New list -->
+                    <label class="mb-2 d-inline-block font-weight-bold" for="id_new_favorite_list">Créer une {% if user.favorite_lists.count %}nouvelle {% endif %}liste</label>
                     {% csrf_token %}
-                    <label class="sr-only" for="id_new_favorite_list">Créer une {% if user.favorite_lists.count %}nouvelle {% endif %}liste</label>
-                    <input type="text" name="new_favorite_list" id="id_new_favorite_list" class="form-control" placeholder="Entretien des locaux, achat de masque…" required>
-                    <button class="btn {% if user.favorite_lists.count %}btn-outline-primary{% else %}btn-primary{% endif %}" type="submit" name="action" value="create">
-                        Créer
-                    </button>
-                </form>
-
-                <!-- Existing list(s) -->
+                    <div class="form-row">
+                        <div class="form-group col">
+                            <input type="text" name="new_favorite_list" id="id_new_favorite_list" class="form-control form-control-sm" placeholder="Entretien des locaux, achat de masque…" required>
+                        </div>
+                        <div class="form-group col-auto">                    
+                            <button class="btn btn-sm {% if user.favorite_lists.count %}btn-outline-primary{% else %}btn-primary{% endif %}" type="submit" name="action" value="create">Créer</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
                 {% if user.favorite_lists.count %}
-                <hr />
-                <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
+                <div class="modal-body home-content-body">
+                    <!-- Existing list(s) -->
+                    <hr />
                     {% csrf_token %}
                     <div class="form-group">
                         <label>Choisir une liste existante</label>
@@ -36,12 +40,13 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <button class="btn btn-primary" type="submit" name="action" value="add">
-                        Enregistrer
-                    </button>
-                </form>
+                </div>
                 {% endif %}
-            </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="submit" name="action" value="add">Enregistrer</button>                        
+                </div>         
+            </form>
+
         </div>
     </div>
 </div>

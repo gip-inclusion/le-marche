@@ -1,29 +1,22 @@
-<div class="modal fade modal-siae" id="favorite_list_edit_modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="z-index:3000">
+<div class="modal fade modal-siae" id="favorite_list_edit_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="modalTitle">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="mb-0">Modifier le nom de la liste</h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h3 class="modal-title" id="modalTitle">Modifier le nom de la liste</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body home-content-body">
-                <form method="POST" action="{% url 'dashboard:profile_favorite_list_edit' favorite_list.slug %}">
+            <form method="POST" action="{% url 'dashboard:profile_favorite_list_edit' favorite_list.slug %}">
+                <div class="modal-body home-content-body">
                     {% csrf_token %}
-                    <input type="text" class="form-control" name="name" value="{{ favorite_list.name }}" required />
-                    <br />
-                    <div class="row justify-content-center">
-                        <div class="col">
-                            <button class="btn btn-outline-primary" type="button" data-dismiss="modal" aria-label="Close">
-                                Annuler
-                            </button>
-                            <button class="btn btn-primary ml-3" type="submit">
-                                Confirmer
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+                    <input type="text" class="form-control form-control-sm" name="name" value="{{ favorite_list.name }}" required />
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-primary" type="button" data-dismiss="modal" aria-label="Fermer">Annuler</button>
+                    <button class="btn btn-primary" type="submit">Confirmer</button>                
+                </div>                  
+            </form>
         </div>
     </div>
 </div>
