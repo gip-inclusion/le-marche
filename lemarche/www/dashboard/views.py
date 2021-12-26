@@ -111,8 +111,8 @@ class SiaeEditInfoContactView(LoginRequiredMixin, SiaeOwnerRequiredMixin, Succes
         """
         context = super().get_context_data(**kwargs)
         s3_upload = S3Upload(kind="siae_logo")
-        context["s3_form_values"] = s3_upload.form_values
-        context["s3_upload_config"] = s3_upload.config
+        context["s3_form_values_siae_logo"] = s3_upload.form_values
+        context["s3_upload_config_siae_logo"] = s3_upload.config
         return context
 
     def get_success_url(self):
@@ -151,9 +151,12 @@ class SiaeEditPrestaView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMess
             context["offer_formset"] = SiaeOfferFormSet(instance=self.object)
             context["client_reference_formset"] = SiaeClientReferenceFormSet(instance=self.object)
             context["image_formset"] = SiaeImageFormSet(instance=self.object)
-        s3_upload = S3Upload(kind="client_reference_logo")
-        context["s3_form_values"] = s3_upload.form_values
-        context["s3_upload_config"] = s3_upload.config
+        s3_upload_client_reference_logo = S3Upload(kind="client_reference_logo")
+        context["s3_form_values_client_reference_logo"] = s3_upload_client_reference_logo.form_values
+        context["s3_upload_config_client_reference_logo"] = s3_upload_client_reference_logo.config
+        s3_upload_siae_image = S3Upload(kind="siae_image")
+        context["s3_form_values_siae_image"] = s3_upload_siae_image.form_values
+        context["s3_upload_config_siae_image"] = s3_upload_siae_image.config
         return context
 
     def post(self, request, *args, **kwargs):
