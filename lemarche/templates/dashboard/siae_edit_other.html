@@ -87,24 +87,6 @@
 {% endblock %}
 
 {% block extra_js %}
-<script type="text/javascript" src="{% static 'vendor/dropzone-5.9.3/dropzone.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/s3_upload.js' %}"></script>
-{{ s3_form_values|json_script:"s3-form-values" }}
-{{ s3_upload_config|json_script:"s3-upload-config" }}
-<script type="text/javascript">
-// loop on each dropzone
-Array.from(document.querySelectorAll(".dropzone")).forEach(function(element) {
-    s3UploadInit({
-        dropzoneSelector: `#${element.id}`,
-        callbackLocationSelector: `#${element.id.replace('image_form', 'image_url')}`,
-        s3FormValuesId: "s3-form-values",
-        s3UploadConfigId: "s3-upload-config",
-        // Not really nice
-        sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
-        sentryCsrfToken: "{{ csrf_token }}",
-    });
-})
-</script>
 <script type="text/javascript">
 /**
  * Add formset items dynamically
@@ -112,9 +94,11 @@ Array.from(document.querySelectorAll(".dropzone")).forEach(function(element) {
 const prefixRegex = new RegExp('__prefix__', 'g');
 
 // label formset
-const totalLabelFormset = document.getElementById('id_labels-TOTAL_FORMS');
-const labelFormsetEmptyForm = document.getElementById('label-formset-empty-form');
-const labelFormsetAddMoreButton = document.getElementById('label-formset-add-more');
+const labelIdString = 'id_labels';
+const labelFormsetString = 'label-formset';
+const totalLabelFormset = document.getElementById(`${labelIdString}-TOTAL_FORMS`);
+const labelFormsetEmptyForm = document.getElementById(`${labelFormsetString}-empty-form`);
+const labelFormsetAddMoreButton = document.getElementById(`${labelFormsetString}-add-more`);
 
 labelFormsetAddMoreButton.addEventListener('click', function(e) {
     if (e) { e.preventDefault(); }

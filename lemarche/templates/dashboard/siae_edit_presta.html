@@ -308,9 +308,11 @@ offerFormsetAddMoreButton.addEventListener('click', function(e) {
 });
 
 // client reference formset
-const totalClientReferenceFormset = document.getElementById('id_client_references-TOTAL_FORMS');
-const clientReferenceFormsetEmptyForm = document.getElementById('client-reference-formset-empty-form');
-const clientReferenceFormsetAddMoreButton = document.getElementById('client-reference-formset-add-more');
+const clientReferenceIdString = 'id_client_references';
+const clientReferenceFormsetString = 'client-reference-formset';
+const totalClientReferenceFormset = document.getElementById(`${clientReferenceIdString}-TOTAL_FORMS`);
+const clientReferenceFormsetEmptyForm = document.getElementById(`${clientReferenceFormsetString}-empty-form`);
+const clientReferenceFormsetAddMoreButton = document.getElementById(`${clientReferenceFormsetString}-add-more`);
 
 clientReferenceFormsetAddMoreButton.addEventListener('click', function(e) {
     if (e) { e.preventDefault(); }
@@ -323,11 +325,10 @@ clientReferenceFormsetAddMoreButton.addEventListener('click', function(e) {
     copyClientReferenceFormsetEmptyForm.setAttribute('id', '');
     copyClientReferenceFormsetEmptyForm.setAttribute('class', '');
     clientReferenceFormsetEmptyForm.parentNode.insertBefore(copyClientReferenceFormsetEmptyForm, clientReferenceFormsetEmptyForm);
-    console.log(totalClientReferenceFormset.value)
     // add dropzone
     s3UploadInit({
-        dropzoneSelector: `#id_client_references-${totalClientReferenceFormset.value}-logo_form`,
-        callbackLocationSelector: `#id_client_references-${totalClientReferenceFormset.value}-logo_url`,
+        dropzoneSelector: `#${clientReferenceIdString}-${totalClientReferenceFormset.value}-logo_form`,
+        callbackLocationSelector: `#${clientReferenceIdString}-${totalClientReferenceFormset.value}-logo_url`,
         s3FormValuesId: "s3-form-values",
         s3UploadConfigId: "s3-upload-config",
         // Not really nice
@@ -339,9 +340,11 @@ clientReferenceFormsetAddMoreButton.addEventListener('click', function(e) {
 });
 
 // image formset
-const totalImageFormset = document.getElementById('id_images-TOTAL_FORMS');
-const imageFormsetEmptyForm = document.getElementById('image-formset-empty-form');
-const imageFormsetAddMoreButton = document.getElementById('image-formset-add-more');
+const imageIdString = 'id_images';
+const imageFormsetString = 'image-formset';
+const totalImageFormset = document.getElementById(`${imageIdString}-TOTAL_FORMS`);
+const imageFormsetEmptyForm = document.getElementById(`${imageFormsetString}-empty-form`);
+const imageFormsetAddMoreButton = document.getElementById(`${imageFormsetString}-add-more`);
 
 imageFormsetAddMoreButton.addEventListener('click', function(e) {
     if (e) { e.preventDefault(); }
@@ -354,11 +357,10 @@ imageFormsetAddMoreButton.addEventListener('click', function(e) {
     copyImageFormsetEmptyForm.setAttribute('id', '');
     copyImageFormsetEmptyForm.setAttribute('class', '');
     imageFormsetEmptyForm.parentNode.insertBefore(copyImageFormsetEmptyForm, imageFormsetEmptyForm);
-    console.log(totalImageFormset.value)
     // add dropzone
     s3UploadInit({
-        dropzoneSelector: `#id_images-${totalImageFormset.value}-image_form`,
-        callbackLocationSelector: `#id_images-${totalImageFormset.value}-image_url`,
+        dropzoneSelector: `#${imageIdString}-${totalImageFormset.value}-image_form`,
+        callbackLocationSelector: `#${imageIdString}-${totalImageFormset.value}-image_url`,
         s3FormValuesId: "s3-form-values",
         s3UploadConfigId: "s3-upload-config",
         // Not really nice
