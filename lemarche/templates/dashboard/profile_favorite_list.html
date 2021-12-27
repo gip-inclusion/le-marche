@@ -53,20 +53,16 @@
                    <!-- Existing list(s) -->
                 {% if favorite_lists.count %}
                 <h3>{{ favorite_lists.count }} liste{% if favorite_lists.count > 1 %}s{% endif %} existante{% if favorite_lists.count > 1 %}s{% endif %}</h3>
-                <table class="table">
-                    <tbody>
-                    {% for favorite_list in favorite_lists.all %}
-                        <tr>
-                            <td class="align-middle">{{ favorite_list.name }} (<strong>{{ favorite_list.siaes.count }}</strong>)</td>
-                            <td class="text-right">
-                                <a href="{% url 'dashboard:profile_favorite_list_detail' favorite_list.slug %}" class="text-decoration-none" title="Voir la liste">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 3c5.392 0 9.878 3.88 10.819 9-.94 5.12-5.427 9-10.819 9-5.392 0-9.878-3.88-10.819-9C2.121 6.88 6.608 3 12 3zm0 16a9.005 9.005 0 0 0 8.777-7 9.005 9.005 0 0 0-17.554 0A9.005 9.005 0 0 0 12 19zm0-2.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9zm0-2a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>                                    
-                                </a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>                    
+                <ul class="list-group">
+                {% for favorite_list in favorite_lists.all %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{ favorite_list.name }} <span class="ml-2 fs-xs badge badge-marche-light badge-pill">{{ favorite_list.siaes.count }}</span></span>
+                        <a href="{% url 'dashboard:profile_favorite_list_detail' favorite_list.slug %}" class="text-decoration-none" title="Voir la liste">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 3c5.392 0 9.878 3.88 10.819 9-.94 5.12-5.427 9-10.819 9-5.392 0-9.878-3.88-10.819-9C2.121 6.88 6.608 3 12 3zm0 16a9.005 9.005 0 0 0 8.777-7 9.005 9.005 0 0 0-17.554 0A9.005 9.005 0 0 0 12 19zm0-2.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9zm0-2a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>                                    
+                        </a>
+                    </li>
+                {% endfor %}
+                </ul>                 
                 {% else %}
                     <p class="text-danger font-weight-bold">Vous n'avez pas encore créé de listes !</p>
                 {% endif %}                
