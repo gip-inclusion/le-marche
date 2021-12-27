@@ -366,7 +366,7 @@ Une initiative de <a href="https://inclusion.beta.gouv.fr/" target="_blank" rel=
 la Plateforme de l'inclusion</a>
 
 Certaines ressources nécessitent un <strong>token</strong> pour accéder complètement à la donnée.<br />
-Plus de détails pour l'obtenir <a href="https://lemarche.inclusion.beta.gouv.fr/api/">ici</a>.
+Plus de détails pour l'obtenir <a href="https://lemarche.inclusion.beta.gouv.fr/api/#auth">ici</a>.
 """
 
 SPECTACULAR_SETTINGS = {
