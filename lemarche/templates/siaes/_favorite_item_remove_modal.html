@@ -1,30 +1,25 @@
-<div class="modal fade modal-siae" id="favorite_item_remove_modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="z-index:3000">
+<div class="modal modal--mini fade modal-siae" id="favorite_item_remove_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="modalTitle">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="mb-0">Supprimer cette structure ?</h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+                        <path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/>
+                    </svg>
                 </button>
             </div>
-            <div class="modal-body">
-                <form method="POST" action="{% url 'dashboard:profile_favorite_item_delete' favorite_list.slug|default:'favorite-list-slug' siae.slug|default:'siae-slug-to-replace' %}">
+            <form method="POST" action="{% url 'dashboard:profile_favorite_item_delete' favorite_list.slug|default:'favorite-list-slug' siae.slug|default:'siae-slug-to-replace' %}">
+                <div class="modal-body">
                     {% csrf_token %}
-                    <p>
-                        La structure <strong>{% if siae %}{{ siae.name_display }}{% else %}<span id="siae-name-display"></span>{% endif %}</strong> sera supprimée de votre liste d'achat.
+                    <p class="font-weight-bold" id="modalTitle">
+                        Supprimer la structure <strong>{% if siae %}{{ siae.name_display }}{% else %}<span id="siae-name-display"></span>{% endif %}</strong> de votre liste d'achat ?
                     </p>
-                    <div class="row justify-content-center">
-                        <div class="col">
-                            <button class="btn btn-outline-primary" type="button" data-dismiss="modal" aria-label="Close">
-                                Annuler
-                            </button>
-                            <button class="btn btn-primary ml-3" type="submit">
-                                Confirmer
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-sm btn-outline-primary" type="button" data-dismiss="modal" aria-label="Fermer">Annuler</button>
+                    <button class="btn btn-sm btn-primary" type="submit">Confirmer</button>                  
+                </div>                 
+            </form>
         </div>
     </div>
 </div>
