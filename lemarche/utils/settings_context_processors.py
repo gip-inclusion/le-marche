@@ -17,4 +17,5 @@ def expose_settings(request):
         "CRISP_ID": settings.CRISP_ID,
         "FACILITATOR_SLIDE": settings.FACILITATOR_SLIDE,
         "FACILITATOR_LIST": settings.FACILITATOR_LIST,
+        "API_GOUV_URL": settings.API_GOUV_URL,
     }
