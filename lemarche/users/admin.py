@@ -55,7 +55,8 @@ class UserAdmin(UserAdmin):
 
     # autocomplete_fields = ["siaes"]
     readonly_fields = [field.name for field in User._meta.fields if field.name.startswith("c4_")] + [
-        "siae_admin_list",
+        "user_siae_admin_list",
+        "user_favorite_list",
         "last_login",
         "image_url",
         "image_url_display",
@@ -91,7 +92,13 @@ class UserAdmin(UserAdmin):
             "Structures",
             {
                 "description": "Ajouter l'utilisateur à une nouvelle structure ? Possible en se rendant sur la fiche de la structure.",  # noqa
-                "fields": ("siae_admin_list",),
+                "fields": ("user_siae_admin_list",),
+            },
+        ),
+        (
+            "Listes d'achats favoris",
+            {
+                "fields": ("user_favorite_list",),
             },
         ),
         (
@@ -163,7 +170,7 @@ class UserAdmin(UserAdmin):
         ("Permissions", {"fields": ("is_staff", "groups")}),
     )
 
-    def siae_admin_list(self, user):
+    def user_siae_admin_list(self, user):
         siaes = user.siaes.all()
         if not siaes:
             return "Aucune"
@@ -177,7 +184,23 @@ class UserAdmin(UserAdmin):
                 )
             return format_html(html)
 
-    siae_admin_list.short_description = "Gestionnaire de"
+    user_siae_admin_list.short_description = "Gestionnaire de"
+
+    def user_favorite_list(self, user):
+        favorite_lists = user.favorite_lists.all()
+        if not favorite_lists:
+            return "Aucune"
+        else:
+            html = ""
+            for favorite_list in favorite_lists:
+                html += format_html(
+                    '<a href="{obj_url}">{obj_name}</a></br>',
+                    obj_url=reverse("admin:favorites_favoritelist_change", args=[favorite_list.id]),
+                    obj_name=favorite_list,
+                )
+            return format_html(html)
+
+    user_favorite_list.short_description = "Listes d'achats"
 
     def image_url_display(self, instance):
         if instance.image_url:

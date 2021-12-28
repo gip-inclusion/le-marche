@@ -5,6 +5,7 @@ from lemarche.www.dashboard.views import (
     DashboardHomeView,
     ProfileEditView,
     ProfileFavoriteItemDeleteView,
+    ProfileFavoriteListCreateView,
     ProfileFavoriteListDeleteView,
     ProfileFavoriteListDetailView,
     ProfileFavoriteListEditView,
@@ -25,6 +26,7 @@ urlpatterns = [
     path("", DashboardHomeView.as_view(), name="home"),
     path("modifier/", ProfileEditView.as_view(), name="profile_edit"),
     path("listes-dachats/", ProfileFavoriteListView.as_view(), name="profile_favorite_list"),
+    path("listes-dachats/creer/", ProfileFavoriteListCreateView.as_view(), name="profile_favorite_list_create"),
     path("listes-dachats/<str:slug>/", ProfileFavoriteListDetailView.as_view(), name="profile_favorite_list_detail"),
     path(
         "listes-dachats/<slug:slug>/prestataires/<slug:siae_slug>/",
