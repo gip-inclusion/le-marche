@@ -1,66 +1,53 @@
-<div class="modal fade modal-siae" id="login_or_signup_modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="z-index:3000">
+<div class="modal fade modal-siae" id="login_or_signup_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="exampleModalLabel">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="mb-0 mx-auto">Profitez du Marché en totalité</h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                <h3 class="modal-title" id="exampleModalLabel">Profitez du Marché en totalité</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+                        <path fill="none" d="M0 0h24v24H0z"></path><path fill="currentColor" d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
+                    </svg>
                 </button>
             </div>
             <div class="modal-body home-content-body">
-                <p>
-                    Ce ne sera pas long !
-                    Inscrivez-vous et accédez à toutes les fonctionnalités du marché.
+                <p class="mb-4">
+                    Ce ne sera pas long !  Inscrivez-vous et accédez à toutes les fonctionnalités du marché.
                 </p>
-
-                <div class="si-ideas">
-                    <p>
-                        <span>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" fill="currentColor" /></svg>
-                        </span>
-                        <span class="ml-2">
-                            <b>Téléchargez la liste complète des structures figurant sur le marché.</b>
-                        </span>
-                    </p>
-                    <p>
-                        <span>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" fill="currentColor" /></svg>
-                        </span>
-                        <span class="ml-2">
-                            <b>Créez des listes d'achat et sauvegardez vous structures favorites.</b>
-                        </span>
-                    </p>
-                    <p>
-                        <span>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" fill="currentColor" /></svg>
-                        </span>
-                        <span class="ml-2">
-                            <b>Accédez aux informations complètes des structures pour un sourcing qualifié.</b>
-                        </span>
-                    </p>
-                    <p>
-                        <span>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" fill="currentColor" /></svg>
-                        </span>
-                        <span class="ml-2">
-                            <b>Accédez aux coordonnées des structures.</b>
-                        </span>
-                    </p>
+                <ul class="list-unstyled mb-5">
+                    <li class="d-flex mb-2">
+                      <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path fill="#18A47D" d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-.997-6l7.07-7.071-1.414-1.414-5.656 5.657-2.829-2.829-1.414 1.414L11.003 16z"/></svg>
+                      </span>
+                      <span class="font-weight-bold ml-2">Téléchargez la liste complète des structures figurant sur le marché.</span>
+                    </li>
+                    <li class="d-flex mb-2">
+                      <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path fill="#18A47D" d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-.997-6l7.07-7.071-1.414-1.414-5.656 5.657-2.829-2.829-1.414 1.414L11.003 16z"/></svg>
+                      </span>
+                      <span class="font-weight-bold ml-2">Créez des listes d'achat et sauvegardez vous structures favorites.</span>
+                    </li>
+                    <li class="d-flex mb-2">
+                      <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path fill="#18A47D" d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-.997-6l7.07-7.071-1.414-1.414-5.656 5.657-2.829-2.829-1.414 1.414L11.003 16z"/></svg>
+                      </span>
+                      <span class="font-weight-bold ml-2">Accédez aux informations complètes des structures pour un sourcing qualifié.</span>
+                    </li>
+                    <li class="d-flex mb-2">
+                      <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path fill="#18A47D" d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-.997-6l7.07-7.071-1.414-1.414-5.656 5.657-2.829-2.829-1.414 1.414L11.003 16z"/></svg>
+                      </span>
+                      <span class="font-weight-bold ml-2">Accédez aux coordonnées des structures.</span>
+                    </li>
+                </ul>
+                <p class="text-center">
+                  <a href="{% url 'auth:signup' %}?next=next-params-to-replace" id="auth-link" class="btn btn-sm btn-primary">Se connecter</a>
+                </p>
+                <hr class="my-5" data-text="ou" />       
+                <div class="text-center">
+                  <p class="mb-0">Vous n'avez pas de compte ?</p>
+                  <a href="{% url 'auth:login' %}?next=next-params-to-replace" id="auth-link" class="btn btn-sm btn-link">Créer un compte</a>
                 </div>
-
-                <div style="text-align:center">
-                    <a href="{% url 'auth:signup' %}?next=next-params-to-replace" id="auth-link" class="btn btn-primary">
-                        Se connecter
-                    </a>
-                </div>
-
-                <hr />
-
-                <div style="text-align:center">
-                    <p class="mb-1">Vous n'avez pas de compte ?</p>
-                    <a href="{% url 'auth:login' %}?next=next-params-to-replace" id="auth-link" style="font-weight:bold">Créer un compte</a>
-                </div>
-            </div>
+              </div>
         </div>
     </div>
 </div>
