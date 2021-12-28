@@ -9,15 +9,15 @@
                 </button>
             </div>
             <form method="POST" action="{% url 'dashboard:profile_favorite_list_edit' favorite_list.slug %}">
+                {% csrf_token %}
                 <div class="modal-body home-content-body">
-                    {% csrf_token %}
                     <p class="font-weight-bold" id="modalTitle">Modifier le nom de la liste</p>
                     <input type="text" class="form-control form-control-sm" name="name" value="{{ favorite_list.name }}" required />
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-sm btn-outline-primary" type="button" data-dismiss="modal" aria-label="Fermer">Annuler</button>
-                    <button class="btn btn-sm btn-primary" type="submit">Confirmer</button>                
-                </div>                  
+                    <button class="btn btn-sm btn-primary" type="submit">Confirmer</button>
+                </div>
             </form>
         </div>
     </div>

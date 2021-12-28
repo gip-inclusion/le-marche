@@ -9,28 +9,30 @@
                     </svg>
                 </button>
             </div>
+
+            <!-- New list -->
             <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
+                {% csrf_token %}
                 <div class="modal-body home-content-body">
                     <p>Pour ajouter <strong>{% if siae %}{{ siae.name_display }}{% else %}<span id="siae-name-display"></span>{% endif %}</strong></p>
-                    <!-- New list -->
                     <label class="mb-2 d-inline-block font-weight-bold" for="id_new_favorite_list">Créer une {% if user.favorite_lists.count %}nouvelle {% endif %}liste</label>
-                    {% csrf_token %}
                     <div class="form-row">
                         <div class="form-group col mb-0">
                             <input type="text" name="new_favorite_list" id="id_new_favorite_list" class="form-control" placeholder="Entretien des locaux, achat de masque…" required>
                         </div>
-                        <div class="form-group col-auto mb-0">                    
+                        <div class="form-group col-auto mb-0">
                             <button class="btn {% if user.favorite_lists.count %}btn-outline-primary{% else %}btn-primary{% endif %}" type="submit" name="action" value="create">Créer</button>
                         </div>
                     </div>
                 </div>
             </form>
+
+            <!-- Existing list(s) -->
             {% if user.favorite_lists.count %}
             <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
+                {% csrf_token %}
                 <div class="modal-body home-content-body pt-0">
-                    <!-- Existing list(s) -->
                     <hr data-text="ou" />
-                    {% csrf_token %}
                     <div class="form-group">
                         <label>Choisir une liste existante</label>
                         <ul class="list-group">
@@ -47,8 +49,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-sm btn-primary" type="submit" name="action" value="add">Enregistrer</button>                        
-                </div>         
+                    <button class="btn btn-sm btn-primary" type="submit" name="action" value="add">Enregistrer</button>
+                </div>
             </form>
             {% endif %}
         </div>

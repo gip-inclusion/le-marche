@@ -9,16 +9,16 @@
                 </button>
             </div>
             <form method="POST" action="{% url 'dashboard:profile_favorite_item_delete' favorite_list.slug|default:'favorite-list-slug' siae.slug|default:'siae-slug-to-replace' %}">
-                <div class="modal-body">
-                    {% csrf_token %}
+                {% csrf_token %}
+                <div class="modal-body home-content-body">
                     <p class="font-weight-bold" id="modalTitle">
                         Supprimer la structure <strong>{% if siae %}{{ siae.name_display }}{% else %}<span id="siae-name-display"></span>{% endif %}</strong> de votre liste d'achat ?
                     </p>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-sm btn-outline-primary" type="button" data-dismiss="modal" aria-label="Fermer">Annuler</button>
-                    <button class="btn btn-sm btn-primary" type="submit">Confirmer</button>                  
-                </div>                 
+                    <button class="btn btn-sm btn-primary" type="submit">Confirmer</button>
+                </div>
             </form>
         </div>
     </div>
