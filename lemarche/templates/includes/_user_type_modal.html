@@ -3,8 +3,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <strong class="title">
-                    {% if paginator_count %} <!-- Siae search -->
-                    Plus de {{ paginator_count }} prestataires inclusifs répondent à votre recherche.
+                    {% if search_results_count %} <!-- Siae search -->
+                    Plus de {{ search_results_count }} prestataires inclusifs répondent à votre recherche.
                     {% else %}
                     Vous y êtes presque !
                     {% endif %}
@@ -15,7 +15,7 @@
             </div>
             <div class="modal-body home-content-body">
                 <p>
-                    {% if paginator_count %} <!-- Siae search -->
+                    {% if search_results_count %} <!-- Siae search -->
                     Pour accéder aux résultats, dites-nous si vous êtes :
                     {% else %}
                     Pour accéder à cette page, dites-nous si vous êtes :

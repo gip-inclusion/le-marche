@@ -1,0 +1,45 @@
+<div class="modal fade modal-siae" id="favorite_modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="z-index:3000">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="mb-0">Liste d'achat : ajouter <strong>{% if siae %}{{ siae.name_display }}{% else %}<span id="siae-name-display"></span>{% endif %}</strong></h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body home-content-body">
+                {% if user.favorite_lists.count %}
+                <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Choisir une liste existante</label>
+                        <div class="radio radio-success">
+                            {% for favorite_list in user.favorite_lists.all %}
+                            <div class="form-check">
+                                <input type="radio" name="favorite_list" value="{{ favorite_list.id }}" id="{{ favorite_list.id }}" required>
+                                <label class="form-check-label" for="{{ favorite_list.id }}">{{ favorite_list.name }} <small>({{ favorite_list.siaes.count }})</small></label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" type="submit" name="action" value="add">
+                        Enregistrer
+                    </button>
+                </form>
+                <hr />
+                {% endif %}
+                <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="id_new_favorite_list">Créer une nouvelle liste</label>
+                        <input type="text" name="new_favorite_list" id="id_new_favorite_list" class="form-control" placeholder="Nom de la liste d'achat" required>
+                    </div>
+                    <button class="btn btn-primary" type="submit" name="action" value="create">
+                        Créer la liste
+                    </button>
+                </form>
+            </div>
+            <!-- <div class="modal-footer"></div> -->
+        </div>
+    </div>
+</div>

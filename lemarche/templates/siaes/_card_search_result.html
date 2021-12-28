@@ -14,15 +14,12 @@
         </div>
         <div class="col">
             <div class="card-body">
-                <h3 class="mb-3 d-flex justify-content-between align-items-start">
-                    <a href="{% url 'siae:detail' siae.slug %}" class="text-decoration-none stretched-link">
+                <a href="{% url 'siae:detail' siae.slug %}" class="text-decoration-none stretched-link">
+                    <h3 class="mb-3 d-flex justify-content-between align-items-start">
                         {{ siae.name_display }}
                         {% if not siae.user_count %}
                             <small class="text-muted">(bientôt inscrite sur le marché)</small>
                         {% endif %}
-                        <!-- <button class="btn btn-link pt-0 pr-0">
-                            <img src="{% static_theme_images 'ico-star-line.svg' %}" height="24" alt="Mettre en favori" />
-                        </button> -->
                     </h3>
                     <ul class="list-unstyled m-0 lh-sm row no-gutters">
                         <li class="sc-profile-type col-12 col-lg-6 pr-lg-2 d-flex" title="Type(s) de prestation">
@@ -36,6 +33,21 @@
                         </li>
                         {% endif %}
                     </ul>
+                    {% if user.is_authenticated %}
+                        {% if siae.in_user_favorite_list_count %}
+                        <a href="#" id="favorite-modal-btn" class="btn btn-favorite">
+                            <img src="{% static_theme_images 'ico-star-fill.svg' %}" height="24" alt="Dans votre liste d'achat" title="Dans votre liste d'achat" />
+                        </a>
+                        {% else %}
+                        <a href="#" id="favorite-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_modal" data-siae-id="{{ siae.id }}" data-siae-slug="{{ siae.slug }}" data-siae-name-display="{{ siae.name_display }}">
+                            <img src="{% static_theme_images 'ico-star-line.svg' %}" height="24" alt="Ajouter à votre liste d'achat" title="Ajouter à votre liste d'achat" />
+                        </a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'auth:login' %}?message=login-to-favorite&next={% url 'siae:search_results' %}?{{ current_search_query_escaped }}" class="btn btn-favorite">
+                            <img src="{% static_theme_images 'ico-star-line.svg' %}" height="24" alt="Ajouter à votre liste d'achat" title="Ajouter à votre liste d'achat" />
+                        </a>
+                    {% endif %}
                 </a>
             </div>
         </div>

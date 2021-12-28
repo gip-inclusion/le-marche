@@ -3,20 +3,23 @@ import datetime
 from urllib.parse import quote
 
 import xlwt
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.core.serializers import serialize
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
+from lemarche.favorites.models import FavoriteList
 from lemarche.siaes.models import Siae
 from lemarche.utils.export import SIAE_HEADER, generate_siae_row
 from lemarche.utils.tracker import extract_meta_from_request, track
-from lemarche.www.siaes.forms import SiaeSearchForm
+from lemarche.www.siaes.forms import SiaeFavoriteForm, SiaeSearchForm
 
 
 CURRENT_SEARCH_QUERY_COOKIE_NAME = "current_search"
@@ -31,11 +34,17 @@ class SiaeSearchResultsView(FormMixin, ListView):
     paginator_class = Paginator
 
     def get_queryset(self):
-        """Filter results."""
+        """
+        Filter results.
+        - filter and order using the SiaeSearchForm
+        - if the user is authenticated, annotate with favorite info
+        """
         filter_form = SiaeSearchForm(data=self.request.GET)
         perimeter = filter_form.get_perimeter()
         results = filter_form.filter_queryset(perimeter)
         results_ordered = filter_form.order_queryset(results, perimeter)
+        if self.request.user.is_authenticated:
+            results_ordered = results_ordered.annotate_with_user_favorite_list_count(self.request.user)
         return results_ordered
 
     def get_context_data(self, **kwargs):
@@ -163,6 +172,15 @@ class SiaeDetailView(DetailView):
             except:  # noqa
                 raise Http404
 
+    def get_queryset(self):
+        """
+        If the user is authenticated, annotate with favorite info
+        """
+        qs = super().get_queryset()
+        if self.request.user.is_authenticated:
+            qs = qs.annotate_with_user_favorite_list_count(self.request.user)
+        return qs
+
     def get_context_data(self, **kwargs):
         """
         - add the current search query (e.g. for the breadcrumbs)
@@ -170,3 +188,54 @@ class SiaeDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context["current_search_query"] = self.request.session.get(CURRENT_SEARCH_QUERY_COOKIE_NAME, "")
         return context
+
+
+class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    http_method_names = ["post"]
+    template_name = "siaes/_favorite_modal.html"
+    form_class = SiaeFavoriteForm
+    context_object_name = "siae"
+    queryset = Siae.objects.prefetch_related("favorite_lists").all()
+    # success_message = "La structure a été ajoutée à votre liste d'achat."
+    success_url = reverse_lazy("siae:search_results")
+
+    def form_valid(self, form):
+        """
+        We need to:
+        - add the Siae to the corresponding FavoriteLists
+        - remove the Siae of some FavoriteLists if needed
+        - keep track of addition & removal for the success_message
+        """
+        siae = form.save(commit=False)
+        favorite_list = None
+
+        if self.request.POST.get("action") == "add":
+            if self.request.POST.get("favorite_list"):
+                favorite_list = FavoriteList.objects.get(id=self.request.POST.get("favorite_list"))
+
+        # new favorite_list? create it
+        elif self.request.POST.get("action") == "create":
+            if self.request.POST.get("new_favorite_list"):
+                favorite_list = FavoriteList.objects.create(
+                    name=self.request.POST.get("new_favorite_list"),
+                    user=self.request.user,
+                )
+
+        siae.favorite_lists.add(favorite_list)
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            self.get_success_message(form.cleaned_data, siae, favorite_list),
+        )
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        """Redirect to the previous page."""
+        request_referer = self.request.META.get("HTTP_REFERER", "")
+        if request_referer:
+            return request_referer
+        return super().get_success_url()
+
+    def get_success_message(self, cleaned_data, siae, favorite_list):
+        return f"La structure <strong>{siae.name_display}</strong> a été ajoutée à votre liste d'achat <strong>{favorite_list.name}</strong>."  # noqa

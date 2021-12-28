@@ -3,6 +3,7 @@ from django.contrib.gis.db.models.functions import Distance
 from django.db.models import BooleanField, Case, Value, When
 from django.db.models.functions import NullIf
 
+from lemarche.favorites.models import FavoriteList
 from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
@@ -194,3 +195,16 @@ class SiaeSearchForm(forms.Form):
         # final ordering
         qs = qs.order_by(*ORDER_BY_FIELDS)
         return qs
+
+
+class SiaeFavoriteForm(forms.ModelForm):
+    favorite_lists = forms.ModelChoiceField(
+        label="Liste à associer",
+        queryset=FavoriteList.objects.all(),
+        widget=forms.RadioSelect,
+        required=False,
+    )
+
+    class Meta:
+        model = Siae
+        fields = ["favorite_lists"]
