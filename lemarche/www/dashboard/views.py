@@ -4,6 +4,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
+from django.utils.safestring import mark_safe
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView, FormMixin
 
@@ -65,7 +66,7 @@ class ProfileFavoriteListView(LoginRequiredMixin, ListView):
 
 class ProfileFavoriteListCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     form_class = ProfileFavoriteEditForm
-    success_message = "Votre liste d'achat a été crée avec succès."
+    # success_message = "Votre liste d'achat a été crée avec succès."
     success_url = reverse_lazy("dashboard:profile_favorite_list")
 
     def form_valid(self, form):
@@ -81,6 +82,9 @@ class ProfileFavoriteListCreateView(LoginRequiredMixin, SuccessMessageMixin, Cre
         )
         # return HttpResponseRedirect(self.get_success_url())  # doesn't work...
         return HttpResponseRedirect(reverse_lazy("dashboard:profile_favorite_list"))
+
+    def get_success_message(self, cleaned_data):
+        return mark_safe(f"Votre liste d'achat <strong>{self.cleaned_data['name']}</strong> a été crée avec succès.")
 
 
 class ProfileFavoriteListDetailView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin, DetailView):
@@ -107,8 +111,11 @@ class ProfileFavoriteListDeleteView(
 ):
     template_name = "siaes/_favorite_list_delete_modal.html"
     model = FavoriteList
-    success_message = "Votre liste d'achat a été supprimée avec succès."
+    # success_message = "Votre liste d'achat a été supprimée avec succès."
     success_url = reverse_lazy("dashboard:profile_favorite_list")
+
+    def get_success_message(self, cleaned_data):
+        return mark_safe(f"Votre liste d'achat <strong>{self.object.name}</strong> a été supprimée avec succès.")
 
 
 class ProfileFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
@@ -140,7 +147,9 @@ class ProfileFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, Del
         return super().get_success_url()
 
     def get_success_message(self, cleaned_data):
-        return f"<strong>{self.object.siae.name_display}</strong> a été supprimée de votre liste d'achat avec succès."  # noqa
+        return mark_safe(
+            f"<strong>{self.object.siae.name_display}</strong> a été supprimée de votre liste d'achat avec succès."
+        )
 
 
 class SiaeSearchBySiretView(LoginRequiredMixin, SiaeUserRequiredMixin, FormMixin, ListView):
