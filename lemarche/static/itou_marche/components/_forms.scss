@@ -15,12 +15,3 @@
     font-weight: 900;
     font-size: 1rem;
 }
-
-// strange behavior where input radio where gone in Chrome
-input[type="radio"] {
-    display: inline-block;
-    position: relative;
-    opacity: 1.0;
-    margin-top: 0.3rem;
-    margin-left: -1.25rem;
-}
