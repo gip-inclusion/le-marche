@@ -23,6 +23,8 @@ class LoginView(auth_views.LoginView):
         # Users need to be logged in to download the search results in CSV
         if message == "login-to-download":
             messages.add_message(request, messages.INFO, "Vous devez être connecté pour télécharger la liste.")
+        if message == "login-to-favorite":
+            messages.add_message(request, messages.INFO, "Vous devez être connecté pour créer des listes d'achats.")
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
