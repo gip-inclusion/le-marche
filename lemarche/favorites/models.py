@@ -6,6 +6,11 @@ from django.template.defaultfilters import slugify
 from django.utils import timezone
 
 
+class FavoriteListQuerySet(models.QuerySet):
+    def by_user(self, user):
+        return self.filter(user=user)
+
+
 class FavoriteList(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
@@ -23,6 +28,8 @@ class FavoriteList(models.Model):
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(FavoriteListQuerySet)()
 
     class Meta:
         verbose_name = "Liste de favoris"

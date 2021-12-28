@@ -34,12 +34,12 @@
                         {% endif %}
                     </ul>
                     {% if user.is_authenticated %}
-                        {% if siae.in_user_favorite_list_count %}
-                        <a href="#" id="favorite-modal-btn" class="btn btn-favorite">
+                        {% if from_profile or siae.in_user_favorite_list_count %}
+                        <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_remove_modal" data-siae-id="{{ siae.id }}" data-siae-slug="{{ siae.slug }}" data-siae-name-display="{{ siae.name_display }}">
                             <img src="{% static_theme_images 'ico-star-fill.svg' %}" height="24" alt="Dans votre liste d'achat" title="Dans votre liste d'achat" />
                         </a>
                         {% else %}
-                        <a href="#" id="favorite-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_modal" data-siae-id="{{ siae.id }}" data-siae-slug="{{ siae.slug }}" data-siae-name-display="{{ siae.name_display }}">
+                        <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_modal" data-siae-id="{{ siae.id }}" data-siae-slug="{{ siae.slug }}" data-siae-name-display="{{ siae.name_display }}">
                             <img src="{% static_theme_images 'ico-star-line.svg' %}" height="24" alt="Ajouter à votre liste d'achat" title="Ajouter à votre liste d'achat" />
                         </a>
                         {% endif %}

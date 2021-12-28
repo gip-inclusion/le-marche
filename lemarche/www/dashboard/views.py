@@ -2,15 +2,18 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, ListView, UpdateView
+from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
+from lemarche.favorites.models import FavoriteItem, FavoriteList
 from lemarche.siaes.models import Siae
 from lemarche.utils.s3 import S3Upload
 from lemarche.utils.tracker import extract_meta_from_request, track
 from lemarche.www.dashboard.forms import (
     ProfileEditForm,
+    ProfileFavoriteEditForm,
     SiaeClientReferenceFormSet,
     SiaeEditInfoContactForm,
     SiaeEditOfferForm,
@@ -22,7 +25,7 @@ from lemarche.www.dashboard.forms import (
     SiaeSearchAdoptConfirmForm,
     SiaeSearchBySiretForm,
 )
-from lemarche.www.dashboard.mixins import SiaeOwnerRequiredMixin, SiaeUserRequiredMixin
+from lemarche.www.dashboard.mixins import FavoriteListOwnerRequiredMixin, SiaeOwnerRequiredMixin, SiaeUserRequiredMixin
 
 
 class DashboardHomeView(LoginRequiredMixin, DetailView):
@@ -43,10 +46,82 @@ class ProfileEditView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return self.request.user
 
 
+class ProfileFavoriteListView(LoginRequiredMixin, ListView):
+    template_name = "dashboard/profile_favorite_list.html"
+    queryset = FavoriteList.objects.all()
+    context_object_name = "favorite_lists"
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.by_user(user=self.request.user)
+        return qs
+
+
+class ProfileFavoriteListDetailView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin, DetailView):
+    template_name = "dashboard/profile_favorite_list_detail.html"
+    context_object_name = "favorite_list"
+    queryset = FavoriteList.objects.prefetch_related("siaes").all()
+
+
+class ProfileFavoriteListEditView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
+    form_class = ProfileFavoriteEditForm
+    template_name = "siaes/_favorite_list_edit_modal.html"
+    success_message = "Votre liste d'achat a été modifiée avec succès."
+    # success_url = reverse_lazy("dashboard:profile_favorite_list_detail")
+
+    def get_object(self):
+        return get_object_or_404(FavoriteList, slug=self.kwargs.get("slug"))
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard:profile_favorite_list_detail", args=[self.kwargs.get("slug")])
+
+
+class ProfileFavoriteListDeleteView(
+    LoginRequiredMixin, FavoriteListOwnerRequiredMixin, SuccessMessageMixin, DeleteView
+):
+    template_name = "siaes/_favorite_list_delete_modal.html"
+    model = FavoriteList
+    success_message = "Votre liste d'achat a été supprimée avec succès."
+    success_url = reverse_lazy("dashboard:profile_favorite_list")
+
+
+class ProfileFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    # FavoriteListOwnerRequiredMixin  # doesn't work because we don't have the FavoriteList slug
+    template_name = "siaes/_favorite_item_remove_modal.html"
+    model = FavoriteItem
+    # success_message = "La structure a été supprimée de votre liste d'achat avec succès."
+    success_url = reverse_lazy("dashboard:profile_favorite_list_detail")
+
+    def get_object(self):
+        """
+        - there should theoretically be only 1 Siae per user's lists (an Siae cannot belong to other list)
+        - in the future it could be possible to add an Siae to multiple user lists
+        """
+        # try:
+        #     favorite_list = FavoriteList.objects.get(slug=self.kwargs.get("slug"))
+        #     siae = Siae.objects.get(slug=self.kwargs.get("siae_slug"))
+        #     return get_object_or_404(FavoriteItem, favorite_list=favorite_list, siae=siae)
+        # except:  # noqa
+        #     raise Http404
+        siae = Siae.objects.get(slug=self.kwargs.get("siae_slug"))
+        return get_object_or_404(FavoriteItem, favorite_list__user=self.request.user, siae=siae)
+
+    def get_success_url(self):
+        """Redirect to the previous page."""
+        request_referer = self.request.META.get("HTTP_REFERER", "")
+        if request_referer:
+            return request_referer
+        return super().get_success_url()
+
+    def get_success_message(self, cleaned_data):
+        return f"<strong>{self.object.siae.name_display}</strong> a été supprimée de votre liste d'achat avec succès."  # noqa
+
+
 class SiaeSearchBySiretView(LoginRequiredMixin, SiaeUserRequiredMixin, FormMixin, ListView):
     form_class = SiaeSearchBySiretForm
     template_name = "dashboard/siae_search_by_siret.html"
     context_object_name = "siaes"
+    # queryset =
 
     def get_queryset(self):
         """Filter results."""

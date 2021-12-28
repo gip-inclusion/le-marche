@@ -57,48 +57,6 @@
 		flex-direction:row;
 	}
 
-	.siae-card {
-		margin-bottom: 1.5rem;
-		border-bottom-width: 5px !important;
-
-		.sc-img {
-			width: 90px;
-		}
-
-		.sc-profile-type,
-		.sc-profile-sectors {
-			span.ml-1 {
-				word-break: break-word;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				display: -webkit-box;
-				max-height: 60px;
-				-webkit-line-clamp: 3;
-				-webkit-box-orient: vertical;
-			}
-		}
-
-		.card-footer {
-			background-color: $gray-400 !important;
-			margin: 0;
-			padding-left: 106px;
-
-			.sc-profile-town,
-			.sc-profile-town-work,
-			.sc-profile-kind {
-				span.ml-1 {
-					word-break: break-word;
-					overflow: hidden;
-					text-overflow: ellipsis;
-					display: -webkit-box;
-					max-height: 20px;
-					-webkit-line-clamp: 1;
-					-webkit-box-orient: vertical;
-				}
-			}			
-		}
-	}
-
 	.sc-fav {
 		position: absolute;
 		display: block;
@@ -120,17 +78,6 @@
 	.sc-fav.is-active {
 		background-image: url('/static/images/sc-fav-star-active.svg');
 	}
-
-	@media screen and (max-width:576px) {
-		.siae-card .sc-img {
-			display: none !important;
-		}
-
-		.siae-card .card-footer {
-			padding-left: 16px;
-		}		
-	}
-
 
 	@media screen and (min-width:768px) {
 		.siae-info-sticky {
@@ -428,4 +375,57 @@
 	// padding: 0;
 	top: 0;
 	right: 0;
+}
+
+
+.siae-card {
+	margin-bottom: 1.5rem;
+	border-bottom-width: 5px !important;
+
+	.sc-img {
+		width: 90px;
+	}
+
+	.sc-profile-type,
+	.sc-profile-sectors {
+		span.ml-1 {
+			word-break: break-word;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			display: -webkit-box;
+			max-height: 60px;
+			-webkit-line-clamp: 3;
+			-webkit-box-orient: vertical;
+		}
+	}
+
+	.card-footer {
+		background-color: $gray-400 !important;
+		margin: 0;
+		padding-left: 106px;
+
+		.sc-profile-town,
+		.sc-profile-town-work,
+		.sc-profile-kind {
+			span.ml-1 {
+				word-break: break-word;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				display: -webkit-box;
+				max-height: 20px;
+				-webkit-line-clamp: 1;
+				-webkit-box-orient: vertical;
+			}
+		}			
+	}
+}
+
+@media screen and (max-width:576px) {
+	.siae-card .sc-img {
+		display: none !important;
+	}
+
+	.siae-card .card-footer {
+		padding-left: 16px;
+	}		
 }

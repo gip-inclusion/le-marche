@@ -12,7 +12,7 @@ class SiaeUserRequiredMixin(UserPassesTestMixin):
 
     def test_func(self):
         user = self.request.user
-        return user.is_authenticated and user.kind in [User.KIND_SIAE, User.KIND_ADMIN]
+        return user.is_authenticated and (user.kind in [User.KIND_SIAE, User.KIND_ADMIN])
 
     def handle_no_permission(self):
         return HttpResponseRedirect(reverse_lazy("dashboard:home"))
@@ -26,7 +26,21 @@ class SiaeOwnerRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         user = self.request.user
         siae_slug = self.kwargs.get("slug")
-        return user.is_authenticated and siae_slug in user.siaes.values_list("slug", flat=True)
+        return user.is_authenticated and (siae_slug in user.siaes.values_list("slug", flat=True))
+
+    def handle_no_permission(self):
+        return HttpResponseRedirect(reverse_lazy("dashboard:home"))
+
+
+class FavoriteListOwnerRequiredMixin(UserPassesTestMixin):
+    """
+    Restrict access to the "view FavoriteList" page to the FavoriteList's user
+    """
+
+    def test_func(self):
+        user = self.request.user
+        favorite_list_slug = self.kwargs.get("slug")
+        return user.is_authenticated and (favorite_list_slug in user.favorite_lists.values_list("slug", flat=True))
 
     def handle_no_permission(self):
         return HttpResponseRedirect(reverse_lazy("dashboard:home"))

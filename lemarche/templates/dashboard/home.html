@@ -28,6 +28,8 @@
                 <h2 id="profil" class="mb-3 mb-lg-5">
                     <strong>Mon profil</strong>
                 </h2>
+
+                <!-- Profile -->
                 <div class="s-cards-grid-01__row row mb-3 mb-md-5">
                     <div class="s-cards-grid-01__col col">
                         <div class="card c-card c-card--marche h-100 w-100">
@@ -66,9 +68,25 @@
                     </div>
                 </div>
 
+                <hr class="mb-3 mb-lg-5">
+                <div id="favoris" class="row justify-content-end mb-3 mb-lg-5">
+                    <div class="col-12 col-lg">
+                        <h2 id="structures" class="mb-0">
+                            <strong>Mes listes d'achats</strong>
+                        </h2>
+                    </div>
+                    <div class="col-12 col-md-auto">
+                        <a href="{% url 'dashboard:profile_favorite_list' %}" class="btn btn-outline-primary btn-block btn-ico">
+                            <span>Voir</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M1.181 12C2.121 6.88 6.608 3 12 3c5.392 0 9.878 3.88 10.819 9-.94 5.12-5.427 9-10.819 9-5.392 0-9.878-3.88-10.819-9zM12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0-2a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Mes structures -->
                 {% if user.kind == user.KIND_SIAE or user.kind == user.KIND_ADMIN %}
                     <hr class="mb-3 mb-lg-5">
-                    <div class="row justify-content-end mb-3 mb-lg-5">
+                    <div id="structures" class="row justify-content-end mb-3 mb-lg-5">
                         <div class="col-12 col-lg">
                             <h2 id="structures" class="mb-0">
                                 <strong>{% if user.siaes.count > 1 %}Mes structures{% else %}Ma structure{% endif %}</strong>
@@ -134,7 +152,7 @@
 
                 {% if user.api_key %}
                     <hr class="mb-3 mb-lg-5">
-                    <div class="row justify-content-end mb-3 mb-lg-5">
+                    <div id="api" class="row justify-content-end mb-3 mb-lg-5">
                         <div class="col-12 col-lg">
                             <h2 id="api" class="mb-0">
                                 <strong>Accès API</strong>
