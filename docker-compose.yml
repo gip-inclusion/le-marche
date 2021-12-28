@@ -12,11 +12,6 @@ services:
     ports:
       - "6543:5432"
 
-  rabbitmq:
-    image: "rabbitmq"
-    hostname: rabbitmq
-    ports:
-      - "5672:5672"
   bitoubi:
     container_name: bitoubi_django
     restart: always

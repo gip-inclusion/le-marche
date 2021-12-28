@@ -168,12 +168,30 @@ poetry run python manage.py test
 poetry run python manage.py test -- lemarche.api.siaes.tests.SiaeListApiTest
 ```
 
-## Celery
+## Taches asynchrones
 ### Setup
-#### RabbitMQ
-Gestionnaire de taches :
+#### Huey storage mode
+Mode direct (sans task queue) :
+```
+export CONNECTION_MODE_TASKS="direct"
+```
 
-`docker compose up rabbitmq`
+Mode redis :
+```
+export CONNECTION_MODE_TASKS="redis"
+```
+Mode sqlite :
+```
+export CONNECTION_MODE_TASKS="sqlite"
+```
 
+Mode redis :
+```
+export CONNECTION_MODE_TASKS="redis"
+```
 #### Lancer en local
-`celery -A config worker -l INFO`
+1/ Lancer un serveur local
+2/ Dans un autre shell lancer la commande
+```
+/manage.py run_huey
+```
