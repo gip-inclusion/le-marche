@@ -84,7 +84,7 @@ class ProfileFavoriteListCreateView(LoginRequiredMixin, SuccessMessageMixin, Cre
         return HttpResponseRedirect(reverse_lazy("dashboard:profile_favorite_list"))
 
     def get_success_message(self, cleaned_data):
-        return mark_safe(f"Votre liste d'achat <strong>{self.cleaned_data['name']}</strong> a été crée avec succès.")
+        return mark_safe(f"Votre liste d'achat <strong>{cleaned_data['name']}</strong> a été crée avec succès.")
 
 
 class ProfileFavoriteListDetailView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin, DetailView):
