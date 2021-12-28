@@ -30,6 +30,10 @@ class ProfileFavoriteEditForm(forms.ModelForm):
         model = FavoriteList
         fields = ["name"]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["name"].widget.attrs.update({"placeholder": "Entretien des locaux, achat de masque…"})
+
 
 class SiaeSearchBySiretForm(forms.Form):
     siret = forms.CharField(

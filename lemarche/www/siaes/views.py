@@ -11,6 +11,7 @@ from django.core.serializers import serialize
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.utils.safestring import mark_safe
 from django.views import View
 from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
@@ -238,4 +239,7 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return super().get_success_url()
 
     def get_success_message(self, cleaned_data, siae, favorite_list):
-        return f"La structure <strong>{siae.name_display}</strong> a été ajoutée à votre liste d'achat <strong>{favorite_list.name}</strong>."  # noqa
+        return mark_safe(
+            f"<strong>{siae.name_display}</strong> a été ajoutée à "
+            f"votre liste d'achat <strong>{favorite_list.name}</strong>."
+        )

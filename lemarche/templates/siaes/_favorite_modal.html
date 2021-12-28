@@ -1,44 +1,58 @@
-<div class="modal fade modal-siae" id="favorite_modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="z-index:3000">
+<div class="modal fade modal-siae" id="favorite_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="modalTitle">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="mb-0">Liste d'achat : ajouter <strong>{% if siae %}{{ siae.name_display }}{% else %}<span id="siae-name-display"></span>{% endif %}</strong></h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                <h3 class="modal-title" id="modalTitle">Liste d'achat favoris</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+                        <path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/>
+                    </svg>
                 </button>
             </div>
-            <div class="modal-body home-content-body">
-                {% if user.favorite_lists.count %}
-                <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label>Choisir une liste existante</label>
-                        <div class="radio radio-success">
-                            {% for favorite_list in user.favorite_lists.all %}
-                            <div class="form-check">
-                                <input type="radio" name="favorite_list" value="{{ favorite_list.id }}" id="{{ favorite_list.id }}" required>
-                                <label class="form-check-label" for="{{ favorite_list.id }}">{{ favorite_list.name }} <small>({{ favorite_list.siaes.count }})</small></label>
-                            </div>
-                            {% endfor %}
+
+            <!-- New list -->
+            <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
+                {% csrf_token %}
+                <div class="modal-body home-content-body">
+                    <p>Pour ajouter <strong>{% if siae %}{{ siae.name_display }}{% else %}<span id="siae-name-display"></span>{% endif %}</strong></p>
+                    <label class="mb-2 d-inline-block font-weight-bold" for="id_new_favorite_list">Créer une {% if user.favorite_lists.count %}nouvelle {% endif %}liste</label>
+                    <div class="form-row">
+                        <div class="form-group col mb-0">
+                            <input type="text" name="new_favorite_list" id="id_new_favorite_list" class="form-control" placeholder="Entretien des locaux, achat de masque…" required>
+                        </div>
+                        <div class="form-group col-auto mb-0">
+                            <button class="btn {% if user.favorite_lists.count %}btn-outline-primary{% else %}btn-primary{% endif %}" type="submit" name="action" value="create">Créer</button>
                         </div>
                     </div>
-                    <button class="btn btn-primary" type="submit" name="action" value="add">
-                        Enregistrer
-                    </button>
-                </form>
-                <hr />
-                {% endif %}
-                <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
-                    {% csrf_token %}
+                </div>
+            </form>
+
+            <!-- Existing list(s) -->
+            {% if user.favorite_lists.count %}
+            <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
+                {% csrf_token %}
+                <div class="modal-body home-content-body pt-0">
+                    <hr data-text="ou" />
                     <div class="form-group">
-                        <label for="id_new_favorite_list">Créer une nouvelle liste</label>
-                        <input type="text" name="new_favorite_list" id="id_new_favorite_list" class="form-control" placeholder="Nom de la liste d'achat" required>
+                        <label>Choisir une liste existante</label>
+                        <ul class="list-group">
+                        {% for favorite_list in user.favorite_lists.all %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div class="form-check">
+                                    <input type="radio" name="favorite_list" value="{{ favorite_list.id }}" id="{{ favorite_list.id }}" required>
+                                    <label class="form-check-label white-space-nowrap" for="{{ favorite_list.id }}">{{ favorite_list.name }}</label>
+                                </div>
+                                <span class="fs-xs badge badge-marche-light badge-pill">{{ favorite_list.siaes.count }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
                     </div>
-                    <button class="btn btn-primary" type="submit" name="action" value="create">
-                        Créer la liste
-                    </button>
-                </form>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-sm btn-primary" type="submit" name="action" value="add">Enregistrer</button>
+                </div>
+            </form>
+            {% endif %}
         </div>
     </div>
 </div>

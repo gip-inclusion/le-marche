@@ -1,6 +1,7 @@
 {% extends "layouts/base.html" %}
+{% load bootstrap4 %}
 
-{% block title %}{{ favorite_list.name }} - Liste d'achat{{ block.super }}{% endblock %}
+{% block title %}Liste d'achat favoris {{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
 <section>
@@ -11,7 +12,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Mes listes d'achats</li>
+                        <li class="breadcrumb-item active" aria-current="page">Liste d'achat favoris</li>
                     </ol>
                 </nav>
             </div>
@@ -26,44 +27,48 @@
         <div class="row">
             <div class="col-12 col-lg-8">
                 <h2 class="mb-3 mb-lg-5">
-                    <strong>Mes listes d'achats</strong>
+                    <strong>Liste d'achat favoris</strong>
                 </h2>
             </div>
         </div>
 
-        {% if favorite_lists.count %}
-        <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2">
-            {% for favorite_list in favorite_lists.all %}
-            <div class="s-cards-grid-01__col col d-sm-flex">
-                <div class="card c-card c-card--mini mb-3 w-100">
-                    <div class="card-body">
-                        <a href="{% url 'dashboard:profile_favorite_list_detail' favorite_list.slug %}" class="text-decoration-none">
-                            <h4>{{ favorite_list.name }}</h4>
-                            <p title="" class="mb-2">
-                                <strong>{{ favorite_list.siaes.count }}</strong> structure{% if favorite_list.siaes.count > 1 %}s{% endif %}
-                            </p>
-                        </a>
-                    </div>
-                    </a>
-                    <div class="card-footer">
-                        <div class="row justify-content-end">
-                            <div class="col-6 col-md-auto pl-2">
-                                <a href="{% url 'dashboard:profile_favorite_list_detail' favorite_list.slug %}" class="btn btn-outline-primary btn-sm btn-block btn-ico">
-                                    <span>Voir</span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M1.181 12C2.121 6.88 6.608 3 12 3c5.392 0 9.878 3.88 10.819 9-.94 5.12-5.427 9-10.819 9-5.392 0-9.878-3.88-10.819-9zM12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0-2a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
-                                </a>
-                            </div>
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                <!-- New list -->
+                <h3>Nouvelle liste</h3>
+                <label class="mb-2 d-inline-block font-weight-bold" for="id_name">Créer une {% if favorite_lists.count %}nouvelle {% endif %}liste</label>
+                <form method="POST" action="{% url 'dashboard:profile_favorite_list_create' %}">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        {% bootstrap_form_errors form type="all" %}
+                        <div class="form-group col">
+                            {% bootstrap_field form.name show_label=False  %}
+                        </div>
+                        <div class="form-group col-auto">
+                            <button class="btn btn-primary" type="submit" name="action" value="create">Créer</button>
                         </div>
                     </div>
-                </div>
+                </form>
+
+                <!-- Existing list(s) -->
+                {% if favorite_lists.count %}
+                    <h3>{{ favorite_lists.count }} liste{% if favorite_lists.count > 1 %}s{% endif %} existante{% if favorite_lists.count > 1 %}s{% endif %}</h3>
+                    <ul class="list-group">
+                    {% for favorite_list in favorite_lists.all %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{{ favorite_list.name }} <span class="ml-2 fs-xs badge badge-marche-light badge-pill">{{ favorite_list.siaes.count }}</span></span>
+                            <a href="{% url 'dashboard:profile_favorite_list_detail' favorite_list.slug %}" class="text-decoration-none" title="Voir la liste">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 3c5.392 0 9.878 3.88 10.819 9-.94 5.12-5.427 9-10.819 9-5.392 0-9.878-3.88-10.819-9C2.121 6.88 6.608 3 12 3zm0 16a9.005 9.005 0 0 0 8.777-7 9.005 9.005 0 0 0-17.554 0A9.005 9.005 0 0 0 12 19zm0-2.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9zm0-2a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>
+                            </a>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-danger font-weight-bold">Vous n'avez pas encore créé de listes !</p>
+                {% endif %}                
             </div>
-            {% endfor %}
         </div>
-        {% else %}
-        <div class="alert alert-info" role="alert">
-            Vous n'avez pas encore créé de listes !
-        </div>
-        {% endif %}
+
     </div>
 </section>
 {% endblock %}

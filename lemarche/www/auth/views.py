@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, views as auth_views
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.utils.safestring import mark_safe
 from django.views.generic import CreateView
 
 from lemarche.users.models import User
@@ -79,7 +80,10 @@ class SignupView(SuccessMessageMixin, CreateView):
         """Show detailed welcome message to SIAE."""
         success_message = super().get_success_message(cleaned_data)
         if cleaned_data["kind"] == User.KIND_SIAE:
-            success_message += f"<br />Vous pouvez maintenant ajouter votre structure en cliquant sur <a href=\"{reverse_lazy('dashboard:siae_search_by_siret')}\">Ajouter une structure</a>."  # noqa
+            success_message += mark_safe(
+                "<br />Vous pouvez maintenant ajouter votre structure en cliquant sur "
+                f"<a href=\"{reverse_lazy('dashboard:siae_search_by_siret')}\">Ajouter une structure</a>."
+            )
         return success_message
 
 
