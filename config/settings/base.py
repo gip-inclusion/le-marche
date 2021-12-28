@@ -341,6 +341,8 @@ API_ENTREPRISE_TOKEN = env.str("API_ENTREPRISE_TOKEN", "")
 #   if SIAE.is_QPV was update after `today-API_QPV_RELATIVE_DAYS_TO_UPDATE`, we call the API to QPV
 API_QPV_RELATIVE_DAYS_TO_UPDATE = env.int("API_QPV_RELATIVE_DAYS_TO_UPDATE", 60)
 
+API_GOUV_URL = "https://api.gouv.fr/les-api/api-structures-inclusion"
+
 
 # Django REST Framework (DRF)
 # https://www.django-rest-framework.org/
@@ -364,13 +366,13 @@ Une initiative de <a href="https://inclusion.beta.gouv.fr/" target="_blank" rel=
 la Plateforme de l'inclusion</a>
 
 Certaines ressources nécessitent un <strong>token</strong> pour accéder complètement à la donnée.<br />
-Plus de détails pour l'obtenir <a href="https://lemarche.inclusion.beta.gouv.fr/api/">ici</a>.
+Plus de détails pour l'obtenir <a href="https://lemarche.inclusion.beta.gouv.fr/api/#auth">ici</a>.
 """
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "API du marché de l'inclusion",
     "DESCRIPTION": API_DESCRIPTION,
-    "VERSION": "0.13",
+    "VERSION": "1.0",
     "CONTACT": {
         "name": "Une question ? Contactez-nous via notre formulaire",
         "url": "https://lemarche.inclusion.beta.gouv.fr/contact/",
@@ -471,7 +473,7 @@ CKEDITOR_CONFIGS = {
 
 
 # External URLs
-# (if you need these settings in the template, add them to the settings_context_processor)
+# (if you need these settings in the template, add them to settings_context_processor.expose_settings)
 # ------------------------------------------------------------------------------
 
 FACILITATOR_SLIDE = "https://docs.google.com/presentation/d/e/2PACX-1vRd5lfQWHNEiUNw8yQqBfBnkGyaud5g440IsBvZm9XLEuawQNOfG91MwBlP24Z66A/pub?start=false&loop=false&delayms=3000&slide=id.p1"  # noqa

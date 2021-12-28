@@ -26,26 +26,24 @@
         <h1>API du marché de l'inclusion</h1>
         <p class="lead">L'API met à disposition le répertoire qualifié des structures d'insertion par l'activité économique.</p>
 
-        <div class="alert alert-warning" role="alert">
-            Service en cours de co-construction.<br />
-            L'API devrait être finalisée et publiée sur <a href="https://api.gouv.fr/" target="_blank" rel="noopener">api.gouv.fr</a> d'ici à la fin de l'année 2021 !
-        </div>
-
         <div class="row mt-5">
             <div class="col-12">
-                <h2>Documentation</h2>
+                <h2 id="doc">Documentation</h2>
                 <p>
-                    Une documentation est disponible pour explorer et tester les possibilités de l'API. Elle liste aussi les dernières nouveautés.
+                    Une documentation est disponible pour explorer et tester les possibilités de l'API.
                 </p>
                 <p>
-                    <a href="{% url 'api:swagger-ui' %}" target="_blank" class="btn btn-outline-primary">📚 Accéder à la documentation</a>
+                    <a href="{% url 'api:swagger-ui' %}" target="_blank" class="btn btn-primary">📚 Accéder à la documentation</a>
+                </p>
+                <p>
+                    L'API est aussi publiée sur <a href="{{ API_GOUV_URL }}" target="_blank" rel="noopener">api.gouv.fr</a>.
                 </p>
             </div>
         </div>
 
         <div class="row mt-5">
             <div class="col-12">
-                <h2>Authentification</h2>
+                <h2 id="auth">Authentification</h2>
 
                 <p>Certaines données nécessitent un <strong>token</strong> (jeton utilisateur).</p>
                 
@@ -80,6 +78,13 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <tr>
+                                <td>22/12/2021</td>
+                                <td>1.0</td>
+                                <td>
+                                    - Publication de l'API sur <a href="{{ API_GOUV_URL }}" target="_blank" rel="noopener">api.gouv.fr</a>
+                                </td>
+                            </tr>
                             <tr>
                                 <td>09/11/2021</td>
                                 <td>0.13</td>
