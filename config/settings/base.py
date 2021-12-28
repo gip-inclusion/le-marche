@@ -496,7 +496,9 @@ BITOUBI_ENV_COLOR = ENV_COLOR_MAPPING.get(BITOUBI_ENV, "")
 # https://docs.djangoproject.com/en/4.0/ref/models/querysets/#bulk-update
 BATCH_SIZE_BULK_UPDATE = env.int("BATCH_SIZE_BULK_UPDATE", 200)
 
-# Celery Configuration Options
+SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", False)
+
+# Async Configuration Options
 
 # Huey / async
 # Workers are run in prod via `CC_WORKER_COMMAND = django-admin run_huey`.
@@ -512,8 +514,23 @@ REDIS_URL = env.str("REDIS_URL", "localhost")
 REDIS_PORT = env.int("REDIS_PORT", 6379)
 REDIS_PASSWORD = env.str("REDIS_PASSWORD", "")
 
-# will be False on production
-HUEY_IMMEDIATE = env.str("HUEY_IMMEDIATE", False)
+CONNECTION_MODES_HUEY = {
+    # immediate mode
+    "direct": {"immediate": True},
+    "sqlite": {
+        "class_name": "huey.SqliteHuey",
+        "connection": {"cache_mb": 8, "fsync": True},
+    },
+    # redis
+    "redis": {
+        "huey_class": "huey.RedisHuey",
+        "connection": {"db": REDIS_DB, "host": REDIS_URL, "port": REDIS_PORT, "password": REDIS_PASSWORD},
+    },
+}
+
+CONNECTION_MODE_TASKS = env.str("CONNECTION_MODE_TASKS", "sqlite")
+
+CONF_HUEY = CONNECTION_MODES_HUEY.get("CONNECTION_MODE_TASKS", CONNECTION_MODES_HUEY["sqlite"])
 
 # Huey instance
 # If any performance issue, increasing the number of workers *can* be a good idea
@@ -522,10 +539,8 @@ HUEY = {
     "name": "ITOU_MARCHE",
     # Don't store task results (see our Redis Post-Morten in documentation for more information)
     "results": False,
-    "immediate": HUEY_IMMEDIATE,
-    "connection": {"db": REDIS_DB, "host": REDIS_URL, "port": REDIS_PORT, "password": REDIS_PASSWORD},
-    "consumer": {
-        "workers": 2,
-        "worker_type": "thread",
-    },
+    "huey_class": CONF_HUEY.get("class_name"),
+    "immediate": CONF_HUEY.get("immediate", False),
+    "connection": CONF_HUEY.get("connection"),
+    "consumer": {"workers": 2, "worker_type": "thread"},
 }

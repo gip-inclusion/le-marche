@@ -82,7 +82,7 @@ if is_windows:
     GDAL_LIBRARY_PATH = "C:/OSGeo4W/bin/gdal304.dll"
 
 
-HUEY["results"] = True
-# if not REDIS_URL
-# HUEY["immediate"] = True
-HUEY["immediate_use_memory"] = True
+HUEY |= {
+    "results": True,
+    "store_none": True,
+}  # Huey implementation to use.

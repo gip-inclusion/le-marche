@@ -1,5 +1,8 @@
 # API dev files
 core
+*.db
+*.db-shm
+*.db-wal
 *.sqlite3
 *.local
 env.local.sh
