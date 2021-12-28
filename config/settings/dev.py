@@ -80,3 +80,9 @@ if is_windows:
     # Postgis Django needs GDAL
     # https://trac.osgeo.org/osgeo4w/
     GDAL_LIBRARY_PATH = "C:/OSGeo4W/bin/gdal304.dll"
+
+
+HUEY["results"] = True
+# if not REDIS_URL
+# HUEY["immediate"] = True
+HUEY["immediate_use_memory"] = True

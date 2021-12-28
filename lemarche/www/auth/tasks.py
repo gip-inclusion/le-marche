@@ -1,4 +1,4 @@
-from celery import shared_task
+from huey.contrib.djhuey import task
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -7,20 +7,18 @@ from lemarche.utils.emails import whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url
 
 
-# TODO: make async (celery)
 def send_welcome_email(user):
     email_subject_prefix = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_ENV != "prod" else ""
     email_subject = email_subject_prefix + f"Bienvenue {user.first_name} !"
     email_body = render_to_string("auth/signup_welcome_email_body.txt", {})
 
-    task_send_mail.delay(
+    _send_mail_async(
         email_subject=email_subject,
         email_body=email_body,
         recipient_list=whitelist_recipient_list([user.email]),
     )
 
 
-# TODO: make async (celery)
 def send_signup_notification_email(user):
     email_subject_prefix = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_ENV != "prod" else ""
     email_subject = (
@@ -39,15 +37,15 @@ def send_signup_notification_email(user):
         },
     )
 
-    task_send_mail.delay(
+    _send_mail_async(
         email_subject=email_subject,
         email_body=email_body,
         recipient_list=[settings.NOTIFY_EMAIL],
     )
 
 
-@shared_task
-def task_send_mail(
+@task()
+def _send_mail_async(
     email_subject,
     email_body,
     recipient_list,

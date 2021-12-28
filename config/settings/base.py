@@ -101,7 +101,7 @@ THIRD_PARTY_APPS = [
     "corsheaders",  # django-cors-headers
     "ckeditor",  # django-ckeditor
     "fieldsets_with_inlines",  # django-fieldsets-with-inlines
-    "django_celery_results",
+    "huey.contrib.djhuey",  # Async tasks lib
 ]
 
 LOCAL_APPS = [
@@ -497,10 +497,35 @@ BITOUBI_ENV_COLOR = ENV_COLOR_MAPPING.get(BITOUBI_ENV, "")
 BATCH_SIZE_BULK_UPDATE = env.int("BATCH_SIZE_BULK_UPDATE", 200)
 
 # Celery Configuration Options
-CELERY_TIMEZONE = TIME_ZONE
-CELERY_TASK_TRACK_STARTED = True
-CELERY_TASK_TIME_LIMIT = 30 * 60
 
-CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="memory://")
+# Huey / async
+# Workers are run in prod via `CC_WORKER_COMMAND = django-admin run_huey`.
+# ------------------------------------------------------------------------------
 
-CELERY_RESULT_BACKEND = "django-db"
+# Redis server URL:
+# Provided by the Redis addon (itou-redis)
+# Redis database to use with async (must be different for each environement)
+# 1 <= REDIS_DB <= 100 (number of dbs available on CleverCloud)
+REDIS_DB = env.int("REDIS_DB", 1)
+# Complete URL (containing the instance password)
+REDIS_URL = env.str("REDIS_URL", "localhost")
+REDIS_PORT = env.int("REDIS_PORT", 6379)
+REDIS_PASSWORD = env.str("REDIS_PASSWORD", "")
+
+# will be False on production
+HUEY_IMMEDIATE = env.str("HUEY_IMMEDIATE", False)
+
+# Huey instance
+# If any performance issue, increasing the number of workers *can* be a good idea
+# Parameter `immediate` means `synchronous` (async here)
+HUEY = {
+    "name": "ITOU_MARCHE",
+    # Don't store task results (see our Redis Post-Morten in documentation for more information)
+    "results": False,
+    "immediate": HUEY_IMMEDIATE,
+    "connection": {"db": REDIS_DB, "host": REDIS_URL, "port": REDIS_PORT, "password": REDIS_PASSWORD},
+    "consumer": {
+        "workers": 2,
+        "worker_type": "thread",
+    },
+}
