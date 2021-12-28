@@ -84,18 +84,13 @@ class ProfileFavoriteListDeleteView(
     success_message = "Votre liste d'achat a été supprimée avec succès."
     success_url = reverse_lazy("dashboard:profile_favorite_list")
 
-    def delete(self, request, *args, **kwargs):
-        """success_message doesn't work on DeleteView."""
-        messages.success(self.request, self.success_message)
-        return super().delete(request, *args, **kwargs)
-
 
 class ProfileFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
-    # FavoriteListOwnerRequiredMixin
+    # FavoriteListOwnerRequiredMixin  # doesn't work because we don't have the FavoriteList slug
     template_name = "siaes/_favorite_item_remove_modal.html"
     model = FavoriteItem
     # success_message = "La structure a été supprimée de votre liste d'achat avec succès."
-    # success_url = reverse_lazy("dashboard:profile_favorite_list_detail")
+    success_url = reverse_lazy("dashboard:profile_favorite_list_detail")
 
     def get_object(self):
         """
@@ -111,12 +106,6 @@ class ProfileFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, Del
         siae = Siae.objects.get(slug=self.kwargs.get("siae_slug"))
         return get_object_or_404(FavoriteItem, favorite_list__user=self.request.user, siae=siae)
 
-    def delete(self, request, *args, **kwargs):
-        """success_message doesn't work on DeleteView."""
-        favorite_item = self.get_object()
-        messages.success(self.request, self.get_success_message(favorite_item))
-        return super().delete(request, *args, **kwargs)
-
     def get_success_url(self):
         """Redirect to the previous page."""
         request_referer = self.request.META.get("HTTP_REFERER", "")
@@ -124,8 +113,8 @@ class ProfileFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, Del
             return request_referer
         return super().get_success_url()
 
-    def get_success_message(self, favorite_item):
-        return f"La structure <strong>{favorite_item.siae.name_display}</strong> a été supprimée de votre liste d'achat avec succès."  # noqa
+    def get_success_message(self, cleaned_data):
+        return f"<strong>{self.object.siae.name_display}</strong> a été supprimée de votre liste d'achat avec succès."  # noqa
 
 
 class SiaeSearchBySiretView(LoginRequiredMixin, SiaeUserRequiredMixin, FormMixin, ListView):
