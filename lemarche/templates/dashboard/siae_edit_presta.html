@@ -268,20 +268,35 @@
 {% block extra_js %}
 <script type="text/javascript" src="{% static 'vendor/dropzone-5.9.3/dropzone.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/s3_upload.js' %}"></script>
-{{ s3_form_values|json_script:"s3-form-values" }}
-{{ s3_upload_config|json_script:"s3-upload-config" }}
+{{ s3_form_values_client_reference_logo|json_script:"s3-form-values-client-reference-logo" }}
+{{ s3_upload_config_client_reference_logo|json_script:"s3-upload-config-client-reference-logo" }}
+{{ s3_form_values_siae_image|json_script:"s3-form-values-siae-image" }}
+{{ s3_upload_config_siae_image|json_script:"s3-upload-config-siae-image" }}
 <script type="text/javascript">
-// loop on each dropzone
+// init dropzones
 Array.from(document.querySelectorAll(".dropzone")).forEach(function(element) {
-    s3UploadInit({
-        dropzoneSelector: `#${element.id}`,
-        callbackLocationSelector: `#${element.id.replace('logo_form', 'logo_url')}`,
-        s3FormValuesId: "s3-form-values",
-        s3UploadConfigId: "s3-upload-config",
-        // Not really nice
-        sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
-        sentryCsrfToken: "{{ csrf_token }}"
-    });
+    if (element.id.includes("logo_form")) {
+        s3UploadInit({
+            dropzoneSelector: `#${element.id}`,
+            callbackLocationSelector: `#${element.id.replace('logo_form', 'logo_url')}`,
+            s3FormValuesId: "s3-form-values-client-reference-logo",
+            s3UploadConfigId: "s3-upload-config-client-reference-logo",
+            // Not really nice
+            sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
+            sentryCsrfToken: "{{ csrf_token }}"
+        });
+    }
+    if (element.id.includes("image_form")) {
+        s3UploadInit({
+            dropzoneSelector: `#${element.id}`,
+            callbackLocationSelector: `#${element.id.replace('image_form', 'image_url')}`,
+            s3FormValuesId: "s3-form-values-siae-image",
+            s3UploadConfigId: "s3-upload-config-siae-image",
+            // Not really nice
+            sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
+            sentryCsrfToken: "{{ csrf_token }}"
+        });
+    }
 })
 </script>
 <script type="text/javascript">
@@ -308,9 +323,11 @@ offerFormsetAddMoreButton.addEventListener('click', function(e) {
 });
 
 // client reference formset
-const totalClientReferenceFormset = document.getElementById('id_client_references-TOTAL_FORMS');
-const clientReferenceFormsetEmptyForm = document.getElementById('client-reference-formset-empty-form');
-const clientReferenceFormsetAddMoreButton = document.getElementById('client-reference-formset-add-more');
+const clientReferenceIdString = 'id_client_references';
+const clientReferenceFormsetString = 'client-reference-formset';
+const totalClientReferenceFormset = document.getElementById(`${clientReferenceIdString}-TOTAL_FORMS`);
+const clientReferenceFormsetEmptyForm = document.getElementById(`${clientReferenceFormsetString}-empty-form`);
+const clientReferenceFormsetAddMoreButton = document.getElementById(`${clientReferenceFormsetString}-add-more`);
 
 clientReferenceFormsetAddMoreButton.addEventListener('click', function(e) {
     if (e) { e.preventDefault(); }
@@ -323,13 +340,12 @@ clientReferenceFormsetAddMoreButton.addEventListener('click', function(e) {
     copyClientReferenceFormsetEmptyForm.setAttribute('id', '');
     copyClientReferenceFormsetEmptyForm.setAttribute('class', '');
     clientReferenceFormsetEmptyForm.parentNode.insertBefore(copyClientReferenceFormsetEmptyForm, clientReferenceFormsetEmptyForm);
-    console.log(totalClientReferenceFormset.value)
     // add dropzone
     s3UploadInit({
-        dropzoneSelector: `#id_client_references-${totalClientReferenceFormset.value}-logo_form`,
-        callbackLocationSelector: `#id_client_references-${totalClientReferenceFormset.value}-logo_url`,
-        s3FormValuesId: "s3-form-values",
-        s3UploadConfigId: "s3-upload-config",
+        dropzoneSelector: `#${clientReferenceIdString}-${totalClientReferenceFormset.value}-logo_form`,
+        callbackLocationSelector: `#${clientReferenceIdString}-${totalClientReferenceFormset.value}-logo_url`,
+        s3FormValuesId: "s3-form-values-client-reference-logo",
+        s3UploadConfigId: "s3-upload-config-client-reference-logo",
         // Not really nice
         sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
         sentryCsrfToken: "{{ csrf_token }}"
@@ -339,9 +355,11 @@ clientReferenceFormsetAddMoreButton.addEventListener('click', function(e) {
 });
 
 // image formset
-const totalImageFormset = document.getElementById('id_images-TOTAL_FORMS');
-const imageFormsetEmptyForm = document.getElementById('image-formset-empty-form');
-const imageFormsetAddMoreButton = document.getElementById('image-formset-add-more');
+const imageIdString = 'id_images';
+const imageFormsetString = 'image-formset';
+const totalImageFormset = document.getElementById(`${imageIdString}-TOTAL_FORMS`);
+const imageFormsetEmptyForm = document.getElementById(`${imageFormsetString}-empty-form`);
+const imageFormsetAddMoreButton = document.getElementById(`${imageFormsetString}-add-more`);
 
 imageFormsetAddMoreButton.addEventListener('click', function(e) {
     if (e) { e.preventDefault(); }
@@ -354,13 +372,12 @@ imageFormsetAddMoreButton.addEventListener('click', function(e) {
     copyImageFormsetEmptyForm.setAttribute('id', '');
     copyImageFormsetEmptyForm.setAttribute('class', '');
     imageFormsetEmptyForm.parentNode.insertBefore(copyImageFormsetEmptyForm, imageFormsetEmptyForm);
-    console.log(totalImageFormset.value)
     // add dropzone
     s3UploadInit({
-        dropzoneSelector: `#id_images-${totalImageFormset.value}-image_form`,
-        callbackLocationSelector: `#id_images-${totalImageFormset.value}-image_url`,
-        s3FormValuesId: "s3-form-values",
-        s3UploadConfigId: "s3-upload-config",
+        dropzoneSelector: `#${imageIdString}-${totalImageFormset.value}-image_form`,
+        callbackLocationSelector: `#${imageIdString}-${totalImageFormset.value}-image_url`,
+        s3FormValuesId: "s3-form-values-siae-image",
+        s3UploadConfigId: "s3-upload-config-siae-image",
         // Not really nice
         sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
         sentryCsrfToken: "{{ csrf_token }}"
