@@ -1,0 +1,38 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Mes listes d'achats{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Mes listes d'achats</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="pt-4 pb-6">
+    <div class="container">
+        <h2 class="mb-3 mb-lg-5">
+            <strong>Mes listes d'achats</strong>
+        </h2>
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                {% for favorite_list in favorite_lists %}
+                    <p>{{ favorite_list.name }} ({{ favorite_list.siaes.count }})</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

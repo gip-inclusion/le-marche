@@ -198,6 +198,7 @@
 {% block modals %}
     {% include "includes/_user_type_modal.html" with search_results_count=paginator.count %}
     {% include "siaes/_favorite_modal.html" %}
+    {% include "siaes/_favorite_item_remove_modal.html" %}
 {% endblock %}
 
 {% block extra_js %}
@@ -262,7 +263,9 @@ document.addEventListener("DOMContentLoaded", function() {
         // - edit the form action url
         var modal = document.querySelector('#favorite_modal');
         var modalForms = modal.querySelectorAll('form');
-        modal.querySelector('#siae-name-display').textContent = siaeNameDisplay;
+        if (modal.querySelector('#siae-name-display')) {
+            modal.querySelector('#siae-name-display').textContent = siaeNameDisplay;
+        }
         modalForms.forEach(form => {
             var formActionUrl = form.getAttribute('action');
             form.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', siaeSlug));
@@ -270,5 +273,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
+<script type="text/javascript" src="{% static 'js/favorite_item_remove.js' %}"></script>
 {% endif %}
 {% endblock %}
