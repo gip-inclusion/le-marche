@@ -4,11 +4,11 @@
 from django.contrib.gis.db import models as gis_models
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import GinIndex
-from django.db import IntegrityError, models, transaction
+from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 
-from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_WITH_IDENTICAL_DEPARTMENT_NAME
+from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS
 
 
 class Perimeter(models.Model):
@@ -61,26 +61,20 @@ class Perimeter(models.Model):
     def __str__(self):
         return self.name_display
 
-    def set_slug(self, duplicate=False):
+    def set_slug(self):
         if not self.slug:
             if self.kind == self.KIND_CITY:
                 self.slug = slugify(f"{self.name}-{self.department_code}")
             elif self.kind == self.KIND_REGION:
-                self.slug = slugify(self.name)
-                if (self.name in REGIONS_WITH_IDENTICAL_DEPARTMENT_NAME) or duplicate:
-                    self.slug += "-region"
+                # because of REGIONS_WITH_IDENTICAL_DEPARTMENT_NAME
+                self.slug = slugify(f"{self.name}-region")
             else:
                 self.slug = slugify(self.name)
 
     def save(self, *args, **kwargs):
         """Generate the slug field before saving."""
-        try:
-            self.set_slug()
-            with transaction.atomic():
-                super().save(*args, **kwargs)
-        except IntegrityError:
-            self.set_slug(duplicate=True)
-            super().save(*args, **kwargs)
+        self.set_slug()
+        super().save(*args, **kwargs)
 
     @property
     def name_display(self):

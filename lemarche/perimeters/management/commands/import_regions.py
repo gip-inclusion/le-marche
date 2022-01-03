@@ -3,7 +3,6 @@ import logging
 import os
 
 from django.core.management.base import BaseCommand
-from django.template.defaultfilters import slugify
 
 from lemarche.perimeters.models import Perimeter
 from lemarche.siaes.constants import REGIONS
@@ -66,21 +65,15 @@ class Command(BaseCommand):
                 # Important! We need to prefix the regions' insee_code to avoid conflicts with departments
                 insee_code = f"R{insee_code}"
 
-                slug = slugify(name)
-
-                # # Special case: some regions have the same name as a department
-                # # managed in Perimeter.set_slug method
-                # if name in REGIONS_WITH_IDENTICAL_DEPARTMENT_NAME:
-                #     slug = f"{slug}-region"
+                # Note: some regions have the same name as a department
+                # managed in Perimeter.set_slug method
 
                 self.logger.debug("-" * 80)
                 self.logger.debug(name)
-                self.logger.debug(slug)
                 self.logger.debug(insee_code)
 
                 if not dry_run:
                     Perimeter.objects.update_or_create(
-                        slug=slug,
                         kind=kind,
                         defaults={
                             "name": name,
@@ -90,15 +83,12 @@ class Command(BaseCommand):
 
         # Also add 'Collectivités d'outre-mer'
         # https://fr.wikipedia.org/wiki/Collectivit%C3%A9_d%27outre-mer
+        name = "Collectivités d'outre-mer"
+        kind = Perimeter.KIND_REGION
+        insee_code = "R97"
+
         if not dry_run:
-            name = "Collectivités d'outre-mer"
-            kind = Perimeter.KIND_REGION
-            insee_code = "R97"
-
-            slug = slugify(name)
-
             Perimeter.objects.update_or_create(
-                slug=slug,
                 kind=kind,
                 defaults={
                     "name": name,
