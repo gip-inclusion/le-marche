@@ -4,23 +4,42 @@ Ressources :
 - [Semantic Versioning](http://semver.org/)
 - [CHANGELOG recommendations](http://keepachangelog.com/).
 
-## [1.4] - 2021-12-17
+## [1.4] - 2021-12-31
 
 ### Ajouté
 
+- Pages
+    - Nouvelle page : valoriser vos achats
 - Contact
-    - Demander le type d'utilisateur dans le formulaire
     - Envoi un e-mail de confirmation aux utilisateurs de type "SIAE" (avec CTA)
+- Recherche / Fiche
+    - Pouvoir mettre des structures en favoris (listes d'achat)
+- Tech
+    - API QPV pour enrichir les fiches
+    - CRON pour automatiser certaines tâches : synchro avec le C1, API Entreprise & API QPV
 
 ### Modifié
 
 - Pages
     - Améliore le scroll vers une section donnée (évite que le header cache le haut de la section)
-    - Réparle le meta title de la page Statistique
+    - Répare le meta title de la page Statistique
+    - Modale : ajout d'une option "autre"
+    - Modale : s'affiche sur 2 nouvelles pages : partenaires & valoriser vos achats
+    - Ajout de logos partenaires
+- Recherche / Fiche
+    - Légère amélioration sur l'ordre retourné par le moteur de recherche
+    - Afficher un CTA sur chaque fiche pour pousser les utilisateurs Siae anonymes à se rattacher à leur fiche
 - Contact
+    - Ajoute un champ "type d'utilisateur" dans le formulaire
     - Ajoute du texte pour rediriger les demandes "Emplois" vers l'outil d'assistance
+- API
+    - publication sur api.gouv.fr
+    - passage à la v1
 - Tech
     - Mise à jour de Django à la version 3.2.10
+    - Mise à jour de Django à la version 4
+    - Configuration CORS
+    - Script de déploiement
 
 ### Supprimé
 
