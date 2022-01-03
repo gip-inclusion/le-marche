@@ -6,7 +6,6 @@ import os
 
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.management.base import BaseCommand
-from django.template.defaultfilters import slugify
 
 from lemarche.perimeters.models import Perimeter
 from lemarche.siaes.constants import (
@@ -231,11 +230,8 @@ class Command(BaseCommand):
                     self.stderr.write(f"No coordinates for {name}. Skipping…")
                     # continue
 
-                slug = slugify(f"{name}-{department_code}")
-
                 self.logger.debug("-" * 80)
                 self.logger.debug(name)
-                self.logger.debug(slug)
                 self.logger.debug(post_codes)
                 self.logger.debug(insee_code)
                 self.logger.debug(department_code)
@@ -243,7 +239,6 @@ class Command(BaseCommand):
 
                 if not dry_run:
                     Perimeter.objects.update_or_create(
-                        slug=slug,
                         kind=kind,
                         defaults={
                             "name": name,
