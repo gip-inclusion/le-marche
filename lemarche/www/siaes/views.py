@@ -2,7 +2,6 @@ import csv
 import datetime
 from urllib.parse import quote
 
-import xlwt
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -18,7 +17,7 @@ from django.views.generic.edit import FormMixin
 
 from lemarche.favorites.models import FavoriteList
 from lemarche.siaes.models import Siae
-from lemarche.utils.export import SIAE_HEADER, generate_siae_row
+from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.tracker import extract_meta_from_request, track
 from lemarche.www.siaes.forms import SiaeFavoriteForm, SiaeSearchForm
 
@@ -96,51 +95,21 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         """Build and return a CSV or XLS."""
         siae_list = self.get_queryset()
-
         format = self.request.GET.get("format", "xls")
+        filename = f"liste_structures_{datetime.date.today()}"
 
         if format == "csv":
-            filename = f"liste_structures_{datetime.date.today()}.csv"
             response = HttpResponse(content_type="text/csv", charset="utf-8")
-            response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+            response["Content-Disposition"] = 'attachment; filename="{}"'.format(f"{filename}.csv")
 
             writer = csv.writer(response)
-
-            # header
-            writer.writerow(SIAE_HEADER)
-
-            # rows
-            for siae in siae_list:
-                siae_row = generate_siae_row(siae)
-                writer.writerow(siae_row)
+            export_siae_to_csv(writer, siae_list)
 
         else:  # "xls"
-            filename = f"liste_structures_{datetime.date.today()}.xls"
             response = HttpResponse(content_type="application/ms-excel")
-            response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+            response["Content-Disposition"] = 'attachment; filename="{}"'.format(f"{filename}.xls")
 
-            wb = xlwt.Workbook(encoding="utf-8")
-            ws = wb.add_sheet("Structures")
-
-            row_number = 0
-
-            # header
-            font_style = xlwt.XFStyle()
-            font_style.font.bold = True
-            for (index, header_item) in enumerate(SIAE_HEADER):
-                ws.write(row_number, index, header_item, font_style)
-                # set column width
-                # ws.col(col_num).width = HEADER[col_num][1]
-
-            # rows
-            font_style = xlwt.XFStyle()
-            font_style.alignment.wrap = 1
-            for siae in siae_list:
-                row_number += 1
-                siae_row = generate_siae_row(siae)
-                for (index, row_item) in enumerate(siae_row):
-                    ws.write(row_number, index, row_item, font_style)
-
+            wb = export_siae_to_excel(siae_list)
             wb.save(response)
 
         # Track download event
