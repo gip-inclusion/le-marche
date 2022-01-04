@@ -70,7 +70,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     search_fields = ["id", "name", "slug", "siret"]
 
     autocomplete_fields = ["sectors", "networks"]
-    # inlines = [SiaeUserInline]
+    prepopulated_fields = {"slug": ("name",)}
     readonly_fields = [field for field in Siae.READONLY_FIELDS if field not in ("coords")] + [
         "sector_count",
         "network_count",
@@ -123,8 +123,8 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                 )
             },
         ),
-        ("Quartiers de la politique de la ville (QPV)", {"fields": Siae.READONLY_FIELDS_FROM_QPV}),
         ("Données API Entreprise", {"fields": Siae.READONLY_FIELDS_FROM_API_ENTREPRISE}),
+        ("Quartiers de la politique de la ville (QPV)", {"fields": Siae.READONLY_FIELDS_FROM_QPV}),
         (
             "Détails",
             {
@@ -248,7 +248,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
 class SiaeOfferAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "source", "created_at"]
     list_filter = ["source"]
-    search_fields = ["id", "name", "siae__id"]
+    search_fields = ["id", "name", "siae__id", "siae__name"]
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["source", "created_at", "updated_at"]
@@ -264,7 +264,7 @@ class SiaeOfferAdmin(admin.ModelAdmin):
 @admin.register(SiaeLabel)
 class SiaeLabelAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
-    search_fields = ["id", "name", "siae__id"]
+    search_fields = ["id", "name", "siae__id", "siae__name"]
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["created_at", "updated_at"]
@@ -280,7 +280,7 @@ class SiaeLabelAdmin(admin.ModelAdmin):
 @admin.register(SiaeClientReference)
 class SiaeClientReferenceAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
-    search_fields = ["id", "name", "siae__id"]
+    search_fields = ["id", "name", "siae__id", "siae__name"]
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["image_name", "logo_url", "logo_url_display", "created_at", "updated_at"]
@@ -307,7 +307,7 @@ class SiaeClientReferenceAdmin(admin.ModelAdmin):
 @admin.register(SiaeImage)
 class SiaeImageAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
-    search_fields = ["id", "name", "siae__id"]
+    search_fields = ["id", "name", "siae__id", "siae__name"]
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["image_name", "image_url", "image_url_display", "created_at", "updated_at"]
