@@ -1,5 +1,5 @@
 import csv
-import datetime
+from datetime import date
 from urllib.parse import quote
 
 from django.contrib import messages
@@ -96,7 +96,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         """Build and return a CSV or XLS."""
         siae_list = self.get_queryset()
         format = self.request.GET.get("format", "xls")
-        filename = f"liste_structures_{datetime.date.today()}"
+        filename = f"liste_structures_{date.today()}"
 
         if format == "csv":
             response = HttpResponse(content_type="text/csv", charset="utf-8")
