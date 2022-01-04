@@ -195,3 +195,10 @@ export CONNECTION_MODE_TASKS="redis"
 ```
 /manage.py run_huey
 ```
+
+#### Lancer sur CleverCloud
+Ajouter la variable d'environnement suivante sur la config clever cloud :
+
+```
+CC_WORKER_COMMAND=django-admin run_huey
+```
