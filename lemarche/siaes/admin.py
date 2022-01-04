@@ -183,9 +183,8 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     #     return qs
 
     def nb_users(self, siae):
-        # url = reverse("admin:users_user_changelist") + f"?siae__id__exact={siae.id}"
-        # return format_html(f'<a href="{url}">{siae.user_count}</a>')
-        return siae.user_count
+        url = reverse("admin:users_user_changelist") + f"?siaes__in={siae.id}"
+        return format_html(f'<a href="{url}">{siae.user_count}</a>')
 
     nb_users.short_description = "Nombre d'utilisateurs"
     nb_users.admin_order_field = "user_count"

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 
@@ -66,13 +67,14 @@ class UserAdmin(UserAdmin):
     form = UserChangeForm
     model = User
 
-    list_display = ["id", "first_name", "last_name", "kind", "last_login", "created_at"]
+    list_display = ["id", "first_name", "last_name", "kind", "nb_siaes", "last_login", "created_at"]
     list_filter = ["kind", HasSiaeFilter, HasFavoriteListFilter, HasApiKeyFilter, "is_staff"]
     search_fields = ["id", "email", "first_name", "last_name"]
     ordering = ["-created_at"]
 
     # autocomplete_fields = ["siaes"]
     readonly_fields = [field.name for field in User._meta.fields if field.name.startswith("c4_")] + [
+        "nb_siaes",
         "user_siae_admin_list",
         "user_favorite_list",
         "last_login",
@@ -187,6 +189,20 @@ class UserAdmin(UserAdmin):
         ("API", {"fields": ("api_key",)}),
         ("Permissions", {"fields": ("is_staff", "groups")}),
     )
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.annotate(siae_count=Count("siaes", distinct=True))
+        return qs
+
+    def nb_siaes(self, user):
+        if user.siae_count:
+            url = reverse("admin:siaes_siae_changelist") + f"?users__in={user.id}"
+            return format_html(f'<a href="{url}">{user.siae_count}</a>')
+        return "-"
+
+    nb_siaes.short_description = "Nombre de structures"
+    nb_siaes.admin_order_field = "siae_count"
 
     def user_siae_admin_list(self, user):
         siaes = user.siaes.all()
