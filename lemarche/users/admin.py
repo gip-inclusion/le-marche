@@ -7,11 +7,11 @@ from lemarche.users.forms import UserChangeForm, UserCreationForm
 from lemarche.users.models import User
 
 
-class SiaeAdminFilter(admin.SimpleListFilter):
-    """Custom admin filter to target users who are linked to a SIAE."""
+class HasSiaeFilter(admin.SimpleListFilter):
+    """Custom admin filter to target users who are linked to a Siae."""
 
     title = "Gestionnaire de structure ?"
-    parameter_name = "is_siae_admin"
+    parameter_name = "has_siae"
 
     def lookups(self, request, model_admin):
         return (("Yes", "Oui"), ("No", "Non"))
@@ -19,13 +19,31 @@ class SiaeAdminFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         value = self.value()
         if value == "Yes":
-            return queryset.siae_admins()
+            return queryset.has_siae()
         elif value == "No":
             return queryset.filter(siaes__isnull=True)
         return queryset
 
 
-class ApiKeyFilter(admin.SimpleListFilter):
+class HasFavoriteListFilter(admin.SimpleListFilter):
+    """Custom admin filter to target users who have favorite lists."""
+
+    title = "Listes d'achats favoris ?"
+    parameter_name = "has_favorite_list"
+
+    def lookups(self, request, model_admin):
+        return (("Yes", "Oui"), ("No", "Non"))
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "Yes":
+            return queryset.has_favorite_list()
+        elif value == "No":
+            return queryset.filter(favorite_lists__isnull=True)
+        return queryset
+
+
+class HasApiKeyFilter(admin.SimpleListFilter):
     """Custom admin filter to target users with API Keys."""
 
     title = "Clé API ?"
@@ -49,7 +67,7 @@ class UserAdmin(UserAdmin):
     model = User
 
     list_display = ["id", "first_name", "last_name", "kind", "last_login", "created_at"]
-    list_filter = ["kind", SiaeAdminFilter, ApiKeyFilter, "is_staff"]
+    list_filter = ["kind", HasSiaeFilter, HasFavoriteListFilter, HasApiKeyFilter, "is_staff"]
     search_fields = ["id", "email", "first_name", "last_name"]
     ordering = ["-created_at"]
 

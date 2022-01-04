@@ -9,9 +9,13 @@ class UserQueryset(models.QuerySet):
     Custom queryset with additional filtering methods for users.
     """
 
-    def siae_admins(self):
-        """Only return users who are linked to a SIAE."""
+    def has_siae(self):
+        """Only return users who are linked to Siae(s)."""
         return self.filter(siaes__isnull=False).distinct()
+
+    def has_favorite_list(self):
+        """Only return users who have FavoriteList(s)."""
+        return self.filter(favorite_lists__isnull=False).distinct()
 
     def with_api_key(self):
         """Only return users with an API Key."""
@@ -54,9 +58,13 @@ class UserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
-    def siae_admins(self):
-        """Only return users who are linked to a SIAE."""
-        return self.get_queryset().siae_admins()
+    def has_siae(self):
+        """Only return users who are linked to Siae(s)."""
+        return self.get_queryset().has_siae()
+
+    def has_favorite_list(self):
+        """Only return users who have FavoriteList(s)."""
+        return self.get_queryset().has_favorite_list()
 
     def with_api_key(self):
         """Only return users with an API Key."""
