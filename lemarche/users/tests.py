@@ -29,8 +29,7 @@ class UserModelTest(TestCase):
     def test_has_favorite_list_queryset(self):
         UserFactory()
         user = UserFactory()
-        favorite_list = FavoriteListFactory()
-        user.favorite_lists.add(favorite_list)
+        FavoriteListFactory(user=user)
         self.assertEqual(User.objects.count(), 2)
         self.assertEqual(User.objects.has_favorite_list().count(), 1)
 

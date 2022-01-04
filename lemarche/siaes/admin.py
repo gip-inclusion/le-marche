@@ -68,6 +68,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     ]
     list_filter = [IsLiveFilter, "is_first_page", HasUserFilter, "kind", "networks", "sectors", "geo_range"]
     search_fields = ["id", "name", "slug", "siret"]
+    search_help_text = "Cherche sur les champs : ID, Raison sociale, Slug, Siret"
 
     autocomplete_fields = ["sectors", "networks"]
     prepopulated_fields = {"slug": ("name",)}
@@ -248,6 +249,7 @@ class SiaeOfferAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "source", "created_at"]
     list_filter = ["source"]
     search_fields = ["id", "name", "siae__id", "siae__name"]
+    search_help_text = "Cherche sur les champs : ID, Nom, Structure (ID, Nom)"
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["source", "created_at", "updated_at"]
@@ -264,6 +266,7 @@ class SiaeOfferAdmin(admin.ModelAdmin):
 class SiaeLabelAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
     search_fields = ["id", "name", "siae__id", "siae__name"]
+    search_help_text = "Cherche sur les champs : ID, Nom, Structure (ID, Nom)"
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["created_at", "updated_at"]
@@ -280,6 +283,7 @@ class SiaeLabelAdmin(admin.ModelAdmin):
 class SiaeClientReferenceAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
     search_fields = ["id", "name", "siae__id", "siae__name"]
+    search_help_text = "Cherche sur les champs : ID, Nom, Structure (ID, Nom)"
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["image_name", "logo_url", "logo_url_display", "created_at", "updated_at"]
@@ -307,6 +311,7 @@ class SiaeClientReferenceAdmin(admin.ModelAdmin):
 class SiaeImageAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
     search_fields = ["id", "name", "siae__id", "siae__name"]
+    search_help_text = "Cherche sur les champs : ID, Nom, Structure (ID, Nom)"
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["image_name", "image_url", "image_url_display", "created_at", "updated_at"]

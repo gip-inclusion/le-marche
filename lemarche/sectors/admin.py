@@ -10,6 +10,7 @@ from lemarche.sectors.models import Sector, SectorGroup
 class SectorGroupAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "nb_sectors", "created_at"]
     search_fields = ["id", "name"]
+    search_help_text = "Cherche sur les champs : ID, Nom"
 
     prepopulated_fields = {"slug": ("name",)}
     readonly_fields = ["created_at", "updated_at"]
@@ -32,6 +33,7 @@ class SectorAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "nb_siaes", "group", "created_at"]
     list_filter = ["group"]
     search_fields = ["id", "name"]
+    search_help_text = "Cherche sur les champs : ID, Nom"
 
     prepopulated_fields = {"slug": ("name",)}
     readonly_fields = ["created_at", "updated_at"]

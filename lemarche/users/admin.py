@@ -70,6 +70,7 @@ class UserAdmin(UserAdmin):
     list_display = ["id", "first_name", "last_name", "kind", "nb_siaes", "last_login", "created_at"]
     list_filter = ["kind", HasSiaeFilter, HasFavoriteListFilter, HasApiKeyFilter, "is_staff"]
     search_fields = ["id", "email", "first_name", "last_name"]
+    search_help_text = "Cherche sur les champs : ID, E-mail, Prénom, Nom"
     ordering = ["-created_at"]
 
     # autocomplete_fields = ["siaes"]

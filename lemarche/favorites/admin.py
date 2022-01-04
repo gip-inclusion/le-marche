@@ -18,6 +18,7 @@ class FavoriteItemInline(admin.TabularInline):
 class FavoriteListAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     list_display = ["id", "name", "user_with_link", "nb_siaes", "created_at", "updated_at"]
     search_fields = ["id", "name", "slug", "user__id", "user__email"]
+    search_help_text = "Cherche sur les champs : ID, Nom, Slug, Utilisateur (ID, E-mail)"
 
     autocomplete_fields = ["user"]
     prepopulated_fields = {"slug": ("name",)}
