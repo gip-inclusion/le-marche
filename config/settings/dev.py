@@ -6,7 +6,7 @@ from .base import *  # noqa
 
 DEBUG = True
 
-INSTALLED_APPS += ["django_extensions", "debug_toolbar", "django_celery_results"]  # noqa F405
+INSTALLED_APPS += ["django_extensions", "debug_toolbar"]  # noqa F405
 
 MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]  # noqa F405
 

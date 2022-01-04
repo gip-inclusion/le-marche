@@ -44,7 +44,6 @@ poethepoet = "0.10.0"
 pre-commit = "2.16.0"
 pyproject-flake8 = "0.0.1a2"
 pytest-django = "4.5.2"
-django-celery-results = "^2.2.0"
 
 [tool.poetry.scripts]
 
