@@ -220,11 +220,11 @@ class UserAdmin(UserAdmin):
 
     user_favorite_list.short_description = "Listes d'achats"
 
-    def image_url_display(self, instance):
-        if instance.image_url:
+    def image_url_display(self, user):
+        if user.image_url:
             return mark_safe(
-                f'<a href="{instance.image_url}" target="_blank">'
-                f'<img src="{instance.image_url}" title="{instance.image_url}" style="max-height:300px" />'
+                f'<a href="{user.image_url}" target="_blank">'
+                f'<img src="{user.image_url}" title="{user.image_url}" style="max-height:300px" />'
                 f"</a>"
             )
         return mark_safe("<div>-</div>")

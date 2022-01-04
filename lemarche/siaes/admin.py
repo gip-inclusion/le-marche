@@ -253,9 +253,9 @@ class SiaeOfferAdmin(admin.ModelAdmin):
     autocomplete_fields = ["siae"]
     readonly_fields = ["source", "created_at", "updated_at"]
 
-    def siae_with_link(self, instance):
-        url = reverse("admin:siaes_siae_change", args=[instance.siae_id])
-        return format_html(f'<a href="{url}">{instance.siae}</a>')
+    def siae_with_link(self, siae_offer):
+        url = reverse("admin:siaes_siae_change", args=[siae_offer.siae_id])
+        return format_html(f'<a href="{url}">{siae_offer.siae}</a>')
 
     siae_with_link.short_description = "Structure"
     siae_with_link.admin_order_field = "siae"
@@ -269,9 +269,9 @@ class SiaeLabelAdmin(admin.ModelAdmin):
     autocomplete_fields = ["siae"]
     readonly_fields = ["created_at", "updated_at"]
 
-    def siae_with_link(self, instance):
-        url = reverse("admin:siaes_siae_change", args=[instance.siae_id])
-        return format_html(f'<a href="{url}">{instance.siae}</a>')
+    def siae_with_link(self, siae_label):
+        url = reverse("admin:siaes_siae_change", args=[siae_label.siae_id])
+        return format_html(f'<a href="{url}">{siae_label.siae}</a>')
 
     siae_with_link.short_description = "Structure"
     siae_with_link.admin_order_field = "siae"
@@ -285,18 +285,18 @@ class SiaeClientReferenceAdmin(admin.ModelAdmin):
     autocomplete_fields = ["siae"]
     readonly_fields = ["image_name", "logo_url", "logo_url_display", "created_at", "updated_at"]
 
-    def siae_with_link(self, instance):
-        url = reverse("admin:siaes_siae_change", args=[instance.siae_id])
-        return format_html(f'<a href="{url}">{instance.siae}</a>')
+    def siae_with_link(self, siae_client_reference):
+        url = reverse("admin:siaes_siae_change", args=[siae_client_reference.siae_id])
+        return format_html(f'<a href="{url}">{siae_client_reference.siae}</a>')
 
     siae_with_link.short_description = "Structure"
     siae_with_link.admin_order_field = "siae"
 
-    def logo_url_display(self, instance):
-        if instance.logo_url:
+    def logo_url_display(self, siae_client_reference):
+        if siae_client_reference.logo_url:
             return mark_safe(
-                f'<a href="{instance.logo_url}" target="_blank">'
-                f'<img src="{instance.logo_url}" title="{instance.logo_url}" style="max-height:300px" />'
+                f'<a href="{siae_client_reference.logo_url}" target="_blank">'
+                f'<img src="{siae_client_reference.logo_url}" title="{siae_client_reference.logo_url}" style="max-height:300px" />'  # noqa
                 f"</a>"
             )
         return mark_safe("<div>-</div>")
@@ -312,18 +312,18 @@ class SiaeImageAdmin(admin.ModelAdmin):
     autocomplete_fields = ["siae"]
     readonly_fields = ["image_name", "image_url", "image_url_display", "created_at", "updated_at"]
 
-    def siae_with_link(self, instance):
-        url = reverse("admin:siaes_siae_change", args=[instance.siae_id])
-        return format_html(f'<a href="{url}">{instance.siae}</a>')
+    def siae_with_link(self, siae_image):
+        url = reverse("admin:siaes_siae_change", args=[siae_image.siae_id])
+        return format_html(f'<a href="{url}">{siae_image.siae}</a>')
 
     siae_with_link.short_description = "Structure"
     siae_with_link.admin_order_field = "siae"
 
-    def image_url_display(self, instance):
-        if instance.image_url:
+    def image_url_display(self, siae_image):
+        if siae_image.image_url:
             return mark_safe(
-                f'<a href="{instance.image_url}" target="_blank">'
-                f'<img src="{instance.image_url}" title="{instance.image_url}" style="max-height:300px" />'
+                f'<a href="{siae_image.image_url}" target="_blank">'
+                f'<img src="{siae_image.image_url}" title="{siae_image.image_url}" style="max-height:300px" />'
                 f"</a>"
             )
         return mark_safe("<div>-</div>")

@@ -43,9 +43,9 @@ class FavoriteListAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         qs = qs.annotate(siae_count=Count("siaes", distinct=True))
         return qs
 
-    def user_with_link(self, instance):
-        url = reverse("admin:users_user_change", args=[instance.user_id])
-        return format_html(f'<a href="{url}">{instance.user}</a>')
+    def user_with_link(self, favorite_list):
+        url = reverse("admin:users_user_change", args=[favorite_list.user_id])
+        return format_html(f'<a href="{url}">{favorite_list.user}</a>')
 
     user_with_link.short_description = "Utilisateur"
     user_with_link.admin_order_field = "user"
