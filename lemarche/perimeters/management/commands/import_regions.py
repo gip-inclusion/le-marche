@@ -47,6 +47,9 @@ class Command(BaseCommand):
     def handle(self, dry_run=False, **options):
         self.stdout.write("-" * 80)
         self.stdout.write("Importing Perimeters > regions...")
+        self.stdout.write(
+            f"Before: {Perimeter.objects.filter(kind=Perimeter.KIND_REGION).count()} {Perimeter.KIND_REGION}s"
+        )
 
         self.set_logger(options.get("verbosity"))
 
@@ -57,7 +60,6 @@ class Command(BaseCommand):
             for i, item in enumerate(json_data):
 
                 name = item["nom"]
-                kind = Perimeter.KIND_REGION
                 insee_code = item["code"]
 
                 assert insee_code in REGIONS
@@ -73,27 +75,25 @@ class Command(BaseCommand):
                 self.logger.debug(insee_code)
 
                 if not dry_run:
-                    Perimeter.objects.update_or_create(
-                        kind=kind,
-                        defaults={
-                            "name": name,
-                            "insee_code": insee_code,
-                        },
+                    Perimeter.objects.get_or_create(
+                        kind=Perimeter.KIND_REGION,
+                        name=name,
+                        insee_code=insee_code,
                     )
 
         # Also add 'Collectivités d'outre-mer'
         # https://fr.wikipedia.org/wiki/Collectivit%C3%A9_d%27outre-mer
         name = "Collectivités d'outre-mer"
-        kind = Perimeter.KIND_REGION
         insee_code = "R97"
 
         if not dry_run:
-            Perimeter.objects.update_or_create(
-                kind=kind,
-                defaults={
-                    "name": name,
-                    "insee_code": insee_code,
-                },
+            Perimeter.objects.get_or_create(
+                kind=Perimeter.KIND_REGION,
+                name=name,
+                insee_code=insee_code,
             )
 
         self.stdout.write("Done.")
+        self.stdout.write(
+            f"After: {Perimeter.objects.filter(kind=Perimeter.KIND_REGION).count()} {Perimeter.KIND_REGION}s"
+        )
