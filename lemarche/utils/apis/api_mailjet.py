@@ -1,10 +1,11 @@
 # https://github.com/betagouv/itou/blob/master/itou/utils/apis/api_entreprise.py
 
-import logging
 
+from huey.contrib.djhuey import task
 import httpx
 from django.conf import settings
 
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,8 @@ def get_default_client(params={}):
     return client
 
 
-def add_to_newsletter(email_adress, properties, client=None):
+@task()
+def add_to_newsletter_async(email_adress, properties, client=None):
     data = {
         "name": email_adress,
         "properties": properties,
@@ -49,7 +51,8 @@ def add_to_newsletter(email_adress, properties, client=None):
         result = client.post(contact_list_endpoint, json=data)
         result.raise_for_status()
         data = result.json()
-        print(data)
+        logger.info("add user to newsletter")
+        logger.info(data)
         return data
     except httpx.HTTPStatusError as e:
         logger.error("Error while fetching `%s`: %s", e.request.url, e)

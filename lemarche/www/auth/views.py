@@ -10,7 +10,7 @@ from lemarche.users.models import User
 from lemarche.utils.tracker import extract_meta_from_request, track
 from lemarche.utils.urls import get_safe_url
 from lemarche.www.auth.forms import LoginForm, PasswordResetForm, SignupForm
-from lemarche.www.auth.tasks import send_signup_notification_email, send_welcome_email
+from lemarche.www.auth.tasks import send_signup_notification_email, send_welcome_email, add_user_to_newsletter
 
 
 class LoginView(auth_views.LoginView):
@@ -77,8 +77,7 @@ class SignupView(SuccessMessageMixin, CreateView):
 
         user = form.save()
         if form.cleaned_data.get("accept_newsletter_buyer"):
-            # add to newsletter
-            pass
+            add_user_to_newsletter(user)
         # welcome email
         send_welcome_email(user)
         send_signup_notification_email(user)
