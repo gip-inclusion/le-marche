@@ -80,3 +80,9 @@ if is_windows:
     # Postgis Django needs GDAL
     # https://trac.osgeo.org/osgeo4w/
     GDAL_LIBRARY_PATH = "C:/OSGeo4W/bin/gdal304.dll"
+
+
+HUEY |= {
+    "results": True,
+    "store_none": True,
+}  # Huey implementation to use.

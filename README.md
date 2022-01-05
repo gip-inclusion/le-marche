@@ -76,7 +76,7 @@ Après création du fichier `env.docker.local` :
  # Re-création de l'environnement (en cas de modification)
  > docker-compose down
  > docker-compose build --no-cache
- > docker-compose up --force-recreate    
+ > docker-compose up --force-recreate
 ```
 
 #### Lancement Dockerfile
@@ -166,4 +166,39 @@ Pour lancer les tests :
 poetry run python manage.py test
 # pour lancer un lot de tests en particulier
 poetry run python manage.py test -- lemarche.api.siaes.tests.SiaeListApiTest
+```
+
+## Taches asynchrones
+### Setup
+#### Huey storage mode
+Mode direct (sans task queue) :
+```
+export CONNECTION_MODE_TASKS="direct"
+```
+
+Mode redis :
+```
+export CONNECTION_MODE_TASKS="redis"
+```
+Mode sqlite :
+```
+export CONNECTION_MODE_TASKS="sqlite"
+```
+
+Mode redis :
+```
+export CONNECTION_MODE_TASKS="redis"
+```
+#### Lancer en local
+1/ Lancer un serveur local
+2/ Dans un autre shell lancer la commande
+```
+/manage.py run_huey
+```
+
+#### Lancer sur CleverCloud
+Ajouter la variable d'environnement suivante sur la config clever cloud :
+
+```
+CC_WORKER_COMMAND=django-admin run_huey
 ```

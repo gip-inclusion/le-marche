@@ -19,3 +19,5 @@ ALLOWED_HOSTS = [
 # ------------------------------------------------------------------------------
 
 sentry_init(dsn=env.str("SENTRY_DSN_PROD"))
+
+SECURE_SSL_REDIRECT = env.str("SECURE_SSL_REDIRECT", True)
