@@ -52,9 +52,8 @@ class FavoriteListAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     user_with_link.admin_order_field = "user"
 
     def nb_siaes(self, favorite_list):
-        # url = reverse("admin:siaes_siae_changelist") + f"?favorite_list__id__exact={favorite_list.id}"
-        # return format_html(f'<a href="{url}">{favorite_list.siae_count}</a>')
-        return favorite_list.siae_count
+        url = reverse("admin:siaes_siae_changelist") + f"?favorite_lists__in={favorite_list.id}"
+        return format_html(f'<a href="{url}">{favorite_list.siae_count}</a>')
 
     nb_siaes.short_description = "Nombre de structures"
     nb_siaes.admin_order_field = "siae_count"
