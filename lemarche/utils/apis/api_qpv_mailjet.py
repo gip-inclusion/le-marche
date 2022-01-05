@@ -27,25 +27,33 @@ def get_default_params():
 
 def get_default_client(params={}):
     params |= get_default_params()
-    client = httpx.Client(params=params, auth=(settings.MAILJET_API_KEY, settings.MAILJET_API_SECRET))
+    headers = {
+        "user-agent": "betagouv-lemarche/0.0.1",
+    }
+    client = httpx.Client(params=params, headers=headers, auth=(settings.MAILJET_API_KEY, settings.MAILJET_API_SECRET))
     return client
 
 
-def add_to_newsletter(user_id, email_adress, contact_list_id, client=None):
-    # API is limited to 5000 calls per day
-    # we pass the client to manage the case of many requests
-    # client provide default params
-    data = {"IsUnsubscribed": "false", "Contact": user_id, "ContactAlt": email_adress, "ListAlt": contact_list_id}
+def add_to_newsletter(email_adress, properties, client=None):
+    data = {
+        "name": email_adress,
+        "properties": properties,
+        "action": "addnoforce",
+        "email": email_adress,
+    }
 
     if not client:
         client = get_default_client()
 
     try:
-        r = client.post(contact_list_endpoint, data=data)
-        r.raise_for_status()
-        data = r.json()
+        result = client.post(contact_list_endpoint, json=data)
+        result.raise_for_status()
+        data = result.json()
         print(data)
         return data
     except httpx.HTTPStatusError as e:
         logger.error("Error while fetching `%s`: %s", e.request.url, e)
         raise e
+
+
+# prop = {"nom": "Madjid", "prénom": "Madjid", "pays": "france", "nomsiae": "", "poste": ""}
