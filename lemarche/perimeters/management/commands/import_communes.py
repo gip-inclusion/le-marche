@@ -6,7 +6,6 @@ import os
 
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.management.base import BaseCommand
-from django.template.defaultfilters import slugify
 
 from lemarche.perimeters.models import Perimeter
 from lemarche.siaes.constants import (
@@ -176,6 +175,9 @@ class Command(BaseCommand):
     def handle(self, dry_run=False, **options):
         self.stdout.write("-" * 80)
         self.stdout.write("Importing Perimeters > communes...")
+        self.stdout.write(
+            f"Before: {Perimeter.objects.filter(kind=Perimeter.KIND_CITY).count()} {Perimeter.KIND_CITY}s"
+        )
 
         self.set_logger(options.get("verbosity"))
 
@@ -193,7 +195,6 @@ class Command(BaseCommand):
                     last_progress = progress
 
                 name = item["nom"]
-                kind = Perimeter.KIND_CITY
                 insee_code = item["code"]
 
                 post_codes = item["codesPostaux"]
@@ -231,11 +232,8 @@ class Command(BaseCommand):
                     self.stderr.write(f"No coordinates for {name}. Skipping…")
                     # continue
 
-                slug = slugify(f"{name}-{department_code}")
-
                 self.logger.debug("-" * 80)
                 self.logger.debug(name)
-                self.logger.debug(slug)
                 self.logger.debug(post_codes)
                 self.logger.debug(insee_code)
                 self.logger.debug(department_code)
@@ -243,17 +241,19 @@ class Command(BaseCommand):
 
                 if not dry_run:
                     Perimeter.objects.update_or_create(
-                        slug=slug,
-                        kind=kind,
+                        kind=Perimeter.KIND_CITY,
+                        name=name,
+                        insee_code=insee_code,
+                        post_codes=post_codes,
+                        department_code=department_code,
+                        region_code=region_code,
+                        population=population,
                         defaults={
-                            "name": name,
-                            "insee_code": insee_code,
                             "coords": coords,
-                            "post_codes": post_codes,
-                            "department_code": department_code,
-                            "region_code": region_code,
-                            "population": population,
                         },
                     )
 
         self.stdout.write("Done.")
+        self.stdout.write(
+            f"After: {Perimeter.objects.filter(kind=Perimeter.KIND_CITY).count()} {Perimeter.KIND_CITY}s"
+        )
