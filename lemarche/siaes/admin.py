@@ -68,9 +68,10 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     ]
     list_filter = [IsLiveFilter, "is_first_page", HasUserFilter, "kind", "networks", "sectors", "geo_range"]
     search_fields = ["id", "name", "slug", "siret"]
+    search_help_text = "Cherche sur les champs : ID, Raison sociale, Slug, Siret"
 
     autocomplete_fields = ["sectors", "networks"]
-    # inlines = [SiaeUserInline]
+    prepopulated_fields = {"slug": ("name",)}
     readonly_fields = [field for field in Siae.READONLY_FIELDS if field not in ("coords")] + [
         "sector_count",
         "network_count",
@@ -123,8 +124,8 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                 )
             },
         ),
-        ("Quartiers de la politique de la ville (QPV)", {"fields": Siae.READONLY_FIELDS_FROM_QPV}),
         ("Données API Entreprise", {"fields": Siae.READONLY_FIELDS_FROM_API_ENTREPRISE}),
+        ("Quartiers de la politique de la ville (QPV)", {"fields": Siae.READONLY_FIELDS_FROM_QPV}),
         (
             "Détails",
             {
@@ -183,9 +184,8 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     #     return qs
 
     def nb_users(self, siae):
-        # url = reverse("admin:users_user_changelist") + f"?siae__id__exact={siae.id}"
-        # return format_html(f'<a href="{url}">{siae.user_count}</a>')
-        return siae.user_count
+        url = reverse("admin:users_user_changelist") + f"?siaes__in={siae.id}"
+        return format_html(f'<a href="{url}">{siae.user_count}</a>')
 
     nb_users.short_description = "Nombre d'utilisateurs"
     nb_users.admin_order_field = "user_count"
@@ -248,14 +248,15 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
 class SiaeOfferAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "source", "created_at"]
     list_filter = ["source"]
-    search_fields = ["id", "name", "siae__id"]
+    search_fields = ["id", "name", "siae__id", "siae__name"]
+    search_help_text = "Cherche sur les champs : ID, Nom, Structure (ID, Nom)"
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["source", "created_at", "updated_at"]
 
-    def siae_with_link(self, instance):
-        url = reverse("admin:siaes_siae_change", args=[instance.siae_id])
-        return format_html(f'<a href="{url}">{instance.siae}</a>')
+    def siae_with_link(self, siae_offer):
+        url = reverse("admin:siaes_siae_change", args=[siae_offer.siae_id])
+        return format_html(f'<a href="{url}">{siae_offer.siae}</a>')
 
     siae_with_link.short_description = "Structure"
     siae_with_link.admin_order_field = "siae"
@@ -264,14 +265,15 @@ class SiaeOfferAdmin(admin.ModelAdmin):
 @admin.register(SiaeLabel)
 class SiaeLabelAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
-    search_fields = ["id", "name", "siae__id"]
+    search_fields = ["id", "name", "siae__id", "siae__name"]
+    search_help_text = "Cherche sur les champs : ID, Nom, Structure (ID, Nom)"
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["created_at", "updated_at"]
 
-    def siae_with_link(self, instance):
-        url = reverse("admin:siaes_siae_change", args=[instance.siae_id])
-        return format_html(f'<a href="{url}">{instance.siae}</a>')
+    def siae_with_link(self, siae_label):
+        url = reverse("admin:siaes_siae_change", args=[siae_label.siae_id])
+        return format_html(f'<a href="{url}">{siae_label.siae}</a>')
 
     siae_with_link.short_description = "Structure"
     siae_with_link.admin_order_field = "siae"
@@ -280,23 +282,24 @@ class SiaeLabelAdmin(admin.ModelAdmin):
 @admin.register(SiaeClientReference)
 class SiaeClientReferenceAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
-    search_fields = ["id", "name", "siae__id"]
+    search_fields = ["id", "name", "siae__id", "siae__name"]
+    search_help_text = "Cherche sur les champs : ID, Nom, Structure (ID, Nom)"
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["image_name", "logo_url", "logo_url_display", "created_at", "updated_at"]
 
-    def siae_with_link(self, instance):
-        url = reverse("admin:siaes_siae_change", args=[instance.siae_id])
-        return format_html(f'<a href="{url}">{instance.siae}</a>')
+    def siae_with_link(self, siae_client_reference):
+        url = reverse("admin:siaes_siae_change", args=[siae_client_reference.siae_id])
+        return format_html(f'<a href="{url}">{siae_client_reference.siae}</a>')
 
     siae_with_link.short_description = "Structure"
     siae_with_link.admin_order_field = "siae"
 
-    def logo_url_display(self, instance):
-        if instance.logo_url:
+    def logo_url_display(self, siae_client_reference):
+        if siae_client_reference.logo_url:
             return mark_safe(
-                f'<a href="{instance.logo_url}" target="_blank">'
-                f'<img src="{instance.logo_url}" title="{instance.logo_url}" style="max-height:300px" />'
+                f'<a href="{siae_client_reference.logo_url}" target="_blank">'
+                f'<img src="{siae_client_reference.logo_url}" title="{siae_client_reference.logo_url}" style="max-height:300px" />'  # noqa
                 f"</a>"
             )
         return mark_safe("<div>-</div>")
@@ -307,23 +310,24 @@ class SiaeClientReferenceAdmin(admin.ModelAdmin):
 @admin.register(SiaeImage)
 class SiaeImageAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
-    search_fields = ["id", "name", "siae__id"]
+    search_fields = ["id", "name", "siae__id", "siae__name"]
+    search_help_text = "Cherche sur les champs : ID, Nom, Structure (ID, Nom)"
 
     autocomplete_fields = ["siae"]
     readonly_fields = ["image_name", "image_url", "image_url_display", "created_at", "updated_at"]
 
-    def siae_with_link(self, instance):
-        url = reverse("admin:siaes_siae_change", args=[instance.siae_id])
-        return format_html(f'<a href="{url}">{instance.siae}</a>')
+    def siae_with_link(self, siae_image):
+        url = reverse("admin:siaes_siae_change", args=[siae_image.siae_id])
+        return format_html(f'<a href="{url}">{siae_image.siae}</a>')
 
     siae_with_link.short_description = "Structure"
     siae_with_link.admin_order_field = "siae"
 
-    def image_url_display(self, instance):
-        if instance.image_url:
+    def image_url_display(self, siae_image):
+        if siae_image.image_url:
             return mark_safe(
-                f'<a href="{instance.image_url}" target="_blank">'
-                f'<img src="{instance.image_url}" title="{instance.image_url}" style="max-height:300px" />'
+                f'<a href="{siae_image.image_url}" target="_blank">'
+                f'<img src="{siae_image.image_url}" title="{siae_image.image_url}" style="max-height:300px" />'
                 f"</a>"
             )
         return mark_safe("<div>-</div>")
