@@ -27,3 +27,9 @@ update_itou_theme: scripts/upload_itou_theme.sh
 
 deploy_prod: scripts/deploy_prod.sh
 	./scripts/deploy_prod.sh
+
+test_container:
+	docker exec -ti bitoubi_django django-admin test --settings=config.settings.test $(TARGET) --noinput --failfast --parallel
+
+test:
+	django-admin test --settings=config.settings.test $(TARGET) --noinput --failfast --parallel
