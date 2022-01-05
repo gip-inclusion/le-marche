@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.db.models import Count
+from django.urls import reverse
+from django.utils.html import format_html
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
 from lemarche.favorites.models import FavoriteItem, FavoriteList
@@ -14,8 +16,9 @@ class FavoriteItemInline(admin.TabularInline):
 
 @admin.register(FavoriteList)
 class FavoriteListAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
-    list_display = ["id", "name", "user", "nb_siaes", "created_at", "updated_at"]
-    search_fields = ["id", "name", "slug", "user__id"]
+    list_display = ["id", "name", "user_with_link", "nb_siaes", "created_at", "updated_at"]
+    search_fields = ["id", "name", "slug", "user__id", "user__email"]
+    search_help_text = "Cherche sur les champs : ID, Nom, Slug, Utilisateur (ID, E-mail)"
 
     autocomplete_fields = ["user"]
     prepopulated_fields = {"slug": ("name",)}
@@ -41,10 +44,16 @@ class FavoriteListAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         qs = qs.annotate(siae_count=Count("siaes", distinct=True))
         return qs
 
+    def user_with_link(self, favorite_list):
+        url = reverse("admin:users_user_change", args=[favorite_list.user_id])
+        return format_html(f'<a href="{url}">{favorite_list.user}</a>')
+
+    user_with_link.short_description = "Utilisateur"
+    user_with_link.admin_order_field = "user"
+
     def nb_siaes(self, favorite_list):
-        # url = reverse("admin:siaes_siae_changelist") + f"?favorite_list__id__exact={favorite_list.id}"
-        # return format_html(f'<a href="{url}">{favorite_list.siae_count}</a>')
-        return favorite_list.siae_count
+        url = reverse("admin:siaes_siae_changelist") + f"?favorite_lists__in={favorite_list.id}"
+        return format_html(f'<a href="{url}">{favorite_list.siae_count}</a>')
 
     nb_siaes.short_description = "Nombre de structures"
     nb_siaes.admin_order_field = "siae_count"
