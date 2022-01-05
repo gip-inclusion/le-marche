@@ -2,6 +2,7 @@ import csv
 from datetime import date
 from urllib.parse import quote
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -18,6 +19,7 @@ from django.views.generic.edit import FormMixin
 from lemarche.favorites.models import FavoriteList
 from lemarche.siaes.models import Siae
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
+from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.tracker import extract_meta_from_request, track
 from lemarche.www.siaes.forms import SiaeFavoriteForm, SiaeSearchForm
 
@@ -87,6 +89,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
 
     def get_queryset(self):
         """Filter results."""
+        print(self.request.GET)
         filter_form = SiaeSearchForm(data=self.request.GET)
         perimeter = filter_form.get_perimeter()
         results = filter_form.filter_queryset(perimeter)
@@ -97,20 +100,12 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         siae_list = self.get_queryset()
         format = self.request.GET.get("format", "xls")
         filename = f"liste_structures_{date.today()}"
+        filename_with_extension = f"{filename}.{format}"
 
-        if format == "csv":
-            response = HttpResponse(content_type="text/csv", charset="utf-8")
-            response["Content-Disposition"] = 'attachment; filename="{}"'.format(f"{filename}.csv")
-
-            writer = csv.writer(response)
-            export_siae_to_csv(writer, siae_list)
-
-        else:  # "xls"
-            response = HttpResponse(content_type="application/ms-excel")
-            response["Content-Disposition"] = 'attachment; filename="{}"'.format(f"{filename}.xls")
-
-            wb = export_siae_to_excel(siae_list)
-            wb.save(response)
+        # we check if there are any search filters
+        request_params = [
+            value for (key, value) in self.request.GET.items() if ((key not in ["page", "format"]) and value)
+        ]
 
         # Track download event
         track(
@@ -120,7 +115,27 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
             session_id=request.COOKIES.get("sessionid", None),
         )
 
-        return response
+        if not len(request_params):
+            # no search filters -> the user wants to download the whole list -> serve the generated file stored on S3
+            file_path = f"{API_CONNECTION_DICT['endpoint_url']}/{settings.S3_STORAGE_BUCKET_NAME}/{settings.SIAE_EXPORT_FOLDER_NAME}/{filename_with_extension}"  # noqa
+            return HttpResponseRedirect(file_path)
+
+        else:
+            if format == "csv":
+                response = HttpResponse(content_type="text/csv", charset="utf-8")
+                response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
+
+                writer = csv.writer(response)
+                export_siae_to_csv(writer, siae_list)
+
+            else:  # "xls"
+                response = HttpResponse(content_type="application/ms-excel")
+                response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
+
+                wb = export_siae_to_excel(siae_list)
+                wb.save(response)
+
+            return response
 
 
 class SiaeDetailView(DetailView):
