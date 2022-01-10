@@ -39,7 +39,7 @@
                         <li>
                             <a href="{% url 'dashboard:profile_favorite_list' %}">
                                 <span class="ml-1"><img src="{% static_theme_images 'ico-star-line.svg' %}" alt="Utilisateur"></span>
-                                Favoris ({{ user.favorite_lists.count }})
+                                Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
                             </a>
                         </li>
                         <li>
@@ -51,7 +51,7 @@
                                     <!-- <div class="dropdown-header">Bonjour user.full_name</div> -->
                                     <a href="{% url 'dashboard:home' %}" class="dropdown-item">
                                         Mon espace
-                                    </a>
+                                    </a>@
                                     <div class="dropdown-divider"></div>
                                     <a href="{% url 'auth:logout' %}" class="dropdown-item">Déconnexion</a>
                                 </div>
