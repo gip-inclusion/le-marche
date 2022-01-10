@@ -1,19 +1,14 @@
-<div class="modal fade modal-siae" id="user_type_modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="z-index:3000">
+<div class="modal fade modal-siae" id="user_type_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="modalTitle">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <strong class="title">
+                <h3 class="modal-title" id="modalTitle">
                     {% if search_results_count %} <!-- Siae search -->
                     Plus de {{ search_results_count }} prestataires inclusifs répondent à votre recherche.
                     {% else %}
                     Vous y êtes presque !
-                    {% endif %}
-                </strong>
-                <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-                        <path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/>
-                    </svg>
-                </button>             -->
+                    {% endif %}                    
+                </h3>
             </div>
             <div class="modal-body home-content-body">
                 <p>
@@ -23,14 +18,14 @@
                     Pour accéder à cette page, dites-nous si vous êtes :
                     {% endif %}
                 </p>
-                <ul style="padding-left:0;list-style:none;">
-                    <li><a href="#" data-usr="buyer" class="btn btn-outline-primary btn-block mb-2" style="text-align:left;">Une entreprise ou une institution qui souhaite augmenter ses achats inclusifs</a></li>
-                    <li><a href="#" data-usr="siae" class="btn btn-outline-primary btn-block mb-2" style="text-align:left;">Une structure d'insertion ou du handicap</a></li>
-                    <li><a href="#" data-usr="actor" class="btn btn-outline-primary btn-block mb-2" style="text-align:left;">Un acteur de l'inclusion (facilitateurs, réseaux…)</a></li>
-                    <li><a href="#" data-usr="other" class="btn btn-outline-primary btn-block mb-2" style="text-align:left;">Autre</a></li>
+                <ul class="list-unstyled">
+                    <li><a href="#" data-usr="buyer" class="btn btn-outline-primary btn-block mb-2 text-left">Une entreprise ou une institution qui souhaite augmenter ses achats inclusifs</a></li>
+                    <li><a href="#" data-usr="siae" class="btn btn-outline-primary btn-block mb-2 text-left">Une structure d'insertion ou du handicap</a></li>
+                    <li><a href="#" data-usr="actor" class="btn btn-outline-primary btn-block mb-2 text-left">Un acteur de l'inclusion (facilitateurs, réseaux…)</a></li>
+                    <li><a href="#" data-usr="other" class="btn btn-outline-primary btn-block mb-2 text-left">Autre</a></li>
                 </ul>
             </div>
-            <!-- <div class="modal-footer"></div> -->
+            <div class="modal-footer"></div>
         </div>
     </div>
 </div>
