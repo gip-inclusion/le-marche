@@ -51,7 +51,7 @@
                         </div>
                     </div>
                 {% else %}
-                    <a href="{% url 'auth:login' %}?message=login-to-download&next={% url 'pages:valoriser_achats' %}" id="valoriser-siae-export-anon" class="btn btn-primary btn-ico d-block d-md-inline-block">
+                    <a href="#" id="valoriser-siae-export-anon" class="btn btn-primary btn-ico d-block d-md-inline-block" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'pages:valoriser_achats' %}">
                         <span>Télécharger la liste complète</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
                             <path fill="none" d="M0 0h24v24H0z" />
@@ -171,4 +171,8 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block modals %}
+    {% include "auth/_login_or_signup_modal.html" %}
 {% endblock %}
