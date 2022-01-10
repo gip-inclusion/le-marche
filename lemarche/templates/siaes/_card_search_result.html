@@ -15,12 +15,12 @@
         <div class="col">
             <div class="card-body">
                 <a href="{% url 'siae:detail' siae.slug %}" class="text-decoration-none stretched -link">
-                    <h3 class="mb-3 mr-5">
+                    <h2 class="mb-3 mr-5">
                         {{ siae.name_display }}
                         {% if not siae.user_count %}
                             <span class="fs-sm font-weight-normal">(bientôt inscrite sur le marché)</span>
                         {% endif %}
-                    </h3>
+                    </h2>
                     <ul class="list-unstyled m-0 lh-sm row no-gutters">
                         <li class="sc-profile-type col-12 col-lg-6 pr-lg-2 d-flex" title="Type(s) de prestation">
                             <img src="{% static_theme_images 'ico-briefcase-4-line.svg' %}" height="16" alt="" />
