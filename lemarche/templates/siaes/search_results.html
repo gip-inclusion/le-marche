@@ -109,20 +109,21 @@
                         <div class="col-sm-6">
                             {% if user.is_authenticated %}
                                 <div class="btn-group btn-block">
-                                    <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}&format=xls" id="csv-submit" class="btn btn-block btn-outline-primary" target="_blank">
-                                        Télécharger la liste (.xls)
+                                    <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}&format=xls" id="siae-export-xls" class="btn btn-block btn-outline-primary btn-ico">
+                                        <span>Télécharger la liste (.xls)</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M13 10h5l-6 6-6-6h5V3h2v7zm-9 9h16v-7h2v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-8h2v7z"/></svg>
                                     </a>
                                     <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <span class="sr-only">Plus d'options de téléchargement</span>
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-right">
-                                        <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}&format=csv" id="csv-submit" class="dropdown-item" target="_blank">
+                                        <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}&format=csv" id="siae-export-csv" class="dropdown-item">
                                             Télécharger la liste (.csv)
                                         </a>
                                     </div>
                                 </div>
                             {% else %}
-                                <a href="{% url 'auth:login' %}?message=login-to-download&next={% url 'siae:search_results' %}?{{ current_search_query_escaped }}" id="csv-submit" class="btn btn-block btn-outline-primary">
+                                <a href="#" id="siae-export-anon" class="btn btn-block btn-outline-primary" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}">
                                     Télécharger la liste
                                 </a>
                             {% endif %}
@@ -197,6 +198,7 @@
 
 {% block modals %}
     {% include "includes/_user_type_modal.html" with search_results_count=paginator.count %}
+    {% include "auth/_login_or_signup_modal.html" %}
     {% include "siaes/_favorite_modal.html" %}
     {% include "siaes/_favorite_item_remove_modal.html" %}
 {% endblock %}

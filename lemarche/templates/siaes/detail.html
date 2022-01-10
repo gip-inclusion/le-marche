@@ -51,16 +51,16 @@
                                 <h1 class="h2 mb-3 mt-1">{{ siae.name_display }}</h1>
                                 {% if user.is_authenticated %}
                                     {% if siae.in_user_favorite_list_count %}
-                                    <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_remove_modal">
-                                        <img src="{% static_theme_images 'ico-star-fill.svg' %}" height="24" alt="Dans votre liste d'achat" title="Dans votre liste d'achat" />
-                                    </a>
+                                        <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_remove_modal">
+                                            <img src="{% static_theme_images 'ico-star-fill.svg' %}" height="24" alt="Dans votre liste d'achat" title="Dans votre liste d'achat" />
+                                        </a>
                                     {% else %}
-                                    <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_modal">
-                                        <img src="{% static_theme_images 'ico-star-line.svg' %}" height="24" alt="Ajouter à votre liste d'achat" title="Ajouter à votre liste d'achat" />
-                                    </a>
+                                        <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_modal">
+                                            <img src="{% static_theme_images 'ico-star-line.svg' %}" height="24" alt="Ajouter à votre liste d'achat" title="Ajouter à votre liste d'achat" />
+                                        </a>
                                     {% endif %}
                                 {% else %}
-                                    <a href="{% url 'auth:login' %}?message=login-to-favorite&next={% url 'siae:detail' siae.slug %}" class="btn btn-favorite p-0">
+                                    <a href="#" id="favorite-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}">
                                         <img src="{% static_theme_images 'ico-star-line.svg' %}" height="24" alt="Ajouter à votre liste d'achat" title="Ajouter à votre liste d'achat" />
                                     </a>
                                 {% endif %}
@@ -119,47 +119,54 @@
                         {% endif %}
                         <div class="profile_capsule">
                             {% if siae.contact_website or siae.contact_email or siae.contact_phone or siae.user_count %}
-                            <div class="map_coordonnees">
-                                <button id="show_data" class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-3" type="button" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
-                                    <span>Afficher les coordonnées</span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-up"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 8l6 6H6z"/></svg>
-                                </button>
-                                <div class="collapse mb-lg-2" id="collapseCoordonnees">
-                                    <ul class="deflist">
-                                        {% if siae.contact_website %}
-                                            <li>
-                                                <span class="prof_icon"><img src="{% static 'img/profile-ico-web.svg' %}" alt="" /></span>
-                                                <a id="company_website" href="{{ siae.contact_website }}" target="_blank" rel="nofollow noopener">{{ siae.contact_website }}</a>
-                                            </li>
-                                        {% endif %}
-                                        {% if siae.contact_email %}
-                                            <li>
-                                                <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" alt="" /></span>
-                                                <a href="mailto:{{ siae.contact_email }}">{{ siae.contact_email }}</a>
-                                            </li>
-                                        {% endif %}
-                                        {% if siae.contact_phone %}
-                                            <li>
-                                                <span class="prof_icon"><img src="{% static 'img/profile-ico-phone.svg' %}" alt="" /></span>
-                                                <a href="tel:{{ siae.contact_phone }}">{{ siae.contact_phone }}</a>
-                                            </li>
-                                        {% endif %}
-                                        {% if siae.user_count %}
-                                            {% if siae.contact_short_name %}
+                                <div class="map_coordonnees">
+                                    {% if user.is_authenticated %}
+                                        <button id="show_data" class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-3" type="button" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
+                                            <span>Afficher les coordonnées</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-up"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 8l6 6H6z"/></svg>
+                                        </button>
+                                        <div class="collapse mb-lg-2" id="collapseCoordonnees">
+                                            <ul class="deflist">
+                                                {% if siae.contact_website %}
+                                                    <li>
+                                                        <span class="prof_icon"><img src="{% static 'img/profile-ico-web.svg' %}" alt="" /></span>
+                                                        <a id="company_website" href="{{ siae.contact_website }}" target="_blank" rel="nofollow noopener">{{ siae.contact_website }}</a>
+                                                    </li>
+                                                {% endif %}
+                                                {% if siae.contact_email %}
+                                                    <li>
+                                                        <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" alt="" /></span>
+                                                        <a href="mailto:{{ siae.contact_email }}">{{ siae.contact_email }}</a>
+                                                    </li>
+                                                {% endif %}
+                                                {% if siae.contact_phone %}
+                                                    <li>
+                                                        <span class="prof_icon"><img src="{% static 'img/profile-ico-phone.svg' %}" alt="" /></span>
+                                                        <a href="tel:{{ siae.contact_phone }}">{{ siae.contact_phone }}</a>
+                                                    </li>
+                                                {% endif %}
+                                                {% if siae.user_count %}
+                                                    {% if siae.contact_short_name %}
+                                                        <li>
+                                                            <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" alt="" /></span>
+                                                            <span>{{ siae.contact_short_name }}</span>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endif %}
                                                 <li>
-                                                    <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" alt="" /></span>
-                                                    <span>{{ siae.contact_short_name }}</span>
+                                                    <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" alt="" /></span>
+                                                    <span>{{ siae.address }} {{ siae.post_code }} {{ siae.city }}</span>
                                                 </li>
-                                            {% endif %}
-                                        {% endif %}
-                                        <li>
-                                            <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" alt="" /></span>
-                                            <span>{{ siae.address }} {{ siae.post_code }} {{ siae.city }}</span>
-                                        </li>
-                                    </ul>
+                                            </ul>
+                                        </div>
+                                    {% else %}
+                                        <a href="#" id="show_data-modal-btn" class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-3" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}">
+                                            <span>Afficher les coordonnées</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
+                                        </a>
+                                    {% endif %}
                                 </div>
-                            </div>
                             {% endif %}
                             <div class="map-holder mb-3">
                                 <div id="map-siae" class="map-canvas"></div>
@@ -376,6 +383,7 @@
 {% endblock %}
 
 {% block modals %}
+    {% include "auth/_login_or_signup_modal.html" %}
     {% include "siaes/_favorite_modal.html" with siae=siae %}
     {% include "siaes/_favorite_item_remove_modal.html" with siae=siae %}
 {% endblock %}
