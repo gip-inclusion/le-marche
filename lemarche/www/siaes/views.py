@@ -1,8 +1,8 @@
 import csv
-import datetime
+from datetime import date
 from urllib.parse import quote
 
-import xlwt
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -18,7 +18,8 @@ from django.views.generic.edit import FormMixin
 
 from lemarche.favorites.models import FavoriteList
 from lemarche.siaes.models import Siae
-from lemarche.utils.export import SIAE_HEADER, generate_siae_row
+from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
+from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.tracker import extract_meta_from_request, track
 from lemarche.www.siaes.forms import SiaeFavoriteForm, SiaeSearchForm
 
@@ -88,6 +89,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
 
     def get_queryset(self):
         """Filter results."""
+        print(self.request.GET)
         filter_form = SiaeSearchForm(data=self.request.GET)
         perimeter = filter_form.get_perimeter()
         results = filter_form.filter_queryset(perimeter)
@@ -96,52 +98,14 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         """Build and return a CSV or XLS."""
         siae_list = self.get_queryset()
-
         format = self.request.GET.get("format", "xls")
+        filename = f"liste_structures_{date.today()}"
+        filename_with_extension = f"{filename}.{format}"
 
-        if format == "csv":
-            filename = f"liste_structures_{datetime.date.today()}.csv"
-            response = HttpResponse(content_type="text/csv", charset="utf-8")
-            response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
-
-            writer = csv.writer(response)
-
-            # header
-            writer.writerow(SIAE_HEADER)
-
-            # rows
-            for siae in siae_list:
-                siae_row = generate_siae_row(siae)
-                writer.writerow(siae_row)
-
-        else:  # "xls"
-            filename = f"liste_structures_{datetime.date.today()}.xls"
-            response = HttpResponse(content_type="application/ms-excel")
-            response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
-
-            wb = xlwt.Workbook(encoding="utf-8")
-            ws = wb.add_sheet("Structures")
-
-            row_number = 0
-
-            # header
-            font_style = xlwt.XFStyle()
-            font_style.font.bold = True
-            for (index, header_item) in enumerate(SIAE_HEADER):
-                ws.write(row_number, index, header_item, font_style)
-                # set column width
-                # ws.col(col_num).width = HEADER[col_num][1]
-
-            # rows
-            font_style = xlwt.XFStyle()
-            font_style.alignment.wrap = 1
-            for siae in siae_list:
-                row_number += 1
-                siae_row = generate_siae_row(siae)
-                for (index, row_item) in enumerate(siae_row):
-                    ws.write(row_number, index, row_item, font_style)
-
-            wb.save(response)
+        # we check if there are any search filters
+        request_params = [
+            value for (key, value) in self.request.GET.items() if ((key not in ["page", "format"]) and value)
+        ]
 
         # Track download event
         track(
@@ -151,7 +115,27 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
             session_id=request.COOKIES.get("sessionid", None),
         )
 
-        return response
+        if not len(request_params):
+            # no search filters -> the user wants to download the whole list -> serve the generated file stored on S3
+            file_path = f"{API_CONNECTION_DICT['endpoint_url']}/{settings.S3_STORAGE_BUCKET_NAME}/{settings.SIAE_EXPORT_FOLDER_NAME}/{filename_with_extension}"  # noqa
+            return HttpResponseRedirect(file_path)
+
+        else:
+            if format == "csv":
+                response = HttpResponse(content_type="text/csv", charset="utf-8")
+                response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
+
+                writer = csv.writer(response)
+                export_siae_to_csv(writer, siae_list)
+
+            else:  # "xls"
+                response = HttpResponse(content_type="application/ms-excel")
+                response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
+
+                wb = export_siae_to_excel(siae_list)
+                wb.save(response)
+
+            return response
 
 
 class SiaeDetailView(DetailView):

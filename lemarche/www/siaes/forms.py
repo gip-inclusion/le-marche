@@ -83,7 +83,7 @@ class SiaeSearchForm(forms.Form):
             self.cleaned_data["perimeter"] = ""
             return self.cleaned_data
 
-    def filter_queryset(self, perimeter):
+    def filter_queryset(self, perimeter=None):
         """
         Method to filter the Siaes depending on the search filters.
         We also make sure there are no duplicates.
