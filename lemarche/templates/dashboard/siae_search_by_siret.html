@@ -26,8 +26,7 @@
     <div class="container">
         <div class="row">
             <div class="col-12 col-lg-8">
-                <h2><strong>Ma structure</strong></h2>
-
+                <h1><strong>Ma structure</strong></h1>
                 <p class="lead mb-0">Recherchez la structure à laquelle vous êtes attaché.</p>
                 <p class="mb-3 mb-lg-5">Si vous en avez plusieurs, vous aurez la possibilité de spécifier d'autres structures par la suite.</p>
 
@@ -91,7 +90,7 @@
                     {% endfor %}
                 {% endif %}
                 {% if not siaes and form.is_valid %}
-                    <div class="alert alert-danger mb-3 mb-lg-5" role="alert">
+                    <div class="alert alert-danger mb-3 mb-lg-5" role="status">
                         Nous n'avons pas retrouvé votre numéro de Siret. Merci de vérifier votre numéro.<br />
                         Dans le cas où le problème persiste, contactez <a href="{% url 'pages:contact' %}">notre support</a>.
                     </div>
