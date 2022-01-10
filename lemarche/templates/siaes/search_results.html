@@ -123,7 +123,7 @@
                                     </div>
                                 </div>
                             {% else %}
-                                <a href="#" id="csv-submit-modal-btn" class="btn btn-block btn-outline-primary" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}">
+                                <a href="#" id="siae-export-anon" class="btn btn-block btn-outline-primary" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}">
                                     Télécharger la liste
                                 </a>
                             {% endif %}
