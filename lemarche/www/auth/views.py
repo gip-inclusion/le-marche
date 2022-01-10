@@ -26,6 +26,8 @@ class LoginView(auth_views.LoginView):
             messages.add_message(request, messages.INFO, "Vous devez être connecté pour télécharger la liste.")
         if message == "login-to-favorite":
             messages.add_message(request, messages.INFO, "Vous devez être connecté pour créer des listes d'achats.")
+        if message == "login-to-display-contacts":
+            messages.add_message(request, messages.INFO, "Vous devez être connecté pour afficher les coordonnées.")
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
