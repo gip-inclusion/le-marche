@@ -23,12 +23,12 @@
 {% block content %}
 <section class="pt-4 pb-6 pb-lg-8">
     <div class="container">
-        <h1>API du marché de l'inclusion</h1>
-        <p class="lead">L'API met à disposition le répertoire qualifié des structures d'insertion par l'activité économique.</p>
+        <h1 class="h1-hero"><strong>API du marché de l'inclusion</strong></h1>
+        <h2 class="h2">L'API met à disposition le répertoire qualifié des structures d'insertion par l'activité économique.</h2>
 
         <div class="row mt-5">
             <div class="col-12">
-                <h2 id="doc">Documentation</h2>
+                <h3 class="h1" id="doc">Documentation</h3>
                 <p>
                     Une documentation est disponible pour explorer et tester les possibilités de l'API.
                 </p>
@@ -43,18 +43,17 @@
 
         <div class="row mt-5">
             <div class="col-12">
-                <h2 id="auth">Authentification</h2>
-
+                <h3 class="h1" id="auth">Authentification</h3>
                 <p>Certaines données nécessitent un <strong>token</strong> (jeton utilisateur).</p>
                 
-                <h3>Comment obtenir un token ?</h3>
+                <h4 class="h2">Comment obtenir un token ?</h4>
                 <ol>
                     <li><a href="{% url 'auth:signup' %}" class="text-dark">Créez-vous un compte</a> sur le marché de l'inclusion</li>
                     <li>Puis rendez-vous sur le <a href="{% url 'pages:contact' %}" class="text-dark">formulaire de contact</a> pour nous en faire la demande</li>
                     <li>Une fois généré, le token apparaîtra dans votre espace utilisateur</li>
                 </ol>
 
-                <h3>Comment se servir du token ?</h3>
+                <h4 class="h2">Comment se servir du token ?</h4>
 
                 <p>Rien de plus simple, il suffit de rajouter <code>token=&lt;VOTRE-TOKEN&gt;</code> dans l'URL de vos requêtes API</p>
                 <p>
@@ -67,92 +66,90 @@
 
         <div class="row mt-5">
             <div class="col-12">
-                <h2 class="mb-3">Dernières Nouveautés</h2>
-                <div class="container">
-                    <table class="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <th scope="col">Date</th>
-                                <th scope="col">Version</th>
-                                <th scope="col">Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>22/12/2021</td>
-                                <td>1.0</td>
-                                <td>
-                                    - Publication de l'API sur <a href="{{ API_GOUV_URL }}" target="_blank" rel="noopener">api.gouv.fr</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>09/11/2021</td>
-                                <td>0.13</td>
-                                <td>
-                                    - Nouvelle ressource <code>/siae/slug/&lt;slug&gt;</code> pour avoir les détails d'une structure par son slug (champ unique)<br />
-                                    - Modifié la ressource <code>/siae/siret/&lt;siret&gt;</code> pour gérer le cas de plusieurs structures partageant le même siret (renvoie une liste dans ce cas là)<br />
-                                    - Rajouté le champ <code>id</code> dans les réponses des ressources <code>/siae</code>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>02/11/2021</td>
-                                <td>0.12</td>
-                                <td>
-                                    - Nouvelle ressource <code>/perimeters/autocomplete</code> dédiée à l'auto-complétion des périmètres<br />
-                                    - Possibilité de filtrer les structures par réseau<br />
-                                    - Ajout de champs supplémentaires dans les détails d'une structure
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>27/10/2021</td>
-                                <td>0.11</td>
-                                <td>
-                                    - Migration du marché terminée (l'application et l'API partagent maintenant le même socle technique)<br />
-                                    - Les champs sont basculés en anglais pour homogénéiser avec le schéma sous-jacent<br />
-                                    - L'url est maintenant finale (sans le sous-domaine <code>api.</code>).
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>10/2021</td>
-                                <td>0.10</td>
-                                <td>
-                                    - Possibilité de filtrer les structures par secteur(s) d'activité
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>10/2021</td>
-                                <td>0.9</td>
-                                <td>
-                                    - Nouvelle ressource <code>/siae/kinds</code><br/>
-                                    - Nouvelle ressource <code>/siae/presta-types</code><br/>
-                                    - Possibilité de filtrer les structures par type de prestation
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>09/2021</td>
-                                <td>0.8</td>
-                                <td>
-                                    - Nouvelle ressource <code>/networks</code> pour récupérer la liste des réseaux de l'inclusion
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>09/2021</td>
-                                <td>0.7</td>
-                                <td>
-                                    - Le site du marché de l'inclusion va prochainement rejoindre le socle technique de l'API<br/>
-                                    - L'accès à l'API est déplacé dans le sous-dossiers <code>/api</code><br />
-                                    - La ressource secteurs d'activité a été re-architecturé (les données sont désormais mieux représentées)
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <h2 class="h1 mb-3">Dernières Nouveautés</h2>
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Version</th>
+                            <th scope="col">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>22/12/2021</td>
+                            <td>1.0</td>
+                            <td>
+                                - Publication de l'API sur <a href="{{ API_GOUV_URL }}" target="_blank" rel="noopener">api.gouv.fr</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>09/11/2021</td>
+                            <td>0.13</td>
+                            <td>
+                                - Nouvelle ressource <code>/siae/slug/&lt;slug&gt;</code> pour avoir les détails d'une structure par son slug (champ unique)<br />
+                                - Modifié la ressource <code>/siae/siret/&lt;siret&gt;</code> pour gérer le cas de plusieurs structures partageant le même siret (renvoie une liste dans ce cas là)<br />
+                                - Rajouté le champ <code>id</code> dans les réponses des ressources <code>/siae</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>02/11/2021</td>
+                            <td>0.12</td>
+                            <td>
+                                - Nouvelle ressource <code>/perimeters/autocomplete</code> dédiée à l'auto-complétion des périmètres<br />
+                                - Possibilité de filtrer les structures par réseau<br />
+                                - Ajout de champs supplémentaires dans les détails d'une structure
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>27/10/2021</td>
+                            <td>0.11</td>
+                            <td>
+                                - Migration du marché terminée (l'application et l'API partagent maintenant le même socle technique)<br />
+                                - Les champs sont basculés en anglais pour homogénéiser avec le schéma sous-jacent<br />
+                                - L'url est maintenant finale (sans le sous-domaine <code>api.</code>).
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>10/2021</td>
+                            <td>0.10</td>
+                            <td>
+                                - Possibilité de filtrer les structures par secteur(s) d'activité
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>10/2021</td>
+                            <td>0.9</td>
+                            <td>
+                                - Nouvelle ressource <code>/siae/kinds</code><br/>
+                                - Nouvelle ressource <code>/siae/presta-types</code><br/>
+                                - Possibilité de filtrer les structures par type de prestation
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>09/2021</td>
+                            <td>0.8</td>
+                            <td>
+                                - Nouvelle ressource <code>/networks</code> pour récupérer la liste des réseaux de l'inclusion
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>09/2021</td>
+                            <td>0.7</td>
+                            <td>
+                                - Le site du marché de l'inclusion va prochainement rejoindre le socle technique de l'API<br/>
+                                - L'accès à l'API est déplacé dans le sous-dossiers <code>/api</code><br />
+                                - La ressource secteurs d'activité a été re-architecturé (les données sont désormais mieux représentées)
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
         <div class="row mt-5">
             <div class="col-12">
-                <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                <div class="alert alert-info mt-3 mt-lg-0" role="status">
                     <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
                     Une remarque ? Une question ? Vous souhaitez accéder à d'avantage de données ?<br />
                     N'hésitez-pas à <a href="{% url 'pages:contact' %}" class="text-dark">nous contacter</a>.
