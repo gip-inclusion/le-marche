@@ -52,11 +52,6 @@
 		font-weight:300;
 	}
 
-	.si-ideas p {
-		display:flex;
-		flex-direction:row;
-	}
-
 	.sc-fav {
 		position: absolute;
 		display: block;
@@ -377,6 +372,10 @@
 	right: 0;
 }
 
+.si-ideas p {
+	display:flex;
+	flex-direction:row;
+}
 
 .siae-card {
 	margin-bottom: 1.5rem;
