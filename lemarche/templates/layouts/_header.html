@@ -109,7 +109,7 @@
                         <li>
                             <a href="{% url 'dashboard:profile_favorite_list' %}">
                                 <span class="ml-1"><img src="{% static_theme_images 'ico-star-line.svg' %}" alt="Utilisateur"></span>
-                                Favoris ({{ user.favorite_lists.count }})
+                                Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
                             </a>
                         </li>
                         <hr />
