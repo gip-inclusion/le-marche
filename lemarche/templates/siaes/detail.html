@@ -48,7 +48,7 @@
                     <div class="col-12 col-lg-9 pl-md-5">
                         <div class="row">
                             <div class="col-sm-12">
-                                <h3 class="h3 mb-3 mt-1">{{ siae.name_display }}</h3>
+                                <h1 class="h2 mb-3 mt-1">{{ siae.name_display }}</h1>
                                 {% if user.is_authenticated %}
                                     {% if siae.in_user_favorite_list_count %}
                                     <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_remove_modal">
@@ -181,7 +181,7 @@
                     </div>
                     <div class="partners d-none d-lg-block">
                         <div class="si-separator"></div>
-                        <h3 class="h4 my-3">Vous avez besoin d'être accompagné dans vos achats inclusifs par des partenaires reconnus ?</h3>
+                        <h2 class="h3 my-3">Vous avez besoin d'être accompagné dans vos achats inclusifs par des partenaires reconnus ?</h2>
                         <a href="{% url 'pages:partenaires' %}" id="track_siae_detail_partners" class="btn btn-outline-primary">Découvrez-les maintenant</a>
                     </div>
                 </aside>
@@ -195,7 +195,7 @@
                                 <img src="{% static_theme_images 'ico-bicro-secteur.svg' %}" alt="" height="32" />
                             </div>
                             <div class="il-r">
-                                <h3 class="h3 mb-1 mt-1">Secteurs d'activité</h3>
+                                <h3 class="h2 mb-1 mt-1">Secteurs d'activité</h3>
                                 <ul>
                                     {% if siae.kind == 'ETTI' and siae.sector_count > 3 %}
                                         <li>Multisectoriel</li>
@@ -221,7 +221,7 @@
                                 <img src="{% static_theme_images 'ico-bicro-marche-ref-clients.svg' %}" alt="" height="32" />
                             </div>
                             <div class="il-r">
-                                <h3 class="h3 mb-1 mt-1">Références clients</h3>
+                                <h3 class="h2 mb-1 mt-1">Références clients</h3>
                                 {% for image in siae.client_references.all %}
                                     {% if image.logo_url %}
                                         <img class="client-ref" src="{{ image.logo_url }}" alt="{{ image.name }}" title="{{ image.name }}" />
@@ -239,7 +239,7 @@
                                 <img src="{% static_theme_images 'ico-bicro-marche-descript-act.svg' %}" alt="" height="32" />
                             </div>
                             <div class="il-r">
-                                <h3 class="h3 mb-1 mt-1">Présentation de la structure</h3>
+                                <h3 class="h2 mb-1 mt-1">Présentation de la structure</h3>
                                 <div>
                                     {% if siae.description %}
                                         {{ siae.description|linebreaks }}
@@ -264,12 +264,12 @@
                                 <img src="{% static_theme_images 'ico-bicro-detail.svg' %}" alt="" height="32" />
                             </div>
                             <div class="il-r">
-                                <h3 class="h3 mb-1 mt-1">Les prestations proposées</h3>
+                                <h3 class="h2 mb-1 mt-1">Les prestations proposées</h3>
                                 <div class="row">
                                 {% for offer in siae.offers.all %}
                                     <article class="prests-post col-12 {% if siae.offer_count > 1 %}col-lg-6{% endif %} mt-2">
                                         <img class="cell_icon" src="{% static 'img/prof_dot.png' %}" alt="" />
-                                        <h4>{{ offer.name }}</h4>
+                                        <h3>{{ offer.name }}</h3>
                                         <div>
                                             {{ offer.description|linebreaks }}
                                         </div>
@@ -289,7 +289,7 @@
                                     <img src="{% static_theme_images 'ico-bicro-reseaux.svg' %}" alt="" height="32" />
                                 </div>
                                 <div class="il-r">
-                                    <h3 class="h3 mb-1 mt-1">Réseaux</h3>
+                                    <h3 class="h2 mb-1 mt-1">Réseaux</h3>
                                     <ul>
                                     {% for network in siae.networks.all %}
                                         <li><a href="{{ network.website }}" class="network_link" rel="noopener" target="_blank">{{ network.brand }}</a></li>
@@ -304,7 +304,7 @@
                                     <img src="{% static_theme_images 'ico-bicro-labels.svg' %}" alt="" height="32" />
                                 </div>
                                 <div class="il-r">
-                                    <h3 class="h3 mb-1 mt-1">Labels & certifications</h3>
+                                    <h3 class="h2 mb-1 mt-1">Labels & certifications</h3>
                                     <ul>
                                     {% for label in siae.labels.all %}
                                         <li>{{ label.name }}</li>
@@ -323,7 +323,7 @@
                                 <img src="{% static_theme_images 'ico-bicro-realisation.svg' %}" alt="" height="32" />
                             </div>
                             <div class="il-r">
-                                <h3 class="h3 mb-1 mt-1">Nos réalisations</h3>
+                                <h3 class="h2 mb-1 mt-1">Nos réalisations</h3>
                             </div>
                         </div>
                     </div>
@@ -340,7 +340,7 @@
                         <div class="col-12 col-lg-10">
                             <div class="card c-card c-card--mini h-100 p-3 p-lg-5 pr-lg-7">
                                 <div class="card-body text-center">
-                                    <h3 class="h3 m-0">
+                                    <h3 class="h2 m-0">
                                         C’est votre structure et vous souhaitez modifier ses informations.
                                     </h3>
                                 </div>
@@ -362,7 +362,7 @@
         <div class="row partners-md d-lg-none">
             <div class="col-12">
                 <hr />
-                <h3 class="h4 my-3">Vous avez besoin d'être accompagné dans vos achats inclusifs par des partenaires reconnus ?</h3>
+                <h3 class="h3 my-3">Vous avez besoin d'être accompagné dans vos achats inclusifs par des partenaires reconnus ?</h3>
                 <a href="{% url 'pages:partenaires' %}" id="track_siae_detail_partners" class="btn btn-outline-primary">Découvrez-les maintenant</a>
             </div>
         </div>
