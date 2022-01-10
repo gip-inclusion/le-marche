@@ -8,7 +8,7 @@ from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes.factories import SiaeFactory, SiaeOfferFactory
 from lemarche.siaes.models import Siae
-from lemarche.users.factories import UserFactory
+from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.www.siaes.forms import SiaeSearchForm
 
 
@@ -413,8 +413,19 @@ class SiaeSearchOrderTest(TestCase):
 
 
 class SiaeDetailTest(TestCase):
-    def test_should_display_contact_fields(self):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = UserFactory()
+
+    def test_should_display_contact_fields_to_authenticated_users(self):
         siae = SiaeFactory(name="Ma boite", contact_email="contact@example.com")
+        self.client.login(email=self.user.email, password=DEFAULT_PASSWORD)
         url = reverse("siae:detail", args=[siae.slug])
         response = self.client.get(url)
         self.assertContains(response, siae.contact_email)
+
+    def test_should_not_display_contact_fields_to_anonymous_users(self):
+        siae = SiaeFactory(name="Ma boite", contact_email="contact@example.com")
+        url = reverse("siae:detail", args=[siae.slug])
+        response = self.client.get(url)
+        self.assertNotContains(response, siae.contact_email)

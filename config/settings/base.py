@@ -294,6 +294,7 @@ SIAE_LOGO_FOLDER_NAME = "siae_logo"
 SIAE_IMAGE_FOLDER_NAME = "siae_image"
 SIAE_CLIENT_REFERENCE_LOGO_FOLDER_NAME = "client_reference_logo"
 USER_IMAGE_FOLDER_NAME = "user_image"
+SIAE_EXPORT_FOLDER_NAME = "siae_export"
 
 STORAGE_UPLOAD_KINDS = {
     "default": {
