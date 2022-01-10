@@ -161,7 +161,7 @@
                                             </ul>
                                         </div>
                                     {% else %}
-                                        <a href="{% url 'auth:login' %}?message=login-to-display-contacts&next={% url 'siae:detail' siae.slug %}" id="show_data_anon" class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-3">
+                                        <a href="#" id="show_data-modal-btn" class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-3" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}">
                                             <span>Afficher les coordonnées</span>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
                                         </a>
