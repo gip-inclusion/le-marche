@@ -24,9 +24,9 @@
 {% block content %}
 <section class="pt-4 pb-6">
     <div class="container">
-        <h2 class="mb-3 mb-lg-5">
+        <h1 class="h1 mb-3 mb-lg-5">
             <strong>Modifier mon profil</strong>
-        </h2>
+        </h1>
         <div class="row">
             <div class="col-12 col-lg-8">
                 <form method="POST" action="" class="mb-3 mb-lg-5">
@@ -82,7 +82,7 @@
             </div>
             {% if user.kind == 'SIAE' %}
             <div class="col-12 col-lg-4">
-                <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                <div class="alert alert-info mt-3 mt-lg-0" role="status">
                     <p>
                         <strong>Vous souhaitez changer les champs "contact" de votre structure ?</strong><br />
                         Ca se passe maintenant directement sur la page de modification de votre structure<br />
