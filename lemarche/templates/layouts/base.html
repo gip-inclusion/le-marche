@@ -89,8 +89,10 @@
         {% if messages %}
         <section class="mt-3">
             <div class="container">
-                <div class="messages fr-container fr-my-5w">
-                    {% bootstrap_messages %}
+                <div class="row messages">
+                    <div class="col">
+                        {% include 'includes/_messages.html' %}
+                    </div>
                 </div>
             </div>
         </section>
