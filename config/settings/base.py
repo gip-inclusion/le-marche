@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 
 import environ
+from django.contrib.messages import constants as messages
 
 
 # django-environ eases the application of twelve-factor methodology :
@@ -420,20 +421,18 @@ BOOTSTRAP4 = {
     "success_css_class": "",
 }
 
+
 # Connect Bootstrap alerts to Django message tags
 # https://ordinarycoders.com/blog/article/django-messages-framework
 # ------------------------------------------------------------------------------
 
-import os
-from django.contrib.messages import constants as messages
-
 MESSAGE_TAGS = {
-    messages.DEBUG: 'alert-secondary',
-    messages.INFO: 'alert-info',
-    messages.SUCCESS: 'alert-success',
-    messages.WARNING: 'alert-warning',
-    messages.ERROR: 'alert-danger',
- }
+    messages.DEBUG: "alert-secondary",
+    messages.INFO: "alert-info",
+    messages.SUCCESS: "alert-success",
+    messages.WARNING: "alert-warning",
+    messages.ERROR: "alert-danger",
+}
 
 
 # Logging
