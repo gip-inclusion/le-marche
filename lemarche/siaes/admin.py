@@ -71,7 +71,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     search_help_text = "Cherche sur les champs : ID, Raison sociale, Slug, Siret"
 
     autocomplete_fields = ["sectors", "networks"]
-    prepopulated_fields = {"slug": ("name",)}
+    # prepopulated_fields = {"slug": ("name",)}
     readonly_fields = [field for field in Siae.READONLY_FIELDS if field not in ("coords")] + [
         "sector_count",
         "network_count",
