@@ -51,7 +51,7 @@
 
                 <div class="row mt-3 mt-lg-5">
                     <div class="col-12 text-center text-lg-left">
-                        <p class="lead">Vous n'avez pas de compte ? <a href="{% url 'auth:signup' %}">Créer un compte</p>
+                        <p class="lead">Vous n'avez pas de compte ? <a href="{% url 'auth:signup' %}{{ next_param }}">Créer un compte</p>
                     </div>
                 </div>
             </div>
