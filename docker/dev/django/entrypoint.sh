@@ -7,12 +7,11 @@ echo "= Bitoubi Api Dev docker-compose               ="
 echo "================================================"
 echo ""
 
-while ! pg_isready -h $POSTGRESQL_ADDON_HOST -p $POSTGRESQL_ADDON_PORT; do
+while ! pg_isready -h $POSTGRESQL_HOST -p $POSTGRESQL_PORT; do
     >&2 echo "Postgres is unavailable - sleeping"
     sleep 1
 done
 
-export PYTHONPATH=$PYTHONPATH:./lemarche:./config
 
 # ./manage.py collectstatic --noinput
 # ./manage.py compress --force
