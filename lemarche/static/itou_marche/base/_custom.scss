@@ -4,28 +4,23 @@
 }
 
 .fake-link {
-    color: #3f3e62;
+    color: $gray-800;
     text-decoration: underline;
     background-color: transparent;
     cursor: pointer;
 }
 
 .badge-success-outline {
-    color: #28a745;
-    border-color: #28a745;
+    color: $green;
+    border-color: $green;
     border-style: solid;
 }
 
+#header-notice,
 #header-env-notice {
-    font-size: 1.5rem;
-    text-transform: uppercase;
-    text-align: center;
-    // background-color:
-}
-#header-notice {
-    padding: 0.5em;
-    text-align: center;
-    background-color: #c3e6cb; // alert-success green // $marche-lightest;
+    border-radius: 0;
+    border: none !important;
+    margin: 0;
 }
 
 .slick-list {
