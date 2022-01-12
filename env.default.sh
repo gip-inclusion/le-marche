@@ -3,11 +3,11 @@
 # to reflect the changes
 
 # PostGreSQL Config
-export POSTGRESQL_HOST="localhost"
-export POSTGRESQL_PORT="5432"
-export LEMARCHE_POSTGRES_USER=""
-export LEMARCHE_POSTGRES_PASSWORD=""
-export LEMARCHE_POSTGRES_DB=""
+export POSTGRESQL_ADDON_HOST="localhost"
+export POSTGRESQL_ADDON_PORT="5432"
+export POSTGRESQL_ADDON_USER=""
+export POSTGRESQL_ADDON_PASSWORD=""
+export POSTGRESQL_ADDON_DB=""
 
 # Django Settings
 export SECRET_KEY="coucou"

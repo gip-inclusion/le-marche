@@ -175,11 +175,11 @@ DEPLOY_URL = env.str("DEPLOY_URL", None)
 DATABASES = {
     "default": {
         "ENGINE": "django.contrib.gis.db.backends.postgis",
-        "HOST": env.str("POSTGRESQL_HOST", "localhost"),
-        "PORT": env.str("POSTGRES_PORT", "5432"),
-        "NAME": env.str("LEMARCHE_POSTGRES_DB", "marche"),
-        "USER": env.str("LEMARCHE_POSTGRES_USER", "user"),
-        "PASSWORD": env.str("LEMARCHE_POSTGRES_PASSWORD", "password"),
+        "HOST": env.str("POSTGRESQL_ADDON_HOST", "localhost"),
+        "PORT": env.str("POSTGRESQL_ADDON_PORT", "5432"),
+        "NAME": env.str("POSTGRESQL_ADDON_DB", "marche"),
+        "USER": env.str("POSTGRESQL_ADDON_USER", "user"),
+        "PASSWORD": env.str("POSTGRESQL_ADDON_PASSWORD", "password"),
     },
 }
 
