@@ -285,6 +285,7 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 
 # S3 uploads
 # ------------------------------------------------------------------------------
+
 S3_STORAGE_ACCESS_KEY_ID = env.str("CELLAR_ADDON_KEY_ID", "")
 S3_STORAGE_SECRET_ACCESS_KEY = env.str("CELLAR_ADDON_KEY_SECRET", "")
 S3_STORAGE_ENDPOINT_DOMAIN = env.str("CELLAR_ADDON_HOST", "")
@@ -420,21 +421,6 @@ BOOTSTRAP4 = {
     # a bug in django-bootstrap4, it should be investigated.
     "success_css_class": "",
 }
-
-# Connect Bootstrap alerts to Django message tags
-# https://ordinarycoders.com/blog/article/django-messages-framework
-# ------------------------------------------------------------------------------
-
-import os
-from django.contrib.messages import constants as messages
-
-MESSAGE_TAGS = {
-    messages.DEBUG: 'alert-secondary',
-    messages.INFO: 'alert-info',
-    messages.SUCCESS: 'alert-success',
-    messages.WARNING: 'alert-warning',
-    messages.ERROR: 'alert-danger',
- }
 
 
 # Connect Bootstrap alerts to Django message tags

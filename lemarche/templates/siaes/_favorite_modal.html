@@ -29,29 +29,29 @@
 
             <!-- Existing list(s) -->
             {% if user.favorite_lists.count %}
-            <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
-                {% csrf_token %}
-                <div class="modal-body home-content-body pt-0">
-                    <hr data-text="ou" />
-                    <div class="form-group">
-                        <label>Choisir une liste existante</label>
-                        <ul class="list-group">
-                        {% for favorite_list in user.favorite_lists.all %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="custom-control custom-radio w-100">
-                                    <input class="custom-control-input" type="radio" name="favorite_list" value="{{ favorite_list.id }}" id="{{ favorite_list.id }}" required>
-                                    <label class="custom-control-label white-space-nowrap d-block" for="{{ favorite_list.id }}">{{ favorite_list.name }}</label>
-                                </div>                            
-                                <span class="fs-xs badge badge-marche-light badge-pill">{{ favorite_list.siaes.count }}</span>
-                            </li>
-                            {% endfor %}
-                        </ul>
+                <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
+                    {% csrf_token %}
+                    <div class="modal-body home-content-body pt-0">
+                        <hr data-text="ou" />
+                        <div class="form-group">
+                            <label>Choisir une liste existante</label>
+                            <ul class="list-group">
+                            {% for favorite_list in user.favorite_lists.all %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="custom-control custom-radio w-100">
+                                        <input class="custom-control-input" type="radio" name="favorite_list" value="{{ favorite_list.id }}" id="{{ favorite_list.id }}" required>
+                                        <label class="custom-control-label white-space-nowrap d-block" for="{{ favorite_list.id }}">{{ favorite_list.name }}</label>
+                                    </div>
+                                    <span class="fs-xs badge badge-marche-light badge-pill">{{ favorite_list.siaes.count }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-sm btn-primary" type="submit" name="action" value="add">Enregistrer</button>
-                </div>
-            </form>
+                    <div class="modal-footer">
+                        <button class="btn btn-sm btn-primary" type="submit" name="action" value="add">Enregistrer</button>
+                    </div>
+                </form>
             {% endif %}
         </div>
     </div>

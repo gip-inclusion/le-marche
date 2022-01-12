@@ -87,15 +87,15 @@
 
         {% block messages %}
         {% if messages %}
-        <section>
-            <div class="container">
-                <div class="row messages">
-                    <div class="col">
-                        {% include 'includes/_messages.html' %}
+            <section>
+                <div class="container">
+                    <div class="row messages">
+                        <div class="col">
+                            {% include 'includes/_messages.html' %}
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
         {% endif %}
         {% endblock %}
 
@@ -131,7 +131,7 @@
     {% endcompress %}
     <script type="text/javascript" src="{% static 'js/utils.js'%}"></script>
     {% if BITOUBI_ENV not in "dev" %}
-    {% include "includes/_tracker_tarteaucitron.html" %}
+        {% include "includes/_tracker_tarteaucitron.html" %}
     {% endif %}
     {% include "includes/_tracker_itou.html" %}
     {% comment "migrate first" %}
