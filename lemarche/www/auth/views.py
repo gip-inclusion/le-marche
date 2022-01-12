@@ -7,6 +7,7 @@ from django.utils.safestring import mark_safe
 from django.views.generic import CreateView
 
 from lemarche.users.models import User
+from lemarche.utils.tracker import extract_meta_from_request, track
 from lemarche.utils.urls import get_safe_url
 from lemarche.www.auth.forms import LoginForm, PasswordResetForm, SignupForm
 from lemarche.www.auth.tasks import send_signup_notification_email, send_welcome_email
@@ -71,12 +72,23 @@ class SignupView(SuccessMessageMixin, CreateView):
         - send a welcome email to the user
         - send a notification email to the staff
         - login the user automatically
+        - track signup
         """
         user = form.save()
+        # welcome email
         send_welcome_email(user)
         send_signup_notification_email(user)
+        # login the user
         user = authenticate(username=form.cleaned_data["email"], password=form.cleaned_data["password1"])
         login(self.request, user)
+        # stats
+        track(
+            "backend",
+            "inscription",
+            meta=extract_meta_from_request(self.request),
+            session_id=self.request.COOKIES.get("sessionid", None),
+        )
+        # response
         messages.add_message(self.request, messages.SUCCESS, self.get_success_message(form.cleaned_data))
         return HttpResponseRedirect(self.get_success_url())
 
