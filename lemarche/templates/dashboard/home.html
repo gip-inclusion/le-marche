@@ -25,16 +25,16 @@
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <h2 id="profil" class="mb-3 mb-lg-5">
+                <h1 id="profil" class="mb-3 mb-lg-5">
                     <strong>Mon profil</strong>
-                </h2>
+                </h1>
 
                 <!-- Profile -->
                 <div class="s-cards-grid-01__row row mb-3 mb-md-5">
                     <div class="s-cards-grid-01__col col">
                         <div class="card c-card c-card--marche h-100 w-100">
                             <div class="card-body">
-                                <p class="h4 lh-base">
+                                <p class="h3 lh-base">
                                     {{ user.full_name }}
                                     <span class="fs-sm badge-pill badge-marche">{{ user.get_kind_display }}</span>
                                 </p>
@@ -71,7 +71,7 @@
                 <hr class="mb-3 mb-lg-5">
                 <div id="favoris" class="row justify-content-end mb-3 mb-lg-5">
                     <div class="col-12 col-lg">
-                        <h2 id="structures" class="mb-0">
+                        <h2 id="structures" class="h1 mb-0">
                             <strong>Liste d'achat favoris</strong>
                         </h2>
                     </div>
@@ -88,7 +88,7 @@
                     <hr class="mb-3 mb-lg-5">
                     <div id="structures" class="row justify-content-end mb-3 mb-lg-5">
                         <div class="col-12 col-lg">
-                            <h2 id="structures" class="mb-0">
+                            <h2 id="structures" class="h1 mb-0">
                                 <strong>{% if user.siaes.count > 1 %}Mes structures{% else %}Ma structure{% endif %}</strong>
                             </h2>
                         </div>
@@ -104,7 +104,7 @@
                         <div class="s-cards-grid-01__col col d-sm-flex">
                             <div class="card c-card c-card--mini mb-3 w-100">
                                 <div class="card-body">
-                                    <h4>{{ siaeuser.siae.name }}</h4>
+                                    <h3>{{ siaeuser.siae.name }}</h3>
                                     <p title="{% get_verbose_name siaeuser.siae 'brand' %}" class="mb-2">
                                         <strong>{% get_verbose_name siaeuser.siae 'brand' %} :</strong>
                                         {{ siaeuser.siae.brand|default:'' }}
@@ -154,7 +154,7 @@
                     <hr class="mb-3 mb-lg-5">
                     <div id="api" class="row justify-content-end mb-3 mb-lg-5">
                         <div class="col-12 col-lg">
-                            <h2 id="api" class="mb-0">
+                            <h2 id="api" class="h1 mb-0">
                                 <strong>Accès API</strong>
                             </h2>
                         </div>
@@ -179,7 +179,7 @@
                     </div>
                 {% endif %}
 
-                <!-- <h2 class="mb-3 mb-lg-5">Mes favoris</h2> -->
+                <!-- <h2 class="h1 mb-3 mb-lg-5">Mes favoris</h2> -->
             </div>
         </div>
     </div>
