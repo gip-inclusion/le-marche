@@ -72,11 +72,17 @@ Après création du fichier `env.docker.local` :
 
  # Se connecter au containeur django
  > docker exec -it bitoubi_django /bin/bash
+ # ou
+ > make shell_on_django_container
 
  # Re-création de l'environnement (en cas de modification)
  > docker-compose down
  > docker-compose build --no-cache
  > docker-compose up --force-recreate
+
+ # Effacement complet des images dockers
+ > ./scripts/delete_docker.sh
+
 ```
 
 #### Lancement Dockerfile
