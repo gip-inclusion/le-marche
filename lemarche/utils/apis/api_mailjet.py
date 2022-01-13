@@ -28,12 +28,25 @@ def get_default_client(params={}):
     headers = {
         "user-agent": "betagouv-lemarche/0.0.1",
     }
-    client = httpx.Client(params=params, headers=headers, auth=(settings.MAILJET_API_KEY, settings.MAILJET_API_SECRET))
+    client = httpx.Client(
+        params=params, headers=headers, auth=(settings.MAILJET_MASTER_API_KEY, settings.MAILJET_MASTER_API_SECRET)
+    )
     return client
 
 
 @task()
 def add_to_newsletter_async(email_adress, properties, client=None):
+    """Huey task adding contact to configured contact list
+
+    Args:
+        email_adress (String): e-mail of contact
+        properties (Dict): {"nom": "", "prénom": "", "pays": "france", "nomsiae": "", "poste": ""}
+        client (httpx.Client, optional): client to send requests. Defaults to None.
+
+    Raises:
+        e: httpx.HTTPStatusError
+
+    """
     data = {
         "name": email_adress,
         "properties": properties,
@@ -54,6 +67,3 @@ def add_to_newsletter_async(email_adress, properties, client=None):
     except httpx.HTTPStatusError as e:
         logger.error("Error while fetching `%s`: %s", e.request.url, e)
         raise e
-
-
-# prop = {"nom": "Madjid", "prénom": "Madjid", "pays": "france", "nomsiae": "", "poste": ""}
