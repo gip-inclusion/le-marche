@@ -100,7 +100,7 @@ def track(
         try:
             r = httpx.post(f"{settings.TRACKER_HOST}/track", json=payload)
             r.raise_for_status()
-            logger.info("Tracker sent")
+            # logger.info("Tracker sent")
         except httpx.HTTPError as e:
             logger.exception(e)
             logger.warning("Failed to submit tracker")
