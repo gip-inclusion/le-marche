@@ -1,6 +1,3 @@
-# https://github.com/betagouv/itou/blob/master/itou/utils/apis/api_entreprise.py
-
-
 from huey.contrib.djhuey import task
 import httpx
 from django.conf import settings
