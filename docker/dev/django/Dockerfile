@@ -9,6 +9,7 @@ FROM python:3.9-slim-buster as common-base
 
 # Default environment: Dev
 ARG ENV=dev
+ENV APP_DIR="/app"
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONUNBUFFERED=1 \
@@ -35,7 +36,7 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 RUN pip install "poetry==$POETRY_VERSION"
-RUN pip install -I uwsgi 
+RUN pip install -I uwsgi
 
 #     apt-get install build-essential -y
 COPY poetry.lock pyproject.toml /app/
@@ -57,6 +58,7 @@ COPY ./config ./config
 COPY ./manage.py ./manage.py
 COPY ./pyproject.toml ./pyproject.toml
 COPY ./docker ./docker
+COPY ./scripts ./scripts
 
 # ----------------------------------------------------
 # Run Dev
@@ -93,7 +95,7 @@ ENV DJANGO_SETTINGS_MODULE="config.settings.prod" \
     ENV="prod" \
     DEBUG="False"
 
-CMD [".docker/dev/entrypoint.sh"]
+CMD [".docker/dev/django/entrypoint.sh"]
 
 # # For some _real_ performance, at cost of ease of use:
 # FROM python:3.9-alpine as prod

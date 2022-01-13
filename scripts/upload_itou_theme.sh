@@ -5,14 +5,14 @@
 
 echo "Running the Upload Itou theme"
 
-cd $APP_HOME
+cd $APP_DIR
 
 # Folder where the theme will be temporary stocked
-tmpFolder="$APP_HOME/tmp"
+tmpFolder="$APP_DIR/tmp"
 tmpFolderDistribSources="$tmpFolder/dist"
 
 # local folder where the source will be updated
-localFolderTheme="$APP_HOME/lemarche/static/vendor/theme-inclusion"
+localFolderTheme="$APP_DIR/lemarche/static/vendor/theme-inclusion"
 
 repository="https://github.com/betagouv/itou-theme"
 

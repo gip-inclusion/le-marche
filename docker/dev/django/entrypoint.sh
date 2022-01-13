@@ -12,7 +12,6 @@ while ! pg_isready -h $POSTGRESQL_ADDON_HOST -p $POSTGRESQL_ADDON_PORT; do
     sleep 1
 done
 
-export PYTHONPATH=$PYTHONPATH:./lemarche:./config
 
 # ./manage.py collectstatic --noinput
 # ./manage.py compress --force
