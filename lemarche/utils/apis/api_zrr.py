@@ -1,5 +1,3 @@
-# https://github.com/betagouv/itou/blob/master/itou/utils/apis/api_entreprise.py
-
 import logging
 
 import httpx
