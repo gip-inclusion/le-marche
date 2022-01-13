@@ -9,6 +9,7 @@ FROM python:3.9-slim-buster as common-base
 
 # Default environment: Dev
 ARG ENV=dev
+ENV APP_DIR="/app"
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONUNBUFFERED=1 \
@@ -57,6 +58,7 @@ COPY ./config ./config
 COPY ./manage.py ./manage.py
 COPY ./pyproject.toml ./pyproject.toml
 COPY ./docker ./docker
+COPY ./scripts ./scripts
 
 # ----------------------------------------------------
 # Run Dev

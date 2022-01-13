@@ -21,20 +21,21 @@ apt-get -y upgrade
 
 # Install a new package, without unnecessary recommended packages:
 apt-get -y install --no-install-recommends \
-    vim-tiny \
-    default-mysql-client \
-    default-libmysqlclient-dev \
-    postgresql-client \
     binutils \
-    libproj-dev \
+    build-essential \
+    default-libmysqlclient-dev \
+    default-mysql-client \
+    gcc \
     gdal-bin \
+    gettext \
+    git \
     iputils-ping \
     libpcre3 \
     libpcre3-dev \
+    libproj-dev \
     libsass1 \
-    gettext \
-    build-essential \
-    gcc
+    postgresql-client \
+    vim-tiny
 
 # Delete cached files we don't need anymore:
 apt-get clean
