@@ -10,6 +10,10 @@
     cursor: pointer;
 }
 
+a.disabled {
+    pointer-events: none;
+}
+
 .badge-success-outline {
     color: $green;
     border-color: $green;
