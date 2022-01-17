@@ -4,6 +4,37 @@ Ressources :
 - [Semantic Versioning](http://semver.org/)
 - [CHANGELOG recommendations](http://keepachangelog.com/).
 
+## [1.5] - 2022-01-14
+
+### Ajouté
+
+- Pages
+    - Ajout d'une modale "freemium" sur les fonctionnalités accessibles aux utilisateurs connectés
+- Inscription / Connexion
+    - Envoi d'un tracking à chaque inscription pour mesure l'impact de la modale
+- Tech
+    - Gestion asynchrone des tâches (avec Huey)
+    - Ajouté quelques scripts dans le code
+    - Export régulier de toutes les structures dans un fichier
+
+### Modifié
+
+- Pages
+    - Téléchargement immédiat de toutes les structures sur la page 'Valorises vos achats'
+    - Mise à jour du thème
+- Recherche / Fiche
+    - Forcer l'inscription pour voir les coordonnées des structures
+- Admin
+    - Quelques améliorations diverses (filtres, liens entre modèles, etc.)
+- Tech
+    - Mise à jour de Django à la version 4.0.1
+    - Modifié la génération des slug des Régions
+    - Accélère l'import des périmètres sur les recettes jetables
+    - Ne plus logger un message à chaque envoi du tracker
+    - Réduit l'envoi d'informations à Sentry
+
+### Supprimé
+
 ## [1.4] - 2021-12-31
 
 ### Ajouté
