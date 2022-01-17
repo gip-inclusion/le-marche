@@ -176,7 +176,7 @@ class SiaeDetailView(DetailView):
 
 class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     http_method_names = ["post"]
-    template_name = "siaes/_favorite_modal.html"
+    template_name = "siaes/_favorite_item_add_modal.html"
     form_class = SiaeFavoriteForm
     context_object_name = "siae"
     queryset = Siae.objects.prefetch_related("favorite_lists").all()

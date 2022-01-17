@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-    $('#favorite_modal').on('show.bs.modal', function (event) {
+    $('#favorite_item_add_modal').on('show.bs.modal', function (event) {
         // Button that triggered the modal
         var button = $(event.relatedTarget);
 
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // - siae name display
         // - check favorite lists that already contain the siae
         // - edit the form action url
-        var modal = document.querySelector('#favorite_modal');
+        var modal = document.querySelector('#favorite_item_add_modal');
         var modalForms = modal.querySelectorAll('form');
         if (modal.querySelector('#siae-name-display')) {
             modal.querySelector('#siae-name-display').textContent = siaeNameDisplay;
