@@ -207,7 +207,7 @@
                                     {% if siae.kind == 'ETTI' and siae.sector_count > 3 %}
                                         <li>Multisectoriel</li>
                                     {% elif siae.sector_count %}
-                                        {% m2m_list_display siae 'sectors' display_max=6 output_format='li' %}
+                                        {% m2m_list_display siae 'sectors' display_max=6 current_search_query=current_search_query output_format='li' %}
                                     {% endif %}
                                 </ul>
                                 {% if not siae.sector_count %}

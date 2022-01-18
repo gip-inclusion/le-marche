@@ -9,7 +9,7 @@ register = template.Library()
 
 
 @register.simple_tag
-def m2m_list_display(obj, field, display_max=5, output_format="string"):
+def m2m_list_display(obj, field, display_max=5, current_search_query="", output_format="string"):
     """Pretty rendering of M2M fields."""
 
     if type(obj) == Siae:
@@ -18,6 +18,11 @@ def m2m_list_display(obj, field, display_max=5, output_format="string"):
 
     # get values
     values = list(qs)
+
+    # if the search query contains sectors, only return these sectors
+    if field == "sectors":
+        if "sectors=" in current_search_query:
+            values = [elem for elem in values if elem.slug in current_search_query]
 
     # get list of names
     values = [force_str(elem.name) for elem in values if elem.name != "Autre"]
