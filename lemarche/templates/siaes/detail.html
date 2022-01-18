@@ -207,14 +207,7 @@
                                     {% if siae.kind == 'ETTI' and siae.sector_count > 3 %}
                                         <li>Multisectoriel</li>
                                     {% elif siae.sector_count %}
-                                        {% for sector in siae.sectors.all %}
-                                            {% if forloop.counter0 < 7 %}
-                                                <li>{{ sector.name }} {% if sector.name == 'Autre' %}<small>({{ sector.group.name }})</small>{% endif %}</li>
-                                            {% endif %}
-                                        {% endfor %}
-                                        {% if siae.sector_count > 6 %}
-                                            <li>…</li>
-                                        {% endif %}
+                                        {% m2m_list_display siae 'sectors' display_max=6 output_format='li' %}
                                     {% endif %}
                                 </ul>
                                 {% if not siae.sector_count %}
