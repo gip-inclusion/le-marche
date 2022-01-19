@@ -14,9 +14,8 @@ def get_endpoint_url(endpoint):
     return f"{BASE_URL}{endpoint}"
 
 
-contact_list_endpoint = get_endpoint_url(
-    f"contactslist/{settings.MAILJET_NEWSLETTER_CONTACT_LIST_BUYER_ID}/managecontact"
-)
+def contact_list_endpoint(contact_list_id):
+    return get_endpoint_url(f"contactslist/{contact_list_id}/managecontact")
 
 
 def get_default_params():
@@ -34,8 +33,18 @@ def get_default_client(params={}):
     return client
 
 
+def add_seller_to_newsletter(email_adress, properties, client=None):
+    return add_to_newsletter_async(
+        email_adress, properties, settings.MAILJET_NEWSLETTER_CONTACT_LIST_SELLER_ID, client
+    )
+
+
+def add_buyer_to_newsletter(email_adress, properties, client=None):
+    return add_to_newsletter_async(email_adress, properties, settings.MAILJET_NEWSLETTER_CONTACT_LIST_BUYER_ID, client)
+
+
 @task()
-def add_to_newsletter_async(email_adress, properties, client=None):
+def add_to_newsletter_async(email_adress, properties, contact_list_id, client=None):
     """Huey task adding contact to configured contact list
 
     Args:
@@ -58,7 +67,7 @@ def add_to_newsletter_async(email_adress, properties, client=None):
         client = get_default_client()
 
     try:
-        result = client.post(contact_list_endpoint, json=data)
+        result = client.post(contact_list_endpoint(contact_list_id), json=data)
         result.raise_for_status()
         data = result.json()
         logger.info("add user to newsletter")

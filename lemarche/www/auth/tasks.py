@@ -6,6 +6,7 @@ from django.template.loader import render_to_string
 from lemarche.utils.emails import whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url
 from lemarche.utils.apis import api_mailjet
+from lemarche.users.models import User
 
 
 def send_welcome_email(user):
@@ -45,7 +46,12 @@ def send_signup_notification_email(user):
     )
 
 
-def add_user_to_newsletter(user):
+def add_to_contact_list(user):
+    """Add user to contactlist
+
+    Args:
+        user (User): the user how will be added in the contact list
+    """
     properties = {
         "nom": user.first_name,
         "prénom": user.last_name,
@@ -53,7 +59,10 @@ def add_user_to_newsletter(user):
         "nomsiae": user.company_name,
         "poste": user.position,
     }
-    api_mailjet.add_to_newsletter_async(user.email, properties)
+    if user.kind == User.KIND_BUYER:
+        api_mailjet.add_buyer_to_newsletter(user.email, properties)
+    elif user.kind == User.KIND_SIAE:
+        api_mailjet.add_seller_to_newsletter(user.email, properties)
 
 
 @task()
