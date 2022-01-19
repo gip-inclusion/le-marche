@@ -13,7 +13,7 @@ from lemarche.utils.apis.api_zrr import IS_ZRR_KEY, ZRR_CODE_KEY, ZRR_NAME_KEY, 
 
 class Command(BaseCommand):
     """
-    Populates API QPV
+    Populates API ZRR
 
     Note: Only on Siae who have coords, filter only on Siae not updated by the API since a two months
 
@@ -78,7 +78,7 @@ class Command(BaseCommand):
                 self.stdout_error("exceeded the requests limit for today (5000/per day)")
         finally:
             client.close()
-            # we still save siaes qpv status
+            # we still save siaes zrr status
             Siae.objects.bulk_update(
                 siaes_to_update, self.FIELDS_TO_BULK_UPDATE, batch_size=settings.BATCH_SIZE_BULK_UPDATE
             )
@@ -92,14 +92,14 @@ class Command(BaseCommand):
         )
 
     def update_siae(self, client, siae):
-        # call api is in qpv
-        result_is_in_qpv = is_in_zrr(siae.latitude, siae.longitude, client=client)
+        # call api is in zrr
+        result_is_in_zrr = is_in_zrr(siae.latitude, siae.longitude, client=client)
         self.success_count["etablissement"] += 1
-        siae.is_qpv = result_is_in_qpv[IS_ZRR_KEY]
+        siae.is_zrr = result_is_in_zrr[IS_ZRR_KEY]
         siae.api_zrr_last_sync_date = timezone.now()
-        if siae.is_qpv:
-            siae.zrr_code = result_is_in_qpv[ZRR_CODE_KEY]
-            siae.zrr_name = result_is_in_qpv[ZRR_NAME_KEY]
+        if siae.is_zrr:
+            siae.zrr_code = result_is_in_zrr[ZRR_CODE_KEY]
+            siae.zrr_name = result_is_in_zrr[ZRR_NAME_KEY]
             self.success_count["etablissement_zrr"] += 1
         else:
             siae.zrr_code = ""
