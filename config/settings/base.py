@@ -225,9 +225,11 @@ SITE_ID = 1
 # Emails
 # ------------------------------------------------------------------------------
 
+MAILJET_API_KEY = env.str("MAILJET_API_KEY", "")
+MAILJET_API_SECRET = env.str("MAILJET_API_SECRET", "")
 ANYMAIL = {
-    "MAILJET_API_KEY": env.str("MAILJET_API_KEY", ""),
-    "MAILJET_SECRET_KEY": env.str("MAILJET_API_SECRET", ""),
+    "MAILJET_API_KEY": MAILJET_API_KEY,
+    "MAILJET_SECRET_KEY": MAILJET_API_SECRET,
     # "WEBHOOK_SECRET": env.str("MAILJET_WEBHOOK_SECRET", ""),
 }
 
@@ -238,7 +240,6 @@ EMAIL_BACKEND = "anymail.backends.mailjet.EmailBackend"
 DEFAULT_FROM_EMAIL = "noreply@inclusion.beta.gouv.fr"
 CONTACT_EMAIL = env("CONTACT_EMAIL", default="contact@example.com")
 NOTIFY_EMAIL = env("NOTIFY_EMAIL", default="notif@example.com")
-
 
 # Security
 # ------------------------------------------------------------------------------
@@ -346,6 +347,14 @@ API_ENTREPRISE_TOKEN = env.str("API_ENTREPRISE_TOKEN", "")
 API_QPV_RELATIVE_DAYS_TO_UPDATE = env.int("API_QPV_RELATIVE_DAYS_TO_UPDATE", 60)
 
 API_GOUV_URL = "https://api.gouv.fr/les-api/api-structures-inclusion"
+
+# API Mailjet
+# We also use the master api key (with the second api key), because we separate the sending message from application
+#   and from human peoples.
+MAILJET_MASTER_API_KEY = env.str("MAILJET_MASTER_API_KEY", "")
+MAILJET_MASTER_API_SECRET = env.str("MAILJET_MASTER_API_SECRET", "")
+# ID of buyers contact list
+MAILJET_NEWSLETTER_CONTACT_LIST_BUYER_ID = env.int("MAILJET_NEWSLETTER_CONTACT_LIST_BUYER_ID", 2500034)
 
 
 # Django REST Framework (DRF)

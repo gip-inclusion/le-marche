@@ -48,6 +48,12 @@ class SignupForm(UserCreationForm):
     )
     # help_text="Nous enverrons un e-mail de confirmation à cette adresse avant de valider le compte.")
 
+    accept_newsletter_buyer = forms.BooleanField(
+        label="Je souhaite recevoir des conseils et actualités sur les achats responsables",
+        help_text="",
+        required=False,
+    )
+
     accept_rgpd = forms.BooleanField(label=User._meta.get_field("accept_rgpd").help_text, help_text="", required=True)
     # accept_survey is hidden by default in the frontend. Shown if the user choses kind BUYER or PARTNER
     accept_survey = forms.BooleanField(
