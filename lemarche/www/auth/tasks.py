@@ -1,12 +1,11 @@
-from huey.contrib.djhuey import task
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from huey.contrib.djhuey import task
 
+from lemarche.utils.apis import api_mailjet
 from lemarche.utils.emails import whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url
-from lemarche.utils.apis import api_mailjet
-from lemarche.users.models import User
 
 
 def send_welcome_email(user):
