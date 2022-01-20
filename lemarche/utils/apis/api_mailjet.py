@@ -1,8 +1,9 @@
-from huey.contrib.djhuey import task
+import logging
+
 import httpx
 from django.conf import settings
+from huey.contrib.djhuey import task
 
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -14,9 +15,8 @@ def get_endpoint_url(endpoint):
     return f"{BASE_URL}{endpoint}"
 
 
-contact_list_endpoint = get_endpoint_url(
-    f"contactslist/{settings.MAILJET_NEWSLETTER_CONTACT_LIST_BUYER_ID}/managecontact"
-)
+def contact_list_endpoint(contact_list_id):
+    return get_endpoint_url(f"contactslist/{contact_list_id}/managecontact")
 
 
 def get_default_params():
@@ -35,12 +35,13 @@ def get_default_client(params={}):
 
 
 @task()
-def add_to_newsletter_async(email_adress, properties, client=None):
+def add_to_contact_list_async(email_adress, properties, contact_list_id, client=None):
     """Huey task adding contact to configured contact list
 
     Args:
         email_adress (String): e-mail of contact
         properties (Dict): {"nom": "", "prénom": "", "pays": "france", "nomsiae": "", "poste": ""}
+        contact_list_id (int): Mailjet id of contact list
         client (httpx.Client, optional): client to send requests. Defaults to None.
 
     Raises:
@@ -53,12 +54,11 @@ def add_to_newsletter_async(email_adress, properties, client=None):
         "action": "addnoforce",
         "email": email_adress,
     }
-
     if not client:
         client = get_default_client()
 
     try:
-        result = client.post(contact_list_endpoint, json=data)
+        result = client.post(contact_list_endpoint(contact_list_id), json=data)
         result.raise_for_status()
         data = result.json()
         logger.info("add user to newsletter")

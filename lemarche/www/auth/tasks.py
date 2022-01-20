@@ -1,11 +1,11 @@
-from huey.contrib.djhuey import task
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from huey.contrib.djhuey import task
 
+from lemarche.utils.apis import api_mailjet
 from lemarche.utils.emails import whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url
-from lemarche.utils.apis import api_mailjet
 
 
 def send_welcome_email(user):
@@ -45,7 +45,20 @@ def send_signup_notification_email(user):
     )
 
 
-def add_user_to_newsletter(user):
+def add_to_contact_list(user, type):
+    """Add user to contactlist
+
+    Args:
+        user (User): the user how will be added in the contact list
+        type (String): "siae", OR "buyer" else raise ValueError
+    """
+    if type == "siae":
+        contact_list_id = settings.MAILJET_NEWSLETTER_CONTACT_LIST_SIAE_ID
+    elif type == "buyer":
+        contact_list_id = settings.MAILJET_NEWSLETTER_CONTACT_LIST_BUYER_ID
+    else:
+        raise ValueError("kind must be siae or buyer")
+
     properties = {
         "nom": user.first_name,
         "prénom": user.last_name,
@@ -53,7 +66,8 @@ def add_user_to_newsletter(user):
         "nomsiae": user.company_name,
         "poste": user.position,
     }
-    api_mailjet.add_to_newsletter_async(user.email, properties)
+
+    api_mailjet.add_to_contact_list_async(user.email, properties, contact_list_id)
 
 
 @task()
