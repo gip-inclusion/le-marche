@@ -199,7 +199,7 @@
 {% block modals %}
     {% include "includes/_user_type_modal.html" with search_results_count=paginator.count %}
     {% include "auth/_login_or_signup_modal.html" %}
-    {% include "siaes/_favorite_modal.html" %}
+    {% include "siaes/_favorite_item_add_modal.html" %}
     {% include "siaes/_favorite_item_remove_modal.html" %}
 {% endblock %}
 
@@ -248,33 +248,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 {% if user.is_authenticated %}
-<script type="text/javascript">
-document.addEventListener("DOMContentLoaded", function() {
-    $('#favorite_modal').on('show.bs.modal', function (event) {
-        // Button that triggered the modal
-        var button = $(event.relatedTarget);
-
-        // Extract info from data-* attributes
-        var siaeId = button.data('siae-id');
-        var siaeSlug = button.data('siae-slug');
-        var siaeNameDisplay = button.data('siae-name-display');
-
-        // Update the modal's content
-        // - siae name display
-        // - check favorite lists that already contain the siae
-        // - edit the form action url
-        var modal = document.querySelector('#favorite_modal');
-        var modalForms = modal.querySelectorAll('form');
-        if (modal.querySelector('#siae-name-display')) {
-            modal.querySelector('#siae-name-display').textContent = siaeNameDisplay;
-        }
-        modalForms.forEach(form => {
-            var formActionUrl = form.getAttribute('action');
-            form.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', siaeSlug));
-        });
-    });
-});
-</script>
+<script type="text/javascript" src="{% static 'js/favorite_item_add.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/favorite_item_remove.js' %}"></script>
 {% endif %}
 {% endblock %}

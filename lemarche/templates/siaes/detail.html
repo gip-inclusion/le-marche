@@ -55,7 +55,7 @@
                                             <img src="{% static_theme_images 'ico-star-fill.svg' %}" height="24" alt="Dans votre liste d'achat" title="Dans votre liste d'achat" />
                                         </a>
                                     {% else %}
-                                        <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_modal">
+                                        <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_add_modal">
                                             <img src="{% static_theme_images 'ico-star-line.svg' %}" height="24" alt="Ajouter à votre liste d'achat" title="Ajouter à votre liste d'achat" />
                                         </a>
                                     {% endif %}
@@ -389,7 +389,7 @@
 
 {% block modals %}
     {% include "auth/_login_or_signup_modal.html" %}
-    {% include "siaes/_favorite_modal.html" with siae=siae %}
+    {% include "siaes/_favorite_item_add_modal.html" with siae=siae %}
     {% include "siaes/_favorite_item_remove_modal.html" with siae=siae %}
 {% endblock %}
 
