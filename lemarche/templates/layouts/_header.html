@@ -50,7 +50,7 @@
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <!-- <div class="dropdown-header">Bonjour user.full_name</div> -->
                                     <a href="{% url 'dashboard:home' %}" class="dropdown-item">
-                                        Mon espace
+                                        Tableau de bord
                                     </a>
                                     <div class="dropdown-divider"></div>
                                     <a href="{% url 'auth:logout' %}" class="dropdown-item">Déconnexion</a>
@@ -92,18 +92,10 @@
                                 Valoriser vos achats
                             </a>
                         </li>
-                        {% comment 'hidden' %}
-                        <li>
-                            <a href="#" rel="noopener" id="h_fav">
-                                <span>Favoris</span>
-                                <span id="fav-count" class="fs-xs badge badge-marche badge-pill ml-1"></span>
-                            </a>
-                        </li>
-                        {% endcomment %}
                         {% if user.is_authenticated %}
                         <li>
                             <a href="{% url 'dashboard:home' %}" id="h_dashboard" rel="noopener">
-                                <span>Mon espace</span>
+                                <span>Tableau de bord</span>
                             </a>
                         </li>
                         <li>
