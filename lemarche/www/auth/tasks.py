@@ -45,12 +45,20 @@ def send_signup_notification_email(user):
     )
 
 
-def add_to_contact_list(user):
+def add_to_contact_list(user, type):
     """Add user to contactlist
 
     Args:
         user (User): the user how will be added in the contact list
+        type (String): "siae", OR "buyer" else raise ValueError
     """
+    if type == "siae":
+        contact_list_id = settings.MAILJET_NEWSLETTER_CONTACT_LIST_SIAE_ID
+    elif type == "buyer":
+        contact_list_id = settings.MAILJET_NEWSLETTER_CONTACT_LIST_BUYER_ID
+    else:
+        raise ValueError("kind must be siae or buyer")
+
     properties = {
         "nom": user.first_name,
         "prénom": user.last_name,
@@ -58,7 +66,8 @@ def add_to_contact_list(user):
         "nomsiae": user.company_name,
         "poste": user.position,
     }
-    api_mailjet.add_to_contact_list_async(user.email, properties, user.kind)
+
+    api_mailjet.add_to_contact_list_async(user.email, properties, contact_list_id)
 
 
 @task()

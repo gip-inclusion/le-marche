@@ -36,13 +36,13 @@ def get_default_client(params={}):
 
 
 @task()
-def add_to_contact_list_async(email_adress, properties, kind, client=None):
+def add_to_contact_list_async(email_adress, properties, contact_list_id, client=None):
     """Huey task adding contact to configured contact list
 
     Args:
         email_adress (String): e-mail of contact
         properties (Dict): {"nom": "", "prénom": "", "pays": "france", "nomsiae": "", "poste": ""}
-        kind (String): User.KIND_SIAE, OR User.KIND_BUYER else raise ValueError
+        contact_list_id (int): Mailjet id of contact list
         client (httpx.Client, optional): client to send requests. Defaults to None.
 
     Raises:
@@ -55,13 +55,6 @@ def add_to_contact_list_async(email_adress, properties, kind, client=None):
         "action": "addnoforce",
         "email": email_adress,
     }
-    if kind == User.KIND_SIAE:
-        contact_list_id = settings.MAILJET_NEWSLETTER_CONTACT_LIST_SIAE_ID
-    elif kind == User.KIND_BUYER:
-        contact_list_id = settings.MAILJET_NEWSLETTER_CONTACT_LIST_BUYER_ID
-    else:
-        raise ValueError("kind must be siae or buyer")
-
     if not client:
         client = get_default_client()
 
