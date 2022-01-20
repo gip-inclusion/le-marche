@@ -150,7 +150,11 @@ class Siae(models.Model):
         "c1_last_sync_date",
         "source",
     ]
+
     READONLY_FIELDS_FROM_QPV = ["is_qpv", "api_qpv_last_sync_date", "qpv_name", "qpv_code"]
+
+    READONLY_FIELDS_FROM_ZRR = ["is_zrr", "zrr_name", "zrr_code", "api_zrr_last_sync_date"]
+
     READONLY_FIELDS_FROM_API_ENTREPRISE = [
         "api_entreprise_date_constitution",
         "api_entreprise_employees",
@@ -160,7 +164,12 @@ class Siae(models.Model):
         "api_entreprise_ca_date_fin_exercice",
         "api_entreprise_exercice_last_sync_date",
     ]
-    READONLY_FIELDS = READONLY_FIELDS_FROM_C1 + READONLY_FIELDS_FROM_QPV + READONLY_FIELDS_FROM_API_ENTREPRISE
+    READONLY_FIELDS = (
+        READONLY_FIELDS_FROM_C1
+        + READONLY_FIELDS_FROM_QPV
+        + READONLY_FIELDS_FROM_ZRR
+        + READONLY_FIELDS_FROM_API_ENTREPRISE
+    )
 
     KIND_EI = "EI"
     KIND_AI = "AI"
@@ -328,6 +337,13 @@ class Siae(models.Model):
     qpv_name = models.CharField(verbose_name="Nom de la zone QPV (API QPV)", max_length=255, blank=True)
     qpv_code = models.CharField(verbose_name="Code de la zone QPV (API QPV)", max_length=16, blank=True)
     api_qpv_last_sync_date = models.DateTimeField("Date de dernière synchronisation (API QPV)", blank=True, null=True)
+
+    # API ZRR
+    # To avoid ZRR zones synchro problematics, we take the choice to duplicate names and codes of ZRR
+    is_zrr = models.BooleanField(verbose_name="Zone ZRR (API ZRR)", blank=False, null=False, default=False)
+    zrr_name = models.CharField(verbose_name="Nom de la zone ZRR (API ZRR)", max_length=255, blank=True)
+    zrr_code = models.CharField(verbose_name="Code de la zone ZRR (API ZRR)", max_length=16, blank=True)
+    api_zrr_last_sync_date = models.DateTimeField("Date de dernière synchronisation (API ZRR)", blank=True, null=True)
 
     # API Entreprise
     api_entreprise_date_constitution = models.DateField(
