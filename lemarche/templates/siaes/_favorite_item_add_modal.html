@@ -1,4 +1,4 @@
-<div class="modal fade modal-siae" id="favorite_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="modalTitle">
+<div class="modal fade modal-siae" id="favorite_item_add_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="modalTitle">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -14,7 +14,6 @@
             <form method="POST" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
                 {% csrf_token %}
                 <div class="modal-body home-content-body">
-                    <p>Pour ajouter <strong>{% if siae %}{{ siae.name_display }}{% else %}<span id="siae-name-display"></span>{% endif %}</strong></p>
                     <label class="mb-2 d-inline-block font-weight-bold" for="id_new_favorite_list">Créer une {% if user.favorite_lists.count %}nouvelle {% endif %}liste</label>
                     <div class="form-row">
                         <div class="form-group col mb-0">
