@@ -89,7 +89,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(User.objects.count(), self.user_count + 1)
         # user should be automatically logged in
         header = driver.find_element_by_css_selector("header#header")
-        self.assertTrue("Mon compte" in header.text)
+        self.assertTrue("Mon espace" in header.text)
         self.assertTrue("Connexion" not in header.text)
         # should redirect to user dashboard
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('dashboard:home')}")
@@ -127,7 +127,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(User.objects.count(), self.user_count + 1)
         # user should be automatically logged in
         header = driver.find_element_by_css_selector("header#header")
-        self.assertTrue("Mon compte" in header.text)
+        self.assertTrue("Mon espace" in header.text)
         self.assertTrue("Connexion" not in header.text)
         # should redirect to home
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('pages:home')}")
@@ -166,7 +166,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(User.objects.count(), self.user_count + 1)
         # user should be automatically logged in
         header = driver.find_element_by_css_selector("header#header")
-        self.assertTrue("Mon compte" in header.text)
+        self.assertTrue("Mon espace" in header.text)
         self.assertTrue("Connexion" not in header.text)
         # should redirect to home
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('pages:home')}")
@@ -205,7 +205,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(User.objects.count(), self.user_count + 1)
         # user should be automatically logged in
         header = driver.find_element_by_css_selector("header#header")
-        self.assertTrue("Mon compte" in header.text)
+        self.assertTrue("Mon espace" in header.text)
         self.assertTrue("Connexion" not in header.text)
         # should redirect to next url
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('siae:search_results')}?kind=ESAT")
