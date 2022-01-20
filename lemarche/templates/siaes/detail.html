@@ -299,7 +299,12 @@
                                     <h3 class="h2 mb-1 mt-1">Réseaux</h3>
                                     <ul>
                                     {% for network in siae.networks.all %}
-                                        <li><a href="{{ network.website }}" class="network_link" rel="noopener" target="_blank">{{ network.brand }}</a></li>
+                                        <li>
+                                            <a href="{{ network.website }}" class="network_link" rel="noopener" target="_blank">
+                                                <span>{{ network.name }}</span>
+                                                {% if network.brand %}<span>({{ network.brand }})</span>{% endif %}
+                                            </a>
+                                        </li>
                                     {% endfor %}
                                     </ul>
                                 </div>
