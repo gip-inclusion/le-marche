@@ -189,15 +189,17 @@
 {% block extra_js %}
 <script type="text/javascript">
 const copyToClipboard = str => {
-    console.log("copyToClipboard")
     const el = document.getElementById('user-api-key');
     el.select();
     document.execCommand('copy');
 };
 document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById('user-api-key-copy-button').addEventListener('click', function(e) {
-        copyToClipboard();
-    });
+    const apiKeyCopyButton = document.getElementById('user-api-key-copy-button');
+    if (apiKeyCopyButton) {
+        apiKeyCopyButton.addEventListener('click', function(e) {
+            copyToClipboard();
+        });
+    }
 });
 </script>
 {% endblock %}
