@@ -1,10 +1,9 @@
-from huey.contrib.djhuey import task
-import httpx
-from django.conf import settings
-
 import logging
 
-from lemarche.users.models import User
+import httpx
+from django.conf import settings
+from huey.contrib.djhuey import task
+
 
 logger = logging.getLogger(__name__)
 
