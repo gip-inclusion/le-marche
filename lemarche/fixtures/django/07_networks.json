@@ -17,7 +17,7 @@
       "fields": {
          "name": "UNAPEI",
          "slug": "unapei",
-         "brand": "UNAPEI",
+         "brand": "",
          "website": "https://www.unapei.org/",
          "created_at": "2021-07-01T12:44:57Z",
          "updated_at": "2021-10-26T22:26:47.574Z"
@@ -29,7 +29,7 @@
       "fields": {
          "name": "UNAI",
          "slug": "unai",
-         "brand": "UNAI",
+         "brand": "",
          "website": "https://unai.fr",
          "created_at": "2021-07-01T12:45:10Z",
          "updated_at": "2021-10-26T22:26:47.578Z"
@@ -41,7 +41,7 @@
       "fields": {
          "name": "Tissons la solidarité",
          "slug": "tissons-la-solidarite",
-         "brand": "Tissons la solidarité",
+         "brand": "",
          "website": "https://www.tissonslasolidarite.fr/",
          "created_at": "2021-07-01T12:45:23Z",
          "updated_at": "2021-10-26T22:26:47.581Z"
@@ -53,7 +53,7 @@
       "fields": {
          "name": "Réseau Envie",
          "slug": "reseau-envie",
-         "brand": "Réseau Envie",
+         "brand": "",
          "website": "https://www.envie.org/",
          "created_at": "2021-07-01T12:45:37Z",
          "updated_at": "2021-10-26T22:26:47.583Z"
@@ -65,7 +65,7 @@
       "fields": {
          "name": "Réseau Cocagne",
          "slug": "reseau-cocagne",
-         "brand": "Réseau Cocagne",
+         "brand": "",
          "website": "http://www.reseaucocagne.asso.fr/",
          "created_at": "2021-07-01T12:45:49Z",
          "updated_at": "2021-10-26T22:26:47.586Z"
@@ -113,7 +113,7 @@
       "fields": {
          "name": "Coorace",
          "slug": "coorace",
-         "brand": "Coorace",
+         "brand": "",
          "website": "http://www.coorace.org/",
          "created_at": "2021-07-01T12:46:46Z",
          "updated_at": "2021-10-26T22:26:47.598Z"
@@ -137,7 +137,7 @@
       "fields": {
          "name": "Chantier Ecole",
          "slug": "chantier-ecole",
-         "brand": "Chantier Ecole",
+         "brand": "",
          "website": "http://www.chantierecole.org/",
          "created_at": "2021-07-01T12:47:25Z",
          "updated_at": "2021-10-26T22:26:47.604Z"
