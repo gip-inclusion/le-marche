@@ -63,7 +63,7 @@
         <div class="col-12 col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                 <fieldset>
-                    <legend class="h4">Données {% if siae.kind == 'ESAT' %}GESAT/Handeco{% else %}ASP{% endif %} de votre structure</legend>
+                    <legend class="h4">Données {% if siae.kind == 'ESAT' %}GESAT/Handeco{% elif siae.kind == 'SEP' %}importées{% else %}ASP{% endif %} de votre structure</legend>
                     {% bootstrap_field form.name %}
                     {% bootstrap_field form.brand %}
                     {% bootstrap_field form.siret %}
