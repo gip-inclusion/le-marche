@@ -59,10 +59,7 @@ def add_to_contact_list(user):
         "nomsiae": user.company_name,
         "poste": user.position,
     }
-    if user.kind == User.KIND_BUYER:
-        api_mailjet.add_buyer_to_newsletter(user.email, properties)
-    elif user.kind == User.KIND_SIAE:
-        api_mailjet.add_seller_to_newsletter(user.email, properties)
+    api_mailjet.add_to_contact_list_async(user.email, properties, user.kind)
 
 
 @task()

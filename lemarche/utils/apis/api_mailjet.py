@@ -4,6 +4,8 @@ from django.conf import settings
 
 import logging
 
+from lemarche.users.models import User
+
 logger = logging.getLogger(__name__)
 
 
@@ -33,23 +35,14 @@ def get_default_client(params={}):
     return client
 
 
-def add_seller_to_newsletter(email_adress, properties, client=None):
-    return add_to_newsletter_async(
-        email_adress, properties, settings.MAILJET_NEWSLETTER_CONTACT_LIST_SELLER_ID, client
-    )
-
-
-def add_buyer_to_newsletter(email_adress, properties, client=None):
-    return add_to_newsletter_async(email_adress, properties, settings.MAILJET_NEWSLETTER_CONTACT_LIST_BUYER_ID, client)
-
-
 @task()
-def add_to_newsletter_async(email_adress, properties, contact_list_id, client=None):
+def add_to_contact_list_async(email_adress, properties, kind, client=None):
     """Huey task adding contact to configured contact list
 
     Args:
         email_adress (String): e-mail of contact
         properties (Dict): {"nom": "", "prénom": "", "pays": "france", "nomsiae": "", "poste": ""}
+        kind (String): User.KIND_SIAE, OR User.KIND_BUYER else raise ValueError
         client (httpx.Client, optional): client to send requests. Defaults to None.
 
     Raises:
@@ -62,6 +55,12 @@ def add_to_newsletter_async(email_adress, properties, contact_list_id, client=No
         "action": "addnoforce",
         "email": email_adress,
     }
+    if kind == User.KIND_SIAE:
+        contact_list_id = settings.MAILJET_NEWSLETTER_CONTACT_LIST_SIAE_ID
+    elif kind == User.KIND_BUYER:
+        contact_list_id = settings.MAILJET_NEWSLETTER_CONTACT_LIST_BUYER_ID
+    else:
+        raise ValueError("kind must be siae or buyer")
 
     if not client:
         client = get_default_client()
