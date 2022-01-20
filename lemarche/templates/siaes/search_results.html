@@ -197,7 +197,6 @@
 {% endblock %}
 
 {% block modals %}
-    {% include "includes/_user_type_modal.html" with search_results_count=paginator.count %}
     {% include "auth/_login_or_signup_modal.html" %}
     {% include "siaes/_favorite_item_add_modal.html" %}
     {% include "siaes/_favorite_item_remove_modal.html" %}
