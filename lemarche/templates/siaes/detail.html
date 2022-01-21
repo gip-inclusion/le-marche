@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load static array_choices_display m2m_list_display %}
+{% load static array_choices_display siae_sectors_display %}
 {% load theme_inclusion %}
 
 {% block title %}{{ siae.name_display }}{{ block.super }}{% endblock %}
@@ -207,7 +207,7 @@
                                     {% if siae.kind == 'ETTI' and siae.sector_count > 3 %}
                                         <li>Multisectoriel</li>
                                     {% elif siae.sector_count %}
-                                        {% m2m_list_display siae 'sectors' display_max=6 current_search_query=current_search_query output_format='li' %}
+                                        {% siae_sectors_display siae display_max=6 current_search_query=current_search_query output_format='li' %}
                                     {% endif %}
                                 </ul>
                                 {% if not siae.sector_count %}

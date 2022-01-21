@@ -1,4 +1,4 @@
-{% load static m2m_list_display %}
+{% load static siae_sectors_display %}
 {% load theme_inclusion %}
 
 <div class="card c-card c-card--marche siae-card">
@@ -29,7 +29,7 @@
                         {% if siae.sectors %}
                         <li class="sc-profile-sectors col-12 col-lg-6 pl-lg-2 mb-3 mb-lg-0 d-flex" title="Secteur(s) d'activité">
                             <img src="{% static_theme_images 'ico-service-line.svg' %}" height="16" alt="" />
-                            <span class="ml-1">{% m2m_list_display siae 'sectors' display_max=3 current_search_query=current_search_query %}</span>
+                            <span class="ml-1">{% siae_sectors_display siae display_max=3 current_search_query=current_search_query %}</span>
                         </li>
                         {% endif %}
                     </ul>
