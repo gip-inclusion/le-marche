@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("siaes", "0039_siae_api_qpv_last_sync_date_alter_siae_is_qpv_and_more"),
+        ("siaes", "0040_siae_api_zrr_last_sync_date_siae_is_zrr_and_more"),
     ]
 
     operations = [
