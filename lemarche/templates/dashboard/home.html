@@ -1,5 +1,6 @@
 {% extends "layouts/base.html" %}
 {% load static get_verbose_name %}
+{% load theme_inclusion %}
 
 {% block title %}Tableau de bord{{ block.super }}{% endblock %}
 
@@ -22,7 +23,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="pt-4 pb-6">
+<section class="py-4">
     <div class="container">
         <div class="row">
             <div class="col-12">
@@ -192,8 +193,7 @@
                 <div class="d-flex flex-column flex-md-row">
                     <div class="text-center text-md-left">
                         <a href="https://aides-territoires.beta.gouv.fr/" target="_blank">
-                            <img height="80" src="{% static_theme_images 'ico-bicro-marche-local.svg' %}" alt="" />
-                            <!-- <img src="{% static_theme_images 'logo-aides-territoires.svg' %}" alt="Aides-territoires | Aides publiques pour les collectivités" height="180" /> -->
+                            <img src="{% static_theme_images 'logo-aides-territoires.svg' %}" alt="Aides-territoires | Aides publiques pour les collectivités" height="120" />
                         </a>
                     </div>
                     <div class="w-100 mt-3 pl-0 pl-md-3">
