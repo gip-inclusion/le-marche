@@ -60,7 +60,6 @@ def extract_meta_from_request(request):
         "user_type": USER_KIND_MAPPING.get(request.user.kind) if request.user.id else "",
         "user_id": request.user.id if request.user.id else None,
         "token": request.GET.get("token", "0"),
-        "user_cookie_type": request.COOKIES.get("leMarcheTypeUsagerV2", ""),
         "cmp": request.GET.get("cmp", ""),
     }
 

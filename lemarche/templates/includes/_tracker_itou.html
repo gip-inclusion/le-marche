@@ -16,7 +16,6 @@ const uTypeMapping = {
     'ADMIN': '5',
 };
 
-const USER_TYPE_MODAL_COOKIE_NAME = 'leMarcheTypeUsagerV2';
 const IS_ADMIN_COOKIE_NAME = 'isAdmin';
 const USER_TYPE_COOKIE_NAME = 'uType';
 const SESSION_ID_COOKIE_NAME = 'sessionid';
@@ -71,7 +70,6 @@ function computeRequestBody(page, action, metaIn) {
     const meta = Object.assign(metaIn, getUrlMeta());
     meta['is_admin'] = getCookieValueByName(IS_ADMIN_COOKIE_NAME) == 'true';
     meta['user_type'] = getCookieValueByName(USER_TYPE_COOKIE_NAME);
-    meta['user_cookie_type'] = getCookieValueByName(USER_TYPE_MODAL_COOKIE_NAME);
 
     return {
         _v: VERSION,
@@ -160,13 +158,4 @@ document.addEventListener('click', async (event) => {
         meta
     );
 }, false);
-
-// show _header_notice_contact.html if buyer or actor
-user_cookie_type = getCookieValueByName(USER_TYPE_MODAL_COOKIE_NAME);
-if ((user_cookie_type === 'buyer') || (user_cookie_type === 'actor')) {
-    const headerNotice = document.getElementById('header-notice');
-    if (headerNotice) {
-        headerNotice.classList.remove('d-none');
-    }
-}
 </script>
