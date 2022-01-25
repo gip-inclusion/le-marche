@@ -27,6 +27,10 @@ class SiaeSearchForm(forms.Form):
         ("Handicap", Siae.KIND_CHOICES_WITH_EXTRA_HANDICAP),
     )
     FORM_PRESTA_CHOICES = EMPTY_CHOICE + Siae.PRESTA_CHOICES
+    FORM_TERRITORY_CHOICES = (
+        ("QPV", "Quartiers prioritaire de la ville (QPV)"),
+        ("ZRR", "Zones de revitalisation rurale (ZRR)"),
+    )
 
     sectors = GroupedModelMultipleChoiceField(
         label="Secteur d’activité",
@@ -52,6 +56,11 @@ class SiaeSearchForm(forms.Form):
     presta_type = forms.ChoiceField(
         label="Type de prestation",
         choices=FORM_PRESTA_CHOICES,
+        required=False,
+    )
+    territory = forms.MultipleChoiceField(
+        label="Territoire spécifique",
+        choices=FORM_TERRITORY_CHOICES,
         required=False,
     )
     networks = forms.ModelChoiceField(
@@ -108,6 +117,13 @@ class SiaeSearchForm(forms.Form):
         presta_type = self.cleaned_data.get("presta_type", None)
         if presta_type:
             qs = qs.filter(presta_type__overlap=[presta_type])
+
+        territory = self.cleaned_data.get("territory", None)
+        if territory:
+            if "QPV" in territory:
+                qs = qs.filter(is_qpv=True)
+            if "ZRR" in territory:
+                qs = qs.filter(is_zrr=True)
 
         network = self.cleaned_data.get("networks", None)
         if network:
