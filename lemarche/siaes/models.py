@@ -180,6 +180,7 @@ class Siae(models.Model):
     KIND_EA = "EA"
     KIND_EATT = "EATT"
     KIND_ESAT = "ESAT"
+    KIND_SEP = "SEP"
 
     KIND_CHOICES = (
         (KIND_EI, "Entreprise d'insertion"),  # Regroupées au sein de la fédération des entreprises d'insertion.
@@ -192,6 +193,7 @@ class Siae(models.Model):
         (KIND_EA, "Entreprise adaptée"),
         (KIND_EATT, "Entreprise adaptée de travail temporaire"),
         (KIND_ESAT, "Etablissement et service d'aide par le travail"),
+        (KIND_SEP, "Produits et services réalisés en prison"),
     )
     # KIND_CHOICES_WITH_EXTRA = ((key, f"{value} ({key})") for (key, value) in KIND_CHOICES)
     KIND_CHOICES_WITH_EXTRA_INSERTION = (
@@ -202,6 +204,7 @@ class Siae(models.Model):
         (KIND_ETTI, "Entreprise de travail temporaire d'insertion (ETTI)"),
         (KIND_EITI, "Entreprise d'insertion par le travail indépendant (EITI)"),
         (KIND_GEIQ, "Groupement d'employeurs pour l'insertion et la qualification (GEIQ)"),
+        (KIND_SEP, "Produits et services réalisés en prison"),  # (SEP) ne s'applique pas à toutes les structures
     )
     KIND_CHOICES_WITH_EXTRA_HANDICAP = (
         (KIND_EA, "Entreprise adaptée (EA)"),
@@ -216,6 +219,7 @@ class Siae(models.Model):
     SOURCE_USER_CREATED = "USER_CREATED"
     SOURCE_STAFF_CREATED = "STAFF_CREATED"
     SOURCE_ESAT = "ESAT"
+    SOURCE_SEP = "SEP"
 
     SOURCE_CHOICES = (
         (SOURCE_ASP, "Export ASP"),
@@ -224,6 +228,7 @@ class Siae(models.Model):
         (SOURCE_USER_CREATED, "Utilisateur (Antenne)"),
         (SOURCE_STAFF_CREATED, "Staff Itou"),
         (SOURCE_ESAT, "Import ESAT (GSAT, Handeco)"),
+        (SOURCE_SEP, "Import SEP"),
     )
 
     NATURE_HEAD_OFFICE = "HEAD_OFFICE"

@@ -77,7 +77,7 @@
                                 <div class="row">
                                     <div class="col-12 mb-3">
                                         <span class="prof_icon mr-1"><img src="{% static 'img/prof_workers.svg' %}" alt=""/></span>
-                                        <span>Salariés<sup>*</sup> : {% if siae.api_entreprise_employees %}{{ siae.api_entreprise_employees }}{% else %}non disponible{% endif %}</span>
+                                        <span>{% if siae.kind == 'SEP' %}Travailleurs détenus{% else %}Salariés{% endif %}<sup>*</sup> : {% if siae.api_entreprise_employees %}{{ siae.api_entreprise_employees }}{% else %}non disponible{% endif %}</span>
                                     </div>
                                 </div>
                                 <div class="row">
