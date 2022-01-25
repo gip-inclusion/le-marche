@@ -85,6 +85,38 @@ class SiaePrestaTypeSearchFilterTest(TestCase):
         self.assertEqual(len(siaes), 1 + 1)
 
 
+class SiaeTerritorySearchFilterTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        SiaeFactory(is_qpv=True)
+        SiaeFactory(is_zrr=True)
+        # SiaeFactory(is_qpv=True, is_zrr=True)
+
+    def test_search_territory_empty(self):
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 3)
+
+    def test_search_territory_empty_string(self):
+        url = reverse("siae:search_results") + "?territory="
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 3)
+
+    def test_search_territory_should_filter(self):
+        url = reverse("siae:search_results") + "?territory=QPV"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+
+    def test_search_territory_multiple_should_filter(self):
+        url = reverse("siae:search_results") + "?territory=QPV&territory=ZRR"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1 + 1)
+
+
 class SiaeSectorSearchFilterTest(TestCase):
     @classmethod
     def setUpTestData(cls):
