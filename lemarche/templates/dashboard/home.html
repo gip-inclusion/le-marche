@@ -1,5 +1,6 @@
 {% extends "layouts/base.html" %}
 {% load static get_verbose_name %}
+{% load theme_inclusion %}
 
 {% block title %}Tableau de bord{{ block.super }}{% endblock %}
 
@@ -22,7 +23,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="pt-4 pb-6">
+<section class="py-4">
     <div class="container">
         <div class="row">
             <div class="col-12">
@@ -166,10 +167,10 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-sm-3">
+                        <div class="col-12 col-md-6">
                             <div class="form-group">
                                 <label>Votre token</label>
-                                <div class="input-group">
+                                <div class="input-group input-group-sm">
                                     <input type="text" id="user-api-key" class="form-control" value="{{ user.api_key }}" readonly />
                                     <div class="input-group-append">
                                         <button id="user-api-key-copy-button" class="btn btn-primary" type="button" id="button-addon2">Copier</button>
@@ -179,12 +180,40 @@
                         </div>
                     </div>
                 {% endif %}
-
-                <!-- <h2 class="h1 mb-3 mb-lg-5">Mes favoris</h2> -->
             </div>
         </div>
     </div>
 </section>
+
+{% if user.kind == user.KIND_SIAE %}
+    <section class="s-banniere-01 s-banniere-01--marche">
+        <div class="s-banniere-01__container container">
+            <div class="s-banniere-01__row row">
+                <div class="s-banniere-01__col col-12">
+                    <div class="d-flex flex-column flex-md-row">
+                        <div class="text-center text-md-left">
+                            <a href="https://aides-territoires.beta.gouv.fr/" target="_blank" rel="noopener">
+                                <img src="{% static_theme_images 'logo-aides-territoires.svg' %}" alt="Aides-territoires | Aides publiques pour les collectivités" height="120" />
+                            </a>
+                        </div>
+                        <div class="w-100 mt-3 pl-0 pl-md-3">
+                            <p class="h3 mb-2">Trouver des aides financières sur votre territoire pour faciliter votre développement.</p>
+                            <p>Venez découvrir plus de 2900 aides répertoriées sur tout le territoire.</p>
+                            <p class="mb-0 text-right">
+                                <a href="https://aides-territoires.beta.gouv.fr/" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary btn-ico" title="Aides-territoires | Aides publiques pour les collectivités">
+                                    <span>Aides-territoires</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                                        <path fill="currentColor" d="M8.66517015,2.82577407 C8.34562066,3.18534827 8.34130426,3.73389577 8.67429909,4.0990571 L11.359,7.039 L1.46428571,7.03948778 C0.93400271,7.03948778 0.5,7.46464861 0.5,7.99431466 L0.506519822,8.10609811 C0.562491613,8.58254879 0.971880067,8.94914154 1.46428571,8.94914154 L11.354,8.949 L8.64311662,11.8995038 C8.28105469,12.2965343 8.31618249,12.9073498 8.7191121,13.2599671 C9.11604213,13.6073339 9.72177649,13.5739032 10.0771295,13.184224 L14.2544508,8.63732099 L14.3103844,8.56958432 L14.3728703,8.47818478 L14.4352531,8.3399089 L14.4491817,8.28987794 L14.462,8.193 L14.4705425,8.17556014 C14.4890266,8.12237865 14.5,8.06201568 14.5,7.99431466 L14.5,7.84422179 L14.4816817,7.71012206 L14.4677531,7.6600911 L14.4094639,7.52822311 L14.3908925,7.49865936 L14.3296866,7.41519605 L10.1084913,2.81453208 C9.75427649,2.42609678 9.14854213,2.39266615 8.7516121,2.74003295 L8.66517015,2.82577407 Z" transform="rotate(-45 10.56 5.732)"></path>
+                                    </svg>
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}
