@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.gis.db.models.functions import Distance
-from django.db.models import BooleanField, Case, Value, When
+from django.db.models import BooleanField, Case, Q, Value, When
 from django.db.models.functions import NullIf
 
 from lemarche.favorites.models import FavoriteList
@@ -120,10 +120,13 @@ class SiaeSearchForm(forms.Form):
 
         territory = self.cleaned_data.get("territory", None)
         if territory:
-            if "QPV" in territory:
-                qs = qs.filter(is_qpv=True)
-            if "ZRR" in territory:
-                qs = qs.filter(is_zrr=True)
+            if len(territory) == 1:
+                if "QPV" in territory:
+                    qs = qs.filter(is_qpv=True)
+                elif "ZRR" in territory:
+                    qs = qs.filter(is_zrr=True)
+            elif len(territory) == 2:
+                qs = qs.filter(Q(is_qpv=True) | Q(is_zrr=True))
 
         network = self.cleaned_data.get("networks", None)
         if network:
