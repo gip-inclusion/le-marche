@@ -37,18 +37,16 @@ var sessionId = getCookieValueByName(SESSION_ID_COOKIE_NAME);
 document.cookie = `${IS_ADMIN_COOKIE_NAME}=${window.isAdmin}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
 document.cookie = `${USER_TYPE_COOKIE_NAME}=${window.uType}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
 
-//export function track(page, action, meta={}) {
 async function track(page, action, meta={}) {
     const body = computeRequestBody(page, action, meta);
     
     if (typeof window !== 'undefined') {
         await fetch('{{ TRACKER_HOST }}/track', {
-        method: 'POST',
-        headers: {
-            // 'Content-Type': 'application/json',
-            'Content-Type': 'text/plain',
-        },
-        body: JSON.stringify(body),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain',
+            },
+            body: JSON.stringify(body),
         });
     }
 }
@@ -68,8 +66,12 @@ function computeRequestBody(page, action, metaIn) {
     const timeNow = new Date();
     // Optionnaly add meta data (in key/value pairs) from url query string
     const meta = Object.assign(metaIn, getUrlMeta());
+    // user info
+    // meta['user_id'] = {% if user.is_authenticated %}'{{ user.id }}'{% else %}null{% endif %};  // privacy concerns...
     meta['is_admin'] = getCookieValueByName(IS_ADMIN_COOKIE_NAME) == 'true';
     meta['user_type'] = getCookieValueByName(USER_TYPE_COOKIE_NAME);
+    // default data
+    meta['source'] = 'bitoubi_frontend';
 
     return {
         _v: VERSION,
@@ -87,13 +89,13 @@ function computeRequestBody(page, action, metaIn) {
 
 
 function uuidv4() {
-try {
-    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-        (c ^ ( crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)
-    );
-} catch {
-    return 'ANONYMOUS';
-}
+    try {
+        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+            (c ^ ( crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)
+        );
+    } catch {
+        return 'ANONYMOUS';
+    }
 }
 
 // export function getSessionId() {
