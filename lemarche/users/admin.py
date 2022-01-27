@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
-from lemarche.siaes.models import SiaeUser
+from lemarche.siaes.models import Siae, SiaeUser
 from lemarche.users.forms import UserChangeForm, UserCreationForm
 from lemarche.users.models import User
 
@@ -66,9 +66,16 @@ class HasApiKeyFilter(admin.SimpleListFilter):
 
 class SiaeUserInline(admin.TabularInline):
     model = SiaeUser
+    fields = ["siae", "siae_with_link", "created_at", "updated_at"]
     autocomplete_fields = ["siae"]
-    readonly_fields = ["created_at", "updated_at"]
+    readonly_fields = ["siae_with_link", "created_at", "updated_at"]
     extra = 0
+
+    def siae_with_link(self, siae_user):
+        url = reverse("admin:siaes_siae_change", args=[siae_user.siae_id])
+        return format_html(f'<a href="{url}">{siae_user.siae}</a>')
+
+    siae_with_link.short_description = Siae._meta.verbose_name
 
 
 @admin.register(User)
