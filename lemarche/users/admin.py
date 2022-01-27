@@ -3,7 +3,9 @@ from django.contrib.auth.admin import UserAdmin
 from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
+from fieldsets_with_inlines import FieldsetsInlineMixin
 
+from lemarche.siaes.models import SiaeUser
 from lemarche.users.forms import UserChangeForm, UserCreationForm
 from lemarche.users.models import User
 
@@ -62,7 +64,15 @@ class HasApiKeyFilter(admin.SimpleListFilter):
         return queryset
 
 
-class UserAdmin(UserAdmin):
+class SiaeUserInline(admin.TabularInline):
+    model = SiaeUser
+    autocomplete_fields = ["siae"]
+    readonly_fields = ["created_at", "updated_at"]
+    extra = 0
+
+
+@admin.register(User)
+class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     add_form = UserCreationForm
     form = UserChangeForm
     model = User
@@ -76,7 +86,6 @@ class UserAdmin(UserAdmin):
     # autocomplete_fields = ["siaes"]
     readonly_fields = [field.name for field in User._meta.fields if field.name.startswith("c4_")] + [
         "nb_siaes",
-        "user_siae_admin_list",
         "user_favorite_list",
         "last_login",
         "image_url",
@@ -85,7 +94,7 @@ class UserAdmin(UserAdmin):
         "updated_at",
     ]
 
-    fieldsets = (
+    fieldsets_with_inlines = (
         (
             None,
             {
@@ -109,13 +118,7 @@ class UserAdmin(UserAdmin):
                 )
             },
         ),
-        (
-            "Structures",
-            {
-                "description": "Ajouter l'utilisateur à une nouvelle structure ? Possible en se rendant sur la fiche de la structure.",  # noqa
-                "fields": ("user_siae_admin_list",),
-            },
-        ),
+        SiaeUserInline,
         (
             "Listes d'achats favoris",
             {
@@ -205,22 +208,6 @@ class UserAdmin(UserAdmin):
     nb_siaes.short_description = "Nombre de structures"
     nb_siaes.admin_order_field = "siae_count"
 
-    def user_siae_admin_list(self, user):
-        siaes = user.siaes.all()
-        if not siaes:
-            return "Aucune"
-        else:
-            html = ""
-            for siae in siaes:
-                html += format_html(
-                    '<a href="{obj_url}">{obj_name}</a></br>',
-                    obj_url=reverse("admin:siaes_siae_change", args=[siae.id]),
-                    obj_name=siae,
-                )
-            return format_html(html)
-
-    user_siae_admin_list.short_description = "Gestionnaire de"
-
     def user_favorite_list(self, user):
         favorite_lists = user.favorite_lists.all()
         if not favorite_lists:
@@ -247,6 +234,3 @@ class UserAdmin(UserAdmin):
         return mark_safe("<div>-</div>")
 
     image_url_display.short_description = "Image"
-
-
-admin.site.register(User, UserAdmin)
