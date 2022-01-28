@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.gis.db.models.functions import Distance
-from django.db.models import BooleanField, Case, Value, When
+from django.db.models import BooleanField, Case, Q, Value, When
 from django.db.models.functions import NullIf
 
 from lemarche.favorites.models import FavoriteList
@@ -27,6 +27,10 @@ class SiaeSearchForm(forms.Form):
         ("Handicap", Siae.KIND_CHOICES_WITH_EXTRA_HANDICAP),
     )
     FORM_PRESTA_CHOICES = EMPTY_CHOICE + Siae.PRESTA_CHOICES
+    FORM_TERRITORY_CHOICES = (
+        ("QPV", "Quartiers prioritaire de la ville (QPV)"),
+        ("ZRR", "Zones de revitalisation rurale (ZRR)"),
+    )
 
     sectors = GroupedModelMultipleChoiceField(
         label="Secteur d’activité",
@@ -52,6 +56,11 @@ class SiaeSearchForm(forms.Form):
     presta_type = forms.ChoiceField(
         label="Type de prestation",
         choices=FORM_PRESTA_CHOICES,
+        required=False,
+    )
+    territory = forms.MultipleChoiceField(
+        label="Territoire spécifique",
+        choices=FORM_TERRITORY_CHOICES,
         required=False,
     )
     networks = forms.ModelChoiceField(
@@ -83,7 +92,7 @@ class SiaeSearchForm(forms.Form):
             self.cleaned_data["perimeter"] = ""
             return self.cleaned_data
 
-    def filter_queryset(self, perimeter=None):
+    def filter_queryset(self, perimeter=None):  # noqa C901
         """
         Method to filter the Siaes depending on the search filters.
         We also make sure there are no duplicates.
@@ -108,6 +117,16 @@ class SiaeSearchForm(forms.Form):
         presta_type = self.cleaned_data.get("presta_type", None)
         if presta_type:
             qs = qs.filter(presta_type__overlap=[presta_type])
+
+        territory = self.cleaned_data.get("territory", None)
+        if territory:
+            if len(territory) == 1:
+                if "QPV" in territory:
+                    qs = qs.filter(is_qpv=True)
+                elif "ZRR" in territory:
+                    qs = qs.filter(is_zrr=True)
+            elif len(territory) == 2:
+                qs = qs.filter(Q(is_qpv=True) | Q(is_zrr=True))
 
         network = self.cleaned_data.get("networks", None)
         if network:
