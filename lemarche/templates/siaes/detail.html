@@ -204,11 +204,7 @@
                             <div class="il-r">
                                 <h3 class="h2 mb-1 mt-1">Secteurs d'activité</h3>
                                 <ul>
-                                    {% if siae.kind == 'ETTI' and siae.sector_count > 3 %}
-                                        <li>Multisectoriel</li>
-                                    {% elif siae.sector_count %}
-                                        {% siae_sectors_display siae display_max=6 current_search_query=current_search_query output_format='li' %}
-                                    {% endif %}
+                                    {% siae_sectors_display siae display_max=6 current_search_query=current_search_query output_format='li' %}
                                 </ul>
                                 {% if not siae.sector_count %}
                                     <p>Non renseigné</p>
