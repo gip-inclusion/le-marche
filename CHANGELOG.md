@@ -4,7 +4,43 @@ Ressources :
 - [Semantic Versioning](http://semver.org/)
 - [CHANGELOG recommendations](http://keepachangelog.com/).
 
-## [1.5] - 2022-01-14
+## [2022.2] - 2022-01-28
+
+### Ajouté
+
+- Inscription / Connexion
+    - Case à cocher pour s'inscrire à la newsletter acheteur
+    - Les utilisateurs structures sont automatiquement ajoutés à notre liste contact Mailjet
+-  Recherche / Fiche
+    - Ajout du filtre "Territoire spécifique" (QPV & ZRR)
+- Espace utilisateur
+    - Ajout d'un bandeau Aides-territoires pour pour les utilisateurs structures
+- Données
+    - Champs & API pour les données ZRR
+    - Import des 39 structures pénitentiaires
+
+### Modifié
+
+-  Recherche / Fiche
+    - Affichage plus claire des réseaux de la structure
+    - Afficher sur les cartes & fiches structures seulement les secteurs d'activités recherchés
+    - Afficher aussi Multisectoriel dans les résultats de recherche (pour les ETTI avec beaucoup de secteurs d'activité)
+    - Favoris : refonte des modales, amélioration de la vue liste sur son profil
+    - Modale "freemium" : indiquer la notion de gratuité
+- Espace utilisateur
+    - Renommer "Mon espace" en "Tableau de bord"
+- Admin
+    - Pouvoir afficher & modifier les structures d'un utilisateur directement sur sa page
+- Tech
+    - Quelques bugs, typos
+    - Mise à jour des packets
+
+### Supprimé
+
+-  Recherche / Fiche
+    - Suppression de la modale "type d'utilisateur" (qui s'affichait pour les utilisateurs anonynmes)
+
+## [2022.1] - 2022-01-14
 
 ### Ajouté
 
