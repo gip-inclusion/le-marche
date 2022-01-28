@@ -30,7 +30,7 @@
                 <p class="lead mb-0">Recherchez la structure à laquelle vous êtes attaché.</p>
                 <p class="mb-3 mb-lg-5">Si vous en avez plusieurs, vous aurez la possibilité de spécifier d'autres structures par la suite.</p>
 
-                <form method="GET" action="{% url 'dashboard:siae_search_by_siret' %}" class="mb-3 mb-lg-5">
+                <form method="GET" action="{% url 'dashboard:siae_search_by_siret' %}">
                     {% bootstrap_form_errors form type="all" %}
                     <label class="mb-2 d-inline-block font-weight-bold required" for="id_siret">Entrez le numéro SIRET ou SIREN de votre structure</label>
                     <div class="form-row">
@@ -47,6 +47,7 @@
                 </form>
 
                 {% if siaes %}
+                    <h2>{{ siaes.count }} structure{% if siaes.count > 1 %}s{% endif %} trouvée{% if siaes.count > 1 %}s{% endif %}</h2>
                     {% for siae in siaes %}
                         <hr />
                         <p title="{% get_verbose_name siae 'name' %}" class="mb-0">
