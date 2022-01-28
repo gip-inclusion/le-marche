@@ -2,7 +2,8 @@
     font-weight: bold;
 }
 .form-group-required > label::after,
-.form-group-required > div > label::after {
+.form-group-required > div > label::after,
+label.required::after {
     content: " *";
     font-weight: 900;
     font-size: 1rem;
