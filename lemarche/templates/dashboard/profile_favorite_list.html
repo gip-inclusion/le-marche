@@ -36,16 +36,19 @@
             <div class="col-12 col-lg-8">
                 <!-- New list -->
                 <h2>Nouvelle liste</h2>
-                <label class="mb-2 d-inline-block font-weight-bold" for="id_name">Créer une {% if favorite_lists.count %}nouvelle {% endif %}liste</label>
                 <form method="POST" action="{% url 'dashboard:profile_favorite_list_create' %}">
                     {% csrf_token %}
+                    {% bootstrap_form_errors form type="all" %}
+                    <label class="mb-2 d-inline-block font-weight-bold" for="id_name">Créer une {% if favorite_lists.count %}nouvelle {% endif %}liste</label>
                     <div class="form-row">
-                        {% bootstrap_form_errors form type="all" %}
                         <div class="form-group col">
-                            {% bootstrap_field form.name show_label=False  %}
+                            {% bootstrap_field form.name show_label=False %}
                         </div>
                         <div class="form-group col-auto">
-                            <button class="btn btn-primary" type="submit" name="action" value="create">Créer</button>
+                            <button class="btn btn-primary btn-ico" type="submit" name="action" value="create">
+                                <span>Créer</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></svg>
+                            </button>
                         </div>
                     </div>
                 </form>
