@@ -5,6 +5,7 @@ from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
 from lemarche.siaes.models import Siae, SiaeClientReference, SiaeImage, SiaeLabel, SiaeOffer, SiaeUser
+from lemarche.users.models import User
 from lemarche.utils.fields import pretty_print_readonly_jsonfield
 
 
@@ -46,9 +47,16 @@ class HasUserFilter(admin.SimpleListFilter):
 
 class SiaeUserInline(admin.TabularInline):
     model = SiaeUser
+    fields = ["user", "user_with_link", "created_at", "updated_at"]
     autocomplete_fields = ["user"]
-    readonly_fields = ["created_at", "updated_at"]
+    readonly_fields = ["user_with_link", "created_at", "updated_at"]
     extra = 0
+
+    def user_with_link(self, siae_user):
+        url = reverse("admin:users_user_change", args=[siae_user.user_id])
+        return format_html(f'<a href="{url}">{siae_user.user}</a>')
+
+    user_with_link.short_description = User._meta.verbose_name
 
 
 @admin.register(Siae)
