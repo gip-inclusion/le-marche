@@ -62,19 +62,19 @@ class SiaePrestaTypeSearchFilterTest(TestCase):
         SiaeFactory(presta_type=[Siae.PRESTA_DISP])
         SiaeFactory(presta_type=[Siae.PRESTA_DISP, Siae.PRESTA_BUILD])
 
-    def test_search_kind_empty(self):
+    def test_search_presta_type_empty(self):
         url = reverse("siae:search_results")
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 2)
 
-    def test_search_kind_empty_string(self):
+    def test_search_presta_type_empty_string(self):
         url = reverse("siae:search_results") + "?presta_type="
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 2)
 
-    def test_search_kind_should_filter(self):
+    def test_search_presta_type_should_filter(self):
         url = reverse("siae:search_results") + f"?presta_type={Siae.PRESTA_BUILD}"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
@@ -83,6 +83,44 @@ class SiaePrestaTypeSearchFilterTest(TestCase):
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 1 + 1)
+
+
+class SiaeTerritorySearchFilterTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        SiaeFactory(is_qpv=True)
+        SiaeFactory(is_zrr=True)
+
+    def test_search_territory_empty(self):
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+
+    def test_search_territory_empty_string(self):
+        url = reverse("siae:search_results") + "?territory="
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+
+    def test_search_territory_should_filter(self):
+        url = reverse("siae:search_results") + "?territory=QPV"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+
+    def test_search_territory_multiple_should_filter(self):
+        url = reverse("siae:search_results") + "?territory=QPV&territory=ZRR"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1 + 1)
+
+    def test_search_territory_multiple_should_filter_and_avoid_duplicates(self):
+        SiaeFactory(is_qpv=True, is_zrr=True)
+        url = reverse("siae:search_results") + "?territory=QPV&territory=ZRR"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1 + 1 + 1)
 
 
 class SiaeSectorSearchFilterTest(TestCase):
