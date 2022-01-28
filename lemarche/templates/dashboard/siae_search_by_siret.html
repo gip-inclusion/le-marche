@@ -50,24 +50,36 @@
                     <h2>{{ siaes.count }} structure{% if siaes.count > 1 %}s{% endif %} trouvée{% if siaes.count > 1 %}s{% endif %}</h2>
                     {% for siae in siaes %}
                         <hr />
-                        <p title="{% get_verbose_name siae 'name' %}" class="mb-0">
-                            <strong>{% get_verbose_name siae 'name' %} :</strong>
-                            {{ siae.name }}
-                        </p>
-                        <p title="{% get_verbose_name siae 'brand' %}" class="mb-0">
-                            <strong>{% get_verbose_name siae 'brand' %} :</strong>
-                            {{ siae.brand|default:'' }}
-                        </p>
-                        <p title="{% get_verbose_name siae 'siret' %}" class="mb-0">
-                            <strong>{% get_verbose_name siae 'siret' %} :</strong>
-                            {{ siae.siret_display }}
-                        </p>
-                        <p title="Localisation" class="mb-0">
-                            <strong>Localisation :</strong>
-                            {{ siae.city }} {{ siae.post_code }}
-                        </p>
-                        <div class="mt-3">
-                            {% if siae.users.count %}
+                        <div class="row">
+                            <div class="col">
+                                <p title="{% get_verbose_name siae 'name' %}" class="mb-0">
+                                    <strong>{% get_verbose_name siae 'name' %} :</strong>
+                                    {{ siae.name }}
+                                </p>
+                                <p title="{% get_verbose_name siae 'brand' %}" class="mb-0">
+                                    <strong>{% get_verbose_name siae 'brand' %} :</strong>
+                                    {{ siae.brand|default:'' }}
+                                </p>
+                                <p title="{% get_verbose_name siae 'siret' %}" class="mb-0">
+                                    <strong>{% get_verbose_name siae 'siret' %} :</strong>
+                                    {{ siae.siret_display }}
+                                </p>
+                                <p title="Localisation" class="mb-0">
+                                    <strong>Localisation :</strong>
+                                    {{ siae.city }} {{ siae.post_code }}
+                                </p>
+                            </div>
+                            {% if not siae.users.count %}
+                                <div class="col text-right">
+                                    <br />
+                                    <a href="{% url 'dashboard:siae_search_adopt_confirm' siae.slug %}" class="btn btn-outline-primary">
+                                        <span>Sélectionner</span>
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% if siae.users.count %}
+                            <div class="mt-3">
                                 <div class="alert alert-warning" role="alert">
                                     <p>
                                         <strong>Rejoindre cette structure</strong><br />
@@ -75,12 +87,8 @@
                                         Si vous souhaitez aussi rejoindre cette structure, <strong><a href="{% url 'pages:contact' %}?siret={{ siae.siret }}">contactez le support</a></strong> (indiquez le Siret pour nous aider à retrouver votre structure).
                                     </p>
                                 </div>
-                            {% else %}
-                                <a href="{% url 'dashboard:siae_search_adopt_confirm' siae.slug %}" class="btn btn-outline-primary">
-                                    <span>Sélectionner</span>
-                                </a>
-                            {% endif %}
-                        </div>
+                            </div>
+                        {% endif %}
                     {% endfor %}
                 {% endif %}
                 {% if not siaes and form.is_valid %}
