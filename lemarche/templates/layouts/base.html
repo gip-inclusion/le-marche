@@ -132,8 +132,8 @@
     <script type="text/javascript" src="{% static 'js/utils.js'%}"></script>
     {% if BITOUBI_ENV not in "dev" %}
         {% include "includes/_tracker_tarteaucitron.html" %}
+        {% include "includes/_tracker_itou.html" %}
     {% endif %}
-    {% include "includes/_tracker_itou.html" %}
     {% comment "migrate first" %}
     {% include '@CocoricoCore/Frontend/Common/_cookie_consent_js.html.twig' only %}
     {% endcomment %}
