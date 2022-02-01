@@ -167,7 +167,7 @@ DEPLOY_URL = env.str("DEPLOY_URL", None)
 
 
 # Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+# ------------------------------------------------------------------------------
 
 # Compatible with clevercloud add-ons
 # TODO: Use django-environ DSN parsing functionality
@@ -182,6 +182,11 @@ DATABASES = {
         "PASSWORD": env.str("POSTGRESQL_ADDON_PASSWORD", "password"),
     },
 }
+
+# controls how many objects are updated in a single query
+# avoid timeout exception
+# https://docs.djangoproject.com/en/4.0/ref/models/querysets/#bulk-update
+BATCH_SIZE_BULK_UPDATE = env.int("BATCH_SIZE_BULK_UPDATE", 200)
 
 
 # Authentication
@@ -241,6 +246,7 @@ DEFAULT_FROM_EMAIL = "noreply@inclusion.beta.gouv.fr"
 CONTACT_EMAIL = env("CONTACT_EMAIL", default="contact@example.com")
 NOTIFY_EMAIL = env("NOTIFY_EMAIL", default="notif@example.com")
 
+
 # Security
 # ------------------------------------------------------------------------------
 
@@ -256,6 +262,8 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 # TODO: use a small value for testing, once confirmed that HSTS didn't break anything increase it.
 # https://docs.djangoproject.com/en/dev/ref/middleware/#http-strict-transport-security
 SECURE_HSTS_SECONDS = 30
+
+SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", False)
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
@@ -286,6 +294,7 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 
 # S3 uploads
 # ------------------------------------------------------------------------------
+
 S3_STORAGE_ACCESS_KEY_ID = env.str("CELLAR_ADDON_KEY_ID", "123")
 S3_STORAGE_SECRET_ACCESS_KEY = env.str("CELLAR_ADDON_KEY_SECRET", "secret")
 S3_STORAGE_ENDPOINT_DOMAIN = env.str("CELLAR_ADDON_HOST", "http://set-var-env.com")
@@ -445,6 +454,52 @@ MESSAGE_TAGS = {
 }
 
 
+# Async Configuration Options: Huey
+# Workers are run in prod via `CC_WORKER_COMMAND = django-admin run_huey`.
+# ------------------------------------------------------------------------------
+
+# Redis server URL:
+# Provided by the Redis addon (itou-redis)
+# Redis database to use with async (must be different for each environement)
+# 1 <= REDIS_DB <= 100 (number of dbs available on CleverCloud)
+REDIS_DB = env.int("REDIS_DB", 1)
+# Complete URL (containing the instance password)
+REDIS_URL = env.str("REDIS_URL", "localhost")
+REDIS_PORT = env.int("REDIS_PORT", 6379)
+REDIS_PASSWORD = env.str("REDIS_PASSWORD", "")
+
+CONNECTION_MODES_HUEY = {
+    # immediate mode
+    "direct": {"immediate": True},
+    "sqlite": {
+        "class_name": "huey.SqliteHuey",
+        "connection": {"cache_mb": 8, "fsync": True},
+    },
+    # redis
+    "redis": {
+        "huey_class": "huey.RedisHuey",
+        "connection": {"db": REDIS_DB, "host": REDIS_URL, "port": REDIS_PORT, "password": REDIS_PASSWORD},
+    },
+}
+
+CONNECTION_MODE_TASKS = env.str("CONNECTION_MODE_TASKS", "sqlite")
+
+CONF_HUEY = CONNECTION_MODES_HUEY.get("CONNECTION_MODE_TASKS", CONNECTION_MODES_HUEY["sqlite"])
+
+# Huey instance
+# If any performance issue, increasing the number of workers *can* be a good idea
+# Parameter `immediate` means `synchronous` (async here)
+HUEY = {
+    "name": "ITOU_MARCHE",
+    # Don't store task results (see our Redis Post-Morten in documentation for more information)
+    "results": False,
+    "huey_class": CONF_HUEY.get("class_name"),
+    "immediate": CONF_HUEY.get("immediate", False),
+    "connection": CONF_HUEY.get("connection"),
+    "consumer": {"workers": 2, "worker_type": "thread"},
+}
+
+
 # Logging
 # https://docs.djangoproject.com/en/dev/topics/logging
 # ------------------------------------------------------------------------------
@@ -518,57 +573,3 @@ ENV_COLOR_MAPPING = {
     "prod": "",
 }
 BITOUBI_ENV_COLOR = ENV_COLOR_MAPPING.get(BITOUBI_ENV, "")
-
-# controls how many objects are updated in a single query
-# avoid timeout exception
-# https://docs.djangoproject.com/en/4.0/ref/models/querysets/#bulk-update
-BATCH_SIZE_BULK_UPDATE = env.int("BATCH_SIZE_BULK_UPDATE", 200)
-
-SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", False)
-
-# Async Configuration Options
-
-# Huey / async
-# Workers are run in prod via `CC_WORKER_COMMAND = django-admin run_huey`.
-# ------------------------------------------------------------------------------
-
-# Redis server URL:
-# Provided by the Redis addon (itou-redis)
-# Redis database to use with async (must be different for each environement)
-# 1 <= REDIS_DB <= 100 (number of dbs available on CleverCloud)
-REDIS_DB = env.int("REDIS_DB", 1)
-# Complete URL (containing the instance password)
-REDIS_URL = env.str("REDIS_URL", "localhost")
-REDIS_PORT = env.int("REDIS_PORT", 6379)
-REDIS_PASSWORD = env.str("REDIS_PASSWORD", "")
-
-CONNECTION_MODES_HUEY = {
-    # immediate mode
-    "direct": {"immediate": True},
-    "sqlite": {
-        "class_name": "huey.SqliteHuey",
-        "connection": {"cache_mb": 8, "fsync": True},
-    },
-    # redis
-    "redis": {
-        "huey_class": "huey.RedisHuey",
-        "connection": {"db": REDIS_DB, "host": REDIS_URL, "port": REDIS_PORT, "password": REDIS_PASSWORD},
-    },
-}
-
-CONNECTION_MODE_TASKS = env.str("CONNECTION_MODE_TASKS", "sqlite")
-
-CONF_HUEY = CONNECTION_MODES_HUEY.get("CONNECTION_MODE_TASKS", CONNECTION_MODES_HUEY["sqlite"])
-
-# Huey instance
-# If any performance issue, increasing the number of workers *can* be a good idea
-# Parameter `immediate` means `synchronous` (async here)
-HUEY = {
-    "name": "ITOU_MARCHE",
-    # Don't store task results (see our Redis Post-Morten in documentation for more information)
-    "results": False,
-    "huey_class": CONF_HUEY.get("class_name"),
-    "immediate": CONF_HUEY.get("immediate", False),
-    "connection": CONF_HUEY.get("connection"),
-    "consumer": {"workers": 2, "worker_type": "thread"},
-}
