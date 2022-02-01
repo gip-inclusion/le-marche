@@ -111,56 +111,57 @@
                 <aside id="sidebar">
                     <div class="profile mb-4">
                         <div class="profile_capsule">
-                            {% if siae.contact_website or siae.contact_email or siae.contact_phone or siae.user_count %}
-                                <div class="map_coordonnees">
-                                    {% if user.is_authenticated %}
-                                        <button id="show_data" class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-3" type="button" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
-                                            <span>Afficher les coordonnées</span>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-up"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 8l6 6H6z"/></svg>
-                                        </button>
-                                        <div class="collapse mb-lg-2" id="collapseCoordonnees">
-                                            <ul class="deflist">
-                                                {% if siae.contact_website %}
-                                                    <li>
-                                                        <span class="prof_icon"><img src="{% static 'img/profile-ico-web.svg' %}" alt="" /></span>
-                                                        <a id="company_website" href="{{ siae.contact_website }}" target="_blank" rel="nofollow noopener">{{ siae.contact_website }}</a>
-                                                    </li>
-                                                {% endif %}
-                                                {% if siae.contact_email %}
-                                                    <li>
-                                                        <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" alt="" /></span>
-                                                        <a href="mailto:{{ siae.contact_email }}">{{ siae.contact_email }}</a>
-                                                    </li>
-                                                {% endif %}
-                                                {% if siae.contact_phone %}
-                                                    <li>
-                                                        <span class="prof_icon"><img src="{% static 'img/profile-ico-phone.svg' %}" alt="" /></span>
-                                                        <a href="tel:{{ siae.contact_phone }}">{{ siae.contact_phone }}</a>
-                                                    </li>
-                                                {% endif %}
-                                                {% if siae.user_count %}
-                                                    {% if siae.contact_short_name %}
-                                                        <li>
-                                                            <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" alt="" /></span>
-                                                            <span>{{ siae.contact_short_name }}</span>
-                                                        </li>
-                                                    {% endif %}
-                                                {% endif %}
+                            <div class="map_coordonnees">
+                                {% if user.is_authenticated %}
+                                    <button id="show_data" class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-3" type="button" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
+                                        <span>Afficher les coordonnées</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-up"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 8l6 6H6z"/></svg>
+                                    </button>
+                                    <div class="collapse mb-lg-2" id="collapseCoordonnees">
+                                        <ul class="deflist">
+                                            {% if not siae.contact_website and not siae.contact_email and not siae.contact_phone %}
+                                                <a href="https://www.google.fr/search?q={{ siae.name_display }}" id="company_google" target="_blank" rel="nofollow noopener">Google</a>
+                                            {% endif %}
+                                            {% if siae.contact_website %}
                                                 <li>
-                                                    <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" alt="" /></span>
-                                                    <span>{{ siae.address }} {{ siae.post_code }} {{ siae.city }}</span>
+                                                    <span class="prof_icon"><img src="{% static 'img/profile-ico-web.svg' %}" alt="" /></span>
+                                                    <a href="{{ siae.contact_website }}" id="company_website" target="_blank" rel="nofollow noopener">{{ siae.contact_website }}</a>
                                                 </li>
-                                            </ul>
-                                        </div>
-                                    {% else %}
-                                        <a href="#" id="show_data-modal-btn" class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-3" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}">
-                                            <span>Afficher les coordonnées</span>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
-                                        </a>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
+                                            {% endif %}
+                                            {% if siae.contact_email %}
+                                                <li>
+                                                    <span class="prof_icon"><img src="{% static 'img/profile-ico-@.svg' %}" alt="" /></span>
+                                                    <a href="mailto:{{ siae.contact_email }}" id="company_email">{{ siae.contact_email }}</a>
+                                                </li>
+                                            {% endif %}
+                                            {% if siae.contact_phone %}
+                                                <li>
+                                                    <span class="prof_icon"><img src="{% static 'img/profile-ico-phone.svg' %}" alt="" /></span>
+                                                    <a href="tel:{{ siae.contact_phone }}" id="company_phone">{{ siae.contact_phone }}</a>
+                                                </li>
+                                            {% endif %}
+                                            {% if siae.user_count %}
+                                                {% if siae.contact_short_name %}
+                                                    <li>
+                                                        <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" alt="" /></span>
+                                                        <span>{{ siae.contact_short_name }}</span>
+                                                    </li>
+                                                {% endif %}
+                                            {% endif %}
+                                            <li>
+                                                <span class="prof_icon"><img src="{% static 'img/profile-ico-pin.svg' %}" alt="" /></span>
+                                                <span>{{ siae.address }} {{ siae.post_code }} {{ siae.city }}</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                {% else %}
+                                    <a href="#" id="show_data-modal-btn" class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-3" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}">
+                                        <span>Afficher les coordonnées</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
+                                    </a>
+                                {% endif %}
+                            </div>
                             <div class="map-holder mb-3">
                                 <div id="map-siae" class="map-canvas"></div>
                             </div>
