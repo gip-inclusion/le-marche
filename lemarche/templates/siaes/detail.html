@@ -121,7 +121,10 @@
                                     <div class="collapse mb-lg-2" id="collapseCoordonnees">
                                         <ul class="deflist">
                                             {% if not siae.contact_website and not siae.contact_email and not siae.contact_phone %}
-                                                <a href="https://www.google.fr/search?q={{ siae.name_display }}" id="company_google" target="_blank" rel="nofollow noopener">Google</a>
+                                                <li>
+                                                    <span class="prof_icon"><img src="{% static 'img/prof_search.svg' %}" alt="" /></span>
+                                                    <a href="https://www.google.fr/search?q={{ siae.name_display }}" id="company_google" target="_blank" rel="nofollow noopener">Google</a>
+                                                </li>
                                             {% endif %}
                                             {% if siae.contact_website %}
                                                 <li>
