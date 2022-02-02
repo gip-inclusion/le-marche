@@ -14,6 +14,7 @@ from lemarche.www.dashboard.views import (
     SiaeEditOfferView,
     SiaeEditOtherView,
     SiaeEditPrestaView,
+    SiaeEditUsersView,
     SiaeSearchAdoptConfirmView,
     SiaeSearchBySiretView,
 )
@@ -52,6 +53,7 @@ urlpatterns = [
                     RedirectView.as_view(pattern_name="dashboard:siae_edit_info_contact", permanent=False),
                     name="siae_edit",
                 ),
+                path("collaborateurs/", SiaeEditUsersView.as_view(), name="siae_edit_users"),
                 path("info-contact/", SiaeEditInfoContactView.as_view(), name="siae_edit_info_contact"),
                 path("offre/", SiaeEditOfferView.as_view(), name="siae_edit_offer"),
                 path("prestations/", SiaeEditPrestaView.as_view(), name="siae_edit_presta"),
