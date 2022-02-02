@@ -17,5 +17,8 @@ def expose_settings(request):
         "CRISP_ID": settings.CRISP_ID,
         "FACILITATOR_SLIDE": settings.FACILITATOR_SLIDE,
         "FACILITATOR_LIST": settings.FACILITATOR_LIST,
+        "TYPEFORM_BESOIN_ACHAT": settings.TYPEFORM_BESOIN_ACHAT,
+        "TYPEFORM_BESOIN_ACHAT_RECHERCHE": settings.TYPEFORM_BESOIN_ACHAT_RECHERCHE,
+        "TYPEFORM_ACHAT_GROUPE": settings.TYPEFORM_ACHAT_GROUPE,
         "API_GOUV_URL": settings.API_GOUV_URL,
     }

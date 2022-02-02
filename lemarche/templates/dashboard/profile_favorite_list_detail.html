@@ -51,7 +51,7 @@
                 {% endfor %}
             </div>
             <div class="col-12 col-lg-4">
-                <a href="https://itou.typeform.com/to/KWViHaph#data=user_id:{{ user.id }},favorite_list_id:{{ favorite_list.id }}" id="favorite-list-demande" class="btn btn-primary btn-ico btn-block {% if favorite_list.siaes.count == 0 %}disabled{% endif %} mb-3" target="_blank">
+                <a href="{{ TYPEFORM_ACHAT_GROUPE }}#data=user_id:{{ user.id }},favorite_list_id:{{ favorite_list.id }}" id="favorite-list-demande" class="btn btn-primary btn-ico btn-block {% if favorite_list.siaes.count == 0 %}disabled{% endif %} mb-3" target="_blank">
                     <span>Envoyer une demande groupée</span>
                     <i class="ri-mail-send-line ri-lg"></i>
                 </a>
