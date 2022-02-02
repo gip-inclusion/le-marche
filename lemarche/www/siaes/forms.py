@@ -78,13 +78,18 @@ class SiaeSearchForm(forms.Form):
     def clean(self):
         """
         We override the clean method to manage 2 edge cases:
-        - if perimeter is empty but perimeter_name is not (the user used the typeahead but didn't select a perimeter option): show an error  # noqa
-        - if perimeter_name is empty but perimeter is not (the user had previously searched a valid perimeter option, but erased it): erase the perimeter data (TODO: manage this case in the frontend ?)  # noqa
+        a) if perimeter is empty but perimeter_name is not
+            - how come? the user used the typeahead but didn't select a perimeter option
+            - result? show an error
+        b) if perimeter_name is empty but perimeter is not
+            - how come? the user had previously searched a valid perimeter option, but erased it
+            - result? erase the perimeter data. also managed in get_perimeter()
+            - TODO: manage this case in the frontend?
         """
         cleaned_data = super().clean()
         perimeter = cleaned_data.get("perimeter", "")
         perimeter_name = cleaned_data.get("perimeter_name", "")
-        if perimeter_name and not perimeter:
+        if not perimeter and perimeter_name:
             raise forms.ValidationError(
                 {"perimeter_name": "Périmètre inconnu. Veuillez en choisir un dans la liste, ou effacer le texte."}
             )
@@ -142,11 +147,19 @@ class SiaeSearchForm(forms.Form):
         return qs
 
     def get_perimeter(self):
-        try:
-            search_perimeter = self.data.get("perimeter", None)
-            perimeter = Perimeter.objects.get(slug=search_perimeter)
-        except Perimeter.DoesNotExist:
-            perimeter = None
+        """
+        Method to extract the perimeter searched by the user.
+        Useful to avoid duplicate DB queries on the Perimeter model.
+        """
+        perimeter = None
+        search_perimeter = self.data.get("perimeter", None)
+        search_perimeter_name = self.data.get("perimeter_name", None)
+        # A valid perimeter search must have both the `perimeter` & `perimeter_name` fields in the querystring
+        if search_perimeter and search_perimeter_name:
+            try:
+                perimeter = Perimeter.objects.get(slug=search_perimeter)
+            except Perimeter.DoesNotExist:
+                pass
         return perimeter
 
     def perimeter_filter(self, qs, perimeter):

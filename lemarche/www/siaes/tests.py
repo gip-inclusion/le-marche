@@ -315,11 +315,26 @@ class SiaePerimeterSearchFilterTest(TestCase):
         qs = form.filter_queryset(perimeter)
         self.assertEqual(qs.count(), 14)
 
+    def test_search_perimeter_name_empty_but_perimeter_valid(self):
+        form = SiaeSearchForm({"perimeter": "auvergne-rhone-alpes-region", "perimeter_name": ""})
+        perimeter = form.get_perimeter()
+        qs = form.filter_queryset(perimeter)
+        self.assertEqual(qs.count(), 14)  # perimeter filter is also ignored
+
     def test_search_perimeter_name_not_empty(self):
         form = SiaeSearchForm({"perimeter": "", "perimeter_name": "Old Search"})
         perimeter = form.get_perimeter()
         qs = form.filter_queryset(perimeter)
         self.assertEqual(qs.count(), 14)
+        self.assertFalse(form.is_valid())
+        self.assertIn("perimeter_name", form.errors.keys())
+        self.assertIn("Périmètre inconnu", form.errors["perimeter_name"][0])
+
+    def test_search_perimeter_name_not_empty_but_perimeter_name_valid(self):
+        form = SiaeSearchForm({"perimeter": "", "perimeter_name": "Auvergne-Rhône-Alpes (région)"})
+        perimeter = form.get_perimeter()
+        qs = form.filter_queryset(perimeter)
+        self.assertEqual(qs.count(), 14)  # perimeter filter is also ignored
         self.assertFalse(form.is_valid())
         self.assertIn("perimeter_name", form.errors.keys())
         self.assertIn("Périmètre inconnu", form.errors["perimeter_name"][0])
