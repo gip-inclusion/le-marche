@@ -33,7 +33,7 @@
                     Vérifiez si ces données correspondent bien à votre structure.
                 </p>
                 <p class="mb-0">
-                   <i>Données fixes provenant de {% if siae.kind == 'ESAT' %}GESAT/Handeco{% else %}l'ASP{% endif %}.</i>
+                   <i>Données fixes provenant de {{ siae.source_display }}.</i>
                 </p>
                 
                 <hr>

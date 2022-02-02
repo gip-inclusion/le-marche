@@ -535,6 +535,15 @@ class Siae(models.Model):
         )
         return not has_contact_field and not has_other_fields
 
+    @property
+    def source_display(self):
+        if self.kind == Siae.KIND_ESAT:
+            return "GESAT/Handeco"
+        elif self.kind == Siae.KIND_SEP:
+            return "l'ATIGIP"
+        else:
+            return "l'ASP"
+
     def sectors_list_to_string(self):
         return ", ".join(self.sectors.all().values_list("name", flat=True))
 
