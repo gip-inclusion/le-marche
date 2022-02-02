@@ -65,18 +65,14 @@
                         <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
                         <button id="filter-submit" class="btn btn-primary btn-block btn-ico" type="submit">
                             <span>Rechercher</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none">
-                                <path d="M12.523 10.963l3.213 3.211-1.062 1.062-3.211-3.213A6.72 6.72 0 017.25 13.5 6.752 6.752 0 01.5 6.75 6.752 6.752 0 017.25 0 6.752 6.752 0 0114 6.75a6.72 6.72 0 01-1.477 4.213zm-1.504-.557A5.233 5.233 0 0012.5 6.75c0-2.901-2.35-5.25-5.25-5.25A5.248 5.248 0 002 6.75C2 9.65 4.349 12 7.25 12a5.233 5.233 0 003.656-1.481l.113-.113z" fill="currentColor" />
-                            </svg>
+                            <i class="ri-search-line ri-lg"></i>
                         </button>
                     </div>
                     <div class="col-12 col-sm-6 col-lg-2 mt-3  mt-3 mt-md-0 mt-lg-3 pl-lg-2">
                         <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
                         <a href="{% url 'siae:search_results' %}" class="btn btn-outline-primary btn-block reset btn-ico">
                             <span>Réinitialiser</span>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M5.463 4.43301C7.27756 2.86067 9.59899 1.99666 12 2.00001C17.523 2.00001 22 6.47701 22 12C22 14.136 21.33 16.116 20.19 17.74L17 12H20C20.0001 10.4316 19.5392 8.89781 18.6747 7.58927C17.8101 6.28072 16.5799 5.25517 15.1372 4.64013C13.6944 4.0251 12.1027 3.84771 10.56 4.13003C9.0172 4.41234 7.59145 5.14191 6.46 6.22801L5.463 4.43301ZM18.537 19.567C16.7224 21.1393 14.401 22.0034 12 22C6.477 22 2 17.523 2 12C2 9.86401 2.67 7.88401 3.81 6.26001L7 12H4C3.99987 13.5684 4.46075 15.1022 5.32534 16.4108C6.18992 17.7193 7.42007 18.7449 8.86282 19.3599C10.3056 19.9749 11.8973 20.1523 13.44 19.87C14.9828 19.5877 16.4085 18.8581 17.54 17.772L18.537 19.567Z" fill="currentColor" />
-                            </svg>
+                            <i class="ri-refresh-line ri-lg"></i>
                         </a>
                     </div>
                 </div>
@@ -114,7 +110,7 @@
                                 <div class="btn-group btn-block">
                                     <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}&format=xls" id="siae-export-xls" class="btn btn-block btn-outline-primary btn-ico">
                                         <span>Télécharger la liste (.xls)</span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M13 10h5l-6 6-6-6h5V3h2v7zm-9 9h16v-7h2v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-8h2v7z"/></svg>
+                                        <i class="ri-download-line ri-lg"></i>
                                     </a>
                                     <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <span class="sr-only">Plus d'options de téléchargement</span>
@@ -144,9 +140,7 @@
                         <div class="mt-3 mt-lg-5">
                             <a href="https://itou.typeform.com/to/nxG0HlYx" class="btn btn-primary btn-ico">
                                 <span>Déposez votre demande</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-                                    <path fill="currentColor" fill-rule="nonzero" stroke="currentColor" d="M1.964 8.95h11.03L9.51 12.737a.451.451 0 00.037.646.474.474 0 00.66-.037L14.386 8.8l.035-.043.033-.05.013-.05V8.539c0-.012.033-.02.033-.044v-.151l-.014-.05-.019-.03-.034-.045-4.193-4.566a.474.474 0 00-.66-.037.452.452 0 00-.036.646l3.45 3.777H1.963a.46.46 0 00-.464.455.46.46 0 00.464.455z"></path>
-                                </svg>
+                                <i class="ri-arrow-right-line ri-lg"></i>
                             </a>
                         </div>
                     </div>
@@ -162,7 +156,7 @@
                             <h3 class="h2 my-3">Idées reçues</h3>
                             <p>
                                 <span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" fill="currentColor" /></svg>
+                                    <i class="ri-check-fill ri-xl font-weight-bold"></i>
                                 </span>
                                 <span class="ml-2">
                                     La structure est trop petite pour répondre à mon besoin…
@@ -171,7 +165,7 @@
                             </p>
                             <p>
                                 <span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" fill="currentColor" /></svg>
+                                    <i class="ri-check-fill ri-xl font-weight-bold"></i>
                                 </span>
                                 <span class="ml-2">
                                     Son chiffre d’affaire est trop bas et je ne veux pas être
@@ -182,7 +176,7 @@
                             </p>
                             <p>
                                 <span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z" fill="currentColor" /></svg>
+                                    <i class="ri-check-fill ri-xl font-weight-bold"></i>
                                 </span>
                                 <span class="ml-2">
                                     L'offre ne correspond pas exactement à ce que je cherche…

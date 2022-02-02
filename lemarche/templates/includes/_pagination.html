@@ -7,7 +7,7 @@
             {% if page_obj.number > 1 %}
                 <li class="page-item">
                     <a href="{% url_add_query page=page_obj.previous_page_number %}" class="page-link" aria-label="Précédent">
-                        <span aria-hidden="true">&laquo;</span>
+                        <i class="ri-arrow-left-s-line"></i>
                     </a>
                 </li>
             {% endif %}
@@ -23,7 +23,7 @@
             {% if page_obj.number < paginator.num_pages %}
                 <li class="page-item">
                     <a href="{% url_add_query page=page_obj.next_page_number %}" class="page-link" aria-label="Suivant">
-                        <span aria-hidden="true">&raquo;</span>
+                        <i class="ri-arrow-right-s-line"></i>
                     </a>
                 </li>
             {% endif %}

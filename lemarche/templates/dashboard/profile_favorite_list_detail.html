@@ -31,10 +31,10 @@
                     <strong>{{ favorite_list.name }}</strong>
                     <div class="btn-group" role="group" aria-label="Actions sur la liste de favoris">
                         <button class="btn btn-link btn-ico  text-decoration-none" data-toggle="modal" data-target="#favorite_list_edit_modal" title="Editer la liste">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12.9 6.858l4.242 4.243L7.242 21H3v-4.243l9.9-9.9zm1.414-1.414l2.121-2.122a1 1 0 0 1 1.414 0l2.829 2.829a1 1 0 0 1 0 1.414l-2.122 2.121-4.242-4.242z"/></svg>
+                            <i class="ri-pencil-fill ri-lg font-weight-light"></i>
                         </button>
                         <button class="btn btn-link btn-ico text-decoration-none" data-toggle="modal" data-target="#favorite_list_delete_modal" title="Supprimer la liste">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M4 8h16v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8zm2 2v10h12V10H6zm3 2h2v6H9v-6zm4 0h2v6h-2v-6zM7 5V3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2h5v2H2V5h5zm2-1v1h6V4H9z"/></svg>
+                            <i class="ri-delete-bin-6-line ri-lg font-weight-light"></i>
                         </button>                        
                     </div>                    
                 </h1>
@@ -53,12 +53,12 @@
             <div class="col-12 col-lg-4">
                 <a href="https://itou.typeform.com/to/KWViHaph#data=user_id:{{ user.id }},favorite_list_id:{{ favorite_list.id }}" id="favorite-list-demande" class="btn btn-primary btn-ico btn-block {% if favorite_list.siaes.count == 0 %}disabled{% endif %} mb-3" target="_blank">
                     <span>Envoyer une demande groupée</span>
-                    <svg width="17" height="15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.5 13.505a.75.75 0 01-.744.745H2.244a.745.745 0 01-.744-.745v-.755H15V3.975l-6 5.4-7.5-6.75V1.5a.75.75 0 01.75-.75h13.5a.75.75 0 01.75.75v12.005zM3.325 2.25L9 7.357l5.675-5.107H3.325zM0 9.75h6v1.5H0v-1.5zM0 6h3.75v1.5H0V6z" fill="currentColor"></path></svg>
+                    <i class="ri-mail-send-line ri-lg"></i>
                 </a>
                 <div class="btn-group w-100 mb-3">
                     <a href="{% url 'siae:search_results_download' %}?favorite_list={{ favorite_list.slug }}&format=xls" id="favorite-list-export-xls" class="btn btn-outline-primary btn-ico btn-block {% if favorite_list.siaes.count == 0 %}disabled{% endif %}" target="_blank">
                         <span>Télécharger la liste (.xls)</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M13 10h5l-6 6-6-6h5V3h2v7zm-9 9h16v-7h2v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-8h2v7z"/></svg>
+                        <i class="ri-download-line ri-lg"></i>
                     </a>
                     <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="sr-only">Plus d'options de téléchargement</span>
