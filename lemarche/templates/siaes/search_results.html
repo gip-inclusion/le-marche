@@ -28,6 +28,7 @@
                 {% if form.errors %}
                     <div class="alert alert-danger" role="alert">{{ form.errors|show_first_form_error_message }}</div>
                 {% endif %}
+                {% bootstrap_form_errors form type="all" %}
                 <div class="row">
                     <div class="col-12 col-lg-8">
                         <div class="row first-row">
