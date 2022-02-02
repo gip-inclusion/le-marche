@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
    */
 
   const perimeterAutocompleteContainer = document.querySelector('#search-form #dir_form_perimeter_name');
-  let perimeterNameInput = document.getElementById('id_perimeter_name');  // autocomplete
+  // let perimeterNameInput = document.getElementById('perimeter_name');  // autocomplete // not yet inititated (see bottom)
   let perimeterInput = document.getElementById('id_perimeter');  // hidden
 
   // check if there is an initial value for the autocomplete
@@ -122,6 +122,19 @@ document.addEventListener("DOMContentLoaded", function() {
       // tStatusResults:
       // tAssistiveHint:
     });
+
+    /**
+     * We track changes on the perimeterNameInput value.
+     * When the value is empty, we need to reset the perimeterName value as well.
+     */
+    let perimeterNameInput = document.getElementById('perimeter_name');  // autocomplete
+    if (perimeterNameInput) {
+      perimeterNameInput.addEventListener('change', function() {
+        if (!perimeterNameInput.value) {
+          inputValueHiddenField({'slug': ''});
+        }
+      });
+    }
   }
 
 });
