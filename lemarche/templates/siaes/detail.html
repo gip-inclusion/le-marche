@@ -51,17 +51,17 @@
                                 <h1 class="h2 mb-3 mt-1">{{ siae.name_display }}</h1>
                                 {% if user.is_authenticated %}
                                     {% if siae.in_user_favorite_list_count %}
-                                        <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_remove_modal">
-                                            <img src="{% static_theme_images 'ico-star-fill.svg' %}" height="24" alt="Dans votre liste d'achat" title="Dans votre liste d'achat" />
+                                        <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_remove_modal" title="Dans votre liste d'achat">
+                                            <i class="ri-star-fill ri-xl"></i>
                                         </a>
-                                    {% else %}
-                                        <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_add_modal">
-                                            <img src="{% static_theme_images 'ico-star-line.svg' %}" height="24" alt="Ajouter à votre liste d'achat" title="Ajouter à votre liste d'achat" />
+                                        {% else %}
+                                        <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_add_modal" title="Ajouter à votre liste d'achat" >
+                                            <i class="ri-star-line ri-xl"></i>
                                         </a>
                                     {% endif %}
                                 {% else %}
-                                    <a href="#" id="favorite-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}">
-                                        <img src="{% static_theme_images 'ico-star-line.svg' %}" height="24" alt="Ajouter à votre liste d'achat" title="Ajouter à votre liste d'achat" />
+                                    <a href="#" id="favorite-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}" title="Ajouter à votre liste d'achat">
+                                        <i class="ri-star-line ri-xl"></i>
                                     </a>
                                 {% endif %}
                             </div>
