@@ -110,13 +110,6 @@
                 <!-- profile-detail sidebar -->
                 <aside id="sidebar">
                     <div class="profile mb-4">
-                        {% if not siae.contact_website and not siae.contact_email and not siae.contact_phone and not siae.user_count %}
-                        <!-- <div class="row">
-                            <div class="col-12 mb-3">
-                                <a id="contact" class="btn btn-outline-primary btn-block" href="https://itou.typeform.com/to/nxG0HlYx#data={{ siae.id }}" target="_blank" rel="nofollow noopener">Être recontacté</a>
-                            </div>
-                        </div> -->
-                        {% endif %}
                         <div class="profile_capsule">
                             {% if siae.contact_website or siae.contact_email or siae.contact_phone or siae.user_count %}
                                 <div class="map_coordonnees">
