@@ -50,7 +50,7 @@ urlpatterns = [
             [
                 path(
                     "",
-                    RedirectView.as_view(pattern_name="dashboard:siae_edit_info_contact", permanent=False),
+                    RedirectView.as_view(pattern_name="dashboard:siae_edit_users", permanent=False),
                     name="siae_edit",
                 ),
                 path("collaborateurs/", SiaeEditUsersView.as_view(), name="siae_edit_users"),
@@ -63,7 +63,7 @@ urlpatterns = [
     ),
     path(
         "prestataires/<str:slug>/",
-        RedirectView.as_view(pattern_name="dashboard:siae_edit_info_contact", permanent=False),
+        RedirectView.as_view(pattern_name="dashboard:siae_edit_users", permanent=False),
         name="siae",
     ),
     path(
