@@ -7,15 +7,15 @@
         <div class="col-12 col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                 <legend class="h4">Mes Collaborateurs</legend>
-                {% for user in siae.users.all %}
-                <ul class="deflist" style="padding:0;margin:0;list-style:none">
+                {% for siaeuser in siae.siaeuser_set.all %}
+                <ul class="deflist">
                     <hr />
                     <li>
                         <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" alt="" /></span>
-                        <span><strong>{{ user.full_name }}</strong></span>
+                        <span><strong>{{ siaeuser.user.full_name }}</strong></span>
                     </li>
                     <li>
-                        <span style="margin-left:23px">{{ user.email }}</span>
+                        <span style="margin-left:23px">{{ siaeuser.user.email }}</span>
                     </li>
                 </ul>
                 {% endfor %}
