@@ -145,6 +145,7 @@ class Siae(models.Model):
         "is_delisted",
         "is_active",
         "siret_is_valid",
+        "asp_id",
         "c1_id",
         "c4_id_old",
         "c1_last_sync_date",
