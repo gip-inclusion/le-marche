@@ -118,6 +118,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "naf",
                     "kind",
                     "c1_id",
+                    "asp_id",
                     "website",
                     "email",
                     "phone",

@@ -145,6 +145,7 @@ class Siae(models.Model):
         "is_delisted",
         "is_active",
         "siret_is_valid",
+        "asp_id",
         "c1_id",
         "c4_id_old",
         "c1_last_sync_date",
@@ -316,6 +317,7 @@ class Siae(models.Model):
     is_consortium = models.BooleanField(verbose_name="Consortium", default=False)
     is_cocontracting = models.BooleanField(verbose_name="Co-traitance", default=False)
 
+    asp_id = models.IntegerField(verbose_name="ID ASP", blank=True, null=True)
     is_active = models.BooleanField(verbose_name="Active", default=True)
     is_delisted = models.BooleanField(verbose_name="Masquée", default=False)
     is_first_page = models.BooleanField(verbose_name="A la une", default=False)
