@@ -200,9 +200,9 @@
 
 {% block modals %}
     {% include "auth/_login_or_signup_modal.html" %}
+    {% include "siaes/_envoi_groupe_modal.html" %}
     {% include "siaes/_favorite_item_add_modal.html" %}
     {% include "siaes/_favorite_item_remove_modal.html" %}
-    {% include "siaes/_envoi_groupe_modal.html" %}
 {% endblock %}
 
 {% block extra_js %}
@@ -249,9 +249,9 @@ document.addEventListener("DOMContentLoaded", function() {
     map.fitBounds(geojson.getBounds());
 });
 </script>
+<script type="text/javascript" src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
 {% if user.is_authenticated %}
 <script type="text/javascript" src="{% static 'js/favorite_item_add.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/favorite_item_remove.js' %}"></script>
 {% endif %}
-<script type="text/javascript" src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
 {% endblock %}
