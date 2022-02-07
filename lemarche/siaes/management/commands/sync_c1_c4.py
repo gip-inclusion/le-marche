@@ -33,6 +33,7 @@ UPDATE_FIELDS = [
     "source",
     "admin_name",
     "admin_email",
+    "asp_id",
     "is_active",
     "is_delisted",
     "c1_last_sync_date",
@@ -67,7 +68,7 @@ def set_is_active(siae):
     """
     # Siae with convention
     if siae["kind"] in ["AI", "ACI", "EI", "ETTI", "EITI"]:
-        if ("is_active" in siae) and siae["is_active"]:
+        if ("convention_is_active" in siae) and siae["convention_is_active"]:
             return True
         return False
     # Siae without convention
@@ -160,7 +161,8 @@ class Command(BaseCommand):
         siae.source,
         ST_X(siae.coords::geometry) AS longitude,
         ST_Y(siae.coords::geometry) AS latitude,
-        convention.is_active as is_active,
+        convention.is_active as convention_is_active,
+        convention.asp_id as convention_asp_id,
         ad.admin_name as admin_name,
         ad.admin_email as admin_email
         FROM siaes_siae AS siae
@@ -208,6 +210,7 @@ class Command(BaseCommand):
                 "admin_email": c1_siae["admin_email"] or "",
                 "source": c1_siae["source"],
                 "is_active": set_is_active(c1_siae),
+                "asp_id": c1_siae["convention_asp_id"],
                 "is_delisted": set_is_delisted(c1_siae),
                 "c1_last_sync_date": timezone.now(),
             }
@@ -289,7 +292,7 @@ class Command(BaseCommand):
             return
 
         # other fields
-        # c1_siae["is_delisted"] = True if not c1_siae["is_active"] else False
+        # c1_siae["is_delisted"] = True if not c1_siae["convention_is_active"] else False
 
         # keep only certain fields for update
         c1_siae_filtered = dict()
