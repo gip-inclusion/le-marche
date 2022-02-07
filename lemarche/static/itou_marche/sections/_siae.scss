@@ -102,28 +102,6 @@
 		color: $gray-900;
 	}
 
-	.deflist {
-		padding: 0;
-			margin: 0;
-		list-style: none;
-
-		li {
-			padding-bottom: 8px;
-			display: flex;
-		}
-
-		.prof_email {
-			max-width: 280px;
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;	
-		}
-
-		.prof_icon {
-			min-width: 30px
-		}
-	}
-
 	#dir-profile aside > .profile {
 
 		@media screen and (min-width:992px) {

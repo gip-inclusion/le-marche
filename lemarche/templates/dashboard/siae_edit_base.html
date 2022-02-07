@@ -59,6 +59,9 @@
             <div class="col-12">
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
+                        <a href="{% url 'dashboard:siae_edit_users' siae.slug %}" class="nav-link {% if 'collaborateurs' in request.path %}active font-weight-bold{% endif %}">Collaborateurs</a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{% url 'dashboard:siae_edit_info_contact' siae.slug %}" class="nav-link {% if 'contact' in request.path %}active font-weight-bold{% endif %}">Informations & Contact</a>
                     </li>
                     <li class="nav-item">

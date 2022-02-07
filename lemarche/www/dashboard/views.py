@@ -208,6 +208,12 @@ class SiaeSearchAdoptConfirmView(LoginRequiredMixin, SiaeUserRequiredMixin, Succ
         return super().form_valid(form)
 
 
+class SiaeEditUsersView(LoginRequiredMixin, SiaeOwnerRequiredMixin, DetailView):
+    template_name = "dashboard/siae_edit_users.html"
+    context_object_name = "siae"
+    queryset = Siae.objects.all()
+
+
 class SiaeEditInfoContactView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeEditInfoContactForm
     template_name = "dashboard/siae_edit_info_contact.html"

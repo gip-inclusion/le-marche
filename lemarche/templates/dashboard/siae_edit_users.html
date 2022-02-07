@@ -1,0 +1,37 @@
+{% extends "dashboard/siae_edit_base.html" %}
+{% load static bootstrap4 %}
+
+{% block content_siae_form %}
+<section class="mb-3 mb-lg-5">
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <legend class="h4">Mes Collaborateurs</legend>
+                {% for siaeuser in siae.siaeuser_set.all %}
+                <ul class="deflist">
+                    <hr />
+                    <li>
+                        <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" alt="" /></span>
+                        <span><strong>{{ siaeuser.user.full_name }}</strong></span>
+                    </li>
+                    <li>
+                        <span style="margin-left:23px">{{ siaeuser.user.email }}</span>
+                    </li>
+                </ul>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                <p class="mb-1">
+                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                    <strong>Collaborateurs</strong>
+                </p>
+                <p class="mb-0">
+                    Gérez ici les collaborateurs liés à votre structure.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
