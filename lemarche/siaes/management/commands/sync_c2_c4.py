@@ -52,25 +52,31 @@ class Command(BaseCommand):
         self.stdout.write("Step 2: update C4 ETP data")
         # count before
         siae_total = Siae.objects.all().count()
-        siae_etp_count_before = Siae.objects.exclude(c2_etp_count__isnull=True).count()
+        siae_etp_count_before = Siae.objects.filter(c2_etp_count__isnull=False).count()
 
         self.c4_etp_update(c2_etp_list, dry_run)
 
         # count after
-        siae_etp_count_after = Siae.objects.exclude(c2_etp_count__isnull=True).count()
+        siae_etp_count_after = Siae.objects.filter(c2_etp_count__isnull=False).count()
         yesterday = datetime.now() - timedelta(days=1)
-        siae_etp_udated = Siae.objects.filter(c2_etp_count_last_sync_date__gte=timezone.make_aware(yesterday)).count()
+        siae_etp_updated = (
+            Siae.objects.filter(c2_etp_count__isnull=False)
+            .filter(c2_etp_count_last_sync_date__gte=timezone.make_aware(yesterday))
+            .count()
+        )
 
         self.stdout.write("-" * 80)
         self.stdout.write("Done ! Some stats...")
-        etp_added_count = siae_etp_count_after - siae_etp_count_before
-        etp_updated_count = siae_etp_udated - etp_added_count
+        siae_etp_added_count = siae_etp_count_after - siae_etp_count_before
+        siae_etp_updated_count = siae_etp_updated - siae_etp_added_count
         self.stdout.write(f"Siae total: {siae_total}")
-        self.stdout.write(f"ETP count added: {etp_added_count}")
-        self.stdout.write(f"ETP count updated: {etp_updated_count}")
+        self.stdout.write(f"ETP count added: {siae_etp_added_count}")
+        self.stdout.write(f"ETP count updated: {siae_etp_updated_count}")
 
     def c2_etp_export(self):
-        # fetch only the latest row for each distinct id_structure_asp
+        """
+        Fetch only the latest row for each distinct id_structure_asp
+        """
         sql = """
         SELECT
             DISTINCT ON (id_structure_asp)
