@@ -399,6 +399,9 @@ class Siae(models.Model):
     client_reference_count = models.IntegerField("Nombre de références clients", default=0)
     label_count = models.IntegerField("Nombre de labels", default=0)
     image_count = models.IntegerField("Nombre d'images", default=0)
+    content_filled_basic_date = models.DateTimeField(
+        "Date de remplissage (basique) de la fiche", blank=True, null=True
+    )
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
@@ -428,18 +431,41 @@ class Siae(models.Model):
             self.slug += f"-{str(uuid4())[:4]}"
 
     def set_related_counts(self):
+        """
+        Works only for related fields.
+        For M2M, see m2m_changed signal.
+        """
         if self.id:
             self.offer_count = self.offers.count()
             self.client_reference_count = self.client_references.count()
             self.label_count = self.labels.count()
             self.image_count = self.images.count()
+            # user_count, sector_count, network_count? see M2M signals
+
+    def set_content_fill_dates(self):
+        """
+        Content fill levels:
+        - Level 1 (basic): user_count + sector_count + description
+        - Level 2: user_count + sector_count + description + logo + client_reference_count
+        - Level 3: user_count + sector_count + description + logo + client_reference_count + image_count
+        - Level 4: user_count + sector_count + description + logo + client_reference_count + image_count + label_count
+        """
+        if self.id:
+            if all(getattr(self, field) for field in ["user_count", "sector_count", "description"]):
+                if not self.content_filled_basic_date:
+                    self.content_filled_basic_date = timezone.now()
+            # else:
+            #     if self.content_filled_basic_date:
+            #         self.content_filled_basic_date = None
 
     def save(self, *args, **kwargs):
         """
-        - update the object stats (only related fields: for M2M, see m2m_changed signal)
+        - update the object stats
+        - update the object content_fill_dates
         - generate the slug field
         """
         self.set_related_counts()
+        self.set_content_fill_dates()
         try:
             self.set_slug()
             with transaction.atomic():
