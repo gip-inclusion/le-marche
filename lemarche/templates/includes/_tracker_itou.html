@@ -18,28 +18,32 @@ const uTypeMapping = {
 
 const IS_ADMIN_COOKIE_NAME = 'isAdmin';
 const USER_TYPE_COOKIE_NAME = 'uType';
+const USER_EMAIL_COOKIE_NAME = 'uEmail';
 const SESSION_ID_COOKIE_NAME = 'sessionid';
 
 // set global variables
 var sessionId = getCookieValueByName(SESSION_ID_COOKIE_NAME);
 {% if user.is_authenticated %}
     var isAdmin = {% if user.kind == 'ADMIN' %}true{% else %}false{% endif %};
-    var uType = {% if user.is_authenticated %}'{{ user.kind }}'{% endif %};
+    var uType = '{{ user.kind }}';
+    var uEmail = '{{ user.email }}';
     if (uType) {
         uType = uTypeMapping[uType];
     }
 {% else %}
     var isAdmin = false;
     var uType = '';
+    var uEmail = '';
 {% endif %}
 
 // update cookie
 document.cookie = `${IS_ADMIN_COOKIE_NAME}=${window.isAdmin}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
 document.cookie = `${USER_TYPE_COOKIE_NAME}=${window.uType}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
+document.cookie = `${USER_EMAIL_COOKIE_NAME}=${window.uEmail}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
 
 async function track(page, action, meta={}) {
     const body = computeRequestBody(page, action, meta);
-    
+
     if (typeof window !== 'undefined') {
         await fetch('{{ TRACKER_HOST }}/track', {
             method: 'POST',
@@ -70,6 +74,7 @@ function computeRequestBody(page, action, metaIn) {
     // meta['user_id'] = {% if user.is_authenticated %}'{{ user.id }}'{% else %}null{% endif %};  // privacy concerns...
     meta['is_admin'] = getCookieValueByName(IS_ADMIN_COOKIE_NAME) == 'true';
     meta['user_type'] = getCookieValueByName(USER_TYPE_COOKIE_NAME);
+    meta['user_email'] = getCookieValueByName(USER_EMAIL_COOKIE_NAME);
     // default data
     meta['source'] = 'bitoubi_frontend';
 
