@@ -70,14 +70,15 @@ class Command(BaseCommand):
         self.stdout.write(f"ETP count updated: {etp_updated_count}")
 
     def c2_etp_export(self):
+        # fetch only the latest row for each distinct id_structure_asp
         sql = """
         SELECT
-            DISTINCT ON (date_saisie, id_structure_asp)
+            DISTINCT ON (id_structure_asp)
             date_saisie,
             id_structure_asp,
             af_etp_postes_insertion
         FROM "saisies_mensuelles_iae"
-        ORDER BY date_saisie DESC, id_structure_asp
+        ORDER BY id_structure_asp, date_saisie DESC
         """
         conn = psycopg2.connect(os.environ.get("C2_DSN"))
         c2_etp_list_temp = list()
