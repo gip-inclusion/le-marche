@@ -39,6 +39,8 @@ UPDATE_FIELDS = [
     "c1_last_sync_date",
 ]
 
+C1_EXTRA_KEYS = ["convention_is_active", "convention_asp_id"]
+
 
 def map_siae_presta_type(siae_kind):
     if siae_kind:
@@ -232,6 +234,9 @@ class Command(BaseCommand):
                     c1_siae_cleaned["coords"] = GEOSGeometry(f"{coords}")  # Feed `GEOSGeometry` with GeoJSON.
                 del c1_siae_cleaned["latitude"]
                 del c1_siae_cleaned["longitude"]
+
+            # remove useless keys
+            [c1_siae_cleaned.pop(key) for key in C1_EXTRA_KEYS]
 
             c1_list_cleaned.append(c1_siae_cleaned)
 
