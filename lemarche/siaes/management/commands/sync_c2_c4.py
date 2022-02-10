@@ -97,22 +97,28 @@ class Command(BaseCommand):
     def c4_etp_update(self, c2_etp_list, dry_run):
         """
         Loop on c2_etp_list and figure out if each siae needs to be updated or not
+        Which Siae do we update?
+        - if their c2_etp_count_last_sync_date is empty (new Siae which never when through the script)
+        - or if c2_etp_count_last_sync_date < since_last_date_limit (to update the values regulary)
         """
-        progress = 0
-
         siaes_queryset = Siae.objects.all().order_by("id")
         since_last_date_limit = timezone.now() - timedelta(days=settings.API_QPV_RELATIVE_DAYS_TO_UPDATE)
         siaes_queryset = siaes_queryset.filter(
             (Q(c2_etp_count_last_sync_date__lte=since_last_date_limit) | Q(c2_etp_count_last_sync_date__isnull=True))
         )
 
+        progress = 0
         for c2_siae in c2_etp_list:
             progress += 1
             if (progress % 1000) == 0:
                 self.stdout.write(f"{progress}...")
             if not dry_run:
-                siaes_queryset.filter(asp_id=c2_siae["id_structure_asp"]).update(
-                    c2_etp_count=c2_siae["af_etp_postes_insertion"],
-                    c2_etp_count_date_saisie=c2_siae["date_saisie"],
-                    c2_etp_count_last_sync_date=timezone.now(),
-                )
+                if c2_siae["id_structure_asp"]:
+                    siaes_queryset.filter(asp_id=c2_siae["id_structure_asp"]).update(
+                        c2_etp_count=c2_siae["af_etp_postes_insertion"],
+                        c2_etp_count_date_saisie=c2_siae["date_saisie"],
+                        c2_etp_count_last_sync_date=timezone.now(),
+                    )
+
+        # also update Siae without asp_id
+        siaes_queryset.filter(asp_id__isnull=True).update(c2_etp_count_last_sync_date=timezone.now())
