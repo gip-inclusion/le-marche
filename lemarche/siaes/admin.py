@@ -108,7 +108,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
             },
         ),
         (
-            "Données C1 (ou ESAT)",
+            "Données C1 (ou ESAT ou SEP)",
             {
                 "fields": (
                     "name",
@@ -133,6 +133,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                 )
             },
         ),
+        ("Données C2", {"fields": Siae.READONLY_FIELDS_FROM_C2}),
         ("Données API Entreprise", {"fields": Siae.READONLY_FIELDS_FROM_API_ENTREPRISE}),
         ("Données API QPV (Quartiers de la politique de la ville)", {"fields": Siae.READONLY_FIELDS_FROM_QPV}),
         ("Données API ZRR (Zones de revitalisation rurale)", {"fields": Siae.READONLY_FIELDS_FROM_ZRR}),
