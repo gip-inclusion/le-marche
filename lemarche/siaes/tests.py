@@ -154,6 +154,22 @@ class SiaeModelSaveTest(TestCase):
         siae.save()
         self.assertEqual(siae.content_filled_basic_date, fill_date)
 
+    def test_update_signup_date_on_save(self):
+        siae = SiaeFactory()
+        user = UserFactory()
+        self.assertEqual(siae.signup_date, None)
+        siae.users.add(user)
+        self.assertEqual(siae.users.count(), 1)
+        # siae.save()  # no need to run save(), m2m_changed signal was triggered above
+        self.assertEqual(siae.user_count, 1)
+        self.assertNotEqual(siae.signup_date, None)
+        # siae should be skipped now
+        user_2 = UserFactory()
+        signup_date = siae.signup_date
+        siae.users.add(user_2)
+        # siae.save()  # no need to run save(), m2m_changed signal was triggered above
+        self.assertEqual(siae.signup_date, signup_date)
+
 
 class SiaeModelQuerysetTest(TestCase):
     def setUp(self):
