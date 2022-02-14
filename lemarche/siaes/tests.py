@@ -137,6 +137,23 @@ class SiaeModelSaveTest(TestCase):
         self.assertEqual(siae.user_count, 1 + 1)
         self.assertEqual(siae.sector_count, 0)
 
+    def test_update_content_fill_date_on_save(self):
+        # siae to update
+        siae = SiaeFactory(description="")
+        user = UserFactory()
+        siae.users.add(user)
+        sector = SectorFactory()
+        siae.sectors.add(sector)
+        self.assertEqual(siae.content_filled_basic_date, None)
+        siae.description = "test"
+        siae.save()
+        self.assertNotEqual(siae.content_filled_basic_date, None)
+        # siae should be skipped now
+        fill_date = siae.content_filled_basic_date
+        siae.description = "another test"
+        siae.save()
+        self.assertEqual(siae.content_filled_basic_date, fill_date)
+
 
 class SiaeModelQuerysetTest(TestCase):
     def setUp(self):

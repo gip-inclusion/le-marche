@@ -91,6 +91,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "coords_display",
         "logo_url",
         "logo_url_display",
+        "content_filled_basic_date",
         # "import_raw_object",
         "import_raw_object_display",
         "created_at",
@@ -185,6 +186,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                 )
             },
         ),
+        ("Stats", {"fields": ("content_filled_basic_date",)}),
         ("Si importé", {"fields": ("import_raw_object_display",)}),
         ("Autres", {"fields": ("created_at", "updated_at")}),
     ]
