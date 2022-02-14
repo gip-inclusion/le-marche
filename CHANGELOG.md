@@ -4,6 +4,33 @@ Ressources :
 - [Semantic Versioning](http://semver.org/)
 - [CHANGELOG recommendations](http://keepachangelog.com/).
 
+## [2022.3] - 2022-02-11
+
+### Ajouté
+
+-  Recherche / Fiche
+    - Mise en avant de la fonctionnalité d'envoi groupé (encart + modale + vidéo)
+    - Proposer une recherche Google sur les fiches sans coordonnées
+- Espace utilisateur
+    - Nouveau typeform pour les demandes groupées
+    - Nouvel onglet "Collaborateurs" dans le formulaire de modification de sa structure
+- Données
+    - Récupérer l'id ASP des structures depuis le C1
+
+### Modifié
+
+- Pages
+    - Mise à jour du thème itou (icons css)
+-  Recherche / Fiche
+    - Réparé la recherche par périmètre
+- Données
+    - Ajoute l'id de l'utilisateur dans le tracking frontend
+    - Ajoute des id manquants sur des `<a href=""></a>`
+- Tech
+    - Mise à jour de Django à la version 4.0.2
+
+### Supprimé
+
 ## [2022.2] - 2022-01-28
 
 ### Ajouté
