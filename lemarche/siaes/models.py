@@ -399,6 +399,9 @@ class Siae(models.Model):
     client_reference_count = models.IntegerField("Nombre de références clients", default=0)
     label_count = models.IntegerField("Nombre de labels", default=0)
     image_count = models.IntegerField("Nombre d'images", default=0)
+    signup_date = models.DateTimeField(
+        "Date d'inscription de la structure (premier utilisateur)", blank=True, null=True
+    )
     content_filled_basic_date = models.DateTimeField(
         "Date de remplissage (basique) de la fiche", blank=True, null=True
     )
@@ -592,11 +595,13 @@ class Siae(models.Model):
 @receiver(m2m_changed, sender=Siae.users.through)
 def siae_users_changed(sender, instance, action, **kwargs):
     """
-    Why do we need this? (looks like a duplicate of siae_users_changed)
+    Why do we need this? (looks like a duplicate of siae_siaeusers_changed)
     Will be called if we do something like `siae.users.add(user)`
     """
     if action in ("post_add", "post_remove", "post_clear"):
         instance.user_count = instance.users.count()
+        if instance.user_count > 0 and not instance.signup_date:
+            instance.signup_date = timezone.now()
         instance.save()
 
 
@@ -634,6 +639,8 @@ def siae_siaeusers_changed(sender, instance, **kwargs):
     Will be called when we update the Siae form in the admin
     """
     instance.siae.user_count = instance.siae.users.count()
+    if instance.siae.user_count > 0 and not instance.siae.signup_date:
+        instance.siae.signup_date = timezone.now()
     instance.siae.save()
 
 
