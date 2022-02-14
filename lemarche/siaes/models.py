@@ -151,11 +151,13 @@ class Siae(models.Model):
         "c1_last_sync_date",
         "source",
     ]
-
+    READONLY_FIELDS_FROM_C2 = [
+        "c2_etp_count",
+        "c2_etp_count_date_saisie",
+        "c2_etp_count_last_sync_date",
+    ]
     READONLY_FIELDS_FROM_QPV = ["is_qpv", "api_qpv_last_sync_date", "qpv_name", "qpv_code"]
-
     READONLY_FIELDS_FROM_ZRR = ["is_zrr", "zrr_name", "zrr_code", "api_zrr_last_sync_date"]
-
     READONLY_FIELDS_FROM_API_ENTREPRISE = [
         "api_entreprise_date_constitution",
         "api_entreprise_employees",
@@ -167,6 +169,7 @@ class Siae(models.Model):
     ]
     READONLY_FIELDS = (
         READONLY_FIELDS_FROM_C1
+        + READONLY_FIELDS_FROM_C2
         + READONLY_FIELDS_FROM_QPV
         + READONLY_FIELDS_FROM_ZRR
         + READONLY_FIELDS_FROM_API_ENTREPRISE
@@ -337,6 +340,13 @@ class Siae(models.Model):
     )
     networks = models.ManyToManyField("networks.Network", verbose_name="Réseaux", related_name="siaes", blank=True)
     # ForeignKeys: offers, client_references, labels, images
+
+    # C2 (ETP)
+    c2_etp_count = models.FloatField("Nombre d'ETP (C2)", blank=True, null=True)
+    c2_etp_count_date_saisie = models.DateField("Date de saisie du nombre d'ETP (C2)", blank=True, null=True)
+    c2_etp_count_last_sync_date = models.DateTimeField(
+        "Date de dernière synchronisation (C2 ETP)", blank=True, null=True
+    )
 
     # API QPV
     is_qpv = models.BooleanField(verbose_name="Zone QPV (API QPV)", blank=False, null=False, default=False)
