@@ -1,3 +1,5 @@
+{% load security %}
+
 <script type="text/javascript">
 const getCookieValueByName = function(cookieName) {
     if (document.cookie.split('; ').find(row => row.startsWith(cookieName))) {
@@ -26,7 +28,7 @@ var sessionId = getCookieValueByName(SESSION_ID_COOKIE_NAME);
 {% if user.is_authenticated %}
     var isAdmin = {% if user.kind == 'ADMIN' %}true{% else %}false{% endif %};
     var uType = '{{ user.kind }}';
-    var uID = '{{ user.id }}';
+    var uID = '{{ user.id | hash_value }}';
     if (uType) {
         uType = uTypeMapping[uType];
     }

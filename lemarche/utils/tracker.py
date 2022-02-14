@@ -18,6 +18,8 @@ import httpx
 from crawlerdetect import CrawlerDetect
 from django.conf import settings
 
+from lemarche.utils.templatetags.security import hash_value
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -58,7 +60,7 @@ def extract_meta_from_request(request):
         **request.GET,
         "is_admin": request.COOKIES.get("isAdmin", "false") == "true",
         "user_type": USER_KIND_MAPPING.get(request.user.kind) if request.user.id else "",
-        "user_id": request.user.id if request.user.id else None,
+        "user_id": hash_value(request.user.id) if request.user.id else None,
         "token": request.GET.get("token", "0"),
         "cmp": request.GET.get("cmp", ""),
     }
