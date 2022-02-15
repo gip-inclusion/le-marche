@@ -25,6 +25,7 @@ from lemarche.www.dashboard.forms import (
     SiaeOfferFormSet,
     SiaeSearchAdoptConfirmForm,
     SiaeSearchBySiretForm,
+    SiaeUserRequestForm,
 )
 from lemarche.www.dashboard.mixins import (
     FavoriteListOwnerRequiredMixin,
@@ -373,3 +374,39 @@ class SiaeEditOtherView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMess
 
     def get_success_url(self):
         return reverse_lazy("dashboard:siae_edit_other", args=[self.kwargs.get("slug")])
+
+
+class SiaeUserRequestConfirm(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
+    form_class = SiaeUserRequestForm
+    template_name = "siaes/_user_request_confirm_modal.html"
+    context_object_name = "siaeuserrequest"
+    queryset = SiaeUserRequest.objects.all()
+    success_message = "L'utilisateur a été rattaché à votre structure."
+    success_url = reverse_lazy("dashboard:home")
+
+    def get_object(self):
+        return get_object_or_404(SiaeUserRequest, id=self.kwargs.get("siaeuserrequest_id"))
+
+    def form_valid(self, form):
+        # add user to siae
+        self.object.siae.users.add(self.object.user)
+        # TODO: update SiaeUserRequest
+        # TODO: notify user
+        return super().form_valid(form)
+
+
+class SiaeUserRequestCancel(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
+    form_class = SiaeUserRequestForm
+    template_name = "siaes/_user_request_cancel_modal.html"
+    context_object_name = "siaeuserrequest"
+    queryset = SiaeUserRequest.objects.all()
+    success_message = "L'utilisateur n'a pas été rattaché à votre structure."
+    success_url = reverse_lazy("dashboard:home")
+
+    def get_object(self):
+        return get_object_or_404(SiaeUserRequest, id=self.kwargs.get("siaeuserrequest_id"))
+
+    def form_valid(self, form):
+        # TODO: update SiaeUserRequest
+        # TODO: notify user
+        return super().form_valid(form)
