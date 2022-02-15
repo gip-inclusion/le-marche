@@ -644,6 +644,27 @@ def siae_siaeusers_changed(sender, instance, **kwargs):
     instance.siae.save()
 
 
+class SiaeUserRequest(models.Model):
+    siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Utilisateur", on_delete=models.CASCADE)
+    assignee = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="Responsable",
+        related_name="siaeuserrequest_assignee",
+        on_delete=models.CASCADE,
+    )
+
+    # status, log
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Demande de rattachement"
+        verbose_name_plural = "Demandes de rattachement"
+        ordering = ["-created_at"]
+
+
 class SiaeOffer(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
     description = models.TextField(verbose_name="Description", blank=True)

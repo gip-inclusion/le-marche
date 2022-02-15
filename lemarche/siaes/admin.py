@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
-from lemarche.siaes.models import Siae, SiaeClientReference, SiaeImage, SiaeLabel, SiaeOffer, SiaeUser
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeImage, SiaeLabel, SiaeOffer, SiaeUser, SiaeUserRequest
 from lemarche.users.models import User
 from lemarche.utils.fields import pretty_print_readonly_jsonfield
 
@@ -264,6 +264,25 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         return "-"
 
     import_raw_object_display.short_description = "Donnée brute importée"
+
+
+@admin.register(SiaeUserRequest)
+class SiaeUserRequestAdmin(admin.ModelAdmin):
+    list_display = ["id", "siae", "user", "assignee", "created_at", "updated_at"]
+    search_fields = ["id", "name", "siae__id", "siae__name", "user__id", "user__email"]
+    search_help_text = "Cherche sur les champs : ID, Nom, Structure (ID, Nom), Utilisateur (ID, E-mail)"
+
+    autocomplete_fields = ["siae"]
+    readonly_fields = [field.name for field in SiaeUserRequest._meta.fields]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(SiaeOffer)
