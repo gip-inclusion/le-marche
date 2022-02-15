@@ -69,26 +69,13 @@
                                     {{ siae.city }} {{ siae.post_code }}
                                 </p>
                             </div>
-                            {% if not siae.users.count %}
-                                <div class="col text-right">
-                                    <br />
-                                    <a href="{% url 'dashboard:siae_search_adopt_confirm' siae.slug %}" class="btn btn-outline-primary">
-                                        <span>Sélectionner</span>
-                                    </a>
-                                </div>
-                            {% endif %}
-                        </div>
-                        {% if siae.users.count %}
-                            <div class="mt-3">
-                                <div class="alert alert-warning" role="alert">
-                                    <p>
-                                        <strong>Rejoindre cette structure</strong><br />
-                                        <i>{{ siae.users.first.full_name }}</i> a déjà activé cette structure sur le marché.<br />
-                                        Si vous souhaitez aussi rejoindre cette structure, <strong><a href="{% url 'pages:contact' %}?siret={{ siae.siret }}">contactez le support</a></strong> (indiquez le Siret pour nous aider à retrouver votre structure).
-                                    </p>
-                                </div>
+                            <div class="col text-right">
+                                <br />
+                                <a href="{% url 'dashboard:siae_search_adopt_confirm' siae.slug %}" class="btn btn-outline-primary">
+                                    <span>Sélectionner</span>
+                                </a>
                             </div>
-                        {% endif %}
+                        </div>
                     {% endfor %}
                 {% endif %}
                 {% if not siaes and form.is_valid %}

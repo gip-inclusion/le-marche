@@ -192,20 +192,21 @@ class SiaeSearchAdoptConfirmView(LoginRequiredMixin, SiaeUserRequiredMixin, Succ
     success_message = "Votre structure a été rajoutée dans votre espace."
     success_url = reverse_lazy("dashboard:home")
 
-    def get(self, request, *args, **kwargs):
-        """The Siae should not have any users yet."""
-        response = super().get(request, *args, **kwargs)
-        if self.object.users.count():
-            messages.add_message(
-                request, messages.INFO, "La structure a déjà été enregistrée sur le marché par un autre utilisateur."
-            )
-            return HttpResponseRedirect(reverse_lazy("dashboard:home"))
-        return response
-
     def form_valid(self, form):
-        """Add the Siae to the User."""
-        self.object.users.add(self.request.user)
-        return super().form_valid(form)
+        """
+        - Siae with user? add the User to the Siae
+        - Siae with existing user(s)? go through the invitation workflow
+        """
+        if not self.object.users.count():
+            self.object.users.add(self.request.user)
+            return super().form_valid(form)
+        else:
+            success_message = (
+                f"La demande a été envoyée à <i>{self.object.users.first().full_name}</i>.<br />"
+                f"<i>Cet utilisateur ne fait plus partie de la structure ? <a href=\"{reverse_lazy('dashboard:siae_search_by_siret')}?siret={self.object.siret}\">Contactez le support</a></i>"  # noqa
+            )
+            messages.add_message(self.request, messages.SUCCESS, success_message)
+            return HttpResponseRedirect(self.get_success_url())
 
 
 class SiaeEditUsersView(LoginRequiredMixin, SiaeOwnerRequiredMixin, DetailView):
