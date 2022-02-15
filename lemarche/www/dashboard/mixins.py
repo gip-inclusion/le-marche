@@ -50,7 +50,7 @@ class SiaeNotMemberRequiredMixin(UserPassesTestMixin):
         return user.is_authenticated and not (siae_slug in user.siaes.values_list("slug", flat=True))
 
     def handle_no_permission(self):
-        messages.add_message(self.request, messages.WARNING, "Vous avez déjà rejoins cette structure.")
+        messages.add_message(self.request, messages.WARNING, "Vous êtes déjà rattaché à cette structure.")
         return HttpResponseRedirect(reverse_lazy("dashboard:home"))
 
 
@@ -65,7 +65,7 @@ class SiaeUserAndNotMemberRequiredMixin(UserPassesTestMixin):
 
     def handle_no_permission(self):
         if SiaeUserRequiredMixin.test_func(self) and not SiaeNotMemberRequiredMixin.test_func(self):
-            messages.add_message(self.request, messages.WARNING, "Vous avez déjà rejoins cette structure.")
+            messages.add_message(self.request, messages.WARNING, "Vous êtes déjà rattaché à cette structure.")
         return HttpResponseRedirect(reverse_lazy("dashboard:home"))
 
 

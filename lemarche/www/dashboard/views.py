@@ -9,7 +9,7 @@ from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView, FormMixin
 
 from lemarche.favorites.models import FavoriteItem, FavoriteList
-from lemarche.siaes.models import Siae
+from lemarche.siaes.models import Siae, SiaeUserRequest
 from lemarche.utils.s3 import S3Upload
 from lemarche.utils.tracker import extract_meta_from_request, track
 from lemarche.www.dashboard.forms import (
@@ -32,6 +32,7 @@ from lemarche.www.dashboard.mixins import (
     SiaeUserAndNotMemberRequiredMixin,
     SiaeUserRequiredMixin,
 )
+from lemarche.www.dashboard.tasks import send_siae_user_request_email
 
 
 class DashboardHomeView(LoginRequiredMixin, DetailView):
@@ -208,7 +209,11 @@ class SiaeSearchAdoptConfirmView(
             self.object.users.add(self.request.user)
             return super().form_valid(form)
         else:
-            # TODO: send invitation email
+            # create SiaeUserRequest + send request email to assignee
+            siae_user_request = SiaeUserRequest.objects.create(
+                siae=self.object, user=self.request.user, assignee=self.object.users.first()
+            )
+            send_siae_user_request_email(siae_user_request)
             success_message = (
                 f"La demande a été envoyée à <i>{self.object.users.first().full_name}</i>.<br />"
                 f"<i>Cet utilisateur ne fait plus partie de la structure ? <a href=\"{reverse_lazy('dashboard:siae_search_by_siret')}?siret={self.object.siret}\">Contactez le support</a></i>"  # noqa
