@@ -44,6 +44,7 @@ class SiaeSearchAdoptViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user_siae = UserFactory(kind=User.KIND_SIAE)
+        cls.user_siae_2 = UserFactory(kind=User.KIND_SIAE)
         cls.user_buyer = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
         cls.user_admin = UserFactory(kind=User.KIND_ADMIN)
@@ -85,10 +86,25 @@ class SiaeSearchAdoptViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/profil/")
 
+    def test_only_new_siae_user_can_adopt_confirm(self):
+        self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
+        self.assertEqual(self.siae_with_user.users.count(), 1)
+        self.assertEqual(self.user_siae.siaes.count(), 1)  # setUpTestData
+
+        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_with_user.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/profil/")
+
     def test_siae_without_user_adopt_confirm(self):
         self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
         self.assertEqual(self.siae_without_user.users.count(), 0)
         self.assertEqual(self.user_siae.siaes.count(), 1)  # setUpTestData
+
+        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_without_user.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Je confirme")
 
         url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_without_user.slug])
         response = self.client.post(url)  # data={}
@@ -96,6 +112,23 @@ class SiaeSearchAdoptViewTest(TestCase):
         self.assertEqual(response.url, "/profil/")
         self.assertEqual(self.siae_without_user.users.count(), 1)
         self.assertEqual(self.user_siae.siaes.count(), 1 + 1)
+
+    def test_siae_with_existing_user_adopt_confirm(self):
+        self.client.login(email=self.user_siae_2.email, password=DEFAULT_PASSWORD)
+        self.assertEqual(self.siae_with_user.users.count(), 1)
+        self.assertEqual(self.user_siae_2.siaes.count(), 0)  # setUpTestData
+
+        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_with_user.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Demander le rattachement")
+
+        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_with_user.slug])
+        response = self.client.post(url)  # data={}
+        self.assertEqual(response.status_code, 302)  # redirect to success_url
+        self.assertEqual(response.url, "/profil/")
+        self.assertEqual(self.siae_with_user.users.count(), 1)  # invitation workflow
+        self.assertEqual(self.user_siae_2.siaes.count(), 0)
 
 
 class SiaeEditView(TestCase):

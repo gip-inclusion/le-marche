@@ -26,7 +26,12 @@ from lemarche.www.dashboard.forms import (
     SiaeSearchAdoptConfirmForm,
     SiaeSearchBySiretForm,
 )
-from lemarche.www.dashboard.mixins import FavoriteListOwnerRequiredMixin, SiaeOwnerRequiredMixin, SiaeUserRequiredMixin
+from lemarche.www.dashboard.mixins import (
+    FavoriteListOwnerRequiredMixin,
+    SiaeMemberRequiredMixin,
+    SiaeUserAndNotMemberRequiredMixin,
+    SiaeUserRequiredMixin,
+)
 
 
 class DashboardHomeView(LoginRequiredMixin, DetailView):
@@ -184,7 +189,9 @@ class SiaeSearchBySiretView(LoginRequiredMixin, SiaeUserRequiredMixin, FormMixin
         return super().get(request, *args, **kwargs)
 
 
-class SiaeSearchAdoptConfirmView(LoginRequiredMixin, SiaeUserRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeSearchAdoptConfirmView(
+    LoginRequiredMixin, SiaeUserAndNotMemberRequiredMixin, SuccessMessageMixin, UpdateView
+):
     form_class = SiaeSearchAdoptConfirmForm
     template_name = "dashboard/siae_search_adopt_confirm.html"
     context_object_name = "siae"
@@ -201,6 +208,7 @@ class SiaeSearchAdoptConfirmView(LoginRequiredMixin, SiaeUserRequiredMixin, Succ
             self.object.users.add(self.request.user)
             return super().form_valid(form)
         else:
+            # TODO: send invitation email
             success_message = (
                 f"La demande a été envoyée à <i>{self.object.users.first().full_name}</i>.<br />"
                 f"<i>Cet utilisateur ne fait plus partie de la structure ? <a href=\"{reverse_lazy('dashboard:siae_search_by_siret')}?siret={self.object.siret}\">Contactez le support</a></i>"  # noqa
@@ -209,13 +217,13 @@ class SiaeSearchAdoptConfirmView(LoginRequiredMixin, SiaeUserRequiredMixin, Succ
             return HttpResponseRedirect(self.get_success_url())
 
 
-class SiaeEditUsersView(LoginRequiredMixin, SiaeOwnerRequiredMixin, DetailView):
+class SiaeEditUsersView(LoginRequiredMixin, SiaeMemberRequiredMixin, DetailView):
     template_name = "dashboard/siae_edit_users.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
 
 
-class SiaeEditInfoContactView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeEditInfoContactView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeEditInfoContactForm
     template_name = "dashboard/siae_edit_info_contact.html"
     context_object_name = "siae"
@@ -236,7 +244,7 @@ class SiaeEditInfoContactView(LoginRequiredMixin, SiaeOwnerRequiredMixin, Succes
         return reverse_lazy("dashboard:siae_edit_info_contact", args=[self.kwargs.get("slug")])
 
 
-class SiaeEditOfferView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeEditOfferView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeEditOfferForm
     template_name = "dashboard/siae_edit_offer.html"
     context_object_name = "siae"
@@ -247,7 +255,7 @@ class SiaeEditOfferView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessa
         return reverse_lazy("dashboard:siae_edit_offer", args=[self.kwargs.get("slug")])
 
 
-class SiaeEditPrestaView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeEditPrestaView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeEditPrestaForm
     template_name = "dashboard/siae_edit_presta.html"
     context_object_name = "siae"
@@ -310,7 +318,7 @@ class SiaeEditPrestaView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMess
         return reverse_lazy("dashboard:siae_edit_presta", args=[self.kwargs.get("slug")])
 
 
-class SiaeEditOtherView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeEditOtherView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeEditOtherForm
     template_name = "dashboard/siae_edit_other.html"
     context_object_name = "siae"
