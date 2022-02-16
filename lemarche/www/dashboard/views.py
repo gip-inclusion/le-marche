@@ -200,6 +200,17 @@ class SiaeSearchAdoptConfirmView(
     success_message = "Votre structure a été rajoutée dans votre espace."
     success_url = reverse_lazy("dashboard:home")
 
+    def get_context_data(self, **kwargs):
+        """
+        - check if there isn't any pending SiaeUserRequest
+        """
+        context = super().get_context_data(**kwargs)
+        siae_user_pending_request = SiaeUserRequest.objects.filter(
+            user=self.request.user, siae=self.object, response=None
+        )
+        context["siae_user_pending_request"] = siae_user_pending_request
+        return context
+
     def form_valid(self, form):
         """
         - Siae with user? add the User to the Siae
