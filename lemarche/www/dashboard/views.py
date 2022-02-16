@@ -34,7 +34,7 @@ from lemarche.www.dashboard.mixins import (
     SiaeUserAndNotMemberRequiredMixin,
     SiaeUserRequiredMixin,
 )
-from lemarche.www.dashboard.tasks import send_siae_user_request_email
+from lemarche.www.dashboard.tasks import send_siae_user_request_email, send_siae_user_request_response_email
 
 
 class DashboardHomeView(LoginRequiredMixin, DetailView):
@@ -384,21 +384,27 @@ class SiaeUserRequestConfirm(LoginRequiredMixin, SiaeMemberRequiredMixin, Succes
     context_object_name = "siaeuserrequest"
     queryset = SiaeUserRequest.objects.all()
     success_message = "L'utilisateur a été rattaché à votre structure."
-    success_url = reverse_lazy("dashboard:home")
+    # success_url = reverse_lazy("dashboard:siae_edit_users")
 
     def get_object(self):
         return get_object_or_404(SiaeUserRequest, id=self.kwargs.get("siaeuserrequest_id"))
 
     def form_valid(self, form):
-        # add user to siae
+        """
+        - add user to Siae
+        - update SiaeUserRequest
+        - notify user
+        """
         self.object.siae.users.add(self.object.user)
-        # TODO: update SiaeUserRequest
         self.object.response = True
         self.object.response_date = timezone.now()
         self.object.logs.append({"action": "response_true", "timestamp": self.object.response_date.isoformat()})
         self.object.save()
-        # TODO: notify user
+        send_siae_user_request_response_email(self.object, response=True)
         return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard:siae_edit_users", args=[self.kwargs.get("slug")])
 
 
 class SiaeUserRequestCancel(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -406,17 +412,23 @@ class SiaeUserRequestCancel(LoginRequiredMixin, SiaeMemberRequiredMixin, Success
     template_name = "siaes/_user_request_cancel_modal.html"
     context_object_name = "siaeuserrequest"
     queryset = SiaeUserRequest.objects.all()
-    success_message = "L'utilisateur n'a pas été rattaché à votre structure."
-    success_url = reverse_lazy("dashboard:home")
+    success_message = "L'utilisateur sera informé de votre refus."
+    # success_url = reverse_lazy("dashboard:siae_edit_users")
 
     def get_object(self):
         return get_object_or_404(SiaeUserRequest, id=self.kwargs.get("siaeuserrequest_id"))
 
     def form_valid(self, form):
-        # TODO: update SiaeUserRequest
+        """
+        - update SiaeUserRequest
+        - notify user
+        """
         self.object.response = False
         self.object.response_date = timezone.now()
         self.object.logs.append({"action": "response_false", "timestamp": self.object.response_date.isoformat()})
         self.object.save()
-        # TODO: notify user
+        send_siae_user_request_response_email(self.object, response=False)
         return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard:siae_edit_users", args=[self.kwargs.get("slug")])
