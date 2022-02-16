@@ -274,6 +274,14 @@ class SiaeUserRequestAdmin(admin.ModelAdmin):
 
     autocomplete_fields = ["siae"]
     readonly_fields = [field.name for field in SiaeUserRequest._meta.fields]
+    fields = ["logs_display" if field_name == "logs" else field_name for field_name in readonly_fields]
+
+    def logs_display(self, siaeuserrequest=None):
+        if siaeuserrequest:
+            return pretty_print_readonly_jsonfield(siaeuserrequest.logs)
+        return "-"
+
+    logs_display.short_description = "Logs des échanges"
 
     def has_add_permission(self, request):
         return False

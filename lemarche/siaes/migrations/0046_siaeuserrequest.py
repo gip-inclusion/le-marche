@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "logs",
-                    models.JSONField(editable=False, null=True, verbose_name="Logs des échanges"),
+                    models.JSONField(default=list, editable=False, verbose_name="Logs des échanges"),
                 ),
             ],
             options={
