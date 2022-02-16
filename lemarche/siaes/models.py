@@ -654,7 +654,10 @@ class SiaeUserRequest(models.Model):
         on_delete=models.CASCADE,
     )
 
-    # status, log
+    response = models.BooleanField(verbose_name="Réponse", blank=True, null=True)
+    response_date = models.DateTimeField("Date de la réponse", blank=True, null=True)
+
+    logs = models.JSONField(verbose_name="Logs des échanges", editable=False, null=True)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)

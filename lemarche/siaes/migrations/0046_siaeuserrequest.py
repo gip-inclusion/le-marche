@@ -46,6 +46,18 @@ class Migration(migrations.Migration):
                         verbose_name="Utilisateur",
                     ),
                 ),
+                (
+                    "response",
+                    models.BooleanField(blank=True, null=True, verbose_name="Réponse"),
+                ),
+                (
+                    "response_date",
+                    models.DateTimeField(blank=True, null=True, verbose_name="Date de la réponse"),
+                ),
+                (
+                    "logs",
+                    models.JSONField(editable=False, null=True, verbose_name="Logs des échanges"),
+                ),
             ],
             options={
                 "verbose_name": "Demande de rattachement",
