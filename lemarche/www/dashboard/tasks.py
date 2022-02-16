@@ -34,6 +34,7 @@ def send_siae_user_request_email(siae_user_request):
 
     # log email
     log_item = {
+        "action": "email_sent",
         "email_to": recipient_list[0],
         "email_subject": email_subject,
         "email_body": email_body,

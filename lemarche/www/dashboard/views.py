@@ -4,6 +4,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView, FormMixin
@@ -206,9 +207,7 @@ class SiaeSearchAdoptConfirmView(
         - check if there isn't any pending SiaeUserRequest
         """
         context = super().get_context_data(**kwargs)
-        siae_user_pending_request = SiaeUserRequest.objects.filter(
-            initiator=self.request.user, siae=self.object, response=None
-        )
+        siae_user_pending_request = SiaeUserRequest.objects.pending().filter(initiator=self.request.user, siae=self.object)
         context["siae_user_pending_request"] = siae_user_pending_request
         return context
 
@@ -223,7 +222,10 @@ class SiaeSearchAdoptConfirmView(
         else:
             # create SiaeUserRequest + send request email to assignee
             siae_user_request = SiaeUserRequest.objects.create(
-                siae=self.object, initiator=self.request.user, assignee=self.object.users.first()
+                siae=self.object,
+                initiator=self.request.user,
+                assignee=self.object.users.first(),
+                logs=[{"action": "create", "timestamp": timezone.now().isoformat()}],
             )
             send_siae_user_request_email(siae_user_request)
             success_message = (
@@ -391,6 +393,10 @@ class SiaeUserRequestConfirm(LoginRequiredMixin, SiaeMemberRequiredMixin, Succes
         # add user to siae
         self.object.siae.users.add(self.object.user)
         # TODO: update SiaeUserRequest
+        self.object.response = True
+        self.object.response_date = timezone.now()
+        self.object.logs.append({"action": "response_true", "timestamp": self.object.response_date.isoformat()})
+        self.object.save()
         # TODO: notify user
         return super().form_valid(form)
 
@@ -408,5 +414,9 @@ class SiaeUserRequestCancel(LoginRequiredMixin, SiaeMemberRequiredMixin, Success
 
     def form_valid(self, form):
         # TODO: update SiaeUserRequest
+        self.object.response = False
+        self.object.response_date = timezone.now()
+        self.object.logs.append({"action": "response_false", "timestamp": self.object.response_date.isoformat()})
+        self.object.save()
         # TODO: notify user
         return super().form_valid(form)

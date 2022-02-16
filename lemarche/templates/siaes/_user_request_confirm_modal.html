@@ -10,8 +10,8 @@
             <form method="POST" action="{% url 'dashboard:siae_user_request_confirm' 'siae-slug-to-replace' 'siae-user-request-id-to-replace' %}">
                 {% csrf_token %}
                 <div class="modal-body home-content-body">
-                    <p class="font-weight-bold">
-                        full_name pourra accéder à votre structure et modifier le contenu de votre fiche.
+                    <p>
+                        <span id="user-full-name-to-replace"></span> pourra accéder à votre structure et modifier le contenu de la fiche commerciale.
                     </p>
                 </div>
                 <div class="modal-footer">

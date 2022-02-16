@@ -21,7 +21,7 @@
                         </div>
                     </div>
                 {% endfor %}
-                {% for siaeuserrequest in siae.siaeuserrequest_set.all %}
+                {% for siaeuserrequest in siae.siaeuserrequest_set.pending %}
                     <hr />
                     <div class="row">
                         <div class="col">
@@ -33,15 +33,13 @@
                                 <span style="margin-left:23px">{{ siaeuserrequest.user.email }}</span>
                             </p>
                         </div>
-                        <div class="col text-center">
+                        <div class="col">
                             <span class="badge badge-pill badge-warning">Nouvelle demande</span>
-                        </div>
-                        <div class="col text-right">
-                            <div class="btn-group" role="group" aria-label="Actions sur la demande de rattachement">
-                                <button class="btn btn-outline-success btn-ico" data-toggle="modal" data-target="#user_request_confirm_modal" data-siae-slug="{{ siae.slug }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Confirmer la demande">
+                            <div class="float-right">
+                                <button class="btn btn-outline-success btn-ico" data-toggle="modal" data-target="#user_request_confirm_modal" data-siae-slug="{{ siae.slug }}" data-user-full-name="{{ siaeuserrequest.user.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Confirmer la demande">
                                     <i class="ri-check-fill ri-lg font-weight-light"></i>
                                 </button>
-                                <button class="btn btn-outline-danger btn-ico" data-toggle="modal" data-target="#user_request_cancel_modal" data-siae-slug="{{ siae.slug }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Refuser la demande">
+                                <button class="btn btn-outline-danger btn-ico" data-toggle="modal" data-target="#user_request_cancel_modal" data-siae-slug="{{ siae.slug }}" data-user-full-name="{{ siaeuserrequest.user.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Refuser la demande">
                                     <i class="ri-close-fill ri-lg font-weight-light"></i>
                                 </button>
                             </div>
