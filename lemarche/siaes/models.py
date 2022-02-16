@@ -648,6 +648,12 @@ class SiaeUserRequestQuerySet(models.QuerySet):
     def pending(self):
         return self.filter(response=None)
 
+    def initiator(self, user):
+        return self.filter(initiator=user)
+
+    def assignee(self, user):
+        return self.filter(assignee=user)
+
 
 class SiaeUserRequest(models.Model):
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)

@@ -207,7 +207,7 @@ class SiaeSearchAdoptConfirmView(
         - check if there isn't any pending SiaeUserRequest
         """
         context = super().get_context_data(**kwargs)
-        siae_user_pending_request = SiaeUserRequest.objects.pending().filter(initiator=self.request.user, siae=self.object)
+        siae_user_pending_request = self.object.siaeuserrequest_set.initiator(self.request.user).pending()
         context["siae_user_pending_request"] = siae_user_pending_request
         return context
 
@@ -240,6 +240,15 @@ class SiaeEditUsersView(LoginRequiredMixin, SiaeMemberRequiredMixin, DetailView)
     template_name = "dashboard/siae_edit_users.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
+
+    def get_context_data(self, **kwargs):
+        """
+        - check if there isn't any pending SiaeUserRequest
+        """
+        context = super().get_context_data(**kwargs)
+        siae_user_pending_request = self.object.siaeuserrequest_set.assignee(self.request.user).pending()
+        context["siae_user_pending_request"] = siae_user_pending_request
+        return context
 
 
 class SiaeEditInfoContactView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -395,7 +404,7 @@ class SiaeUserRequestConfirm(LoginRequiredMixin, SiaeMemberRequiredMixin, Succes
         - update SiaeUserRequest
         - notify user
         """
-        self.object.siae.users.add(self.object.user)
+        self.object.siae.users.add(self.object.initiator)
         self.object.response = True
         self.object.response_date = timezone.now()
         self.object.logs.append({"action": "response_true", "timestamp": self.object.response_date.isoformat()})
