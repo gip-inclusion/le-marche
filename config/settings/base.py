@@ -498,6 +498,8 @@ HUEY = {
     "immediate": CONF_HUEY.get("immediate") or not CC_WORKER_ENV,
     "results": False,
 }
+
+# if the sqlite mode or redis is set, we need to define the var env CC_WORKER to enable async jobs on CleverCloud
 if CONNECTION_MODE_TASKS in ("sqlite", "redis") and CC_WORKER_ENV:
     HUEY |= {
         "huey_class": CONF_HUEY.get("class_name"),
