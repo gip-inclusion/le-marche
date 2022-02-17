@@ -1,0 +1,36 @@
+{% extends "layouts/base.html" %}
+{% load bootstrap4 %}
+
+{% block title %}Ajout d'un besoin{{ block.super }}{% endblock %}
+
+{% block content %}
+<section>
+    <div class="container">
+        <div class="d-flex justify-content-center">
+            <div class="col-10 bg-white d-block my-5  rounded-lg shadow-lg p-3 p-lg-5">
+                <h1>Déposer un besoin</h1>
+                <form method="POST" action="{% url 'tenders:add' %}">
+                    {% csrf_token %}
+                    <fieldset class="py-2 pb-lg-4">
+                        {% bootstrap_field form.kind %}
+                        {% bootstrap_field form.title %}
+                        {% bootstrap_field form.description %}
+                        {% bootstrap_field form.sector %}
+                    </fieldset>
+                    <fieldset class="pb-2 pb-lg-4">
+                        {% bootstrap_field form.constraints %}
+                        {% bootstrap_field form.completion_time %}
+                        {% bootstrap_field form.perimeter %}
+                        {% bootstrap_field form.external_link %}
+                        {% bootstrap_field form.kind_response %}
+                    </fieldset>
+                    <button type="submit" class="btn btn-primary btn-block btn-ico">
+                        <span>Valider</span>
+                        <i class="ri-arrow-right-line ri-lg"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
