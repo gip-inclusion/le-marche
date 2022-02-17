@@ -1,0 +1,7 @@
+Bonjour {{ user_full_name }},
+
+Votre demande de rattachement à la structure {{ siae_name }} n'a pas encore obtenu de réponse.
+Nous envoyons une relance à votre collaborateur.
+
+Le marché de l'inclusion
+https://lemarche.inclusion.beta.gouv.fr/

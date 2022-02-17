@@ -89,3 +89,80 @@ def send_siae_user_request_response_email(siae_user_request, response=None):
     }
     siae_user_request.logs.append(log_item)
     siae_user_request.save()
+
+
+def send_siae_user_request_reminder_3_days_email(siae_user_request):
+    """
+    Send request reminder (after 3 days) to:
+    - the initial user
+    - to the assignee
+    """
+    email_subject_prefix = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_ENV != "prod" else ""
+    email_subject = email_subject_prefix + "Rattachement sans réponse"
+    email_body = render_to_string(
+        "dashboard/siae_user_request_reminder_3_days_email.txt",
+        {
+            "assignee_full_name": siae_user_request.assignee.full_name,
+            "user_full_name": siae_user_request.user.full_name,
+            "siae_name": siae_user_request.siae.name_display,
+        },
+    )
+    recipient_list = whitelist_recipient_list([siae_user_request.user.email])
+
+    send_mail(
+        subject=email_subject,
+        message=email_body,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=recipient_list,
+        fail_silently=False,
+    )
+
+    # log email
+    log_item = {
+        "action": "email_sent",
+        "email_to": recipient_list,
+        "email_subject": email_subject,
+        "email_body": email_body,
+        "email_timestamp": timezone.now().isoformat(),
+    }
+    siae_user_request.logs.append(log_item)
+    siae_user_request.save()
+
+
+def send_siae_user_request_reminder_8_days_email(siae_user_request):
+    """
+    Send request reminder (after 8 days) to:
+    - the initial user
+    - to the assignee
+    """
+    email_subject_prefix = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_ENV != "prod" else ""
+    email_subject = email_subject_prefix + "Rattachement sans réponse"
+    email_body = render_to_string(
+        "dashboard/siae_user_request_reminder_8_days_email.txt",
+        {
+            "assignee_full_name": siae_user_request.assignee.full_name,
+            "user_full_name": siae_user_request.user.full_name,
+            "siae_name": siae_user_request.siae.name_display,
+            "support_url": f"https://{get_domain_url()}{reverse_lazy('pages:contact')}?siret={siae_user_request.siae.siret}",  # noqa
+        },
+    )
+    recipient_list = whitelist_recipient_list([siae_user_request.user.email])
+
+    send_mail(
+        subject=email_subject,
+        message=email_body,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=recipient_list,
+        fail_silently=False,
+    )
+
+    # log email
+    log_item = {
+        "action": "email_sent",
+        "email_to": recipient_list,
+        "email_subject": email_subject,
+        "email_body": email_body,
+        "email_timestamp": timezone.now().isoformat(),
+    }
+    siae_user_request.logs.append(log_item)
+    siae_user_request.save()
