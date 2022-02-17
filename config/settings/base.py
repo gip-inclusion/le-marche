@@ -473,18 +473,21 @@ CONNECTION_MODES_HUEY = {
     "direct": {"immediate": True},
     "sqlite": {
         "class_name": "huey.SqliteHuey",
+        "immediate": False,
         "connection": {"cache_mb": 8, "fsync": True},
     },
     # redis
     "redis": {
-        "huey_class": "huey.RedisHuey",
+        "class_name": "huey.RedisHuey",
+        "immediate": False,
         "connection": {"db": REDIS_DB, "host": REDIS_URL, "port": REDIS_PORT, "password": REDIS_PASSWORD},
     },
 }
 
-CONNECTION_MODE_TASKS = env.str("CONNECTION_MODE_TASKS", "sqlite")
+CONNECTION_MODE_TASKS = env.str("CONNECTION_MODE_TASKS", "redis")
+CC_WORKER_ENV = env.str("CC_WORKER_COMMAND", None)
 
-CONF_HUEY = CONNECTION_MODES_HUEY.get("CONNECTION_MODE_TASKS", CONNECTION_MODES_HUEY["sqlite"])
+CONF_HUEY = CONNECTION_MODES_HUEY.get(CONNECTION_MODE_TASKS, CONNECTION_MODES_HUEY["sqlite"])
 
 # Huey instance
 # If any performance issue, increasing the number of workers *can* be a good idea
@@ -492,12 +495,17 @@ CONF_HUEY = CONNECTION_MODES_HUEY.get("CONNECTION_MODE_TASKS", CONNECTION_MODES_
 HUEY = {
     "name": "ITOU_MARCHE",
     # Don't store task results (see our Redis Post-Morten in documentation for more information)
+    "immediate": CONF_HUEY.get("immediate") or not CC_WORKER_ENV,
     "results": False,
-    "huey_class": CONF_HUEY.get("class_name"),
-    "immediate": CONF_HUEY.get("immediate", False),
-    "connection": CONF_HUEY.get("connection"),
-    "consumer": {"workers": 2, "worker_type": "thread"},
 }
+
+# if the sqlite mode or redis is set, we need to define the var env CC_WORKER to enable async jobs on CleverCloud
+if CONNECTION_MODE_TASKS in ("sqlite", "redis") and CC_WORKER_ENV:
+    HUEY |= {
+        "huey_class": CONF_HUEY.get("class_name"),
+        "connection": CONF_HUEY.get("connection"),
+        "consumer": {"workers": 2, "worker_type": "thread"},
+    }
 
 
 # Logging
