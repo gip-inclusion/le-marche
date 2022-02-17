@@ -16,7 +16,7 @@ from lemarche.utils.data import rename_dict_key
 
 UPDATE_FIELDS = [
     # "name",  # what happens to the slug if the name is updated?
-    # "brand",
+    "brand",
     # "kind"
     "siret",
     "siret_is_valid",
