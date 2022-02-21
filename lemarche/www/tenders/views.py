@@ -18,7 +18,6 @@ class AddTenderView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
     def form_valid(self, form):
         tender = form.save()
-
         messages.add_message(
             self.request,
             messages.SUCCESS,
@@ -34,4 +33,8 @@ class AddTenderView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return super().get_success_url()
 
     def get_success_message(self, cleaned_data, tender):
-        return mark_safe(f"<strong>{tender.name_display}</strong> a été ajoutée à ")
+        return mark_safe(f"<strong>{tender}</strong> a été ajoutée à ")
+
+    def form_invalid(self, form):
+        messages.error(self.request, form.errors)
+        return super().form_invalid(form)
