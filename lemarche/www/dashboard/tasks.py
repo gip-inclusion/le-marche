@@ -117,7 +117,7 @@ def send_siae_user_request_reminder_3_days_email(siae_user_request, email_to):
         email_template,
         {
             "assignee_full_name": siae_user_request.assignee.full_name,
-            "user_full_name": siae_user_request.user.full_name,
+            "user_full_name": siae_user_request.initiator.full_name,
             "siae_name": siae_user_request.siae.name_display,
             "siae_edit_users_url": f"https://{get_domain_url()}{reverse_lazy('dashboard:siae_edit_users', args=[siae_user_request.siae.slug])}",  # noqa
         },
@@ -125,7 +125,7 @@ def send_siae_user_request_reminder_3_days_email(siae_user_request, email_to):
     if email_to == "assignee":
         recipient_list = whitelist_recipient_list([siae_user_request.assignee.email])
     else:
-        recipient_list = whitelist_recipient_list([siae_user_request.user.email])
+        recipient_list = whitelist_recipient_list([siae_user_request.initiator.email])
 
     send_mail(
         subject=email_subject,
@@ -173,7 +173,7 @@ def send_siae_user_request_reminder_8_days_email(siae_user_request, email_to):
         email_template,
         {
             "assignee_full_name": siae_user_request.assignee.full_name,
-            "user_full_name": siae_user_request.user.full_name,
+            "user_full_name": siae_user_request.initiator.full_name,
             "siae_name": siae_user_request.siae.name_display,
             "siae_edit_users_url": f"https://{get_domain_url()}{reverse_lazy('dashboard:siae_edit_users', args=[siae_user_request.siae.slug])}",  # noqa
             "support_url": f"https://{get_domain_url()}{reverse_lazy('pages:contact')}?siret={siae_user_request.siae.siret}",  # noqa
@@ -182,7 +182,7 @@ def send_siae_user_request_reminder_8_days_email(siae_user_request, email_to):
     if email_to == "assignee":
         recipient_list = whitelist_recipient_list([siae_user_request.assignee.email])
     else:
-        recipient_list = whitelist_recipient_list([siae_user_request.user.email])
+        recipient_list = whitelist_recipient_list([siae_user_request.initiator.email])
 
     send_mail(
         subject=email_subject,

@@ -1,7 +1,6 @@
 Bonjour {{ assignee_full_name }},
 
-Vous avez reçu une nouvelle demande de collaboration.
-{{ user_full_name }} souhaite se rattacher à la structure {{ siae_name }}.
+{{ user_full_name }} souhaite rejoindre la structure {{ siae_name }}.
 
 <a href="{{ siae_edit_users_url }}">Répondre à la demande</a>
 
