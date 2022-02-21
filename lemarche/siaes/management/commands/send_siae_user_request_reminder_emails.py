@@ -5,8 +5,8 @@ from django.utils import timezone
 
 from lemarche.siaes.models import SiaeUserRequest
 from lemarche.www.dashboard.tasks import (
-    send_siae_user_request_reminder_3_days_email,
-    send_siae_user_request_reminder_8_days_email,
+    send_siae_user_request_reminder_3_days_emails,
+    send_siae_user_request_reminder_8_days_emails,
 )
 
 
@@ -39,7 +39,7 @@ class Command(BaseCommand):
 
         if not dry_run:
             for siae_user_request in siae_user_request_reminder_3_days:
-                send_siae_user_request_reminder_3_days_email(siae_user_request)
+                send_siae_user_request_reminder_3_days_emails(siae_user_request)
             self.stdout.write(f"Sent {siae_user_request_reminder_3_days.count()} J+3 reminders")
 
         self.stdout.write("-" * 80)
@@ -54,7 +54,7 @@ class Command(BaseCommand):
 
         if not dry_run:
             for siae_user_request in siae_user_request_reminder_8_days:
-                send_siae_user_request_reminder_8_days_email(siae_user_request)
+                send_siae_user_request_reminder_8_days_emails(siae_user_request)
             self.stdout.write(f"Sent {siae_user_request_reminder_8_days.count()} J+8 reminders")
 
         self.stdout.write("-" * 80)
