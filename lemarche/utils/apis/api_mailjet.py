@@ -65,6 +65,7 @@ def add_to_contact_list_async(email_address, properties, contact_list_id, client
         raise e
 
 
+@task()
 def send_transactional_email_with_template(
     template_id, subject, recipient_email, recipient_name, variables, client=None
 ):
@@ -77,23 +78,22 @@ def send_transactional_email_with_template(
                 "TemplateLanguage": True,
                 "Subject": subject,
                 "Variables": variables,
-                # "Variables": {
-                #     "ASSIGNEE_FULL_NAME": "",
-                #     "USER_FULL_NAME": "",
-                #     "SIAE_NAME": ""
-                # }
+                # "Variables": {}
             }
         ]
     }
     if not client:
         client = get_default_client()
 
-    try:
-        response = client.post(SEND_URL, json=data)
-        response.raise_for_status()
-        logger.info("Mailjet: send transactional email with template")
-        logger.info(response.json())
-        return response.json()
-    except httpx.HTTPStatusError as e:
-        logger.error("Error while fetching `%s`: %s", e.request.url, e)
-        raise e
+    if settings.BITOUBI_ENV != "dev":
+        try:
+            response = client.post(SEND_URL, json=data)
+            response.raise_for_status()
+            logger.info("Mailjet: send transactional email with template")
+            logger.info(response.json())
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            logger.error("Error while fetching `%s`: %s", e.request.url, e)
+            raise e
+    else:
+        logger.info("Email not sent (DEV environment detected)")
