@@ -206,7 +206,7 @@ class SiaeSearchAdoptConfirmView(
         """
         context = super().get_context_data(**kwargs)
         siae_user_pending_request = SiaeUserRequest.objects.filter(
-            user=self.request.user, siae=self.object, response=None
+            initiator=self.request.user, siae=self.object, response=None
         )
         context["siae_user_pending_request"] = siae_user_pending_request
         return context
@@ -222,7 +222,7 @@ class SiaeSearchAdoptConfirmView(
         else:
             # create SiaeUserRequest + send request email to assignee
             siae_user_request = SiaeUserRequest.objects.create(
-                siae=self.object, user=self.request.user, assignee=self.object.users.first()
+                siae=self.object, initiator=self.request.user, assignee=self.object.users.first()
             )
             send_siae_user_request_email(siae_user_request)
             success_message = (

@@ -39,11 +39,11 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "user",
+                    "initiator",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         to=settings.AUTH_USER_MODEL,
-                        verbose_name="Utilisateur",
+                        verbose_name="Initiateur",
                     ),
                 ),
                 (

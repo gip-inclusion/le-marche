@@ -646,7 +646,7 @@ def siae_siaeusers_changed(sender, instance, **kwargs):
 
 class SiaeUserRequest(models.Model):
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Utilisateur", on_delete=models.CASCADE)
+    initiator = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Initiateur", on_delete=models.CASCADE)
     assignee = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name="Responsable",

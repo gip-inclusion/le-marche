@@ -268,9 +268,19 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
 
 @admin.register(SiaeUserRequest)
 class SiaeUserRequestAdmin(admin.ModelAdmin):
-    list_display = ["id", "siae", "user", "assignee", "response", "created_at", "updated_at"]
-    search_fields = ["id", "siae__id", "siae__name", "user__id", "user__email"]
-    search_help_text = "Cherche sur les champs : ID, Structure (ID, Nom), Utilisateur (ID, E-mail)"
+    list_display = ["id", "siae", "initiator", "assignee", "response", "created_at", "updated_at"]
+    search_fields = [
+        "id",
+        "siae__id",
+        "siae__name",
+        "initiator__id",
+        "initiator__email",
+        "assignee__id",
+        "assignee__email",
+    ]
+    search_help_text = (
+        "Cherche sur les champs : ID, Structure (ID, Nom), Initiateur (ID, E-mail), Responsable (ID, E-mail)"
+    )
 
     autocomplete_fields = ["siae"]
     readonly_fields = [field.name for field in SiaeUserRequest._meta.fields]
