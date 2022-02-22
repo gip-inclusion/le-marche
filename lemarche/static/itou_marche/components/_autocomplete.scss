@@ -1,19 +1,24 @@
 // alphagov-accessible-autocomplete
 .autocomplete__input {
 	// force .form-control
-	height:calc(1.2em + 1.6rem + 2px) !important;
-	padding:.8rem 1rem !important;
-	font-size:1rem !important;
-	font-weight:400 !important;
-	line-height:1.2 !important;
-	color:#3f3e62 !important;
-	background-color:#fff !important;
-	background-clip:padding-box !important;
-	border:1px solid #999baf !important;
-	border-radius:.25rem !important;
-	box-shadow:inset 0 1px 1px rgba(0,6,56,.075) !important;
-    // additional css for icon
-    background-position: right 1rem center;
-    background-repeat: no-repeat;
-    background-image: url('/static/images/dir_form_ico_map.png');
+	display: block !important;
+	width: 100% !important;
+	height: calc(1.2em + 1.68rem + 4px) !important;
+	padding: .84rem 1rem !important;
+	font-size: 1rem !important;
+	font-weight: 400 !important;
+	line-height: 1.2 !important;
+	color: #3f3e62 !important;
+	background-color: #fff !important;
+	background-clip: padding-box !important;
+	border: 2px solid #80829c !important;
+	border-radius: .25rem !important;
+	box-shadow: none !important;
+	transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out !important;
+	margin: 0 !important;
+	font-family: inherit !important;
+	// additional css for icon
+	background-position: right 1rem center;
+	background-repeat: no-repeat;
+	background-image: url('/static/images/dir_form_ico_map.png');
 }
