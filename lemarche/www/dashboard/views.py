@@ -34,7 +34,10 @@ from lemarche.www.dashboard.mixins import (
     SiaeUserAndNotMemberRequiredMixin,
     SiaeUserRequiredMixin,
 )
-from lemarche.www.dashboard.tasks import send_siae_user_request_email, send_siae_user_request_response_email
+from lemarche.www.dashboard.tasks import (
+    send_siae_user_request_email_to_assignee,
+    send_siae_user_request_response_email,
+)
 
 
 class DashboardHomeView(LoginRequiredMixin, DetailView):
@@ -227,9 +230,9 @@ class SiaeSearchAdoptConfirmView(
                 assignee=self.object.users.first(),
                 logs=[{"action": "create", "timestamp": timezone.now().isoformat()}],
             )
-            send_siae_user_request_email(siae_user_request)
+            send_siae_user_request_email_to_assignee(siae_user_request)
             success_message = (
-                f"La demande a été envoyée à <i>{self.object.users.first().full_name}</i>.<br />"
+                f"La demande a été envoyée à {self.object.users.first().full_name}.<br />"
                 f"<i>Cet utilisateur ne fait plus partie de la structure ? <a href=\"{reverse_lazy('dashboard:siae_search_by_siret')}?siret={self.object.siret}\">Contactez le support</a></i>"  # noqa
             )
             messages.add_message(self.request, messages.SUCCESS, success_message)

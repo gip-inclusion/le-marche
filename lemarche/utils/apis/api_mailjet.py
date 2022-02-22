@@ -65,12 +65,14 @@ def add_to_contact_list_async(email_address, properties, contact_list_id, client
         raise e
 
 
-def send_transactional_email_with_template(template_id, subject, recipient_email, variables, client=None):
+def send_transactional_email_with_template(
+    template_id, subject, recipient_email, recipient_name, variables, client=None
+):
     data = {
         "Messages": [
             {
                 "From": {"Email": settings.DEFAULT_FROM_EMAIL, "Name": settings.DEFAULT_FROM_NAME},
-                "To": [{"Email": recipient_email, "Name": ""}],
+                "To": [{"Email": recipient_email, "Name": recipient_name}],
                 "TemplateID": template_id,
                 "TemplateLanguage": True,
                 "Subject": subject,
