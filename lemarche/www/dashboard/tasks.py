@@ -15,7 +15,8 @@ def send_siae_user_request_email_to_assignee(siae_user_request):
     Send request to the assignee
     """
     email_subject = EMAIL_SUBJECT_PREFIX + "Nouveau collaborateur"
-    recipient_email = whitelist_recipient_list([siae_user_request.assignee.email])[0]
+    recipient_list = whitelist_recipient_list([siae_user_request.assignee.email])
+    recipient_email = recipient_list[0] if recipient_list else ""
     recipient_name = siae_user_request.assignee.full_name
 
     variables = {
@@ -52,8 +53,9 @@ def send_siae_user_request_response_email_to_initiator(siae_user_request, respon
     email_subject_text = "Accéder à votre structure" if response else "Rattachement refusé"
     email_subject = EMAIL_SUBJECT_PREFIX + email_subject_text
     email_template_id = 3662344 if response else 3662592
-    recipient_email = whitelist_recipient_list([siae_user_request.initiator.email])[0]
-    recipient_name = siae_user_request.initiator.full_name
+    recipient_list = whitelist_recipient_list([siae_user_request.user.email])
+    recipient_email = recipient_list[0] if recipient_list else ""
+    recipient_name = siae_user_request.user.full_name
 
     variables = {
         "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
@@ -94,7 +96,8 @@ def send_siae_user_request_reminder_3_days_emails(siae_user_request):
 
 def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
     email_subject = EMAIL_SUBJECT_PREFIX + "Nouveau collaborateur"
-    recipient_email = whitelist_recipient_list([siae_user_request.assignee.email])[0]
+    recipient_list = whitelist_recipient_list([siae_user_request.assignee.email])
+    recipient_email = recipient_list[0] if recipient_list else ""
     recipient_name = siae_user_request.assignee.full_name
 
     variables = {
@@ -126,8 +129,9 @@ def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
 
 def send_siae_user_request_reminder_3_days_email_to_initiator(siae_user_request):
     email_subject = EMAIL_SUBJECT_PREFIX + "Rattachement sans réponse"
-    recipient_email = whitelist_recipient_list([siae_user_request.initiator.email])[0]
-    recipient_name = siae_user_request.initiator.full_name
+    recipient_list = whitelist_recipient_list([siae_user_request.user.email])
+    recipient_email = recipient_list[0] if recipient_list else ""
+    recipient_name = siae_user_request.user.full_name
 
     variables = {
         "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
@@ -168,7 +172,8 @@ def send_siae_user_request_reminder_8_days_emails(siae_user_request):
 
 def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
     email_subject = EMAIL_SUBJECT_PREFIX + "Nouveau collaborateur"
-    recipient_email = whitelist_recipient_list([siae_user_request.assignee.email])[0]
+    recipient_list = whitelist_recipient_list([siae_user_request.assignee.email])
+    recipient_email = recipient_list[0] if recipient_list else ""
     recipient_name = siae_user_request.assignee.full_name
 
     variables = {
@@ -201,8 +206,9 @@ def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
 
 def send_siae_user_request_reminder_8_days_email_to_initiator(siae_user_request):
     email_subject = EMAIL_SUBJECT_PREFIX + "Rattachement sans réponse"
-    recipient_email = whitelist_recipient_list([siae_user_request.initiator.email])[0]
-    recipient_name = siae_user_request.initiator.full_name
+    recipient_list = whitelist_recipient_list([siae_user_request.user.email])
+    recipient_email = recipient_list[0] if recipient_list else ""
+    recipient_name = siae_user_request.user.full_name
 
     variables = {
         "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
