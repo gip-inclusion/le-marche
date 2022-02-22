@@ -10,7 +10,6 @@ from lemarche.utils.urls import get_domain_url
 EMAIL_SUBJECT_PREFIX = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_ENV != "prod" else ""
 
 
-# TODO: make async (celery)
 def send_siae_user_request_email_to_assignee(siae_user_request):
     """
     Send request to the assignee
@@ -138,7 +137,7 @@ def send_siae_user_request_reminder_3_days_email_to_initiator(siae_user_request)
     }
 
     api_mailjet.send_transactional_email_with_template(
-        template_id="TODO",
+        template_id=3662658,
         subject=email_subject,
         recipient_email=recipient_email,
         recipient_name=recipient_name,
@@ -214,7 +213,7 @@ def send_siae_user_request_reminder_8_days_email_to_initiator(siae_user_request)
     }
 
     api_mailjet.send_transactional_email_with_template(
-        template_id="TODO",
+        template_id=3662684,
         subject=email_subject,
         recipient_email=recipient_email,
         recipient_name=recipient_name,
