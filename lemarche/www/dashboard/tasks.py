@@ -1,6 +1,4 @@
 from django.conf import settings
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils import timezone
 
@@ -18,8 +16,8 @@ def send_siae_user_request_email_to_assignee(siae_user_request):
     Send request to the assignee
     """
     email_subject = EMAIL_SUBJECT_PREFIX + "Nouveau collaborateur"
-
-    recipient_list = whitelist_recipient_list([siae_user_request.assignee.email])
+    recipient_email = whitelist_recipient_list([siae_user_request.assignee.email])[0]
+    recipient_name = siae_user_request.assignee.full_name
 
     variables = {
         "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
@@ -31,15 +29,15 @@ def send_siae_user_request_email_to_assignee(siae_user_request):
     api_mailjet.send_transactional_email_with_template(
         template_id=3658653,
         subject=email_subject,
-        recipient_email=recipient_list[0],
-        recipient_name=siae_user_request.initiator.full_name,
+        recipient_email=recipient_email,
+        recipient_name=recipient_name,
         variables=variables,
     )
 
     # log email
     log_item = {
         "action": "email_sent",
-        "email_to": recipient_list[0],
+        "email_to": recipient_email,
         "email_subject": email_subject,
         # "email_body": email_body,
         "email_timestamp": timezone.now().isoformat(),
@@ -48,42 +46,37 @@ def send_siae_user_request_email_to_assignee(siae_user_request):
     siae_user_request.save()
 
 
-def send_siae_user_request_response_email(siae_user_request, response=None):
+def send_siae_user_request_response_email_to_initiator(siae_user_request, response=None):
     """
     Send request response (True or False) to the initial user
     """
-    email_subject_text = "Nouveau collaborateur" if response else "Rattachement refusé"
+    email_subject_text = "Accéder à votre structure" if response else "Rattachement refusé"
     email_subject = EMAIL_SUBJECT_PREFIX + email_subject_text
-    email_template = (
-        "dashboard/siae_user_request_response_true_email_body.txt"
-        if response
-        else "dashboard/siae_user_request_response_false_email_body.txt"
-    )
-    email_body = render_to_string(
-        email_template,
-        {
-            "assignee_full_name": siae_user_request.assignee.full_name,
-            "user_full_name": siae_user_request.initiator.full_name,
-            "siae_name": siae_user_request.siae.name_display,
-            "siae_edit_users_url": f"https://{get_domain_url()}{reverse_lazy('dashboard:siae_edit_users', args=[siae_user_request.siae.slug])}",  # noqa
-        },
-    )
-    recipient_list = whitelist_recipient_list([siae_user_request.initiator.email])
+    email_template_id = 3662344 if response else 3662592
+    recipient_email = whitelist_recipient_list([siae_user_request.initiator.email])[0]
+    recipient_name = siae_user_request.initiator.full_name
 
-    send_mail(
+    variables = {
+        "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
+        "USER_FULL_NAME": siae_user_request.initiator.full_name,
+        "SIAE_NAME": siae_user_request.siae.name_display,
+        "SIAE_EDIT_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard:siae_edit_users', args=[siae_user_request.siae.slug])}",  # noqa
+    }
+
+    api_mailjet.send_transactional_email_with_template(
+        template_id=email_template_id,
         subject=email_subject,
-        message=email_body,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=recipient_list,
-        fail_silently=False,
+        recipient_email=recipient_email,
+        recipient_name=recipient_name,
+        variables=variables,
     )
 
     # log email
     log_item = {
         "action": "email_sent",
-        "email_to": recipient_list,
+        "email_to": recipient_email,
         "email_subject": email_subject,
-        "email_body": email_body,
+        # "email_body": email_body,
         "email_timestamp": timezone.now().isoformat(),
     }
     siae_user_request.logs.append(log_item)
@@ -102,8 +95,8 @@ def send_siae_user_request_reminder_3_days_emails(siae_user_request):
 
 def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
     email_subject = EMAIL_SUBJECT_PREFIX + "Nouveau collaborateur"
-
-    recipient_list = whitelist_recipient_list([siae_user_request.assignee.email])
+    recipient_email = whitelist_recipient_list([siae_user_request.assignee.email])[0]
+    recipient_name = siae_user_request.assignee.full_name
 
     variables = {
         "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
@@ -115,15 +108,15 @@ def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
     api_mailjet.send_transactional_email_with_template(
         template_id=3661739,
         subject=email_subject,
-        recipient_email=recipient_list[0],
-        recipient_name=siae_user_request.initiator.full_name,
+        recipient_email=recipient_email,
+        recipient_name=recipient_name,
         variables=variables,
     )
 
     # log email
     log_item = {
         "action": "email_sent",
-        "email_to": recipient_list[0],
+        "email_to": recipient_email,
         "email_subject": email_subject,
         # "email_body": email_body,
         "email_timestamp": timezone.now().isoformat(),
@@ -134,8 +127,8 @@ def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
 
 def send_siae_user_request_reminder_3_days_email_to_initiator(siae_user_request):
     email_subject = EMAIL_SUBJECT_PREFIX + "Rattachement sans réponse"
-
-    recipient_list = whitelist_recipient_list([siae_user_request.initiator.email])
+    recipient_email = whitelist_recipient_list([siae_user_request.initiator.email])[0]
+    recipient_name = siae_user_request.initiator.full_name
 
     variables = {
         "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
@@ -147,15 +140,15 @@ def send_siae_user_request_reminder_3_days_email_to_initiator(siae_user_request)
     api_mailjet.send_transactional_email_with_template(
         template_id="TODO",
         subject=email_subject,
-        recipient_email=recipient_list[0],
-        recipient_name=siae_user_request.initiator.full_name,
+        recipient_email=recipient_email,
+        recipient_name=recipient_name,
         variables=variables,
     )
 
     # log email
     log_item = {
         "action": "email_sent",
-        "email_to": recipient_list[0],
+        "email_to": recipient_email,
         "email_subject": email_subject,
         # "email_body": email_body,
         "email_timestamp": timezone.now().isoformat(),
@@ -176,8 +169,8 @@ def send_siae_user_request_reminder_8_days_emails(siae_user_request):
 
 def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
     email_subject = EMAIL_SUBJECT_PREFIX + "Nouveau collaborateur"
-
-    recipient_list = whitelist_recipient_list([siae_user_request.assignee.email])
+    recipient_email = whitelist_recipient_list([siae_user_request.assignee.email])[0]
+    recipient_name = siae_user_request.assignee.full_name
 
     variables = {
         "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
@@ -190,15 +183,15 @@ def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
     api_mailjet.send_transactional_email_with_template(
         template_id=3662063,
         subject=email_subject,
-        recipient_email=recipient_list[0],
-        recipient_name=siae_user_request.initiator.full_name,
+        recipient_email=recipient_email,
+        recipient_name=recipient_name,
         variables=variables,
     )
 
     # log email
     log_item = {
         "action": "email_sent",
-        "email_to": recipient_list[0],
+        "email_to": recipient_email,
         "email_subject": email_subject,
         # "email_body": email_body,
         "email_timestamp": timezone.now().isoformat(),
@@ -209,8 +202,8 @@ def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
 
 def send_siae_user_request_reminder_8_days_email_to_initiator(siae_user_request):
     email_subject = EMAIL_SUBJECT_PREFIX + "Rattachement sans réponse"
-
-    recipient_list = whitelist_recipient_list([siae_user_request.initiator.email])
+    recipient_email = whitelist_recipient_list([siae_user_request.initiator.email])[0]
+    recipient_name = siae_user_request.initiator.full_name
 
     variables = {
         "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
@@ -223,15 +216,15 @@ def send_siae_user_request_reminder_8_days_email_to_initiator(siae_user_request)
     api_mailjet.send_transactional_email_with_template(
         template_id="TODO",
         subject=email_subject,
-        recipient_email=recipient_list[0],
-        recipient_name=siae_user_request.initiator.full_name,
+        recipient_email=recipient_email,
+        recipient_name=recipient_name,
         variables=variables,
     )
 
     # log email
     log_item = {
         "action": "email_sent",
-        "email_to": recipient_list[0],
+        "email_to": recipient_email,
         "email_subject": email_subject,
         # "email_body": email_body,
         "email_timestamp": timezone.now().isoformat(),

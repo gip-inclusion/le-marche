@@ -1,8 +1,0 @@
-Bonjour {{ user_full_name }},
-
-Votre demande de rattachement a été validée.
-
-<a href="{{ dashboard_home_url }}">Accéder à la structure</a>
-
-Le marché de l'inclusion
-https://lemarche.inclusion.beta.gouv.fr/

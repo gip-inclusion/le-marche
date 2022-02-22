@@ -36,7 +36,7 @@ from lemarche.www.dashboard.mixins import (
 )
 from lemarche.www.dashboard.tasks import (
     send_siae_user_request_email_to_assignee,
-    send_siae_user_request_response_email,
+    send_siae_user_request_response_email_to_initiator,
 )
 
 
@@ -412,7 +412,7 @@ class SiaeUserRequestConfirm(LoginRequiredMixin, SiaeMemberRequiredMixin, Succes
         self.object.response_date = timezone.now()
         self.object.logs.append({"action": "response_true", "timestamp": self.object.response_date.isoformat()})
         self.object.save()
-        send_siae_user_request_response_email(self.object, response=True)
+        send_siae_user_request_response_email_to_initiator(self.object, response=True)
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -439,7 +439,7 @@ class SiaeUserRequestCancel(LoginRequiredMixin, SiaeMemberRequiredMixin, Success
         self.object.response_date = timezone.now()
         self.object.logs.append({"action": "response_false", "timestamp": self.object.response_date.isoformat()})
         self.object.save()
-        send_siae_user_request_response_email(self.object, response=False)
+        send_siae_user_request_response_email_to_initiator(self.object, response=False)
         return super().form_valid(form)
 
     def get_success_url(self):
