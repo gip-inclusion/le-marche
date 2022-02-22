@@ -36,10 +36,10 @@
                         <div class="col">
                             <span class="badge badge-pill badge-warning" title="{{ siaeuserrequest.created_at|date:'d/m/Y H:i' }}">Nouvelle demande</span>
                             <div class="float-right">
-                                <button class="btn btn-outline-success btn-ico" data-toggle="modal" data-target="#user_request_confirm_modal" data-siae-slug="{{ siae.slug }}" data-user-full-name="{{ siaeuserrequest.initiator.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Confirmer la demande">
+                                <button class="btn btn-outline-success btn-ico" data-toggle="modal" data-target="#user_request_confirm_modal" data-siae-slug="{{ siae.slug }}" data-initiator-full-name="{{ siaeuserrequest.initiator.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Confirmer la demande">
                                     <i class="ri-check-fill ri-lg font-weight-light"></i>
                                 </button>
-                                <button class="btn btn-outline-danger btn-ico" data-toggle="modal" data-target="#user_request_cancel_modal" data-siae-slug="{{ siae.slug }}" data-user-full-name="{{ siaeuserrequest.initiator.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Refuser la demande">
+                                <button class="btn btn-outline-danger btn-ico" data-toggle="modal" data-target="#user_request_cancel_modal" data-siae-slug="{{ siae.slug }}" data-initiator-full-name="{{ siaeuserrequest.initiator.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Refuser la demande">
                                     <i class="ri-close-fill ri-lg font-weight-light"></i>
                                 </button>
                             </div>

@@ -21,7 +21,7 @@ def send_siae_user_request_email_to_assignee(siae_user_request):
 
     variables = {
         "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
-        "USER_FULL_NAME": siae_user_request.initiator.full_name,
+        "INITIATOR_FULL_NAME": siae_user_request.initiator.full_name,
         "SIAE_NAME": siae_user_request.siae.name_display,
         "SIAE_EDIT_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard:siae_edit_users', args=[siae_user_request.siae.slug])}",  # noqa
     }
@@ -53,13 +53,13 @@ def send_siae_user_request_response_email_to_initiator(siae_user_request, respon
     email_subject_text = "Accéder à votre structure" if response else "Rattachement refusé"
     email_subject = EMAIL_SUBJECT_PREFIX + email_subject_text
     email_template_id = 3662344 if response else 3662592
-    recipient_list = whitelist_recipient_list([siae_user_request.user.email])
+    recipient_list = whitelist_recipient_list([siae_user_request.initiator.email])
     recipient_email = recipient_list[0] if recipient_list else ""
-    recipient_name = siae_user_request.user.full_name
+    recipient_name = siae_user_request.initiator.full_name
 
     variables = {
         "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
-        "USER_FULL_NAME": siae_user_request.initiator.full_name,
+        "INITIATOR_FULL_NAME": siae_user_request.initiator.full_name,
         "SIAE_NAME": siae_user_request.siae.name_display,
         "SIAE_EDIT_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard:siae_edit_users', args=[siae_user_request.siae.slug])}",  # noqa
     }
@@ -102,7 +102,7 @@ def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
 
     variables = {
         "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
-        "USER_FULL_NAME": siae_user_request.initiator.full_name,
+        "INITIATOR_FULL_NAME": siae_user_request.initiator.full_name,
         "SIAE_NAME": siae_user_request.siae.name_display,
         "SIAE_EDIT_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard:siae_edit_users', args=[siae_user_request.siae.slug])}",  # noqa
     }
@@ -129,13 +129,13 @@ def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
 
 def send_siae_user_request_reminder_3_days_email_to_initiator(siae_user_request):
     email_subject = EMAIL_SUBJECT_PREFIX + "Rattachement sans réponse"
-    recipient_list = whitelist_recipient_list([siae_user_request.user.email])
+    recipient_list = whitelist_recipient_list([siae_user_request.initiator.email])
     recipient_email = recipient_list[0] if recipient_list else ""
-    recipient_name = siae_user_request.user.full_name
+    recipient_name = siae_user_request.initiator.full_name
 
     variables = {
         "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
-        "USER_FULL_NAME": siae_user_request.initiator.full_name,
+        "INITIATOR_FULL_NAME": siae_user_request.initiator.full_name,
         "SIAE_NAME": siae_user_request.siae.name_display,
         "SIAE_EDIT_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard:siae_edit_users', args=[siae_user_request.siae.slug])}",  # noqa
     }
@@ -178,7 +178,7 @@ def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
 
     variables = {
         "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
-        "USER_FULL_NAME": siae_user_request.initiator.full_name,
+        "INITIATOR_FULL_NAME": siae_user_request.initiator.full_name,
         "SIAE_NAME": siae_user_request.siae.name_display,
         "SIAE_EDIT_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard:siae_edit_users', args=[siae_user_request.siae.slug])}",  # noqa
         # "SUPPORT_URL": f"https://{get_domain_url()}{reverse_lazy('pages:contact')}?siret={siae_user_request.siae.siret}",  # noqa
@@ -206,13 +206,13 @@ def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
 
 def send_siae_user_request_reminder_8_days_email_to_initiator(siae_user_request):
     email_subject = EMAIL_SUBJECT_PREFIX + "Rattachement sans réponse"
-    recipient_list = whitelist_recipient_list([siae_user_request.user.email])
+    recipient_list = whitelist_recipient_list([siae_user_request.initiator.email])
     recipient_email = recipient_list[0] if recipient_list else ""
-    recipient_name = siae_user_request.user.full_name
+    recipient_name = siae_user_request.initiator.full_name
 
     variables = {
         "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
-        "USER_FULL_NAME": siae_user_request.initiator.full_name,
+        "INITIATOR_FULL_NAME": siae_user_request.initiator.full_name,
         "SIAE_NAME": siae_user_request.siae.name_display,
         "SIAE_EDIT_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard:siae_edit_users', args=[siae_user_request.siae.slug])}",  # noqa
         "SUPPORT_URL": f"https://{get_domain_url()}{reverse_lazy('pages:contact')}?siret={siae_user_request.siae.siret}",  # noqa
