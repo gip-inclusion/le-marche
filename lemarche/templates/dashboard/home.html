@@ -72,7 +72,9 @@
                                         <hr />
                                         <div class="row">
                                             <div class="col-6">
-                                                <h4 class="mt-2 mb-0">Mes collaborateurs</h4>
+                                                <h4 class="mt-2 mb-0">
+                                                    Mes collaborateurs {% if siaeuser.siae.siae_user_requests_pending_count > 0 %}<span class="badge badge-pill badge-warning fs-xs">{{ siaeuser.siae.siae_user_requests_pending_count }}</span>{% endif %}
+                                                </h4>
                                             </div>
                                             <div class="col-6 text-right">
                                                 <a href="{% url 'dashboard:siae_users' siaeuser.siae.slug %}" class="btn btn-link btn-sm">

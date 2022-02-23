@@ -14,11 +14,11 @@ from lemarche.www.dashboard.views import (
     SiaeEditOfferView,
     SiaeEditOtherView,
     SiaeEditPrestaView,
-    SiaeEditUsersView,
     SiaeSearchAdoptConfirmView,
     SiaeSearchBySiretView,
     SiaeUserRequestCancel,
     SiaeUserRequestConfirm,
+    SiaeUsersView,
 )
 
 
@@ -68,7 +68,7 @@ urlpatterns = [
     # Siae Users (& Requests)
     path(
         "prestataires/<str:slug>/collaborateurs/",
-        SiaeEditUsersView.as_view(),
+        SiaeUsersView.as_view(),
         name="siae_users",
     ),
     path(
