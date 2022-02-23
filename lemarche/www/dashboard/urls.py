@@ -55,10 +55,9 @@ urlpatterns = [
             [
                 path(
                     "",
-                    RedirectView.as_view(pattern_name="dashboard:siae_edit_users", permanent=False),
+                    RedirectView.as_view(pattern_name="dashboard:siae_edit_info_contact", permanent=False),
                     name="siae_edit",
                 ),
-                path("collaborateurs/", SiaeEditUsersView.as_view(), name="siae_edit_users"),
                 path("info-contact/", SiaeEditInfoContactView.as_view(), name="siae_edit_info_contact"),
                 path("offre/", SiaeEditOfferView.as_view(), name="siae_edit_offer"),
                 path("prestations/", SiaeEditPrestaView.as_view(), name="siae_edit_presta"),
@@ -66,7 +65,12 @@ urlpatterns = [
             ]
         ),
     ),
-    # Siae User Requests
+    # Siae Users (& Requests)
+    path(
+        "prestataires/<str:slug>/collaborateurs/",
+        SiaeEditUsersView.as_view(),
+        name="siae_users",
+    ),
     path(
         "prestataires/<str:slug>/collaborateurs/<str:siaeuserrequest_id>/accepter",
         SiaeUserRequestConfirm.as_view(),
@@ -80,7 +84,7 @@ urlpatterns = [
     # Redirects
     path(
         "prestataires/<str:slug>/",
-        RedirectView.as_view(pattern_name="dashboard:siae_edit_users", permanent=False),
+        RedirectView.as_view(pattern_name="dashboard:siae_users", permanent=False),
         name="siae",
     ),
     path(
