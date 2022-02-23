@@ -44,51 +44,46 @@
                     </div>
                     <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2">
                         {% for siaeuser in user.siaeuser_set.all %}
-                        <div class="s-cards-grid-01__col col d-sm-flex">
-                            <div class="card c-card c-card--mini mb-3 w-100">
-                                <div class="card-body">
-                                    <h3>{{ siaeuser.siae.name }}</h3>
-                                    <p title="{% get_verbose_name siaeuser.siae 'brand' %}" class="mb-2">
-                                        <strong>{% get_verbose_name siaeuser.siae 'brand' %} :</strong>
-                                        {{ siaeuser.siae.brand|default:'' }}
-                                    </p>
-                                    <p title="{% get_verbose_name siaeuser.siae 'siret' %}" class="mb-2">
-                                        <strong>{% get_verbose_name siaeuser.siae 'siret' %} :</strong>
-                                        {{ siaeuser.siae.siret_display }}
-                                    </p>
-                                    <p title="{% get_verbose_name siaeuser.siae 'kind' %}" class="mb-2">
-                                        <strong>{% get_verbose_name siaeuser.siae 'kind' %} :</strong>
-                                        {{ siaeuser.siae.get_kind_display }}
-                                    </p>
-                                    <p title="{% get_verbose_name siaeuser.siae 'nature' %}" class="mb-2">
-                                        <strong>{% get_verbose_name siaeuser.siae 'nature' %} :</strong>
-                                        {{ siaeuser.siae.get_nature_display }}
-                                    </p>
-                                    {% if siaeuser.siae.is_missing_content %}
-                                    <div class="alert alert-warning mt-3 mb-0" role="alert">
-                                        <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
-                                        Votre fiche n'est pas complète.
-                                    </div>
-                                    {% endif %}
-                                </div>
-                                <div class="card-footer">
-                                    <div class="row justify-content-end">
-                                        <div class="col-6 col-md-auto pr-2">
-                                            <a href="{% url 'dashboard:siae_edit' siaeuser.siae.slug %}" class="btn btn-outline-primary btn-sm btn-block btn-ico">
-                                                <span>Modifier</span>
-                                                <i class="ri-pencil-fill ri-lg"></i>
-                                            </a>
+                            <div class="s-cards-grid-01__col col d-sm-flex">
+                                <div class="card c-card c-card--mini mb-3 w-100">
+                                    <div class="card-body">
+                                        <h3 class="mb-3">{{ siaeuser.siae.name }}</h3>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <h4 class="mt-2 mb-0">Ma fiche commerciale</h4>
+                                            </div>
+                                            <div class="col-6 text-right">
+                                                <a href="{% url 'siae:detail' siaeuser.siae.slug %}" target="_blank" class="btn btn-outline-primary btn-sm btn-ico">
+                                                    <span>Voir</span>
+                                                    <i class="ri-eye-line ri-lg"></i>
+                                                </a>
+                                                <a href="{% url 'dashboard:siae_edit' siaeuser.siae.slug %}" class="btn btn-primary btn-sm btn-ico">
+                                                    <span>Modifier</span>
+                                                    <i class="ri-pencil-fill ri-lg"></i>
+                                                </a>
+                                            </div>
                                         </div>
-                                        <div class="col-6 col-md-auto pl-2">
-                                            <a href="{% url 'siae:detail' siaeuser.siae.slug %}" target="_blank" class="btn btn-outline-primary btn-sm btn-block btn-ico">
-                                                <span>Voir</span>
-                                                <i class="ri-eye-line ri-lg"></i>
-                                            </a>
+                                        {% if siaeuser.siae.is_missing_content %}
+                                            <div class="alert alert-warning mt-3 mb-0" role="alert">
+                                                <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                                                Votre fiche n'est pas complète.
+                                            </div>
+                                        {% endif %}
+                                        <hr />
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <h4 class="mt-2 mb-0">Mes collaborateurs</h4>
+                                            </div>
+                                            <div class="col-6 text-right">
+                                                <a href="{% url 'dashboard:siae_edit' siaeuser.siae.slug %}" class="btn btn-link btn-sm">
+                                                    <span>Accéder</span>
+                                                    <!-- <i class="ri-arrow-drop-right ri-lg"></i> -->
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         {% endfor %}
                     </div>
                     <hr class="mb-3 mb-lg-5">
