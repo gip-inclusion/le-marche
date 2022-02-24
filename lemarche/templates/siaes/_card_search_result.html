@@ -55,16 +55,22 @@
     <div class="card-footer">
         <a href="{% url 'siae:detail' siae.slug %}" class="text-decoration-none stretched-link">
             <ul class="list-unstyled m-0 lh-sm fs-sm row no-gutters">
-                <li class="sc-profile-town col-12 col-md-4 pr-lg-2 mb-3 mb-md-0 d-flex" title="Situé à {{ siae.city }}">
+                <li class="sc-profile-town col-12 col-md-4 pr-lg-2 mb-3 mb-md-0 d-flex justify-content-center" title="Situé à {{ siae.city }}">
                     <img src="{% static_theme_images 'ico-map-pin-line.svg' %}" height="16" alt="" />
                     <span class="ml-1">{{ siae.city }}</span>
+                    {% if siae.is_qpv %}
+                        <span class="badge badge-pill badge-secondary ml-1" title="Quartier prioritaire de la politique de la ville">QPV</span>
+                    {% endif %}
+                    {% if siae.is_zrr %}
+                        <span class="badge badge-pill badge-secondary ml-1" title="Zone de revitalisation rurale">ZRR</span>
+                    {% endif %}
                 </li>
-                <li class="sc-profile-town-work col-12 col-md-4 px-lg-2 mb-3 mb-md-0 d-flex" title="Intervient sur : {{ siae.geo_range_pretty_title }}">
+                <li class="sc-profile-town-work col-12 col-md-4 px-lg-2 mb-3 mb-md-0 d-flex justify-content-center" title="Intervient sur : {{ siae.geo_range_pretty_title }}">
                     <img src="{% static_theme_images 'ico-compass-line.svg' %}" height="16" alt="" />
                     <span class="ml-1">{{ siae.geo_range_pretty_display }}</span>
                 </li>
                 {% if siae.kind %}
-                    <li class="sc-profile-kind col-12 col-md-4 pl-lg-2 d-flex" title="Type de structure : {{ siae.get_kind_display }}">
+                    <li class="sc-profile-kind col-12 col-md-4 pl-lg-2 d-flex justify-content-center" title="Type de structure : {{ siae.get_kind_display }}">
                         <img src="{% static_theme_images 'ico-building-4-line.svg' %}" height="16" alt="" />
                         <span class="ml-1">{{ siae.get_kind_display }}</span>
                     </li>
