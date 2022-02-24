@@ -53,13 +53,18 @@ class Tender(models.Model):
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
+    class Meta:
+        verbose_name = "Besoin d'acheteur"
+        verbose_name_plural = "Besoins des acheteurs"
+        ordering = ["deadline_date"]
+
     def clean(self):
         today = datetime.date.today()
 
         if self.deadline_date < today:
             raise ValidationError("La date de cloture des réponses ne doit pas être antérieur à aujourd'hui.")
 
-        if self.start_working_date < self.deadline_date:
+        if self.start_working_date and self.start_working_date < self.deadline_date:
             raise ValidationError(
                 "La date idéale de début de préstation ne doit pas être antérieur de cloture des réponses."
             )

@@ -7,5 +7,5 @@ from lemarche.www.tenders.views import AddTenderView
 app_name = "tenders"
 
 urlpatterns = [
-    path("", AddTenderView.as_view(), name="add"),
+    path("add", AddTenderView.as_view(), name="add"),
 ]
