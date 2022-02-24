@@ -1,4 +1,20 @@
-# from django.contrib import admin
+from django.contrib import admin
+
+from lemarche.tenders.models import Tender
 
 
 # Register your models here.
+@admin.register(Tender)
+class TenderAdmin(admin.ModelAdmin):
+    list_display = [
+        "id",
+        "title",
+        "kind",
+        "deadline_date",
+        "kind_response",
+        "start_working_date",
+        "created_at",
+    ]
+    list_filter = ["kind", "perimeters", "deadline_date", "kind_response", "start_working_date"]
+    search_fields = ["id", "title", "perimeters"]
+    search_help_text = "Cherche sur les champs : ID, Titre ou perimètre"

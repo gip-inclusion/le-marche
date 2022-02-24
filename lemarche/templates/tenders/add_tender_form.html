@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load bootstrap4 %}
+{% load bootstrap4 static %}
 
 {% block title %}Ajout d'un besoin{{ block.super }}{% endblock %}
 
@@ -21,20 +21,20 @@
                     <fieldset class="pb-2 pb-lg-4">
                         {% bootstrap_field form.constraints %}
                         {% bootstrap_field form.completion_time %}
-                        {% bootstrap_field form.perimeters %}
-                        {% comment %} <div id="dir_form_perimeter_name" class="form-group">
-                            <label for="perimeter_name">{{ form.perimeter.label }}</label>
+                        {% comment %} {% bootstrap_field form.perimeters %} {% endcomment %}
+                        <div id="dir_form_perimeter_name" class="form-group">
+                            <label for="perimeter_name">{{ form.perimeters.label }}</label>
                             <div class="field-holder">
                                 <div>
                                     {{ form.perimeter_name }}
                                 </div>
                             </div>
-                        </div> {% endcomment %}
+                        </div>
+                        <div id="perimeters-selected" class="mb-3"></div>
                         {% bootstrap_field form.external_link %}
                         {% bootstrap_field form.kind_response %}
                         {% bootstrap_field form.deadline_date %}
                         {% bootstrap_field form.start_working_date %}
-                        {% comment %} {% bootstrap_field form.sectors %} {% endcomment %}
                     </fieldset>
                     <button type="submit" class="btn btn-primary btn-block btn-ico">
                         <span>Valider</span>
@@ -45,4 +45,8 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
 {% endblock %}
