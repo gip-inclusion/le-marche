@@ -3,9 +3,10 @@ document.addEventListener("DOMContentLoaded", function() {
    * Accessible autocomplete for the perimeter search form field
    */
 
-  const perimeterAutocompleteContainer = document.querySelector('#dir_form_perimeter_name');
+  const perimeterAutocompleteContainer = document.querySelector('#search-form #dir_form_perimeter_name');
   // let perimeterNameInput = document.getElementById('perimeter_name');  // autocomplete // not yet inititated (see bottom)
   let perimeterInput = document.getElementById('id_perimeter');  // hidden
+
   // check if there is an initial value for the autocomplete
   const urlParams = new URLSearchParams(window.location.search);
   const perimeterParam = urlParams.get('perimeter');
