@@ -28,8 +28,8 @@ class SiaeSearchForm(forms.Form):
     )
     FORM_PRESTA_CHOICES = EMPTY_CHOICE + Siae.PRESTA_CHOICES
     FORM_TERRITORY_CHOICES = (
-        ("QPV", "Quartiers prioritaire de la ville (QPV)"),
-        ("ZRR", "Zones de revitalisation rurale (ZRR)"),
+        ("QPV", "Quartier prioritaire de la politique de la ville (QPV)"),
+        ("ZRR", "Zone de revitalisation rurale (ZRR)"),
     )
 
     sectors = GroupedModelMultipleChoiceField(
