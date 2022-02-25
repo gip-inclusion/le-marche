@@ -22,7 +22,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="py-4">
+<section class="pt-4 pb-6">
     <div class="container">
         <h1 class="mb-3 mb-lg-5">
             <strong>Mes collaborateurs</strong>
@@ -30,44 +30,53 @@
         <div class="row">
             <div class="col-12 col-lg-8">
                 <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                    {% if siae.siaeuserrequest_set.pending.count %}
+                        <div class="bg-white d-block rounded-lg shadow-lg p-3 mb-5">
+                        {% for siaeuserrequest in siae.siaeuserrequest_set.pending %}
+                            <div class="row">
+                                <div class="col">
+                                    <p class="mb-0">
+                                        <span class="prof_icon"><i class="ri-user-line"></i></span>
+                                        <span><strong>{{ siaeuserrequest.initiator.full_name }}</strong></span>
+                                    </p>
+                                    <p class="mb-0">
+                                        <span style="margin-left:23px;white-space:nowrap">{{ siaeuserrequest.initiator.email }}</span>
+                                    </p>
+                                </div>
+                                <div class="col">
+                                    <span class="badge badge-pill badge-warning mt-2" title="{{ siaeuserrequest.created_at|date:'d/m/Y H:i' }}">Nouveau collaborateur</span>
+                                </div>
+                                <div class="col">
+                                    <div class="float-right">
+                                        <button class="btn btn-outline-success btn-ico" data-toggle="modal" data-target="#user_request_confirm_modal" data-siae-slug="{{ siae.slug }}" data-initiator-full-name="{{ siaeuserrequest.initiator.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Confirmer la demande">
+                                            <i class="ri-check-fill ri-lg font-weight-light"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger btn-ico" data-toggle="modal" data-target="#user_request_cancel_modal" data-siae-slug="{{ siae.slug }}" data-initiator-full-name="{{ siaeuserrequest.initiator.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Refuser la demande">
+                                            <i class="ri-close-fill ri-lg font-weight-light"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col">
+                            <h2 class="mb-0">Mes collaborateurs</h2>
+                        </div>
+                    </div>
                     {% for siaeuser in siae.siaeuser_set.all %}
-                        {% if forloop.counter0 > 0 %}
-                            <hr />
-                        {% endif %}
+                        <hr class="mb-2" />
                         <div class="row">
                             <div class="col">
                                 <p class="mb-0">
-                                    <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" alt="" /></span>
+                                    <span class="prof_icon"><i class="ri-user-line"></i></span>
                                     <span><strong>{{ siaeuser.user.full_name }}</strong></span>
                                 </p>
                                 <p class="mb-0">
                                     <span style="margin-left:23px">{{ siaeuser.user.email }}</span>
                                 </p>
-                            </div>
-                        </div>
-                    {% endfor %}
-                    {% for siaeuserrequest in siae.siaeuserrequest_set.pending %}
-                        <hr />
-                        <div class="row">
-                            <div class="col">
-                                <p class="mb-0">
-                                    <span class="prof_icon"><img src="{% static 'img/profile-ico-user.svg' %}" alt="" /></span>
-                                    <span><strong>{{ siaeuserrequest.initiator.full_name }}</strong></span>
-                                </p>
-                                <p class="mb-0">
-                                    <span style="margin-left:23px">{{ siaeuserrequest.initiator.email }}</span>
-                                </p>
-                            </div>
-                            <div class="col">
-                                <span class="badge badge-pill badge-warning" title="{{ siaeuserrequest.created_at|date:'d/m/Y H:i' }}">Nouvelle demande</span>
-                                <div class="float-right">
-                                    <button class="btn btn-outline-success btn-ico" data-toggle="modal" data-target="#user_request_confirm_modal" data-siae-slug="{{ siae.slug }}" data-initiator-full-name="{{ siaeuserrequest.initiator.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Confirmer la demande">
-                                        <i class="ri-check-fill ri-lg font-weight-light"></i>
-                                    </button>
-                                    <button class="btn btn-outline-danger btn-ico" data-toggle="modal" data-target="#user_request_cancel_modal" data-siae-slug="{{ siae.slug }}" data-initiator-full-name="{{ siaeuserrequest.initiator.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Refuser la demande">
-                                        <i class="ri-close-fill ri-lg font-weight-light"></i>
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     {% endfor %}
