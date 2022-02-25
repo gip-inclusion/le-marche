@@ -1,7 +1,0 @@
-Bonjour {{ user_full_name }},
-
-Nous sommes désolés, mais votre de demande de rattachement a été refusée.
-Si vous pensez qu'il s'agit d'une erreur, prenez contact avec {{ assignee_full_name }} de la structure {{ siae_name }}.
-
-Le marché de l'inclusion
-https://lemarche.inclusion.beta.gouv.fr/

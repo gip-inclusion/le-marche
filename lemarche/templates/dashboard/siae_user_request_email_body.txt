@@ -1,8 +1,0 @@
-Bonjour {{ assignee_full_name }},
-
-{{ user_full_name }} souhaite rejoindre la structure {{ siae_name }}.
-
-<a href="{{ siae_edit_users_url }}">Répondre à la demande</a>
-
-Le marché de l'inclusion
-https://lemarche.inclusion.beta.gouv.fr/

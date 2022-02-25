@@ -1,9 +1,0 @@
-Bonjour {{ user_full_name }},
-
-Votre demande de rattachement à la structure {{ siae_name }} n'a pas obtenu de réponse.
-Nous envoyons une dernière relance à votre collaborateur.
-
-Vous pouvez dès à présent contacter <a href="{{ }}>le support</a> si vous savez que vous n'obtiendrez pas de réponse.
-
-Le marché de l'inclusion
-https://lemarche.inclusion.beta.gouv.fr/
