@@ -12,7 +12,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ siae.name }}</li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ siae.name }} : modifier</li>
                     </ol>
                 </nav>
             </div>
@@ -58,11 +58,6 @@
         <div class="row mb-3 mb-lg-5">
             <div class="col-12">
                 <ul class="nav nav-tabs">
-                    <li class="nav-item">
-                        <a href="{% url 'dashboard:siae_edit_users' siae.slug %}" class="nav-link {% if 'collaborateurs' in request.path %}active font-weight-bold{% endif %}">
-                            Collaborateurs {% if siae_user_pending_request %}<span class="badge badge-pill badge-warning fs-xs">{{ siae_user_pending_request.count }}</span>{% endif %}
-                        </a>
-                    </li>
                     <li class="nav-item">
                         <a href="{% url 'dashboard:siae_edit_info_contact' siae.slug %}" class="nav-link {% if 'contact' in request.path %}active font-weight-bold{% endif %}">
                             Informations & Contact

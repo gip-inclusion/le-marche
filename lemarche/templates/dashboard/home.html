@@ -23,15 +23,78 @@
 {% endblock %}
 
 {% block content %}
-<section class="py-4">
+<section class="pt-4 pb-6">
     <div class="container">
         <div class="row">
             <div class="col-12">
+                <!-- Mes structures -->
+                {% if user.kind == user.KIND_SIAE or user.kind == user.KIND_ADMIN %}
+                    <div id="structures" class="row justify-content-end mb-3 mb-lg-5">
+                        <div class="col-12 col-lg">
+                            <h2 id="structures" class="h1 mb-0">
+                                <strong>{% if user.siaes.count > 1 %}Mes structures{% else %}Ma structure{% endif %}</strong>
+                            </h2>
+                        </div>
+                        <div class="col-12 col-md-auto">
+                            <a href="{% url 'dashboard:siae_search_by_siret' %}" class="btn btn-primary btn-block btn-ico">
+                                <span>Ajouter une structure</span>
+                                <i class="ri-add-fill ri-lg"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2">
+                        {% for siaeuser in user.siaeuser_set.all %}
+                            <div class="s-cards-grid-01__col col d-sm-flex">
+                                <div class="card c-card c-card--mini mb-3 w-100">
+                                    <div class="card-body">
+                                        <h3 class="mb-3">{{ siaeuser.siae.name }}</h3>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <h4 class="mt-2 mb-0">Ma fiche commerciale</h4>
+                                            </div>
+                                            <div class="col-6 text-right">
+                                                <a href="{% url 'siae:detail' siaeuser.siae.slug %}" target="_blank" class="btn btn-outline-primary btn-sm btn-ico">
+                                                    <span>Voir</span>
+                                                    <i class="ri-eye-line ri-lg"></i>
+                                                </a>
+                                                <a href="{% url 'dashboard:siae_edit' siaeuser.siae.slug %}" class="btn btn-primary btn-sm btn-ico">
+                                                    <span>Modifier</span>
+                                                    <i class="ri-pencil-fill ri-lg"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        {% if siaeuser.siae.is_missing_content %}
+                                            <div class="alert alert-warning mt-3 mb-0" role="alert">
+                                                <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                                                Votre fiche n'est pas complète.
+                                            </div>
+                                        {% endif %}
+                                        <hr />
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <h4 class="mt-2 mb-0">
+                                                    Mes collaborateurs {% if siaeuser.siae.siae_user_requests_pending_count > 0 %}<span class="badge badge-pill badge-warning fs-xs">{{ siaeuser.siae.siae_user_requests_pending_count }}</span>{% endif %}
+                                                </h4>
+                                            </div>
+                                            <div class="col-6 text-right">
+                                                <a href="{% url 'dashboard:siae_users' siaeuser.siae.slug %}" class="btn btn-link btn-sm">
+                                                    <span>Accéder</span>
+                                                    <!-- <i class="ri-arrow-drop-right ri-lg"></i> -->
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <hr class="mb-3 mb-lg-5">
+                {% endif %}
+
+                <!-- Profile -->
                 <h1 id="profil" class="mb-3 mb-lg-5">
                     <strong>Mon profil</strong>
                 </h1>
-
-                <!-- Profile -->
                 <div class="s-cards-grid-01__row row mb-3 mb-md-5">
                     <div class="s-cards-grid-01__col col">
                         <div class="card c-card c-card--marche h-100 w-100">
@@ -70,6 +133,7 @@
                     </div>
                 </div>
 
+                <!-- Favoris -->
                 <hr class="mb-3 mb-lg-5">
                 <div id="favoris" class="row justify-content-end mb-3 mb-lg-5">
                     <div class="col-12 col-lg">
@@ -85,73 +149,7 @@
                     </div>
                 </div>
 
-                <!-- Mes structures -->
-                {% if user.kind == user.KIND_SIAE or user.kind == user.KIND_ADMIN %}
-                    <hr class="mb-3 mb-lg-5">
-                    <div id="structures" class="row justify-content-end mb-3 mb-lg-5">
-                        <div class="col-12 col-lg">
-                            <h2 id="structures" class="h1 mb-0">
-                                <strong>{% if user.siaes.count > 1 %}Mes structures{% else %}Ma structure{% endif %}</strong>
-                            </h2>
-                        </div>
-                        <div class="col-12 col-md-auto">
-                            <a href="{% url 'dashboard:siae_search_by_siret' %}" class="btn btn-primary btn-block btn-ico">
-                                <span>Ajouter une structure</span>
-                                <i class="ri-add-fill ri-lg"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2">
-                        {% for siaeuser in user.siaeuser_set.all %}
-                        <div class="s-cards-grid-01__col col d-sm-flex">
-                            <div class="card c-card c-card--mini mb-3 w-100">
-                                <div class="card-body">
-                                    <h3>{{ siaeuser.siae.name }}</h3>
-                                    <p title="{% get_verbose_name siaeuser.siae 'brand' %}" class="mb-2">
-                                        <strong>{% get_verbose_name siaeuser.siae 'brand' %} :</strong>
-                                        {{ siaeuser.siae.brand|default:'' }}
-                                    </p>
-                                    <p title="{% get_verbose_name siaeuser.siae 'siret' %}" class="mb-2">
-                                        <strong>{% get_verbose_name siaeuser.siae 'siret' %} :</strong>
-                                        {{ siaeuser.siae.siret_display }}
-                                    </p>
-                                    <p title="{% get_verbose_name siaeuser.siae 'kind' %}" class="mb-2">
-                                        <strong>{% get_verbose_name siaeuser.siae 'kind' %} :</strong>
-                                        {{ siaeuser.siae.get_kind_display }}
-                                    </p>
-                                    <p title="{% get_verbose_name siaeuser.siae 'nature' %}" class="mb-2">
-                                        <strong>{% get_verbose_name siaeuser.siae 'nature' %} :</strong>
-                                        {{ siaeuser.siae.get_nature_display }}
-                                    </p>
-                                    {% if siaeuser.siae.is_missing_content %}
-                                    <div class="alert alert-warning mt-3 mb-0" role="alert">
-                                        <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
-                                        Votre fiche n'est pas complète.
-                                    </div>
-                                    {% endif %}
-                                </div>
-                                <div class="card-footer">
-                                    <div class="row justify-content-end">
-                                        <div class="col-6 col-md-auto pr-2">
-                                            <a href="{% url 'dashboard:siae_edit' siaeuser.siae.slug %}" class="btn btn-outline-primary btn-sm btn-block btn-ico">
-                                                <span>Modifier</span>
-                                                <i class="ri-pencil-fill ri-lg"></i>
-                                            </a>
-                                        </div>
-                                        <div class="col-6 col-md-auto pl-2">
-                                            <a href="{% url 'siae:detail' siaeuser.siae.slug %}" target="_blank" class="btn btn-outline-primary btn-sm btn-block btn-ico">
-                                                <span>Voir</span>
-                                                <i class="ri-eye-line ri-lg"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-
+                <!-- API -->
                 {% if user.api_key %}
                     <hr class="mb-3 mb-lg-5">
                     <div id="api" class="row justify-content-end mb-3 mb-lg-5">
