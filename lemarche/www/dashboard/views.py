@@ -239,8 +239,8 @@ class SiaeSearchAdoptConfirmView(
             return HttpResponseRedirect(self.get_success_url())
 
 
-class SiaeEditUsersView(LoginRequiredMixin, SiaeMemberRequiredMixin, DetailView):
-    template_name = "dashboard/siae_edit_users.html"
+class SiaeUsersView(LoginRequiredMixin, SiaeMemberRequiredMixin, DetailView):
+    template_name = "dashboard/siae_users.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
 
@@ -396,7 +396,7 @@ class SiaeUserRequestConfirm(LoginRequiredMixin, SiaeMemberRequiredMixin, Succes
     context_object_name = "siaeuserrequest"
     queryset = SiaeUserRequest.objects.all()
     success_message = "L'utilisateur a été rattaché à votre structure."
-    # success_url = reverse_lazy("dashboard:siae_edit_users")
+    # success_url = reverse_lazy("dashboard:siae_users")
 
     def get_object(self):
         return get_object_or_404(SiaeUserRequest, id=self.kwargs.get("siaeuserrequest_id"))
@@ -416,7 +416,7 @@ class SiaeUserRequestConfirm(LoginRequiredMixin, SiaeMemberRequiredMixin, Succes
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_users", args=[self.kwargs.get("slug")])
+        return reverse_lazy("dashboard:siae_users", args=[self.kwargs.get("slug")])
 
 
 class SiaeUserRequestCancel(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -425,7 +425,7 @@ class SiaeUserRequestCancel(LoginRequiredMixin, SiaeMemberRequiredMixin, Success
     context_object_name = "siaeuserrequest"
     queryset = SiaeUserRequest.objects.all()
     success_message = "L'utilisateur sera informé de votre refus."
-    # success_url = reverse_lazy("dashboard:siae_edit_users")
+    # success_url = reverse_lazy("dashboard:siae_users")
 
     def get_object(self):
         return get_object_or_404(SiaeUserRequest, id=self.kwargs.get("siaeuserrequest_id"))
@@ -443,4 +443,4 @@ class SiaeUserRequestCancel(LoginRequiredMixin, SiaeMemberRequiredMixin, Success
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_users", args=[self.kwargs.get("slug")])
+        return reverse_lazy("dashboard:siae_users", args=[self.kwargs.get("slug")])

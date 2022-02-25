@@ -1,0 +1,108 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block title %}Mes collaborateurs{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-lg">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ siae.name }} : collaborateurs</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="pt-4 pb-6">
+    <div class="container">
+        <h1 class="mb-3 mb-lg-5">
+            <strong>Mes collaborateurs</strong>
+        </h1>
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                    {% if siae.siaeuserrequest_set.pending.count %}
+                        <div class="bg-white d-block rounded-lg shadow-lg p-3 mb-5">
+                        {% for siaeuserrequest in siae.siaeuserrequest_set.pending %}
+                            <div class="row">
+                                <div class="col">
+                                    <p class="mb-0">
+                                        <span class="prof_icon"><i class="ri-user-line"></i></span>
+                                        <span><strong>{{ siaeuserrequest.initiator.full_name }}</strong></span>
+                                    </p>
+                                    <p class="mb-0">
+                                        <span style="margin-left:23px;white-space:nowrap">{{ siaeuserrequest.initiator.email }}</span>
+                                    </p>
+                                </div>
+                                <div class="col">
+                                    <span class="badge badge-pill badge-warning mt-2" title="{{ siaeuserrequest.created_at|date:'d/m/Y H:i' }}">Nouveau collaborateur</span>
+                                </div>
+                                <div class="col">
+                                    <div class="float-right">
+                                        <button class="btn btn-outline-success btn-ico" data-toggle="modal" data-target="#user_request_confirm_modal" data-siae-slug="{{ siae.slug }}" data-initiator-full-name="{{ siaeuserrequest.initiator.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Confirmer la demande">
+                                            <i class="ri-check-fill ri-lg font-weight-light"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger btn-ico" data-toggle="modal" data-target="#user_request_cancel_modal" data-siae-slug="{{ siae.slug }}" data-initiator-full-name="{{ siaeuserrequest.initiator.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Refuser la demande">
+                                            <i class="ri-close-fill ri-lg font-weight-light"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col">
+                            <h2 class="mb-0">Mes collaborateurs</h2>
+                        </div>
+                    </div>
+                    {% for siaeuser in siae.siaeuser_set.all %}
+                        <hr class="mb-2" />
+                        <div class="row">
+                            <div class="col">
+                                <p class="mb-0">
+                                    <span class="prof_icon"><i class="ri-user-line"></i></span>
+                                    <span><strong>{{ siaeuser.user.full_name }}</strong></span>
+                                </p>
+                                <p class="mb-0">
+                                    <span style="margin-left:23px">{{ siaeuser.user.email }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">
+                <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                    <p class="mb-1">
+                        <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                        <strong>Collaborateurs</strong>
+                    </p>
+                    <p class="mb-0">
+                        Gérez ici les collaborateurs liés à votre structure.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block modals %}
+    {% include "siaes/_user_request_confirm_modal.html" %}
+    {% include "siaes/_user_request_cancel_modal.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript" src="{% static 'js/user_request.js' %}"></script>
+{% endblock %}

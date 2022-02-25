@@ -588,6 +588,10 @@ class Siae(models.Model):
     def sectors_list_to_string(self):
         return ", ".join(self.sectors.all().values_list("name", flat=True))
 
+    def siae_user_requests_pending_count(self):
+        # TODO: optimize + filter on assignee
+        return self.siaeuserrequest_set.pending().count()
+
     def get_absolute_url(self):
         return reverse("siae:detail", kwargs={"slug": self.slug})
 
