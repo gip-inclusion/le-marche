@@ -17,6 +17,8 @@ from lemarche.www.dashboard.views import (
     SiaeEditUsersView,
     SiaeSearchAdoptConfirmView,
     SiaeSearchBySiretView,
+    SiaeUserRequestCancel,
+    SiaeUserRequestConfirm,
 )
 
 
@@ -26,6 +28,7 @@ app_name = "dashboard"
 urlpatterns = [
     path("", DashboardHomeView.as_view(), name="home"),
     path("modifier/", ProfileEditView.as_view(), name="profile_edit"),
+    # FavoriteList
     path("listes-dachats/", ProfileFavoriteListView.as_view(), name="profile_favorite_list"),
     path("listes-dachats/creer/", ProfileFavoriteListCreateView.as_view(), name="profile_favorite_list_create"),
     path("listes-dachats/<str:slug>/", ProfileFavoriteListDetailView.as_view(), name="profile_favorite_list_detail"),
@@ -42,8 +45,10 @@ urlpatterns = [
         ProfileFavoriteListDeleteView.as_view(),
         name="profile_favorite_list_delete",
     ),
+    # Adopt Siae
     path("prestataires/rechercher/", SiaeSearchBySiretView.as_view(), name="siae_search_by_siret"),
     path("prestataires/<str:slug>/adopter/", SiaeSearchAdoptConfirmView.as_view(), name="siae_search_adopt_confirm"),
+    # Edit Siae
     path(
         "prestataires/<str:slug>/modifier/",
         include(
@@ -61,6 +66,18 @@ urlpatterns = [
             ]
         ),
     ),
+    # Siae User Requests
+    path(
+        "prestataires/<str:slug>/collaborateurs/<str:siaeuserrequest_id>/accepter",
+        SiaeUserRequestConfirm.as_view(),
+        name="siae_user_request_confirm",
+    ),
+    path(
+        "prestataires/<str:slug>/collaborateurs/<str:siaeuserrequest_id>/refuser",
+        SiaeUserRequestCancel.as_view(),
+        name="siae_user_request_cancel",
+    ),
+    # Redirects
     path(
         "prestataires/<str:slug>/",
         RedirectView.as_view(pattern_name="dashboard:siae_edit_users", permanent=False),

@@ -4,6 +4,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView, FormMixin
@@ -25,6 +26,7 @@ from lemarche.www.dashboard.forms import (
     SiaeOfferFormSet,
     SiaeSearchAdoptConfirmForm,
     SiaeSearchBySiretForm,
+    SiaeUserRequestForm,
 )
 from lemarche.www.dashboard.mixins import (
     FavoriteListOwnerRequiredMixin,
@@ -32,7 +34,7 @@ from lemarche.www.dashboard.mixins import (
     SiaeUserAndNotMemberRequiredMixin,
     SiaeUserRequiredMixin,
 )
-from lemarche.www.dashboard.tasks import send_siae_user_request_email
+from lemarche.www.dashboard.tasks import send_siae_user_request_email, send_siae_user_request_response_email
 
 
 class DashboardHomeView(LoginRequiredMixin, DetailView):
@@ -205,9 +207,7 @@ class SiaeSearchAdoptConfirmView(
         - check if there isn't any pending SiaeUserRequest
         """
         context = super().get_context_data(**kwargs)
-        siae_user_pending_request = SiaeUserRequest.objects.filter(
-            initiator=self.request.user, siae=self.object, response=None
-        )
+        siae_user_pending_request = self.object.siaeuserrequest_set.initiator(self.request.user).pending()
         context["siae_user_pending_request"] = siae_user_pending_request
         return context
 
@@ -222,7 +222,10 @@ class SiaeSearchAdoptConfirmView(
         else:
             # create SiaeUserRequest + send request email to assignee
             siae_user_request = SiaeUserRequest.objects.create(
-                siae=self.object, initiator=self.request.user, assignee=self.object.users.first()
+                siae=self.object,
+                initiator=self.request.user,
+                assignee=self.object.users.first(),
+                logs=[{"action": "create", "timestamp": timezone.now().isoformat()}],
             )
             send_siae_user_request_email(siae_user_request)
             success_message = (
@@ -237,6 +240,15 @@ class SiaeEditUsersView(LoginRequiredMixin, SiaeMemberRequiredMixin, DetailView)
     template_name = "dashboard/siae_edit_users.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
+
+    def get_context_data(self, **kwargs):
+        """
+        - check if there isn't any pending SiaeUserRequest
+        """
+        context = super().get_context_data(**kwargs)
+        siae_user_pending_request = self.object.siaeuserrequest_set.assignee(self.request.user).pending()
+        context["siae_user_pending_request"] = siae_user_pending_request
+        return context
 
 
 class SiaeEditInfoContactView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -373,3 +385,59 @@ class SiaeEditOtherView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMess
 
     def get_success_url(self):
         return reverse_lazy("dashboard:siae_edit_other", args=[self.kwargs.get("slug")])
+
+
+class SiaeUserRequestConfirm(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
+    form_class = SiaeUserRequestForm
+    template_name = "siaes/_user_request_confirm_modal.html"
+    context_object_name = "siaeuserrequest"
+    queryset = SiaeUserRequest.objects.all()
+    success_message = "L'utilisateur a été rattaché à votre structure."
+    # success_url = reverse_lazy("dashboard:siae_edit_users")
+
+    def get_object(self):
+        return get_object_or_404(SiaeUserRequest, id=self.kwargs.get("siaeuserrequest_id"))
+
+    def form_valid(self, form):
+        """
+        - add user to Siae
+        - update SiaeUserRequest
+        - notify user
+        """
+        self.object.siae.users.add(self.object.initiator)
+        self.object.response = True
+        self.object.response_date = timezone.now()
+        self.object.logs.append({"action": "response_true", "timestamp": self.object.response_date.isoformat()})
+        self.object.save()
+        send_siae_user_request_response_email(self.object, response=True)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard:siae_edit_users", args=[self.kwargs.get("slug")])
+
+
+class SiaeUserRequestCancel(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
+    form_class = SiaeUserRequestForm
+    template_name = "siaes/_user_request_cancel_modal.html"
+    context_object_name = "siaeuserrequest"
+    queryset = SiaeUserRequest.objects.all()
+    success_message = "L'utilisateur sera informé de votre refus."
+    # success_url = reverse_lazy("dashboard:siae_edit_users")
+
+    def get_object(self):
+        return get_object_or_404(SiaeUserRequest, id=self.kwargs.get("siaeuserrequest_id"))
+
+    def form_valid(self, form):
+        """
+        - update SiaeUserRequest
+        - notify user
+        """
+        self.object.response = False
+        self.object.response_date = timezone.now()
+        self.object.logs.append({"action": "response_false", "timestamp": self.object.response_date.isoformat()})
+        self.object.save()
+        send_siae_user_request_response_email(self.object, response=False)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard:siae_edit_users", args=[self.kwargs.get("slug")])
