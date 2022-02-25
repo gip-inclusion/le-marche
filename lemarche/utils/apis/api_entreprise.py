@@ -100,7 +100,11 @@ def siae_update_etablissement(siae):
         # update_data"nature"] = Siae.NATURE_HEAD_OFFICE if etablissement["is_head_office"] else Siae.NATURE_ANTENNA  # noqa
         # update_data"is_active"] = False if not etablissement["is_closed"] else True
         if etablissement["employees"]:
-            update_data["api_entreprise_employees"] = etablissement["employees"]
+            update_data["api_entreprise_employees"] = (
+                etablissement["employees"]
+                if (etablissement["employees"] != "Unité non employeuse")
+                else "Non renseigné"
+            )
         if etablissement["employees_date_reference"]:
             update_data["api_entreprise_employees_year_reference"] = etablissement["employees_date_reference"]
         if etablissement["date_constitution"]:
@@ -146,7 +150,7 @@ def exercice_get_or_error(siret, reason="Inscription au marché de l'inclusion")
         data = r.json()
     except httpx.HTTPStatusError as e:
         if e.response.status_code == 422:
-            error = f"SIRET « {siret} » non reconnu."
+            error = f"SIRET {siret} non reconnu."
         else:
             # logger.error("Error while fetching `%s`: %s", url, e)
             error = "Problème de connexion à la base Sirene. Essayez ultérieurement."
