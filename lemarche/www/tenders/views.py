@@ -17,7 +17,9 @@ class AddTenderView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     success_url = reverse_lazy("dashboard:home")
 
     def form_valid(self, form):
-        tender = form.save()
+        tender = form.save(commit=False)
+        tender.author = self.request.user
+        tender.save()
         messages.add_message(
             self.request,
             messages.SUCCESS,

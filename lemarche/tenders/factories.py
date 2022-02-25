@@ -7,6 +7,7 @@ from factory.django import DjangoModelFactory
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.sectors.factories import SectorFactory
 from lemarche.tenders.models import Tender
+from lemarche.users.factories import UserFactory
 
 
 class TenderFactory(DjangoModelFactory):
@@ -21,6 +22,7 @@ class TenderFactory(DjangoModelFactory):
     constraints = factory.Faker("paragraph", nb_sentences=5, locale="fr_FR")
     completion_time = factory.Faker("paragraph", nb_sentences=5, locale="fr_FR")
     deadline_date = datetime.date.today() + datetime.timedelta(days=10)
+    author = factory.SubFactory(UserFactory)
 
     @factory.post_generation
     def perimeters(self, create, extracted, **kwargs):

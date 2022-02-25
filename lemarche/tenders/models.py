@@ -1,5 +1,6 @@
 import datetime
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
@@ -50,6 +51,10 @@ class Tender(models.Model):
         "sectors.Sector", verbose_name="Secteurs d'activités", related_name="tenders", blank=True
     )
 
+    author = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL, related_name="tenders", on_delete=models.CASCADE, blank=True
+    )
+
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
@@ -60,7 +65,6 @@ class Tender(models.Model):
 
     def clean(self):
         today = datetime.date.today()
-
         if self.deadline_date < today:
             raise ValidationError("La date de cloture des réponses ne doit pas être antérieure à aujourd'hui.")
 
