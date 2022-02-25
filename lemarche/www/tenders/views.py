@@ -13,7 +13,7 @@ class AddTenderView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     template_name = "tenders/add_tender_form.html"
     form_class = AddTenderForm
     context_object_name = "tender"
-    # success_message = "La structure a été ajoutée à votre liste d'achat."
+    success_message = "<strong>{}</strong> a été ajoutée à votre liste d'achats."
     success_url = reverse_lazy("dashboard:home")
 
     def form_valid(self, form):
@@ -23,14 +23,7 @@ class AddTenderView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
             messages.SUCCESS,
             self.get_success_message(form.cleaned_data, tender),
         )
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_success_url(self):
-        """Redirect to the previous page."""
-        request_referer = self.request.META.get("HTTP_REFERER", "")
-        if request_referer:
-            return request_referer
-        return super().get_success_url()
+        return HttpResponseRedirect(self.success_url)
 
     def get_success_message(self, cleaned_data, tender):
-        return mark_safe(f"<strong>{tender.title}</strong> a été ajoutée à vos besoins d'achats.")
+        return mark_safe(self.success_message.format(tender.title))
