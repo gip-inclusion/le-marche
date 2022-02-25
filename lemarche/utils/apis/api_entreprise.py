@@ -102,7 +102,7 @@ def siae_update_etablissement(siae):
         if etablissement["employees"]:
             update_data["api_entreprise_employees"] = (
                 etablissement["employees"]
-                if (etablissement["employees"] != "Unité non employeuse")
+                if (etablissement["employees"] != "Unités non employeuses")
                 else "Non renseigné"
             )
         if etablissement["employees_date_reference"]:
