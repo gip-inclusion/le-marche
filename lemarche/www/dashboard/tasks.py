@@ -27,7 +27,7 @@ def send_siae_user_request_email_to_assignee(siae_user_request):
     }
 
     api_mailjet.send_transactional_email_with_template(
-        template_id=3658653,
+        template_id=settings.MAILJET_SIAEUSERREQUEST_ASSIGNEE_TEMPLATE_ID,
         subject=email_subject,
         recipient_email=recipient_email,
         recipient_name=recipient_name,
@@ -52,7 +52,11 @@ def send_siae_user_request_response_email_to_initiator(siae_user_request, respon
     """
     email_subject_text = "Accéder à votre structure" if response else "Rattachement refusé"
     email_subject = EMAIL_SUBJECT_PREFIX + email_subject_text
-    email_template_id = 3662344 if response else 3662592
+    email_template_id = (
+        settings.MAILJET_SIAEUSERREQUEST_INITIATOR_RESPONSE_POSITIVE_TEMPLATE_ID
+        if response
+        else settings.MAILJET_SIAEUSERREQUEST_INITIATOR_RESPONSE_NEGATIVE_TEMPLATE_ID
+    )
     recipient_list = whitelist_recipient_list([siae_user_request.initiator.email])
     recipient_email = recipient_list[0] if recipient_list else ""
     recipient_name = siae_user_request.initiator.full_name
@@ -108,7 +112,7 @@ def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
     }
 
     api_mailjet.send_transactional_email_with_template(
-        template_id=3661739,
+        template_id=settings.MAILJET_SIAEUSERREQUEST_REMINDER_1_ASSIGNEE_TEMPLATE_ID,
         subject=email_subject,
         recipient_email=recipient_email,
         recipient_name=recipient_name,
@@ -141,7 +145,7 @@ def send_siae_user_request_reminder_3_days_email_to_initiator(siae_user_request)
     }
 
     api_mailjet.send_transactional_email_with_template(
-        template_id=3662658,
+        template_id=settings.MAILJET_SIAEUSERREQUEST_REMINDER_1_INITIATOR_TEMPLATE_ID,
         subject=email_subject,
         recipient_email=recipient_email,
         recipient_name=recipient_name,
@@ -185,7 +189,7 @@ def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
     }
 
     api_mailjet.send_transactional_email_with_template(
-        template_id=3662063,
+        template_id=settings.MAILJET_SIAEUSERREQUEST_REMINDER_2_ASSIGNEE_TEMPLATE_ID,
         subject=email_subject,
         recipient_email=recipient_email,
         recipient_name=recipient_name,
@@ -219,7 +223,7 @@ def send_siae_user_request_reminder_8_days_email_to_initiator(siae_user_request)
     }
 
     api_mailjet.send_transactional_email_with_template(
-        template_id=3662684,
+        template_id=settings.MAILJET_SIAEUSERREQUEST_REMINDER_2_INITIATOR_TEMPLATE_ID,
         subject=email_subject,
         recipient_email=recipient_email,
         recipient_name=recipient_name,
