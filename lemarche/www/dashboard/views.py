@@ -34,7 +34,10 @@ from lemarche.www.dashboard.mixins import (
     SiaeUserAndNotMemberRequiredMixin,
     SiaeUserRequiredMixin,
 )
-from lemarche.www.dashboard.tasks import send_siae_user_request_email, send_siae_user_request_response_email
+from lemarche.www.dashboard.tasks import (
+    send_siae_user_request_email_to_assignee,
+    send_siae_user_request_response_email_to_initiator,
+)
 
 
 class DashboardHomeView(LoginRequiredMixin, DetailView):
@@ -227,9 +230,9 @@ class SiaeSearchAdoptConfirmView(
                 assignee=self.object.users.first(),
                 logs=[{"action": "create", "timestamp": timezone.now().isoformat()}],
             )
-            send_siae_user_request_email(siae_user_request)
+            send_siae_user_request_email_to_assignee(siae_user_request)
             success_message = (
-                f"La demande a été envoyée à <i>{self.object.users.first().full_name}</i>.<br />"
+                f"La demande a été envoyée à {self.object.users.first().full_name}.<br />"
                 f"<i>Cet utilisateur ne fait plus partie de la structure ? <a href=\"{reverse_lazy('dashboard:siae_search_by_siret')}?siret={self.object.siret}\">Contactez le support</a></i>"  # noqa
             )
             messages.add_message(self.request, messages.SUCCESS, success_message)
@@ -409,7 +412,7 @@ class SiaeUserRequestConfirm(LoginRequiredMixin, SiaeMemberRequiredMixin, Succes
         self.object.response_date = timezone.now()
         self.object.logs.append({"action": "response_true", "timestamp": self.object.response_date.isoformat()})
         self.object.save()
-        send_siae_user_request_response_email(self.object, response=True)
+        send_siae_user_request_response_email_to_initiator(self.object, response=True)
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -436,7 +439,7 @@ class SiaeUserRequestCancel(LoginRequiredMixin, SiaeMemberRequiredMixin, Success
         self.object.response_date = timezone.now()
         self.object.logs.append({"action": "response_false", "timestamp": self.object.response_date.isoformat()})
         self.object.save()
-        send_siae_user_request_response_email(self.object, response=False)
+        send_siae_user_request_response_email_to_initiator(self.object, response=False)
         return super().form_valid(form)
 
     def get_success_url(self):
