@@ -33,4 +33,4 @@ class AddTenderView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return super().get_success_url()
 
     def get_success_message(self, cleaned_data, tender):
-        return mark_safe(f"<strong>{tender}</strong> a été ajoutée à ")
+        return mark_safe(f"<strong>{tender.title}</strong> a été ajoutée à vos besoins d'achats.")

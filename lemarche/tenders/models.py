@@ -9,27 +9,27 @@ from django.utils import timezone
 class Tender(models.Model):
     """Appel d'offre et devis"""
 
-    KIND_TENDERS_TENDER = "TENDER"
-    KIND_TENDERS_QUOTE = "QUOTE"
-    KIND_TENDERS_BOAMP = "BOAMP"
+    TENDERS_KIND_TENDER = "TENDER"
+    TENDERS_KIND_QUOTE = "QUOTE"
+    TENDERS_KIND_BOAMP = "BOAMP"
 
-    KIND_TENDERS_CHOICES = (
-        (KIND_TENDERS_TENDER, "Appel d'offre"),
-        (KIND_TENDERS_QUOTE, "Devis"),
+    TENDERS_KIND_CHOICES = (
+        (TENDERS_KIND_TENDER, "Appel d'offre"),
+        (TENDERS_KIND_QUOTE, "Devis"),
     )
 
-    KIND_RESPONSES_EMAIL = "EMAIL"
-    KIND_RESPONSES_TEL = "TEL"
-    KIND_RESPONSES_EXTERNAL = "EXTERN"
+    RESPONSES_KIND_EMAIL = "EMAIL"
+    RESPONSES_KIND_TEL = "TEL"
+    RESPONSES_KIND_EXTERNAL = "EXTERN"
 
-    KIND_RESPONSES_CHOICES = (
-        (KIND_RESPONSES_EMAIL, "Email"),
-        (KIND_RESPONSES_EMAIL, "Téléphone"),
-        (KIND_RESPONSES_EMAIL, "Lien externe"),
+    RESPONSES_KIND_CHOICES = (
+        (RESPONSES_KIND_EMAIL, "Email"),
+        (RESPONSES_KIND_EMAIL, "Téléphone"),
+        (RESPONSES_KIND_EMAIL, "Lien externe"),
     )
 
     kind = models.CharField(
-        verbose_name="Type de besoin", max_length=6, choices=KIND_TENDERS_CHOICES, default=KIND_TENDERS_TENDER
+        verbose_name="Type de besoin", max_length=6, choices=TENDERS_KIND_CHOICES, default=TENDERS_KIND_TENDER
     )
 
     title = models.CharField(verbose_name="Titre", max_length=255)
@@ -39,8 +39,8 @@ class Tender(models.Model):
     external_link = models.URLField(verbose_name="Lien externe", blank=True)
     deadline_date = models.DateField(verbose_name="Date de clôture des réponses")
     start_working_date = models.DateField(verbose_name="Date idéale de début des prestations", blank=True, null=True)
-    kind_response = models.CharField(
-        verbose_name="Comment répondre", max_length=6, choices=KIND_RESPONSES_CHOICES, default=KIND_TENDERS_TENDER
+    response_kind = models.CharField(
+        verbose_name="Comment répondre", max_length=6, choices=RESPONSES_KIND_CHOICES, default=RESPONSES_KIND_EMAIL
     )
 
     perimeters = models.ManyToManyField(
@@ -62,11 +62,11 @@ class Tender(models.Model):
         today = datetime.date.today()
 
         if self.deadline_date < today:
-            raise ValidationError("La date de cloture des réponses ne doit pas être antérieur à aujourd'hui.")
+            raise ValidationError("La date de cloture des réponses ne doit pas être antérieure à aujourd'hui.")
 
         if self.start_working_date and self.start_working_date < self.deadline_date:
             raise ValidationError(
-                "La date idéale de début de préstation ne doit pas être antérieur de cloture des réponses."
+                "La date idéale de début des prestations ne doit pas être antérieure de cloture des réponses."
             )
 
     def __str__(self):
