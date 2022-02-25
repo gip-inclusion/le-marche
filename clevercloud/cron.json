@@ -1,5 +1,6 @@
 [
     "0 0 * * * $ROOT/clevercloud/siaes_export_all_siae_to_file.sh",
+    "0 9 * * * $ROOT/clevercloud/siaes_send_user_request_reminders.sh",
     "0 7 * * 1 $ROOT/clevercloud/siaes_sync_c1_c4.sh",
     "15 7 * * 1 $ROOT/clevercloud/siaes_sync_c2_c4.sh",
     "30 7 * * 1 $ROOT/clevercloud/siaes_update_api_entreprise_fields.sh",
