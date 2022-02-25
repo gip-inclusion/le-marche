@@ -240,6 +240,9 @@ class SiaeQuerySet(models.QuerySet):
             in_user_favorite_list_ids=ArrayAgg("favorite_lists__pk", filter=Q(favorite_lists__user=user))
         )
 
+    def filter_with_email(self):
+        return self.exclude(contact_email__isnull=True).exclude(contact_email__exact="")
+
 
 class Siae(models.Model):
     READONLY_FIELDS_FROM_C1 = [
