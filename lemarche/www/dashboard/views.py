@@ -9,7 +9,7 @@ from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView, FormMixin
 
 from lemarche.favorites.models import FavoriteItem, FavoriteList
-from lemarche.siaes.models import Siae
+from lemarche.siaes.models import Siae, SiaeUserRequest
 from lemarche.utils.s3 import S3Upload
 from lemarche.utils.tracker import extract_meta_from_request, track
 from lemarche.www.dashboard.forms import (
@@ -26,7 +26,13 @@ from lemarche.www.dashboard.forms import (
     SiaeSearchAdoptConfirmForm,
     SiaeSearchBySiretForm,
 )
-from lemarche.www.dashboard.mixins import FavoriteListOwnerRequiredMixin, SiaeOwnerRequiredMixin, SiaeUserRequiredMixin
+from lemarche.www.dashboard.mixins import (
+    FavoriteListOwnerRequiredMixin,
+    SiaeMemberRequiredMixin,
+    SiaeUserAndNotMemberRequiredMixin,
+    SiaeUserRequiredMixin,
+)
+from lemarche.www.dashboard.tasks import send_siae_user_request_email
 
 
 class DashboardHomeView(LoginRequiredMixin, DetailView):
@@ -184,7 +190,9 @@ class SiaeSearchBySiretView(LoginRequiredMixin, SiaeUserRequiredMixin, FormMixin
         return super().get(request, *args, **kwargs)
 
 
-class SiaeSearchAdoptConfirmView(LoginRequiredMixin, SiaeUserRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeSearchAdoptConfirmView(
+    LoginRequiredMixin, SiaeUserAndNotMemberRequiredMixin, SuccessMessageMixin, UpdateView
+):
     form_class = SiaeSearchAdoptConfirmForm
     template_name = "dashboard/siae_search_adopt_confirm.html"
     context_object_name = "siae"
@@ -192,29 +200,46 @@ class SiaeSearchAdoptConfirmView(LoginRequiredMixin, SiaeUserRequiredMixin, Succ
     success_message = "Votre structure a été rajoutée dans votre espace."
     success_url = reverse_lazy("dashboard:home")
 
-    def get(self, request, *args, **kwargs):
-        """The Siae should not have any users yet."""
-        response = super().get(request, *args, **kwargs)
-        if self.object.users.count():
-            messages.add_message(
-                request, messages.INFO, "La structure a déjà été enregistrée sur le marché par un autre utilisateur."
-            )
-            return HttpResponseRedirect(reverse_lazy("dashboard:home"))
-        return response
+    def get_context_data(self, **kwargs):
+        """
+        - check if there isn't any pending SiaeUserRequest
+        """
+        context = super().get_context_data(**kwargs)
+        siae_user_pending_request = SiaeUserRequest.objects.filter(
+            initiator=self.request.user, siae=self.object, response=None
+        )
+        context["siae_user_pending_request"] = siae_user_pending_request
+        return context
 
     def form_valid(self, form):
-        """Add the Siae to the User."""
-        self.object.users.add(self.request.user)
-        return super().form_valid(form)
+        """
+        - Siae with user? add the User to the Siae
+        - Siae with existing user(s)? go through the invitation workflow
+        """
+        if not self.object.users.count():
+            self.object.users.add(self.request.user)
+            return super().form_valid(form)
+        else:
+            # create SiaeUserRequest + send request email to assignee
+            siae_user_request = SiaeUserRequest.objects.create(
+                siae=self.object, initiator=self.request.user, assignee=self.object.users.first()
+            )
+            send_siae_user_request_email(siae_user_request)
+            success_message = (
+                f"La demande a été envoyée à <i>{self.object.users.first().full_name}</i>.<br />"
+                f"<i>Cet utilisateur ne fait plus partie de la structure ? <a href=\"{reverse_lazy('dashboard:siae_search_by_siret')}?siret={self.object.siret}\">Contactez le support</a></i>"  # noqa
+            )
+            messages.add_message(self.request, messages.SUCCESS, success_message)
+            return HttpResponseRedirect(self.get_success_url())
 
 
-class SiaeEditUsersView(LoginRequiredMixin, SiaeOwnerRequiredMixin, DetailView):
+class SiaeEditUsersView(LoginRequiredMixin, SiaeMemberRequiredMixin, DetailView):
     template_name = "dashboard/siae_edit_users.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
 
 
-class SiaeEditInfoContactView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeEditInfoContactView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeEditInfoContactForm
     template_name = "dashboard/siae_edit_info_contact.html"
     context_object_name = "siae"
@@ -235,7 +260,7 @@ class SiaeEditInfoContactView(LoginRequiredMixin, SiaeOwnerRequiredMixin, Succes
         return reverse_lazy("dashboard:siae_edit_info_contact", args=[self.kwargs.get("slug")])
 
 
-class SiaeEditOfferView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeEditOfferView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeEditOfferForm
     template_name = "dashboard/siae_edit_offer.html"
     context_object_name = "siae"
@@ -246,7 +271,7 @@ class SiaeEditOfferView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessa
         return reverse_lazy("dashboard:siae_edit_offer", args=[self.kwargs.get("slug")])
 
 
-class SiaeEditPrestaView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeEditPrestaView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeEditPrestaForm
     template_name = "dashboard/siae_edit_presta.html"
     context_object_name = "siae"
@@ -309,7 +334,7 @@ class SiaeEditPrestaView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMess
         return reverse_lazy("dashboard:siae_edit_presta", args=[self.kwargs.get("slug")])
 
 
-class SiaeEditOtherView(LoginRequiredMixin, SiaeOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeEditOtherView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeEditOtherForm
     template_name = "dashboard/siae_edit_other.html"
     context_object_name = "siae"

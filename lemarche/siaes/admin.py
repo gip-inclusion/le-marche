@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
-from lemarche.siaes.models import Siae, SiaeClientReference, SiaeImage, SiaeLabel, SiaeOffer, SiaeUser
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeImage, SiaeLabel, SiaeOffer, SiaeUser, SiaeUserRequest
 from lemarche.users.models import User
 from lemarche.utils.fields import pretty_print_readonly_jsonfield
 
@@ -267,6 +267,43 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         return "-"
 
     import_raw_object_display.short_description = "Donnée brute importée"
+
+
+@admin.register(SiaeUserRequest)
+class SiaeUserRequestAdmin(admin.ModelAdmin):
+    list_display = ["id", "siae", "initiator", "assignee", "response", "created_at", "updated_at"]
+    search_fields = [
+        "id",
+        "siae__id",
+        "siae__name",
+        "initiator__id",
+        "initiator__email",
+        "assignee__id",
+        "assignee__email",
+    ]
+    search_help_text = (
+        "Cherche sur les champs : ID, Structure (ID, Nom), Initiateur (ID, E-mail), Responsable (ID, E-mail)"
+    )
+
+    autocomplete_fields = ["siae"]
+    readonly_fields = [field.name for field in SiaeUserRequest._meta.fields]
+    fields = ["logs_display" if field_name == "logs" else field_name for field_name in readonly_fields]
+
+    def logs_display(self, siaeuserrequest=None):
+        if siaeuserrequest:
+            return pretty_print_readonly_jsonfield(siaeuserrequest.logs)
+        return "-"
+
+    logs_display.short_description = "Logs des échanges"
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(SiaeOffer)

@@ -1,0 +1,8 @@
+Vous avez reçu une nouvelle demande de collaboration.
+
+{{ user_name }} souhaite se rattacher à la structure {{ siae_name }}.
+
+Pour confirmer le rattachement, rendez-vous sur votre <a href="{{ dashboard_home_url }}">Tableau de bord</a>.
+
+Le marché de l'inclusion
+https://lemarche.inclusion.beta.gouv.fr/
