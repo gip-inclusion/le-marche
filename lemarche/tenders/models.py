@@ -1,6 +1,7 @@
 import datetime
 
 from django.conf import settings
+from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
@@ -40,8 +41,10 @@ class Tender(models.Model):
     external_link = models.URLField(verbose_name="Lien externe", blank=True)
     deadline_date = models.DateField(verbose_name="Date de clôture des réponses")
     start_working_date = models.DateField(verbose_name="Date idéale de début des prestations", blank=True, null=True)
-    response_kind = models.CharField(
-        verbose_name="Comment répondre", max_length=6, choices=RESPONSES_KIND_CHOICES, default=RESPONSES_KIND_EMAIL
+    response_kind = ArrayField(
+        models.CharField(max_length=6, choices=RESPONSES_KIND_CHOICES),
+        verbose_name="Comment répondre",
+        default=[RESPONSES_KIND_EMAIL],
     )
 
     perimeters = models.ManyToManyField(

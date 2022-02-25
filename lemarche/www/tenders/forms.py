@@ -28,6 +28,8 @@ class AddTenderForm(forms.ModelForm):
         required=False,
     )
 
+    response_kind = forms.MultipleChoiceField(label="Comment répondre", choices=Tender.RESPONSES_KIND_CHOICES)
+
     class Meta:
         model = Tender
         fields = [
