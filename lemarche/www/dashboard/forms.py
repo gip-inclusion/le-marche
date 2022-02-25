@@ -3,7 +3,7 @@ from django.forms.models import inlineformset_factory
 
 from lemarche.favorites.models import FavoriteList
 from lemarche.networks.models import Network
-from lemarche.siaes.models import Siae, SiaeClientReference, SiaeImage, SiaeLabel, SiaeOffer
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeImage, SiaeLabel, SiaeOffer, SiaeUserRequest
 from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.www.siaes.forms import SECTOR_FORM_QUERYSET
@@ -252,3 +252,9 @@ class SiaeImageForm(forms.ModelForm):
 
 
 SiaeImageFormSet = inlineformset_factory(Siae, SiaeImage, form=SiaeImageForm, extra=0, can_delete=True)
+
+
+class SiaeUserRequestForm(forms.ModelForm):
+    class Meta:
+        model = SiaeUserRequest
+        fields = []
