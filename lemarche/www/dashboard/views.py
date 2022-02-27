@@ -239,7 +239,7 @@ class SiaeSearchAdoptConfirmView(
             return HttpResponseRedirect(self.get_success_url())
 
 
-class SiaeUsersView(LoginRequiredMixin, SiaeMemberRequiredMixin, DetailView):
+class SiaeUsersView(SiaeMemberRequiredMixin, DetailView):
     template_name = "dashboard/siae_users.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
