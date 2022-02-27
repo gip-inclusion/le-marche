@@ -144,9 +144,9 @@ class SiaeEditView(TestCase):
         url = reverse("dashboard:siae_search_by_siret")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        # self.assertTrue(response.url.startswith("/accounts/login/"))
+        self.assertTrue(response.url.startswith("/accounts/login/"))
 
-    def test_only_siae_user_can_edit_siae(self):
+    def test_siae_user_can_edit_siae(self):
         self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
         url = reverse("dashboard:siae_edit", args=[self.siae_with_user.slug])
         response = self.client.get(url)
@@ -157,7 +157,7 @@ class SiaeEditView(TestCase):
         url = reverse("dashboard:siae_edit", args=[self.siae_with_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        # self.assertEqual(response.url, "/profil/")  # redirects first to siae_users
+        # self.assertEqual(response.url, "/profil/")  # redirects first to siae_edit_info_contact
 
     def test_only_siae_user_can_access_siae_edit_tabs(self):
         SIAE_EDIT_URLS = [

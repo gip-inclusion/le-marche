@@ -29,7 +29,7 @@ class LoginRequiredUserPassesTestMixin(UserPassesTestMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
-class SiaeUserRequiredMixin(UserPassesTestMixin):
+class SiaeUserRequiredMixin(LoginRequiredUserPassesTestMixin):
     """
     Restrict access to specific users: Siae & Admin
     Where?
@@ -60,7 +60,7 @@ class SiaeMemberRequiredMixin(LoginRequiredUserPassesTestMixin):
         return HttpResponseRedirect(reverse_lazy("dashboard:home"))
 
 
-class SiaeNotMemberRequiredMixin(UserPassesTestMixin):
+class SiaeNotMemberRequiredMixin(LoginRequiredUserPassesTestMixin):
     """
     Restrict access to users who do not belong to the Siae
     Where?
@@ -77,7 +77,7 @@ class SiaeNotMemberRequiredMixin(UserPassesTestMixin):
         return HttpResponseRedirect(reverse_lazy("dashboard:home"))
 
 
-class SiaeUserAndNotMemberRequiredMixin(UserPassesTestMixin):
+class SiaeUserAndNotMemberRequiredMixin(LoginRequiredUserPassesTestMixin):
     """
     SiaeUserRequiredMixin + SiaeNotMemberRequiredMixin
     """
@@ -91,7 +91,7 @@ class SiaeUserAndNotMemberRequiredMixin(UserPassesTestMixin):
         return HttpResponseRedirect(reverse_lazy("dashboard:home"))
 
 
-class FavoriteListOwnerRequiredMixin(UserPassesTestMixin):
+class FavoriteListOwnerRequiredMixin(LoginRequiredUserPassesTestMixin):
     """
     Restrict access to the "view FavoriteList" page to the FavoriteList's user
     """

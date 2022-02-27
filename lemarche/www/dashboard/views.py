@@ -98,13 +98,13 @@ class ProfileFavoriteListCreateView(LoginRequiredMixin, SuccessMessageMixin, Cre
         return mark_safe(f"Votre liste d'achat <strong>{cleaned_data['name']}</strong> a été crée avec succès.")
 
 
-class ProfileFavoriteListDetailView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin, DetailView):
+class ProfileFavoriteListDetailView(FavoriteListOwnerRequiredMixin, DetailView):
     template_name = "dashboard/profile_favorite_list_detail.html"
     context_object_name = "favorite_list"
     queryset = FavoriteList.objects.prefetch_related("siaes").all()
 
 
-class ProfileFavoriteListEditView(LoginRequiredMixin, FavoriteListOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
+class ProfileFavoriteListEditView(FavoriteListOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = ProfileFavoriteEditForm
     template_name = "siaes/_favorite_list_edit_modal.html"
     success_message = "Votre liste d'achat a été modifiée avec succès."
@@ -117,9 +117,7 @@ class ProfileFavoriteListEditView(LoginRequiredMixin, FavoriteListOwnerRequiredM
         return reverse_lazy("dashboard:profile_favorite_list_detail", args=[self.kwargs.get("slug")])
 
 
-class ProfileFavoriteListDeleteView(
-    LoginRequiredMixin, FavoriteListOwnerRequiredMixin, SuccessMessageMixin, DeleteView
-):
+class ProfileFavoriteListDeleteView(FavoriteListOwnerRequiredMixin, SuccessMessageMixin, DeleteView):
     template_name = "siaes/_favorite_list_delete_modal.html"
     model = FavoriteList
     # success_message = "Votre liste d'achat a été supprimée avec succès."
@@ -163,7 +161,7 @@ class ProfileFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, Del
         )
 
 
-class SiaeSearchBySiretView(LoginRequiredMixin, SiaeUserRequiredMixin, FormMixin, ListView):
+class SiaeSearchBySiretView(SiaeUserRequiredMixin, FormMixin, ListView):
     form_class = SiaeSearchBySiretForm
     template_name = "dashboard/siae_search_by_siret.html"
     context_object_name = "siaes"
@@ -195,9 +193,7 @@ class SiaeSearchBySiretView(LoginRequiredMixin, SiaeUserRequiredMixin, FormMixin
         return super().get(request, *args, **kwargs)
 
 
-class SiaeSearchAdoptConfirmView(
-    LoginRequiredMixin, SiaeUserAndNotMemberRequiredMixin, SuccessMessageMixin, UpdateView
-):
+class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeSearchAdoptConfirmForm
     template_name = "dashboard/siae_search_adopt_confirm.html"
     context_object_name = "siae"
@@ -254,7 +250,7 @@ class SiaeUsersView(SiaeMemberRequiredMixin, DetailView):
         return context
 
 
-class SiaeEditInfoContactView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeEditInfoContactView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeEditInfoContactForm
     template_name = "dashboard/siae_edit_info_contact.html"
     context_object_name = "siae"
@@ -275,7 +271,7 @@ class SiaeEditInfoContactView(LoginRequiredMixin, SiaeMemberRequiredMixin, Succe
         return reverse_lazy("dashboard:siae_edit_info_contact", args=[self.kwargs.get("slug")])
 
 
-class SiaeEditOfferView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeEditOfferView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeEditOfferForm
     template_name = "dashboard/siae_edit_offer.html"
     context_object_name = "siae"
@@ -286,7 +282,7 @@ class SiaeEditOfferView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMess
         return reverse_lazy("dashboard:siae_edit_offer", args=[self.kwargs.get("slug")])
 
 
-class SiaeEditPrestaView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeEditPrestaView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeEditPrestaForm
     template_name = "dashboard/siae_edit_presta.html"
     context_object_name = "siae"
@@ -349,7 +345,7 @@ class SiaeEditPrestaView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMes
         return reverse_lazy("dashboard:siae_edit_presta", args=[self.kwargs.get("slug")])
 
 
-class SiaeEditOtherView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeEditOtherView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeEditOtherForm
     template_name = "dashboard/siae_edit_other.html"
     context_object_name = "siae"
@@ -390,7 +386,7 @@ class SiaeEditOtherView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMess
         return reverse_lazy("dashboard:siae_edit_other", args=[self.kwargs.get("slug")])
 
 
-class SiaeUserRequestConfirm(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeUserRequestConfirm(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeUserRequestForm
     template_name = "siaes/_siae_user_request_confirm_modal.html"
     context_object_name = "siaeuserrequest"
@@ -419,7 +415,7 @@ class SiaeUserRequestConfirm(LoginRequiredMixin, SiaeMemberRequiredMixin, Succes
         return reverse_lazy("dashboard:siae_users", args=[self.kwargs.get("slug")])
 
 
-class SiaeUserRequestCancel(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeUserRequestCancel(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeUserRequestForm
     template_name = "siaes/_siae_user_request_cancel_modal.html"
     context_object_name = "siaeuserrequest"
