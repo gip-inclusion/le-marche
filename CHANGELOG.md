@@ -4,6 +4,36 @@ Ressources :
 - [Semantic Versioning](http://semver.org/)
 - [CHANGELOG recommendations](http://keepachangelog.com/).
 
+## [2022.4] - 2022-02-28
+
+### Ajouté
+
+- Espace utilisateur
+    - Permettre à un utilisateur de faire une demande de rattachement à une structure déjà inscrite
+    - Permettre à l'utilisateur d'une structure de gérer les demandes de rattachements à sa structure
+- Données
+    - Script pour récupérer le nombre d'ETP des structures depuis le C2
+    - Nouveau champ `signup_date` ppur mesurer l'évolution du nombre de structures inscrites
+    - Nouveau champ `content_filled_basic_date` pour mesurer l'évolution du nombre de structures avec leur fiche remplie
+
+### Modifié
+
+- Pages
+    - Mise à jour du thème itou (icons css)
+-  Recherche / Fiche
+    - Renommé le terme QPV
+- Espace utilisateur
+    - Remonté la section "Mes structures" tout en haut
+    - Refonte de la carte "Structure"
+    - Séparé la page "Collaborateurs" du formulaire de modification de sa structure
+- Données
+    - API Entreprise : renommé "Unités non employeuses" par "Non renseigné"
+    - Synchonisation avec le C1 : rajouté le champ `brand` à la liste des champs synchronisés
+- Tech
+    - Meilleure gestion des tâches asynchrones
+
+### Supprimé
+
 ## [2022.3] - 2022-02-11
 
 ### Ajouté
