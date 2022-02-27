@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 
+from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
@@ -40,7 +41,7 @@ class DashboardHomeViewTest(TestCase):
         self.assertContains(response, "Accès API")
 
 
-class SiaeSearchAdoptViewTest(TestCase):
+class DashboardSiaeSearchAdoptViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user_siae = UserFactory(kind=User.KIND_SIAE)
@@ -131,7 +132,7 @@ class SiaeSearchAdoptViewTest(TestCase):
         self.assertEqual(self.user_siae_2.siaes.count(), 0)
 
 
-class SiaeEditView(TestCase):
+class DashboardSiaeEditView(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user_siae = UserFactory(kind=User.KIND_SIAE)
@@ -146,7 +147,7 @@ class SiaeEditView(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.startswith("/accounts/login/"))
 
-    def test_siae_user_can_edit_siae(self):
+    def test_only_siae_user_can_edit_siae(self):
         self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
         url = reverse("dashboard:siae_edit", args=[self.siae_with_user.slug])
         response = self.client.get(url)
@@ -196,3 +197,35 @@ class SiaeEditView(TestCase):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 302)
             self.assertEqual(response.url, "/profil/")
+
+
+class DashboardFavoriteListViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_favorite_list = UserFactory(kind=User.KIND_BUYER)
+        cls.other_user_favorite_list = UserFactory(kind=User.KIND_PARTNER)
+        cls.favorite_list_1 = FavoriteListFactory(name="Liste 1", user=cls.user_favorite_list)
+        cls.favorite_list_2 = FavoriteListFactory(name="Liste 2", user=cls.other_user_favorite_list)
+
+    def test_anonymous_user_cannot_view_favorite_list(self):
+        url = reverse("dashboard:profile_favorite_list")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith("/accounts/login/"))
+
+        url = reverse("dashboard:profile_favorite_list_detail", args=[self.favorite_list_1.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith("/accounts/login/"))
+
+    def test_only_favorite_list_user_can_access(self):
+        self.client.login(email=self.user_favorite_list.email, password=DEFAULT_PASSWORD)
+        url = reverse("dashboard:profile_favorite_list_detail", args=[self.favorite_list_1.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        self.client.login(email=self.other_user_favorite_list.email, password=DEFAULT_PASSWORD)
+        url = reverse("dashboard:profile_favorite_list_detail", args=[self.favorite_list_1.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/profil/")
