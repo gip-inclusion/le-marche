@@ -13,7 +13,7 @@ Ressources :
     - Permettre à l'utilisateur d'une structure de gérer les demandes de rattachements à sa structure
 - Données
     - Script pour récupérer le nombre d'ETP des structures depuis le C2
-    - Nouveau champ `signup_date` ppur mesurer l'évolution du nombre de structures inscrites
+    - Nouveau champ `signup_date` pour mesurer l'évolution du nombre de structures inscrites
     - Nouveau champ `content_filled_basic_date` pour mesurer l'évolution du nombre de structures avec leur fiche remplie
 
 ### Modifié
