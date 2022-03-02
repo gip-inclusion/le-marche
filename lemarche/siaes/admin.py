@@ -74,7 +74,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "nb_images",
         "created_at",
     ]
-    list_filter = [IsLiveFilter, "is_first_page", HasUserFilter, "kind", "networks", "sectors", "geo_range"]
+    list_filter = [IsLiveFilter, "is_first_page", HasUserFilter, "kind", "networks", "sectors", "geo_range", "source"]
     search_fields = ["id", "name", "slug", "siret"]
     search_help_text = "Cherche sur les champs : ID, Raison sociale, Slug, Siret"
 
