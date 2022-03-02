@@ -390,7 +390,7 @@ class Siae(models.Model):
     c1_last_sync_date = models.DateTimeField(blank=True, null=True)
     c1_sync_skip = models.BooleanField(blank=False, null=False, default=False)
 
-    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True)
+    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default=SOURCE_STAFF_C4_CREATED)
     import_raw_object = models.JSONField(verbose_name="Donnée JSON brute", editable=False, null=True)
 
     # stats
