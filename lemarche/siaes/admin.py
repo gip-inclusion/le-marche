@@ -203,10 +203,67 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         ("Autres", {"fields": ("created_at", "updated_at")}),
     ]
 
-    # def get_queryset(self, request):
-    #     qs = super().get_queryset(request)
-    #     qs = qs.annotate(image_count=Count("images", distinct=True))
-    #     return qs
+    add_fieldsets = [
+        (
+            "Affichage",
+            {
+                "fields": ("is_active",),
+            },
+        ),
+        (
+            "Données C1 (ou ESAT ou SEP)",
+            {
+                "fields": (
+                    "name",
+                    "slug",
+                    "brand",
+                    "siret",
+                    "naf",
+                    "kind",
+                    "c1_id",
+                    "asp_id",
+                    "website",
+                    "email",
+                    "phone",
+                    "address",
+                    "city",
+                    "post_code",
+                    "department",
+                    "region",
+                    # "coords_display",
+                    # "coords",
+                    "source",
+                )
+            },
+        ),
+    ]
+
+    def get_readonly_fields(self, request, obj=None):
+        """
+        Staff can create and edit some Siaes.
+        The whitelisted fields are listed in add_fieldsets.
+        """
+        if not obj or (obj and obj.source == Siae.SOURCE_STAFF_C4_CREATED):
+            add_fields = []
+            for fieldset in self.add_fieldsets:
+                add_fields.extend(list(fieldset[1]["fields"]))
+            return [field for field in self.readonly_fields if field not in add_fields]
+        return self.readonly_fields
+
+    def get_fieldsets(self, request, obj=None):
+        """
+        The add form has a lighter fieldsets.
+        (add_fieldsets is only available for User Admin, so we need to set it manually)
+        """
+        if not obj:
+            self.fieldsets_with_inlines = self.add_fieldsets
+        return super().get_fieldsets(request, obj)
+
+    def get_changeform_initial_data(self, request):
+        """
+        Default values in add form.
+        """
+        return {"is_active": False, "source": Siae.SOURCE_STAFF_C4_CREATED}
 
     def nb_users(self, siae):
         url = reverse("admin:users_user_changelist") + f"?siaes__in={siae.id}"
