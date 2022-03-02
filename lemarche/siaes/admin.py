@@ -281,7 +281,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         Staff can create and edit some Siaes.
         The whitelisted fields are listed in add_fieldsets.
         """
-        if not obj or (obj and obj.source == Siae.SOURCE_STAFF_C4_CREATED):
+        if not obj or (obj and obj.source in [Siae.SOURCE_STAFF_C4_CREATED, Siae.SOURCE_ESAT]):
             add_fields = []
             for fieldset in self.add_fieldsets:
                 add_fields.extend(list(fieldset[1]["fields"]))
