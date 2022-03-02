@@ -9,7 +9,7 @@ from django.views.generic import CreateView
 from lemarche.www.tenders.forms import AddTenderForm
 
 
-class AddTenderView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class TenderAddView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     template_name = "tenders/add_tender_form.html"
     form_class = AddTenderForm
     context_object_name = "tender"
@@ -26,6 +26,15 @@ class AddTenderView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
             self.get_success_message(form.cleaned_data, tender),
         )
         return HttpResponseRedirect(self.success_url)
+
+    def get_initial(self):
+        user = self.request.user
+        return {
+            "contact_first_name": user.first_name,
+            "contact_last_name": user.last_name,
+            "contact_email": user.email,
+            "contact_phone": user.phone,
+        }
 
     def get_success_message(self, cleaned_data, tender):
         return mark_safe(self.success_message.format(tender.title))

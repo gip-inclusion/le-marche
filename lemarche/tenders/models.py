@@ -1,13 +1,19 @@
 import datetime
+from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import IntegrityError, models, transaction
 from django.utils import timezone
+from django.utils.text import slugify
 
 
-# Create your models here.
+class TenderQuerySet(models.QuerySet):
+    def created_by_user(self, user):
+        return self.filter(author=user)
+
+
 class Tender(models.Model):
     """Appel d'offre et devis"""
 
@@ -41,10 +47,14 @@ class Tender(models.Model):
     external_link = models.URLField(verbose_name="Lien externe", blank=True)
     deadline_date = models.DateField(verbose_name="Date de clôture des réponses")
     start_working_date = models.DateField(verbose_name="Date idéale de début des prestations", blank=True, null=True)
+    contact_first_name = models.CharField(verbose_name="Prénom du contact", max_length=255, blank=True)
+    contact_last_name = models.CharField(verbose_name="Nom de famille du contact", max_length=255, blank=True)
+    contact_email = models.EmailField(verbose_name="Email du contact", blank=True)
+    contact_phone = models.CharField(verbose_name="Téléphone du contact", max_length=20, blank=True)
+
     response_kind = ArrayField(
         models.CharField(max_length=6, choices=RESPONSES_KIND_CHOICES),
         verbose_name="Comment répondre",
-        default=[RESPONSES_KIND_EMAIL],
     )
 
     perimeters = models.ManyToManyField(
@@ -60,6 +70,11 @@ class Tender(models.Model):
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+    objects = models.Manager.from_queryset(TenderQuerySet)()
+
+    slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
+
+    objects = models.Manager.from_queryset(TenderQuerySet)()
 
     class Meta:
         verbose_name = "Besoin d'acheteur"
@@ -78,3 +93,31 @@ class Tender(models.Model):
 
     def __str__(self):
         return self.title
+
+    def set_slug(self, with_uuid=False):
+        """
+        The slug field should be unique.
+        """
+        if not self.slug:
+            self.slug = f"{slugify(self.title)[:40]}-{str(self.author.company_name or '')}"
+        if with_uuid:
+            self.slug += f"-{str(uuid4())[:4]}"
+
+    def save(self, *args, **kwargs):
+        """
+        - update the object stats
+        - update the object content_fill_dates
+        - generate the slug field
+        """
+        try:
+            self.set_slug()
+            with transaction.atomic():
+                super().save(*args, **kwargs)
+        except IntegrityError as e:
+            # check that it's a slug conflict
+            # Full message expected: duplicate key value violates unique constraint "tenders_tender_slug_0f0b821f_uniq" DETAIL:  Key (slug)=(...) already exists.  # noqa
+            if "tenders_tender_slug" in str(e):
+                self.set_slug(with_uuid=True)
+                super().save(*args, **kwargs)
+            else:
+                raise e

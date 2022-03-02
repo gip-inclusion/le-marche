@@ -2,7 +2,6 @@ from django import forms
 from django.db.models import Value
 from django.db.models.functions import NullIf
 
-from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.tenders.models import Tender
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
@@ -28,7 +27,11 @@ class AddTenderForm(forms.ModelForm):
         required=False,
     )
 
-    response_kind = forms.MultipleChoiceField(label="Comment répondre", choices=Tender.RESPONSES_KIND_CHOICES)
+    response_kind = forms.MultipleChoiceField(
+        label="Comment répondre",
+        choices=Tender.RESPONSES_KIND_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+    )
 
     class Meta:
         model = Tender
@@ -45,6 +48,10 @@ class AddTenderForm(forms.ModelForm):
             "response_kind",
             "deadline_date",
             "start_working_date",
+            "contact_first_name",
+            "contact_last_name",
+            "contact_email",
+            "contact_phone",
         ]
 
         widgets = {
@@ -52,19 +59,3 @@ class AddTenderForm(forms.ModelForm):
             "deadline_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
             "start_working_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
         }
-
-    def get_perimeter(self):
-        """
-        Method to extract the perimeter searched by the user.
-        Useful to avoid duplicate DB queries on the Perimeter model.
-        """
-        perimeter = None
-        search_perimeter = self.data.get("perimeter", None)
-        search_perimeter_name = self.data.get("perimeter_name", None)
-        # A valid perimeter search must have both the `perimeter` & `perimeter_name` fields in the querystring
-        if search_perimeter and search_perimeter_name:
-            try:
-                perimeter = Perimeter.objects.get(slug=search_perimeter)
-            except Perimeter.DoesNotExist:
-                pass
-        return perimeter
