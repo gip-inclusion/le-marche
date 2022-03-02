@@ -379,21 +379,10 @@
 	.card-footer {
 		background-color: $gray-400 !important;
 		margin: 0;
-		padding-left: 106px;
-
-		.sc-profile-town,
-		.sc-profile-town-work,
-		.sc-profile-kind {
-			span.ml-1 {
-				word-break: break-word;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				display: -webkit-box;
-				max-height: 20px;
-				-webkit-line-clamp: 1;
-				-webkit-box-orient: vertical;
-			}
-		}			
+		text-align: center;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 }
 
