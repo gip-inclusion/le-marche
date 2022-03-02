@@ -52,30 +52,26 @@
             </div>
         </div>
     </div>
-    <div class="card-footer">
+    <div class="card-footer fs-sm">
         <a href="{% url 'siae:detail' siae.slug %}" class="text-decoration-none stretched-link">
-            <ul class="list-unstyled m-0 lh-sm fs-sm row no-gutters">
-                <li class="sc-profile-town col-12 col-md-4 pr-lg-2 mb-3 mb-md-0 d-flex justify-content-center" title="Situé à {{ siae.city }}">
-                    <i class="ri-map-pin-line"></i>
-                    <span class="ml-1">{{ siae.city }}</span>
-                    {% if siae.is_qpv %}
-                        <span class="badge badge-pill badge-emploi-lightest ml-1" title="Quartier prioritaire de la politique de la ville">QPV</span>
-                    {% endif %}
-                    {% if siae.is_zrr %}
-                        <span class="badge badge-pill badge-emploi-lightest ml-1" title="Zone de revitalisation rurale">ZRR</span>
-                    {% endif %}
-                </li>
-                <li class="sc-profile-town-work col-12 col-md-4 px-lg-2 mb-3 mb-md-0 d-flex justify-content-center" title="Intervient sur : {{ siae.geo_range_pretty_title }}">
-                    <i class="ri-map-2-line"></i>
-                    <span class="ml-1">{{ siae.geo_range_pretty_display }}</span>
-                </li>
-                {% if siae.kind %}
-                    <li class="sc-profile-kind col-12 col-md-4 pl-lg-2 d-flex justify-content-center" title="Type de structure : {{ siae.get_kind_display }}">
-                        <i class="ri-building-4-line"></i>
-                        <span class="ml-1">{{ siae.get_kind_display }}</span>
-                    </li>
+            <span title="Situé à {{ siae.city }}">
+                <i class="ri-map-pin-line"></i>
+                <span class="ml-1">{{ siae.city }}</span>
+                {% if siae.is_qpv %}
+                    <span class="badge badge-pill badge-emploi-lightest" title="Quartier prioritaire de la politique de la ville">QPV</span>
                 {% endif %}
-            </ul>
+                {% if siae.is_zrr %}
+                    <span class="badge badge-pill badge-emploi-lightest" title="Zone de revitalisation rurale">ZRR</span>
+                {% endif %}
+            </span>
+            <span class="ml-3" title="Intervient sur : {{ siae.geo_range_pretty_title }}">
+                <i class="ri-map-2-line"></i>
+                <span class="ml-1">{{ siae.geo_range_pretty_display }}</span>
+            </span>
+            <span class="ml-3" title="Type de structure : {{ siae.get_kind_display }}">
+                <i class="ri-building-4-line"></i>
+                <span class="ml-1">{{ siae.get_kind_display }}</span>
+            </span>
         </a>
     </div>
 </div>
