@@ -59,10 +59,10 @@
                     <i class="ri-map-pin-line"></i>
                     <span class="ml-1">{{ siae.city }}</span>
                     {% if siae.is_qpv %}
-                        <span class="badge badge-pill badge-secondary ml-1" title="Quartier prioritaire de la politique de la ville">QPV</span>
+                        <span class="badge badge-pill badge-emploi-lightest ml-1" title="Quartier prioritaire de la politique de la ville">QPV</span>
                     {% endif %}
                     {% if siae.is_zrr %}
-                        <span class="badge badge-pill badge-secondary ml-1" title="Zone de revitalisation rurale">ZRR</span>
+                        <span class="badge badge-pill badge-emploi-lightest ml-1" title="Zone de revitalisation rurale">ZRR</span>
                     {% endif %}
                 </li>
                 <li class="sc-profile-town-work col-12 col-md-4 px-lg-2 mb-3 mb-md-0 d-flex justify-content-center" title="Intervient sur : {{ siae.geo_range_pretty_title }}">
