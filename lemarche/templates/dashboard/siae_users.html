@@ -78,6 +78,15 @@
                                     <span style="margin-left:23px">{{ siaeuser.user.email }}</span>
                                 </p>
                             </div>
+                            {% if siaeuser.user != user %}
+                                <div class="col">
+                                    <div class="float-right mt-2">
+                                        <button class="btn btn-link btn-ico" data-toggle="modal" data-target="#" data-siae-slug="{{ siae.slug }}" data-initiator-full-name="{{ siaeuserrequest.initiator.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Confirmer la demande">
+                                            <i class="ri-delete-bin-line ri-xl font-weight-light"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 </div>
