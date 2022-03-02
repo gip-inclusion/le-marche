@@ -220,8 +220,8 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "siret",
                     "naf",
                     "kind",
-                    "c1_id",
-                    "asp_id",
+                    # "c1_id",
+                    # "asp_id",
                     "website",
                     "email",
                     "phone",
@@ -236,6 +236,44 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                 )
             },
         ),
+        (
+            "Détails",
+            {
+                "fields": (
+                    "description",
+                    "sectors",
+                    # "sector_count",
+                    "networks",
+                    # "network_count",
+                    # "nb_offers",
+                    # "nb_labels",
+                    # "nb_cient_references",
+                    # "nb_images",
+                )
+            },
+        ),
+        (
+            "Périmètre d'intervention",
+            {
+                "fields": (
+                    "geo_range",
+                    "geo_range_custom_distance",
+                )
+            },
+        ),
+        (
+            "Contact",
+            {
+                "fields": (
+                    "contact_first_name",
+                    "contact_last_name",
+                    "contact_email",
+                    "contact_phone",
+                    "contact_website",
+                    # "nb_users",
+                )
+            },
+        ),
     ]
 
     def get_readonly_fields(self, request, obj=None):
@@ -247,7 +285,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
             add_fields = []
             for fieldset in self.add_fieldsets:
                 add_fields.extend(list(fieldset[1]["fields"]))
-            return [field for field in self.readonly_fields if field not in add_fields]
+            return [field for field in self.readonly_fields if field not in add_fields] + ["slug", "source"]
         return self.readonly_fields
 
     def get_fieldsets(self, request, obj=None):
