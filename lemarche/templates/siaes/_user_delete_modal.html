@@ -1,0 +1,24 @@
+<div class="modal fade modal-siae" id="user_delete_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="modalTitle">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Supprimer le collaborateur</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <form method="POST" action="{% url 'dashboard:siae_user_delete' 'siae-slug-to-replace' 'siae-user-id-to-replace' %}">
+                {% csrf_token %}
+                <div class="modal-body home-content-body">
+                    <p>
+                        <span id="user-full-name-to-replace"></span> ne sera plus rattaché à cette structure.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-sm btn-outline-primary" type="button" data-dismiss="modal" aria-label="Fermer">Annuler</button>
+                    <button class="btn btn-sm btn-primary" type="submit">Confirmer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

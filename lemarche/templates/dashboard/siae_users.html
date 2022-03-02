@@ -81,7 +81,7 @@
                             {% if siaeuser.user != user %}
                                 <div class="col">
                                     <div class="float-right mt-2">
-                                        <button class="btn btn-link btn-ico" data-toggle="modal" data-target="#" data-siae-slug="{{ siae.slug }}" data-initiator-full-name="{{ siaeuserrequest.initiator.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Confirmer la demande">
+                                        <button class="btn btn-link btn-ico" data-toggle="modal" data-target="#user_delete_modal" data-siae-slug="{{ siae.slug }}" data-user-full-name="{{ siaeuser.user.full_name }}" data-siae-user-id="{{ siaeuser.id }}" title="Supprimer le collaborateur">
                                             <i class="ri-delete-bin-line ri-xl font-weight-light"></i>
                                         </button>
                                     </div>
@@ -110,6 +110,7 @@
 {% block modals %}
     {% include "siaes/_user_request_confirm_modal.html" %}
     {% include "siaes/_user_request_cancel_modal.html" %}
+    {% include "siaes/_user_delete_modal.html" %}
 {% endblock %}
 
 {% block extra_js %}
