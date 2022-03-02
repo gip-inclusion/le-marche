@@ -207,7 +207,11 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         (
             "Affichage",
             {
-                "fields": ("is_active",),
+                "fields": (
+                    "is_active",
+                    # "is_delisted",
+                    # "is_first_page"
+                ),
             },
         ),
         (
@@ -279,13 +283,19 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     def get_readonly_fields(self, request, obj=None):
         """
         Staff can create and edit some Siaes.
-        The whitelisted fields are listed in add_fieldsets.
+        The editable fields are listed in add_fieldsets.
         """
-        if not obj or (obj and obj.source in [Siae.SOURCE_STAFF_C4_CREATED, Siae.SOURCE_ESAT]):
-            add_fields = []
-            for fieldset in self.add_fieldsets:
-                add_fields.extend(list(fieldset[1]["fields"]))
-            return [field for field in self.readonly_fields if field not in add_fields] + ["slug", "source"]
+        add_fields = []
+        for fieldset in self.add_fieldsets:
+            add_fields.extend(list(fieldset[1]["fields"]))
+        add_readonly_fields = [field for field in self.readonly_fields if field not in add_fields] + ["slug", "source"]
+        # add form
+        if not obj:
+            return add_readonly_fields
+        # also allow edition of some specific Siae
+        if obj and obj.source in [Siae.SOURCE_STAFF_C4_CREATED, Siae.SOURCE_ESAT]:
+            return add_readonly_fields + ["name"]
+        # for the rest, use the default full-version list
         return self.readonly_fields
 
     def get_fieldsets(self, request, obj=None):
