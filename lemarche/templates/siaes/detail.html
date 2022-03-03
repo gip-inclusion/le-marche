@@ -77,13 +77,13 @@
                                 <div class="row">
                                     <div class="col-12 mb-3">
                                         <i class="ri-group-line"></i>
-                                        <span>{% if siae.kind == 'SEP' %}Travailleurs détenus{% else %}Salariés{% endif %}<sup>*</sup> : {% if siae.api_entreprise_employees %}{{ siae.api_entreprise_employees }}{% else %}non disponible{% endif %}</span>
+                                        <span>{% if siae.kind == 'SEP' %}Travailleurs détenus{% else %}Salariés{% endif %}<sup>*</sup> : {{ siae.api_entreprise_employees|default:"non disponible" }}</span>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-12 mb-3">
                                         <i class="ri-calendar-2-fill"></i>
-                                        <span>Date de création<sup>*</sup> : {% if siae.api_entreprise_date_constitution %}{{ siae.api_entreprise_date_constitution|date:"Y" }}{% else %}non disponible{% endif %}</span>
+                                        <span>Date de création<sup>*</sup> : {{ siae.api_entreprise_date_constitution|date:"Y"|default:"non disponible" }}</span>
                                     </div>
                                 </div>
                             </div>
