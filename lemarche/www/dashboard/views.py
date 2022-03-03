@@ -392,7 +392,7 @@ class SiaeEditOtherView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMess
 
 class SiaeUserRequestConfirm(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeUserRequestForm
-    template_name = "siaes/_user_request_confirm_modal.html"
+    template_name = "siaes/_siae_user_request_confirm_modal.html"
     context_object_name = "siaeuserrequest"
     queryset = SiaeUserRequest.objects.all()
     success_message = "L'utilisateur a été rattaché à votre structure."
@@ -421,7 +421,7 @@ class SiaeUserRequestConfirm(LoginRequiredMixin, SiaeMemberRequiredMixin, Succes
 
 class SiaeUserRequestCancel(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeUserRequestForm
-    template_name = "siaes/_user_request_cancel_modal.html"
+    template_name = "siaes/_siae_user_request_cancel_modal.html"
     context_object_name = "siaeuserrequest"
     queryset = SiaeUserRequest.objects.all()
     success_message = "L'utilisateur sera informé de votre refus."
