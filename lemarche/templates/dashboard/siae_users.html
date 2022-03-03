@@ -48,10 +48,10 @@
                                 </div>
                                 <div class="col">
                                     <div class="float-right">
-                                        <button class="btn btn-outline-success btn-ico" data-toggle="modal" data-target="#user_request_confirm_modal" data-siae-slug="{{ siae.slug }}" data-initiator-full-name="{{ siaeuserrequest.initiator.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Confirmer la demande">
+                                        <button class="btn btn-outline-success btn-ico" data-toggle="modal" data-target="#siae_user_request_confirm_modal" data-siae-slug="{{ siae.slug }}" data-initiator-full-name="{{ siaeuserrequest.initiator.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Confirmer la demande">
                                             <i class="ri-check-fill ri-lg font-weight-light"></i>
                                         </button>
-                                        <button class="btn btn-outline-danger btn-ico" data-toggle="modal" data-target="#user_request_cancel_modal" data-siae-slug="{{ siae.slug }}" data-initiator-full-name="{{ siaeuserrequest.initiator.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Refuser la demande">
+                                        <button class="btn btn-outline-danger btn-ico" data-toggle="modal" data-target="#siae_user_request_cancel_modal" data-siae-slug="{{ siae.slug }}" data-initiator-full-name="{{ siaeuserrequest.initiator.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Refuser la demande">
                                             <i class="ri-close-fill ri-lg font-weight-light"></i>
                                         </button>
                                     </div>
@@ -78,6 +78,15 @@
                                     <span style="margin-left:23px">{{ siaeuser.user.email }}</span>
                                 </p>
                             </div>
+                            {% if siaeuser.user != user %}
+                                <div class="col">
+                                    <div class="float-right mt-2">
+                                        <button class="btn btn-link btn-ico" data-toggle="modal" data-target="#siae_user_delete_modal" data-siae-slug="{{ siae.slug }}" data-user-full-name="{{ siaeuser.user.full_name }}" data-siae-user-id="{{ siaeuser.id }}" title="Supprimer le collaborateur">
+                                            <i class="ri-delete-bin-line ri-xl font-weight-light"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 </div>
@@ -99,10 +108,11 @@
 {% endblock %}
 
 {% block modals %}
-    {% include "siaes/_user_request_confirm_modal.html" %}
-    {% include "siaes/_user_request_cancel_modal.html" %}
+    {% include "siaes/_siae_user_request_confirm_modal.html" %}
+    {% include "siaes/_siae_user_request_cancel_modal.html" %}
+    {% include "siaes/_siae_user_delete_modal.html" %}
 {% endblock %}
 
 {% block extra_js %}
-<script type="text/javascript" src="{% static 'js/user_request.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/siae_user_modals.js' %}"></script>
 {% endblock %}
