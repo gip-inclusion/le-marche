@@ -330,6 +330,24 @@ class Siae(models.Model):
     admin_name = models.CharField(max_length=255, blank=True)
     admin_email = models.EmailField(max_length=255, blank=True)
 
+    year_constitution = models.PositiveIntegerField(verbose_name="Année de création", blank=True, null=True)
+    employees_insertion_count = models.PositiveIntegerField(
+        verbose_name="Nombre de salariés en insertion", blank=True, null=True
+    )
+    employees_insertion_count_last_updated = models.DateTimeField(
+        verbose_name="Date de dernière mise à jour du nombre de salariés en insertion", blank=True, null=True
+    )
+    employees_permanent_count = models.PositiveIntegerField(
+        verbose_name="Nombre de salariés permanents", blank=True, null=True
+    )
+    employees_permanent_count_last_updated = models.DateTimeField(
+        verbose_name="Date de dernière mise à jour du nombre de salariés permanents", blank=True, null=True
+    )
+    ca = models.PositiveIntegerField(verbose_name="Chiffre d'affaire", blank=True, null=True)
+    ca_last_updated = models.DateTimeField(
+        verbose_name="Date de dernière mise à jour du chiffre d'affaire", blank=True, null=True
+    )
+
     users = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through="siaes.SiaeUser",
