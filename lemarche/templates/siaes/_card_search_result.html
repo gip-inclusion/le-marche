@@ -14,7 +14,7 @@
         </div>
         <div class="col">
             <div class="card-body">
-                <a href="{% url 'siae:detail' siae.slug %}" class="text-decoration-none stretched -link">
+                <a href="{% url 'siae:detail' siae.slug %}" target="_blank" class="text-decoration-none stretched-link">
                     <h2 class="mb-3 mr-5">
                         {{ siae.name_display }}
                         {% if not siae.user_count %}
@@ -27,10 +27,10 @@
                             <span class="ml-1">{{ siae.presta_type_display }}</span>
                         </li>
                         {% if siae.sectors %}
-                        <li class="sc-profile-sectors col-12 col-lg-6 pl-lg-2 mb-3 mb-lg-0 d-flex" title="Secteur(s) d'activité">
-                            <i class="ri-service-line"></i>
-                            <span class="ml-1">{% siae_sectors_display siae display_max=3 current_search_query=current_search_query %}</span>
-                        </li>
+                            <li class="sc-profile-sectors col-12 col-lg-6 pl-lg-2 mb-3 mb-lg-0 d-flex" title="Secteur(s) d'activité">
+                                <i class="ri-service-line"></i>
+                                <span class="ml-1">{% siae_sectors_display siae display_max=3 current_search_query=current_search_query %}</span>
+                            </li>
                         {% endif %}
                     </ul>
                     {% if user.is_authenticated %}
@@ -53,7 +53,7 @@
         </div>
     </div>
     <div class="card-footer fs-sm">
-        <a href="{% url 'siae:detail' siae.slug %}" class="text-decoration-none stretched-link">
+        <a href="{% url 'siae:detail' siae.slug %}" target="_blank" class="text-decoration-none stretched-link">
             <span title="Situé à {{ siae.city }}">
                 <i class="ri-map-pin-line"></i>
                 <span class="ml-1">{{ siae.city }}</span>
