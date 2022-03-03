@@ -10,7 +10,7 @@ from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView, FormMixin
 
 from lemarche.favorites.models import FavoriteItem, FavoriteList
-from lemarche.siaes.models import Siae, SiaeUserRequest
+from lemarche.siaes.models import Siae, SiaeUser, SiaeUserRequest
 from lemarche.utils.s3 import S3Upload
 from lemarche.utils.tracker import extract_meta_from_request, track
 from lemarche.www.dashboard.forms import (
@@ -392,7 +392,7 @@ class SiaeEditOtherView(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMess
 
 class SiaeUserRequestConfirm(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeUserRequestForm
-    template_name = "siaes/_user_request_confirm_modal.html"
+    template_name = "siaes/_siae_user_request_confirm_modal.html"
     context_object_name = "siaeuserrequest"
     queryset = SiaeUserRequest.objects.all()
     success_message = "L'utilisateur a été rattaché à votre structure."
@@ -421,7 +421,7 @@ class SiaeUserRequestConfirm(LoginRequiredMixin, SiaeMemberRequiredMixin, Succes
 
 class SiaeUserRequestCancel(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeUserRequestForm
-    template_name = "siaes/_user_request_cancel_modal.html"
+    template_name = "siaes/_siae_user_request_cancel_modal.html"
     context_object_name = "siaeuserrequest"
     queryset = SiaeUserRequest.objects.all()
     success_message = "L'utilisateur sera informé de votre refus."
@@ -444,3 +444,22 @@ class SiaeUserRequestCancel(LoginRequiredMixin, SiaeMemberRequiredMixin, Success
 
     def get_success_url(self):
         return reverse_lazy("dashboard:siae_users", args=[self.kwargs.get("slug")])
+
+
+class SiaeUserDelete(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, DeleteView):
+    template_name = "siaes/_siae_user_delete_modal.html"
+    model = SiaeUser
+    # success_message = "L'utilisateur a été supprimé de votre structure."
+    # success_url = reverse_lazy("dashboard:siae_users")
+
+    def get_object(self):
+        siae = Siae.objects.get(slug=self.kwargs.get("slug"))
+        return get_object_or_404(SiaeUser, siae=siae, id=self.kwargs.get("siaeuser_id"))
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard:siae_users", args=[self.kwargs.get("slug")])
+
+    def get_success_message(self, cleaned_data):
+        return mark_safe(
+            f"L'utilisateur <strong>{self.object.user.full_name}</strong> a été supprimé de votre structure avec succès."  # noqa
+        )
