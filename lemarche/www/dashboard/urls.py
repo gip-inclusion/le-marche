@@ -16,6 +16,7 @@ from lemarche.www.dashboard.views import (
     SiaeEditPrestaView,
     SiaeSearchAdoptConfirmView,
     SiaeSearchBySiretView,
+    SiaeUserDelete,
     SiaeUserRequestCancel,
     SiaeUserRequestConfirm,
     SiaeUsersView,
@@ -80,6 +81,11 @@ urlpatterns = [
         "prestataires/<str:slug>/collaborateurs/<str:siaeuserrequest_id>/refuser",
         SiaeUserRequestCancel.as_view(),
         name="siae_user_request_cancel",
+    ),
+    path(
+        "prestataires/<str:slug>/collaborateurs/<str:siaeuser_id>/supprimer",
+        SiaeUserDelete.as_view(),
+        name="siae_user_delete",
     ),
     # Redirects
     path(
