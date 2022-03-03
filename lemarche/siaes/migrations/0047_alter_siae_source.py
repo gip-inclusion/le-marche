@@ -14,7 +14,6 @@ class Migration(migrations.Migration):
             model_name="siae",
             name="source",
             field=models.CharField(
-                blank=True,
                 choices=[
                     ("ASP", "Export ASP"),
                     ("GEIQ", "Export GEIQ"),
@@ -25,6 +24,7 @@ class Migration(migrations.Migration):
                     ("ESAT", "Import ESAT (GSAT, Handeco)"),
                     ("SEP", "Import SEP"),
                 ],
+                default="STAFF_C4_CREATED",
                 max_length=20,
             ),
         ),
