@@ -442,7 +442,7 @@ class SiaeUserRequestCancel(SiaeMemberRequiredMixin, SuccessMessageMixin, Update
         return reverse_lazy("dashboard:siae_users", args=[self.kwargs.get("slug")])
 
 
-class SiaeUserDelete(LoginRequiredMixin, SiaeMemberRequiredMixin, SuccessMessageMixin, DeleteView):
+class SiaeUserDelete(SiaeMemberRequiredMixin, SuccessMessageMixin, DeleteView):
     template_name = "siaes/_siae_user_delete_modal.html"
     model = SiaeUser
     # success_message = "L'utilisateur a été supprimé de votre structure."

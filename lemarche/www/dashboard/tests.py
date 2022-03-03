@@ -3,6 +3,7 @@ from django.urls import reverse
 
 from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.siaes.factories import SiaeFactory
+from lemarche.siaes.models import SiaeUser
 from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
 
@@ -166,7 +167,6 @@ class DashboardSiaeEditView(TestCase):
             "dashboard:siae_edit_offer",
             "dashboard:siae_edit_presta",
             "dashboard:siae_edit_other",
-            "dashboard:siae_users",
         ]
         self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
         for siae_edit_url in SIAE_EDIT_URLS:
@@ -180,6 +180,18 @@ class DashboardSiaeEditView(TestCase):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 302)
             self.assertEqual(response.url, "/profil/")
+
+
+class DashboardSiaeUserViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_siae = UserFactory(kind=User.KIND_SIAE)
+        cls.user_siae_2 = UserFactory(kind=User.KIND_SIAE)
+        cls.other_user_siae = UserFactory(kind=User.KIND_SIAE)
+        cls.siae_with_users = SiaeFactory()
+        cls.siae_with_users.users.add(cls.user_siae)
+        cls.siae_with_users.users.add(cls.user_siae_2)
+        cls.siae_without_user = SiaeFactory()
 
     def test_only_siae_user_can_access_siae_users(self):
         SIAE_USER_URLS = [
@@ -187,16 +199,35 @@ class DashboardSiaeEditView(TestCase):
         ]
         self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
         for siae_edit_url in SIAE_USER_URLS:
-            url = reverse(siae_edit_url, args=[self.siae_with_user.slug])
+            url = reverse(siae_edit_url, args=[self.siae_with_users.slug])
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
 
         self.client.login(email=self.other_user_siae.email, password=DEFAULT_PASSWORD)
         for siae_edit_url in SIAE_USER_URLS:
-            url = reverse(siae_edit_url, args=[self.siae_with_user.slug])
+            url = reverse(siae_edit_url, args=[self.siae_with_users.slug])
             response = self.client.get(url)
             self.assertEqual(response.status_code, 302)
             self.assertEqual(response.url, "/profil/")
+
+    def test_only_siae_user_can_delete_collaborator(self):
+        self.assertEqual(self.siae_with_users.users.count(), 2)
+
+        self.client.login(email=self.other_user_siae.email, password=DEFAULT_PASSWORD)
+        siaeuser = SiaeUser.objects.get(siae=self.siae_with_users, user=self.user_siae)
+        url = reverse("dashboard:siae_user_delete", args=[self.siae_with_users.slug, siaeuser.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/profil/")
+
+        self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
+        siaeuser = SiaeUser.objects.get(siae=self.siae_with_users, user=self.user_siae_2)
+        url = reverse("dashboard:siae_user_delete", args=[self.siae_with_users.slug, siaeuser.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 302)  # 200? normal because redirects to dashboard:siae_users
+        self.assertEqual(response.url, reverse("dashboard:siae_users", args=[self.siae_with_users.slug]))
+        self.assertEqual(self.siae_with_users.users.count(), 1)
+        # TODO: user should not be able to delete itself
 
 
 class DashboardFavoriteListViewTest(TestCase):
