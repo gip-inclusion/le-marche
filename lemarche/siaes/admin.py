@@ -74,7 +74,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "nb_images",
         "created_at",
     ]
-    list_filter = [IsLiveFilter, "is_first_page", HasUserFilter, "kind", "networks", "sectors", "geo_range"]
+    list_filter = [IsLiveFilter, "is_first_page", HasUserFilter, "kind", "networks", "sectors", "geo_range", "source"]
     search_fields = ["id", "name", "slug", "siret"]
     search_help_text = "Cherche sur les champs : ID, Raison sociale, Slug, Siret"
 
@@ -203,10 +203,115 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         ("Autres", {"fields": ("created_at", "updated_at")}),
     ]
 
-    # def get_queryset(self, request):
-    #     qs = super().get_queryset(request)
-    #     qs = qs.annotate(image_count=Count("images", distinct=True))
-    #     return qs
+    add_fieldsets = [
+        (
+            "Affichage",
+            {
+                "fields": (
+                    "is_active",
+                    # "is_delisted",
+                    # "is_first_page"
+                ),
+            },
+        ),
+        (
+            "Données C1 (ou ESAT ou SEP)",
+            {
+                "fields": (
+                    "name",
+                    "slug",
+                    "brand",
+                    "siret",
+                    "naf",
+                    "kind",
+                    # "c1_id",
+                    # "asp_id",
+                    "website",
+                    "email",
+                    "phone",
+                    "address",
+                    "city",
+                    "post_code",
+                    "department",
+                    "region",
+                    # "coords_display",
+                    # "coords",
+                    "source",
+                )
+            },
+        ),
+        (
+            "Détails",
+            {
+                "fields": (
+                    "description",
+                    "sectors",
+                    # "sector_count",
+                    "networks",
+                    # "network_count",
+                    # "nb_offers",
+                    # "nb_labels",
+                    # "nb_cient_references",
+                    # "nb_images",
+                )
+            },
+        ),
+        (
+            "Périmètre d'intervention",
+            {
+                "fields": (
+                    "geo_range",
+                    "geo_range_custom_distance",
+                )
+            },
+        ),
+        (
+            "Contact",
+            {
+                "fields": (
+                    "contact_first_name",
+                    "contact_last_name",
+                    "contact_email",
+                    "contact_phone",
+                    "contact_website",
+                    # "nb_users",
+                )
+            },
+        ),
+    ]
+
+    def get_readonly_fields(self, request, obj=None):
+        """
+        Staff can create and edit some Siaes.
+        The editable fields are listed in add_fieldsets.
+        """
+        add_fields = []
+        for fieldset in self.add_fieldsets:
+            add_fields.extend(list(fieldset[1]["fields"]))
+        add_readonly_fields = [field for field in self.readonly_fields if field not in add_fields] + ["slug", "source"]
+        # add form
+        if not obj:
+            return add_readonly_fields
+        # also allow edition of some specific Siae
+        if obj and obj.source in [Siae.SOURCE_STAFF_C4_CREATED, Siae.SOURCE_ESAT]:
+            return add_readonly_fields + ["name"]
+        # for the rest, use the default full-version list
+        return self.readonly_fields
+
+    def get_fieldsets(self, request, obj=None):
+        """
+        The add form has a lighter fieldsets.
+        (add_fieldsets is only available for User Admin, so we need to set it manually)
+        """
+        if not obj:
+            self.fieldsets_with_inlines = self.add_fieldsets
+        return super().get_fieldsets(request, obj)
+
+    def get_changeform_initial_data(self, request):
+        """
+        Default values in add form.
+        """
+        return {"is_active": False, "source": Siae.SOURCE_STAFF_C4_CREATED}
 
     def nb_users(self, siae):
         url = reverse("admin:users_user_changelist") + f"?siaes__in={siae.id}"

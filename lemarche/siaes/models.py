@@ -221,7 +221,8 @@ class Siae(models.Model):
     SOURCE_GEIQ = "GEIQ"
     SOURCE_EA_EATT = "EA_EATT"
     SOURCE_USER_CREATED = "USER_CREATED"
-    SOURCE_STAFF_CREATED = "STAFF_CREATED"
+    SOURCE_STAFF_C1_CREATED = "STAFF_C1_CREATED"
+    SOURCE_STAFF_C4_CREATED = "STAFF_C4_CREATED"
     SOURCE_ESAT = "ESAT"
     SOURCE_SEP = "SEP"
 
@@ -230,7 +231,8 @@ class Siae(models.Model):
         (SOURCE_GEIQ, "Export GEIQ"),
         (SOURCE_EA_EATT, "Export EA+EATT"),
         (SOURCE_USER_CREATED, "Utilisateur (Antenne)"),
-        (SOURCE_STAFF_CREATED, "Staff Itou"),
+        (SOURCE_STAFF_C1_CREATED, "Staff C1"),
+        (SOURCE_STAFF_C4_CREATED, "Staff C4"),
         (SOURCE_ESAT, "Import ESAT (GSAT, Handeco)"),
         (SOURCE_SEP, "Import SEP"),
     )
@@ -388,7 +390,7 @@ class Siae(models.Model):
     c1_last_sync_date = models.DateTimeField(blank=True, null=True)
     c1_sync_skip = models.BooleanField(blank=False, null=False, default=False)
 
-    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True)
+    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default=SOURCE_STAFF_C4_CREATED)
     import_raw_object = models.JSONField(verbose_name="Donnée JSON brute", editable=False, null=True)
 
     # stats
