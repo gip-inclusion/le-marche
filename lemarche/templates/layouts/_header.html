@@ -34,7 +34,7 @@
                         {% if user.is_authenticated %}
                         <li>
                             <a href="{% url 'dashboard:profile_favorite_list' %}">
-                                <i class="ri-star-line ri-lg mr-1"></i>
+                                <i class="ri-star-line ri-lg"></i>
                                 Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
                             </a>
                         </li>
@@ -94,7 +94,7 @@
                         </li>
                         <li>
                             <a href="{% url 'dashboard:profile_favorite_list' %}">
-                                <i class="ri-star-line ri-lg mr-1"></i>
+                                <i class="ri-star-line ri-lg"></i>
                                 Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
                             </a>
                         </li>

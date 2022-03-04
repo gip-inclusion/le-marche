@@ -24,14 +24,14 @@
                     <ul class="list-unstyled m-0 lh-sm row no-gutters">
                         <li class="sc-profile-type col-12 col-lg-6 pr-lg-2 d-flex">
                             <i class="ri-briefcase-4-line mr-1"></i> 
-                            <span class="sr-only">Type(s) de prestation:</span>
-                            <span class="ml-1">{{ siae.presta_type_display }}</span>
+                            <span class="sr-only">Type(s) de prestation :</span>
+                            <span>{{ siae.presta_type_display }}</span>
                         </li>
                         {% if siae.sectors %}
                             <li class="sc-profile-sectors col-12 col-lg-6 pl-lg-2 mb-3 mb-lg-0 d-flex">
                                 <i class="ri-service-line mr-1"></i>
-                                <span class="sr-only">Secteur(s) d'activité:</span>
-                                <span class="ml-1">{% siae_sectors_display siae display_max=3 current_search_query=current_search_query %}</span>
+                                <span class="sr-only">Secteur(s) d'activité :</span>
+                                <span>{% siae_sectors_display siae display_max=3 current_search_query=current_search_query %}</span>
                             </li>
                         {% endif %}
                     </ul>
@@ -59,23 +59,23 @@
             <span>
                 <i class="ri-map-pin-line"></i>
                 <span class="sr-only">Situé à {{ siae.city }}</span>
-                <span class="ml-1">{{ siae.city }}</span>
+                <span>{{ siae.city }}</span>
                 {% if siae.is_qpv %}
-                <span class="badge badge-sm badge-pill badge-emploi-lightest" title="Quartier prioritaire de la politique de la ville">QPV</span>
+                    <span class="badge badge-sm badge-pill badge-emploi-lightest" title="Quartier prioritaire de la politique de la ville">QPV</span>
                 {% endif %}
                 {% if siae.is_zrr %}
-                <span class="badge badge-sm badge-pill badge-emploi-lightest" title="Zone de revitalisation rurale">ZRR</span>
+                    <span class="badge badge-sm badge-pill badge-emploi-lightest" title="Zone de revitalisation rurale">ZRR</span>
                 {% endif %}
             </span>
             <span class="ml-3">
                 <i class="ri-map-2-line"></i>
                 <span class="sr-only">Intervient sur : {{ siae.geo_range_pretty_title }}</span>
-                <span class="ml-1">{{ siae.geo_range_pretty_display }}</span>
+                <span>{{ siae.geo_range_pretty_display }}</span>
             </span>
             <span class="ml-3">
                 <i class="ri-building-4-line"></i>
                 <span class="sr-only">Type de structure : {{ siae.get_kind_display }}</span>
-                <span class="ml-1">{{ siae.get_kind_display }}</span>
+                <span>{{ siae.get_kind_display }}</span>
             </span>
         </a>
     </div>
