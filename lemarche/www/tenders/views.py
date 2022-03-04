@@ -1,11 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
-from django.views.generic import CreateView
+from django.views.generic import CreateView, DetailView, ListView
 
+from lemarche.tenders.models import Tender
 from lemarche.www.tenders.forms import AddTenderForm
 from lemarche.www.tenders.tasks import find_opportunities_for_siaes
 
@@ -45,3 +47,24 @@ class TenderAddView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
     def get_success_message(self, cleaned_data, tender):
         return mark_safe(self.success_message.format(tender.title))
+
+
+class TenderListView(LoginRequiredMixin, ListView):
+    template_name = "tenders/list_tenders.html"
+    model = Tender
+    context_object_name = "tenders"
+    paginate_by = 10
+    paginator_class = Paginator
+
+    def get_queryset(self):
+        user = self.request.user
+        # user kind : buyer
+        queryset = Tender.objects.created_by_user(user)
+        # user kind : siae
+        return queryset
+
+
+class TenderDetail(DetailView):
+    model = Tender
+    template_name = "tenders/detail_tender.html"
+    context_object_name = "tender"

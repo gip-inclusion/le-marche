@@ -1,0 +1,8 @@
+{% load static siae_sectors_display %}
+
+<div class="card c-card c-card--marche siae-card">
+    <div class="card-body">
+        {{tender}}
+        <a class="btn btn-outline-primary" href="{% url 'tenders:detail' tender.slug%}"> Voir </a>
+    </div>
+</div>
