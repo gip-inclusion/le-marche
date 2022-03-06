@@ -51,4 +51,16 @@ class Migration(migrations.Migration):
             name="year_constitution",
             field=models.PositiveIntegerField(blank=True, null=True, verbose_name="Année de création"),
         ),
+        migrations.AlterField(
+            model_name="siae",
+            name="is_qpv",
+            field=models.BooleanField(
+                default=False, verbose_name="Quartier prioritaire de la politique de la ville (API QPV)"
+            ),
+        ),
+        migrations.AlterField(
+            model_name="siae",
+            name="is_zrr",
+            field=models.BooleanField(default=False, verbose_name="Zone de revitalisation rurale (API ZRR)"),
+        ),
     ]

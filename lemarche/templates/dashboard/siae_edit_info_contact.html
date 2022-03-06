@@ -1,5 +1,5 @@
 {% extends "dashboard/siae_edit_base.html" %}
-{% load static bootstrap4 %}
+{% load static bootstrap4 get_verbose_name %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'vendor/dropzone-5.9.3/dropzone.min.css' %}" />
@@ -69,19 +69,19 @@
                 </div>
                 <div class="row">
                     <div class="col-12 col-md-6">
-                        <div class="row" title="{{ form.siret.label }}">
+                        <div class="row" title="{% get_verbose_name siae 'siret' %}">
                             <div class="col-12 mb-3">
                                 <i class="ri-profile-line"></i>
                                 <span>{{ siae.siret_display }}</span>
                             </div>
                         </div>
-                        <div class="row" title="{{ form.kind.label }}">
+                        <div class="row" title="{% get_verbose_name siae 'kind' %}">
                             <div class="col-12 mb-3">
                                 <i class="ri-building-4-line"></i>
                                 <span>{{ siae.get_kind_display }}</span>
                             </div>
                         </div>
-                        <div class="row" title="{{ form.address.label }}">
+                        <div class="row" title="{% get_verbose_name siae 'address' %}">
                             <div class="col-12 mb-3">
                                 <i class="ri-map-pin-line"></i>
                                 <span>{{ siae.address }},</span>
@@ -93,19 +93,19 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-6">
-                        <div class="row" title="">
+                        <div class="row" title="{% get_verbose_name siae 'api_entreprise_date_constitution' %}">
                             <div class="col-12 mb-3">
                                 <span>Année de création :</span>
                                 <span>{{ siae.api_entreprise_date_constitution|date:"Y"|default:"" }}</span>
                             </div>
                         </div>
-                        <div class="row" title="">
+                        <div class="row" title="{% get_verbose_name siae 'api_entreprise_employees' %}">
                             <div class="col-12 mb-3">
                                 <span>{% if siae.kind == 'SEP' %}Travailleurs détenus{% else %}Salariés{% endif %} :</span>
                                 <span>{{ siae.api_entreprise_employees|default:"" }}</span>
                             </div>
                         </div>
-                        <div class="row" title="">
+                        <div class="row" title="{% get_verbose_name siae 'api_entreprise_ca' %}">
                             <div class="col-12 mb-3">
                                 <span>Chiffre d'affaire :</span>
                                 <span>{{ siae.api_entreprise_ca|default:"" }}</span>
@@ -117,14 +117,14 @@
                     <div class="row">
                         <div class="col-12 col-md-6">
                             {% if siae.is_qpv %}
-                                <div class="row" title="Quartier prioritaire de la politique de la ville">
+                                <div class="row" title="{% get_verbose_name siae 'is_qpv' %}">
                                     <div class="col-12 mb-3">
                                         <span>QPV : {{ siae.qpv_name }} ({{ siae.qpv_code }})</span>
                                     </div>
                                 </div>
                             {% endif %}
                             {% if siae.is_zrr %}
-                                <div class="row" title="Zone de revitalisation rurale">
+                                <div class="row" title="{% get_verbose_name siae 'is_zrr' %}">
                                     <div class="col-12 mb-3">
                                         <span>ZRR : {{ siae.zrr_name }} ({{ siae.zrr_code }})</span>
                                     </div>
@@ -175,48 +175,6 @@ s3UploadInit({
     // Not really nice
     sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
     sentryCsrfToken: "{{ csrf_token }}"
-});
-</script>
-<script type="text/javascript">
-document.addEventListener("DOMContentLoaded", function() {
-    // siae coords output as floats with commas. We need to transform them into floats.
-    const siaeName = "{{ siae.name }}";
-    const siaeBrand = "{{ siae.brand|default:'' }}";
-    const siaeLatitudeString = "{{ siae.coords.x }}";
-    const siaeLongitudeString = "{{ siae.coords.y }}";
-    const siaeLatitudeFloat = parseFloat(siaeLatitudeString.replace(',', '.'));
-    const siaeLongitudeFloat = parseFloat(siaeLongitudeString.replace(',', '.'));
-
-    // init map
-    var map = L.map('map-siae-edit').setView([siaeLongitudeFloat, siaeLatitudeFloat], 13);
-
-    // map tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 19,
-        zoomControl: false,
-    }).addTo(map);
-
-    // map zoom controls in the bottom right
-    map.zoomControl.remove();
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-    // create custom marker (because of static url issues)
-    var customLeafletIcon = L.icon({
-        'iconUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-icon.png' %}",
-        'shadowUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-shadow.png' %}",
-        iconSize: [25,41],
-        iconAnchor: [12,41],
-        popupAnchor:[1,-34],
-        tooltipAnchor:[16,-28],
-        shadowSize:[41,41],
-    });
-
-    // add marker (with popup on click)
-    var siaeDisplayName = siaeBrand ? siaeBrand : siaeName;
-    L.marker([siaeLongitudeFloat, siaeLatitudeFloat], {icon: customLeafletIcon})
-    .bindPopup(`<p class="h6">${siaeDisplayName}</p></a>`)
-    .addTo(map);
 });
 </script>
 {% endblock %}

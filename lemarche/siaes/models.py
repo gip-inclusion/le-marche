@@ -369,7 +369,12 @@ class Siae(models.Model):
     )
 
     # API QPV
-    is_qpv = models.BooleanField(verbose_name="Zone QPV (API QPV)", blank=False, null=False, default=False)
+    is_qpv = models.BooleanField(
+        verbose_name="Quartier prioritaire de la politique de la ville (API QPV)",
+        blank=False,
+        null=False,
+        default=False,
+    )
     # To avoid QPV zones synchro problematics, we take the choice to duplicate names and codes of QPV
     qpv_name = models.CharField(verbose_name="Nom de la zone QPV (API QPV)", max_length=255, blank=True)
     qpv_code = models.CharField(verbose_name="Code de la zone QPV (API QPV)", max_length=16, blank=True)
@@ -377,7 +382,9 @@ class Siae(models.Model):
 
     # API ZRR
     # To avoid ZRR zones synchro problematics, we take the choice to duplicate names and codes of ZRR
-    is_zrr = models.BooleanField(verbose_name="Zone ZRR (API ZRR)", blank=False, null=False, default=False)
+    is_zrr = models.BooleanField(
+        verbose_name="Zone de revitalisation rurale (API ZRR)", blank=False, null=False, default=False
+    )
     zrr_name = models.CharField(verbose_name="Nom de la zone ZRR (API ZRR)", max_length=255, blank=True)
     zrr_code = models.CharField(verbose_name="Code de la zone ZRR (API ZRR)", max_length=16, blank=True)
     api_zrr_last_sync_date = models.DateTimeField("Date de dernière synchronisation (API ZRR)", blank=True, null=True)
