@@ -5,10 +5,10 @@
 
 {% block content %}
 <section>
-    <div class="container">
+    <div class="container py-4">
+        <h1>Consulter les appels d'offre et devis référencés</h1>
         <div class="d-flex justify-content-center">
-            <div class="col-12 bg-white d-block my-5  rounded-lg shadow-lg p-3 p-lg-5">
-                <h1>Liste des besoins</h1>
+            <div class="col-12 d-block my-5 py-3">
                 {% if tenders %}
                         {% for tender in tenders %}
                             {% include "tenders/list_item_tenders.html" with tender=tender %}

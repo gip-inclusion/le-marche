@@ -2,7 +2,34 @@
 
 <div class="card c-card c-card--marche siae-card">
     <div class="card-body">
-        {{tender}}
-        <a class="btn btn-outline-primary" href="{% url 'tenders:detail' tender.slug%}"> Voir </a>
+        <div class="row">
+            <div class="col-md-6">
+                Répondre avant le : {{tender.deadline_date}}
+            </div>
+            <div class="col-md-6">
+                <span class="float-right badge badge-base badge-pill badge-emploi">{{tender.get_kind_name}}</span>
+            </div>
+        </div>
+        <h2 class="py-3">{{tender.title}}</h2>
+        <hr>
+        <div class="p-4">
+            <div class="row">
+                {% if tender.get_sectors_names %}
+                    <div class="col-md-4">
+                        <span class="ri-award-line"></span>
+                        {{tender.get_sectors_names}}
+                    </div>
+                {% endif %}
+                {% if tender.get_perimeters_names %}
+                    <div class="col-md-4">
+                        <span class="ri-map-pin-2-line"></span>
+                        {{tender.get_perimeters_names}}
+                    </div>
+                {% endif %}
+                <div class="col-md-4">
+                    <a class="btn btn-primary" href="{% url 'tenders:detail' tender.slug%}"> Voir </a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
