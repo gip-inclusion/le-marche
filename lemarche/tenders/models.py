@@ -52,7 +52,7 @@ class Tender(models.Model):
     contact_last_name = models.CharField(verbose_name="Nom de famille du contact", max_length=255, blank=True)
     contact_email = models.EmailField(verbose_name="Email du contact", blank=True)
     contact_phone = models.CharField(verbose_name="Téléphone du contact", max_length=20, blank=True)
-
+    amount = models.PositiveIntegerField(verbose_name="Montant du marché", blank=True, null=True)
     response_kind = ArrayField(
         models.CharField(max_length=6, choices=RESPONSES_KIND_CHOICES),
         verbose_name="Comment répondre",
