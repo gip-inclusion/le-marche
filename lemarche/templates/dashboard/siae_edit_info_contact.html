@@ -148,6 +148,73 @@
         </div>
     </div>
 
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h5">Indiquez le chiffre d'affaire de votre structure</legend>
+                    {% bootstrap_field form.ca show_label=False %}
+                </fieldset>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                <p class="mb-1">
+                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                    <strong>Conseil</strong>
+                </p>
+                <p class="mb-0">
+                    Votre chiffre d'affaire est un élément d'information important aux yeux des acheteurs.
+                    Il permet de rendre compte de votre dimension et de votre capacité à répondre à certains marchés et appels d'offres.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h5">Année de création de votre structure</legend>
+                    {% bootstrap_field form.year_constitution show_label=False %}
+                </fieldset>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h5">{% get_verbose_name siae 'employees_insertion_count' %}</legend>
+                    {% bootstrap_field form.employees_insertion_count show_label=False %}
+                </fieldset>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                <p class="mb-1">
+                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                    <strong>Conseil</strong>
+                </p>
+                <p class="mb-0">
+                    Le nombre de salariés en insertion démontre à la fois votre capacité de production et l'impact social de votre structure.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h5">{% get_verbose_name siae 'employees_permanent_count' %}</legend>
+                    {% bootstrap_field form.employees_permanent_count show_label=False %}
+                </fieldset>
+            </div>
+        </div>
+    </div>
+
     <div class="row mt-3 mt-lg-5 justify-content-end">
         <div class="col-12 col-lg-auto px-5 px-lg-6">
             <button type="submit" class="btn btn-primary btn-block">

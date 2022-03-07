@@ -95,6 +95,10 @@ class SiaeEditInfoContactForm(forms.ModelForm):
             "contact_email",
             "contact_phone",
             "logo_url",
+            "ca",
+            "year_constitution",
+            "employees_insertion_count",
+            "employees_permanent_count",
         ]
         widgets = {
             "address": forms.Textarea(attrs={"rows": 3}),
