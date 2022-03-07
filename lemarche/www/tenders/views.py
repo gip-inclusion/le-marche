@@ -20,6 +20,7 @@ class TenderAddView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         tender = form.save(commit=False)
         tender.author = self.request.user
         tender.save()
+        form.save_m2m()
         messages.add_message(
             self.request,
             messages.SUCCESS,
