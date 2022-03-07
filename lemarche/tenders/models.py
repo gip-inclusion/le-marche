@@ -6,10 +6,11 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models, transaction
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.text import slugify
 
 
-class TenderQuerySet(models.QuerySet):
+class TenderManager(models.Manager):
     def created_by_user(self, user):
         return self.filter(author=user)
 
@@ -70,11 +71,10 @@ class Tender(models.Model):
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
-    objects = models.Manager.from_queryset(TenderQuerySet)()
 
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
 
-    objects = models.Manager.from_queryset(TenderQuerySet)()
+    objects = TenderManager()
 
     class Meta:
         verbose_name = "Besoin d'acheteur"
@@ -121,3 +121,33 @@ class Tender(models.Model):
                 super().save(*args, **kwargs)
             else:
                 raise e
+
+    @cached_property
+    def contact_infos(self):
+        return {
+            "full_name": f"{self.contact_first_name} {self.contact_last_name}",
+            "company": self.author.company_name,
+            "contact_email": self.contact_email,
+            "contact_phone": self.contact_phone,
+        }
+
+    @cached_property
+    def get_kind_name(self):
+        for key, value in self.TENDERS_KIND_CHOICES:
+            if self.kind == key:
+                return value
+
+    @cached_property
+    def get_sectors_names(self):
+        print("self.sectors.values_list(name, flat=True)", self.sectors.values_list("name", flat=True))
+        return ", ".join(self.sectors.values_list("name", flat=True))
+
+    @cached_property
+    def get_perimeters_names(self):
+        print("self.sectors.values_list(name, flat=True)", self.sectors.values_list("name", flat=True))
+        return ", ".join(self.perimeters.values_list("name", flat=True))
+
+    @cached_property
+    def get_url(self):
+        # TODO: create view page for tenders
+        return "https://lemarche.inclusion.beta.gouv.fr/"
