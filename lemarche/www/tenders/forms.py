@@ -58,4 +58,5 @@ class AddTenderForm(forms.ModelForm):
             # "perimeters": forms.HiddenInput(),
             "deadline_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
             "start_working_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
+            "kind": forms.RadioSelect(),
         }
