@@ -139,12 +139,10 @@ class Tender(models.Model):
 
     @cached_property
     def get_sectors_names(self):
-        print("self.sectors.values_list(name, flat=True)", self.sectors.values_list("name", flat=True))
         return ", ".join(self.sectors.values_list("name", flat=True))
 
     @cached_property
     def get_perimeters_names(self):
-        print("self.sectors.values_list(name, flat=True)", self.sectors.values_list("name", flat=True))
         return ", ".join(self.perimeters.values_list("name", flat=True))
 
     @cached_property
