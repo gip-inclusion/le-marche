@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models, transaction
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.text import slugify
@@ -144,7 +145,5 @@ class Tender(models.Model):
     def get_perimeters_names(self):
         return ", ".join(self.perimeters.values_list("name", flat=True))
 
-    @cached_property
-    def get_url(self):
-        # TODO: create view page for tenders
-        return "https://lemarche.inclusion.beta.gouv.fr/"
+    def get_absolute_url(self):
+        return reverse("tenders:add", kwargs={"pk": self.pk})

@@ -36,7 +36,7 @@ def send_emails_tender_to_siae(tender: Tender, siae: Siae):
         "RESPONSE_KIND": tender.get_kind_name,
         "SECTORS": tender.get_sectors_names,
         "PERIMETERS": tender.get_perimeters_names,
-        "TENDER_URL": tender.get_url,
+        "TENDER_URL": tender.get_absolute_url(),
     }
 
     api_mailjet.send_transactional_email_with_template(
