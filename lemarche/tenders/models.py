@@ -33,8 +33,8 @@ class Tender(models.Model):
 
     RESPONSES_KIND_CHOICES = (
         (RESPONSES_KIND_EMAIL, "Email"),
-        (RESPONSES_KIND_EMAIL, "Téléphone"),
-        (RESPONSES_KIND_EMAIL, "Lien externe"),
+        (RESPONSES_KIND_TEL, "Téléphone"),
+        (RESPONSES_KIND_EXTERNAL, "Lien externe"),
     )
 
     kind = models.CharField(
