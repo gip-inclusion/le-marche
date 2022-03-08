@@ -1,19 +1,41 @@
 import datetime
+from functools import reduce
 from uuid import uuid4
 
+import _operator
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models, transaction
+from django.db.models import Q
+from django.db.models.manager import BaseManager
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 
 
-class TenderManager(models.Manager):
+class TenderQuerySet(models.QuerySet):
     def created_by_user(self, user):
         return self.filter(author=user)
+
+    def find_in_perimeters(self, post_code, coords, department, region):
+        filters = (
+            Q(perimeters__post_codes__contains=post_code)
+            | Q(perimeters__insee_code=department)
+            | Q(perimeters__name=region)
+        )
+        # add distance
+        queryset = self.filter(filters)
+        return queryset
+
+    def in_sectors(self, sectors):
+        query = reduce(_operator.or_, (Q(sectors__id__contains=item.id) for item in sectors))
+        return self.filter(query)
+
+
+class TenderManager(BaseManager.from_queryset(TenderQuerySet)):
+    pass
 
 
 class Tender(models.Model):

@@ -8,6 +8,7 @@ from django.utils.safestring import mark_safe
 from django.views.generic import CreateView, DetailView, ListView
 
 from lemarche.tenders.models import Tender
+from lemarche.users.models import User
 from lemarche.www.tenders.forms import AddTenderForm
 from lemarche.www.tenders.tasks import find_opportunities_for_siaes
 
@@ -59,8 +60,18 @@ class TenderListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         user = self.request.user
         # user kind : buyer
-        queryset = Tender.objects.created_by_user(user)
-        # user kind : siae
+        if user.kind == User.KIND_BUYER:
+            queryset = Tender.objects.created_by_user(user)
+            # user kind : siae
+        elif user.kind == User.KIND_SIAE and user.siaes:
+            # TODO: manage many siaes
+            siae = user.siaes.first()
+            sectors = siae.sectors.all()
+            queryset = Tender.objects.in_sectors(sectors).find_in_perimeters(
+                post_code=siae.post_code, coords=siae.coords, department=siae.department, region=siae.region
+            )
+        else:
+            queryset = Tender.objects.all()
         return queryset
 
 
