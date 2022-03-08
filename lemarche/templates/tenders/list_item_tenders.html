@@ -1,35 +1,42 @@
-{% load static siae_sectors_display %}
+{% load static siae_sectors_display humanize %}
 
-<div class="card c-card c-card--marche siae-card">
+
+<div class="card c-card c-card--marche siae-card p-2">
     <div class="card-body">
         <div class="row">
-            <div class="col-md-6">
-                Répondre avant le : {{tender.deadline_date}}
+            <div class="col-md-12">
+                <p>
+                    Répondre avant le : {{tender.deadline_date}}
+                    <span class="float-right badge badge-base badge-pill badge-emploi">{{tender.get_kind_name}}</span>
+
+                </p>
             </div>
             <div class="col-md-6">
-                <span class="float-right badge badge-base badge-pill badge-emploi">{{tender.get_kind_name}}</span>
             </div>
         </div>
-        <h2 class="py-3">{{tender.title}}</h2>
-        <hr>
-        <div class="p-4">
+        <a class="text-decoration-none" href="{% url 'tenders:detail' tender.slug%}"><h2 class="py-3">{{tender.title}}</h2></a>
+        {% if tender.get_sectors_names or tender.get_perimeters_names or tender.amount %}
+            <hr>
             <div class="row">
                 {% if tender.get_sectors_names %}
-                    <div class="col-md-4">
+                    <div class="col-md-4 ">
                         <span class="ri-award-line"></span>
                         {{tender.get_sectors_names}}
                     </div>
                 {% endif %}
                 {% if tender.get_perimeters_names %}
-                    <div class="col-md-4">
+                    <div class="col-md-4 text-center">
                         <span class="ri-map-pin-2-line"></span>
                         {{tender.get_perimeters_names}}
                     </div>
                 {% endif %}
-                <div class="col-md-4">
-                    <a class="btn btn-primary" href="{% url 'tenders:detail' tender.slug%}"> Voir </a>
-                </div>
+                {% if tender.amount %}
+                    <div class="col-md-4  text-center">
+                        <span class="ri-money-euro-circle-line"></span>
+                        {{tender.amount | intcomma}}&nbsp;€
+                    </div>
+                {% endif %}
             </div>
-        </div>
+        {% endif %}
     </div>
 </div>
