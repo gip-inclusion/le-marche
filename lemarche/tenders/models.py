@@ -21,7 +21,7 @@ class TenderQuerySet(models.QuerySet):
 
     def find_in_perimeters(self, post_code, coords, department, region):
         filters = (
-            Q(perimeters__post_codes__contains=post_code)
+            Q(perimeters__post_codes__contains=[post_code])
             | Q(perimeters__insee_code=department)
             | Q(perimeters__name=region)
         )
