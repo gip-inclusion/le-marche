@@ -201,7 +201,7 @@ class SiaeQuerySet(models.QuerySet):
     def in_city_area(self, perimeter):
         return self.filter(self.get_filter_city(perimeter))
 
-    def in_cities_area(self, perimeters: models.QuerySet):
+    def in_perimeters_area(self, perimeters: models.QuerySet):
         cities = perimeters.filter(kind=Perimeter.KIND_CITY)
         departments = perimeters.filter(kind=Perimeter.KIND_DEPARTMENT)
         regions = perimeters.filter(kind=Perimeter.KIND_REGION)

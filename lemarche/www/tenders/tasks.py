@@ -20,7 +20,7 @@ def find_opportunities_for_siaes(tender: Tender):
     siaes_potentially_interested = (
         Siae.objects.is_live()
         .prefetch_many_to_many()
-        .in_cities_area(tender.perimeters.all())
+        .in_perimeters_area(tender.perimeters.all())
         .filter_sectors(tender.sectors.all())
         .filter_with_email()
     )
