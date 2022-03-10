@@ -8,7 +8,6 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models, transaction
 from django.db.models import Q
-from django.db.models.manager import BaseManager
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -32,10 +31,6 @@ class TenderQuerySet(models.QuerySet):
     def in_sectors(self, sectors):
         query = reduce(_operator.or_, (Q(sectors__id__contains=item.id) for item in sectors))
         return self.filter(query).distinct()
-
-
-class TenderManager(BaseManager.from_queryset(TenderQuerySet)):
-    pass
 
 
 class Tender(models.Model):
@@ -96,7 +91,7 @@ class Tender(models.Model):
 
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
 
-    objects = TenderManager()
+    objects = models.Manager.from_queryset(TenderQuerySet)()
 
     class Meta:
         verbose_name = "Besoin d'acheteur"
