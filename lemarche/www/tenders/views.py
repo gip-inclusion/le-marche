@@ -60,9 +60,8 @@ class TenderListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         user = self.request.user
         # user kind : buyer
-        if user.kind == User.KIND_BUYER:
+        if user.kind == User.KIND_BUYER or user.kind == User.KIND_PARTNER:
             queryset = Tender.objects.created_by_user(user)
-            # user kind : siae
         elif user.kind == User.KIND_SIAE and user.siaes:
             # TODO: manage many siaes
             siae = user.siaes.first()
@@ -70,8 +69,6 @@ class TenderListView(LoginRequiredMixin, ListView):
             queryset = Tender.objects.in_sectors(sectors).find_in_perimeters(
                 post_code=siae.post_code, coords=siae.coords, department=siae.department, region=siae.region
             )
-        else:
-            queryset = Tender.objects.all()
         return queryset
 
 
