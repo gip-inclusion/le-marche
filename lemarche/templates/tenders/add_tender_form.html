@@ -6,26 +6,31 @@
 {% block content %}
 <section>
     <div class="container">
-        <div class="d-flex justify-content-center">
-            <div class="col-12 bg-white d-block my-5  rounded-lg shadow-lg p-3 p-lg-5">
-                <h1>Déposer un besoin</h1>
+        <div class="d-flex">
+            <div class="col-12">
+                <h1 class="py-6">Déposer un besoin</h1>
+            </div>
+        </div>
+        <div class="d-flex">
+            <div id="formAddTender" class="col-8 bg-white d-block mb-5 p-3 p-lg-5 rounded-lg shadow-lg">
                 <form method="POST" action="{% url 'tenders:add' %}">
                     {% csrf_token %}
                     {% bootstrap_form_errors form type="all" %}
+                    <h2>Informations générales</h2>
                     <fieldset class="py-2 pb-lg-4">
                         {% bootstrap_field form.kind %}
-                        {% bootstrap_field form.title %}
+                        {% bootstrap_field form.title placeholder="Ex: Rénovation de façade" %}
                         {% bootstrap_field form.sectors %}
-                        <div id="dir_form_perimeter_name" class="form-group">
+                        <div id="dir_form_perimeter_name" class="form-group mb-2">
                             <label for="perimeter_name">{{ form.perimeters.label }}</label>
                             <div class="field-holder">
-                                <div>
-                                    {{ form.perimeter_name }}
-                                </div>
+                                {{ form.perimeter_name }}
                             </div>
                         </div>
-                        <div id="perimeters-selected" class="mb-3"></div>
+                        <div id="perimeters-selected"></div>
+                        <small class="form-text text-muted mb-3">Ajouter un ou plusieurs lieux d'exécutions</small>
                     </fieldset>
+                    <h2>Description du besoin</h2>
                     <fieldset class="pb-2 pb-lg-4">
                         {% bootstrap_field form.description %}
                         {% bootstrap_field form.external_link %}
@@ -33,6 +38,9 @@
                         {% bootstrap_field form.amount %}
                         {% comment %} {% bootstrap_field form.perimeters %} {% endcomment %}
                         {% bootstrap_field form.start_working_date %}
+                    </fieldset>
+                    <h2>Contact</h2>
+                    <fieldset class="pb-2 pb-lg-4">
                         {% bootstrap_field form.contact_first_name %}
                         {% bootstrap_field form.contact_last_name %}
                         {% bootstrap_field form.contact_email %}
@@ -40,10 +48,29 @@
                         {% bootstrap_field form.response_kind %}
                         {% bootstrap_field form.deadline_date %}
                     </fieldset>
-                    <button type="submit" class="btn btn-primary btn-block btn-ico">
-                        <span>Valider</span>
+                    <button type="button" id="btnAddTender" class="btn btn-primary btn-block btn-ico">
+                        <span>Publier et diffuser ce besoin</span>
                         <i class="ri-arrow-right-line ri-lg"></i>
                     </button>
+                    <div class="modal fade show" id="modalConfirmAddTender" tabindex="-1" aria-labelledby="modalConfirmAddTenderLabel" aria-modal="true" role="dialog">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3 class="modal-title" id="modalConfirmAddTenderLabel">Confirmation d’envoi</h3>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Annuler">
+                                        <i class="ri-close-line"></i>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Votre besoin va être publié et diffusé auprès des structures d’insertion du marché.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" data-dismiss="modal">Annuler</button>
+                                    <button type="submit" id="btnConfirmAddTender" class="btn btn-sm btn-primary">Confirmer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
@@ -53,4 +80,19 @@
 
 {% block extra_js %}
     <script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
+    <script>
+
+        const idModal = "#modalConfirmAddTender";
+
+        $(document).on("click", "#btnAddTender", function(e){
+            $(idModal).modal("show");
+        });
+
+        $(document).on("click", "#btnConfirmAddTender", function(e){
+            $(idModal).modal("hide");
+            return true;
+        });
+
+
+    </script>
 {% endblock %}

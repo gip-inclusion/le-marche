@@ -1,18 +1,21 @@
 {% extends "layouts/base.html" %}
 {% load bootstrap4 static %}
 
-{% block title %}Ajout d'un besoin{{ block.super }}{% endblock %}
+{% block title %}Besoins en cours{{ block.super }}{% endblock %}
 
 {% block content %}
 <section>
     <div class="container py-4">
-        <h1>Consulter les appels d'offre et devis référencés</h1>
+        <h1>Besoins en cours</h1>
+        <a href="{% url 'tenders:add' %}" class="btn btn-primary my-4">
+            <span>Publier un besoin d’achat</span>
+        </a>
         <div class="d-flex justify-content-center">
             <div class="col-12 d-block my-5 py-3">
                 {% if tenders %}
-                        {% for tender in tenders %}
-                            {% include "tenders/list_item_tenders.html" with tender=tender %}
-                        {% endfor %}
+                    {% for tender in tenders %}
+                        {% include "tenders/list_item_tenders.html" with tender=tender %}
+                    {% endfor %}
 
                     {% include "includes/_pagination.html" %}
                 {% endif %}
@@ -24,4 +27,10 @@
 {% endblock %}
 
 {% block extra_js %}
+<script>
+    $(document).on("click", ".c-card--link", function(e) {
+        window.location.href = $(this).data("url");
+    });
+
+</script>
 {% endblock %}

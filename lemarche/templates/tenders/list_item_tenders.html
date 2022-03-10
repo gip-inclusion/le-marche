@@ -1,7 +1,7 @@
 {% load static siae_sectors_display humanize %}
 
 
-<div class="card c-card c-card--marche siae-card p-2">
+<div class="card c-card c-card--marche c-card--link siae-card p-2" role="button" data-url="{% url 'tenders:detail' tender.slug%}">
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
@@ -14,7 +14,7 @@
             <div class="col-md-6">
             </div>
         </div>
-        <a class="text-decoration-none" href="{% url 'tenders:detail' tender.slug%}"><h2 class="py-3">{{tender.title}}</h2></a>
+        <a class="text-decoration-none" href="{% url 'tenders:detail' tender.slug %}"><h2 class="py-3">{{tender.title}}</h2></a>
         {% if tender.get_sectors_names or tender.get_perimeters_names or tender.amount %}
             <hr>
             <div class="row">
@@ -38,5 +38,13 @@
                 {% endif %}
             </div>
         {% endif %}
-    </div>
+        <div class="row">
+                <div class="col-md-12 ">
+                    <p class="text-muted text-right">
+                        Publier le {{tender.updated_at}}
+                    </p>
+                </div>
+
+            </div>
+        </div>
 </div>
