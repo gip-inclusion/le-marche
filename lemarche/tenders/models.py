@@ -26,12 +26,12 @@ class TenderQuerySet(models.QuerySet):
             | Q(perimeters__name=region)
         )
         # add distance
-        queryset = self.filter(filters)
+        queryset = self.filter(filters).distinct()
         return queryset
 
     def in_sectors(self, sectors):
         query = reduce(_operator.or_, (Q(sectors__id__contains=item.id) for item in sectors))
-        return self.filter(query)
+        return self.filter(query).distinct()
 
 
 class TenderManager(BaseManager.from_queryset(TenderQuerySet)):
