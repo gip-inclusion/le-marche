@@ -37,8 +37,17 @@
                     {% for tender in tenders %}
                         {% include "tenders/list_item.html" with tender=tender %}
                     {% endfor %}
-
                     {% include "includes/_pagination.html" %}
+                {% else %}
+                   <p class="text-muted">
+                        {% if user.kind == user.KIND_SIAE %}
+                            Désolé, nous avons aucune opportunité à vous présenter pour le moment. <br>
+                            Si ce n'est pas déjà fait, pensez à <a href="{% url 'dashboard:home' %}">compléter votre fiche structure</a>
+                            pour optimiser vos chances de trouver de nouvelles opportunités.
+                        {% else %}
+                            Publiez un besoin pour trouver des prestataires près de chez vous.
+                        {% endif %}
+                    </p>
                 {% endif %}
 
             </div>
