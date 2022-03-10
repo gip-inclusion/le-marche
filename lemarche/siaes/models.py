@@ -136,6 +136,18 @@ class SiaeGroup(models.Model):
         super().save(*args, **kwargs)
 
 
+def get_filter_city(perimeter):
+    return (
+        Q(post_code__in=perimeter.post_codes)
+        | (
+            Q(geo_range=GEO_RANGE_CUSTOM)
+            # why distance / 1000 ? because convert from meter to km
+            & Q(geo_range_custom_distance__gte=Distance("coords", perimeter.coords) / 1000)
+        )
+        | (Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=perimeter.department_code))
+    )
+
+
 class SiaeQuerySet(models.QuerySet):
     def is_live(self):
         return self.filter(is_active=True).filter(is_delisted=False)
