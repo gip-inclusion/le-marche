@@ -24,6 +24,11 @@ class SiaeSearchForm(forms.Form):
         ("ZRR", "Zone de revitalisation rurale (ZRR)"),
     )
 
+    q = forms.CharField(
+        label="Recherche texte",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Nom, SIRET"}),
+    )
     sectors = GroupedModelMultipleChoiceField(
         label=Sector._meta.verbose_name_plural,
         queryset=Sector.objects.form_filter_queryset(),
@@ -79,6 +84,10 @@ class SiaeSearchForm(forms.Form):
 
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
+
+        full_text_string = self.cleaned_data.get("q", None)
+        if full_text_string:
+            qs = qs.filter_full_text(full_text_string)
 
         sectors = self.cleaned_data.get("sectors", None)
         if sectors:

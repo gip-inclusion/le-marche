@@ -425,6 +425,62 @@ class SiaePerimeterSearchFilterTest(TestCase):
         self.assertEqual(qs.count(), 14)
 
 
+class SiaeFullTextSearchTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        SiaeFactory(name="Ma boite", siret="11111111111111")
+        SiaeFactory(name="Une autre activité", siret="22222222222222")
+        SiaeFactory(name="ABC Insertion", siret="33333333344444")
+
+    def test_search_empty_query(self):
+        url = reverse("siae:search_results") + "?q="
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 3)
+
+    def test_search_by_siae_name(self):
+        url = reverse("siae:search_results") + "?q=boite"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+
+    def test_search_by_siae_name_should_be_case_insensitive(self):
+        url = reverse("siae:search_results") + "?q=abc"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        url = reverse("siae:search_results") + "?q=ABC"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+
+    def test_search_by_siae_name_should_ignore_accents(self):
+        url = reverse("siae:search_results") + "?q=activite"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 0)  # TODO: should be 1
+        url = reverse("siae:search_results") + "?q=activité"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+
+    def test_search_by_siae_siret(self):
+        url = reverse("siae:search_results") + "?q=22222222222222"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        # siren search
+        url = reverse("siae:search_results") + "?q=333333333"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 0)  # TODO: should be 1
+        # siret with space
+        url = reverse("siae:search_results") + "?q=333 333 333 44444"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 0)  # TODO: should be 1
+
+
 class SiaeSearchOrderTest(TestCase):
     @classmethod
     def setUpTestData(cls):

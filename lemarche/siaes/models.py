@@ -5,6 +5,7 @@ from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django.contrib.postgres.aggregates import ArrayAgg
+from django.contrib.postgres.search import SearchVector
 from django.db import IntegrityError, models, transaction
 from django.db.models import Count, Q
 from django.db.models.signals import m2m_changed, post_delete, post_save
@@ -155,6 +156,9 @@ class SiaeQuerySet(models.QuerySet):
 
     def search_query_set(self):
         return self.is_live().exclude(kind="OPCS").prefetch_many_to_many()
+
+    def filter_full_text(self, full_text_string):
+        return self.annotate(search=SearchVector("name", "brand", "siret")).filter(search=full_text_string)
 
     def filter_sectors(self, sectors):
         return self.filter(sectors__in=sectors)
