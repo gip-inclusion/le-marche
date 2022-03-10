@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views.generic import CreateView, DetailView, ListView
@@ -40,6 +41,13 @@ class TenderAddView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         # task
         find_opportunities_for_siaes(tender)
         return HttpResponseRedirect(self.success_url)
+
+    def get(self, request, *args, **kwargs):
+        # siaes cannot add tenders
+        if request.user.kind == User.KIND_SIAE:
+            return redirect("tenders:list")
+        else:
+            return super().get(request, *args, **kwargs)
 
     def get_initial(self):
         user = self.request.user
