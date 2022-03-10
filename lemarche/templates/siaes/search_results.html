@@ -54,6 +54,13 @@
                                 {% bootstrap_field form.networks %}
                             </div>
                         </div>
+                        {% if user.is_authenticated and user.kind == 'ADMIN' %}
+                            <div class="row">
+                                <div class="col-12 col-md-6 mt-lg-2 pr-md-0">
+                                    {% bootstrap_field form.q %}
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="col-12 col-sm-6 col-lg-2 mt-3 mt-3 mt-md-0 mt-lg-3 pr-sm-0 pr-lg-2">
                         <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
