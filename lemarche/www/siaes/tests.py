@@ -428,9 +428,9 @@ class SiaePerimeterSearchFilterTest(TestCase):
 class SiaeFullTextSearchTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        SiaeFactory(name="Ma boite", siret="11111111111111")
-        SiaeFactory(name="Une autre activité", siret="22222222222222")
-        SiaeFactory(name="ABC Insertion", siret="33333333344444")
+        cls.siae_1 = SiaeFactory(name="Ma boite", siret="11111111111111")
+        cls.siae_2 = SiaeFactory(name="Une autre activité", siret="22222222222222")
+        cls.siae_3 = SiaeFactory(name="ABC Insertion", siret="33333333344444")
 
     def test_search_empty_query(self):
         url = reverse("siae:search_results") + "?q="
@@ -443,26 +443,46 @@ class SiaeFullTextSearchTest(TestCase):
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_1.name)
+        # full name with space
+        url = reverse("siae:search_results") + "?q=ma boite"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_1.name)
+
+    def test_search_by_siae_name_partial(self):
+        url = reverse("siae:search_results") + "?q=insert"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_3.name)
 
     def test_search_by_siae_name_should_be_case_insensitive(self):
         url = reverse("siae:search_results") + "?q=abc"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_3.name)
+        # with case
         url = reverse("siae:search_results") + "?q=ABC"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_3.name)
 
     def test_search_by_siae_name_should_ignore_accents(self):
         url = reverse("siae:search_results") + "?q=activite"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 0)  # TODO: should be 1
+        # self.assertEqual(siaes[0].name, self.siae_2.name)
+        # with accent
         url = reverse("siae:search_results") + "?q=activité"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_2.name)
 
     def test_search_by_siae_siret(self):
         url = reverse("siae:search_results") + "?q=22222222222222"
