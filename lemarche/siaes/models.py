@@ -158,7 +158,11 @@ class SiaeQuerySet(models.QuerySet):
         return self.is_live().exclude(kind="OPCS").prefetch_many_to_many()
 
     def filter_full_text(self, full_text_string):
-        return self.annotate(search=SearchVector("name", "brand", "siret")).filter(search=full_text_string)
+        return self.annotate(
+            search=SearchVector("name", config="french")
+            + SearchVector("brand", config="french")
+            + SearchVector("siret")
+        ).filter(search=full_text_string)
 
     def filter_sectors(self, sectors):
         return self.filter(sectors__in=sectors)

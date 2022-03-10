@@ -87,6 +87,9 @@ class SiaeSearchForm(forms.Form):
 
         full_text_string = self.cleaned_data.get("q", None)
         if full_text_string:
+            # case where a siret search was done, strip all spaces
+            if full_text_string.replace(" ", "").isdigit():
+                full_text_string = full_text_string.replace(" ", "")
             qs = qs.filter_full_text(full_text_string)
 
         sectors = self.cleaned_data.get("sectors", None)

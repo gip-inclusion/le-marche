@@ -478,7 +478,7 @@ class SiaeFullTextSearchTest(TestCase):
         url = reverse("siae:search_results") + "?q=333 333 333 44444"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
-        self.assertEqual(len(siaes), 0)  # TODO: should be 1
+        self.assertEqual(len(siaes), 1)
 
 
 class SiaeSearchOrderTest(TestCase):
