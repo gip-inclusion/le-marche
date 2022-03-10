@@ -13,8 +13,11 @@ class TenderAddView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     template_name = "tenders/add_tender_form.html"
     form_class = AddTenderForm
     context_object_name = "tender"
-    success_message = "<strong>{}</strong> a été ajoutée à votre liste d'achats."
-    success_url = reverse_lazy("dashboard:home")
+    success_message = """
+        Votre besoin <strong>{}</strong> est déposé sur le marché et les structures
+        correspondants à vos critères seront notifiés
+    """
+    success_url = reverse_lazy("tenders:list")
 
     def form_valid(self, form):
         tender = form.save(commit=False)

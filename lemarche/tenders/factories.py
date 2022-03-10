@@ -24,7 +24,6 @@ class TenderFactory(DjangoModelFactory):
     )
     description = factory.Faker("paragraph", nb_sentences=5, locale="fr_FR")
     constraints = factory.Faker("paragraph", nb_sentences=5, locale="fr_FR")
-    completion_time = factory.Faker("paragraph", nb_sentences=5, locale="fr_FR")
     deadline_date = datetime.date.today() + datetime.timedelta(days=10)
     author = factory.SubFactory(UserFactory)
 

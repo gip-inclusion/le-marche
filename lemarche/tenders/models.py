@@ -41,11 +41,10 @@ class Tender(models.Model):
         verbose_name="Type de besoin", max_length=6, choices=TENDERS_KIND_CHOICES, default=TENDERS_KIND_TENDER
     )
 
-    title = models.CharField(verbose_name="Titre", max_length=255)
-    description = models.TextField(verbose_name="Description", blank=True)
+    title = models.CharField(verbose_name="Titre du besoin", max_length=255)
+    description = models.TextField(verbose_name="Description du besoin", blank=True)
     constraints = models.TextField(verbose_name="Contraintes techniques spécifiques", blank=True)
-    completion_time = models.TextField(verbose_name="Délais de réalisation / Fréquence", blank=True)
-    external_link = models.URLField(verbose_name="Lien externe", blank=True)
+    external_link = models.URLField(verbose_name="Lien vers l’appel d’offre", blank=True)
     deadline_date = models.DateField(verbose_name="Date de clôture des réponses")
     start_working_date = models.DateField(verbose_name="Date idéale de début des prestations", blank=True, null=True)
     contact_first_name = models.CharField(verbose_name="Prénom du contact", max_length=255, blank=True)
@@ -55,7 +54,7 @@ class Tender(models.Model):
     amount = models.PositiveIntegerField(verbose_name="Montant du marché", blank=True, null=True)
     response_kind = ArrayField(
         models.CharField(max_length=6, choices=RESPONSES_KIND_CHOICES),
-        verbose_name="Comment répondre",
+        verbose_name="Comment souhaitez-vous être contacté ?",
     )
 
     perimeters = models.ManyToManyField(
@@ -79,7 +78,7 @@ class Tender(models.Model):
     class Meta:
         verbose_name = "Besoin d'acheteur"
         verbose_name_plural = "Besoins des acheteurs"
-        ordering = ["deadline_date"]
+        ordering = ["-updated_at", "deadline_date"]
 
     def clean(self):
         today = datetime.date.today()
