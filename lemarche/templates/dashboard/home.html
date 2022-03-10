@@ -154,7 +154,13 @@
                 <div id="tenders" class="row justify-content-end mb-3 mb-lg-5">
                     <div class="col-12 col-lg">
                         <h2 class="h1 mb-0">
-                            <strong>Mes besoins</strong>
+                            <strong>
+                                {% if user.kind == user.KIND_SIAE %}
+                                    Trouver de nouvelles opportunités
+                                {% else %}
+                                    Mes besoins
+                                {% endif %}
+                            </strong>
                         </h2>
                     </div>
                     <div class="col-12 col-md-auto">

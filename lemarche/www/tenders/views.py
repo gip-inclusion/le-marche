@@ -13,6 +13,10 @@ from lemarche.www.tenders.forms import AddTenderForm
 from lemarche.www.tenders.tasks import find_opportunities_for_siaes
 
 
+TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
+TITLE_DETAIL_PAGE_OTHERS = "Besoins en cours"
+
+
 class TenderAddView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     template_name = "tenders/add_tender_form.html"
     form_class = AddTenderForm
@@ -59,7 +63,6 @@ class TenderListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        # user kind : buyer
         if user.kind == User.KIND_BUYER or user.kind == User.KIND_PARTNER:
             queryset = Tender.objects.created_by_user(user)
         elif user.kind == User.KIND_SIAE and user.siaes:
@@ -71,8 +74,20 @@ class TenderListView(LoginRequiredMixin, ListView):
             )
         return queryset
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_kind = self.request.user.kind if self.request.user.is_authenticated else "anonymous"
+        context["page_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
+        return context
 
-class TenderDetail(DetailView):
+
+class TenderDetail(LoginRequiredMixin, DetailView):
     model = Tender
     template_name = "tenders/detail_tender.html"
     context_object_name = "tender"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_kind = self.request.user.kind if self.request.user.is_authenticated else "anonymous"
+        context["parent_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
+        return context
