@@ -136,6 +136,18 @@ def get_filter_city(perimeter, with_country=False):
     return filters
 
 
+def get_filter_city(perimeter):
+    return (
+        Q(post_code__in=perimeter.post_codes)
+        | (
+            Q(geo_range=GEO_RANGE_CUSTOM)
+            # why distance / 1000 ? because convert from meter to km
+            & Q(geo_range_custom_distance__gte=Distance("coords", perimeter.coords) / 1000)
+        )
+        | (Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=perimeter.department_code))
+    )
+
+
 class SiaeQuerySet(models.QuerySet):
     def is_live(self):
         return self.filter(is_active=True).filter(is_delisted=False)
@@ -204,19 +216,8 @@ class SiaeQuerySet(models.QuerySet):
                 & Q(geo_range_custom_distance__lte=Distance("coords", kwargs["city_coords"]) / 1000)
             )
 
-    def get_filter_city(self, perimeter):
-        return (
-            Q(post_code__in=perimeter.post_codes)
-            | (
-                Q(geo_range=GEO_RANGE_CUSTOM)
-                # why distance / 1000 ? because convert from meter to km
-                & Q(geo_range_custom_distance__gte=Distance("coords", perimeter.coords) / 1000)
-            )
-            | (Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=perimeter.department_code))
-        )
-
     def in_city_area(self, perimeter):
-        return self.filter(self.get_filter_city(perimeter))
+        return self.filter(get_filter_city(perimeter))
 
     def in_perimeters_area(self, perimeters: models.QuerySet, with_country=False):
         cities = perimeters.filter(kind=Perimeter.KIND_CITY)
