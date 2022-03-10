@@ -16,6 +16,7 @@ from django.utils.encoding import force_str
 from django.utils.text import slugify
 
 from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY, get_department_code_from_name
+from lemarche.siaes.tasks import set_siae_coords
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
 
 
@@ -175,7 +176,14 @@ class Siae(models.Model):
         + READONLY_FIELDS_FROM_API_ENTREPRISE
     )
 
-    TRACK_UPDATE_FIELDS = ["employees_insertion_count", "employees_permanent_count", "ca"]
+    TRACK_UPDATE_FIELDS = [
+        # update coords
+        "address",
+        # set last_updated fields
+        "employees_insertion_count",
+        "employees_permanent_count",
+        "ca",
+    ]
 
     KIND_EI = "EI"
     KIND_AI = "AI"
@@ -478,7 +486,10 @@ class Siae(models.Model):
         for field_name in self.TRACK_UPDATE_FIELDS:
             previous_field_name = f"__previous_{field_name}"
             if getattr(self, field_name) and getattr(self, field_name) != getattr(self, previous_field_name):
-                setattr(self, f"{field_name}_last_updated", timezone.now())
+                try:
+                    setattr(self, f"{field_name}_last_updated", timezone.now())
+                except AttributeError:  # TRACK_UPDATE_FIELDS without last_updated fields
+                    pass
 
     def set_related_counts(self):
         """
@@ -642,6 +653,14 @@ class Siae(models.Model):
 
     def get_absolute_url(self):
         return reverse("siae:detail", kwargs={"slug": self.slug})
+
+
+@receiver(post_save, sender=Siae)
+def siae_post_save(sender, instance, **kwargs):
+    field_name = "address"
+    previous_field_name = f"__previous_{field_name}"
+    if getattr(instance, field_name) and getattr(instance, field_name) != getattr(instance, previous_field_name):
+        set_siae_coords(sender, instance)
 
 
 @receiver(m2m_changed, sender=Siae.users.through)

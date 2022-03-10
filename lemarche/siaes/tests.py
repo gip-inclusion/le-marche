@@ -194,6 +194,16 @@ class SiaeModelSaveTest(TestCase):
         self.assertEqual(siae.employees_insertion_count, 15)
         self.assertNotEqual(siae.employees_insertion_count_last_updated, employees_insertion_count_last_updated)
 
+    def test_update_address_coords_field(self):
+        siae = SiaeFactory(address="", post_code="", city="", department="", region="")
+        self.assertEqual(siae.address, "")
+        self.assertEqual(siae.coords, None)
+        siae.address = "20 Avenue de Segur"
+        siae.city = "Paris"
+        siae.save()
+        siae = Siae.objects.get(id=siae.id)  # we need to fetch it again to make sure
+        self.assertNotEqual(siae.coords, None)
+
 
 class SiaeModelQuerysetTest(TestCase):
     def setUp(self):
