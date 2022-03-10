@@ -2,6 +2,24 @@
 {% load bootstrap4 static humanize %}
 
 {% block title %}{{tender.get_kind_name}} {{tender.title}} {{ block.super }}{% endblock %}
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">Besoins en cours</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{tender.title|truncatechars:25 }}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
 
 {% block content %}
 <section class="container">
@@ -77,7 +95,7 @@
             {% if tender.external_link %}
                 <hr class="my-5">
                 <div class="py-2">
-                    <a class="btn btn-outline-primary float-right" href="{{tender.external_link}}">
+                    <a class="btn btn-outline-primary float-right" target="_blank" href="{{tender.external_link}}">
                         Voir l'appel d'offre <span class="ri-external-link-line" aria-hidden="true"></span>
                     </a>
 

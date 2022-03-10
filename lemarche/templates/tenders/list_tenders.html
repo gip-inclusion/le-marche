@@ -2,16 +2,35 @@
 {% load bootstrap4 static %}
 
 {% block title %}Besoins en cours{{ block.super }}{% endblock %}
+{% block breadcrumbs %}
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Besoins en cours</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
 
 {% block content %}
 <section>
     <div class="container py-4">
-        <h1>Besoins en cours</h1>
-        <a href="{% url 'tenders:add' %}" class="btn btn-primary my-4">
-            <span>Publier un besoin d’achat</span>
-        </a>
-        <div class="d-flex justify-content-center">
-            <div class="col-12 d-block my-5 py-3">
+        <div class="row">
+            <div class="col-12 ">
+                <h1>Besoins en cours</h1>
+                <a href="{% url 'tenders:add' %}" class="btn btn-primary my-4">
+                    <span>Publier un besoin d’achat</span>
+                </a>
+            </div>
+            <div class="col-12 my-5 py-3">
                 {% if tenders %}
                     {% for tender in tenders %}
                         {% include "tenders/list_item_tenders.html" with tender=tender %}
