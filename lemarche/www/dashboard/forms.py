@@ -76,7 +76,7 @@ class SiaeSearchBySiretForm(forms.Form):
 
         siret = self.cleaned_data.get("siret", None)
         if siret:
-            qs = qs.filter(siret__startswith=siret)
+            qs = qs.filter_siret_startswith(siret)
         else:
             # show results only if there is a valid siret provided
             qs = qs.none()
