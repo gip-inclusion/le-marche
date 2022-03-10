@@ -18,8 +18,8 @@ TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
 TITLE_DETAIL_PAGE_OTHERS = "Besoins en cours"
 
 
-class TenderAddView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
-    template_name = "tenders/add_tender_form.html"
+class TenderCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    template_name = "tenders/create.html"
     form_class = AddTenderForm
     context_object_name = "tender"
     success_message = """
@@ -63,7 +63,7 @@ class TenderAddView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
 
 class TenderListView(LoginRequiredMixin, ListView):
-    template_name = "tenders/list_tenders.html"
+    template_name = "tenders/list.html"
     model = Tender
     context_object_name = "tenders"
     paginate_by = 10
@@ -91,7 +91,7 @@ class TenderListView(LoginRequiredMixin, ListView):
 
 class TenderDetail(LoginRequiredMixin, DetailView):
     model = Tender
-    template_name = "tenders/detail_tender.html"
+    template_name = "tenders/detail.html"
     context_object_name = "tender"
 
     def get_context_data(self, **kwargs):

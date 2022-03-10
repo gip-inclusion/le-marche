@@ -35,7 +35,7 @@
             <div class="col-12 my-5 py-3">
                 {% if tenders %}
                     {% for tender in tenders %}
-                        {% include "tenders/list_item_tenders.html" with tender=tender %}
+                        {% include "tenders/list_item.html" with tender=tender %}
                     {% endfor %}
 
                     {% include "includes/_pagination.html" %}
