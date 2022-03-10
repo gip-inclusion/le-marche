@@ -103,27 +103,17 @@
 	}
 
 	#dir-profile aside > .profile {
-
 		@media screen and (min-width:992px) {
-			background-image:url('/static/img/ronds_rose.svg');
 			background-repeat:no-repeat;
 			background-position: bottom left;
 			background-color:#fff;
-			box-shadow: 0 2px 19px 0 rgba(56,56,56,.1) !important;
-			padding: 2rem 1rem;
 			border-radius: .25rem;
-			// position: sticky;
-			// top: 150px;
-			// z-index: 1;
 		}
 	}
 
 	.profile_capsule {
-	
 		@media screen and (min-width:992px) {
 				background-color:#fff;
-				padding: 1rem;
-				box-shadow: 0 2px 9px 0 rgba(56,56,56,.1) !important;
 			}
 	}
 
@@ -132,16 +122,6 @@
 		padding-bottom:.4rem;
 		padding-top:.6rem;
 		border-bottom: 1px solid $gray-300;
-	}
-
-	.map_capsule .deflist,
-	.profile_capsule .deflist {
-		padding: 0;
-	}
-
-	.map_capsule {
-		margin:2rem 1rem;
-		border-radius:4px;
 	}
 
 	.user_description {
