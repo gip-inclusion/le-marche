@@ -175,6 +175,8 @@ class Siae(models.Model):
         + READONLY_FIELDS_FROM_API_ENTREPRISE
     )
 
+    TRACK_UPDATE_FIELDS = ["employees_insertion_count", "employees_permanent_count", "ca"]
+
     KIND_EI = "EI"
     KIND_AI = "AI"
     KIND_ACI = "ACI"
@@ -330,6 +332,24 @@ class Siae(models.Model):
     admin_name = models.CharField(max_length=255, blank=True)
     admin_email = models.EmailField(max_length=255, blank=True)
 
+    year_constitution = models.PositiveIntegerField(verbose_name="Année de création", blank=True, null=True)
+    employees_insertion_count = models.PositiveIntegerField(
+        verbose_name="Nombre de salariés en insertion", blank=True, null=True
+    )
+    employees_insertion_count_last_updated = models.DateTimeField(
+        verbose_name="Date de dernière mise à jour du nombre de salariés en insertion", blank=True, null=True
+    )
+    employees_permanent_count = models.PositiveIntegerField(
+        verbose_name="Nombre de salariés permanents", blank=True, null=True
+    )
+    employees_permanent_count_last_updated = models.DateTimeField(
+        verbose_name="Date de dernière mise à jour du nombre de salariés permanents", blank=True, null=True
+    )
+    ca = models.PositiveIntegerField(verbose_name="Chiffre d'affaire", blank=True, null=True)
+    ca_last_updated = models.DateTimeField(
+        verbose_name="Date de dernière mise à jour du chiffre d'affaire", blank=True, null=True
+    )
+
     users = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through="siaes.SiaeUser",
@@ -351,7 +371,12 @@ class Siae(models.Model):
     )
 
     # API QPV
-    is_qpv = models.BooleanField(verbose_name="Zone QPV (API QPV)", blank=False, null=False, default=False)
+    is_qpv = models.BooleanField(
+        verbose_name="Quartier prioritaire de la politique de la ville (API QPV)",
+        blank=False,
+        null=False,
+        default=False,
+    )
     # To avoid QPV zones synchro problematics, we take the choice to duplicate names and codes of QPV
     qpv_name = models.CharField(verbose_name="Nom de la zone QPV (API QPV)", max_length=255, blank=True)
     qpv_code = models.CharField(verbose_name="Code de la zone QPV (API QPV)", max_length=16, blank=True)
@@ -359,7 +384,9 @@ class Siae(models.Model):
 
     # API ZRR
     # To avoid ZRR zones synchro problematics, we take the choice to duplicate names and codes of ZRR
-    is_zrr = models.BooleanField(verbose_name="Zone ZRR (API ZRR)", blank=False, null=False, default=False)
+    is_zrr = models.BooleanField(
+        verbose_name="Zone de revitalisation rurale (API ZRR)", blank=False, null=False, default=False
+    )
     zrr_name = models.CharField(verbose_name="Nom de la zone ZRR (API ZRR)", max_length=255, blank=True)
     zrr_code = models.CharField(verbose_name="Code de la zone ZRR (API ZRR)", max_length=16, blank=True)
     api_zrr_last_sync_date = models.DateTimeField("Date de dernière synchronisation (API ZRR)", blank=True, null=True)
@@ -424,6 +451,14 @@ class Siae(models.Model):
     def __str__(self):
         return self.name
 
+    def __init__(self, *args, **kwargs):
+        """
+        https://stackoverflow.com/a/23363123
+        """
+        super(Siae, self).__init__(*args, **kwargs)
+        for field_name in self.TRACK_UPDATE_FIELDS:
+            setattr(self, f"__previous_{field_name}", getattr(self, field_name))
+
     def set_slug(self, with_uuid=False):
         """
         The slug field should be unique.
@@ -434,6 +469,16 @@ class Siae(models.Model):
             self.slug = f"{slugify(self.name)[:40]}-{str(self.department or '')}"
         if with_uuid:
             self.slug += f"-{str(uuid4())[:4]}"
+
+    def set_last_updated_fields(self):
+        """
+        We track changes on some fields, in order to update their 'last_updated' counterpart.
+        Where are the '__previous' fields set? In the __init__ method
+        """
+        for field_name in self.TRACK_UPDATE_FIELDS:
+            previous_field_name = f"__previous_{field_name}"
+            if getattr(self, field_name) and getattr(self, field_name) != getattr(self, previous_field_name):
+                setattr(self, f"{field_name}_last_updated", timezone.now())
 
     def set_related_counts(self):
         """
@@ -469,6 +514,7 @@ class Siae(models.Model):
         - update the object content_fill_dates
         - generate the slug field
         """
+        self.set_last_updated_fields()
         self.set_related_counts()
         self.set_content_fill_dates()
         try:

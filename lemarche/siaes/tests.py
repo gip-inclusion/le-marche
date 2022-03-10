@@ -170,6 +170,30 @@ class SiaeModelSaveTest(TestCase):
         # siae.save()  # no need to run save(), m2m_changed signal was triggered above
         self.assertEqual(siae.signup_date, signup_date)
 
+    def test_update_last_updated_fields(self):
+        siae = SiaeFactory()
+        self.assertEqual(siae.employees_insertion_count, None)
+        self.assertEqual(siae.employees_insertion_count_last_updated, None)
+        # new value: last_updated field will be set
+        siae = Siae.objects.get(id=siae.id)  # we need to fetch it again to pass through the __init__
+        siae.employees_insertion_count = 10
+        siae.save()
+        self.assertEqual(siae.employees_insertion_count, 10)
+        self.assertNotEqual(siae.employees_insertion_count_last_updated, None)
+        employees_insertion_count_last_updated = siae.employees_insertion_count_last_updated
+        # same value: last_updated field will not be updated
+        siae = Siae.objects.get(id=siae.id)
+        siae.employees_insertion_count = 10
+        siae.save()
+        self.assertEqual(siae.employees_insertion_count, 10)
+        self.assertEqual(siae.employees_insertion_count_last_updated, employees_insertion_count_last_updated)
+        # updated value: last_updated field will be updated
+        siae = Siae.objects.get(id=siae.id)
+        siae.employees_insertion_count = 15
+        siae.save()
+        self.assertEqual(siae.employees_insertion_count, 15)
+        self.assertNotEqual(siae.employees_insertion_count_last_updated, employees_insertion_count_last_updated)
+
 
 class SiaeModelQuerysetTest(TestCase):
     def setUp(self):

@@ -1,5 +1,5 @@
 {% extends "dashboard/siae_edit_base.html" %}
-{% load static bootstrap4 %}
+{% load static bootstrap4 get_verbose_name %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'vendor/dropzone-5.9.3/dropzone.min.css' %}" />
@@ -61,61 +61,90 @@
 
     <div class="row mb-3 mb-lg-5">
         <div class="col-12 col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
-                <fieldset>
-                    <legend class="h4">Données importées provenant de {{ siae.source_display }}</legend>
-                    {% bootstrap_field form.name %}
-                    {% bootstrap_field form.brand %}
-                    {% bootstrap_field form.siret %}
-                    {% bootstrap_field form.kind %}
-                    {% bootstrap_field form.website %}
-                    {% bootstrap_field form.email %}
-                    {% bootstrap_field form.phone %}
-                    <div class="row">
-                        <div class="col-12 col-sm-6">
-                            {% bootstrap_field form.address %}
+            <div class="siae-details-card align-items-start">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h1 class="h2 mb-3 mt-1">{{ siae.name_display }}</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="row" title="{% get_verbose_name siae 'siret' %}">
+                            <div class="col-12 mb-3">
+                                <i class="ri-profile-line"></i>
+                                <span>{{ siae.siret_display }}</span>
+                            </div>
                         </div>
-                        <div class="col-12 col-sm-6">
-                            <div class="map-holder">
-                                <div id="map-siae-edit" class="map-canvas"></div>
+                        <div class="row" title="{% get_verbose_name siae 'kind' %}">
+                            <div class="col-12 mb-3">
+                                <i class="ri-building-4-line"></i>
+                                <span>{{ siae.get_kind_display }}</span>
+                            </div>
+                        </div>
+                        <div class="row" title="{% get_verbose_name siae 'address' %}">
+                            <div class="col-12 mb-3">
+                                <i class="ri-map-pin-line"></i>
+                                <span>{{ siae.address }},</span>
+                                <span>{{ siae.post_code }},</span>
+                                <span>{{ siae.city }},</span>
+                                <span>{{ siae.department }},</span>
+                                <span>{{ siae.region }}</span>
                             </div>
                         </div>
                     </div>
-
-                    {% bootstrap_field form.city %}
-                    {% bootstrap_field form.post_code %}
-                    {% bootstrap_field form.department %}
-                    {% bootstrap_field form.region %}
-                </fieldset>
+                    <div class="col-12 col-md-6">
+                        <div class="row" title="{% get_verbose_name siae 'api_entreprise_date_constitution' %}">
+                            <div class="col-12 mb-3">
+                                <span>Année de création :</span>
+                                <span>{{ siae.api_entreprise_date_constitution|date:"Y"|default:"" }}</span>
+                            </div>
+                        </div>
+                        <div class="row" title="{% get_verbose_name siae 'api_entreprise_employees' %}">
+                            <div class="col-12 mb-3">
+                                <span>{% if siae.kind == 'SEP' %}Travailleurs détenus{% else %}Salariés{% endif %} :</span>
+                                <span>{{ siae.api_entreprise_employees|default:"" }}</span>
+                            </div>
+                        </div>
+                        <div class="row" title="{% get_verbose_name siae 'api_entreprise_ca' %}">
+                            <div class="col-12 mb-3">
+                                <span>Chiffre d'affaire :</span>
+                                <span>{{ siae.api_entreprise_ca|default:"" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if siae.is_qpv or siae.is_zrr %}
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            {% if siae.is_qpv %}
+                                <div class="row" title="{% get_verbose_name siae 'is_qpv' %}">
+                                    <div class="col-12 mb-3">
+                                        <span>QPV : {{ siae.qpv_name }} ({{ siae.qpv_code }})</span>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if siae.is_zrr %}
+                                <div class="row" title="{% get_verbose_name siae 'is_zrr' %}">
+                                    <div class="col-12 mb-3">
+                                        <span>ZRR : {{ siae.zrr_name }} ({{ siae.zrr_code }})</span>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
         <div class="col-12 col-lg-4">
             <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                 <p class="mb-1">
                     <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
-                    <strong>Données source</strong>
-                </p>
-                <p class="mb-1">
-                    Les informations reçues concernant votre structure.
+                    <strong>Conseil</strong>
                 </p>
                 <p class="mb-0">
-                    Si vous souhaitez mettre à jour vos informations de contact, vous pouvez le faire à l'aide du formulaire ci-dessus.
+                    Toutes les informations affichées ici sont en provenance de {{ siae.source_display }} et de données ouvertes (API Entreprise, API QPV et API ZRR).
                 </p>
             </div>
-            {% if not siae.department or not siae.region or not siae.coords %}
-            <div class="alert alert-warning mt-3 mt-lg-0" role="alert">
-                <p class="mb-1">
-                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
-                    <strong>Localisation incomplète</strong>
-                </p>
-                <p class="mb-1">
-                    Il semblerait que les données de localisation (département, région, coordonnées GPS...) de votre structure soient incomplètes.
-                </p>
-                <p class="mb-0">
-                    Si vous voyez des erreurs, aidez-nous à les réparer en <a href="{% url 'pages:contact' %}?siret={{ siae.siret }}">nous contactant</a>.
-                </p>
-            </div>
-            {% endif %}
         </div>
     </div>
 
@@ -123,55 +152,67 @@
         <div class="col-12 col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                 <fieldset>
-                    <legend class="h4">Données tierces</legend>
-                    {% bootstrap_field form.api_entreprise_date_constitution %} <!-- |date:"d/m/Y" -->
-                    {% bootstrap_field form.api_entreprise_employees %}
-                    {% bootstrap_field form.api_entreprise_ca %}
-                    {% bootstrap_field form.api_entreprise_ca_date_fin_exercice %}
-                    {% bootstrap_field form.is_qpv %}
-                    {% bootstrap_field form.qpv_name %}
-                    {% bootstrap_field form.qpv_code %}
+                    <legend class="h5">Indiquez le chiffre d'affaire de votre structure</legend>
+                    {% bootstrap_field form.ca show_label=False %}
                 </fieldset>
             </div>
         </div>
         <div class="col-12 col-lg-4">
             <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-                <p class="mt-2 mb-1">
-                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
-                    <strong>D'où viennent ces données ?</strong>
-                </p>
-                <h5 class="mb-1">API Entreprise</h5>
-                <p class="mb-1">
-                    Elles ont été récupérées en requêtant <a href="https://entreprise.api.gouv.fr/" target="_blank" rel="noopener">l'API Entreprise</a> avec votre Siret.
-                </p>
-                <p class="mb-0">
-                    Date de dernière mise à jour : <strong>{{ siae.api_entreprise_etablissement_last_sync_date|date:"d/m/Y" }}</strong>
-                </p>
-                <h5 class="mt-2 mb-1">API QPV</h5>
-                <p class="mb-1">
-                    Elles ont été récupérées en requêtant
-                    <a href="https://equipements.sports.gouv.fr/api/v1/console/records/1.0/search/?dataset=quartiers-prioritaires-de-la-politique-de-la-ville-qpv" target="_blank" rel="noopener">
-                        l'API QPV</a>
-                    avec les données de géolocalisation de votre structure.
-                </p>
-                <p class="mb-0">
-                    Date de dernière mise à jour : <strong>{{ siae.api_qpv_last_sync_date|date:"d/m/Y" }}</strong>
-                </p>
-            </div>
-            {% if not siae.department or not siae.region or not siae.coords %}
-            <div class="alert alert-warning mt-3 mt-lg-0" role="status">
                 <p class="mb-1">
                     <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
-                    <strong>Localisation incomplète</strong>
-                </p>
-                <p class="mb-1">
-                    Il semblerait que les données de localisation (département, région, coordonnées GPS...) de votre structure soient incomplètes.
+                    <strong>Conseil</strong>
                 </p>
                 <p class="mb-0">
-                    Si vous voyez des erreurs, aidez-nous à les réparer en <a href="{% url 'pages:contact' %}?siret={{ siae.siret }}">nous contactant</a>.
+                    Votre chiffre d'affaire est un élément d'information important aux yeux des acheteurs.
+                    Il permet de rendre compte de votre dimension et de votre capacité à répondre à certains marchés et appels d'offres.
                 </p>
             </div>
-            {% endif %}
+        </div>
+    </div>
+
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h5">Année de création de votre structure</legend>
+                    {% bootstrap_field form.year_constitution show_label=False %}
+                </fieldset>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h5">{% get_verbose_name siae 'employees_insertion_count' %}</legend>
+                    {% bootstrap_field form.employees_insertion_count show_label=False %}
+                </fieldset>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                <p class="mb-1">
+                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                    <strong>Conseil</strong>
+                </p>
+                <p class="mb-0">
+                    Le nombre de salariés en insertion démontre à la fois votre capacité de production et l'impact social de votre structure.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h5">{% get_verbose_name siae 'employees_permanent_count' %}</legend>
+                    {% bootstrap_field form.employees_permanent_count show_label=False %}
+                </fieldset>
+            </div>
+            <div>{{ siae.employees_permanent_count_last_updated }}</div>
         </div>
     </div>
 
@@ -202,48 +243,6 @@ s3UploadInit({
     // Not really nice
     sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
     sentryCsrfToken: "{{ csrf_token }}"
-});
-</script>
-<script type="text/javascript">
-document.addEventListener("DOMContentLoaded", function() {
-    // siae coords output as floats with commas. We need to transform them into floats.
-    const siaeName = "{{ siae.name }}";
-    const siaeBrand = "{{ siae.brand|default:'' }}";
-    const siaeLatitudeString = "{{ siae.coords.x }}";
-    const siaeLongitudeString = "{{ siae.coords.y }}";
-    const siaeLatitudeFloat = parseFloat(siaeLatitudeString.replace(',', '.'));
-    const siaeLongitudeFloat = parseFloat(siaeLongitudeString.replace(',', '.'));
-
-    // init map
-    var map = L.map('map-siae-edit').setView([siaeLongitudeFloat, siaeLatitudeFloat], 13);
-
-    // map tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 19,
-        zoomControl: false,
-    }).addTo(map);
-
-    // map zoom controls in the bottom right
-    map.zoomControl.remove();
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-    // create custom marker (because of static url issues)
-    var customLeafletIcon = L.icon({
-        'iconUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-icon.png' %}",
-        'shadowUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-shadow.png' %}",
-        iconSize: [25,41],
-        iconAnchor: [12,41],
-        popupAnchor:[1,-34],
-        tooltipAnchor:[16,-28],
-        shadowSize:[41,41],
-    });
-
-    // add marker (with popup on click)
-    var siaeDisplayName = siaeBrand ? siaeBrand : siaeName;
-    L.marker([siaeLongitudeFloat, siaeLatitudeFloat], {icon: customLeafletIcon})
-    .bindPopup(`<p class="h6">${siaeDisplayName}</p></a>`)
-    .addTo(map);
 });
 </script>
 {% endblock %}
