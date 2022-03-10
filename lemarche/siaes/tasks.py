@@ -11,7 +11,7 @@ def set_siae_coords(model, siae):
     geocoding_data = get_geocoding_data(siae.address + " " + siae.city, post_code=siae.post_code)
     if geocoding_data:
         if siae.post_code != geocoding_data["post_code"]:
-            if siae.post_code[:2] == geocoding_data["post_code"][:2]:
+            if not siae.post_code or (siae.post_code[:2] == geocoding_data["post_code"][:2]):
                 # update post_code as well
                 model.objects.filter(id=siae.id).update(
                     coords=geocoding_data["coords"], post_code=geocoding_data["post_code"]
