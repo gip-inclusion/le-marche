@@ -431,14 +431,16 @@ class SiaeFullTextSearchTest(TestCase):
         cls.siae_1 = SiaeFactory(name="Ma boite", siret="11111111111111")
         cls.siae_2 = SiaeFactory(name="Une autre activité", siret="22222222222222")
         cls.siae_3 = SiaeFactory(name="ABC Insertion", siret="33333333344444")
+        cls.siae_4 = SiaeFactory(name="Empty", brand="ETHICOFIL", siret="55555555555555")
 
     def test_search_empty_query(self):
         url = reverse("siae:search_results") + "?q="
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
-        self.assertEqual(len(siaes), 3)
+        self.assertEqual(len(siaes), 4)
 
     def test_search_by_siae_name(self):
+        # name & brand work similarly
         url = reverse("siae:search_results") + "?q=boite"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
@@ -475,14 +477,28 @@ class SiaeFullTextSearchTest(TestCase):
         url = reverse("siae:search_results") + "?q=activite"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
-        self.assertEqual(len(siaes), 0)  # TODO: should be 1
-        # self.assertEqual(siaes[0].name, self.siae_2.name)
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_2.name)
         # with accent
         url = reverse("siae:search_results") + "?q=activité"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 1)
         self.assertEqual(siaes[0].name, self.siae_2.name)
+
+    def test_search_by_siae_brand(self):
+        url = reverse("siae:search_results") + "?q=ethicofil"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_4.name)
+
+    def test_search_by_siae_brand_should_accept_typos(self):
+        url = reverse("siae:search_results") + "?q=ethicofl"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_4.name)
 
     def test_search_by_siae_siret(self):
         url = reverse("siae:search_results") + "?q=22222222222222"

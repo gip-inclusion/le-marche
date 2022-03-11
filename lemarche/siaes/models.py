@@ -5,9 +5,10 @@ from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.contrib.postgres.search import SearchVector
+from django.contrib.postgres.search import TrigramSimilarity  # SearchVector
 from django.db import IntegrityError, models, transaction
 from django.db.models import Count, Q
+from django.db.models.functions import Greatest
 from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
 from django.urls import reverse
@@ -160,10 +161,19 @@ class SiaeQuerySet(models.QuerySet):
     def filter_siret_startswith(self, siret):
         return self.filter(siret__startswith=siret)
 
+    # def filter_full_text(self, full_text_string):
+
     def filter_full_text(self, full_text_string):
+        # Simple method 1: SearchVectors
+        #     return self.annotate(
+        #         search=SearchVector("name", config="french") + SearchVector("brand", config="french")
+        #     ).filter(Q(search=full_text_string) | Q(siret__startswith=full_text_string))
+        # Simple method 2: TrigramSimilarity
         return self.annotate(
-            search=SearchVector("name", config="french") + SearchVector("brand", config="french")
-        ).filter(Q(search=full_text_string) | Q(siret__startswith=full_text_string))
+            similarity=Greatest(
+                TrigramSimilarity("name", full_text_string), TrigramSimilarity("brand", full_text_string)
+            )
+        ).filter(Q(similarity__gt=0.2) | Q(siret__startswith=full_text_string))
 
     def filter_sectors(self, sectors):
         return self.filter(sectors__in=sectors)
