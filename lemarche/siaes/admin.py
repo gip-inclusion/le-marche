@@ -521,6 +521,7 @@ class SiaeGroupAdmin(admin.ModelAdmin):
     search_help_text = "Cherche sur les champs : ID, Nom"
 
     prepopulated_fields = {"slug": ("name",)}
+    autocomplete_fields = ["sectors"]
     readonly_fields = [f"{field}_last_updated" for field in SiaeGroup.TRACK_UPDATE_FIELDS] + [
         "nb_siaes",
         "logo_url_display",
@@ -539,6 +540,7 @@ class SiaeGroupAdmin(admin.ModelAdmin):
             "Détails",
             {
                 "fields": (
+                    "sectors",
                     "year_constitution",
                     "siae_count",
                     "siae_count_last_updated",

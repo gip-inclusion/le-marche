@@ -69,6 +69,10 @@ class SiaeGroup(models.Model):
         verbose_name="Date de dernière mise à jour du chiffre d'affaire", blank=True, null=True
     )
 
+    sectors = models.ManyToManyField(
+        "sectors.Sector", verbose_name="Secteurs d'activité", related_name="siae_groups", blank=True
+    )
+
     created_at = models.DateTimeField("Date de création", default=timezone.now)
     updated_at = models.DateTimeField("Date de modification", auto_now=True)
 
