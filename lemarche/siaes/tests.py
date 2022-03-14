@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from lemarche.sectors.factories import SectorFactory
-from lemarche.siaes.factories import SiaeFactory, SiaeLabelFactory, SiaeOfferFactory
+from lemarche.siaes.factories import SiaeFactory, SiaeGroupFactory, SiaeLabelFactory, SiaeOfferFactory
 from lemarche.siaes.models import Siae, SiaeUser
 from lemarche.users.factories import UserFactory
 
@@ -228,3 +228,15 @@ class SiaeModelQuerysetTest(TestCase):
 
     # def test_annotate_with_user_favorite_list_ids(self):
     # see favorites > tests.py
+
+
+class SiaeGroupModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae_group = SiaeGroupFactory(name="Mon groupement")
+
+    def test_slug_field(self):
+        self.assertEqual(self.siae_group.slug, "mon-groupement")
+
+    def test_str(self):
+        self.assertEqual(str(self.siae_group), "Mon groupement")

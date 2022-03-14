@@ -79,6 +79,18 @@ class SiaeGroup(models.Model):
     def __str__(self):
         return self.name
 
+    def set_slug(self):
+        """
+        The slug field should be unique.
+        """
+        if not self.slug:
+            self.slug = slugify(self.name)[:50]
+
+    def save(self, *args, **kwargs):
+        """Generate the slug field before saving."""
+        self.set_slug()
+        super().save(*args, **kwargs)
+
 
 class SiaeQuerySet(models.QuerySet):
     def is_live(self):
