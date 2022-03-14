@@ -28,21 +28,22 @@ def find_opportunities_for_siaes(tender: Tender):
 def send_emails_tender_to_siae(tender: Tender, siae: Siae):
     email_subject = EMAIL_SUBJECT_PREFIX + f"{siae.name_display} a besoin de vous sur le marché de l’inclusion"
     recipient_list = whitelist_recipient_list([siae.contact_email])
-    recipient_email = recipient_list[0] if recipient_list else ""
-    recipient_name = tender.author.full_name
+    if recipient_list:
+        recipient_email = recipient_list[0] if recipient_list else ""
+        recipient_name = tender.author.full_name
 
-    variables = {
-        "FULL_NAME": siae.contact_first_name,
-        "RESPONSE_KIND": tender.get_kind_name,
-        "SECTORS": tender.get_sectors_names,
-        "PERIMETERS": tender.get_perimeters_names,
-        "TENDER_URL": tender.get_absolute_url(),
-    }
+        variables = {
+            "FULL_NAME": siae.contact_first_name,
+            "RESPONSE_KIND": tender.get_kind_name,
+            "SECTORS": tender.get_sectors_names,
+            "PERIMETERS": tender.get_perimeters_names,
+            "TENDER_URL": tender.get_absolute_url(),
+        }
 
-    api_mailjet.send_transactional_email_with_template(
-        template_id=settings.MAILJET_TENDERS_PRESENTATION_TEMPLATE_ID,
-        subject=email_subject,
-        recipient_email=recipient_email,
-        recipient_name=recipient_name,
-        variables=variables,
-    )
+        api_mailjet.send_transactional_email_with_template(
+            template_id=settings.MAILJET_TENDERS_PRESENTATION_TEMPLATE_ID,
+            subject=email_subject,
+            recipient_email=recipient_email,
+            recipient_name=recipient_name,
+            variables=variables,
+        )
