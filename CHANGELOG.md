@@ -4,6 +4,30 @@ Ressources :
 - [Semantic Versioning](http://semver.org/)
 - [CHANGELOG recommendations](http://keepachangelog.com/).
 
+## [2022.5] - 2022-03-11
+
+### Ajouté
+
+-  Recherche / Fiche
+    - Afficher les tags "QPV" & "ZRR"
+- Admin
+    - Permettre de créer et modifier certaines structures
+- Données
+    - Mise à jour automatiques des coordonnées GPS lorsque le champ "adresse" d'une structure est modifié
+
+### Modifié
+
+- Espace utilisateur
+    - Collaborateurs : pouvoir supprimer un autre utilisateur
+    - Pouvoir modifier les champs provenant des API dans le formulaire de modification de sa structure
+    - Meilleure gestion des authorizations (et des redirections lorsque l'utilisateur n'est pas connecté)
+-  Recherche / Fiche
+    - Le clic sur une fiche ESI ouvre un nouvel onglet
+    - Refonte du CSS autour du bouton "Afficher les coordonnées"
+    - Thème : utiliser les RemixIcons
+
+### Supprimé
+
 ## [2022.4] - 2022-02-28
 
 ### Ajouté
