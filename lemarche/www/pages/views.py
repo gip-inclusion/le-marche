@@ -28,7 +28,6 @@ class HomeView(TemplateView):
         """
         context = super().get_context_data(**kwargs)
         context["siaes_first_page"] = Siae.objects.filter(is_first_page=True)
-        context["user_kind"] = self.request.user.kind if self.request.user.is_authenticated else "anonymous"
         return context
 
 

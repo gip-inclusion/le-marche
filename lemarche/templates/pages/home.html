@@ -17,17 +17,10 @@
                         <span>Rechercher un prestataire</span>
                         <i class="ri-search-line ri-lg"></i>
                     </a>
-                    {% if user_kind == "SIAE" %}
-                        <a href="{% url 'tenders:list' %}" id="home-opportunity-list" class="btn btn-outline-primary btn-ico d-block d-md-inline-block ml-md-2 mt-3 mt-md-0">
-                            <span>Trouver de nouvelles opportunités</span>
-                            <i class="ri-mail-send-line ri-lg"></i>
-                        </a>
-                    {% else %}
-                        <a href="{% url 'tenders:add' %}" id="home-demande" class="btn btn-outline-primary btn-ico d-block d-md-inline-block ml-md-2 mt-3 mt-md-0">
-                            <span>Publier un besoin d’achat</span>
-                            <i class="ri-mail-send-line ri-lg"></i>
-                        </a>
-                    {% endif %}
+                    <a href="{% url 'tenders:add' %}" id="home-demande" class="btn btn-outline-primary btn-ico d-block d-md-inline-block ml-md-2 mt-3 mt-md-0">
+                        <span>Publier un besoin d’achat</span>
+                        <i class="ri-mail-send-line ri-lg"></i>
+                    </a>
                 </p>
             </div>
         </div>
