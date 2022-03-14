@@ -39,10 +39,12 @@ class Tender(models.Model):
     TENDERS_KIND_TENDER = "TENDER"
     TENDERS_KIND_QUOTE = "QUOTE"
     TENDERS_KIND_BOAMP = "BOAMP"
+    TENDERS_KIND_PROJECT = "PROJ"
 
     TENDERS_KIND_CHOICES = (
         (TENDERS_KIND_TENDER, "Appel d'offre"),
         (TENDERS_KIND_QUOTE, "Devis"),
+        (TENDERS_KIND_PROJECT, "Projet d’achat"),
     )
 
     RESPONSES_KIND_EMAIL = "EMAIL"
