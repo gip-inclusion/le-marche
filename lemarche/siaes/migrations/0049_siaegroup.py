@@ -38,6 +38,12 @@ class Migration(migrations.Migration):
                     models.PositiveIntegerField(blank=True, null=True, verbose_name="Nombre de structures"),
                 ),
                 (
+                    "siae_count_last_updated",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="Date de dernière mise à jour du nombre de structures"
+                    ),
+                ),
+                (
                     "employees_insertion_count",
                     models.PositiveIntegerField(blank=True, null=True, verbose_name="Nombre de salariés en insertion"),
                 ),
@@ -73,12 +79,6 @@ class Migration(migrations.Migration):
                     models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date de création"),
                 ),
                 ("updated_at", models.DateTimeField(auto_now=True, verbose_name="Date de modification")),
-                (
-                    "siaes",
-                    models.ManyToManyField(
-                        blank=True, related_name="groups", to="siaes.Siae", verbose_name="Structures du groupement"
-                    ),
-                ),
             ],
             options={
                 "verbose_name": "Groupement",

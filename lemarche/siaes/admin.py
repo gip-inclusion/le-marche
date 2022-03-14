@@ -1,10 +1,20 @@
 from django.contrib import admin
 from django.contrib.gis import admin as gis_admin
+from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
-from lemarche.siaes.models import Siae, SiaeClientReference, SiaeImage, SiaeLabel, SiaeOffer, SiaeUser, SiaeUserRequest
+from lemarche.siaes.models import (
+    Siae,
+    SiaeClientReference,
+    SiaeGroup,
+    SiaeImage,
+    SiaeLabel,
+    SiaeOffer,
+    SiaeUser,
+    SiaeUserRequest,
+)
 from lemarche.users.models import User
 from lemarche.utils.fields import pretty_print_readonly_jsonfield
 
@@ -78,7 +88,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     search_fields = ["id", "name", "slug", "siret"]
     search_help_text = "Cherche sur les champs : ID, Raison sociale, Slug, Siret"
 
-    autocomplete_fields = ["sectors", "networks"]
+    autocomplete_fields = ["sectors", "networks", "groups"]
     # prepopulated_fields = {"slug": ("name",)}
     readonly_fields = [field for field in Siae.READONLY_FIELDS if field not in ("coords")] + [
         "sector_count",
@@ -155,6 +165,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "nb_labels",
                     "nb_cient_references",
                     "nb_images",
+                    "groups",
                 )
             },
         ),
@@ -253,6 +264,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     # "nb_labels",
                     # "nb_cient_references",
                     # "nb_images",
+                    # "groups",
                 )
             },
         ),
@@ -500,3 +512,90 @@ class SiaeImageAdmin(admin.ModelAdmin):
         return mark_safe("<div>-</div>")
 
     image_url_display.short_description = "Image"
+
+
+@admin.register(SiaeGroup)
+class SiaeGroupAdmin(admin.ModelAdmin):
+    list_display = ["id", "name", "nb_siaes", "created_at"]
+    search_fields = ["id", "name"]
+    search_help_text = "Cherche sur les champs : ID, Nom"
+
+    prepopulated_fields = {"slug": ("name",)}
+    # autocomplete_fields = ["siaes"]
+    readonly_fields = [f"{field}_last_updated" for field in SiaeGroup.TRACK_UPDATE_FIELDS] + [
+        "nb_siaes",
+        "logo_url_display",
+        "created_at",
+        "updated_at",
+    ]
+
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": ("name", "slug", "siret"),
+            },
+        ),
+        (
+            "Détails",
+            {
+                "fields": (
+                    "year_constitution",
+                    "siae_count",
+                    "siae_count_last_updated",
+                    "nb_siaes",
+                    "employees_insertion_count",
+                    "employees_insertion_count_last_updated",
+                    "employees_permanent_count",
+                    "employees_permanent_count_last_updated",
+                    "ca",
+                    "ca_last_updated",
+                )
+            },
+        ),
+        (
+            "Contact",
+            {
+                "fields": (
+                    "contact_first_name",
+                    "contact_last_name",
+                    "contact_email",
+                    "contact_phone",
+                    "contact_website",
+                )
+            },
+        ),
+        (
+            "Logo",
+            {
+                "fields": (
+                    "logo_url",
+                    "logo_url_display",
+                )
+            },
+        ),
+        ("Info", {"fields": ("created_at", "updated_at")}),
+    )
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.annotate(siae_count_live=Count("siaes", distinct=True))
+        return qs
+
+    def nb_siaes(self, siae_group):
+        url = reverse("admin:siaes_siae_changelist") + f"?groups__in={siae_group.id}"
+        return format_html(f'<a href="{url}">{siae_group.siae_count_live}</a>')
+
+    nb_siaes.short_description = "Nombre de structures (live)"
+    nb_siaes.admin_order_field = "siae_count_live"
+
+    def logo_url_display(self, siae):
+        if siae.logo_url:
+            return mark_safe(
+                f'<a href="{siae.logo_url}" target="_blank">'
+                f'<img src="{siae.logo_url}" title="{siae.logo_url}" style="max-height:300px" />'
+                f"</a>"
+            )
+        return mark_safe("<div>-</div>")
+
+    logo_url_display.short_description = "Logo"
