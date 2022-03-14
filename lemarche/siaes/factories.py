@@ -1,6 +1,7 @@
 import string
 
 import factory.fuzzy
+from django.contrib.gis.geos import Point
 from factory.django import DjangoModelFactory
 
 from lemarche.siaes.models import Siae, SiaeClientReference, SiaeGroup, SiaeLabel, SiaeOffer
@@ -30,6 +31,8 @@ class SiaeFactory(DjangoModelFactory):
     post_code = factory.Faker("postalcode")
     department = factory.fuzzy.FuzzyChoice([key for (key, value) in Siae.DEPARTMENT_CHOICES])
     region = factory.fuzzy.FuzzyChoice([key for (key, value) in Siae.REGION_CHOICES])
+    coords = Point(48.86385199985207, 2.337071483848432)
+    contact_email = factory.Sequence("email{0}@example.com".format)
 
 
 class SiaeOfferFactory(DjangoModelFactory):

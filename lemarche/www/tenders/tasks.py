@@ -22,11 +22,13 @@ def find_opportunities_for_siaes(tender: Tender):
         .prefetch_many_to_many()
         .in_perimeters_area(tender.perimeters.all())
         .filter_sectors(tender.sectors.all())
-        .filter_with_email()
+        .has_contact_email()
     )
 
     for siae in siaes_potentially_interested:
         send_emails_tender_to_siae(tender, siae)
+
+    return siaes_potentially_interested
 
 
 @task()
