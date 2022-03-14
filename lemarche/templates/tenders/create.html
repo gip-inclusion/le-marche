@@ -100,7 +100,6 @@
 {% block extra_js %}
     <script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
     <script>
-
         const idModal = "#modalConfirmAddTender";
 
         $(document).on("click", "#btnAddTender", function(e){
@@ -144,10 +143,10 @@
 
             kindInput.addEventListener('change', () => {
                 let inputValue = $(kindInput).find('input:checked')[0].value
-                if (kindInput.value === 'TENDER') {
-                    toggleInputElement(false, element=external_link, required=false);
-                } else {
+                if (inputValue === 'TENDER') {
                     toggleInputElement(true, element=external_link, required=false);
+                } else {
+                    toggleInputElement(false, element=external_link, required=false);
                 }
             });
         });
