@@ -1,6 +1,7 @@
 import string
 
 import factory.fuzzy
+from django.contrib.gis.geos import Point
 from factory.django import DjangoModelFactory
 
 from lemarche.siaes.models import Siae, SiaeClientReference, SiaeGroup, SiaeLabel, SiaeOffer
