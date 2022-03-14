@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes.factories import SiaeFactory, SiaeGroupFactory, SiaeLabelFactory, SiaeOfferFactory
-from lemarche.siaes.models import Siae, SiaeUser
+from lemarche.siaes.models import Siae, SiaeGroup, SiaeUser
 from lemarche.users.factories import UserFactory
 
 
@@ -240,3 +240,29 @@ class SiaeGroupModelTest(TestCase):
 
     def test_str(self):
         self.assertEqual(str(self.siae_group), "Mon groupement")
+
+
+class SiaeGroupModelSaveTest(TestCase):
+    def test_update_last_updated_fields(self):
+        siae_group = SiaeGroupFactory()
+        self.assertEqual(siae_group.employees_insertion_count, None)
+        self.assertEqual(siae_group.employees_insertion_count_last_updated, None)
+        # new value: last_updated field will be set
+        siae_group = SiaeGroup.objects.get(id=siae_group.id)  # we need to fetch it again to pass through the __init__
+        siae_group.employees_insertion_count = 10
+        siae_group.save()
+        self.assertEqual(siae_group.employees_insertion_count, 10)
+        self.assertNotEqual(siae_group.employees_insertion_count_last_updated, None)
+        employees_insertion_count_last_updated = siae_group.employees_insertion_count_last_updated
+        # same value: last_updated field will not be updated
+        siae_group = SiaeGroup.objects.get(id=siae_group.id)
+        siae_group.employees_insertion_count = 10
+        siae_group.save()
+        self.assertEqual(siae_group.employees_insertion_count, 10)
+        self.assertEqual(siae_group.employees_insertion_count_last_updated, employees_insertion_count_last_updated)
+        # updated value: last_updated field will be updated
+        siae_group = SiaeGroup.objects.get(id=siae_group.id)
+        siae_group.employees_insertion_count = 15
+        siae_group.save()
+        self.assertEqual(siae_group.employees_insertion_count, 15)
+        self.assertNotEqual(siae_group.employees_insertion_count_last_updated, employees_insertion_count_last_updated)

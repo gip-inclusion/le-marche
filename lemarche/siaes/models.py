@@ -79,6 +79,14 @@ class SiaeGroup(models.Model):
     def __str__(self):
         return self.name
 
+    def __init__(self, *args, **kwargs):
+        """
+        https://stackoverflow.com/a/23363123
+        """
+        super(SiaeGroup, self).__init__(*args, **kwargs)
+        for field_name in self.TRACK_UPDATE_FIELDS:
+            setattr(self, f"__previous_{field_name}", getattr(self, field_name))
+
     def set_slug(self):
         """
         The slug field should be unique.
@@ -86,9 +94,23 @@ class SiaeGroup(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)[:50]
 
+    def set_last_updated_fields(self):
+        """
+        We track changes on some fields, in order to update their 'last_updated' counterpart.
+        Where are the '__previous' fields set? In the __init__ method
+        """
+        for field_name in self.TRACK_UPDATE_FIELDS:
+            previous_field_name = f"__previous_{field_name}"
+            if getattr(self, field_name) and getattr(self, field_name) != getattr(self, previous_field_name):
+                try:
+                    setattr(self, f"{field_name}_last_updated", timezone.now())
+                except AttributeError:
+                    pass
+
     def save(self, *args, **kwargs):
         """Generate the slug field before saving."""
         self.set_slug()
+        self.set_last_updated_fields()
         super().save(*args, **kwargs)
 
 
