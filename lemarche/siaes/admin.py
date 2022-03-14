@@ -521,7 +521,6 @@ class SiaeGroupAdmin(admin.ModelAdmin):
     search_help_text = "Cherche sur les champs : ID, Nom"
 
     prepopulated_fields = {"slug": ("name",)}
-    # autocomplete_fields = ["siaes"]
     readonly_fields = [f"{field}_last_updated" for field in SiaeGroup.TRACK_UPDATE_FIELDS] + [
         "nb_siaes",
         "logo_url_display",
@@ -589,11 +588,11 @@ class SiaeGroupAdmin(admin.ModelAdmin):
     nb_siaes.short_description = "Nombre de structures (live)"
     nb_siaes.admin_order_field = "siae_count_live"
 
-    def logo_url_display(self, siae):
-        if siae.logo_url:
+    def logo_url_display(self, siae_group):
+        if siae_group.logo_url:
             return mark_safe(
-                f'<a href="{siae.logo_url}" target="_blank">'
-                f'<img src="{siae.logo_url}" title="{siae.logo_url}" style="max-height:300px" />'
+                f'<a href="{siae_group.logo_url}" target="_blank">'
+                f'<img src="{siae_group.logo_url}" title="{siae_group.logo_url}" style="max-height:300px" />'
                 f"</a>"
             )
         return mark_safe("<div>-</div>")
