@@ -1,6 +1,10 @@
 {% extends "dashboard/siae_edit_base.html" %}
 {% load static bootstrap4 addstr %}
 
+{% block extra_css %}
+{{ form.media.css }}
+{% endblock %}
+
 {% block content_siae_form %}
 <form method="POST" action="" class="mb-3 mb-lg-5">
     {% csrf_token %}
@@ -98,6 +102,7 @@
 {% endblock %}
 
 {% block extra_js %}
+{{ form.media.js }}
 <script type="text/javascript">
 /**
  * Add formset items dynamically

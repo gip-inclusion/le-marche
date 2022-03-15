@@ -96,6 +96,7 @@ THIRD_PARTY_APPS = [
     "anymail",
     "django_filters",
     "bootstrap4",
+    "django_select2",
     "rest_framework",
     "drf_spectacular",
     "compressor",

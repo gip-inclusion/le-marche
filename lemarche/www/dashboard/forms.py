@@ -1,5 +1,6 @@
 from django import forms
 from django.forms.models import inlineformset_factory
+from django_select2.forms import ModelSelect2MultipleWidget
 
 from lemarche.favorites.models import FavoriteList
 from lemarche.networks.models import Network
@@ -210,15 +211,23 @@ class SiaeEditOtherForm(forms.ModelForm):
         required=False,
         widget=forms.RadioSelect(choices=[(True, "Oui"), (False, "Non")]),
     )
-    networks = forms.ModelChoiceField(
+    networks = forms.ModelMultipleChoiceField(
         queryset=Network.objects.all().order_by("name"),
         required=False,
-        widget=forms.Select,
+        widget=ModelSelect2MultipleWidget(
+            model=Network,
+            search_fields=["name__icontains"],
+            attrs={"data-placeholder": "Choississez le réseau", "data-minimum-input-length": 0},
+        ),
     )
-    groups = forms.ModelChoiceField(
+    groups = forms.ModelMultipleChoiceField(
         queryset=SiaeGroup.objects.all().order_by("name"),
         required=False,
-        widget=forms.Select,
+        widget=ModelSelect2MultipleWidget(
+            model=SiaeGroup,
+            search_fields=["name__icontains"],
+            attrs={"data-placeholder": "Choississez le groupement", "data-minimum-input-length": 0},
+        ),
     )
 
     class Meta:
