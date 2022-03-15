@@ -11,8 +11,19 @@
         <div class="col-12 col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                 <fieldset>
-                    <legend class="h3">Les informations en plus</legend>
-                    {% bootstrap_field form.is_cocontracting %}
+                    <legend class="h4">A quel réseau appartenez-vous ?</legend>
+                    {% bootstrap_field form.networks show_label=False %}
+                </fieldset>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h4">{{ form.is_cocontracting.label }}</legend>
+                    {% bootstrap_field form.is_cocontracting show_label=False %}
                 </fieldset>
             </div>
         </div>
@@ -29,13 +40,13 @@
             </div>
         </div>
     </div>
-        
+
     <div class="row mb-3 mb-lg-5">
         <div class="col-12 col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                 <fieldset>
-                    <legend class="h4">Les réseaux</legend>
-                    {% bootstrap_field form.networks show_label=False %}
+                    <legend class="h4">Appartenez-vous à un groupement commercial ?</legend>
+                    {% bootstrap_field form.groups show_label=False %}
                 </fieldset>
             </div>
         </div>

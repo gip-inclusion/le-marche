@@ -15,7 +15,7 @@
         <div class="col-12 col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                 <fieldset>
-                    <legend class="h3">Présenter votre structure</legend>
+                    <legend class="h4">Présenter votre structure</legend>
                     {% bootstrap_field form.description show_label=False %}
                 </fieldset>
             </div>
@@ -38,7 +38,7 @@
         <div class="col-12 col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                 <fieldset>
-                    <legend class="h3">Détails des prestations effectués <small class="text-muted">(matériels, lieux, savoirs faire…)</small></legend>
+                    <legend class="h4">Détails des prestations effectués <small class="text-muted">(matériels, lieux, savoirs faire…)</small></legend>
                     {% bootstrap_formset_errors offer_formset %}
                     {% if offer_formset.errors %}
                         <div class="alert alert-danger" role="alert">{{ offer_formset.errors }}</div>
@@ -76,7 +76,7 @@
         <div class="col-12 col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                 <fieldset>
-                    <legend class="h3">Références clients</legend>
+                    <legend class="h4">Références clients</legend>
                     {% bootstrap_formset_errors client_reference_formset %}
                     {% if client_reference_formset.errors %}
                         <div class="alert alert-danger" role="alert">{{ client_reference_formset.errors }}</div>
@@ -169,7 +169,7 @@
         <div class="col-12 col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                 <fieldset>
-                    <legend class="h3">Vos réalisations</legend>
+                    <legend class="h4">Vos réalisations</legend>
                     {% bootstrap_formset_errors image_formset %}
                     {% if image_formset.errors %}
                         <div class="alert alert-danger" role="alert">{{ image_formset.errors }}</div>
