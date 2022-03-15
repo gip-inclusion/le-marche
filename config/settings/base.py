@@ -531,6 +531,21 @@ if CONNECTION_MODE_TASKS in ("sqlite", "redis") and CC_WORKER_ENV:
     }
 
 
+# Caching
+# https://docs.djangoproject.com/en/4.0/topics/cache/
+# ------------------------------------------------------------------------------
+
+# Simple DB caching, we need it for Select2 (don't ask me why...)
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "django_cache",
+    }
+}
+
+SELECT2_CACHE_BACKEND = "default"
+
+
 # Logging
 # https://docs.djangoproject.com/en/dev/topics/logging
 # ------------------------------------------------------------------------------

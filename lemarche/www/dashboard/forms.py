@@ -217,7 +217,7 @@ class SiaeEditOtherForm(forms.ModelForm):
         widget=ModelSelect2MultipleWidget(
             model=Network,
             search_fields=["name__icontains"],
-            attrs={"data-placeholder": "Choississez le réseau", "data-minimum-input-length": 0},
+            attrs={"data-placeholder": "Choisissez le réseau", "data-minimum-input-length": 0},
         ),
     )
     groups = forms.ModelMultipleChoiceField(
@@ -226,7 +226,7 @@ class SiaeEditOtherForm(forms.ModelForm):
         widget=ModelSelect2MultipleWidget(
             model=SiaeGroup,
             search_fields=["name__icontains"],
-            attrs={"data-placeholder": "Choississez le groupement", "data-minimum-input-length": 0},
+            attrs={"data-placeholder": "Choisissez le groupement", "data-minimum-input-length": 0},
         ),
     )
 
