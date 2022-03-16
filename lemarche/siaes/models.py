@@ -129,7 +129,7 @@ class SiaeQuerySet(models.QuerySet):
         return self.filter(Q(is_active=False) | Q(is_delisted=True))
 
     def prefetch_many_to_many(self):
-        return self.prefetch_related("sectors", "networks", "perimeters")
+        return self.prefetch_related("sectors", "networks")
 
     def prefetch_many_to_one(self):
         return self.prefetch_related("offers", "client_references", "labels", "images")
@@ -248,7 +248,7 @@ class SiaeQuerySet(models.QuerySet):
     def filter_with_tender(self, tender: Tender):
         return (
             self.is_live()
-            .prefetch_related("sectors", "perimeters")
+            .prefetch_related("sectors")
             .in_perimeters_area(tender.perimeters.all())
             .filter_sectors(tender.sectors.all())
             .has_contact_email()
