@@ -17,14 +17,7 @@ def find_opportunities_for_siaes(tender: Tender):
     Args:
         tender (tenders.Tender): Need of the buyer
     """
-    siaes_potentially_interested = (
-        Siae.objects.is_live()
-        .prefetch_many_to_many()
-        .in_perimeters_area(tender.perimeters.all())
-        .filter_sectors(tender.sectors.all())
-        .has_contact_email()
-    )
-
+    siaes_potentially_interested = Siae.objects.filter_with_tender(tender)
     for siae in siaes_potentially_interested:
         send_emails_tender_to_siae(tender, siae)
 

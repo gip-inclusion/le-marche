@@ -19,10 +19,12 @@ from lemarche.perimeters.models import Perimeter
 from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY, get_department_code_from_name
 from lemarche.siaes.tasks import set_siae_coords
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
+from lemarche.tenders.models import Tender
 
 
 GEO_RANGE_DEPARTMENT = "DEPARTMENT"
 GEO_RANGE_CUSTOM = "CUSTOM"
+GEO_RANGE_COUNTRY = "COUNTRY"
 
 
 class SiaeGroup(models.Model):
@@ -127,7 +129,7 @@ class SiaeQuerySet(models.QuerySet):
         return self.filter(Q(is_active=False) | Q(is_delisted=True))
 
     def prefetch_many_to_many(self):
-        return self.prefetch_related("sectors", "networks")
+        return self.prefetch_related("sectors", "networks", "perimeters")
 
     def prefetch_many_to_one(self):
         return self.prefetch_related("offers", "client_references", "labels", "images")
@@ -242,6 +244,16 @@ class SiaeQuerySet(models.QuerySet):
 
     def filter_with_email(self):
         return self.exclude(contact_email__isnull=True).exclude(contact_email__exact="")
+
+    def filter_with_tender(self, tender: Tender):
+        return (
+            self.is_live()
+            .prefetch_related("sectors", "perimeters")
+            .in_perimeters_area(tender.perimeters.all())
+            .filter_sectors(tender.sectors.all())
+            .has_contact_email()
+            .distinct()
+        )
 
 
 class Siae(models.Model):
@@ -388,7 +400,7 @@ class Siae(models.Model):
 
     DEPARTMENT_CHOICES = DEPARTMENTS_PRETTY.items()
     REGION_CHOICES = REGIONS_PRETTY.items()
-    GEO_RANGE_COUNTRY = "COUNTRY"  # 3
+    GEO_RANGE_COUNTRY = GEO_RANGE_COUNTRY  # 3
     GEO_RANGE_REGION = "REGION"  # 2
     GEO_RANGE_DEPARTMENT = GEO_RANGE_DEPARTMENT  # 1
     GEO_RANGE_CUSTOM = GEO_RANGE_CUSTOM  # 0
