@@ -121,6 +121,21 @@ class SiaeGroup(models.Model):
         super().save(*args, **kwargs)
 
 
+def get_filter_city(perimeter, with_country=False):
+    filters = (
+        Q(post_code__in=perimeter.post_codes)
+        | (
+            Q(geo_range=GEO_RANGE_CUSTOM)
+            # why distance / 1000 ? because convert from meter to km
+            & Q(geo_range_custom_distance__gte=Distance("coords", perimeter.coords) / 1000)
+        )
+        | (Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=perimeter.department_code))
+    )
+    if with_country:
+        filters |= Q(geo_range=GEO_RANGE_COUNTRY)
+    return filters
+
+
 class SiaeQuerySet(models.QuerySet):
     def is_live(self):
         return self.filter(is_active=True).filter(is_delisted=False)
@@ -203,16 +218,16 @@ class SiaeQuerySet(models.QuerySet):
     def in_city_area(self, perimeter):
         return self.filter(self.get_filter_city(perimeter))
 
-    def in_perimeters_area(self, perimeters: models.QuerySet):
+    def in_perimeters_area(self, perimeters: models.QuerySet, with_country=False):
         cities = perimeters.filter(kind=Perimeter.KIND_CITY)
         departments = perimeters.filter(kind=Perimeter.KIND_DEPARTMENT)
         regions = perimeters.filter(kind=Perimeter.KIND_REGION)
         conditions = Q()
         if cities:
             # https://stackoverflow.com/questions/20222457/django-building-a-queryset-with-q-objects
-            conditions |= self.get_filter_city(cities[0])
+            conditions |= get_filter_city(cities[0], with_country)
             for c in cities[1:]:
-                conditions |= self.get_filter_city(c)
+                conditions |= get_filter_city(c, with_country)
         if departments:
             conditions |= Q(department=departments[0].insee_code)
             for d in departments[1:]:
@@ -249,7 +264,7 @@ class SiaeQuerySet(models.QuerySet):
         return (
             self.is_live()
             .prefetch_related("sectors")
-            .in_perimeters_area(tender.perimeters.all())
+            .in_perimeters_area(tender.perimeters.all(), with_country=True)
             .filter_sectors(tender.sectors.all())
             .has_contact_email()
             .distinct()
