@@ -23,10 +23,11 @@ update_itou_theme: scripts/upload_itou_theme.sh
 
 # After migrate
 populate_db:
+	pg_restore -d marche --if-exists --clean --no-owner --no-privileges lemarche/perimeters/management/commands/data/perimeters_20220104.sql
 	ls -d lemarche/fixtures/django/* | xargs django-admin loaddata
 
 populate_db_container:
-	# docker exec -ti bitoubi_postgres bash -c "pg_restore -d itou --if-exists --clean --no-owner --no-privileges backups/cities.sql"
+	# docker exec -ti bitoubi_postgres bash -c "pg_restore -d marche --if-exists --clean --no-owner --no-privileges lemarche/perimeters/management/commands/data/perimeters_20220104.sql"
 	docker exec -ti bitoubi_django bash -c "ls -d lemarche/fixtures/django/* | xargs django-admin loaddata"
 
 # Deployment
