@@ -145,6 +145,7 @@ def get_filter_city(perimeter):
             & Q(geo_range_custom_distance__gte=Distance("coords", perimeter.coords) / 1000)
         )
         | (Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=perimeter.department_code))
+        | Q(geo_range=GEO_RANGE_COUNTRY)
     )
 
 
@@ -156,7 +157,7 @@ class SiaeQuerySet(models.QuerySet):
         return self.filter(Q(is_active=False) | Q(is_delisted=True))
 
     def prefetch_many_to_many(self):
-        return self.prefetch_related("sectors", "networks")
+        return self.prefetch_related("sectors", "networks", "perimeters")
 
     def prefetch_many_to_one(self):
         return self.prefetch_related("offers", "client_references", "labels", "images")
