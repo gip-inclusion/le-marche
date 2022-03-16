@@ -3,7 +3,15 @@ import string
 import factory.fuzzy
 from factory.django import DjangoModelFactory
 
-from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeGroup, SiaeLabel, SiaeOffer
+
+
+class SiaeGroupFactory(DjangoModelFactory):
+    class Meta:
+        model = SiaeGroup
+
+    name = factory.Faker("company", locale="fr_FR")
+    # slug auto-generated
 
 
 class SiaeFactory(DjangoModelFactory):

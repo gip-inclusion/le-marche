@@ -24,6 +24,100 @@ GEO_RANGE_DEPARTMENT = "DEPARTMENT"
 GEO_RANGE_CUSTOM = "CUSTOM"
 
 
+class SiaeGroup(models.Model):
+    TRACK_UPDATE_FIELDS = [
+        # set last_updated fields
+        "siae_count",
+        "employees_insertion_count",
+        "employees_permanent_count",
+        "ca",
+    ]
+
+    name = models.CharField(verbose_name="Nom", max_length=255)
+    slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
+    siret = models.CharField(verbose_name="Siret", max_length=14, blank=True)
+
+    contact_first_name = models.CharField(verbose_name="Prénom", max_length=150, blank=True)
+    contact_last_name = models.CharField(verbose_name="Nom", max_length=150, blank=True)
+    contact_website = models.URLField(
+        verbose_name="Site internet", help_text="Doit commencer par http:// ou https://", blank=True
+    )
+    contact_email = models.EmailField(verbose_name="E-mail", blank=True)
+    contact_phone = models.CharField(verbose_name="Téléphone", max_length=150, blank=True)
+
+    logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True)
+
+    year_constitution = models.PositiveIntegerField(verbose_name="Année de création", blank=True, null=True)
+    siae_count = models.PositiveIntegerField(verbose_name="Nombre de structures", blank=True, null=True)
+    siae_count_last_updated = models.DateTimeField(
+        verbose_name="Date de dernière mise à jour du nombre de structures", blank=True, null=True
+    )
+    employees_insertion_count = models.PositiveIntegerField(
+        verbose_name="Nombre de salariés en insertion", blank=True, null=True
+    )
+    employees_insertion_count_last_updated = models.DateTimeField(
+        verbose_name="Date de dernière mise à jour du nombre de salariés en insertion", blank=True, null=True
+    )
+    employees_permanent_count = models.PositiveIntegerField(
+        verbose_name="Nombre de salariés permanents", blank=True, null=True
+    )
+    employees_permanent_count_last_updated = models.DateTimeField(
+        verbose_name="Date de dernière mise à jour du nombre de salariés permanents", blank=True, null=True
+    )
+    ca = models.PositiveIntegerField(verbose_name="Chiffre d'affaire", blank=True, null=True)
+    ca_last_updated = models.DateTimeField(
+        verbose_name="Date de dernière mise à jour du chiffre d'affaire", blank=True, null=True
+    )
+
+    sectors = models.ManyToManyField(
+        "sectors.Sector", verbose_name="Secteurs d'activité", related_name="siae_groups", blank=True
+    )
+
+    created_at = models.DateTimeField("Date de création", default=timezone.now)
+    updated_at = models.DateTimeField("Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Groupement"
+        verbose_name_plural = "Groupements"
+
+    def __str__(self):
+        return self.name
+
+    def __init__(self, *args, **kwargs):
+        """
+        https://stackoverflow.com/a/23363123
+        """
+        super(SiaeGroup, self).__init__(*args, **kwargs)
+        for field_name in self.TRACK_UPDATE_FIELDS:
+            setattr(self, f"__previous_{field_name}", getattr(self, field_name))
+
+    def set_slug(self):
+        """
+        The slug field should be unique.
+        """
+        if not self.slug:
+            self.slug = slugify(self.name)[:50]
+
+    def set_last_updated_fields(self):
+        """
+        We track changes on some fields, in order to update their 'last_updated' counterpart.
+        Where are the '__previous' fields set? In the __init__ method
+        """
+        for field_name in self.TRACK_UPDATE_FIELDS:
+            previous_field_name = f"__previous_{field_name}"
+            if getattr(self, field_name) and getattr(self, field_name) != getattr(self, previous_field_name):
+                try:
+                    setattr(self, f"{field_name}_last_updated", timezone.now())
+                except AttributeError:
+                    pass
+
+    def save(self, *args, **kwargs):
+        """Generate the slug field before saving."""
+        self.set_slug()
+        self.set_last_updated_fields()
+        super().save(*args, **kwargs)
+
+
 class SiaeQuerySet(models.QuerySet):
     def is_live(self):
         return self.filter(is_active=True).filter(is_delisted=False)
@@ -369,6 +463,7 @@ class Siae(models.Model):
         "sectors.Sector", verbose_name="Secteurs d'activité", related_name="siaes", blank=True
     )
     networks = models.ManyToManyField("networks.Network", verbose_name="Réseaux", related_name="siaes", blank=True)
+    groups = models.ManyToManyField("siaes.SiaeGroup", verbose_name="Groupements", related_name="siaes", blank=True)
     # ForeignKeys: offers, client_references, labels, images
 
     # C2 (ETP)
