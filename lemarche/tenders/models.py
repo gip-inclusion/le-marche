@@ -96,6 +96,7 @@ class Tender(models.Model):
     author = models.ForeignKey(
         to=settings.AUTH_USER_MODEL, related_name="tenders", on_delete=models.CASCADE, blank=True
     )
+    nb_siaes_found = models.PositiveIntegerField(verbose_name="Nombre de SIAE trouvées", default=0)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
