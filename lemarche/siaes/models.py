@@ -27,6 +27,21 @@ GEO_RANGE_CUSTOM = "CUSTOM"
 GEO_RANGE_COUNTRY = "COUNTRY"
 
 
+def get_filter_city(perimeter, with_country=False):
+    filters = (
+        Q(post_code__in=perimeter.post_codes)
+        | (
+            Q(geo_range=GEO_RANGE_CUSTOM)
+            # why distance / 1000 ? because convert from meter to km
+            & Q(geo_range_custom_distance__gte=Distance("coords", perimeter.coords) / 1000)
+        )
+        | (Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=perimeter.department_code))
+    )
+    if with_country:
+        filters |= Q(geo_range=GEO_RANGE_COUNTRY)
+    return filters
+
+
 class SiaeGroup(models.Model):
     TRACK_UPDATE_FIELDS = [
         # set last_updated fields
@@ -119,34 +134,6 @@ class SiaeGroup(models.Model):
         self.set_slug()
         self.set_last_updated_fields()
         super().save(*args, **kwargs)
-
-
-def get_filter_city(perimeter, with_country=False):
-    filters = (
-        Q(post_code__in=perimeter.post_codes)
-        | (
-            Q(geo_range=GEO_RANGE_CUSTOM)
-            # why distance / 1000 ? because convert from meter to km
-            & Q(geo_range_custom_distance__gte=Distance("coords", perimeter.coords) / 1000)
-        )
-        | (Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=perimeter.department_code))
-    )
-    if with_country:
-        filters |= Q(geo_range=GEO_RANGE_COUNTRY)
-    return filters
-
-
-def get_filter_city(perimeter):
-    return (
-        Q(post_code__in=perimeter.post_codes)
-        | (
-            Q(geo_range=GEO_RANGE_CUSTOM)
-            # why distance / 1000 ? because convert from meter to km
-            & Q(geo_range_custom_distance__gte=Distance("coords", perimeter.coords) / 1000)
-        )
-        | (Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=perimeter.department_code))
-        | Q(geo_range=GEO_RANGE_COUNTRY)
-    )
 
 
 class SiaeQuerySet(models.QuerySet):
