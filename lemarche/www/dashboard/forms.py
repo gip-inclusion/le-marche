@@ -1,9 +1,18 @@
 from django import forms
 from django.forms.models import inlineformset_factory
+from django_select2.forms import ModelSelect2MultipleWidget
 
 from lemarche.favorites.models import FavoriteList
 from lemarche.networks.models import Network
-from lemarche.siaes.models import Siae, SiaeClientReference, SiaeImage, SiaeLabel, SiaeOffer, SiaeUserRequest
+from lemarche.siaes.models import (
+    Siae,
+    SiaeClientReference,
+    SiaeGroup,
+    SiaeImage,
+    SiaeLabel,
+    SiaeOffer,
+    SiaeUserRequest,
+)
 from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.www.siaes.forms import SECTOR_FORM_QUERYSET
@@ -205,7 +214,20 @@ class SiaeEditOtherForm(forms.ModelForm):
     networks = forms.ModelMultipleChoiceField(
         queryset=Network.objects.all().order_by("name"),
         required=False,
-        widget=forms.CheckboxSelectMultiple,
+        widget=ModelSelect2MultipleWidget(
+            model=Network,
+            search_fields=["name__icontains"],
+            attrs={"data-placeholder": "Choisissez le réseau", "data-minimum-input-length": 0},
+        ),
+    )
+    groups = forms.ModelMultipleChoiceField(
+        queryset=SiaeGroup.objects.all().order_by("name"),
+        required=False,
+        widget=ModelSelect2MultipleWidget(
+            model=SiaeGroup,
+            search_fields=["name__icontains"],
+            attrs={"data-placeholder": "Choisissez le groupement", "data-minimum-input-length": 0},
+        ),
     )
 
     class Meta:
@@ -213,6 +235,7 @@ class SiaeEditOtherForm(forms.ModelForm):
         fields = [
             "is_cocontracting",
             "networks",
+            "groups",
             # "labels",  # inlineformset
         ]
 

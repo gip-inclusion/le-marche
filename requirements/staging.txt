@@ -21,6 +21,7 @@ django-fieldsets-with-inlines==0.6; python_version >= "3.4"
 django-filter==21.1; python_version >= "3.6"
 django-js-asset==1.2.2
 django-libsass==0.9
+django-select2==7.10.0
 django==4.0.2; python_version >= "3.8"
 djangorestframework==3.13.1; python_version >= "3.6"
 drf-spectacular==0.21.1; python_version >= "3.6"
