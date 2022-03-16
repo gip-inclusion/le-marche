@@ -197,13 +197,13 @@ class SiaeSearchForm(forms.Form):
         """
         Method to order the search results (can depend on the search filters).
 
-        By default, the Siaes are ordered by name.
-
+        By default, Siae will be ordered randomly (was by "name" before. could also be by "-last_updated"?)
         **BUT**
         - if a Siae has a a SiaeOffer, or a description, or a User, then it is "boosted"
         - if the search is on a CITY perimeter, we order by coordinates first
         """
-        ORDER_BY_FIELDS = ["-has_offer", "-has_description", "-has_user", "name"]
+        DEFAULT_ORDERING = ["?"]
+        ORDER_BY_FIELDS = ["-has_offer", "-has_description", "-has_user"] + DEFAULT_ORDERING
         # annotate on description presence: https://stackoverflow.com/a/65014409/4293684
         # qs = qs.annotate(has_description=Exists(F("description")))  # doesn't work
         qs = qs.annotate(
