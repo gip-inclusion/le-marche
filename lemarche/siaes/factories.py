@@ -31,8 +31,10 @@ class SiaeFactory(DjangoModelFactory):
     post_code = factory.Faker("postalcode")
     department = factory.fuzzy.FuzzyChoice([key for (key, value) in Siae.DEPARTMENT_CHOICES])
     region = factory.fuzzy.FuzzyChoice([key for (key, value) in Siae.REGION_CHOICES])
+    # by default is Paris
     coords = Point(48.86385199985207, 2.337071483848432)
     contact_email = factory.Sequence("email{0}@example.com".format)
+    geo_range_custom_distance = 10
 
 
 class SiaeOfferFactory(DjangoModelFactory):
