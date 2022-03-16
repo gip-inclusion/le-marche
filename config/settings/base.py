@@ -96,6 +96,7 @@ THIRD_PARTY_APPS = [
     "anymail",
     "django_filters",
     "bootstrap4",
+    "django_select2",
     "rest_framework",
     "drf_spectacular",
     "compressor",
@@ -530,6 +531,21 @@ if CONNECTION_MODE_TASKS in ("sqlite", "redis") and CC_WORKER_ENV:
     }
 
 
+# Caching
+# https://docs.djangoproject.com/en/4.0/topics/cache/
+# ------------------------------------------------------------------------------
+
+# Simple DB caching, we need it for Select2 (don't ask me why...)
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "django_cache",
+    }
+}
+
+SELECT2_CACHE_BACKEND = "default"
+
+
 # Logging
 # https://docs.djangoproject.com/en/dev/topics/logging
 # ------------------------------------------------------------------------------
@@ -593,6 +609,7 @@ FACILITATOR_LIST = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRtavj-NHym
 TYPEFORM_BESOIN_ACHAT = "https://itou.typeform.com/to/KWViHaph"
 TYPEFORM_BESOIN_ACHAT_RECHERCHE = "https://itou.typeform.com/to/nxG0HlYx"
 TYPEFORM_BESOIN_ACHAT_GROUPE = "https://itou.typeform.com/to/nySSrtiP"
+TYPEFORM_GROUPEMENT_AJOUT = "https://itou.typeform.com/to/AENCiOWD"
 
 
 # Misc
