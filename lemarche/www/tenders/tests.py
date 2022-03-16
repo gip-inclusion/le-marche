@@ -75,6 +75,6 @@ class TenderMatchingTest(TestCase):
 
     def test_number_queries(self):
         tender = TenderFactory(sectors=self.sectors)
-        with self.assertNumQueries(7):
+        with self.assertNumQueries(5):
             siaes = find_opportunities_for_siaes(tender)
         self.assertEqual(len(siaes.get()), 2)
