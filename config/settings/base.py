@@ -609,6 +609,7 @@ FACILITATOR_LIST = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRtavj-NHym
 TYPEFORM_BESOIN_ACHAT = "https://itou.typeform.com/to/KWViHaph"
 TYPEFORM_BESOIN_ACHAT_RECHERCHE = "https://itou.typeform.com/to/nxG0HlYx"
 TYPEFORM_BESOIN_ACHAT_GROUPE = "https://itou.typeform.com/to/nySSrtiP"
+TYPEFORM_GROUPEMENT_AJOUT = "https://itou.typeform.com/to/AENCiOWD"
 
 
 # Misc
