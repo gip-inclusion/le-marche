@@ -32,6 +32,15 @@ class TenderQuerySet(models.QuerySet):
         query = reduce(_operator.or_, (Q(sectors__id__contains=item.id) for item in sectors))
         return self.filter(query).distinct()
 
+    def filter_with_siae(self, siae):
+        sectors = siae.sectors.all()
+        qs = self.prefetch_related("sectors", "perimeters").in_sectors(sectors)
+        if siae.geo_range != siae.GEO_RANGE_COUNTRY:
+            qs.find_in_perimeters(
+                post_code=siae.post_code, coords=siae.coords, department=siae.department, region=siae.region
+            )
+        return qs.distinct()
+
 
 class Tender(models.Model):
     """Appel d'offre et devis"""
