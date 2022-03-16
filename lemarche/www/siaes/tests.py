@@ -359,12 +359,11 @@ class SiaePerimeterSearchFilterTest(TestCase):
         - all the Siae exactly in this city+department (4 SIAE)
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble (2 SIAE: Grenoble & La Tronche. Chamrousse is outside)  # noqa
         + all the Siae with geo_range=GEO_RANGE_DEPARTMENT + department=38 (1 SIAE)
-        + all the Siae with geo_range=GEO_RANGE_COUNTRY (2 SIAE)
         """
         form = SiaeSearchForm({"perimeter": "grenoble-38", "perimeter_name": "Grenoble (38)"})
         perimeter = form.get_perimeter()
         qs = form.filter_queryset(perimeter)
-        self.assertEqual(qs.count(), 2 + 2 + 1 + 2)
+        self.assertEqual(qs.count(), 2 + 2 + 1)
 
     def test_search_perimeter_city_2(self):
         """
@@ -372,12 +371,11 @@ class SiaePerimeterSearchFilterTest(TestCase):
         - all the Siae exactly in this city+department (1 SIAE)
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble (1 SIAE: Chamrousse. Grenoble & La Tronche are outside)  # noqa
         + all the Siae with geo_range=GEO_RANGE_DEPARTMENT + department=38 (1 SIAE)
-        + all the Siae with geo_range=GEO_RANGE_COUNTRY (3 SIAE)
         """
         form = SiaeSearchForm({"perimeter": "chamrousse-38", "perimeter_name": "Chamrousse (38)"})
         perimeter = form.get_perimeter()
         qs = form.filter_queryset(perimeter)
-        self.assertEqual(qs.count(), 0 + 1 + 1 + 3)
+        self.assertEqual(qs.count(), 0 + 1 + 1)
 
 
 class SiaeSearchOrderTest(TestCase):
