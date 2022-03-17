@@ -1,18 +1,45 @@
 import datetime
+from functools import reduce
 from uuid import uuid4
 
+import _operator
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models, transaction
+from django.db.models import Q
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 
 
-class TenderManager(models.Manager):
+class TenderQuerySet(models.QuerySet):
     def created_by_user(self, user):
         return self.filter(author=user)
+
+    def find_in_perimeters(self, post_code, coords, department, region):
+        filters = (
+            Q(perimeters__post_codes__contains=[post_code])
+            | Q(perimeters__insee_code=department)
+            | Q(perimeters__name=region)
+        )
+        # add distance
+        queryset = self.filter(filters).distinct()
+        return queryset
+
+    def in_sectors(self, sectors):
+        query = reduce(_operator.or_, (Q(sectors__id__contains=item.id) for item in sectors))
+        return self.filter(query).distinct()
+
+    def filter_with_siae(self, siae):
+        sectors = siae.sectors.all()
+        qs = self.prefetch_related("sectors", "perimeters").in_sectors(sectors)
+        if siae.geo_range != siae.GEO_RANGE_COUNTRY:
+            qs.find_in_perimeters(
+                post_code=siae.post_code, coords=siae.coords, department=siae.department, region=siae.region
+            )
+        return qs.distinct()
 
 
 class Tender(models.Model):
@@ -21,10 +48,12 @@ class Tender(models.Model):
     TENDERS_KIND_TENDER = "TENDER"
     TENDERS_KIND_QUOTE = "QUOTE"
     TENDERS_KIND_BOAMP = "BOAMP"
+    TENDERS_KIND_PROJECT = "PROJ"
 
     TENDERS_KIND_CHOICES = (
         (TENDERS_KIND_TENDER, "Appel d'offre"),
         (TENDERS_KIND_QUOTE, "Devis"),
+        (TENDERS_KIND_PROJECT, "Projet d’achat"),
     )
 
     RESPONSES_KIND_EMAIL = "EMAIL"
@@ -67,13 +96,14 @@ class Tender(models.Model):
     author = models.ForeignKey(
         to=settings.AUTH_USER_MODEL, related_name="tenders", on_delete=models.CASCADE, blank=True
     )
+    nb_siaes_found = models.PositiveIntegerField(verbose_name="Nombre de SIAE trouvées", default=0)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
 
-    objects = TenderManager()
+    objects = models.Manager.from_queryset(TenderQuerySet)()
 
     class Meta:
         verbose_name = "Besoin d'acheteur"
@@ -144,7 +174,5 @@ class Tender(models.Model):
     def get_perimeters_names(self):
         return ", ".join(self.perimeters.values_list("name", flat=True))
 
-    @cached_property
-    def get_url(self):
-        # TODO: create view page for tenders
-        return "https://lemarche.inclusion.beta.gouv.fr/"
+    def get_absolute_url(self):
+        return reverse("tenders:detail", kwargs={"slug": self.slug})

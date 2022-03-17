@@ -63,9 +63,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   function inputValue(result) {
-    // strip html from suggestion
-    const resultValue = result ? suggestion(result).replace(/(<([^>]+)>)/gi, '') : '';
-    return result && resultValue;
+    return "";
   }
 
   function removeInputOnClick(){
@@ -106,8 +104,6 @@ document.addEventListener("DOMContentLoaded", function() {
       // }
       // debugger
       createHiddenInputPerimeter(result);
-      setTimeout(
-      resetInputValueHiddenField(), 5000);
       // // Edge case: if there is an initial value and it is selected again (!)  // commented out because the hidden input value is already set, no need to re-set it
       // if (typeof result === 'string') {
       //   perimeterInput.value = perimeterParamInitial;
@@ -115,10 +111,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  function resetInputValueHiddenField() {
-    let perimeterNameInput = document.getElementById('perimeter_name');  // autocomplete // not yet inititated (see bottom)
-    perimeterNameInput.value = '';
-  }
 
   if (document.body.contains(perimeterAutocompleteContainer)) {
     accessibleAutocomplete({
@@ -132,7 +124,6 @@ document.addEventListener("DOMContentLoaded", function() {
         const res = await fetchSource(query);
         populateResults(res);
         // we also reset the inputValueHiddenField because the perimeter hasn't been chosen yet (will happen with onConfirm)
-        // resetInputValueHiddenField();
       }, 300),
       displayMenu: 'overlay',
       templates: {

@@ -1,0 +1,110 @@
+{% extends "layouts/base.html" %}
+{% load bootstrap4 static humanize %}
+
+{% block title %}{{tender.get_kind_name}} {{tender.title}} {{ block.super }}{% endblock %}
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">{{parent_title}}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{tender.title|truncatechars:25 }}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="container">
+    <div class="card c-card c-card--marche siae-card rounded-lg shadow-lg mt-4">
+        <p class="text-right text-white bg-tertiary fs-sm rounded-t-lg py-3 px-5">
+            Date limite de réponse : {{tender.deadline_date}}
+        </p>
+        <div class="card-body pb-5 px-5">
+            <div class="row py-4">
+                <div class="col-md-12">
+                    <h1>
+                        {{tender.title}}
+                        <span class="fs-sm badge badge-base badge-pill badge-emploi float-right"  aria-hidden="true">{{tender.get_kind_name}}</span>
+                    </h1>
+                </div>
+            </div>
+            <div class="row text-bold">
+                <div class="col">
+                    <span class="ri-award-line"></span>
+                    {{tender.get_sectors_names}}
+                </div>
+                <div class="col">
+                    <span class="ri-map-pin-2-line"></span>
+                    {{tender.get_perimeters_names}}
+                </div>
+            </div>
+            <hr class="my-5">
+            <div class="py-2">
+                <h2>Description <span class="float-right fs-sm  text-muted">Début d'intervention : {{tender.start_working_date}}</span></h2>
+                <p>{{tender.description}}</p>
+            </div>
+            <hr class="my-5">
+            <div class="py-2">
+                <h2>Contraintes techniques spécifiques</h2>
+                <p>{{tender.constraints}}</p>
+            </div>
+            <hr class="my-5">
+            <div class="py-2">
+                <h2>Montant du marché</h2>
+                <p>{{tender.amount | intcomma}}&nbsp;€</p>
+            </div>
+
+            <hr class="my-5">
+            <div class="py-2">
+                <h2>Pour répondre à cet appel d’offre</h2>
+                <div class="row">
+                    {% if tender.contact_infos.full_name %}
+                        <div class="col-md-6">
+                            <span class="ri-account-circle-line"></span>
+                            {{tender.contact_infos.full_name}}
+                        </div>
+                    {% endif %}
+                    {% if tender.contact_infos.company %}
+                        <div class="col-md-6">
+                            <span class="ri-building-2-line"></span>
+                            {{tender.contact_infos.company}}
+                        </div>
+                    {% endif %}
+                    {% if tender.contact_infos.contact_email %}
+                        <div class="col-md-6">
+                            <span class="ri-at-line"></span>
+                            {{tender.contact_infos.contact_email}}
+                        </div>
+                    {% endif %}
+                    {% if tender.contact_infos.contact_phone %}
+                        <div class="col-md-6">
+                            <span class="ri-phone-line"></span>
+                            {{tender.contact_infos.contact_phone}}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% if tender.external_link %}
+                <hr class="my-5">
+                <div class="py-2">
+                    <a class="btn btn-outline-primary float-right" target="_blank" href="{{tender.external_link}}">
+                        Voir l'appel d'offre <span class="ri-external-link-line" aria-hidden="true"></span>
+                    </a>
+
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}
