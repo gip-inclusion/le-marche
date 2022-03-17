@@ -152,7 +152,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             },
         ),
         ("API", {"fields": ("api_key",)}),
-        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser", "groups")}),
+        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser")}),
         (
             "Données C4 Cocorico",
             {
@@ -206,7 +206,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             },
         ),
         ("API", {"fields": ("api_key",)}),
-        # ("Permissions", {"fields": ("is_staff", "groups")}),
     )
 
     def get_queryset(self, request):
