@@ -116,7 +116,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         )
         user = self.request.user
         if user.kind == user.KIND_BUYER:
-            add_to_contact_list(self.request.user, "buyer_download")
+            add_to_contact_list(user, "buyer_download")
 
         if not len(request_params):
             # no search filters -> the user wants to download the whole list -> serve the generated file stored on S3
