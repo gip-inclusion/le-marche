@@ -85,7 +85,15 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     model = User
 
     list_display = ["id", "first_name", "last_name", "kind", "nb_siaes", "last_login", "created_at"]
-    list_filter = ["kind", HasSiaeFilter, "partner_kind", HasFavoriteListFilter, HasApiKeyFilter, "is_staff"]
+    list_filter = [
+        "kind",
+        HasSiaeFilter,
+        "partner_kind",
+        HasFavoriteListFilter,
+        HasApiKeyFilter,
+        "is_staff",
+        "is_superuser",
+    ]
     search_fields = ["id", "email", "first_name", "last_name"]
     search_help_text = "Cherche sur les champs : ID, E-mail, Prénom, Nom"
     ordering = ["-created_at"]
@@ -144,7 +152,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             },
         ),
         ("API", {"fields": ("api_key",)}),
-        ("Permissions", {"fields": ("is_active", "is_staff", "groups")}),
+        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser", "groups")}),
         (
             "Données C4 Cocorico",
             {
@@ -198,7 +206,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             },
         ),
         ("API", {"fields": ("api_key",)}),
-        ("Permissions", {"fields": ("is_staff", "groups")}),
+        # ("Permissions", {"fields": ("is_staff", "groups")}),
     )
 
     def get_queryset(self, request):
