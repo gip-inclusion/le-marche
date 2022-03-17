@@ -1,18 +1,13 @@
 document.addEventListener("DOMContentLoaded", function() {
-  /**
+   /**
    * Accessible autocomplete for the perimeter search form field
    */
 
-  const perimeterAutocompleteContainer = document.querySelector('#search-form #dir_form_perimeter_name');
-  // let perimeterNameInput = document.getElementById('perimeter_name');  // autocomplete // not yet inititated (see bottom)
-  let perimeterInput = document.getElementById('id_perimeter');  // hidden
+  const perimeterAutocompleteContainer = document.querySelector('#dir_form_perimeter_name');
+  const perimetersContainer = document.querySelector('#perimeters-selected');
 
-  // check if there is an initial value for the autocomplete
-  const urlParams = new URLSearchParams(window.location.search);
-  const perimeterParam = urlParams.get('perimeter');
-  const perimeterNameParam = urlParams.get('perimeter_name');
-  const perimeterParamInitial = perimeterParam ? perimeterParam : '';
-  const perimeterNameParamInitial = perimeterNameParam ? perimeterNameParam : '';
+
+  // let perimeterInput = document.getElementById('id_perimeters');  // hidden
 
   const perimeterKindMapping = {
     'REGION': 'région',
@@ -73,12 +68,45 @@ document.addEventListener("DOMContentLoaded", function() {
     return result && resultValue;
   }
 
+  function removeInputOnClick(){
+    let idRefInput = $(this).data("refinput");
+    // remove the input
+    $(`#${idRefInput}`).remove();
+    $(this).remove();
+  }
+
+
+  function createHiddenInputPerimeter(result){
+    let removeIcon = $('<i>', { class: "ri-close-line ml-2" });
+    let idResult = `hiddenPermeter-${result.id}`;
+    $('<input>', {
+        type: 'hidden',
+        id: idResult,
+        name: "perimeters",
+        value: result.id
+    }).appendTo(perimetersContainer);
+    let button = $('<button>', {
+        type: 'button',
+        class: "btn btn-sm btn-outline-primary btn-warning mr-2",
+        text: `${result.name}`,
+        'data-refInput': idResult,
+        click: removeInputOnClick
+    })
+    removeIcon.appendTo(button);
+    button.appendTo(perimetersContainer);
+
+  }
+
   function inputValueHiddenField(result) {
     // we want to avoid clicks outside that return 'undefined'
     if (result) {
-      if (typeof result === 'object') {
-        perimeterInput.value = result.slug;
-      }
+      // if (typeof result === 'object') {
+      //   perimeterInput.value = result.slug;
+      // }
+      // debugger
+      createHiddenInputPerimeter(result);
+      setTimeout(
+      resetInputValueHiddenField(), 5000);
       // // Edge case: if there is an initial value and it is selected again (!)  // commented out because the hidden input value is already set, no need to re-set it
       // if (typeof result === 'string') {
       //   perimeterInput.value = perimeterParamInitial;
@@ -87,7 +115,8 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   function resetInputValueHiddenField() {
-    perimeterInput.value = '';
+    let perimeterNameInput = document.getElementById('perimeter_name');  // autocomplete // not yet inititated (see bottom)
+    perimeterNameInput.value = '';
   }
 
   if (document.body.contains(perimeterAutocompleteContainer)) {
@@ -97,13 +126,13 @@ document.addEventListener("DOMContentLoaded", function() {
       name: 'perimeter_name',  // url GET param name
       placeholder: 'Région, département, ville',  // 'Autour de (Arras, Bobigny, Strasbourg…)',
       minLength: 2,
-      defaultValue: perimeterNameParamInitial,
-      source: async (query, populateResults) => {  // TODO; use debounce ?
+      defaultValue: "",
+      source: debounce(async (query, populateResults) => {  // TODO; use debounce ?
         const res = await fetchSource(query);
         populateResults(res);
         // we also reset the inputValueHiddenField because the perimeter hasn't been chosen yet (will happen with onConfirm)
-        resetInputValueHiddenField();
-      },
+        // resetInputValueHiddenField();
+      }, 300),
       displayMenu: 'overlay',
       templates: {
         inputValue: inputValue,  // returns the string value to be inserted into the input
@@ -123,18 +152,6 @@ document.addEventListener("DOMContentLoaded", function() {
       // tAssistiveHint:
     });
 
-    /**
-     * We track changes on the perimeterNameInput value.
-     * When the value is empty, we need to reset the perimeterName value as well.
-     */
-    let perimeterNameInput = document.getElementById('perimeter_name');  // autocomplete
-    if (perimeterNameInput) {
-      perimeterNameInput.addEventListener('change', function() {
-        if (!perimeterNameInput.value) {
-          inputValueHiddenField({'slug': ''});
-        }
-      });
-    }
   }
 
 });
