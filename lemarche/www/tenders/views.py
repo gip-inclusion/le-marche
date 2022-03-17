@@ -7,6 +7,7 @@ from django.utils.safestring import mark_safe
 from django.views.generic import CreateView
 
 from lemarche.www.tenders.forms import AddTenderForm
+from lemarche.www.tenders.tasks import find_opportunities_for_siaes
 
 
 class TenderAddView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -29,6 +30,8 @@ class TenderAddView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
             messages.SUCCESS,
             self.get_success_message(form.cleaned_data, tender),
         )
+        # task
+        find_opportunities_for_siaes(tender)
         return HttpResponseRedirect(self.success_url)
 
     def get_initial(self):
