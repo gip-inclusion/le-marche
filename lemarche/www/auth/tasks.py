@@ -3,6 +3,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from huey.contrib.djhuey import task
 
+from lemarche.users.models import User
 from lemarche.utils.apis import api_mailjet
 from lemarche.utils.emails import whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url
@@ -45,29 +46,43 @@ def send_signup_notification_email(user):
     )
 
 
-def add_to_contact_list(user, type):
+def get_mailjet_cl_on_signup(user: User):
+    if user.kind == user.KIND_SIAE:
+        return settings.MAILJET_NL_CL_SIAE_ID
+    elif user.kind == user.KIND_BUYER:
+        return settings.MAILJET_NL_CL_BUYER_ID
+    elif user.kind == user.KIND_PARTNER:
+        if user.partner_kind == user.PARTNER_KIND_FACILITATOR:
+            return settings.MAILJET_NL_CL_PARTNER_FACILITATORS_ID
+        elif user.partner_kind in (user.PARTNER_KIND_NETWORD_IAE, user.PARTNER_KIND_NETWORK_HANDICAP):
+            return settings.MAILJET_NL_CL_PARTNER_NETWORKS_IAE_HANDICAP_ID
+        elif user.partner_kind == user.PARTNER_KIND_DREETS:
+            return settings.MAILJET_NL_CL_PARTNER_DREETS_ID
+
+
+def add_to_contact_list(user: User, type: str):
     """Add user to contactlist
 
     Args:
         user (User): the user how will be added in the contact list
-        type (String): "siae", OR "buyer" else raise ValueError
+        type (String): "signup", OR "buyer_download" else raise ValueError
     """
-    if type == "siae":
-        contact_list_id = settings.MAILJET_NEWSLETTER_CONTACT_LIST_SIAE_ID
-    elif type == "buyer":
-        contact_list_id = settings.MAILJET_NEWSLETTER_CONTACT_LIST_BUYER_ID
+    if type == "signup":
+        contact_list_id = get_mailjet_cl_on_signup(user)
+    elif type == "buyer_download":
+        contact_list_id = settings.MAILJET_NL_CL_BUYER_DOWNLOAD_SIAE_LIST_ID
     else:
-        raise ValueError("kind must be siae or buyer")
+        raise ValueError("kind must be siae or buyer_download")
+    if contact_list_id:
+        properties = {
+            "nom": user.first_name.capitalize(),
+            "prénom": user.last_name.capitalize(),
+            "pays": "france",
+            "nomsiae": user.company_name.capitalize() if user.company_name else "",
+            "poste": user.position.capitalize() if user.position else "",
+        }
 
-    properties = {
-        "nom": user.first_name,
-        "prénom": user.last_name,
-        "pays": "france",
-        "nomsiae": user.company_name,
-        "poste": user.position,
-    }
-
-    api_mailjet.add_to_contact_list_async(user.email, properties, contact_list_id)
+        api_mailjet.add_to_contact_list_async(user.email, properties, contact_list_id)
 
 
 @task()
