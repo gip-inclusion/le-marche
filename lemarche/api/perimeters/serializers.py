@@ -7,6 +7,7 @@ class PerimeterSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Perimeter
         fields = [
+            "id",
             "name",
             "slug",
             "kind",

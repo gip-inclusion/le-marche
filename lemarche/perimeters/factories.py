@@ -11,3 +11,4 @@ class PerimeterFactory(DjangoModelFactory):
     name = factory.Faker("name")
     # slug is auto-generated
     kind = Perimeter.KIND_CITY
+    insee_code = factory.Sequence(lambda n: n)
