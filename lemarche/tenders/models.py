@@ -58,10 +58,10 @@ class Tender(models.Model):
     )
 
     perimeters = models.ManyToManyField(
-        "perimeters.Perimeter", verbose_name="Lieux d'exécutions", related_name="tenders", blank=True
+        "perimeters.Perimeter", verbose_name="Lieux d'exécutions", related_name="tenders", blank=False
     )
     sectors = models.ManyToManyField(
-        "sectors.Sector", verbose_name="Secteurs d'activités", related_name="tenders", blank=True
+        "sectors.Sector", verbose_name="Secteurs d'activités", related_name="tenders", blank=False
     )
 
     author = models.ForeignKey(

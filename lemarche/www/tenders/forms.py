@@ -24,7 +24,7 @@ class AddTenderForm(forms.ModelForm):
         queryset=SECTOR_FORM_QUERYSET,
         choices_groupby="group",
         to_field_name="slug",
-        required=False,
+        required=True,
     )
 
     response_kind = forms.MultipleChoiceField(
@@ -60,3 +60,11 @@ class AddTenderForm(forms.ModelForm):
             "start_working_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
             "kind": forms.RadioSelect(),
         }
+
+    def clean(self):
+        super().clean()
+        msg_field_missing = "{} est un champ obligatoire"
+        if "perimeters" in self.errors:
+            self.errors["perimeters"] = [msg_field_missing.format("Lieux d'exécutions")]
+        if "sectors" in self.errors:
+            self.errors["sectors"] = [msg_field_missing.format("Secteurs d’activités")]
