@@ -175,4 +175,4 @@ class Tender(models.Model):
         return ", ".join(self.perimeters.values_list("name", flat=True))
 
     def get_absolute_url(self):
-        return reverse("tenders:add", kwargs={"pk": self.pk})
+        return reverse("tenders:detail", kwargs={"slug": self.slug})

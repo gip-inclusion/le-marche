@@ -5,6 +5,7 @@ from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
 from lemarche.utils.apis import api_mailjet
 from lemarche.utils.emails import whitelist_recipient_list
+from lemarche.utils.urls import get_domain_url
 
 
 EMAIL_SUBJECT_PREFIX = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_ENV != "prod" else ""
@@ -22,6 +23,7 @@ def find_opportunities_for_siaes(tender: Tender):
         send_emails_tender_to_siae(tender, siae)
 
     tender.nb_siaes_found = len(siaes_potentially_interested)
+
     tender.save()
     return siaes_potentially_interested
 
@@ -39,7 +41,7 @@ def send_emails_tender_to_siae(tender: Tender, siae: Siae):
             "RESPONSE_KIND": tender.get_kind_name,
             "SECTORS": tender.get_sectors_names,
             "PERIMETERS": tender.get_perimeters_names,
-            "TENDER_URL": tender.get_absolute_url(),
+            "TENDER_URL": f"https://{get_domain_url()}{tender.get_absolute_url()}",
         }
 
         api_mailjet.send_transactional_email_with_template(
