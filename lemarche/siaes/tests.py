@@ -49,7 +49,7 @@ class SiaeModelTest(TestCase):
         self.assertEqual(siae_custom_empty.geo_range_pretty_display, "non disponible")
 
     def test_is_missing_content_property(self):
-        siae_missing = SiaeFactory(name="Ma boite")
+        siae_missing = SiaeFactory(name="Ma boite", contact_email="")
         self.assertTrue(siae_missing.is_missing_content)
         siae_full = SiaeFactory(
             name="Ma boite",

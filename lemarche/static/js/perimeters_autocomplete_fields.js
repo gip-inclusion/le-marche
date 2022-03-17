@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
   function createHiddenInputPerimeter(result){
-    let removeIcon = $('<i>', { class: "ri-close-line ml-2" });
+    let removeIcon = $('<i>', { class: "ri-close-line ml-2", "aria-hidden":true });
     let idResult = `hiddenPermeter-${result.id}`;
     $('<input>', {
         type: 'hidden',
@@ -88,6 +88,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let button = $('<button>', {
         type: 'button',
         class: "btn btn-sm btn-outline-primary btn-warning mr-2",
+        title: `Retirer ${result.name} du besoin`,
         text: `${result.name}`,
         'data-refInput': idResult,
         click: removeInputOnClick
@@ -127,7 +128,7 @@ document.addEventListener("DOMContentLoaded", function() {
       placeholder: 'Région, département, ville',  // 'Autour de (Arras, Bobigny, Strasbourg…)',
       minLength: 2,
       defaultValue: "",
-      source: debounce(async (query, populateResults) => {  // TODO; use debounce ?
+      source: debounce(async (query, populateResults) => {
         const res = await fetchSource(query);
         populateResults(res);
         // we also reset the inputValueHiddenField because the perimeter hasn't been chosen yet (will happen with onConfirm)

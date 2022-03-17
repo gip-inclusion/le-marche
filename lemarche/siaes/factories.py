@@ -30,6 +30,7 @@ class SiaeFactory(DjangoModelFactory):
     post_code = factory.Faker("postalcode")
     department = factory.fuzzy.FuzzyChoice([key for (key, value) in Siae.DEPARTMENT_CHOICES])
     region = factory.fuzzy.FuzzyChoice([key for (key, value) in Siae.REGION_CHOICES])
+    contact_email = factory.Sequence("email{0}@example.com".format)
 
 
 class SiaeOfferFactory(DjangoModelFactory):
