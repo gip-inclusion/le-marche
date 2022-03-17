@@ -1,0 +1,66 @@
+{% extends "layouts/base.html" %}
+{% load bootstrap4 static %}
+
+{% block title %}{{page_title}}{{ block.super }}{% endblock %}
+{% block breadcrumbs %}
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{page_title}}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block content %}
+<section>
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-12 ">
+                <h1>{{page_title}}</h1>
+                {% if user.kind != user.KIND_SIAE %}
+                    <a href="{% url 'tenders:add' %}" class="btn btn-primary my-4">
+                        <span>Publier un besoin d’achat</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div class="col-12 my-5 py-3">
+                {% if tenders %}
+                    {% for tender in tenders %}
+                        {% include "tenders/list_item.html" with tender=tender %}
+                    {% endfor %}
+                    {% include "includes/_pagination.html" %}
+                {% else %}
+                   <p class="text-muted">
+                        {% if user.kind == user.KIND_SIAE %}
+                            Désolé, nous avons aucune opportunité à vous présenter pour le moment. <br>
+                            Si ce n'est pas déjà fait, pensez à <a href="{% url 'dashboard:home' %}">compléter votre fiche structure</a>
+                            pour optimiser vos chances de trouver de nouvelles opportunités.
+                        {% else %}
+                            Publiez un besoin pour trouver des prestataires près de chez vous.
+                        {% endif %}
+                    </p>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).on("click", ".c-card--link", function(e) {
+        window.location.href = $(this).data("url");
+    });
+
+</script>
+{% endblock %}

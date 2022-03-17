@@ -91,7 +91,29 @@
                     <hr class="mb-3 mb-lg-5">
                 {% endif %}
 
+                <!-- Tenders -->
+                <div id="tenders" class="row justify-content-end mb-3 mb-lg-5">
+                    <div class="col-12 col-lg">
+                        <h2 class="h1 mb-0">
+                            <strong>
+                                {% if user.kind == user.KIND_SIAE %}
+                                    Trouver de nouvelles opportunités
+                                {% else %}
+                                    Mes besoins
+                                {% endif %}
+                            </strong>
+                        </h2>
+                    </div>
+                    <div class="col-12 col-md-auto">
+                        <a href="{% url 'tenders:list' %}" class="btn btn-outline-primary btn-block btn-ico">
+                            <span>Voir</span>
+                            <i class="ri-eye-line ri-lg"></i>
+                        </a>
+                    </div>
+                </div>
+
                 <!-- Profile -->
+                <hr class="mb-3 mb-lg-5">
                 <h1 id="profil" class="mb-3 mb-lg-5">
                     <strong>Mon profil</strong>
                 </h1>

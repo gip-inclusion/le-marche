@@ -2,17 +2,17 @@
 	.s-page-menu-01.has-illustration-bg-01 .container::before {
 		right: 1rem;
 	}
-} 
+}
 
 .p-homepage {
 	.s-page-menu-01 {
 		@media (min-width:1200px) {
-			overflow: hidden;	
-		}					
+			overflow: hidden;
+		}
 
 		.s-page-menu-01__container {
 			position: relative;
-			
+
 			&::before {
 				content: '';
 				position: absolute;
@@ -26,12 +26,12 @@
 				display: none;
 				top: 4rem;
 				left: -10rem;
-				
+
 				@media (min-width:1200px) {
 					display: block;
-				}			
+				}
 			}
-	
+
 			&::after {
 				content: '';
 				position: absolute;
@@ -45,16 +45,16 @@
 				display: none;
 				top: 6rem;
 				right: -6rem;
-				
+
 				@media (min-width:1200px) {
 					display: block;
-				}				
+				}
 			}
 		}
-	
+
 		.s-page-menu-01__row {
 				position: relative;
-	
+
 				&::after {
 					content: '';
 					position: absolute;
@@ -68,32 +68,32 @@
 					display: none;
 					top: 0;
 					right: 0;
-					
+
 					@media (min-width:768px) {
 						display: block;
-					}				
-				}			
+					}
+				}
 		}
 	}
 
-	
+
 	.align-slide-stretch {
 		.slick-slide {
 			display: flex !important;
 			height: auto !important;
-			
+
 			.card {
 				display: flex !important;
 			}
 		}
 	}
-} 
+}
 
 
 .p-valoriser-achats {
 	.s-page-menu-01__col--cta {
 		position: relative;
-		
+
 		> span {
 			width: auto;
 			display: inline-block;
@@ -109,14 +109,18 @@
 			transform: rotate(-5deg);
 			left: 5%;
 			display: none;
-			
+
 			@media (min-width:992px) {
 				display: inline-block;
 			}
-			
+
 			@media (min-width:1200px) {
 				left: 8%;
-			}					
+			}
 		}
 	}
+}
+
+.rounded-t-lg {
+	border-radius: 1em 1em 0em 0em;
 }
