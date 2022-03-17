@@ -21,6 +21,7 @@ from lemarche.siaes.models import Siae
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.tracker import extract_meta_from_request, track
+from lemarche.www.auth.tasks import add_to_contact_list
 from lemarche.www.siaes.forms import SiaeFavoriteForm, SiaeSearchForm
 
 
@@ -113,6 +114,9 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
             meta=extract_meta_from_request(self.request),
             session_id=request.COOKIES.get("sessionid", None),
         )
+        user = self.request.user
+        if user.kind == user.KIND_BUYER:
+            add_to_contact_list(self.request.user, "buyer_download")
 
         if not len(request_params):
             # no search filters -> the user wants to download the whole list -> serve the generated file stored on S3
