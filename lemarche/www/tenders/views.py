@@ -72,13 +72,13 @@ class TenderListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         user = self.request.user
         queryset = Tender.objects.none()
-        if user.kind == User.KIND_BUYER or user.kind == User.KIND_PARTNER:
-            queryset = Tender.objects.created_by_user(user)
-        elif user.kind == User.KIND_SIAE and user.siaes:
+        if user.kind == User.KIND_SIAE and user.siaes:
             # TODO: manage many siaes
             siae = user.siaes.first()
             if siae:
                 queryset = Tender.objects.filter_with_siae(siae)
+        else:
+            queryset = Tender.objects.created_by_user(user)
         return queryset
 
     def get_context_data(self, **kwargs):
