@@ -5,9 +5,6 @@ from lemarche.tenders.models import Tender
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
-EMPTY_CHOICE = (("", ""),)
-
-
 class AddTenderForm(forms.ModelForm):
 
     sectors = GroupedModelMultipleChoiceField(

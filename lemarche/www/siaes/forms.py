@@ -7,10 +7,8 @@ from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae
+from lemarche.utils.constants import EMPTY_CHOICE
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
-
-
-EMPTY_CHOICE = (("", ""),)
 
 
 class SiaeSearchForm(forms.Form):
