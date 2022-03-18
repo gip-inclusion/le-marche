@@ -15,16 +15,16 @@ from django.utils.text import slugify
 
 
 class TenderQuerySet(models.QuerySet):
-    def created_by_user(self, user):
+    def by_user(self, user):
         return self.filter(author=user)
 
-    def find_in_perimeters(self, post_code, coords, department, region):
+    def find_in_perimeters(self, post_code, department, region):
         filters = (
             Q(perimeters__post_codes__contains=[post_code])
             | Q(perimeters__insee_code=department)
             | Q(perimeters__name=region)
         )
-        # add distance
+        # add distance?
         queryset = self.filter(filters).distinct()
         return queryset
 
@@ -33,12 +33,14 @@ class TenderQuerySet(models.QuerySet):
         return self.filter(query).distinct()
 
     def filter_with_siae(self, siae):
+        """
+        Return the list of tenders corresponding to the Siae
+        Filters on its sectors & perimeter
+        """
         sectors = siae.sectors.all()
         qs = self.prefetch_related("sectors", "perimeters").in_sectors(sectors)
         if siae.geo_range != siae.GEO_RANGE_COUNTRY:
-            qs.find_in_perimeters(
-                post_code=siae.post_code, coords=siae.coords, department=siae.department, region=siae.region
-            )
+            qs.find_in_perimeters(post_code=siae.post_code, department=siae.department, region=siae.region)
         return qs.distinct()
 
 
