@@ -28,7 +28,7 @@
             <div class="col-12 ">
                 <h1>{{ page_title }}</h1>
                 {% if user.kind != user.KIND_SIAE %}
-                    <a href="{% url 'tenders:add' %}" class="btn btn-primary my-4">
+                    <a href="{% url 'tenders:create' %}" class="btn btn-primary my-4">
                         <span>Publier un besoin d'achat</span>
                     </a>
                 {% endif %}

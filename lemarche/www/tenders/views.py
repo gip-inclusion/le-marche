@@ -3,13 +3,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views.generic import CreateView, DetailView, ListView
 
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
+from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin
 from lemarche.www.tenders.forms import AddTenderForm
 from lemarche.www.tenders.tasks import find_opportunities_for_siaes
 
@@ -18,7 +18,7 @@ TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
 TITLE_DETAIL_PAGE_OTHERS = "Besoins en cours"
 
 
-class TenderCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView):
     template_name = "tenders/create.html"
     form_class = AddTenderForm
     context_object_name = "tender"
@@ -41,13 +41,6 @@ class TenderCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         # task
         find_opportunities_for_siaes(tender)
         return HttpResponseRedirect(self.success_url)
-
-    def get(self, request, *args, **kwargs):
-        # siaes cannot add tenders
-        if request.user.kind == User.KIND_SIAE:
-            return redirect("tenders:list")
-        else:
-            return super().get(request, *args, **kwargs)
 
     def get_initial(self):
         user = self.request.user

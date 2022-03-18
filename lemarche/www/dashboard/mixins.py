@@ -29,6 +29,21 @@ class LoginRequiredUserPassesTestMixin(UserPassesTestMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
+class NotSiaeUserRequiredMixin(LoginRequiredUserPassesTestMixin):
+    """
+    Restrict access to non-SIAE users
+    Where?
+    - Tender create form
+    """
+
+    def test_func(self):
+        user = self.request.user
+        return user.is_authenticated and (user.kind != User.KIND_SIAE)
+
+    def handle_no_permission(self):
+        return HttpResponseRedirect(reverse_lazy("tenders:list"))
+
+
 class SiaeUserRequiredMixin(LoginRequiredUserPassesTestMixin):
     """
     Restrict access to specific users: Siae & Admin

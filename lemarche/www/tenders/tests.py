@@ -1,5 +1,6 @@
 from django.contrib.gis.geos import Point
 from django.test import TestCase
+from django.urls import reverse
 
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.sectors.factories import SectorFactory
@@ -7,7 +8,36 @@ from lemarche.siaes.factories import SiaeFactory
 from lemarche.siaes.models import GEO_RANGE_COUNTRY, GEO_RANGE_CUSTOM, GEO_RANGE_DEPARTMENT
 from lemarche.tenders.factories import TenderFactory
 from lemarche.tenders.models import Tender
+from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
+from lemarche.users.models import User
 from lemarche.www.tenders.tasks import find_opportunities_for_siaes
+
+
+class TenderCreateView(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_siae = UserFactory(kind=User.KIND_SIAE)
+        cls.user_buyer = UserFactory(kind=User.KIND_BUYER)
+
+    def test_anonymous_user_cannot_create_tender(self):
+        url = reverse("tenders:create")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith("/accounts/login/"))
+
+    def test_only_non_siae_users_can_create_tender(self):
+        # allowed
+        self.client.login(email=self.user_buyer.email, password=DEFAULT_PASSWORD)
+        url = reverse("tenders:create")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # not allowed
+        self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
+        url = reverse("tenders:create")
+        response = self.client.get(url)
+        print(response.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/besoins/")
 
 
 class TenderMatchingTest(TestCase):

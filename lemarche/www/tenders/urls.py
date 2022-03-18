@@ -7,7 +7,7 @@ from lemarche.www.tenders.views import TenderCreateView, TenderDetail, TenderLis
 app_name = "tenders"
 
 urlpatterns = [
-    path("ajouter", TenderCreateView.as_view(), name="add"),
+    path("ajouter", TenderCreateView.as_view(), name="create"),
     path("", TenderListView.as_view(), name="list"),
     path("<str:slug>", TenderDetail.as_view(), name="detail"),
 ]
