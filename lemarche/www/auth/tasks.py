@@ -75,8 +75,8 @@ def add_to_contact_list(user: User, type: str):
         raise ValueError("kind must be siae or buyer_download")
     if contact_list_id:
         properties = {
-            "nom": user.first_name.capitalize(),
-            "prénom": user.last_name.capitalize(),
+            "nom": user.last_name.capitalize(),
+            "prénom": user.first_name.capitalize(),
             "pays": "france",
             "nomsiae": user.company_name.capitalize() if user.company_name else "",
             "poste": user.position.capitalize() if user.position else "",
