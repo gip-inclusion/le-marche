@@ -7,11 +7,12 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views.generic import CreateView, DetailView, ListView
 
+from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin
 from lemarche.www.tenders.forms import AddTenderForm
-from lemarche.www.tenders.tasks import find_opportunities_for_siaes
+from lemarche.www.tenders.tasks import send_tender_emails_to_siae_list
 
 
 TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
@@ -31,15 +32,21 @@ class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView
     def form_valid(self, form):
         tender = form.save(commit=False)
         tender.author = self.request.user
+
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+        tender.siae_found_count = siae_found_list.count()
+
         tender.save()
         form.save_m2m()
+
+        # task
+        send_tender_emails_to_siae_list(tender, siae_found_list)
+
         messages.add_message(
             self.request,
             messages.SUCCESS,
             self.get_success_message(form.cleaned_data, tender),
         )
-        # task
-        find_opportunities_for_siaes(tender)
         return HttpResponseRedirect(self.success_url)
 
     def get_initial(self):
