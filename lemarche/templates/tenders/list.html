@@ -1,7 +1,8 @@
 {% extends "layouts/base.html" %}
 {% load bootstrap4 static %}
 
-{% block title %}{{page_title}}{{ block.super }}{% endblock %}
+{% block title %}{{ page_title }}{{ block.super }}{% endblock %}
+
 {% block breadcrumbs %}
     <section>
         <div class="container">
@@ -11,7 +12,7 @@
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
                             <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">{{page_title}}</li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
                         </ol>
                     </nav>
                 </div>
@@ -25,10 +26,10 @@
     <div class="container py-4">
         <div class="row">
             <div class="col-12 ">
-                <h1>{{page_title}}</h1>
+                <h1>{{ page_title }}</h1>
                 {% if user.kind != user.KIND_SIAE %}
                     <a href="{% url 'tenders:add' %}" class="btn btn-primary my-4">
-                        <span>Publier un besoin d’achat</span>
+                        <span>Publier un besoin d'achat</span>
                     </a>
                 {% endif %}
             </div>
@@ -41,7 +42,7 @@
                 {% else %}
                    <p class="text-muted">
                         {% if user.kind == user.KIND_SIAE %}
-                            Désolé, nous avons aucune opportunité à vous présenter pour le moment. <br>
+                            Désolé, nous avons aucune opportunités à vous présenter pour le moment.<br>
                             Si ce n'est pas déjà fait, pensez à <a href="{% url 'dashboard:home' %}">compléter votre fiche structure</a>
                             pour optimiser vos chances de trouver de nouvelles opportunités.
                         {% else %}
@@ -49,7 +50,6 @@
                         {% endif %}
                     </p>
                 {% endif %}
-
             </div>
         </div>
     </div>
@@ -61,6 +61,5 @@
     $(document).on("click", ".c-card--link", function(e) {
         window.location.href = $(this).data("url");
     });
-
 </script>
 {% endblock %}

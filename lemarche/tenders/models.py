@@ -154,19 +154,8 @@ class Tender(models.Model):
                 raise e
 
     @cached_property
-    def contact_infos(self):
-        return {
-            "full_name": f"{self.contact_first_name} {self.contact_last_name}",
-            "company": self.author.company_name,
-            "contact_email": self.contact_email,
-            "contact_phone": self.contact_phone,
-        }
-
-    @cached_property
-    def get_kind_name(self):
-        for key, value in self.TENDER_KIND_CHOICES:
-            if self.kind == key:
-                return value
+    def get_contact_full_name(self):
+        return f"{self.contact_first_name} {self.contact_last_name}"
 
     @cached_property
     def get_sectors_names(self):

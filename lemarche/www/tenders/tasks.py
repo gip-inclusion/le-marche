@@ -38,7 +38,7 @@ def send_emails_tender_to_siae(tender: Tender, siae: Siae):
 
         variables = {
             "FULL_NAME": siae.contact_first_name,
-            "RESPONSE_KIND": tender.get_kind_name,
+            "RESPONSE_KIND": tender.get_kind_display(),
             "SECTORS": tender.get_sectors_names,
             "PERIMETERS": tender.get_perimeters_names,
             "TENDER_URL": f"https://{get_domain_url()}{tender.get_absolute_url()}",
