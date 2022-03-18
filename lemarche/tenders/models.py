@@ -47,63 +47,63 @@ class TenderQuerySet(models.QuerySet):
 class Tender(models.Model):
     """Appel d'offre et devis"""
 
-    TENDERS_KIND_TENDER = "TENDER"
-    TENDERS_KIND_QUOTE = "QUOTE"
-    TENDERS_KIND_BOAMP = "BOAMP"
-    TENDERS_KIND_PROJECT = "PROJ"
+    TENDER_KIND_TENDER = "TENDER"
+    TENDER_KIND_QUOTE = "QUOTE"
+    TENDER_KIND_BOAMP = "BOAMP"
+    TENDER_KIND_PROJECT = "PROJ"
 
-    TENDERS_KIND_CHOICES = (
-        (TENDERS_KIND_TENDER, "Appel d'offre"),
-        (TENDERS_KIND_QUOTE, "Devis"),
-        (TENDERS_KIND_PROJECT, "Projet d’achat"),
+    TENDER_KIND_CHOICES = (
+        (TENDER_KIND_TENDER, "Appel d'offre"),
+        (TENDER_KIND_QUOTE, "Devis"),
+        (TENDER_KIND_PROJECT, "Projet d'achat"),
     )
 
-    RESPONSES_KIND_EMAIL = "EMAIL"
-    RESPONSES_KIND_TEL = "TEL"
-    RESPONSES_KIND_EXTERNAL = "EXTERN"
+    RESPONSE_KIND_EMAIL = "EMAIL"
+    RESPONSE_KIND_TEL = "TEL"
+    RESPONSE_KIND_EXTERNAL = "EXTERN"
 
-    RESPONSES_KIND_CHOICES = (
-        (RESPONSES_KIND_EMAIL, "Email"),
-        (RESPONSES_KIND_TEL, "Téléphone"),
-        (RESPONSES_KIND_EXTERNAL, "Lien externe"),
-    )
-
-    kind = models.CharField(
-        verbose_name="Type de besoin", max_length=6, choices=TENDERS_KIND_CHOICES, default=TENDERS_KIND_TENDER
+    RESPONSE_KIND_CHOICES = (
+        (RESPONSE_KIND_EMAIL, "E-mail"),
+        (RESPONSE_KIND_TEL, "Téléphone"),
+        (RESPONSE_KIND_EXTERNAL, "Lien externe"),
     )
 
     title = models.CharField(verbose_name="Titre du besoin", max_length=255)
+    slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
+    kind = models.CharField(
+        verbose_name="Type de besoin", max_length=6, choices=TENDER_KIND_CHOICES, default=TENDER_KIND_TENDER
+    )
     description = models.TextField(verbose_name="Description du besoin", blank=True)
     constraints = models.TextField(verbose_name="Contraintes techniques spécifiques", blank=True)
-    external_link = models.URLField(verbose_name="Lien vers l’appel d’offre", blank=True)
+    external_link = models.URLField(verbose_name="Lien vers l'appel d'offre", blank=True)
     deadline_date = models.DateField(verbose_name="Date de clôture des réponses")
     start_working_date = models.DateField(verbose_name="Date idéale de début des prestations", blank=True, null=True)
-    contact_first_name = models.CharField(verbose_name="Prénom du contact", max_length=255, blank=True)
-    contact_last_name = models.CharField(verbose_name="Nom de famille du contact", max_length=255, blank=True)
-    contact_email = models.EmailField(verbose_name="Email du contact", blank=True)
-    contact_phone = models.CharField(verbose_name="Téléphone du contact", max_length=20, blank=True)
     amount = models.PositiveIntegerField(verbose_name="Montant du marché", blank=True, null=True)
     response_kind = ArrayField(
-        models.CharField(max_length=6, choices=RESPONSES_KIND_CHOICES),
+        models.CharField(max_length=6, choices=RESPONSE_KIND_CHOICES),
         verbose_name="Comment souhaitez-vous être contacté ?",
     )
 
+    contact_first_name = models.CharField(verbose_name="Prénom du contact", max_length=255, blank=True)
+    contact_last_name = models.CharField(verbose_name="Nom de famille du contact", max_length=255, blank=True)
+    contact_email = models.EmailField(verbose_name="E-mail du contact", blank=True)
+    contact_phone = models.CharField(verbose_name="Téléphone du contact", max_length=20, blank=True)
+
     perimeters = models.ManyToManyField(
-        "perimeters.Perimeter", verbose_name="Lieux d'exécutions", related_name="tenders", blank=False
+        "perimeters.Perimeter", verbose_name="Lieux d'exécution", related_name="tenders", blank=False
     )
     sectors = models.ManyToManyField(
-        "sectors.Sector", verbose_name="Secteurs d'activités", related_name="tenders", blank=False
+        "sectors.Sector", verbose_name="Secteurs d'activité", related_name="tenders", blank=False
     )
 
     author = models.ForeignKey(
         to=settings.AUTH_USER_MODEL, related_name="tenders", on_delete=models.CASCADE, blank=True
     )
-    nb_siaes_found = models.PositiveIntegerField(verbose_name="Nombre de SIAE trouvées", default=0)
+
+    siae_found_count = models.PositiveIntegerField(verbose_name="Nombre de SIAE trouvées", default=0)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
-
-    slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
 
     objects = models.Manager.from_queryset(TenderQuerySet)()
 
@@ -164,7 +164,7 @@ class Tender(models.Model):
 
     @cached_property
     def get_kind_name(self):
-        for key, value in self.TENDERS_KIND_CHOICES:
+        for key, value in self.TENDER_KIND_CHOICES:
             if self.kind == key:
                 return value
 

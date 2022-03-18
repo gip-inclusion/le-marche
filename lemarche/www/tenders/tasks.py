@@ -22,7 +22,7 @@ def find_opportunities_for_siaes(tender: Tender):
     for siae in siaes_potentially_interested:
         send_emails_tender_to_siae(tender, siae)
 
-    tender.nb_siaes_found = len(siaes_potentially_interested)
+    tender.siae_found_count = len(siaes_potentially_interested)
 
     tender.save()
     return siaes_potentially_interested

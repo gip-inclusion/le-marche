@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib.gis.db.models.functions import Distance
 from django.db.models import BooleanField, Case, Q, Value, When
-from django.db.models.functions import NullIf
 
 from lemarche.favorites.models import FavoriteList
 from lemarche.networks.models import Network
@@ -12,13 +11,6 @@ from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
 EMPTY_CHOICE = (("", ""),)
-
-SECTOR_FORM_QUERYSET = (
-    Sector.objects.select_related("group")
-    .exclude(group=None)  # sector must have a group !
-    .annotate(sector_is_autre=NullIf("name", Value("Autre")))
-    .order_by("group__id", "sector_is_autre")
-)
 
 
 class SiaeSearchForm(forms.Form):
@@ -33,8 +25,8 @@ class SiaeSearchForm(forms.Form):
     )
 
     sectors = GroupedModelMultipleChoiceField(
-        label="Secteur d’activité",
-        queryset=SECTOR_FORM_QUERYSET,
+        label=Sector._meta.verbose_name_plural,
+        queryset=Sector.objects.form_filter_queryset(),
         choices_groupby="group",
         to_field_name="slug",
         required=False,
