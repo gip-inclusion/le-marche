@@ -12,25 +12,14 @@ EMAIL_SUBJECT_PREFIX = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_
 
 
 @task()
-def find_opportunities_for_siaes(tender: Tender):
-    """Function to find new opportunities from the tender
-
-    Args:
-        tender (tenders.Tender): Need of the buyer
-    """
-    siaes_potentially_interested = Siae.objects.filter_with_tender(tender)
-    for siae in siaes_potentially_interested:
-        send_emails_tender_to_siae(tender, siae)
-
-    tender.nb_siaes_found = len(siaes_potentially_interested)
-
-    tender.save()
-    return siaes_potentially_interested
+def send_tender_emails_to_siae_list(tender: Tender, siae_found_list):
+    for siae in siae_found_list:
+        send_tender_email_to_siae(tender, siae)
 
 
 @task()
-def send_emails_tender_to_siae(tender: Tender, siae: Siae):
-    email_subject = EMAIL_SUBJECT_PREFIX + f"{siae.name_display} a besoin de vous sur le marché de l’inclusion"
+def send_tender_email_to_siae(tender: Tender, siae: Siae):
+    email_subject = EMAIL_SUBJECT_PREFIX + f"{siae.name_display} a besoin de vous sur le marché de l'inclusion"
     recipient_list = whitelist_recipient_list([siae.contact_email])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
@@ -38,7 +27,7 @@ def send_emails_tender_to_siae(tender: Tender, siae: Siae):
 
         variables = {
             "FULL_NAME": siae.contact_first_name,
-            "RESPONSE_KIND": tender.get_kind_name,
+            "RESPONSE_KIND": tender.get_kind_display(),
             "SECTORS": tender.get_sectors_names,
             "PERIMETERS": tender.get_perimeters_names,
             "TENDER_URL": f"https://{get_domain_url()}{tender.get_absolute_url()}",

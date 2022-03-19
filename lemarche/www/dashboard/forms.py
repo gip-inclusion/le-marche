@@ -4,6 +4,7 @@ from django_select2.forms import ModelSelect2MultipleWidget
 
 from lemarche.favorites.models import FavoriteList
 from lemarche.networks.models import Network
+from lemarche.sectors.models import Sector
 from lemarche.siaes.models import (
     Siae,
     SiaeClientReference,
@@ -15,7 +16,6 @@ from lemarche.siaes.models import (
 )
 from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
-from lemarche.www.siaes.forms import SECTOR_FORM_QUERYSET
 
 
 class ProfileEditForm(forms.ModelForm):
@@ -136,8 +136,8 @@ class SiaeEditOfferForm(forms.ModelForm):
         widget=forms.RadioSelect,
     )
     sectors = GroupedModelMultipleChoiceField(
-        label=Siae._meta.get_field("sectors").verbose_name,
-        queryset=SECTOR_FORM_QUERYSET,
+        label=Sector._meta.verbose_name_plural,
+        queryset=Sector.objects.form_filter_queryset(),
         choices_groupby="group",
         required=True,
         widget=forms.CheckboxSelectMultiple,

@@ -1,7 +1,6 @@
 from django import forms
 
-
-EMPTY_CHOICE = (("", ""),)
+from lemarche.utils.constants import EMPTY_CHOICE
 
 
 class ContactForm(forms.Form):

@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import Value
+from django.db.models.functions import NullIf
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 
@@ -30,6 +32,19 @@ class SectorGroup(models.Model):
         super().save(*args, **kwargs)
 
 
+class SectorQuerySet(models.QuerySet):
+    def form_filter_queryset(self):
+        """
+        In our filter forms, we want to display the sectors by group.
+        """
+        return (
+            self.select_related("group")
+            .exclude(group=None)  # sector must have a group !
+            .annotate(sector_is_autre=NullIf("name", Value("Autre")))
+            .order_by("group__id", "sector_is_autre")
+        )
+
+
 class Sector(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
@@ -43,6 +58,8 @@ class Sector(models.Model):
     )
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(SectorQuerySet)()
 
     class Meta:
         verbose_name = "Secteur d'activité"
