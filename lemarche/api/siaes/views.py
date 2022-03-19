@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from lemarche.api.siaes.filters import SiaeFilter
 from lemarche.api.siaes.serializers import SiaeChoiceSerializer, SiaeDetailSerializer, SiaeListSerializer
-from lemarche.api.utils import ensure_user_permission
+from lemarche.api.utils import check_user_token
 from lemarche.siaes.models import Siae
 
 
@@ -44,7 +44,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
                 )
                 return Response(serializer.data)
             else:
-                ensure_user_permission(token)
+                check_user_token(token)
                 return super().list(request, format)
 
     @extend_schema(
@@ -110,7 +110,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
                 many=False,
             )
         else:
-            ensure_user_permission(token)
+            check_user_token(token)
             serializer = SiaeDetailSerializer(
                 queryset,
                 many=False,
@@ -125,7 +125,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
                 many=True,
             )
         else:
-            ensure_user_permission(token)
+            check_user_token(token)
             serializer = SiaeDetailSerializer(
                 queryset,
                 many=True,
