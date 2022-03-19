@@ -38,3 +38,32 @@ class UserModelTest(TestCase):
         UserFactory(api_key="coucou")
         self.assertEqual(User.objects.count(), 2)
         self.assertEqual(User.objects.with_api_key().count(), 1)
+
+
+class UserModelSaveTest(TestCase):
+    def setUp(self):
+        pass
+
+    def test_update_last_updated_fields(self):
+        user = UserFactory()
+        self.assertEqual(user.api_key, None)
+        self.assertEqual(user.api_key_last_updated, None)
+        # new value: last_updated field will be set
+        user = User.objects.get(id=user.id)  # we need to fetch it again to pass through the __init__
+        user.api_key = "AZERTY"
+        user.save()
+        self.assertEqual(user.api_key, "AZERTY")
+        self.assertNotEqual(user.api_key_last_updated, None)
+        api_key_last_updated = user.api_key_last_updated
+        # same value: last_updated field will not be updated
+        user = User.objects.get(id=user.id)
+        user.api_key = "AZERTY"
+        user.save()
+        self.assertEqual(user.api_key, "AZERTY")
+        self.assertEqual(user.api_key_last_updated, api_key_last_updated)
+        # updated value: last_updated field will be updated
+        user = User.objects.get(id=user.id)
+        user.api_key = "QWERTY"
+        user.save()
+        self.assertEqual(user.api_key, "QWERTY")
+        self.assertNotEqual(user.api_key_last_updated, api_key_last_updated)
