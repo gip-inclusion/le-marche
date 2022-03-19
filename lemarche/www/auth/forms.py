@@ -2,10 +2,8 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, UserCreationForm
 
 from lemarche.users.models import User
+from lemarche.utils.constants import EMPTY_CHOICE
 from lemarche.utils.password_validation import CnilCompositionPasswordValidator
-
-
-EMPTY_CHOICE = (("", ""),)
 
 
 class SignupForm(UserCreationForm):

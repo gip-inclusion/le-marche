@@ -32,7 +32,7 @@
         </div>
         <div class="d-flex">
             <div id="formAddTender" class="col-8 bg-white d-block mb-5 p-3 p-lg-5 rounded-lg shadow-lg">
-                <form method="POST" action="{% url 'tenders:add' %}">
+                <form method="POST" action="{% url 'tenders:create' %}">
                     {% csrf_token %}
                     {% bootstrap_form_errors form type="all" %}
                     <h2>Informations générales</h2>
@@ -71,26 +71,6 @@
                         <span>Publier et diffuser ce besoin</span>
                         <i class="ri-arrow-right-line ri-lg"></i>
                     </button>
-                    <div class="modal fade show" id="modalConfirmAddTender" tabindex="-1" aria-labelledby="modalConfirmAddTenderLabel" aria-modal="true" role="dialog">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h3 class="modal-title" id="modalConfirmAddTenderLabel">Confirmation d’envoi</h3>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Annuler">
-                                        <i class="ri-close-line"></i>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <p class="font-weight-bold">En confirmant, j’accepte que mon nom et celui de mon entreprise soient visibles pour diffuser mon besoin.</p>
-                                    <p>Votre besoin va être publié et diffusé auprès des structures d’insertion du marché.</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-sm btn-outline-primary" data-dismiss="modal">Annuler</button>
-                                    <button type="submit" id="btnConfirmAddTender" class="btn btn-sm btn-primary">Confirmer</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </form>
             </div>
         </div>
@@ -98,59 +78,81 @@
 </section>
 {% endblock %}
 
+{% block modals %}
+<div class="modal fade show" id="modalConfirmAddTender" tabindex="-1" aria-labelledby="modalConfirmAddTenderLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalConfirmAddTenderLabel">Confirmation d'envoi</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Annuler">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="font-weight-bold">En confirmant, j'accepte que mon nom et celui de mon entreprise soient visibles pour diffuser mon besoin.</p>
+                <p>Votre besoin va être publié et diffusé auprès des structures d'insertion du marché.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-outline-primary" data-dismiss="modal">Annuler</button>
+                <button type="submit" id="btnConfirmAddTender" class="btn btn-sm btn-primary">Confirmer</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
 {% block extra_js %}
-    <script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
-    <script>
-        const idModal = "#modalConfirmAddTender";
+<script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
+<script>
+    const idModal = "#modalConfirmAddTender";
 
-        $(document).on("click", "#btnAddTender", function(e){
-            $(idModal).modal("show");
-        });
+    $(document).on("click", "#btnAddTender", function(e){
+        $(idModal).modal("show");
+    });
 
-        $(document).on("click", "#btnConfirmAddTender", function(e){
-            $(idModal).modal("hide");
-            return true;
-        });
+    $(document).on("click", "#btnConfirmAddTender", function(e){
+        $(idModal).modal("hide");
+        return true;
+    });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // get all usefull elements
-            let kindInput = document.getElementById('id_kind');
-            let external_link = document.getElementById('id_external_link');
+    document.addEventListener('DOMContentLoaded', function() {
+        // get all usefull elements
+        let kindInput = document.getElementById('id_kind');
+        let external_link = document.getElementById('id_external_link');
 
-            {% comment %} TODO : refactor this code  `toggleRequiredClasses`, `toggleInputElement`{% endcomment %}
-            let toggleRequiredClasses = (toggle, element) => {
-                element.required = required;
-                elementToToggle = element.parentNode.classList.contains("form-group") ? element.parentNode : element.parentNode.parentNode;
-                if (required) {
-                    elementToToggle.classList.add('form-group-required');
-                } else {
-                    elementToToggle.classList.remove('form-group-required');
-                }
-            };
-
-            let toggleInputElement = (toggle, element, required=undefined) => {
-                // function usefull to find element form-group of bootstrap forms
-                elementToToggle = element.parentNode.classList.contains("form-group") ? element.parentNode : element.parentNode.parentNode;
-                if (toggle) {
-                    elementToToggle.classList.remove('d-none');
-                } else {
-                    elementToToggle.classList.add('d-none');
-                }
-                if (required != undefined) {
-                    toggleRequiredClasses(required, element);
-                }
+        {% comment %} TODO : refactor this code  `toggleRequiredClasses`, `toggleInputElement`{% endcomment %}
+        let toggleRequiredClasses = (toggle, element) => {
+            element.required = required;
+            elementToToggle = element.parentNode.classList.contains("form-group") ? element.parentNode : element.parentNode.parentNode;
+            if (required) {
+                elementToToggle.classList.add('form-group-required');
+            } else {
+                elementToToggle.classList.remove('form-group-required');
             }
+        };
+
+        let toggleInputElement = (toggle, element, required=undefined) => {
+            // function usefull to find element form-group of bootstrap forms
+            elementToToggle = element.parentNode.classList.contains("form-group") ? element.parentNode : element.parentNode.parentNode;
+            if (toggle) {
+                elementToToggle.classList.remove('d-none');
+            } else {
+                elementToToggle.classList.add('d-none');
+            }
+            if (required != undefined) {
+                toggleRequiredClasses(required, element);
+            }
+        }
 
 
-            kindInput.addEventListener('change', () => {
-                let inputValue = $(kindInput).find('input:checked')[0].value
-                if (inputValue === 'TENDER') {
-                    toggleInputElement(true, element=external_link, required=false);
-                } else {
-                    toggleInputElement(false, element=external_link, required=false);
-                }
-            });
+        kindInput.addEventListener('change', () => {
+            let inputValue = $(kindInput).find('input:checked')[0].value
+            if (inputValue === 'TENDER') {
+                toggleInputElement(true, element=external_link, required=false);
+            } else {
+                toggleInputElement(false, element=external_link, required=false);
+            }
         });
-
-    </script>
+    });
+</script>
 {% endblock %}

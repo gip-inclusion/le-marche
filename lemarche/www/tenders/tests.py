@@ -1,13 +1,42 @@
 from django.contrib.gis.geos import Point
 from django.test import TestCase
+from django.urls import reverse
 
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes.factories import SiaeFactory
-from lemarche.siaes.models import GEO_RANGE_COUNTRY, GEO_RANGE_CUSTOM, GEO_RANGE_DEPARTMENT
+from lemarche.siaes.models import GEO_RANGE_COUNTRY, GEO_RANGE_CUSTOM, GEO_RANGE_DEPARTMENT, Siae
 from lemarche.tenders.factories import TenderFactory
 from lemarche.tenders.models import Tender
-from lemarche.www.tenders.tasks import find_opportunities_for_siaes
+from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
+from lemarche.users.models import User
+
+
+class TenderCreateView(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_siae = UserFactory(kind=User.KIND_SIAE)
+        cls.user_buyer = UserFactory(kind=User.KIND_BUYER)
+
+    def test_anonymous_user_cannot_create_tender(self):
+        url = reverse("tenders:create")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith("/accounts/login/"))
+
+    def test_only_non_siae_users_can_create_tender(self):
+        # allowed
+        self.client.login(email=self.user_buyer.email, password=DEFAULT_PASSWORD)
+        url = reverse("tenders:create")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # not allowed
+        self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
+        url = reverse("tenders:create")
+        response = self.client.get(url)
+        print(response.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/besoins/")
 
 
 class TenderMatchingTest(TestCase):
@@ -30,42 +59,42 @@ class TenderMatchingTest(TestCase):
 
     def test_matching_tenders_siae(self):
         tender = TenderFactory(sectors=self.sectors)
-        siaes = find_opportunities_for_siaes(tender).get()
-        self.assertEqual(len(siaes), 2)
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+        self.assertEqual(len(siae_found_list), 2)
 
     def test_with_siae_country(self):
         # add Siae with geo_range_country
         tender = TenderFactory(sectors=self.sectors, perimeters=self.perimeters)
         siae_country = SiaeFactory(is_active=True, geo_range=GEO_RANGE_COUNTRY)
         siae_country.sectors.add(self.sectors[0])
-        siaes = find_opportunities_for_siaes(tender).get()
-        self.assertEqual(len(siaes), 3)
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+        self.assertEqual(len(siae_found_list), 3)
 
     def test_with_siae_department(self):
         # add Siae with geo_range_country
         tender = TenderFactory(sectors=self.sectors, perimeters=self.perimeters)
         siae_department = SiaeFactory(is_active=True, department="75", geo_range=GEO_RANGE_DEPARTMENT)
         siae_department.sectors.add(self.sectors[0])
-        siaes = find_opportunities_for_siaes(tender).get()
-        self.assertEqual(len(siaes), 3)
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+        self.assertEqual(len(siae_found_list), 3)
 
     def test_no_siaes(self):
         tender = TenderFactory(sectors=[SectorFactory()], perimeters=self.perimeters)
-        siaes = find_opportunities_for_siaes(tender).get()
-        self.assertEqual(len(siaes), 0)
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+        self.assertEqual(len(siae_found_list), 0)
         tender_marseille = TenderFactory(
             sectors=self.sectors, perimeters=[PerimeterFactory(coords=Point(43.35101634452076, 5.379616625955892))]
         )
-        siaes_marseille = find_opportunities_for_siaes(tender_marseille).get()
-        self.assertEqual(len(siaes_marseille), 0)
+        siae_found_list_marseille = Siae.objects.filter_with_tender(tender_marseille)
+        self.assertEqual(len(siae_found_list_marseille), 0)
         siae = SiaeFactory(is_active=True, department="75", geo_range=GEO_RANGE_COUNTRY)
-        siaes_marseille = find_opportunities_for_siaes(tender_marseille).get()
-        self.assertEqual(len(siaes_marseille), 0)
+        siae_found_list_marseille = Siae.objects.filter_with_tender(tender_marseille)
+        self.assertEqual(len(siae_found_list_marseille), 0)
         # add sector
         siae.sectors.add(self.sectors[0])
-        siaes_marseille = find_opportunities_for_siaes(tender_marseille).get()
-        self.assertEqual(len(siaes_marseille), 1)
-        opportunities_for_siae = Tender.objects.filter_with_siae(siaes_marseille[0])
+        siae_found_list_marseille = Siae.objects.filter_with_tender(tender_marseille)
+        self.assertEqual(len(siae_found_list_marseille), 1)
+        opportunities_for_siae = Tender.objects.filter_with_siae(siae_found_list_marseille[0])
         self.assertEqual(len(opportunities_for_siae), 1)
 
     def test_with_no_contact_email(self):
@@ -73,13 +102,13 @@ class TenderMatchingTest(TestCase):
         tender = TenderFactory(sectors=self.sectors, perimeters=self.perimeters)
         siae_country = SiaeFactory(is_active=True, geo_range=GEO_RANGE_COUNTRY, contact_email="")
         siae_country.sectors.add(self.sectors[0])
-        siaes = find_opportunities_for_siaes(tender).get()
-        self.assertEqual(len(siaes), 2)
-        opportunities_for_siae = Tender.objects.filter_with_siae(siaes[0])
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+        self.assertEqual(len(siae_found_list), 2)
+        opportunities_for_siae = Tender.objects.filter_with_siae(siae_found_list[0])
         self.assertEqual(len(opportunities_for_siae), 1)
 
     # def test_number_queries(self):
     #     tender = TenderFactory(sectors=self.sectors)
     #     with self.assertNumQueries(8):
-    #         siaes = find_opportunities_for_siaes(tender).get()
-    #     self.assertEqual(len(siaes), 2)
+    #         siae_found_list = Siae.objects.filter_with_tender(tender)
+    #     self.assertEqual(len(siae_found_list), 2)
