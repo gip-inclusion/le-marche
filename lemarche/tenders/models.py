@@ -25,12 +25,14 @@ class TenderQuerySet(models.QuerySet):
             | Q(perimeters__name=region)
         )
         # add distance?
-        queryset = self.filter(filters).distinct()
-        return queryset
+        return self.filter(filters).distinct()
 
     def in_sectors(self, sectors):
-        query = reduce(_operator.or_, (Q(sectors__id__contains=item.id) for item in sectors))
-        return self.filter(query).distinct()
+        if sectors:
+            query = reduce(_operator.or_, (Q(sectors__id__contains=item.id) for item in sectors))
+            return self.filter(query).distinct()
+        else:
+            return self
 
     def filter_with_siae(self, siae):
         """
