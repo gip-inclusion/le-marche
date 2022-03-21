@@ -62,6 +62,9 @@ class SiaeGroup(models.Model):
     )
     contact_email = models.EmailField(verbose_name="E-mail", blank=True)
     contact_phone = models.CharField(verbose_name="Téléphone", max_length=150, blank=True)
+    contact_social_website = models.URLField(
+        verbose_name="Réseau social", help_text="Doit commencer par http:// ou https://", blank=True
+    )
 
     logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True)
 
@@ -462,6 +465,9 @@ class Siae(models.Model):
     )
     contact_email = models.EmailField(verbose_name="E-mail", blank=True)
     contact_phone = models.CharField(verbose_name="Téléphone", max_length=150, blank=True)
+    contact_social_website = models.URLField(
+        verbose_name="Réseau social", help_text="Doit commencer par http:// ou https://", blank=True
+    )
 
     image_name = models.CharField(verbose_name="Nom de l'image", max_length=255, blank=True)
     logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True)
@@ -755,10 +761,17 @@ class Siae(models.Model):
         return self.geo_range_pretty_display
 
     @property
-    def is_missing_content(self):
-        has_contact_field = any(
-            getattr(self, field) for field in ["contact_website", "contact_email", "contact_phone"]
+    def is_missing_contact(self):
+        """
+        Return True if all of the contact fields are missing
+        """
+        return not any(
+            getattr(self, field)
+            for field in ["contact_website", "contact_email", "contact_phone", "contact_social_website"]
         )
+
+    @property
+    def is_missing_content(self):
         has_other_fields = all(
             getattr(self, field)
             for field in [
@@ -768,7 +781,7 @@ class Siae(models.Model):
                 "label_count",
             ]
         )
-        return not has_contact_field and not has_other_fields
+        return self.is_missing_contact or not has_other_fields
 
     @property
     def source_display(self):

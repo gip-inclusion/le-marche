@@ -7,8 +7,7 @@ from django.test import TestCase
 from lemarche.tenders.factories import TenderFactory
 
 
-# Create your tests here.
-class SiaeModelTest(TestCase):
+class TenderModelTest(TestCase):
     def setUp(self):
         pass
 

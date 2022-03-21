@@ -103,6 +103,7 @@ class SiaeEditInfoContactForm(forms.ModelForm):
             "contact_website",
             "contact_email",
             "contact_phone",
+            "contact_social_website",
             "logo_url",
             "ca",
             "year_constitution",
