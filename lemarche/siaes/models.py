@@ -762,7 +762,13 @@ class Siae(models.Model):
 
     @property
     def is_missing_contact(self):
-        return not any(getattr(self, field) for field in ["contact_website", "contact_email", "contact_phone"])
+        """
+        Return True if all of the contact fields are missing
+        """
+        return not any(
+            getattr(self, field)
+            for field in ["contact_website", "contact_email", "contact_phone", "contact_social_website"]
+        )
 
     @property
     def is_missing_content(self):
