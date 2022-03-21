@@ -4,7 +4,9 @@ from django.db import IntegrityError
 from django.forms import ValidationError
 from django.test import TestCase
 
+from lemarche.sectors.factories import SectorFactory
 from lemarche.tenders.factories import TenderFactory
+from lemarche.tenders.models import Tender
 
 
 class TenderModelTest(TestCase):
@@ -31,3 +33,20 @@ class TenderModelTest(TestCase):
         tender = TenderFactory()
         tender.deadline_date = None
         self.assertRaises(IntegrityError, tender.save)
+
+
+class TenderModelQuerysetTest(TestCase):
+    def setUp(self):
+        pass
+
+    def test_in_sectors_queryset(self):
+        sector_1 = SectorFactory(name="Un secteur")
+        sector_2 = SectorFactory(name="Un deuxieme secteur")
+        sector_3 = SectorFactory(name="Autre")
+        TenderFactory()
+        TenderFactory(sectors=[sector_1, sector_2])
+        self.assertEqual(Tender.objects.in_sectors([sector_1]).count(), 1)
+        self.assertEqual(Tender.objects.in_sectors([sector_1, sector_2]).count(), 1)
+        self.assertEqual(Tender.objects.in_sectors([sector_1, sector_3]).count(), 1)
+        self.assertEqual(Tender.objects.in_sectors([sector_3]).count(), 0)
+        self.assertEqual(Tender.objects.in_sectors([]).count(), 2)
