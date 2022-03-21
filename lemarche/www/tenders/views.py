@@ -32,12 +32,15 @@ class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView
     def form_valid(self, form):
         tender = form.save(commit=False)
         tender.author = self.request.user
-
-        siae_found_list = Siae.objects.filter_with_tender(tender)
-        tender.siae_found_count = siae_found_list.count()
-
+        # we need to save before because the matching of Siaes needs
+        # the sectors and perimeters of tender (relation ManyToMany)
         tender.save()
         form.save_m2m()
+
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+
+        tender.siae_found_count = siae_found_list.count()
+        tender.save()
 
         # task
         send_tender_emails_to_siae_list(tender, siae_found_list)
