@@ -15,7 +15,7 @@ class TenderAdmin(admin.ModelAdmin):
         "start_working_date",
         "created_at",
     ]
-    list_filter = ["kind", "perimeters", "deadline_date", "response_kind", "start_working_date"]
+    list_filter = ["kind", "deadline_date", "response_kind", "start_working_date"]
+    # filter on "perimeters"? (loads ALL the perimeters... Use django-admin-autocomplete-filter instead?)
     search_fields = ["id", "title"]
-    # search on "perimeters"? (loads ALL the perimeters... Use django-admin-autocomplete-filter instead?)
     search_help_text = "Cherche sur les champs : ID, Titre"
