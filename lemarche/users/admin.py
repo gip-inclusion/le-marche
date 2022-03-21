@@ -85,21 +85,33 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     model = User
 
     list_display = ["id", "first_name", "last_name", "kind", "nb_siaes", "last_login", "created_at"]
-    list_filter = ["kind", HasSiaeFilter, "partner_kind", HasFavoriteListFilter, HasApiKeyFilter, "is_staff"]
+    list_filter = [
+        "kind",
+        HasSiaeFilter,
+        "partner_kind",
+        HasFavoriteListFilter,
+        HasApiKeyFilter,
+        "is_staff",
+        "is_superuser",
+    ]
     search_fields = ["id", "email", "first_name", "last_name"]
     search_help_text = "Cherche sur les champs : ID, E-mail, Prénom, Nom"
     ordering = ["-created_at"]
 
     # autocomplete_fields = ["siaes"]
-    readonly_fields = [field.name for field in User._meta.fields if field.name.startswith("c4_")] + [
-        "nb_siaes",
-        "user_favorite_list",
-        "last_login",
-        "image_url",
-        "image_url_display",
-        "created_at",
-        "updated_at",
-    ]
+    readonly_fields = (
+        [f"{field}_last_updated" for field in User.TRACK_UPDATE_FIELDS]
+        + [field.name for field in User._meta.fields if field.name.startswith("c4_")]
+        + [
+            "nb_siaes",
+            "user_favorite_list",
+            "last_login",
+            "image_url",
+            "image_url_display",
+            "created_at",
+            "updated_at",
+        ]
+    )
 
     fieldsets_with_inlines = (
         (
@@ -143,8 +155,8 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
                 )
             },
         ),
-        ("API", {"fields": ("api_key",)}),
-        ("Permissions", {"fields": ("is_active", "is_staff", "groups")}),
+        ("API", {"fields": ("api_key", "api_key_last_updated")}),
+        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser")}),
         (
             "Données C4 Cocorico",
             {
@@ -198,7 +210,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             },
         ),
         ("API", {"fields": ("api_key",)}),
-        ("Permissions", {"fields": ("is_staff", "groups")}),
     )
 
     def get_queryset(self, request):

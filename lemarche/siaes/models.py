@@ -590,9 +590,6 @@ class Siae(models.Model):
         verbose_name = "Structure"
         verbose_name_plural = "Structures"
         ordering = ["name"]
-        permissions = [
-            ("access_api", "Can access the API"),
-        ]
 
     def __str__(self):
         return self.name
