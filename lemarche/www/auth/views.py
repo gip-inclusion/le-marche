@@ -75,10 +75,7 @@ class SignupView(SuccessMessageMixin, CreateView):
         - track signup
         """
         user = form.save()
-        if form.cleaned_data.get("accept_newsletter_buyer"):
-            add_to_contact_list(user, "buyer")
-        if user.kind == user.KIND_SIAE:
-            add_to_contact_list(user, "siae")
+        add_to_contact_list(user, "signup")
         # welcome email
         send_welcome_email(user)
         send_signup_notification_email(user)
