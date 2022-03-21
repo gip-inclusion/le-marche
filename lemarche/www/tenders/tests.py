@@ -34,7 +34,6 @@ class TenderCreateView(TestCase):
         self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
         url = reverse("tenders:create")
         response = self.client.get(url)
-        print(response.url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/besoins/")
 

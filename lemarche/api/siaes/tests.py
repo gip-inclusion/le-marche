@@ -265,8 +265,8 @@ class SiaeChoicesApiTest(TestCase):
     def test_should_return_siae_kinds_list(self):
         url = reverse("api:siae-kinds-list")  # anonymous user
         response = self.client.get(url)
-        self.assertEqual(response.data["count"], 9)
-        self.assertEqual(len(response.data["results"]), 9)
+        self.assertEqual(response.data["count"], 10)
+        self.assertEqual(len(response.data["results"]), 10)
         self.assertTrue("id" in response.data["results"][0])
         self.assertTrue("name" in response.data["results"][0])
 

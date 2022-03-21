@@ -86,6 +86,11 @@ class User(AbstractUser):
     ACCOUNT_USERNAME_REQUIRED = False
     ACCOUNT_EMAIL_REQUIRED = True
 
+    TRACK_UPDATE_FIELDS = [
+        # set last_updated fields
+        "api_key",
+    ]
+
     # KIND_PERSO = "PERSO"  # PERSON_TYPE_NATURAL / 1
     # KIND_COMPANY = "COMPANY"  # PERSON_TYPE_LEGAL / 2 (not used)
     KIND_SIAE = "SIAE"  # PERSON_TYPE_INCLUSIVE / 4
@@ -136,6 +141,9 @@ class User(AbstractUser):
     )
 
     api_key = models.CharField(verbose_name="Clé API", max_length=128, unique=True, blank=True, null=True)
+    api_key_last_updated = models.DateTimeField(
+        verbose_name="Date de dernière mise à jour de la clé API", blank=True, null=True
+    )
 
     accept_rgpd = models.BooleanField(help_text="J'accepte les conditions d'utilisation du service", default=False)
     accept_survey = models.BooleanField(
@@ -176,6 +184,31 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+    def __init__(self, *args, **kwargs):
+        """
+        https://stackoverflow.com/a/23363123
+        """
+        super(User, self).__init__(*args, **kwargs)
+        for field_name in self.TRACK_UPDATE_FIELDS:
+            setattr(self, f"__previous_{field_name}", getattr(self, field_name))
+
+    def set_last_updated_fields(self):
+        """
+        We track changes on some fields, in order to update their 'last_updated' counterpart.
+        Where are the '__previous' fields set? In the __init__ method
+        """
+        for field_name in self.TRACK_UPDATE_FIELDS:
+            previous_field_name = f"__previous_{field_name}"
+            if getattr(self, field_name) and getattr(self, field_name) != getattr(self, previous_field_name):
+                try:
+                    setattr(self, f"{field_name}_last_updated", timezone.now())
+                except AttributeError:  # TRACK_UPDATE_FIELDS without last_updated fields
+                    pass
+
+    def save(self, *args, **kwargs):
+        self.set_last_updated_fields()
+        super().save(*args, **kwargs)
 
     @property
     def full_name(self):
