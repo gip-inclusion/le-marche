@@ -32,7 +32,7 @@
         </div>
         <div class="d-flex">
             <div id="formAddTender" class="col-8 bg-white d-block mb-5 p-3 p-lg-5 rounded-lg shadow-lg">
-                <form method="POST" action="{% url 'tenders:create' %}">
+                <form method="POST" action="{% url 'tenders:create' %}" id="createTenderForm">
                     {% csrf_token %}
                     {% bootstrap_form_errors form type="all" %}
                     <h2>Informations générales</h2>
@@ -112,7 +112,7 @@
 
     $(document).on("click", "#btnConfirmAddTender", function(e){
         $(idModal).modal("hide");
-        return true;
+        $("#createTenderForm").submit();
     });
 
     document.addEventListener('DOMContentLoaded', function() {

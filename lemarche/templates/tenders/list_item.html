@@ -31,7 +31,7 @@
                 {% if tender.amount %}
                     <div class="col-md-4 text-center">
                         <span class="ri-money-euro-circle-line"></span>
-                        {{ tender.amount.value|intcomma|default:"-" }}&nbsp;€
+                        {{ tender.amount|intcomma|default:"-" }}&nbsp;€
                     </div>
                 {% endif %}
             </div>
