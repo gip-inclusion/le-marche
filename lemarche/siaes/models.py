@@ -761,10 +761,11 @@ class Siae(models.Model):
         return self.geo_range_pretty_display
 
     @property
+    def is_missing_contact(self):
+        return not any(getattr(self, field) for field in ["contact_website", "contact_email", "contact_phone"])
+
+    @property
     def is_missing_content(self):
-        has_contact_field = any(
-            getattr(self, field) for field in ["contact_website", "contact_email", "contact_phone"]
-        )
         has_other_fields = all(
             getattr(self, field)
             for field in [
@@ -774,7 +775,7 @@ class Siae(models.Model):
                 "label_count",
             ]
         )
-        return not has_contact_field and not has_other_fields
+        return self.is_missing_contact or not has_other_fields
 
     @property
     def source_display(self):

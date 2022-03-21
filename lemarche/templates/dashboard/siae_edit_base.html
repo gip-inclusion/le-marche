@@ -38,7 +38,7 @@
                     <strong>Votre fiche n'est pas complète, et donc moins visible par les acheteurs.</strong>
                 </p>
                 <ol class="mb-0">
-                    {% if not siae.contact_website and not siae.contact_email and not siae.contact_phone %}
+                    {% if siae.is_missing_contact %}
                         <li><a href="{% url 'dashboard:siae_edit_info_contact' siae.slug %}">Complétez vos informations & contact</a></li>
                     {% endif %}
                     {% if not siae.sector_count %}

@@ -187,6 +187,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "contact_email",
                     "contact_phone",
                     "contact_website",
+                    "contact_social_website",
                     "nb_users",
                 )
             },
@@ -286,6 +287,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "contact_email",
                     "contact_phone",
                     "contact_website",
+                    "contact_social_website",
                     # "nb_users",
                 )
             },
@@ -563,6 +565,7 @@ class SiaeGroupAdmin(admin.ModelAdmin):
                     "contact_email",
                     "contact_phone",
                     "contact_website",
+                    "contact_social_website",
                 )
             },
         ),
