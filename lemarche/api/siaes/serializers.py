@@ -53,6 +53,7 @@ class SiaeDetailSerializer(serializers.ModelSerializer):
             "contact_website",
             "contact_email",
             "contact_phone",
+            "contact_social_website",
             "address",
             "city",
             "post_code",
@@ -85,7 +86,7 @@ class SiaeListSerializer(SiaeDetailSerializer):
             "kind",
             "presta_type",
             "contact_website",
-            # extra contact stuff available in detail
+            # extra contact_ stuff available in detail
             "address",
             "city",
             "post_code",

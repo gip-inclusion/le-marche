@@ -120,8 +120,8 @@
                                     </button>
                                     <div class="collapse mb-lg-2" id="collapseCoordonnees">
                                         <ul class="list-unstyled fs-sm">
-                                            {% if not siae.contact_website and not siae.contact_email and not siae.contact_phone %}
-                                                <li  class="mb-1">
+                                            {% if siae.is_missing_contact %}
+                                                <li class="mb-1">
                                                     <i class="ri-search-line"></i>
                                                     <a href="https://www.google.fr/search?q={{ siae.name_display }}" id="company_google" target="_blank" rel="noopener">Google</a>
                                                 </li>
@@ -142,6 +142,12 @@
                                                 <li class="mb-1">
                                                     <i class="ri-phone-line"></i>
                                                     <a href="tel:{{ siae.contact_phone }}" id="company_phone">{{ siae.contact_phone }}</a>
+                                                </li>
+                                            {% endif %}
+                                            {% if siae.contact_social_website %}
+                                                <li class="mb-1">
+                                                    <i class="ri-earth-line"></i>
+                                                    <a href="{{ siae.contact_social_website }}" id="company_social_website" target="_blank" rel="noopener">{{ siae.contact_social_website }}</a>
                                                 </li>
                                             {% endif %}
                                             {% if siae.user_count %}
@@ -341,7 +347,7 @@
                             <div class="card c-card c-card--mini h-100 p-3 p-lg-5 pr-lg-7">
                                 <div class="card-body text-center">
                                     <h3 class="h2 m-0">
-                                        C’est votre structure et vous souhaitez modifier ses informations.
+                                        C'est votre structure et vous souhaitez modifier ses informations.
                                     </h3>
                                 </div>
                                 <div class="card-footer text-center">
