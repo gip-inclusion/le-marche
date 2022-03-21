@@ -46,7 +46,6 @@
                         <div class="col-12 px-5 px-lg-6">
                             {% bootstrap_field form.accept_rgpd %}
                             {% bootstrap_field form.accept_survey form_group_class="form-group accept-survey-form-group d-none" %}
-                            {% bootstrap_field form.accept_newsletter_buyer form_group_class="form-group d-none" %}
                         </div>
                         <div class="col-12 col-lg-auto px-5 px-lg-6">
                             <button type="submit" class="btn btn-primary btn-block btn-ico">
@@ -81,7 +80,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let companyNameInput = document.getElementById('id_company_name');
     let positionInput = document.getElementById('id_position');
     let partnerKindInput = document.getElementById('id_partner_kind');
-    let acceptNewsletterBuyerInput = document.getElementById('id_accept_newsletter_buyer');
     let acceptSurveyInput = document.getElementById('id_accept_survey');
 
 
@@ -123,11 +121,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (radio.value === 'BUYER') {
             toggleInputElement(true, element=positionInput, required=true);
             toggleInputElement(true, element=phoneInput, required=true);
-            toggleInputElement(true, acceptNewsletterBuyerInput)
         } else {
             toggleInputElement(false, element=positionInput, required=false);
             toggleInputElement(true, element=phoneInput, required=false);
-            toggleInputElement(false, acceptNewsletterBuyerInput)
         }
 
         if (radio.value === 'PARTNER') {

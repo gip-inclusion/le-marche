@@ -103,15 +103,24 @@ class User(AbstractUser):
 
     KIND_CHOICES_WITH_ADMIN = KIND_CHOICES + ((KIND_ADMIN, "Administrateur"),)  # Administrateur.trice
 
+    PARTNER_KIND_FACILITATOR = "FACILITATEUR"
+    PARTNER_KIND_NETWORD_IAE = "RESEAU_IAE"
+    PARTNER_KIND_NETWORK_HANDICAP = "RESEAU_HANDICAP"
+    PARTNER_KIND_DREETS = "DREETS"
+    PARTNER_KIND_PRESCRIBER = "PRESCRIPTEUR"
+    PARTNER_KIND_PUBLIC = "PUBLIC"
+    PARTNER_KIND_PRIVATE = "PRIVE"
+    PARTNER_KIND_OTHER = "AUTRE"
+
     PARTNER_KIND_CHOICES = (
-        ("FACILITATEUR", "Facilitateur des clauses sociales"),
-        ("RESEAU_IAE", "Réseaux IAE"),
-        ("RESEAU_HANDICAP", "Réseau secteur Handicap"),
-        ("DREETS", "DREETS / DDETS"),
-        ("PRESCRIPTEUR", "Prescripteur"),
-        ("PUBLIC", "Organisme public"),
-        ("PRIVE", "Organisme privé"),
-        ("AUTRE", "Autre"),
+        (PARTNER_KIND_FACILITATOR, "Facilitateur des clauses sociales"),
+        (PARTNER_KIND_NETWORD_IAE, "Réseaux IAE"),
+        (PARTNER_KIND_NETWORK_HANDICAP, "Réseau secteur Handicap"),
+        (PARTNER_KIND_DREETS, "DREETS / DDETS"),
+        (PARTNER_KIND_PRESCRIBER, "Prescripteur"),
+        (PARTNER_KIND_PUBLIC, "Organisme public"),
+        (PARTNER_KIND_PRIVATE, "Organisme privé"),
+        (PARTNER_KIND_OTHER, "Autre"),
     )
 
     username = None
