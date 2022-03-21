@@ -153,7 +153,7 @@ class DashboardSiaeEditView(TestCase):
         url = reverse("dashboard:siae_edit", args=[self.siae_with_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, f"/profil/prestataires/{self.siae_with_user.slug}/modifier/info-contact/")
+        self.assertEqual(response.url, f"/profil/prestataires/{self.siae_with_user.slug}/modifier/recherche/")
 
         self.client.login(email=self.other_user_siae.email, password=DEFAULT_PASSWORD)
         url = reverse("dashboard:siae_edit", args=[self.siae_with_user.slug])

@@ -144,30 +144,23 @@ class SiaeEditInfoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["description"].label = "Présentation générale de votre structure"
         self.fields["description"].widget.attrs.update(
             {
-                "placeholder": "N'hésitez pas à mettre en avant les spécificités de votre structure",
+                "placeholder": "Soyez le plus concret possible",
             }
         )
+        # self.fields["logo_url"].label = "Importez votre logo"
 
 
 class SiaeEditOfferForm(forms.ModelForm):
     class Meta:
         model = Siae
         fields = [
-            "description",
             # "offers",  # SiaeOfferForm
             # "client_references",  # SiaeClientReferenceForm
             # "images",  # SiaeImageFormSet
         ]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["description"].widget.attrs.update(
-            {
-                "placeholder": "N'hésitez pas à mettre en avant les spécificités de votre structure",
-            }
-        )
 
 
 class SiaeOfferForm(forms.ModelForm):
@@ -180,7 +173,7 @@ class SiaeOfferForm(forms.ModelForm):
         self.fields["description"].widget.attrs.update({"rows": 5})
 
 
-SiaeOfferFormSet = inlineformset_factory(Siae, SiaeOffer, form=SiaeOfferForm, extra=0, can_delete=True)
+SiaeOfferFormSet = inlineformset_factory(Siae, SiaeOffer, form=SiaeOfferForm, extra=1, can_delete=True)
 
 
 class SiaeClientReferenceForm(forms.ModelForm):
@@ -190,7 +183,7 @@ class SiaeClientReferenceForm(forms.ModelForm):
 
 
 SiaeClientReferenceFormSet = inlineformset_factory(
-    Siae, SiaeClientReference, form=SiaeClientReferenceForm, extra=0, can_delete=True
+    Siae, SiaeClientReference, form=SiaeClientReferenceForm, extra=1, can_delete=True
 )
 
 
@@ -200,7 +193,7 @@ class SiaeImageForm(forms.ModelForm):
         fields = ["name", "image_url"]  # TODO: make name mandatory ?
 
 
-SiaeImageFormSet = inlineformset_factory(Siae, SiaeImage, form=SiaeImageForm, extra=0, can_delete=True)
+SiaeImageFormSet = inlineformset_factory(Siae, SiaeImage, form=SiaeImageForm, extra=1, can_delete=True)
 
 
 class SiaeEditLinksForm(forms.ModelForm):
@@ -244,7 +237,7 @@ class SiaeLabelForm(forms.ModelForm):
         fields = ["name"]
 
 
-SiaeLabelFormSet = inlineformset_factory(Siae, SiaeLabel, form=SiaeLabelForm, extra=0, can_delete=True)
+SiaeLabelFormSet = inlineformset_factory(Siae, SiaeLabel, form=SiaeLabelForm, extra=1, can_delete=True)
 
 
 class SiaeEditContactForm(forms.ModelForm):

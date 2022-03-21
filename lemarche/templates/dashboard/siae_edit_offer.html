@@ -10,35 +10,12 @@
     {% csrf_token %}
 
     {% bootstrap_form_errors form type="all" %}
-    
-    <div class="row mb-3 mb-lg-5">
-        <div class="col-12 col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
-                <fieldset>
-                    <legend class="h4">Présenter votre structure</legend>
-                    {% bootstrap_field form.description show_label=False %}
-                </fieldset>
-            </div>
-        </div>
-        <div class="col-12 col-lg-4">
-            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-                <p class="mb-1">
-                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
-                    <strong>Présentation</strong>
-                </p>
-                <p class="mb-0">
-                    En plus des secteurs d'activités, la présentation de votre structure permet aux acheteurs
-                    de faire un choix éclairé et de vous contacter.
-                </p>
-            </div>
-        </div>
-    </div>
         
     <div class="row mb-3 mb-lg-5">
         <div class="col-12 col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                 <fieldset>
-                    <legend class="h4">Détails des prestations effectués <small class="text-muted">(matériels, lieux, savoirs faire…)</small></legend>
+                    <legend class="h4">Vos prestations commerciales <small class="text-muted">(services rendus, protuis vendus, activités exercées par vos salariés…)</small></legend>
                     {% bootstrap_formset_errors offer_formset %}
                     {% if offer_formset.errors %}
                         <div class="alert alert-danger" role="alert">{{ offer_formset.errors }}</div>
@@ -48,7 +25,7 @@
 
                     <div id="offer-formset-empty-form" class="d-none">{% bootstrap_form offer_formset.empty_form %}</div>
                     <button id="offer-formset-add-more" class="btn btn-outline-primary btn-sm btn-ico float-right" type="button">
-                        <span>Ajouter une prestation</span>
+                        <span>Ajouter une nouvelle prestation</span>
                         <i class="ri-add-fill ri-lg"></i>
                     </button>
                 </fieldset>
@@ -57,16 +34,14 @@
         <div class="col-12 col-lg-4">
             <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                 <p class="mb-1">
-                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
-                    <strong>Prestations</strong>
+                    <i class="ri-information-line ri-lg"></i>
+                    <strong>Conseil</strong>
                 </p>
                 <p class="mb-1">
-                    En plus des secteurs d'activité, la présentation des prestations permet d'en savoir plus sur vos activités exactes.
+                    Expliquez, détaillez les différents services ou produits que vous proposez aux entreprises.
                 </p>
                 <p class="mb-0">
-                    Exemple de prestations de services :
-                    Nous transformons les fruits et légumes bio ou traditionnels en produits finis (soupes, compotes, confitures).
-                    Nous avons le label ECOCERT pour la transformation des matières premières biologiques.
+                    Utilisez des mots-clés qui permettront de bien identifier vos prestations.
                 </p>
             </div>
         </div>
@@ -142,7 +117,7 @@
                         <input type="hidden" name="client_references-__prefix__-siae" id="id_client_references-__prefix__-siae">
                     </div>
                     <button id="client-reference-formset-add-more" class="btn btn-outline-primary btn-sm btn-ico float-right" type="button">
-                        <span>Ajouter une référence</span>
+                        <span>Ajouter une nouvelle référence</span>
                         <i class="ri-add-fill ri-lg"></i>
                     </button>
                 </fieldset>
@@ -151,15 +126,14 @@
         <div class="col-12 col-lg-4">
             <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                 <p class="mb-1">
-                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
-                    <strong>Références clients</strong>
-                </p>
-                <p class="mb-1">
-                    Avoir des références clients permet de donner confiance à vos futurs acheteurs et de les rassurer sur vos capacités à faire.
+                    <i class="ri-information-line ri-lg"></i>
+                    <strong>Conseil</strong>
                 </p>
                 <p class="mb-0">
-                    Vous vous demandez si vous avez le droit de mettre les logos de vos clients ?
-                    Le mieux est de leur poser la question avant de les mettre sur le site.
+                    Elles permettent :<br />
+                    - de rassurer un acheteur sur la qualité de votre service ou produit<br />
+                    - de gagner en crédibilité auprès de nouveaux acheteurs<br />
+                    - de relater une expérience client réussie
                 </p>
             </div>
         </div>
@@ -235,7 +209,7 @@
                         <input type="hidden" name="images-__prefix__-siae" id="id_images-__prefix__-siae">
                     </div>
                     <button id="image-formset-add-more" class="btn btn-outline-primary btn-sm btn-ico float-right" type="button">
-                        <span>Ajouter une image</span>
+                        <span>Ajouter une nouvelle image</span>
                         <i class="ri-add-fill ri-lg"></i>
                     </button>
                 </fieldset>
@@ -244,11 +218,14 @@
         <div class="col-12 col-lg-4">
             <div role="alert" class="alert alert-info mt-3 mt-lg-0">
                 <p class="mb-1">
-                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
-                    <strong>Réalisations</strong>
+                    <i class="ri-information-line ri-lg"></i>
+                    <strong>Conseil</strong>
+                </p>
+                <p class="mb-1">
+                    Une image vaut mille mots !
                 </p>
                 <p class="mb-0">
-                    Ces images s'afficheront tout en bas de votre fiche.
+                    Montrez vos produits, vos avant/après, vos chantiers, vos machines et moyens de production.
                 </p>
             </div>
         </div>
