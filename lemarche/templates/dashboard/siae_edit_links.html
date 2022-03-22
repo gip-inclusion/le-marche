@@ -64,40 +64,6 @@
         </div>
     </div>
 
-    <div class="row mb-3 mb-lg-5">
-        <div class="col-12 col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
-                <fieldset>
-                    <legend class="h4">Labels et certifications</legend>
-                    {% bootstrap_formset_errors label_formset %}
-                    {% if label_formset.errors %}
-                        <div class="alert alert-danger" role="alert">{{ label_formset.errors }}</div>
-                    {% endif %}
-
-                    {% bootstrap_formset label_formset %}
-
-                    <div id="label-formset-empty-form" class="d-none">{% bootstrap_form label_formset.empty_form %}</div>
-                    <button id="label-formset-add-more" class="btn btn-outline-primary btn-sm btn-ico float-right" type="button">
-                        <span>Ajouter un label</span>
-                        <i class="ri-add-fill ri-lg"></i>
-                    </button>
-                </fieldset>
-            </div>
-        </div>
-        <div class="col-12 col-lg-4">
-            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-                <p class="mb-1">
-                    <i class="ri-information-line ri-lg"></i>
-                    <strong>Pourquoi mettre des labels ?</strong>
-                </p>
-                <p class="mb-0">
-                    Certains labels sont recherchés par nos acheteurs, c'est donc un plus de les rendre visible rapidement.<br />
-                    Exemples : RSEI, ISO 14001, Ecocert…
-                </p>
-            </div>
-        </div>
-    </div>
-
     <div class="row mt-3 mt-lg-5 justify-content-end">
         <div class="col-12 col-lg-auto px-5 px-lg-6">
             <button type="submit" class="btn btn-primary btn-block">
@@ -111,29 +77,4 @@
 
 {% block extra_js %}
 {{ form.media.js }}
-<script type="text/javascript">
-/**
- * Add formset items dynamically
- */
-const prefixRegex = new RegExp('__prefix__', 'g');
-
-// label formset
-const labelIdString = 'id_labels';
-const labelFormsetString = 'label-formset';
-const totalLabelFormset = document.getElementById(`${labelIdString}-TOTAL_FORMS`);
-const labelFormsetEmptyForm = document.getElementById(`${labelFormsetString}-empty-form`);
-const labelFormsetAddMoreButton = document.getElementById(`${labelFormsetString}-add-more`);
-
-labelFormsetAddMoreButton.addEventListener('click', function(e) {
-    if (e) { e.preventDefault(); }
-    // add new form
-    const copyLabelFormsetEmptyForm = labelFormsetEmptyForm.cloneNode(true);
-    copyLabelFormsetEmptyForm.innerHTML = copyLabelFormsetEmptyForm.innerHTML.replace(prefixRegex, totalLabelFormset.value);
-    copyLabelFormsetEmptyForm.childNodes.forEach(node => {
-        labelFormsetEmptyForm.parentNode.insertBefore(node, labelFormsetEmptyForm);
-    });
-    // update total forms count
-    totalLabelFormset.setAttribute('value', parseInt(totalLabelFormset.getAttribute('value'), 10) + 1);
-});
-</script>
 {% endblock %}

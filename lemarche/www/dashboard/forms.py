@@ -140,6 +140,7 @@ class SiaeEditInfoForm(forms.ModelForm):
             "year_constitution",
             "employees_insertion_count",
             "employees_permanent_count",
+            # "labels",  # SiaeLabelFormSet
         ]
 
     def __init__(self, *args, **kwargs):
@@ -151,6 +152,15 @@ class SiaeEditInfoForm(forms.ModelForm):
             }
         )
         # self.fields["logo_url"].label = "Importez votre logo"
+
+
+class SiaeLabelForm(forms.ModelForm):
+    class Meta:
+        model = SiaeLabel
+        fields = ["name"]
+
+
+SiaeLabelFormSet = inlineformset_factory(Siae, SiaeLabel, form=SiaeLabelForm, extra=1, can_delete=True)
 
 
 class SiaeEditOfferForm(forms.ModelForm):
@@ -227,17 +237,7 @@ class SiaeEditLinksForm(forms.ModelForm):
             "is_cocontracting",
             "networks",
             "groups",
-            # "labels",  # SiaeLabelFormSet
         ]
-
-
-class SiaeLabelForm(forms.ModelForm):
-    class Meta:
-        model = SiaeLabel
-        fields = ["name"]
-
-
-SiaeLabelFormSet = inlineformset_factory(Siae, SiaeLabel, form=SiaeLabelForm, extra=1, can_delete=True)
 
 
 class SiaeEditContactForm(forms.ModelForm):

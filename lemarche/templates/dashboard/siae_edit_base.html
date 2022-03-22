@@ -45,13 +45,10 @@
                         <li><a href="{% url 'dashboard:siae_edit_info' siae.slug %}">Ajoutez une description & votre logo</a></li>
                     {% endif %}
                     {% if not siae.offer_count and not siae.client_reference_count %}
-                        <li><a href="{% url 'dashboard:siae_edit_links' siae.slug %}">Détaillez vos offres & vos références clients</a></li>
-                    {% endif %}
-                    {% if not siae.label_count %}
-                        <li><a href="{% url 'dashboard:siae_edit_links' siae.slug %}">Ajoutez des labels & certifications</a></li>
+                        <li><a href="{% url 'dashboard:siae_edit_offer' siae.slug %}">Détaillez vos offres & vos références clients</a></li>
                     {% endif %}
                     {% if siae.is_missing_contact %}
-                        <li><a href="{% url 'dashboard:siae_edit_contact' siae.slug %}">Complétez vos informations & contact</a></li>
+                        <li><a href="{% url 'dashboard:siae_edit_contact' siae.slug %}">Complétez vos informations de contact</a></li>
                     {% endif %}
                 </ol>
             </div>
