@@ -726,6 +726,23 @@ class Siae(models.Model):
         return self.siret
 
     @property
+    def year_constitution_display(self):
+        if self.year_constitution:
+            return self.year_constitution
+        if self.api_entreprise_date_constitution:
+            return self.api_entreprise_date_constitution.year
+        return "non disponible"
+
+    @property
+    def ca_display(self):
+        if self.ca or self.api_entreprise_ca:
+            ca = self.ca or self.api_entreprise_ca
+            # https://stackoverflow.com/a/18891054/4293684
+            ca_formatted = "{:,}".format(ca).replace(",", " ")
+            return f"{ca_formatted}€"
+        return "non disponible"
+
+    @property
     def contact_full_name(self):
         return f"{self.contact_first_name} {self.contact_last_name}"
 
@@ -779,7 +796,6 @@ class Siae(models.Model):
                 "description",
                 "sector_count",
                 "offer_count",
-                "label_count",
             ]
         )
         return self.is_missing_contact or not has_other_fields
