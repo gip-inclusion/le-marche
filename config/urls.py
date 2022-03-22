@@ -28,7 +28,7 @@ urlpatterns = [
     path("documents/", include(wagtaildocs_urls)),
     # urls pages blog
     path("ressources/", include(wagtail_urls)),
-    path("pages/", include("lemarche.www.pages.urls")),
+    path("", include("lemarche.www.pages.urls")),
 ]
 
 if settings.DEBUG and "debug_toolbar" in settings.INSTALLED_APPS:
@@ -37,4 +37,4 @@ if settings.DEBUG and "debug_toolbar" in settings.INSTALLED_APPS:
     urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
 
 if settings.BITOUBI_ENV == "dev":
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns = static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + urlpatterns
