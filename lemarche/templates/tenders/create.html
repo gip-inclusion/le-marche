@@ -39,8 +39,8 @@
                     <fieldset class="py-2 pb-lg-4">
                         {% bootstrap_field form.kind %}
                         {% bootstrap_field form.title placeholder="Ex: Rénovation de façade" %}
-                        {% bootstrap_field form.sectors %}
-                        <div id="dir_form_perimeter_name" class="form-group  form-group-required mb-2">
+                        {% bootstrap_field form.sectors form_group_class="use-multiselect" %}
+                        <div id="dir_form_perimeter_name" class="form-group form-group-required mb-2">
                             <label for="perimeter_name">{{ form.perimeters.label }}</label>
                             <div class="field-holder">
                                 {{ form.perimeter_name }}
@@ -120,7 +120,7 @@
         let kindInput = document.getElementById('id_kind');
         let external_link = document.getElementById('id_external_link');
 
-        {% comment %} TODO : refactor this code  `toggleRequiredClasses`, `toggleInputElement`{% endcomment %}
+        {% comment %} TODO : refactor this code `toggleRequiredClasses`, `toggleInputElement`{% endcomment %}
         let toggleRequiredClasses = (toggle, element) => {
             element.required = required;
             elementToToggle = element.parentNode.classList.contains("form-group") ? element.parentNode : element.parentNode.parentNode;

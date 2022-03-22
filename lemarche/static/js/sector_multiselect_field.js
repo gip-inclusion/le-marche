@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * Multiselect dropdown for the sector search form field
      */
 
-    const sectorFormElement = document.querySelector('#id_sectors');
+    const sectorFormElement = document.querySelector('.use-multiselect #id_sectors');
     const sectorFormPlaceholder = 'Espaces verts, informatique, restauration…';
 
     const buttonTextAndTitle = function(options, select) {

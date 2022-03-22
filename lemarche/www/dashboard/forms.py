@@ -89,41 +89,7 @@ class SiaeSearchAdoptConfirmForm(forms.ModelForm):
         fields = []
 
 
-class SiaeEditInfoContactForm(forms.ModelForm):
-    # # to avoid select widget
-    # kind = forms.CharField(label=Siae._meta.get_field("kind").verbose_name)
-    # department = forms.CharField(label=Siae._meta.get_field("department").verbose_name)
-    # region = forms.CharField(label=Siae._meta.get_field("region").verbose_name)
-
-    class Meta:
-        model = Siae
-        fields = [
-            "contact_first_name",
-            "contact_last_name",
-            "contact_website",
-            "contact_email",
-            "contact_phone",
-            "contact_social_website",
-            "logo_url",
-            "ca",
-            "year_constitution",
-            "employees_insertion_count",
-            "employees_permanent_count",
-        ]
-        widgets = {
-            "address": forms.Textarea(attrs={"rows": 3}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Disabled fields
-        for field in Siae.READONLY_FIELDS:
-            if field in self.fields:
-                self.fields[field].disabled = True
-                self.fields[field].required = False  # to avoid form errors on submit
-
-
-class SiaeEditOfferForm(forms.ModelForm):
+class SiaeEditSearchForm(forms.ModelForm):
     presta_type = forms.MultipleChoiceField(
         label=Siae._meta.get_field("presta_type").verbose_name,
         choices=Siae.PRESTA_CHOICES,
@@ -164,22 +130,47 @@ class SiaeEditOfferForm(forms.ModelForm):
         super().save(*args, **kwargs)
 
 
-class SiaeEditPrestaForm(forms.ModelForm):
+class SiaeEditInfoForm(forms.ModelForm):
     class Meta:
         model = Siae
         fields = [
             "description",
-            # "offers",  # inlineformset
-            # "client_references",  # inlineformset
+            "logo_url",
+            "ca",
+            "year_constitution",
+            "employees_insertion_count",
+            "employees_permanent_count",
+            # "labels",  # SiaeLabelFormSet
         ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["description"].label = "Présentation générale de votre structure"
         self.fields["description"].widget.attrs.update(
             {
-                "placeholder": "N'hésitez pas à mettre en avant les spécificités de votre structure",
+                "placeholder": "Soyez le plus concret possible",
             }
         )
+        # self.fields["logo_url"].label = "Importez votre logo"
+
+
+class SiaeLabelForm(forms.ModelForm):
+    class Meta:
+        model = SiaeLabel
+        fields = ["name"]
+
+
+SiaeLabelFormSet = inlineformset_factory(Siae, SiaeLabel, form=SiaeLabelForm, extra=1, can_delete=True)
+
+
+class SiaeEditOfferForm(forms.ModelForm):
+    class Meta:
+        model = Siae
+        fields = [
+            # "offers",  # SiaeOfferForm
+            # "client_references",  # SiaeClientReferenceForm
+            # "images",  # SiaeImageFormSet
+        ]
 
 
 class SiaeOfferForm(forms.ModelForm):
@@ -192,7 +183,7 @@ class SiaeOfferForm(forms.ModelForm):
         self.fields["description"].widget.attrs.update({"rows": 5})
 
 
-SiaeOfferFormSet = inlineformset_factory(Siae, SiaeOffer, form=SiaeOfferForm, extra=0, can_delete=True)
+SiaeOfferFormSet = inlineformset_factory(Siae, SiaeOffer, form=SiaeOfferForm, extra=1, can_delete=True)
 
 
 class SiaeClientReferenceForm(forms.ModelForm):
@@ -202,11 +193,20 @@ class SiaeClientReferenceForm(forms.ModelForm):
 
 
 SiaeClientReferenceFormSet = inlineformset_factory(
-    Siae, SiaeClientReference, form=SiaeClientReferenceForm, extra=0, can_delete=True
+    Siae, SiaeClientReference, form=SiaeClientReferenceForm, extra=1, can_delete=True
 )
 
 
-class SiaeEditOtherForm(forms.ModelForm):
+class SiaeImageForm(forms.ModelForm):
+    class Meta:
+        model = SiaeImage
+        fields = ["name", "image_url"]  # TODO: make name mandatory ?
+
+
+SiaeImageFormSet = inlineformset_factory(Siae, SiaeImage, form=SiaeImageForm, extra=1, can_delete=True)
+
+
+class SiaeEditLinksForm(forms.ModelForm):
     is_cocontracting = forms.BooleanField(
         label="Êtes-vous ouvert à la co-traitance ?",
         required=False,
@@ -237,26 +237,20 @@ class SiaeEditOtherForm(forms.ModelForm):
             "is_cocontracting",
             "networks",
             "groups",
-            # "labels",  # inlineformset
         ]
 
 
-class SiaeLabelForm(forms.ModelForm):
+class SiaeEditContactForm(forms.ModelForm):
     class Meta:
-        model = SiaeLabel
-        fields = ["name"]
-
-
-SiaeLabelFormSet = inlineformset_factory(Siae, SiaeLabel, form=SiaeLabelForm, extra=0, can_delete=True)
-
-
-class SiaeImageForm(forms.ModelForm):
-    class Meta:
-        model = SiaeImage
-        fields = ["name", "image_url"]  # TODO: make name mandatory ?
-
-
-SiaeImageFormSet = inlineformset_factory(Siae, SiaeImage, form=SiaeImageForm, extra=0, can_delete=True)
+        model = Siae
+        fields = [
+            "contact_first_name",
+            "contact_last_name",
+            "contact_website",
+            "contact_email",
+            "contact_phone",
+            "contact_social_website",
+        ]
 
 
 class SiaeUserRequestForm(forms.ModelForm):

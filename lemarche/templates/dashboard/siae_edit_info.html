@@ -15,19 +15,13 @@
         <div class="col-12 col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                 <fieldset>
-                    <legend class="h4">Informations & Contact</legend>
-                    {% bootstrap_field form.contact_first_name %}
-                    {% bootstrap_field form.contact_last_name %}
-                    {% bootstrap_field form.contact_website %}
-                    {% bootstrap_field form.contact_email %}
-                    {% bootstrap_field form.contact_phone %}
-                    {% bootstrap_field form.contact_social_website %}
+                    {% bootstrap_field form.description %}
                     <!-- Logo -->
                     <div class="row">
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
                                 {{ form.logo_url.as_hidden }}
-                                <label for="logo_form" class="js-display-if-javascript-enabled">Logo</label>
+                                <label for="logo_form" class="js-display-if-javascript-enabled">Importez votre logo</label>
                                 {% include "storage/s3_upload_form.html" with dropzone_form_id="logo_form" %}
                             </div>
                         </div>
@@ -47,14 +41,104 @@
                 </fieldset>
             </div>
         </div>
+    </div>
+
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h5">Indiquez le chiffre d'affaire de votre structure</legend>
+                    {% bootstrap_field form.ca show_label=False %}
+                </fieldset>
+            </div>
+        </div>
         <div class="col-12 col-lg-4">
             <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                 <p class="mb-1">
-                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
-                    <strong>Contact commercial</strong>
+                    <i class="ri-information-line ri-lg"></i>
+                    <strong>Conseil</strong>
                 </p>
                 <p class="mb-0">
-                    Les informations de contact seront mis à disposition des acheteurs afin de leur permettre de vous contacter facilement.
+                    Votre chiffre d'affaire est un élément d'information important aux yeux des acheteurs.
+                    Il permet de rendre compte de votre dimension et de votre capacité à répondre à certains marchés et appels d'offres.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h5">Année de création de votre structure</legend>
+                    {% bootstrap_field form.year_constitution show_label=False %}
+                </fieldset>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h5">{% get_verbose_name siae 'employees_insertion_count' %}</legend>
+                    {% bootstrap_field form.employees_insertion_count show_label=False %}
+                </fieldset>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                <p class="mb-1">
+                    <i class="ri-information-line ri-lg"></i>
+                    <strong>Conseil</strong>
+                </p>
+                <p class="mb-0">
+                    Le nombre de salariés en insertion démontre à la fois votre capacité de production et l'impact social de votre structure.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h5">{% get_verbose_name siae 'employees_permanent_count' %}</legend>
+                    {% bootstrap_field form.employees_permanent_count show_label=False %}
+                </fieldset>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    <legend class="h4">Labels et certifications</legend>
+                    {% bootstrap_formset_errors label_formset %}
+                    {% if label_formset.errors %}
+                        <div class="alert alert-danger" role="alert">{{ label_formset.errors }}</div>
+                    {% endif %}
+
+                    {% bootstrap_formset label_formset %}
+
+                    <div id="label-formset-empty-form" class="d-none">{% bootstrap_form label_formset.empty_form %}</div>
+                    <button id="label-formset-add-more" class="btn btn-outline-primary btn-sm btn-ico float-right" type="button">
+                        <span>Ajouter un label</span>
+                        <i class="ri-add-fill ri-lg"></i>
+                    </button>
+                </fieldset>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                <p class="mb-1">
+                    <i class="ri-information-line ri-lg"></i>
+                    <strong>Pourquoi mettre des labels ?</strong>
+                </p>
+                <p class="mb-0">
+                    Certains labels sont recherchés par nos acheteurs, c'est donc un plus de les rendre visible rapidement.<br />
+                    Exemples : RSEI, ISO 14001, Ecocert…
                 </p>
             </div>
         </div>
@@ -139,79 +223,12 @@
         <div class="col-12 col-lg-4">
             <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                 <p class="mb-1">
-                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
+                    <i class="ri-information-line ri-lg"></i>
                     <strong>Conseil</strong>
                 </p>
                 <p class="mb-0">
                     Toutes les informations affichées ici sont en provenance de {{ siae.source_display }} et de données ouvertes (API Entreprise, API QPV et API ZRR).
                 </p>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-3 mb-lg-5">
-        <div class="col-12 col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
-                <fieldset>
-                    <legend class="h5">Indiquez le chiffre d'affaire de votre structure</legend>
-                    {% bootstrap_field form.ca show_label=False %}
-                </fieldset>
-            </div>
-        </div>
-        <div class="col-12 col-lg-4">
-            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-                <p class="mb-1">
-                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
-                    <strong>Conseil</strong>
-                </p>
-                <p class="mb-0">
-                    Votre chiffre d'affaire est un élément d'information important aux yeux des acheteurs.
-                    Il permet de rendre compte de votre dimension et de votre capacité à répondre à certains marchés et appels d'offres.
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-3 mb-lg-5">
-        <div class="col-12 col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
-                <fieldset>
-                    <legend class="h5">Année de création de votre structure</legend>
-                    {% bootstrap_field form.year_constitution show_label=False %}
-                </fieldset>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-3 mb-lg-5">
-        <div class="col-12 col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
-                <fieldset>
-                    <legend class="h5">{% get_verbose_name siae 'employees_insertion_count' %}</legend>
-                    {% bootstrap_field form.employees_insertion_count show_label=False %}
-                </fieldset>
-            </div>
-        </div>
-        <div class="col-12 col-lg-4">
-            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-                <p class="mb-1">
-                    <span class="prof_icon"><img src="{% static 'img/prof_info_circle.svg' %}" /></span>
-                    <strong>Conseil</strong>
-                </p>
-                <p class="mb-0">
-                    Le nombre de salariés en insertion démontre à la fois votre capacité de production et l'impact social de votre structure.
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-3 mb-lg-5">
-        <div class="col-12 col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
-                <fieldset>
-                    <legend class="h5">{% get_verbose_name siae 'employees_permanent_count' %}</legend>
-                    {% bootstrap_field form.employees_permanent_count show_label=False %}
-                </fieldset>
             </div>
         </div>
     </div>
@@ -224,7 +241,6 @@
         </div>
         <div class="col-12 col-lg-4"></div>
     </div>
-
 </form>
 {% endblock %}
 
@@ -243,6 +259,31 @@ s3UploadInit({
     // Not really nice
     sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
     sentryCsrfToken: "{{ csrf_token }}"
+});
+</script>
+<script type="text/javascript">
+/**
+ * Add formset items dynamically
+ */
+const prefixRegex = new RegExp('__prefix__', 'g');
+
+// label formset
+const labelIdString = 'id_labels';
+const labelFormsetString = 'label-formset';
+const totalLabelFormset = document.getElementById(`${labelIdString}-TOTAL_FORMS`);
+const labelFormsetEmptyForm = document.getElementById(`${labelFormsetString}-empty-form`);
+const labelFormsetAddMoreButton = document.getElementById(`${labelFormsetString}-add-more`);
+
+labelFormsetAddMoreButton.addEventListener('click', function(e) {
+    if (e) { e.preventDefault(); }
+    // add new form
+    const copyLabelFormsetEmptyForm = labelFormsetEmptyForm.cloneNode(true);
+    copyLabelFormsetEmptyForm.innerHTML = copyLabelFormsetEmptyForm.innerHTML.replace(prefixRegex, totalLabelFormset.value);
+    copyLabelFormsetEmptyForm.childNodes.forEach(node => {
+        labelFormsetEmptyForm.parentNode.insertBefore(node, labelFormsetEmptyForm);
+    });
+    // update total forms count
+    totalLabelFormset.setAttribute('value', parseInt(totalLabelFormset.getAttribute('value'), 10) + 1);
 });
 </script>
 {% endblock %}

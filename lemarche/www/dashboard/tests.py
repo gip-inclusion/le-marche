@@ -153,20 +153,21 @@ class DashboardSiaeEditView(TestCase):
         url = reverse("dashboard:siae_edit", args=[self.siae_with_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, f"/profil/prestataires/{self.siae_with_user.slug}/modifier/info-contact/")
+        self.assertEqual(response.url, f"/profil/prestataires/{self.siae_with_user.slug}/modifier/recherche/")
 
         self.client.login(email=self.other_user_siae.email, password=DEFAULT_PASSWORD)
         url = reverse("dashboard:siae_edit", args=[self.siae_with_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        # self.assertEqual(response.url, "/profil/")  # redirects first to siae_edit_info_contact
+        # self.assertEqual(response.url, "/profil/")  # redirects first to siae_edit_search
 
     def test_only_siae_user_can_access_siae_edit_tabs(self):
         SIAE_EDIT_URLS = [
-            "dashboard:siae_edit_info_contact",
+            "dashboard:siae_edit_search",
+            "dashboard:siae_edit_info",
             "dashboard:siae_edit_offer",
-            "dashboard:siae_edit_presta",
-            "dashboard:siae_edit_other",
+            "dashboard:siae_edit_links",
+            "dashboard:siae_edit_contact",
         ]
         self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
         for siae_edit_url in SIAE_EDIT_URLS:
