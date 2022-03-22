@@ -1,0 +1,27 @@
+{% extends "layouts/base.html" %}
+{% load wagtailcore_tags %}
+{% load wagtailimages_tags %}
+
+{% block meta_description %}
+    <meta name="description" content="{{ page.search_description }}">
+{% endblock %}
+
+{% block title %}{{page.seo_title}} | {{ block.super }}{% endblock %}
+
+
+{% block content %}
+    <section class="s-page-menu-01 s-page-menu-01--marche pb-5 pb-lg-7">
+        <div class="s-page-menu-01__container container">
+            <div class="s-page-menu-01__row row align-items-center">
+                <div class="s-page-menu-01__col s-page-menu-01__col--title col-12">
+                    <h1>
+                        {{page.title}}
+                    </h1>
+                </div>
+                {% for article in article_list %}
+                    {% include "cms/article_item.html" with article=article %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

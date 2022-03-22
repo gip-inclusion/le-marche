@@ -1,0 +1,21 @@
+{% load wagtailimages_tags %}
+
+<div class="col-md-4">
+    <div class="card c-card h-100 w-100 c-card--marche" style="width: 100%; display: inline-block;">
+        <div class="card-header">
+            {% image article.image fill-316x163 class="card-img-top"%}
+        </div>
+        <div class="card-body">
+            <p class="h3 lh-base">{{article.title}}</p>
+            <p>
+                {{article.intro}}
+            </p>
+        </div>
+        <div class="card-footer text-right">
+            <a href="{{article.url}}" class="btn btn-outline-primary btn-ico">
+                <span>Lire</span>
+                <i class="ri-arrow-right-up-line ri-lg"></i>
+            </a>
+        </div>
+    </div>
+</div>
