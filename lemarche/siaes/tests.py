@@ -145,6 +145,23 @@ class SiaeModelSaveTest(TestCase):
         self.assertEqual(siae.offer_count, 0)
         self.assertEqual(siae.user_count, 1 + 1)
         self.assertEqual(siae.sector_count, 0)
+        # works also in the opposite direction
+        siae_2 = SiaeFactory()
+        user_3 = UserFactory()
+        user_3.siaes.add(siae_2)
+        user_3.siaes.add(siae)
+        self.assertEqual(siae.users.count(), 2 + 1)
+        # we need to fetch it again
+        siae = Siae.objects.get(id=siae.id)
+        self.assertEqual(siae.user_count, 2 + 1)
+        # works with set()
+        siae_3 = SiaeFactory()
+        self.assertEqual(siae_3.users.count(), 0)
+        self.assertEqual(siae_3.user_count, 0)
+        siae_3.users.set([user, user_2, user_3])
+        self.assertEqual(siae_3.users.count(), 3)
+        self.assertEqual(siae_3.user_count, 3)
+        # TODO: but not in the opposite direction
 
     def test_update_content_fill_date_on_save(self):
         # siae to update

@@ -20,6 +20,7 @@ from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY
 from lemarche.siaes.tasks import set_siae_coords
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
 from lemarche.tenders.models import Tender
+from lemarche.users.models import User
 
 
 GEO_RANGE_DEPARTMENT = "DEPARTMENT"
@@ -815,9 +816,15 @@ def siae_post_save(sender, instance, **kwargs):
 def siae_users_changed(sender, instance, action, **kwargs):
     """
     Why do we need this? (looks like a duplicate of siae_siaeusers_changed)
-    Will be called if we do something like `siae.users.add(user)`
+    Will be called if we do `siae.users.add(user)` or `user.siaes.add(siae)` (also .set())
     """
     if action in ("post_add", "post_remove", "post_clear"):
+        if isinstance(instance, User):
+            # if we do user.siaes.add(siae), we get a User instance
+            # we need to transform it to an Siae instance
+            # TODO: manage the case where user.siaes.set([siae1, siae2]) ...
+            siae_id = next(iter(kwargs["pk_set"]))
+            instance = Siae.objects.get(id=siae_id)
         instance.user_count = instance.users.count()
         if instance.user_count > 0 and not instance.signup_date:
             instance.signup_date = timezone.now()
