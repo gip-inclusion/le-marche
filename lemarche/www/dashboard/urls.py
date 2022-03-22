@@ -10,10 +10,11 @@ from lemarche.www.dashboard.views import (
     ProfileFavoriteListDetailView,
     ProfileFavoriteListEditView,
     ProfileFavoriteListView,
-    SiaeEditInfoContactView,
+    SiaeEditContactView,
+    SiaeEditInfoView,
+    SiaeEditLinksView,
     SiaeEditOfferView,
-    SiaeEditOtherView,
-    SiaeEditPrestaView,
+    SiaeEditSearchView,
     SiaeSearchAdoptConfirmView,
     SiaeSearchBySiretView,
     SiaeUserDelete,
@@ -56,15 +57,32 @@ urlpatterns = [
             [
                 path(
                     "",
-                    RedirectView.as_view(pattern_name="dashboard:siae_edit_info_contact", permanent=False),
+                    RedirectView.as_view(pattern_name="dashboard:siae_edit_search", permanent=False),
                     name="siae_edit",
                 ),
-                path("info-contact/", SiaeEditInfoContactView.as_view(), name="siae_edit_info_contact"),
+                path("recherche/", SiaeEditSearchView.as_view(), name="siae_edit_search"),
+                path("info/", SiaeEditInfoView.as_view(), name="siae_edit_info"),
                 path("offre/", SiaeEditOfferView.as_view(), name="siae_edit_offer"),
-                path("prestations/", SiaeEditPrestaView.as_view(), name="siae_edit_presta"),
-                path("autre/", SiaeEditOtherView.as_view(), name="siae_edit_other"),
+                path("liens/", SiaeEditLinksView.as_view(), name="siae_edit_links"),
+                path("contact/", SiaeEditContactView.as_view(), name="siae_edit_contact"),
             ]
         ),
+    ),
+    # Edit Siae (old urls: redirect)
+    path(
+        "prestataires/<str:slug>/modifier/info-contact/",
+        RedirectView.as_view(pattern_name="dashboard:siae_edit_search", permanent=True),
+        name="siae_edit_info_contact_old",
+    ),
+    path(
+        "prestataires/<str:slug>/modifier/prestations/",
+        RedirectView.as_view(pattern_name="dashboard:siae_edit_search", permanent=True),
+        name="siae_edit_info_presta_old",
+    ),
+    path(
+        "prestataires/<str:slug>/modifier/autre/",
+        RedirectView.as_view(pattern_name="dashboard:siae_edit_search", permanent=True),
+        name="siae_edit_other_old",
     ),
     # Siae Users (& Requests)
     path(

@@ -17,10 +17,11 @@ from lemarche.www.dashboard.forms import (
     ProfileEditForm,
     ProfileFavoriteEditForm,
     SiaeClientReferenceFormSet,
-    SiaeEditInfoContactForm,
+    SiaeEditContactForm,
+    SiaeEditInfoForm,
+    SiaeEditLinksForm,
     SiaeEditOfferForm,
-    SiaeEditOtherForm,
-    SiaeEditPrestaForm,
+    SiaeEditSearchForm,
     SiaeImageFormSet,
     SiaeLabelFormSet,
     SiaeOfferFormSet,
@@ -250,9 +251,20 @@ class SiaeUsersView(SiaeMemberRequiredMixin, DetailView):
         return context
 
 
-class SiaeEditInfoContactView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
-    form_class = SiaeEditInfoContactForm
-    template_name = "dashboard/siae_edit_info_contact.html"
+class SiaeEditSearchView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
+    form_class = SiaeEditSearchForm
+    template_name = "dashboard/siae_edit_search.html"
+    context_object_name = "siae"
+    queryset = Siae.objects.all()
+    success_message = "Vos modifications ont bien été prises en compte."
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard:siae_edit_search", args=[self.kwargs.get("slug")])
+
+
+class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
+    form_class = SiaeEditInfoForm
+    template_name = "dashboard/siae_edit_info.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
     success_message = "Vos modifications ont bien été prises en compte."
@@ -260,31 +272,44 @@ class SiaeEditInfoContactView(SiaeMemberRequiredMixin, SuccessMessageMixin, Upda
     def get_context_data(self, **kwargs):
         """
         - pass s3 image upload config
+        - init label form
         """
         context = super().get_context_data(**kwargs)
         s3_upload = S3Upload(kind="siae_logo")
         context["s3_form_values_siae_logo"] = s3_upload.form_values
         context["s3_upload_config_siae_logo"] = s3_upload.config
+        if self.request.POST:
+            context["label_formset"] = SiaeLabelFormSet(self.request.POST, instance=self.object)
+        else:
+            context["label_formset"] = SiaeLabelFormSet(instance=self.object)
         return context
 
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        label_formset = SiaeLabelFormSet(self.request.POST, instance=self.object)
+        if form.is_valid() and label_formset.is_valid():
+            return self.form_valid(form, label_formset)
+        else:
+            return self.form_invalid(form, label_formset)
+
+    def form_valid(self, form, label_formset):
+        self.object = form.save()
+        label_formset.instance = self.object
+        label_formset.save()
+        return super().form_valid(form)
+
+    def form_invalid(self, form, label_formset):
+        return self.render_to_response(self.get_context_data())
+
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_info_contact", args=[self.kwargs.get("slug")])
+        return reverse_lazy("dashboard:siae_edit_info", args=[self.kwargs.get("slug")])
 
 
 class SiaeEditOfferView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeEditOfferForm
     template_name = "dashboard/siae_edit_offer.html"
-    context_object_name = "siae"
-    queryset = Siae.objects.all()
-    success_message = "Vos modifications ont bien été prises en compte."
-
-    def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_offer", args=[self.kwargs.get("slug")])
-
-
-class SiaeEditPrestaView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
-    form_class = SiaeEditPrestaForm
-    template_name = "dashboard/siae_edit_presta.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
     success_message = "Vos modifications ont bien été prises en compte."
@@ -342,48 +367,29 @@ class SiaeEditPrestaView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateVie
         return self.render_to_response(self.get_context_data())
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_presta", args=[self.kwargs.get("slug")])
+        return reverse_lazy("dashboard:siae_edit_offer", args=[self.kwargs.get("slug")])
 
 
-class SiaeEditOtherView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
-    form_class = SiaeEditOtherForm
-    template_name = "dashboard/siae_edit_other.html"
+class SiaeEditLinksView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
+    form_class = SiaeEditLinksForm
+    template_name = "dashboard/siae_edit_links.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
     success_message = "Vos modifications ont bien été prises en compte."
 
-    def get_context_data(self, **kwargs):
-        """
-        - init forms
-        """
-        context = super().get_context_data(**kwargs)
-        if self.request.POST:
-            context["label_formset"] = SiaeLabelFormSet(self.request.POST, instance=self.object)
-        else:
-            context["label_formset"] = SiaeLabelFormSet(instance=self.object)
-        return context
+    def get_success_url(self):
+        return reverse_lazy("dashboard:siae_edit_links", args=[self.kwargs.get("slug")])
 
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        label_formset = SiaeLabelFormSet(self.request.POST, instance=self.object)
-        if form.is_valid() and label_formset.is_valid():
-            return self.form_valid(form, label_formset)
-        else:
-            return self.form_invalid(form, label_formset)
 
-    def form_valid(self, form, label_formset):
-        self.object = form.save()
-        label_formset.instance = self.object
-        label_formset.save()
-        return super().form_valid(form)
-
-    def form_invalid(self, form, label_formset):
-        return self.render_to_response(self.get_context_data())
+class SiaeEditContactView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
+    form_class = SiaeEditContactForm
+    template_name = "dashboard/siae_edit_contact.html"
+    context_object_name = "siae"
+    queryset = Siae.objects.all()
+    success_message = "Vos modifications ont bien été prises en compte."
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_other", args=[self.kwargs.get("slug")])
+        return reverse_lazy("dashboard:siae_edit_contact", args=[self.kwargs.get("slug")])
 
 
 class SiaeUserRequestConfirm(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):

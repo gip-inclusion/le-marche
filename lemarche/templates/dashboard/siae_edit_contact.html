@@ -1,0 +1,51 @@
+{% extends "dashboard/siae_edit_base.html" %}
+{% load static bootstrap4 get_verbose_name %}
+
+{% block content_siae_form %}
+<form method="POST" action="" class="mb-3 mb-lg-5">
+    {% csrf_token %}
+
+    {% bootstrap_form_errors form type="all" %}
+
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <h3>Contact commercial affiché sur votre fiche commerciale</h3>
+        </div>
+    </div>
+
+    <div class="row mb-3 mb-lg-5">
+        <div class="col-12 col-lg-8">
+            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                <fieldset>
+                    {% bootstrap_field form.contact_first_name %}
+                    {% bootstrap_field form.contact_last_name %}
+                    {% bootstrap_field form.contact_website %}
+                    {% bootstrap_field form.contact_email %}
+                    {% bootstrap_field form.contact_phone %}
+                    {% bootstrap_field form.contact_social_website %}
+                </fieldset>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                <p class="mb-1">
+                    <i class="ri-information-line ri-lg"></i>
+                    <strong>Contact commercial</strong>
+                </p>
+                <p class="mb-0">
+                    Les informations de contact seront mis à disposition des acheteurs afin de leur permettre de vous contacter facilement.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3 mt-lg-5 justify-content-end">
+        <div class="col-12 col-lg-auto px-5 px-lg-6">
+            <button type="submit" class="btn btn-primary btn-block">
+                <span>Enregistrer mes modifications</span>
+            </button>
+        </div>
+        <div class="col-12 col-lg-4"></div>
+    </div>
+</form>
+{% endblock %}
