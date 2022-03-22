@@ -187,13 +187,13 @@
                         <div class="row" title="{% get_verbose_name siae 'api_entreprise_employees' %}">
                             <div class="col-12 mb-3">
                                 <span>{% if siae.kind == 'SEP' %}Travailleurs détenus{% else %}Salariés{% endif %} :</span>
-                                <span>{{ siae.api_entreprise_employees|default:"" }}</span>
+                                <span>{{ siae.api_entreprise_employees|default:"non disponible" }}</span>
                             </div>
                         </div>
                         <div class="row" title="{% get_verbose_name siae 'api_entreprise_ca' %}">
                             <div class="col-12 mb-3">
                                 <span>Chiffre d'affaire :</span>
-                                <span>{{ siae.api_entreprise_ca|default:"" }}</span>
+                                <span>{{ siae.api_entreprise_ca|default:"non disponible" }}</span>
                             </div>
                         </div>
                     </div>

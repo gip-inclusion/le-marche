@@ -36,70 +36,107 @@
             <div id="content" class="col-12 listing-area">
                 <!-- profile-detail basic info -->
                 <div id="user_profile" class="row align-items-start">
-                    <div class="gallery-small slideshow col-12 col-lg-3">
-                        <div class="img-container">
-                            {% if siae.logo_url %}
-                                <img src="{{ siae.logo_url }}" class="img-fluid" alt="Logo de la structure {{ siae.name }}" />
-                            {% else %}
-                                <img src="{% static 'img/default-listing.png' %}" class="img-fluid" alt="{{ siae.name }}" />
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-9">
+                    <div class="col-12">
                         <div class="row">
-                            <div class="col-sm-12">
-                                <h1 class="h2 mb-3 mt-1">{{ siae.name_display }}</h1>
-                                {% if user.is_authenticated %}
-                                    {% if siae.in_user_favorite_list_count %}
-                                        <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_remove_modal" title="Dans votre liste d'achat">
-                                            <i class="ri-star-fill ri-xl"></i>
-                                        </a>
-                                        {% else %}
-                                        <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_add_modal" title="Ajouter à votre liste d'achat" >
-                                            <i class="ri-star-line ri-xl"></i>
-                                        </a>
+                            <div class="gallery-small slideshow col-12 col-lg-3">
+                                <div class="img-container">
+                                    {% if siae.logo_url %}
+                                        <img src="{{ siae.logo_url }}" class="img-fluid" alt="Logo de la structure {{ siae.name }}" />
+                                    {% else %}
+                                        <img src="{% static 'img/default-listing.png' %}" class="img-fluid" alt="{{ siae.name }}" />
                                     {% endif %}
-                                {% else %}
-                                    <a href="#" id="favorite-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}" title="Ajouter à votre liste d'achat">
-                                        <i class="ri-star-line ri-xl"></i>
-                                    </a>
-                                {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-9">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <h1 class="h2 mb-3 mt-1">
+                                            {{ siae.name_display }}
+                                            <small>(profil mis à jour il y a {{ siae.updated_at|timesince }})</small>
+                                        </h1>
+                                        {% if user.is_authenticated %}
+                                            {% if siae.in_user_favorite_list_count %}
+                                                <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_remove_modal" title="Dans votre liste d'achat">
+                                                    <i class="ri-star-fill ri-xl"></i>
+                                                </a>
+                                                {% else %}
+                                                <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_add_modal" title="Ajouter à votre liste d'achat" >
+                                                    <i class="ri-star-line ri-xl"></i>
+                                                </a>
+                                            {% endif %}
+                                        {% else %}
+                                            <a href="#" id="favorite-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}" title="Ajouter à votre liste d'achat">
+                                                <i class="ri-star-line ri-xl"></i>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-12">
+                                        <i class="ri-building-4-line"></i>
+                                        <span>{{ siae.get_kind_display }}</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        {% for group in siae.groups.all %}
+                                            <span class="badge badge-pill badge-emploi-light">{{ group.name }}</span>
+                                        {% endfor %}
+                                        {% if siae.is_cocontracting %}
+                                            <span class="badge badge-pill badge-success-light">Ouvert à la co-traitance</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
+                        <hr />
+
                         <div class="row">
                             <div class="col-12 col-md-6">
                                 <div class="row">
                                     <div class="col-12 mb-3">
+                                        <i class="ri-calendar-2-fill"></i>
+                                        <strong>Année de création :</strong>
+                                        <span>{{ siae.year_constitution_display }}</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 mb-3">
                                         <i class="ri-bill-line"></i>
-                                        <span>Siret : {{ siae.siret_display }}</span>
+                                        <strong>SIRET :</strong>
+                                        <span>{{ siae.siret_display }}</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <i class="ri-money-euro-circle-line"></i>
+                                        <strong>Chiffre d'affaire :</strong>
+                                        <span>{{ siae.ca_display }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        {% if siae.presta_type %}
+                                            <i class="ri-briefcase-4-line"></i>
+                                            <strong>{% array_choices_display siae 'presta_type' %}</strong>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-12 mb-3">
                                         <i class="ri-group-line"></i>
-                                        <span>{% if siae.kind == 'SEP' %}Travailleurs détenus{% else %}Salariés{% endif %}<sup>*</sup> : {{ siae.api_entreprise_employees|default:"non disponible" }}</span>
+                                        <strong>Salariés permanents</strong>
+                                        <span>{{ siae.employees_permanent_count|default:"non disponible" }}</span>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-12 mb-3">
-                                        <i class="ri-calendar-2-fill"></i>
-                                        <span>Date de création<sup>*</sup> : {{ siae.api_entreprise_date_constitution|date:"Y"|default:"non disponible" }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                {% if siae.presta_type %}
-                                    <div class="row">
-                                        <div class="col-12 mb-3">
-                                            <i class="ri-briefcase-4-line"></i>
-                                            <span>{% array_choices_display siae 'presta_type' %}</span>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                                <div class="row">
-                                    <div class="col-12 mb-3">
-                                        <i class="ri-building-4-line"></i>
-                                        <span>{{ siae.get_kind_display }}</span>
+                                        <i class="ri-user-add-line"></i>
+                                        <strong>Salariés en insertion</strong>
+                                        <span>{{ siae.employees_insertion_count|default:"non disponible" }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -198,6 +235,30 @@
 
                 <!-- profile-detail suite -->
                 <article id="user_detail" class="profile-detail">
+
+                    <!-- Third row : Description -->
+                    {% if siae.user_count %}
+                        <div class="row">
+                            <div class="col-sm-12 img-left mb-3">
+                                <div class="il-l">
+                                    <img src="{% static_theme_images 'ico-bicro-marche-descript-act.svg' %}" alt="" height="32" />
+                                </div>
+                                <div class="il-r">
+                                    <h3 class="h2 mb-1 mt-1">Présentation de la structure</h3>
+                                    <div>
+                                        {% if siae.description %}
+                                            {{ siae.description|linebreaks }}
+                                        {% else %}
+                                            Non renseigné
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr />
+                    {% endif %}
+
                     <!-- Second Row : Secteurs, Références -->
                     <div class="row">
                         <div class="col-sm-6 img-left mb-3">
@@ -215,132 +276,117 @@
                             </div>
                         </div>
                         {% if siae.client_reference_count %}
-                        <div class="col-sm-6 img-left mb-3">
-                            <div class="il-l">
-                                <img src="{% static_theme_images 'ico-bicro-marche-ref-clients.svg' %}" alt="" height="32" />
+                            <div class="col-sm-6 img-left mb-3">
+                                <div class="il-l">
+                                    <img src="{% static_theme_images 'ico-bicro-marche-ref-clients.svg' %}" alt="" height="32" />
+                                </div>
+                                <div class="il-r">
+                                    <h3 class="h2 mb-1 mt-1">Références clients</h3>
+                                    {% for image in siae.client_references.all %}
+                                        {% if image.logo_url %}
+                                            <img class="client-ref" src="{{ image.logo_url }}" alt="{{ image.name }}" title="{{ image.name }}" />
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
                             </div>
-                            <div class="il-r">
-                                <h3 class="h2 mb-1 mt-1">Références clients</h3>
-                                {% for image in siae.client_references.all %}
-                                    {% if image.logo_url %}
-                                        <img class="client-ref" src="{{ image.logo_url }}" alt="{{ image.name }}" title="{{ image.name }}" />
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                        </div>
                         {% endif %}
                     </div>
-                    <!-- Third row : Description -->
-                    {% if siae.user_count %}
-                    <div class="row">
-                        <div class="col-sm-12 img-left mb-3">
-                            <div class="il-l">
-                                <img src="{% static_theme_images 'ico-bicro-marche-descript-act.svg' %}" alt="" height="32" />
-                            </div>
-                            <div class="il-r">
-                                <h3 class="h2 mb-1 mt-1">Présentation de la structure</h3>
-                                <div>
-                                    {% if siae.description %}
-                                        {{ siae.description|linebreaks }}
-                                    {% else %}
-                                        Non renseigné
-                                    {% endif %}
-                                </div>
-                                {% if siae.is_cocontracting %}
-                                    <div>
-                                        <span class="badge badge-pill badge-success-outline">Ouvert à la co-traitance</span>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
+
+                    <hr />
+
                     <!-- Fourth Row : Prestations -->
                     {% if siae.offer_count %}
-                    <div class="row">
-                        <div class="col-sm-12 img-left mb-3">
-                            <div class="il-l">
-                                <img src="{% static_theme_images 'ico-bicro-detail.svg' %}" alt="" height="32" />
-                            </div>
-                            <div class="il-r">
-                                <h3 class="h2 mb-1 mt-1">Les prestations proposées</h3>
-                                <div class="row">
-                                {% for offer in siae.offers.all %}
-                                    <article class="prests-post col-12 {% if siae.offer_count > 1 %}col-lg-6{% endif %} mt-2">
-                                        <h3>
-                                            <img src="{% static 'img/prof_dot.png' %}" alt="" />
-                                            <span>{{ offer.name }}</span>
-                                        </h3>
-                                        <div>
-                                            {{ offer.description|linebreaks }}
-                                        </div>
-                                    </article>
-                                {% endfor %}
+                        <div class="row">
+                            <div class="col-sm-12 img-left mb-3">
+                                <div class="il-l">
+                                    <img src="{% static_theme_images 'ico-bicro-detail.svg' %}" alt="" height="32" />
+                                </div>
+                                <div class="il-r">
+                                    <h3 class="h2 mb-1 mt-1">Détails des prestations effectuées <small>(matériels, lieux, savoir-faire)</small></h3>
+                                    <div class="row">
+                                    {% for offer in siae.offers.all %}
+                                        <article class="prests-post col-12 {% if siae.offer_count > 1 %}col-lg-6{% endif %} mt-2">
+                                            <h3>
+                                                <img src="{% static 'img/prof_dot.png' %}" alt="" />
+                                                <span>{{ offer.name }}</span>
+                                            </h3>
+                                            <div>
+                                                {{ offer.description|linebreaks }}
+                                            </div>
+                                        </article>
+                                    {% endfor %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+
+                        <hr />
                     {% endif %}
+
                     <!-- Fifth Row : Réseaux, Labels -->
                     {% if siae.network_count or siae.label_count %}
-                    <div class="row">
-                        {% if siae.network_count %}
-                            <div class="col-12 col-md-6 img-left mb-3">
-                                <div class="il-l">
-                                    <img src="{% static_theme_images 'ico-bicro-reseaux.svg' %}" alt="" height="32" />
+                        <div class="row">
+                            {% if siae.network_count %}
+                                <div class="col-12 col-md-6 img-left mb-3">
+                                    <div class="il-l">
+                                        <img src="{% static_theme_images 'ico-bicro-reseaux.svg' %}" alt="" height="32" />
+                                    </div>
+                                    <div class="il-r">
+                                        <h3 class="h2 mb-1 mt-1">Réseaux</h3>
+                                        <ul>
+                                        {% for network in siae.networks.all %}
+                                            <li>
+                                                <a href="{{ network.website }}" class="network_link" rel="noopener" target="_blank">
+                                                    <span>{{ network.name }}</span>
+                                                    {% if network.brand %}<span>({{ network.brand }})</span>{% endif %}
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                        </ul>
+                                    </div>
                                 </div>
-                                <div class="il-r">
-                                    <h3 class="h2 mb-1 mt-1">Réseaux</h3>
-                                    <ul>
-                                    {% for network in siae.networks.all %}
-                                        <li>
-                                            <a href="{{ network.website }}" class="network_link" rel="noopener" target="_blank">
-                                                <span>{{ network.name }}</span>
-                                                {% if network.brand %}<span>({{ network.brand }})</span>{% endif %}
-                                            </a>
-                                        </li>
-                                    {% endfor %}
-                                    </ul>
+                            {% endif %}
+                            {% if siae.label_count %}
+                                <div class="col-12 col-md-6 img-left mb-3">
+                                    <div class="il-l">
+                                        <img src="{% static_theme_images 'ico-bicro-labels.svg' %}" alt="" height="32" />
+                                    </div>
+                                    <div class="il-r">
+                                        <h3 class="h2 mb-1 mt-1">Labels & certifications</h3>
+                                        <ul>
+                                        {% for label in siae.labels.all %}
+                                            <li>{{ label.name }}</li>
+                                        {% endfor %}
+                                        </ul>
+                                    </div>
                                 </div>
-                            </div>
-                        {% endif %}
-                        {% if siae.label_count %}
-                            <div class="col-12 col-md-6 img-left mb-3">
-                                <div class="il-l">
-                                    <img src="{% static_theme_images 'ico-bicro-labels.svg' %}" alt="" height="32" />
-                                </div>
-                                <div class="il-r">
-                                    <h3 class="h2 mb-1 mt-1">Labels & certifications</h3>
-                                    <ul>
-                                    {% for label in siae.labels.all %}
-                                        <li>{{ label.name }}</li>
-                                    {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
+                            {% endif %}
+                        </div>
+
+                        <hr />
                     {% endif %}
+
                     <!-- Sixth Row : Réalisations -->
                     {% if siae.images.count %}
-                    <div class="row">
-                        <div class="col-12 img-left">
-                            <div class="il-l">
-                                <img src="{% static_theme_images 'ico-bicro-realisation.svg' %}" alt="" height="32" />
-                            </div>
-                            <div class="il-r">
-                                <h3 class="h2 mb-1 mt-1">Nos réalisations</h3>
+                        <div class="row">
+                            <div class="col-12 img-left">
+                                <div class="il-l">
+                                    <img src="{% static_theme_images 'ico-bicro-realisation.svg' %}" alt="" height="32" />
+                                </div>
+                                <div class="il-r">
+                                    <h3 class="h2 mb-1 mt-1">Nos réalisations</h3>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div id="image-grid" class="row">
-                        {% for image in siae.images.all %}
-                            <div class="col-12 col-sm-4 pb-3"> <!-- 3 per row -->
-                                <img src="{{ image.image_url }}" class="img-fluid" title="{{ image.name|default:'' }}" loading="lazy" />
-                            </div>
-                        {% endfor %}
-                    </div>
+                        <div id="image-grid" class="row">
+                            {% for image in siae.images.all %}
+                                <div class="col-12 col-sm-4 pb-3"> <!-- 3 per row -->
+                                    <img src="{{ image.image_url }}" class="img-fluid" title="{{ image.name|default:'' }}" loading="lazy" />
+                                </div>
+                            {% endfor %}
+                        </div>
                     {% endif %}
+
                     {% if not siae.user_count and not user.is_authenticated %}
                     <div id="user_update_cta" class="row justify-content-center mb-5 mb-lg-3 mt-lg-5">
                         <div class="col-12 col-lg-10">
@@ -370,11 +416,6 @@
                 <hr />
                 <h3 class="h3 my-3">Vous avez besoin d'être accompagné dans vos achats inclusifs par des partenaires reconnus ?</h3>
                 <a href="{% url 'pages:partenaires' %}" id="track_siae_detail_partners" class="btn btn-outline-primary">Découvrez-les maintenant</a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12 mt-5">
-                <small><sup>*</sup>source: informations en provenance d'<a href="https://entreprise.api.gouv.fr/" target="_blank" rel="noopener">entreprise.api.gouv.fr</a></small>
             </div>
         </div>
     </div>
