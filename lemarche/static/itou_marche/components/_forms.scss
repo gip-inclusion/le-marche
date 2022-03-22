@@ -12,7 +12,8 @@ label.required::after {
     padding-bottom: 1rem;
 }
 // 'group-title' class added with Javascript (see static > js > utils.js)
-.form-group > .checkbox > .checkbox-title > .group-title {
+.form-group > .checkbox > .checkbox-title > .group-title,
+div#id_sectors > div > label {
     font-weight: 900;
-    font-size: 1rem;
+    // font-size: 1rem;
 }
