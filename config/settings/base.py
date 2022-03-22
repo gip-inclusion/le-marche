@@ -70,6 +70,10 @@ COMPRESS_PRECOMPILERS = [
 ]
 LIBSASS_OUTPUT_STYLE = "compressed"
 
+# media files
+MEDIA_ROOT = os.path.join(APPS_DIR, "media")
+MEDIA_URL = "/media/"
+
 # Application definition
 
 AUTH_USER_MODEL = "users.User"
@@ -122,9 +126,26 @@ LOCAL_APPS = [
     "lemarche.pages",
     # Api
     "lemarche.api",
+    # wagtail cms
+    "lemarche.cms",
 ]
 
-INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+WAGTAIL_APPS = [
+    "wagtail.contrib.forms",
+    "wagtail.contrib.redirects",
+    "wagtail.embeds",
+    "wagtail.sites",
+    "wagtail.users",
+    "wagtail.snippets",
+    "wagtail.documents",
+    "wagtail.images",
+    "wagtail.search",
+    "wagtail.admin",
+    "wagtail.core",
+    "modelcluster",
+    "taggit",
+]
+INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS + WAGTAIL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -137,6 +158,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Third-party Middlewares
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    # wagtail
+    "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     # Custom Middlewares
     "lemarche.utils.tracker.TrackerMiddleware",
 ]
@@ -637,3 +660,15 @@ ENV_COLOR_MAPPING = {
     "prod": "",
 }
 BITOUBI_ENV_COLOR = ENV_COLOR_MAPPING.get(BITOUBI_ENV, "")
+
+# Wagtail
+# ------------------------------------------------------------------------------
+WAGTAIL_SITE_NAME = "Le Marché"
+
+WAGTAILSEARCH_BACKENDS = {
+    "default": {
+        "BACKEND": "wagtail.search.backends.database",
+    }
+}
+
+SITE_ID = 1
