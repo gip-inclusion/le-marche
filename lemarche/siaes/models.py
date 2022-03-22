@@ -796,7 +796,6 @@ class Siae(models.Model):
                 "description",
                 "sector_count",
                 "offer_count",
-                "label_count",
             ]
         )
         return self.is_missing_contact or not has_other_fields

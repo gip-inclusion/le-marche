@@ -128,14 +128,14 @@
                                 <div class="row">
                                     <div class="col-12 mb-3">
                                         <i class="ri-group-line"></i>
-                                        <strong>Salariés permanents</strong>
+                                        <strong>Salariés permanents :</strong>
                                         <span>{{ siae.employees_permanent_count|default:"non disponible" }}</span>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-12 mb-3">
                                         <i class="ri-user-add-line"></i>
-                                        <strong>Salariés en insertion</strong>
+                                        <strong>Salariés en insertion :</strong>
                                         <span>{{ siae.employees_insertion_count|default:"non disponible" }}</span>
                                     </div>
                                 </div>
@@ -237,7 +237,7 @@
                 <article id="user_detail" class="profile-detail">
 
                     <!-- Third row : Description -->
-                    {% if siae.user_count %}
+                    {% if siae.description %}
                         <div class="row">
                             <div class="col-sm-12 img-left mb-3">
                                 <div class="il-l">
