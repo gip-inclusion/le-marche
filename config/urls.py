@@ -28,7 +28,7 @@ urlpatterns = [
     path("documents/", include(wagtaildocs_urls)),
     # urls pages blog
     path("ressources/", include(wagtail_urls)),
-    path("", include("lemarche.www.pages.urls")),
+    path("pages/", include("lemarche.www.pages.urls")),
 ]
 
 if settings.DEBUG and "debug_toolbar" in settings.INSTALLED_APPS:

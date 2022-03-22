@@ -14,6 +14,7 @@ envs/dev.env
 envs/prod.env
 envs/secrets.env
 envs/staging.env
+.envrc
 
 # Config
 config/settings/dev.py
@@ -24,6 +25,7 @@ docker/staging/
 
 # Project specific
 lemarche/staticfiles/
+lemarche/media/
 
 # Debian
 .bash_history
