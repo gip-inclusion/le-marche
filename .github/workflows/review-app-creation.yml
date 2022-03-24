@@ -17,8 +17,9 @@ env:
   CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
   REVIEW_APPS_ORGANIZATION_NAME: ${{ secrets.CLEVER_REVIEW_APPS_ORG }}
   CONFIGURATION_ADDON: ${{ secrets.CLEVER_REVIEW_APPS_CONFIGURATION_ADDON }}
-  # S3_ADDON: ${{ secrets.CLEVER_REVIEW_APPS_S3_ADDON }}
+  S3_ADDON: ${{ secrets.CLEVER_REVIEW_APPS_S3_ADDON }}
   BRANCH: ${{ github.head_ref }}
+  PYTHON_VERSION: 3.9
 
 jobs:
   create:
@@ -59,6 +60,9 @@ jobs:
         # --region: server location ("par" means Paris).
         # --alias: custom application name, used to find it with the CLI.
         $CLEVER_CLI create $REVIEW_APP_NAME -t python --org $REVIEW_APPS_ORGANIZATION_NAME --region par --alias $REVIEW_APP_NAME
+        # Force Python version through env, because its default is not accurate and environment variables
+        # have precedence over configuration addons
+        $CLEVER_CLI env set CC_PYTHON_VERSION ${{ env.PYTHON_VERSION }} --alias $REVIEW_APP_NAME
         $CLEVER_CLI domain add $DEPLOY_URL --alias $REVIEW_APP_NAME
         $CLEVER_CLI link $REVIEW_APP_NAME --org $REVIEW_APPS_ORGANIZATION_NAME
 
@@ -67,10 +71,10 @@ jobs:
         $CLEVER_CLI addon create postgresql-addon $REVIEW_APP_DB_NAME --org $REVIEW_APPS_ORGANIZATION_NAME --plan xxs_sml --yes
         $CLEVER_CLI service link-addon $REVIEW_APP_DB_NAME
 
-    # - name: 🤝 Link S3 addon
-    #   run: |
-    #     $CLEVER_CLI link $REVIEW_APP_NAME --org $REVIEW_APPS_ORGANIZATION_NAME
-    #     $CLEVER_CLI service link-addon $S3_ADDON
+    - name: 🤝 Link S3 addon
+      run: |
+        $CLEVER_CLI link $REVIEW_APP_NAME --org $REVIEW_APPS_ORGANIZATION_NAME
+        $CLEVER_CLI service link-addon $S3_ADDON
 
     - name: 🗺 Add environment variables to the review app
       run: |
