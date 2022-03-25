@@ -106,7 +106,12 @@ class ArticleList(RoutablePageMixin, Page):
         return context
 
     def get_posts(self):
-        return ArticlePage.objects.descendant_of(self).live().order_by("-last_published_at")
+        return (
+            ArticlePage.objects.prefetch_related("categories")
+            .descendant_of(self)
+            .live()
+            .order_by("-last_published_at")
+        )
 
     @route(r"^$")
     def post_list(self, request, *args, **kwargs):
