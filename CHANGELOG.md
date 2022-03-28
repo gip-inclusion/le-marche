@@ -4,6 +4,29 @@ Ressources :
 - [Semantic Versioning](http://semver.org/)
 - [CHANGELOG recommendations](http://keepachangelog.com/).
 
+## [2022.5] - 2022-03-25
+
+### Ajouté
+
+- Données : ajouter la notion de groupement (+ ajouté une liste de 19 groupements)
+- Dépôt des besoins:
+    - Dépôt de besoins des acheteurs
+    - Matching des besoins avec les structures du marché et envoi de mails
+- Mailjet : inscription automatique des utilisateurs inscrits sur des listes de contacts spécifiques mailjet.
+- Admin: ajout de l'option superuser, ajout d'un champs pour stocker la date de génération des tokens
+
+### Modifié
+
+- Tableau de bord
+    - Pouvoir se rattacher à un groupement dans le formulaire de modification de sa structure
+    - Afficher l'Enseigne plutôt que la Raison sociale si l'information est remplie (comme sur les pages recherche & fiche)
+- Espace utilisateur
+    - Ajout d'un nouveau champ "Réseau social" pour les structures (formulaire de modification + fiche)
+- Cacher le bouton "Newsletter achat" pour les utilisateurs connectés
+
+### Supprimé
+
+
 ## [2022.5] - 2022-03-11
 
 ### Ajouté
