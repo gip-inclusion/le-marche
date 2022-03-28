@@ -14,7 +14,7 @@ from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin
 from lemarche.www.tenders.forms import AddTenderForm
 
 
-# from lemarche.www.tenders.tasks import send_tender_emails_to_siae_list
+# from lemarche.www.tenders.tasks import send_tender_emails
 
 
 TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
@@ -39,13 +39,14 @@ class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView
         tender.save()
         form.save_m2m()
 
+        # find the matching Siaes
         siae_found_list = Siae.objects.filter_with_tender(tender)
-
+        tender.siaes.set(siae_found_list)
         tender.siae_found_count = siae_found_list.count()
         tender.save()
 
         # task
-        # send_tender_emails_to_siae_list(tender, siae_found_list)
+        # send_tender_emails(tender)
 
         messages.add_message(
             self.request,
