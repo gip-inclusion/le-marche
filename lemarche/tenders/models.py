@@ -102,7 +102,14 @@ class Tender(models.Model):
         to=settings.AUTH_USER_MODEL, related_name="tenders", on_delete=models.CASCADE, blank=True
     )
 
-    siae_found_count = models.PositiveIntegerField(verbose_name="Nombre de SIAE trouvées", default=0)
+    siaes = models.ManyToManyField(
+        "siaes.Siae",
+        through="tenders.TenderSiae",
+        verbose_name="Structures correspondantes au besoin",
+        related_name="siaes",
+        blank=True,
+    )
+    siae_found_count = models.PositiveIntegerField(verbose_name="Nombre de structures trouvées", default=0)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
@@ -169,3 +176,28 @@ class Tender(models.Model):
 
     def get_absolute_url(self):
         return reverse("tenders:detail", kwargs={"slug": self.slug})
+
+
+class TenderSiae(models.Model):
+    TENDER_SIAE_SOURCE_EMAIL = "EMAIL"
+    TENDER_SIAE_SOURCE_DASHBOARD = "DASHBOARD"
+    TENDER_SIAE_SOURCE_CHOICES = (
+        (TENDER_SIAE_SOURCE_EMAIL, "E-mail"),
+        (TENDER_SIAE_SOURCE_DASHBOARD, "Dashboard"),
+    )
+
+    tender = models.ForeignKey("tenders.Tender", verbose_name="Besoin d'acheteur", on_delete=models.CASCADE)
+    siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
+
+    source = models.CharField(max_length=20, choices=TENDER_SIAE_SOURCE_CHOICES, default=TENDER_SIAE_SOURCE_EMAIL)
+    email_send_date = models.DateTimeField("Date d'envoi de l'e-mail", blank=True, null=True)
+    detail_display_date = models.DateTimeField("Date de visualisation du besoin", blank=True, null=True)
+    contact_click_date = models.DateTimeField("Date de clic sur les coordonnées du besoin", blank=True, null=True)
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Structure correspondant au besoin"
+        verbose_name_plural = "Structures correspondantes au besoin"
+        ordering = ["-created_at"]
