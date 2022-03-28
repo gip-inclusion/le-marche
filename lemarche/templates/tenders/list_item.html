@@ -10,14 +10,16 @@
                 </p>
             </div>
         </div>
+
         <a href="{% url 'tenders:detail' tender.slug %}" class="text-decoration-none">
             <h2 class="py-3">{{ tender.title }}</h2>
         </a>
+
         {% if tender.get_sectors_names or tender.get_perimeters_names or tender.amount %}
             <hr>
             <div class="row">
                 {% if tender.get_sectors_names %}
-                    <div class="col-md-4 ">
+                    <div class="col-md-4">
                         <span class="ri-award-line"></span>
                         {{ tender.get_sectors_names }}
                     </div>
@@ -36,12 +38,27 @@
                 {% endif %}
             </div>
         {% endif %}
+
         <div class="row">
-            <div class="col-md-12 ">
-                <p class="text-muted text-right">
-                    Publié le {{ tender.updated_at }}
+            <div class="col-md-12">
+                <p class="text-muted text-right" title="{{ tender.updated_at }}">
+                    Publié le {{ tender.updated_at|date }}
                 </p>
             </div>
         </div>
+
+        {% if tender.author == request.user %}
+            <hr>
+            <div class="row">
+                <div class="col-md-4">
+                    <i class="ri-mail-check-line"></i>
+                    <strong>{{ tender.siae_email_send_count|default:0 }} structures contactées</strong>
+                </div>
+                <div class="col-md-4">
+                    <i class="ri-eye-line"></i>
+                    <strong>{{ tender.siae_detail_display_count|default:0 }} vues</strong>
+                </div>
+            </div>
+        {% endif %}
     </div>
 </div>

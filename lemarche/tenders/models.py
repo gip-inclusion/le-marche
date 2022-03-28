@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models, transaction
-from django.db.models import Q
+from django.db.models import Case, IntegerField, Q, Sum, When
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -17,6 +17,16 @@ from django.utils.text import slugify
 class TenderQuerySet(models.QuerySet):
     def by_user(self, user):
         return self.filter(author=user)
+
+    def with_siae_stats(self):
+        return self.annotate(
+            siae_email_send_count=Sum(
+                Case(When(tendersiae__email_send_date__isnull=False, then=1), output_field=IntegerField())
+            ),
+            siae_detail_display_count=Sum(
+                Case(When(tendersiae__detail_display_date__isnull=False, then=1), output_field=IntegerField())
+            ),
+        )
 
     def find_in_perimeters(self, post_code, department, region):
         filters = (

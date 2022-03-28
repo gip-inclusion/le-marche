@@ -77,6 +77,10 @@ class TenderListView(LoginRequiredMixin, ListView):
     paginator_class = Paginator
 
     def get_queryset(self):
+        """
+        - show matching Tenders for Users KIND_SIAE
+        - show owned Tenders for other Users
+        """
         user = self.request.user
         queryset = Tender.objects.none()
         if user.kind == User.KIND_SIAE and user.siaes:
@@ -85,7 +89,7 @@ class TenderListView(LoginRequiredMixin, ListView):
             if siae:
                 queryset = Tender.objects.filter_with_siae(siae)
         else:
-            queryset = Tender.objects.by_user(user)
+            queryset = Tender.objects.by_user(user).with_siae_stats()
         return queryset
 
     def get_context_data(self, **kwargs):
