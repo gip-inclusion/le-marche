@@ -14,6 +14,7 @@ def expose_settings(request):
         "HOTJAR_ID": settings.HOTJAR_ID,
         "MATOMO_SITE_ID": settings.MATOMO_SITE_ID,
         "MATOMO_HOST": settings.MATOMO_HOST,
+        "MATOMO_TAG_MANAGER_CONTAINER_ID": settings.MATOMO_TAG_MANAGER_CONTAINER_ID,
         "CRISP_ID": settings.CRISP_ID,
         "FACILITATOR_SLIDE": settings.FACILITATOR_SLIDE,
         "FACILITATOR_LIST": settings.FACILITATOR_LIST,
