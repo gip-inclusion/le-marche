@@ -4,11 +4,12 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.generic import CreateView, DetailView, ListView
 
 from lemarche.siaes.models import Siae
-from lemarche.tenders.models import Tender
+from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin
 from lemarche.www.tenders.forms import AddTenderForm
@@ -98,6 +99,16 @@ class TenderDetail(LoginRequiredMixin, DetailView):
     model = Tender
     template_name = "tenders/detail.html"
     context_object_name = "tender"
+
+    def get(self, request, *args, **kwargs):
+        """
+        Check if the User has any Siae contacted for this Tender
+        """
+        tender = self.get_object()
+        TenderSiae.objects.filter(
+            tender=tender, siae__in=self.request.user.siaes.all(), detail_display_date=None
+        ).update(detail_display_date=timezone.now())
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
