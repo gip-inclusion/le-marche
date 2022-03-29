@@ -14,7 +14,7 @@
         </div>
         <div class="col">
             <div class="card-body">
-                <a href="{% url 'siae:detail' siae.slug %}" target="_blank" class="text-decoration-none stretched-link">
+                <a href="{% url 'siae:detail' siae.slug %}" target="_blank" id="search-results-siae-card" class="text-decoration-none stretched-link">
                     <h2 class="mb-3 mr-5">
                         {{ siae.name_display }}
                         {% if not siae.user_count %}
@@ -55,7 +55,7 @@
         </div>
     </div>
     <div class="card-footer fs-sm">
-        <a href="{% url 'siae:detail' siae.slug %}" target="_blank" class="text-primary text-decoration-none stretched-link">
+        <a href="{% url 'siae:detail' siae.slug %}" target="_blank" id="search-results-siae-card" class="text-primary text-decoration-none stretched-link">
             <span>
                 <i class="ri-map-pin-line"></i>
                 <span class="sr-only">Situé à {{ siae.city }}</span>
