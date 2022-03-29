@@ -451,6 +451,7 @@ TRACKER_HOST = env.str("TRACKER_HOST", "http://localhost")
 HOTJAR_ID = int(env.str("HOTJAR_ID", 0))
 MATOMO_SITE_ID = int(env.str("MATOMO_SITE_ID", 0))
 MATOMO_HOST = env.str("MATOMO_HOST", "")
+MATOMO_TAG_MANAGER_CONTAINER_ID = env.str("MATOMO_TAG_MANAGER_CONTAINER_ID", "")
 CRISP_ID = env.str("CRISP_ID", "")
 
 
