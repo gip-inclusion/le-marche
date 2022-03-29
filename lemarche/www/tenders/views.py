@@ -106,7 +106,7 @@ class TenderDetail(LoginRequiredMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         """
-        Check if the User has any Siae contacted for this Tender
+        Check if the User has any Siae contacted for this Tender. If yes, update 'detail_display_date'
         """
         tender = self.get_object()
         TenderSiae.objects.filter(
