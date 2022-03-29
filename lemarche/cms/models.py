@@ -7,36 +7,9 @@ from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.core.fields import RichTextField
 from wagtail.core.models import Page
 from wagtail.images.edit_handlers import ImageChooserPanel
-from wagtail.search import index
-from wagtail.snippets.models import register_snippet
 
-
-class ArticleCategory(models.Model):
-    """Article catgory for a snippet."""
-
-    name = models.CharField(max_length=255)
-    slug = models.SlugField(
-        verbose_name="slug",
-        allow_unicode=True,
-        max_length=255,
-        help_text="A slug to identify posts by this category",
-    )
-
-    panels = [
-        FieldPanel("name"),
-        FieldPanel("slug"),
-    ]
-
-    class Meta:
-        verbose_name = "Catégorie d'articles"
-        verbose_name_plural = "Catégories d'articles"
-        ordering = ["name"]
-
-    def __str__(self):
-        return self.name
-
-
-register_snippet(ArticleCategory)
+from lemarche.cms.forms import ArticlePageForm
+from lemarche.cms.snippets import ArticleCategory
 
 
 class ArticlePage(Page):
@@ -49,25 +22,20 @@ class ArticlePage(Page):
     is_static_page = models.BooleanField(verbose_name="c'est une page statique ?", default=False)
 
     template_name = models.CharField(
-        verbose_name="nom de la template",
+        verbose_name="Nom de la template",
         help_text="Nom du fichier présent dans 'templates/cms/static', ex: valoriser-achats.html",
         max_length=90,
         blank=True,
     )
     # Database fields
-    body = RichTextField(blank=True)
+    body = RichTextField(blank=True, verbose_name="Contenu de l'article")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.is_static_page:
             self.template = f"cms/static/{self.template_name}"
 
-    # Search index configuration
-
-    search_fields = Page.search_fields + [
-        index.FilterField("intro"),
-        index.SearchField("body"),
-    ]
+    base_form_class = ArticlePageForm
 
     # Editor panels configuration
 
@@ -89,8 +57,6 @@ class ArticlePage(Page):
             heading="Article normal",
         ),
     ]
-
-    # Parent page / subpage type rules
 
     parent_page_types = ["cms.ArticleList"]
     subpage_types = []
