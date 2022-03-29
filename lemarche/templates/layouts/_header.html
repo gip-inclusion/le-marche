@@ -29,13 +29,13 @@
                             </li>
                         {% endif %}
                         <li>
-                            <a href="{% url 'pages:valoriser_achats' %}">
+                            <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser">
                                 Valoriser vos achats
                             </a>
                         </li>
                         {% if user.is_authenticated %}
                             <li>
-                                <a href="{% url 'dashboard:profile_favorite_list' %}">
+                                <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites">
                                     <i class="ri-star-line ri-lg"></i>
                                     Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
                                 </a>
@@ -86,7 +86,7 @@
                             </li>
                         {% endif %}
                         <li>
-                            <a href="{% url 'pages:valoriser_achats' %}">
+                            <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser">
                                 Valoriser vos achats
                             </a>
                         </li>
@@ -97,7 +97,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{% url 'dashboard:profile_favorite_list' %}">
+                                <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites">
                                     <i class="ri-star-line ri-lg"></i>
                                     Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
                                 </a>
