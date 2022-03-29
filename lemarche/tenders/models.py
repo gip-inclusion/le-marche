@@ -18,17 +18,7 @@ class TenderQuerySet(models.QuerySet):
     def by_user(self, user):
         return self.filter(author=user)
 
-    def with_siae_stats(self):
-        return self.annotate(
-            siae_email_send_count=Sum(
-                Case(When(tendersiae__email_send_date__isnull=False, then=1), output_field=IntegerField())
-            ),
-            siae_detail_display_count=Sum(
-                Case(When(tendersiae__detail_display_date__isnull=False, then=1), output_field=IntegerField())
-            ),
-        )
-
-    def find_in_perimeters(self, post_code, department, region):
+    def in_perimeters(self, post_code, department, region):
         filters = (
             Q(perimeters__post_codes__contains=[post_code])
             | Q(perimeters__insee_code=department)
@@ -52,8 +42,23 @@ class TenderQuerySet(models.QuerySet):
         sectors = siae.sectors.all()
         qs = self.prefetch_related("sectors", "perimeters").in_sectors(sectors)
         if siae.geo_range != siae.GEO_RANGE_COUNTRY:
-            qs.find_in_perimeters(post_code=siae.post_code, department=siae.department, region=siae.region)
+            qs.in_perimeters(post_code=siae.post_code, department=siae.department, region=siae.region)
         return qs.distinct()
+
+    def with_siae_stats(self):
+        """
+        Enrich each Tender with stats on their linked Siae
+        """
+        return self.annotate(
+            siae_email_send_count=Sum(
+                Case(When(tendersiae__email_send_date__isnull=False, then=1), default=0, output_field=IntegerField())
+            ),
+            siae_detail_display_count=Sum(
+                Case(
+                    When(tendersiae__detail_display_date__isnull=False, then=1), default=0, output_field=IntegerField()
+                )
+            ),
+        )
 
 
 class Tender(models.Model):

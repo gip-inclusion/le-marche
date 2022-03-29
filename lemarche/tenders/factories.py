@@ -44,3 +44,9 @@ class TenderFactory(DjangoModelFactory):
 
         # Add the iterable of groups using bulk addition
         self.sectors.add(*extracted)
+
+    @factory.post_generation
+    def siaes(self, create, extracted, **kwargs):
+        if extracted:
+            # Add the iterable of groups using bulk addition
+            self.siaes.add(*extracted)
