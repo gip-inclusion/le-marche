@@ -5,6 +5,7 @@ async-generator==1.10; python_version >= "3.7" and python_version < "4.0"
 attrs==21.4.0; python_version >= "3.7" and python_full_version < "3.0.0" and python_version < "4.0" or python_full_version >= "3.5.0" and python_version >= "3.7" and python_version < "4.0"
 beautifulsoup4==4.9.3; python_version >= "3.7"
 boto3==1.20.47; python_version >= "3.6"
+boto==2.49.0
 botocore==1.23.47; python_version >= "3.6"
 certifi==2021.10.8; python_version >= "3.7" and python_full_version < "3.0.0" and python_version < "4.0" or python_full_version >= "3.6.0" and python_version >= "3.7" and python_version < "4"
 cffi==1.15.0; os_name == "nt" and implementation_name != "pypy" and python_version >= "3.7" and python_version < "4.0" and (python_version >= "3.7" and python_full_version < "3.0.0" and python_version < "4.0" or python_full_version >= "3.6.0" and python_version < "4" and python_version >= "3.7")
