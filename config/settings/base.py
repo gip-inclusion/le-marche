@@ -145,6 +145,7 @@ WAGTAIL_APPS = [
     "wagtail.core",
     "modelcluster",
     "taggit",
+    "storages",
 ]
 INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS + WAGTAIL_APPS
 
