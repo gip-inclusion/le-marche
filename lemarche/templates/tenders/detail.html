@@ -72,50 +72,18 @@
 
             <hr class="my-5">
 
-            <button id="show-tender-contact" class="btn btn-block btn-primary btn-ico mb-4" type="button" data-toggle="collapse" data-target="#collapseTenderContact" aria-expanded="false" aria-controls="collapseTenderContact">
-                <span>Afficher les coordonnées pour répondre à cet appel d'offre</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-up"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 8l6 6H6z"/></svg>
-            </button>
-            <div id="collapseTenderContact" class="collapse py-2">
-                <h2>Pour répondre à cet appel d'offre</h2>
-                <div class="row">
-                    {% if tender.get_contact_full_name %}
-                        <div class="col-md-6">
-                            <span class="ri-account-circle-line"></span>
-                            {{ tender.get_contact_full_name }}
-                        </div>
-                    {% endif %}
-                    {% if tender.author.company_name %}
-                        <div class="col-md-6">
-                            <span class="ri-building-2-line"></span>
-                            {{ tender.author.company_name }}
-                        </div>
-                    {% endif %}
-                    {% if tender.contact_email %}
-                        <div class="col-md-6">
-                            <span class="ri-at-line"></span>
-                            {{ tender.contact_email }}
-                        </div>
-                    {% endif %}
-                    {% if tender.contact_phone %}
-                        <div class="col-md-6">
-                            <span class="ri-phone-line"></span>
-                            {{ tender.contact_phone }}
-                        </div>
-                    {% endif %}
+            {% if tender.author == request.user %}
+                {% include "tenders/_detail_contact.html" with tender=tender %}
+            {% else %}
+                <button id="show-tender-contact" class="btn btn-block btn-primary btn-ico mb-4" type="button" data-toggle="collapse" data-target="#collapseTenderContact" aria-expanded="false" aria-controls="collapseTenderContact">
+                    <span>Afficher les coordonnées pour répondre à cet appel d'offre</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-up"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 8l6 6H6z"/></svg>
+                </button>
+                <div id="collapseTenderContact" class="collapse py-2">
+                    {% include "tenders/_detail_contact.html" with tender=tender %}
                 </div>
-                {% if tender.external_link %}
-                    <div class="row">
-                        <div class="col-12">
-                            <a href="{{ tender.external_link }}" target="_blank" class="btn btn-outline-primary float-right">
-                                Voir l'appel d'offre <span class="ri-external-link-line" aria-hidden="true"></span>
-                            </a>
-                        </div>
-                    </div>
-                {% endif %}
-                </div>
-            </div>
+            {% endif %}
         </div>
     </div>
 </section>
