@@ -49,14 +49,18 @@
 
         {% if tender.author == request.user %}
             <hr>
-            <div class="row">
+            <div class="row text-center">
                 <div class="col-md-4">
                     <i class="ri-mail-check-line"></i>
-                    <strong>{{ tender.siae_email_send_count|default:0 }} structures contactées</strong>
+                    <strong>{{ tender.siae_email_send_count }} structures contactées</strong>
                 </div>
                 <div class="col-md-4">
                     <i class="ri-eye-line"></i>
-                    <strong>{{ tender.siae_detail_display_count|default:0 }} vues</strong>
+                    <strong>{{ tender.siae_detail_display_count }} vues</strong>
+                </div>
+                <div class="col-md-4">
+                    <i class="ri-thumb-up-line"></i>
+                    <strong>{{ tender.siae_contact_click_count }} prestataires intéressés</strong>
                 </div>
             </div>
         {% endif %}
