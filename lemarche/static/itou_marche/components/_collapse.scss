@@ -1,0 +1,19 @@
+[aria-expanded="false"] {
+    #collapse__ico-up {
+        display: none;
+    }
+
+    #collapse__ico-down {
+        display: inline;
+    }
+}
+
+[aria-expanded="true"] {
+    #collapse__ico-up {
+        display: inline;
+    }
+
+    #collapse__ico-down {
+        display: none;
+    }
+}
