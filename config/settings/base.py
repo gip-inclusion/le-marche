@@ -131,6 +131,7 @@ LOCAL_APPS = [
 ]
 
 WAGTAIL_APPS = [
+    "wagtail.contrib.search_promotions",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.embeds",
@@ -139,6 +140,7 @@ WAGTAIL_APPS = [
     "wagtail.snippets",
     "wagtail.documents",
     "wagtail.images",
+    "wagtail.search",
     "wagtail.admin",
     "wagtail.core",
     "modelcluster",
@@ -351,13 +353,14 @@ S3_STORAGE_SECRET_ACCESS_KEY = env.str("CELLAR_ADDON_KEY_SECRET", "secret")
 S3_STORAGE_ENDPOINT_DOMAIN = env.str("CELLAR_ADDON_HOST", "http://set-var-env.com")
 S3_STORAGE_BUCKET_NAME = env.str("S3_STORAGE_BUCKET_NAME", "set-bucket-name")
 S3_STORAGE_BUCKET_REGION = env.str("S3_STORAGE_BUCKET_REGION", "fr")
+AWS_DEFAULT_ACL = env.str("AWS_DEFAULT_ACL", "public-read")
+AWS_S3_USE_SSL = env.bool("AWS_S3_USE_SSL", False)
 
 AWS_ACCESS_KEY_ID = S3_STORAGE_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY = S3_STORAGE_SECRET_ACCESS_KEY
 
-AWS_S3_CUSTOM_DOMAIN = S3_STORAGE_ENDPOINT_DOMAIN
+AWS_S3_HOST = S3_STORAGE_ENDPOINT_DOMAIN
 AWS_STORAGE_BUCKET_NAME = S3_STORAGE_BUCKET_NAME
-
 
 SIAE_LOGO_FOLDER_NAME = "siae_logo"
 SIAE_IMAGE_FOLDER_NAME = "siae_image"
