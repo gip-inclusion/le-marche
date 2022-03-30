@@ -88,3 +88,20 @@
     </div>
 </section>
 {% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    var tenderContactCollapseButton = document.getElementById('show-tender-contact');
+    tenderContactCollapseButton.addEventListener('click', function() {
+        fetch(`${window.location.href}/contact-click-stat`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({}),
+        });
+    });
+});
+</script>
+{% endblock %}
