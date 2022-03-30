@@ -114,17 +114,27 @@ class TenderModelQuerysetTest(TestCase):
         siae_1 = SiaeFactory()
         siae_2 = SiaeFactory()
         siae_3 = SiaeFactory()
-        tender = TenderFactory(siaes=[siae_1])
-        TenderSiae.objects.create(tender=tender, siae=siae_2, email_send_date=timezone.now())
+        siae_4 = SiaeFactory()
+        tender_with_siae = TenderFactory(siaes=[siae_1])
+        TenderSiae.objects.create(tender=tender_with_siae, siae=siae_2, email_send_date=timezone.now())
         TenderSiae.objects.create(
-            tender=tender, siae=siae_3, email_send_date=timezone.now(), detail_display_date=timezone.now()
+            tender=tender_with_siae, siae=siae_3, email_send_date=timezone.now(), detail_display_date=timezone.now()
         )
-        TenderFactory()
-        self.assertEqual(tender.siaes.count(), 3)
+        TenderSiae.objects.create(
+            tender=tender_with_siae,
+            siae=siae_4,
+            email_send_date=timezone.now(),
+            detail_display_date=timezone.now(),
+            contact_click_date=timezone.now(),
+        )
+        tender_without_siae = TenderFactory()
+        self.assertEqual(tender_with_siae.siaes.count(), 4)
         self.assertEqual(Tender.objects.count(), 2)
-        tender_in_queryset = Tender.objects.with_siae_stats().first()
-        self.assertEqual(tender_in_queryset.siae_email_send_count, 2)
-        self.assertEqual(tender_in_queryset.siae_detail_display_count, 1)
-        empty_tender_in_queryset = Tender.objects.with_siae_stats().last()
-        self.assertEqual(empty_tender_in_queryset.siae_email_send_count, 0)
-        self.assertEqual(empty_tender_in_queryset.siae_detail_display_count, 0)
+        tender_with_siae = Tender.objects.with_siae_stats().first()
+        self.assertEqual(tender_with_siae.siae_email_send_count, 3)
+        self.assertEqual(tender_with_siae.siae_detail_display_count, 2)
+        self.assertEqual(tender_with_siae.siae_contact_click_count, 1)
+        tender_without_siae = Tender.objects.with_siae_stats().last()
+        self.assertEqual(tender_without_siae.siae_email_send_count, 0)
+        self.assertEqual(tender_without_siae.siae_detail_display_count, 0)
+        self.assertEqual(tender_without_siae.siae_contact_click_count, 0)

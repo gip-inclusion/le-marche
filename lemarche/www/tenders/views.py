@@ -3,10 +3,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponseForbidden, HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, View
 
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender, TenderSiae
@@ -129,8 +130,9 @@ class TenderDetail(LoginRequiredMixin, DetailView):
         return context
 
 
-class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
-    model = Tender
+class TenderDetailContactClickStat(LoginRequiredMixin, View):
+    def get_object(self):
+        return get_object_or_404(Tender, slug=self.kwargs.get("slug"))
 
     def post(self, request, *args, **kwargs):
         if self.request.user.kind == User.KIND_SIAE:
