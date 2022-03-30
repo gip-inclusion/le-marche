@@ -111,7 +111,7 @@ class TenderDetail(LoginRequiredMixin, DetailView):
         if self.request.user.kind == User.KIND_SIAE:
             tender = self.get_object()
             TenderSiae.objects.filter(
-                tender=tender, siae__in=self.request.user.siaes.all(), detail_display_date=None
+                tender=tender, siae__in=self.request.user.siaes.all(), detail_display_date__isnull=True
             ).update(detail_display_date=timezone.now())
         return super().get(request, *args, **kwargs)
 
@@ -119,6 +119,13 @@ class TenderDetail(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         user_kind = self.request.user.kind if self.request.user.is_authenticated else "anonymous"
         context["parent_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
+        if self.request.user.kind == User.KIND_SIAE:
+            context["user_has_detail_display_date"] = TenderSiae.objects.filter(
+                tender=self.get_object(), siae__in=self.request.user.siaes.all(), detail_display_date__isnull=False
+            ).exists()
+            context["user_has_contact_click_date"] = TenderSiae.objects.filter(
+                tender=self.get_object(), siae__in=self.request.user.siaes.all(), contact_click_date__isnull=False
+            ).exists()
         return context
 
 
@@ -129,7 +136,7 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
         if self.request.user.kind == User.KIND_SIAE:
             tender = self.get_object()
             TenderSiae.objects.filter(
-                tender=tender, siae__in=self.request.user.siaes.all(), contact_click_date=None
+                tender=tender, siae__in=self.request.user.siaes.all(), contact_click_date__isnull=True
             ).update(contact_click_date=timezone.now())
             return JsonResponse({"message": "success"})
         else:

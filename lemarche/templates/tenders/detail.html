@@ -72,7 +72,7 @@
 
             <hr class="my-5">
 
-            {% if tender.author == request.user %}
+            {% if tender.author == request.user or user_has_contact_click_date %}
                 {% include "tenders/_detail_contact.html" with tender=tender %}
             {% else %}
                 <button id="show-tender-contact" class="btn btn-block btn-primary btn-ico mb-4" type="button" data-toggle="collapse" data-target="#collapseTenderContact" aria-expanded="false" aria-controls="collapseTenderContact">
@@ -93,15 +93,17 @@
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
     var tenderContactCollapseButton = document.getElementById('show-tender-contact');
-    tenderContactCollapseButton.addEventListener('click', function() {
-        fetch(`${window.location.href}/contact-click-stat`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({}),
+    if (tenderContactCollapseButton) {
+        tenderContactCollapseButton.addEventListener('click', function() {
+            fetch(`${window.location.href}/contact-click-stat`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({}),
+            });
         });
-    });
+    }
 });
 </script>
 {% endblock %}
