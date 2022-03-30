@@ -108,10 +108,11 @@ class TenderDetail(LoginRequiredMixin, DetailView):
         """
         Check if the User has any Siae contacted for this Tender. If yes, update 'detail_display_date'
         """
-        tender = self.get_object()
-        TenderSiae.objects.filter(
-            tender=tender, siae__in=self.request.user.siaes.all(), detail_display_date=None
-        ).update(detail_display_date=timezone.now())
+        if self.request.user.kind == User.KIND_SIAE:
+            tender = self.get_object()
+            TenderSiae.objects.filter(
+                tender=tender, siae__in=self.request.user.siaes.all(), detail_display_date=None
+            ).update(detail_display_date=timezone.now())
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
