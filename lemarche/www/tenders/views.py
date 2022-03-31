@@ -20,7 +20,7 @@ from lemarche.www.tenders.forms import AddTenderForm
 
 
 TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
-TITLE_DETAIL_PAGE_OTHERS = "Besoins en cours"
+TITLE_DETAIL_PAGE_OTHERS = "Mes besoins"
 
 
 class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView):
