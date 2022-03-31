@@ -12,7 +12,7 @@ from django.views.generic import CreateView, DetailView, ListView, View
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
-from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin
+from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin, TenderOwnerRequiredMixin
 from lemarche.www.tenders.forms import AddTenderForm
 
 
@@ -84,6 +84,7 @@ class TenderListView(LoginRequiredMixin, ListView):
         """
         user = self.request.user
         queryset = Tender.objects.none()
+        print(user)
         if user.kind == User.KIND_SIAE and user.siaes:
             # TODO: manage many siaes
             siae = user.siaes.first()
@@ -100,7 +101,7 @@ class TenderListView(LoginRequiredMixin, ListView):
         return context
 
 
-class TenderDetail(LoginRequiredMixin, DetailView):
+class TenderDetailView(LoginRequiredMixin, DetailView):
     model = Tender
     template_name = "tenders/detail.html"
     context_object_name = "tender"
@@ -109,6 +110,7 @@ class TenderDetail(LoginRequiredMixin, DetailView):
         """
         Check if the User has any Siae contacted for this Tender. If yes, update 'detail_display_date'
         """
+        print("get")
         if self.request.user.kind == User.KIND_SIAE:
             tender = self.get_object()
             TenderSiae.objects.filter(
@@ -143,3 +145,21 @@ class TenderDetailContactClickStat(LoginRequiredMixin, View):
             return JsonResponse({"message": "success"})
         else:
             return HttpResponseForbidden()
+
+
+class TenderSiaeInterestedListView(TenderOwnerRequiredMixin, ListView):
+    # model = TenderSiae
+    queryset = TenderSiae.objects.all()
+    template_name = "tenders/siae_interested_list.html"
+    context_object_name = "tendersiaes"
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.filter(tender__slug=self.kwargs.get("slug"), contact_click_date__isnull=False)
+        print(qs)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["tender"] = context["tendersiaes"].first().tender
+        return context

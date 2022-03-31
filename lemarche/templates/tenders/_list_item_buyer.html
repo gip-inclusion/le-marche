@@ -34,9 +34,9 @@
                 <i class="ri-thumb-up-line ri-xl"></i>
                 <h4>{{ tender.siae_contact_click_count }} prestataires intéressés</h4>
                 {% if tender.siae_contact_click_count %}
-                    <button type="button" id="show-tender-siae-list-btn" class="btn btn-sm btn-primary">
+                    <a href="{% url 'tenders:detail-siae-interested' tender.slug %}" id="show-tender-siae-list-btn" class="btn btn-sm btn-primary">
                         Voir la liste
-                    </button>
+                    </a>
                 {% endif %}
             </div>
         </div>
