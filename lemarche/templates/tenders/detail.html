@@ -75,12 +75,10 @@
             {% if tender.author == request.user or user_has_contact_click_date %}
                 {% include "tenders/_detail_contact.html" with tender=tender %}
             {% else %}
-                <button id="show-tender-contact" class="btn btn-block btn-primary btn-ico mb-4" type="button" data-toggle="collapse" data-target="#collapseTenderContact" aria-expanded="false" aria-controls="collapseTenderContact">
-                    <span>Afficher les coordonnées pour répondre à cet appel d'offre</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-up"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 8l6 6H6z"/></svg>
+                <button type="button" id="show-tender-contact-btn" class="btn btn-primary float-right mb-4" style="display:block">
+                    Afficher les coordonnées
                 </button>
-                <div id="collapseTenderContact" class="collapse py-2">
+                <div id="show-tender-contact-content" class="py-2" style="display:none">
                     {% include "tenders/_detail_contact.html" with tender=tender %}
                 </div>
             {% endif %}
@@ -92,9 +90,14 @@
 {% block extra_js %}
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
-    var tenderContactCollapseButton = document.getElementById('show-tender-contact');
+    var tenderContactCollapseButton = document.getElementById('show-tender-contact-btn');
+    var tenderContactCollapseContent = document.getElementById('show-tender-contact-content');
     if (tenderContactCollapseButton) {
         tenderContactCollapseButton.addEventListener('click', function() {
+            // hide button, show content
+            tenderContactCollapseButton.style.display = 'none';
+            tenderContactCollapseContent.style.display = '';
+            // send click stat to backend
             fetch(`${window.location.href}/contact-click-stat`, {
                 method: 'POST',
                 headers: {
