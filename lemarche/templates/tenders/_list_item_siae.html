@@ -5,7 +5,7 @@
         <div class="row">
             <div class="col-md-12">
                 <p>
-                    Répondre avant le : {{ tender.deadline_date|default:"" }}
+                    Date de clôture : {{ tender.deadline_date|default:"" }}
                     <span class="float-right badge badge-base badge-pill badge-emploi">{{ tender.get_kind_display }}</span>
                 </p>
             </div>
@@ -46,23 +46,5 @@
                 </p>
             </div>
         </div>
-
-        {% if tender.author == request.user %}
-            <hr>
-            <div class="row text-center">
-                <div class="col-md-4">
-                    <i class="ri-mail-check-line"></i>
-                    <strong>{{ tender.siae_email_send_count }} structures contactées</strong>
-                </div>
-                <div class="col-md-4">
-                    <i class="ri-eye-line"></i>
-                    <strong>{{ tender.siae_detail_display_count }} vues</strong>
-                </div>
-                <div class="col-md-4">
-                    <i class="ri-thumb-up-line"></i>
-                    <strong>{{ tender.siae_contact_click_count }} prestataires intéressés</strong>
-                </div>
-            </div>
-        {% endif %}
     </div>
 </div>

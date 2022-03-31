@@ -28,6 +28,7 @@
             <div class="col-12 col-lg">
                 <h1>{{ page_title }}</h1>
             </div>
+            <!-- "buyer": can create new tenders -->
             {% if user.kind != user.KIND_SIAE %}
                 <div class="col-12 col-md-auto">
                     <a href="{% url 'tenders:create' %}" class="btn btn-primary btn-ico">
@@ -37,9 +38,10 @@
                 </div>
             {% endif %}
             <div class="col-12 my-5 py-3">
+                <!-- "buyer": display tenders which the user is the author -->
                 {% if user.kind != user.KIND_SIAE %}
                     {% for tender in tenders %}
-                        {% include "tenders/_list_item.html" with tender=tender %}
+                        {% include "tenders/_list_item_buyer.html" with tender=tender %}
                     {% endfor %}
                     {% include "includes/_pagination.html" %}
                     {% if not tenders %}
@@ -47,9 +49,10 @@
                             Publiez un besoin pour trouver des prestataires près de chez vous.
                         </p>
                     {% endif %}
+                <!-- "siae": display opportunities -->
                 {% else %}
                     {% for tender in tenders %}
-                        {% include "tenders/_list_item.html" with tender=tender %}
+                        {% include "tenders/_list_item_siae.html" with tender=tender %}
                     {% endfor %}
                     {% include "includes/_pagination.html" %}
                     {% if not tenders %}
