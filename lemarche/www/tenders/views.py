@@ -84,7 +84,6 @@ class TenderListView(LoginRequiredMixin, ListView):
         """
         user = self.request.user
         queryset = Tender.objects.none()
-        print(user)
         if user.kind == User.KIND_SIAE and user.siaes:
             # TODO: manage many siaes
             siae = user.siaes.first()
@@ -110,7 +109,6 @@ class TenderDetailView(LoginRequiredMixin, DetailView):
         """
         Check if the User has any Siae contacted for this Tender. If yes, update 'detail_display_date'
         """
-        print("get")
         if self.request.user.kind == User.KIND_SIAE:
             tender = self.get_object()
             TenderSiae.objects.filter(
@@ -148,7 +146,6 @@ class TenderDetailContactClickStat(LoginRequiredMixin, View):
 
 
 class TenderSiaeInterestedListView(TenderOwnerRequiredMixin, ListView):
-    # model = TenderSiae
     queryset = TenderSiae.objects.all()
     template_name = "tenders/siae_interested_list.html"
     context_object_name = "tendersiaes"
@@ -156,7 +153,6 @@ class TenderSiaeInterestedListView(TenderOwnerRequiredMixin, ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         qs = qs.filter(tender__slug=self.kwargs.get("slug"), contact_click_date__isnull=False)
-        print(qs)
         return qs
 
     def get_context_data(self, **kwargs):
