@@ -33,7 +33,7 @@
 
             <div class="col-12 my-5 py-3">
                 {% for tendersiae in tendersiaes %}
-                    {% include "siaes/_card_search_result.html" with siae=tendersiae.siae %}
+                    {% include "siaes/_card_tender.html" with siae=tendersiae.siae %}
                 {% endfor %}
                 {% include "includes/_pagination.html" %}
             </div>

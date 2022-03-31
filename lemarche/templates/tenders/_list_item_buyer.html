@@ -1,9 +1,9 @@
 {% load static siae_sectors_display humanize %}
 
-<div class="card c-card c-card--marche c-card--link siae-card p-2" role="button" data-url="{% url 'tenders:detail' tender.slug %}">
+<div class="card c-card c-card--marche c-card--link siae-card" role="button" data-url="{% url 'tenders:detail' tender.slug %}">
     <div class="card-body">
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-8" style="border-right:1px solid">
                 <div class="row">
                     <div class="col-12">
                         Date de clôture : {{ tender.deadline_date|default:"" }}
@@ -12,7 +12,7 @@
                 </div>
 
                 <a href="{% url 'tenders:detail' tender.slug %}" class="text-decoration-none">
-                    <h2 class="py-3">{{ tender.title }}</h2>
+                    <h2 class="py-2">{{ tender.title }}</h2>
                 </a>
         
                 <div class="row">
@@ -30,7 +30,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 text-center my-auto" style="border-left:1px solid">
+            <div class="col-md-4 text-center my-auto">
                 <i class="ri-thumb-up-line ri-xl"></i>
                 <h4>{{ tender.siae_contact_click_count }} prestataires intéressés</h4>
                 {% if tender.siae_contact_click_count %}
