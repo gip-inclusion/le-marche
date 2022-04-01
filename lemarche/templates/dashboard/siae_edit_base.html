@@ -35,40 +35,39 @@
                 <h1 class="s-title-01__title h1 mb-0"><strong>{{ siae.name_display }} : Modifier</strong></h1>
             </div>
         </div>
-    </div>
-</section>
-
-<!-- Nudge to fill SIAE -->
-{% if siae.is_missing_content %}
-<section class="s-section">
-    <div class="s-section__container container">
-        <div class="s-section__row row">
-            <div class="s-section__col col-12">
-                <div class="alert alert-warning mb-4" role="status">
-                    <p class="mb-1">
-                        <i class="ri-information-line ri-xl"></i>
-                        <strong>Votre fiche n'est pas complète, et donc moins visible par les acheteurs.</strong>
-                    </p>
-                    <ol class="mb-0">
-                        {% if not siae.sector_count %}
-                        <li><a href="{% url 'dashboard:siae_edit_search' siae.slug %}">Ajoutez un ou plusieurs secteurs d'activité</a></li>
-                        {% endif %}
-                        {% if not siae.description and not siae.logo_url %}
-                        <li><a href="{% url 'dashboard:siae_edit_info' siae.slug %}">Ajoutez une description & votre logo</a></li>
-                        {% endif %}
-                        {% if not siae.offer_count and not siae.client_reference_count %}
-                        <li><a href="{% url 'dashboard:siae_edit_offer' siae.slug %}">Détaillez vos offres & vos références clients</a></li>
-                        {% endif %}
-                        {% if siae.is_missing_contact %}
-                        <li><a href="{% url 'dashboard:siae_edit_contact' siae.slug %}">Complétez vos informations de contact</a></li>
-                        {% endif %}
-                    </ol>
-                </div>           
+        <!-- Nudge to fill SIAE -->
+        {% if siae.is_missing_content %}
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-warning mt-3 mt-md-5" role="status">
+                    <div class="row">
+                        <div class="col-auto pr-0">
+                            <i class="ri-information-line ri-xl text-warning"></i>
+                        </div>
+                        <div class="col">
+                            <p class="mb-2"><strong>Votre fiche n'est pas complète, et donc moins visible par les acheteurs.</strong></p>
+                            <ol class="mb-0">
+                                {% if not siae.sector_count %}
+                                <li><a href="{% url 'dashboard:siae_edit_search' siae.slug %}">Ajoutez un ou plusieurs secteurs d'activité</a></li>
+                                {% endif %}
+                                {% if not siae.description and not siae.logo_url %}
+                                <li><a href="{% url 'dashboard:siae_edit_info' siae.slug %}">Ajoutez une description & votre logo</a></li>
+                                {% endif %}
+                                {% if not siae.offer_count and not siae.client_reference_count %}
+                                <li><a href="{% url 'dashboard:siae_edit_offer' siae.slug %}">Détaillez vos offres & vos références clients</a></li>
+                                {% endif %}
+                                {% if siae.is_missing_contact %}
+                                <li><a href="{% url 'dashboard:siae_edit_contact' siae.slug %}">Complétez vos informations de contact</a></li>
+                                {% endif %}
+                            </ol>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+        {% endif %}
     </div>
 </section>
-{% endif %}
 
 <section class="s-section">
     <div class="s-section__container container">
@@ -106,7 +105,6 @@
                 </div>
             </div>
         </div>
-
 
     </div>
 </section>

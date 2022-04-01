@@ -4,17 +4,17 @@
 {% block content_siae_form %}
 <form method="POST" action="" class="pt-3 pt-lg-5">
     {% csrf_token %}
-    
+
     {% bootstrap_form_errors form type="all" %}
-    
+
     <fieldset>
-        
+
         <div class="row">
             <div class="col-12 col-lg-7">
                 <legend>Réferencez efficacement votre structure dans les résultats de recherche</legend>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-12 col-lg-7">
                 <div class="form-group form-group-required">
@@ -29,19 +29,23 @@
                         </li>
                         {% endfor %}
                     </ul>
-                </div>                
+                </div>
             </div>
             <div class="col-12 col-lg-5">
                 <div class="c-form-conseil">
                     <div>
                         <p>Vous pourrez ensuite détailler vos prestations dans l'onglet <strong>offre commerciale</strong>.</p>
                     </div>
-                </div>                
+                </div>
             </div>
         </div>
-        
-        <div class="row"><div class="col-12 col-lg-7"><hr></div></div>
-        
+
+        <div class="row">
+            <div class="col-12 col-lg-7">
+                <hr>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-12 col-lg-7">
                 <div class="form-group form-group-required">
@@ -56,7 +60,7 @@
                         </li>
                         {% endfor %}
                     </ul>
-                    {% bootstrap_field form.geo_range_custom_distance show_label=False size="small" form_group_class="form-group col-12 col-md-6" %}
+                    {% bootstrap_field form.geo_range_custom_distance show_label="skip" size="small" form_group_class="form-group col-12 col-md-6" %}
                 </div>
             </div>
             <div class="col-12 col-lg-4">
@@ -65,26 +69,56 @@
                         <p>Le périmètre d'intervention est un critère essentiel dans le choix des acheteurs.</p>
                         <p>Il est nécessaire de bien le renseigner.</p>
                     </div>
-                </div>                
+                </div>
             </div>
         </div>
-        
-        <div class="row"><div class="col-12 col-lg-7"><hr></div></div>
 
         <div class="row">
             <div class="col-12 col-lg-7">
-                {% bootstrap_field form.sectors show_label=True form_check_class="form-check checkbox-title" %}
+                <hr>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 col-lg-7">
+
+                <div class="form-group">
+                    {{ form.sectors.label_tag }}
+                    <ul class="list-group c-list-group-collapse c-list-group-form">
+                        {% for pk, choices in form.sectors.field.widget.choices %}
+                        <li class="list-group-item list-group-item-action">
+                            <a data-toggle="collapse" href="#id_{{form.sectors.name}}_{{ forloop.counter0 }}" role="button" aria-expanded="false" aria-controls="id_{{form.sectors.name}}_{{ forloop.counter0 }}">{{pk}}</a>
+                            <div class="collapse" id="id_{{form.sectors.name}}_{{ forloop.counter0 }}">
+                                <ul>
+                                    {% for pk, choice in choices %}
+                                    <li>
+                                        <div class="custom-control custom-checkbox">
+                                            <input id="id_{{form.sectors.name}}_{{ forloop.parentloop.counter0 }}_{{ forloop.counter0 }}" name="id_{{form.sectors.name}}_{{ forloop.parentloop.counter0 }}_{{ forloop.counter0 }}" type="{{form.presta_type.field.widget.input_type}}" value="{{pk}}" class="custom-control-input" />
+                                            <label for="id_{{form.sectors.name}}_{{ forloop.parentloop.counter0 }}_{{ forloop.counter0 }}" class="custom-control-label">{{ choice }}</label>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
             <div class="col-12 col-lg-5">
                 <div class="c-form-conseil">
                     <div>
                         <p>Améliorez votre référencement en indiquant tous les secteurs d'activités sur lesquels votre struture est positionnée.</p>
                     </div>
-                </div>                  
+                </div>
             </div>
         </div>
-        
-        <div class="row"><div class="col-12 col-lg-7"><hr></div></div>
+
+        <div class="row">
+            <div class="col-12 col-lg-7">
+                <hr>
+            </div>
+        </div>
 
         <div class="row">
             <div class="col-12 col-lg-7">
@@ -94,18 +128,18 @@
                     </div>
                 </div>
             </div>
-        </div>        
+        </div>
     </fieldset>
-    
+
 </form>
 {% endblock %}
 
 {% block extra_js %}
 <script type="text/javascript">
     // disable geo range custom distance if geo range is not CUSTOM
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         let geoRangeCustomDistanceInput = document.getElementById('id_geo_range_custom_distance');
-        
+
         let geoRangeRadios = document.querySelectorAll('input[type=radio][name="geo_range"]');
         // init
         geoRangeRadios.forEach(radio => {
