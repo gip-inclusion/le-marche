@@ -101,7 +101,7 @@
                                 <ul class="list-unstyled mb-1">
                                     {% for pk, choice in form.response_kind.field.widget.choices %}
                                     <li>
-                                        <div class="custom-control custom-radio">
+                                        <div class="custom-control custom-checkbox">
                                             <input id="id_{{form.response_kind.name}}_{{ forloop.counter0 }}" name="{{form.response_kind.name}}" type="{{form.response_kind.field.widget.input_type}}" value="{{pk}}" class="custom-control-input" />
                                             <label for="id_{{form.response_kind.name}}_{{ forloop.counter0 }}" class="custom-control-label">{{ choice }}</label>
                                         </div>
