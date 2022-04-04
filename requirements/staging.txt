@@ -25,6 +25,7 @@ django-js-asset==1.2.2
 django-libsass==0.9
 django-modelcluster==5.3; python_version >= "3.7"
 django-select2==7.10.0
+django-storages==1.12.3; python_version >= "3.5"
 django-taggit==2.1.0; python_version >= "3.7"
 django-treebeard==4.5.1; python_version >= "3.7"
 django==4.0.2; python_version >= "3.8"
