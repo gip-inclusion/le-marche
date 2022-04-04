@@ -39,7 +39,7 @@
                     <fieldset class="py-2 pb-lg-4">
                         {% bootstrap_field form.kind %}
                         {% bootstrap_field form.title placeholder="Ex: Rénovation de façade" %}
-                        {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
+                        {% bootstrap_field form.sectors form_group_class="use-multiselect mb-2" %}
                         <div id="dir_form_perimeter_name" class="form-group form-group-required mb-2">
                             <label for="perimeter_name">{{ form.perimeters.label }}</label>
                             <div class="field-holder">
