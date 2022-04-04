@@ -191,16 +191,16 @@ class S3BotoStorage(Storage):
     key_class = S3Key
 
     # used for looking up the access and secret key from env vars
-    access_key_names = ["AWS_S3_ACCESS_KEY_ID", "AWS_ACCESS_KEY_ID"]
-    secret_key_names = ["AWS_S3_SECRET_ACCESS_KEY", "AWS_SECRET_ACCESS_KEY"]
+    access_key_names = ["S3_STORAGE_ACCESS_KEY_ID", "AWS_ACCESS_KEY_ID"]
+    secret_key_names = ["S3_STORAGE_SECRET_ACCESS_KEY", "AWS_SECRET_ACCESS_KEY"]
     security_token_names = ["AWS_SESSION_TOKEN", "AWS_SECURITY_TOKEN"]
     security_token = None
 
-    access_key = setting("AWS_S3_ACCESS_KEY_ID", setting("AWS_ACCESS_KEY_ID"))
-    secret_key = setting("AWS_S3_SECRET_ACCESS_KEY", setting("AWS_SECRET_ACCESS_KEY"))
+    access_key = setting("S3_STORAGE_ACCESS_KEY_ID", setting("AWS_ACCESS_KEY_ID"))
+    secret_key = setting("S3_STORAGE_SECRET_ACCESS_KEY", setting("AWS_SECRET_ACCESS_KEY"))
     file_overwrite = setting("AWS_S3_FILE_OVERWRITE", True)
     headers = setting("AWS_HEADERS", {})
-    bucket_name = setting("AWS_STORAGE_BUCKET_NAME")
+    bucket_name = setting("S3_STORAGE_BUCKET_NAME")
     auto_create_bucket = setting("AWS_AUTO_CREATE_BUCKET", False)
     default_acl = setting("AWS_DEFAULT_ACL", "public-read")
     bucket_acl = setting("AWS_BUCKET_ACL", default_acl)
@@ -227,7 +227,7 @@ class S3BotoStorage(Storage):
         ),
     )
     url_protocol = setting("AWS_S3_URL_PROTOCOL", "http:")
-    host = setting("AWS_S3_HOST", S3Connection.DefaultHost)
+    host = setting("S3_STORAGE_ENDPOINT_DOMAIN", S3Connection.DefaultHost)
     use_ssl = setting("AWS_S3_USE_SSL", True)
     port = setting("AWS_S3_PORT")
     proxy = setting("AWS_S3_PROXY_HOST")
