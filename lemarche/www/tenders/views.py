@@ -4,17 +4,18 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.generic import CreateView, DetailView, ListView
 
 from lemarche.siaes.models import Siae
-from lemarche.tenders.models import Tender
+from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin
 from lemarche.www.tenders.forms import AddTenderForm
 
 
-# from lemarche.www.tenders.tasks import send_tender_emails_to_siae_list
+# from lemarche.www.tenders.tasks import send_tender_emails
 
 
 TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
@@ -39,13 +40,14 @@ class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView
         tender.save()
         form.save_m2m()
 
+        # find the matching Siaes
         siae_found_list = Siae.objects.filter_with_tender(tender)
-
+        tender.siaes.set(siae_found_list)
         tender.siae_found_count = siae_found_list.count()
         tender.save()
 
         # task
-        # send_tender_emails_to_siae_list(tender, siae_found_list)
+        # send_tender_emails(tender)
 
         messages.add_message(
             self.request,
@@ -75,6 +77,10 @@ class TenderListView(LoginRequiredMixin, ListView):
     paginator_class = Paginator
 
     def get_queryset(self):
+        """
+        - show matching Tenders for Users KIND_SIAE
+        - show owned Tenders for other Users
+        """
         user = self.request.user
         queryset = Tender.objects.none()
         if user.kind == User.KIND_SIAE and user.siaes:
@@ -83,7 +89,7 @@ class TenderListView(LoginRequiredMixin, ListView):
             if siae:
                 queryset = Tender.objects.filter_with_siae(siae)
         else:
-            queryset = Tender.objects.by_user(user)
+            queryset = Tender.objects.by_user(user).with_siae_stats()
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -97,6 +103,17 @@ class TenderDetail(LoginRequiredMixin, DetailView):
     model = Tender
     template_name = "tenders/detail.html"
     context_object_name = "tender"
+
+    def get(self, request, *args, **kwargs):
+        """
+        Check if the User has any Siae contacted for this Tender. If yes, update 'detail_display_date'
+        """
+        if self.request.user.kind == User.KIND_SIAE:
+            tender = self.get_object()
+            TenderSiae.objects.filter(
+                tender=tender, siae__in=self.request.user.siaes.all(), detail_display_date=None
+            ).update(detail_display_date=timezone.now())
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

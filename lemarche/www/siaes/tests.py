@@ -203,16 +203,17 @@ class SiaePerimeterSearchFilterTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         # create the Perimeters
-        auvergne_rhone_alpes = PerimeterFactory(
+        auvergne_rhone_alpes_perimeter = PerimeterFactory(
             name="Auvergne-Rhône-Alpes", kind=Perimeter.KIND_REGION, insee_code="R84"
         )
+        PerimeterFactory(name="Isère", kind=Perimeter.KIND_DEPARTMENT, insee_code="38", region_code="84")
         cls.grenoble_perimeter = PerimeterFactory(
             name="Grenoble",
             kind=Perimeter.KIND_CITY,
             insee_code="38185",
             department_code="38",
             region_code="84",
-            post_codes=[38000, 38100, 38700],
+            post_codes=["38000", "38100", "38700"],
             coords=Point(5.7301, 45.1825),
         )
         chamrousse_perimeter = PerimeterFactory(
@@ -221,36 +222,35 @@ class SiaePerimeterSearchFilterTest(TestCase):
             insee_code="38567",
             department_code="38",
             region_code="84",
-            post_codes=[38410],
+            post_codes=["38410"],
             coords=Point(5.8862, 45.1106),
         )
-        PerimeterFactory(name="Isère", kind=Perimeter.KIND_DEPARTMENT, insee_code="38", region_code="84")
         # create the Siaes
         SiaeFactory(
             city=cls.grenoble_perimeter.name,
             department=cls.grenoble_perimeter.department_code,
-            region=auvergne_rhone_alpes.name,
+            region=auvergne_rhone_alpes_perimeter.name,
             post_code=cls.grenoble_perimeter.post_codes[0],
             geo_range=Siae.GEO_RANGE_COUNTRY,
         )
         SiaeFactory(
             city=cls.grenoble_perimeter.name,
             department=cls.grenoble_perimeter.department_code,
-            region=auvergne_rhone_alpes.name,
+            region=auvergne_rhone_alpes_perimeter.name,
             post_code=cls.grenoble_perimeter.post_codes[0],
             geo_range=Siae.GEO_RANGE_REGION,
         )
         SiaeFactory(
             city=cls.grenoble_perimeter.name,
             department=cls.grenoble_perimeter.department_code,
-            region=auvergne_rhone_alpes.name,
+            region=auvergne_rhone_alpes_perimeter.name,
             post_code=cls.grenoble_perimeter.post_codes[1],
             geo_range=Siae.GEO_RANGE_DEPARTMENT,
         )
         SiaeFactory(
             city=cls.grenoble_perimeter.name,
             department=cls.grenoble_perimeter.department_code,
-            region=auvergne_rhone_alpes.name,
+            region=auvergne_rhone_alpes_perimeter.name,
             post_code=cls.grenoble_perimeter.post_codes[2],
             geo_range=Siae.GEO_RANGE_CUSTOM,
             geo_range_custom_distance=10,
@@ -260,7 +260,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
         SiaeFactory(
             city="La Tronche",
             department="38",
-            region=auvergne_rhone_alpes.name,
+            region=auvergne_rhone_alpes_perimeter.name,
             geo_range=Siae.GEO_RANGE_CUSTOM,
             geo_range_custom_distance=10,
             coords=Point(5.746, 45.2124),
@@ -269,20 +269,27 @@ class SiaePerimeterSearchFilterTest(TestCase):
         SiaeFactory(
             city=chamrousse_perimeter.name,
             department="38",
-            region=auvergne_rhone_alpes.name,
+            region=auvergne_rhone_alpes_perimeter.name,
             geo_range=Siae.GEO_RANGE_CUSTOM,
             geo_range_custom_distance=5,
             coords=Point(5.8862, 45.1106),
         )
-        SiaeFactory(city="Lyon", department="69", region=auvergne_rhone_alpes.name, geo_range=Siae.GEO_RANGE_COUNTRY)
-        SiaeFactory(city="Lyon", department="69", region=auvergne_rhone_alpes.name, geo_range=Siae.GEO_RANGE_REGION)
         SiaeFactory(
-            city="Lyon", department="69", region=auvergne_rhone_alpes.name, geo_range=Siae.GEO_RANGE_DEPARTMENT
+            city="Lyon", department="69", region=auvergne_rhone_alpes_perimeter.name, geo_range=Siae.GEO_RANGE_COUNTRY
+        )
+        SiaeFactory(
+            city="Lyon", department="69", region=auvergne_rhone_alpes_perimeter.name, geo_range=Siae.GEO_RANGE_REGION
         )
         SiaeFactory(
             city="Lyon",
             department="69",
-            region=auvergne_rhone_alpes.name,
+            region=auvergne_rhone_alpes_perimeter.name,
+            geo_range=Siae.GEO_RANGE_DEPARTMENT,
+        )
+        SiaeFactory(
+            city="Lyon",
+            department="69",
+            region=auvergne_rhone_alpes_perimeter.name,
             geo_range=Siae.GEO_RANGE_CUSTOM,
             geo_range_custom_distance=50,
             coords=Point(4.8236, 45.7685),
