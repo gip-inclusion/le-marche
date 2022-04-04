@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib.gis.geos import Point
 from django.test import TestCase
 from django.urls import reverse
@@ -269,16 +271,24 @@ class TenderSiaeInterestedListView(TestCase):
     def setUpTestData(cls):
         cls.siae_1 = SiaeFactory(name="ZZ ESI")
         cls.siae_2 = SiaeFactory(name="ABC Insertion")
-        cls.user_siae_1 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_1])
-        cls.user_siae_2 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_2])
+        cls.siae_3 = SiaeFactory(name="Une autre structure")
+        cls.user_siae_1 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_1, cls.siae_2])
+        cls.user_siae_2 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_3])
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
         cls.tender_1 = TenderFactory(author=cls.user_buyer_1)
         cls.tender_2 = TenderFactory(author=cls.user_buyer_2)
-        TenderSiae.objects.create(tender=cls.tender_1, siae=cls.siae_1, contact_click_date=timezone.now())
-        TenderSiae.objects.create(tender=cls.tender_1, siae=cls.siae_2)
-        TenderSiae.objects.create(tender=cls.tender_2, siae=cls.siae_2, contact_click_date=timezone.now())
+        cls.tendersiae_1_1 = TenderSiae.objects.create(
+            tender=cls.tender_1, siae=cls.siae_1, contact_click_date=timezone.now()
+        )
+        cls.tendersiae_1_2 = TenderSiae.objects.create(tender=cls.tender_1, siae=cls.siae_2)
+        cls.tendersiae_1_3 = TenderSiae.objects.create(
+            tender=cls.tender_1, siae=cls.siae_3, contact_click_date=timezone.now() - timedelta(hours=1)
+        )
+        cls.tendersiae_2_1 = TenderSiae.objects.create(
+            tender=cls.tender_2, siae=cls.siae_2, contact_click_date=timezone.now()
+        )
 
     def test_anonymous_user_cannot_view_tender_siae_interested_list(self):
         url = reverse("tenders:detail-siae-interested", kwargs={"slug": self.tender_1.slug})
@@ -292,7 +302,7 @@ class TenderSiaeInterestedListView(TestCase):
         url = reverse("tenders:detail-siae-interested", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["tendersiaes"]), 1)
+        self.assertEqual(len(response.context["tendersiaes"]), 2)
         # forbidden
         for user in [self.user_buyer_2, self.user_partner, self.user_siae_1, self.user_siae_2]:
             self.client.login(email=user.email, password=DEFAULT_PASSWORD)
@@ -300,3 +310,12 @@ class TenderSiaeInterestedListView(TestCase):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 302)
             self.assertEqual(response.url, "/besoins/")
+
+    def test_order_tender_siae_by_last_contact_click_date(self):
+        # TenderSiae are ordered by -created_at by default
+        self.assertEqual(self.tender_1.tendersiae_set.first().id, self.tendersiae_1_3.id)
+        # but TenderSiaeInterestedListView are ordered by -contact_click_date
+        self.client.login(email=self.user_buyer_1.email, password=DEFAULT_PASSWORD)
+        url = reverse("tenders:detail-siae-interested", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.context["tendersiaes"][0].id, self.tendersiae_1_1.id)
