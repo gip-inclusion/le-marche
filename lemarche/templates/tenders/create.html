@@ -51,8 +51,8 @@
                                     {% for pk, choice in form.kind.field.widget.choices %}
                                     <li>
                                         <div class="custom-control custom-radio">
-                                            <input id="id_{{form.kind.name}}_{{ forloop.counter0 }}" name="{{form.kind.name}}" type="{{form.kind.field.widget.input_type}}" value="{{pk}}" class="custom-control-input" />
-                                            <label for="id_{{form.kind.name}}_{{ forloop.counter0 }}" class="custom-control-label">{{ choice }}</label>
+                                            <input id="id_{{ form.kind.name }}_{{ forloop.counter0 }}" class="custom-control-input" name="{{ form.kind.name }}" type="{{ form.kind.field.widget.input_type }}" value="{{ pk }}" />
+                                            <label for="id_{{ form.kind.name }}_{{ forloop.counter0 }}" class="custom-control-label">{{ choice }}</label>
                                         </div>
                                     </li>
                                     {% endfor %}
@@ -62,9 +62,7 @@
                             {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
                             <div id="dir_form_perimeter_name" class="form-group form-group-required mb-2">
                                 <label for="perimeter_name">{{ form.perimeters.label }}</label>
-                                <div class="field-holder">
-                                    {{ form.perimeter_name }}
-                                </div>
+                                <div class="field-holder">{{ form.perimeter_name }}</div>
                             </div>
                             <div id="perimeters-selected"></div>
                             <small class="form-text text-muted mb-3">Ajouter un ou plusieurs lieux d'exécutions</small>
@@ -80,7 +78,7 @@
                             <div class="form-group">
                                 {{ form.start_working_date.label_tag }}
                                 <div class="input-group">
-                                    <input id="id_{{form.start_working_date.name}}" name="{{form.start_working_date.name}}" type="{{form.start_working_date.field.widget.input_type}}" value="{{form.start_working_date.value}}" class="form-control" />
+                                    <input id="id_{{ form.start_working_date.name }}" class="form-control" name="{{ form.start_working_date.name }}" type="{{ form.start_working_date.field.widget.input_type }}" value="{{ form.start_working_date.value}}" />
                                     <div class="input-group-append">
                                         <span class="input-group-text"><i class="ri-calendar-2-line ri-lg"></i></span>
                                     </div>
@@ -102,8 +100,8 @@
                                     {% for pk, choice in form.response_kind.field.widget.choices %}
                                     <li>
                                         <div class="custom-control custom-checkbox">
-                                            <input id="id_{{form.response_kind.name}}_{{ forloop.counter0 }}" name="{{form.response_kind.name}}" type="{{form.response_kind.field.widget.input_type}}" value="{{pk}}" class="custom-control-input" />
-                                            <label for="id_{{form.response_kind.name}}_{{ forloop.counter0 }}" class="custom-control-label">{{ choice }}</label>
+                                            <input id="id_{{ form.response_kind.name }}_{{ forloop.counter0 }}" class="custom-control-input" name="{{ form.response_kind.name }}" type="{{ form.response_kind.field.widget.input_type }}" value="{{ pk }}" />
+                                            <label for="id_{{ form.response_kind.name }}_{{ forloop.counter0 }}" class="custom-control-label">{{ choice }}</label>
                                         </div>
                                     </li>
                                     {% endfor %}
@@ -112,7 +110,7 @@
                             <div class="form-group">
                                 {{ form.deadline_date.label_tag }}
                                 <div class="input-group">
-                                    <input id="id_{{form.deadline_date.name}}" name="{{form.deadline_date.name}}" type="{{form.deadline_date.field.widget.input_type}}" value="{{form.deadline_date.value}}" class="form-control" />
+                                    <input id="id_{{ form.deadline_date.name }}" class="form-control" name="{{ form.deadline_date.name }}" type="{{ form.deadline_date.field.widget.input_type }}" value="{{ form.deadline_date.value}}" />
                                     <div class="input-group-append">
                                         <span class="input-group-text"><i class="ri-calendar-2-line ri-lg"></i></span>
                                     </div>
@@ -201,7 +199,6 @@
                 toggleRequiredClasses(required, element);
             }
         }
-
 
         kindInput.addEventListener('change', () => {
             let inputValue = $(kindInput).find('input:checked')[0].value

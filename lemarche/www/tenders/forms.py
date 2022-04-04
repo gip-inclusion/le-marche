@@ -6,7 +6,6 @@ from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
 class AddTenderForm(forms.ModelForm):
-
     sectors = GroupedModelMultipleChoiceField(
         label=Sector._meta.verbose_name_plural,
         queryset=Sector.objects.form_filter_queryset(),

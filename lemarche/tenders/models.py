@@ -165,10 +165,10 @@ class Tender(models.Model):
 
     def clean(self):
         today = datetime.date.today()
-        if self.deadline_date < today:
+        if self.deadline_date and (self.deadline_date < today):
             raise ValidationError("La date de cloture des réponses ne doit pas être antérieure à aujourd'hui.")
 
-        if self.start_working_date and self.start_working_date < self.deadline_date:
+        if self.deadline_date and self.start_working_date and (self.start_working_date < self.deadline_date):
             raise ValidationError(
                 "La date idéale de début des prestations ne doit pas être antérieure de cloture des réponses."
             )
