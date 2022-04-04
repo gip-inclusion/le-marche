@@ -19,3 +19,9 @@ class UserFactory(DjangoModelFactory):
     password = factory.PostGenerationMethodCall("set_password", DEFAULT_PASSWORD)
     phone = factory.fuzzy.FuzzyText(length=10, chars=string.digits)
     kind = User.KIND_SIAE
+
+    @factory.post_generation
+    def siaes(self, create, extracted, **kwargs):
+        if extracted:
+            # Add the iterable of groups using bulk addition
+            self.siaes.add(*extracted)

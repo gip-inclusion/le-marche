@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models, transaction
-from django.db.models import Q
+from django.db.models import Case, IntegerField, Q, Sum, When
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -18,7 +18,7 @@ class TenderQuerySet(models.QuerySet):
     def by_user(self, user):
         return self.filter(author=user)
 
-    def find_in_perimeters(self, post_code, department, region):
+    def in_perimeters(self, post_code, department, region):
         filters = (
             Q(perimeters__post_codes__contains=[post_code])
             | Q(perimeters__insee_code=department)
@@ -42,8 +42,23 @@ class TenderQuerySet(models.QuerySet):
         sectors = siae.sectors.all()
         qs = self.prefetch_related("sectors", "perimeters").in_sectors(sectors)
         if siae.geo_range != siae.GEO_RANGE_COUNTRY:
-            qs.find_in_perimeters(post_code=siae.post_code, department=siae.department, region=siae.region)
+            qs.in_perimeters(post_code=siae.post_code, department=siae.department, region=siae.region)
         return qs.distinct()
+
+    def with_siae_stats(self):
+        """
+        Enrich each Tender with stats on their linked Siae
+        """
+        return self.annotate(
+            siae_email_send_count=Sum(
+                Case(When(tendersiae__email_send_date__isnull=False, then=1), default=0, output_field=IntegerField())
+            ),
+            siae_detail_display_count=Sum(
+                Case(
+                    When(tendersiae__detail_display_date__isnull=False, then=1), default=0, output_field=IntegerField()
+                )
+            ),
+        )
 
 
 class Tender(models.Model):
@@ -102,7 +117,14 @@ class Tender(models.Model):
         to=settings.AUTH_USER_MODEL, related_name="tenders", on_delete=models.CASCADE, blank=True
     )
 
-    siae_found_count = models.PositiveIntegerField(verbose_name="Nombre de SIAE trouvées", default=0)
+    siaes = models.ManyToManyField(
+        "siaes.Siae",
+        through="tenders.TenderSiae",
+        verbose_name="Structures correspondantes au besoin",
+        related_name="siaes",
+        blank=True,
+    )
+    siae_found_count = models.PositiveIntegerField(verbose_name="Nombre de structures trouvées", default=0)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
@@ -169,3 +191,28 @@ class Tender(models.Model):
 
     def get_absolute_url(self):
         return reverse("tenders:detail", kwargs={"slug": self.slug})
+
+
+class TenderSiae(models.Model):
+    TENDER_SIAE_SOURCE_EMAIL = "EMAIL"
+    TENDER_SIAE_SOURCE_DASHBOARD = "DASHBOARD"
+    TENDER_SIAE_SOURCE_CHOICES = (
+        (TENDER_SIAE_SOURCE_EMAIL, "E-mail"),
+        (TENDER_SIAE_SOURCE_DASHBOARD, "Dashboard"),
+    )
+
+    tender = models.ForeignKey("tenders.Tender", verbose_name="Besoin d'acheteur", on_delete=models.CASCADE)
+    siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
+
+    source = models.CharField(max_length=20, choices=TENDER_SIAE_SOURCE_CHOICES, default=TENDER_SIAE_SOURCE_EMAIL)
+    email_send_date = models.DateTimeField("Date d'envoi de l'e-mail", blank=True, null=True)
+    detail_display_date = models.DateTimeField("Date de visualisation du besoin", blank=True, null=True)
+    contact_click_date = models.DateTimeField("Date de clic sur les coordonnées du besoin", blank=True, null=True)
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Structure correspondant au besoin"
+        verbose_name_plural = "Structures correspondantes au besoin"
+        ordering = ["-created_at"]

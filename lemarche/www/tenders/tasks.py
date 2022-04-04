@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils import timezone
 
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
@@ -11,9 +12,13 @@ EMAIL_SUBJECT_PREFIX = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_
 
 
 # @task()
-def send_tender_emails_to_siae_list(tender: Tender, siae_found_list):
-    for siae in siae_found_list:
+def send_tender_emails(tender: Tender):
+    """
+    TODO: filter on source="EMAIL" ?
+    """
+    for siae in tender.siaes.all():
         send_tender_email_to_siae(tender, siae)
+    tender.tendersiae_set.update(email_send_date=timezone.now())
 
 
 # @task()
