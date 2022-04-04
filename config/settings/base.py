@@ -131,6 +131,7 @@ LOCAL_APPS = [
 ]
 
 WAGTAIL_APPS = [
+    "wagtail.contrib.routable_page",
     "wagtail.contrib.search_promotions",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
