@@ -142,29 +142,6 @@
 		}
 	}
 
-	.map_coordonnees__btn {
-
-		&[aria-expanded="false"] {
-			#map_coordonnees__ico-up {
-				display: none;
-			}
-
-			#map_coordonnees__ico-down {
-				display: inline;
-			}
-		}
-
-		&[aria-expanded="true"] {
-			#map_coordonnees__ico-up {
-				display: inline;
-			}
-
-			#map_coordonnees__ico-down {
-				display: none;
-			}
-		}
-	}
-
 	.profile-detail {
 		.img-left {
 			display: flex;

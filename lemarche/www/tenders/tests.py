@@ -193,9 +193,71 @@ class TenderDetailView(TestCase):
         self.assertEqual(self.tender.tendersiae_set.last().siae, self.siae)
         self.assertIsNone(self.tender.tendersiae_set.first().detail_display_date)
         self.assertIsNone(self.tender.tendersiae_set.last().detail_display_date)
+        # first load
         self.client.login(email=self.user_siae_2.email, password=DEFAULT_PASSWORD)
         url = reverse("tenders:detail", kwargs={"slug": self.tender.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertNotEqual(self.tender.tendersiae_set.first().detail_display_date, None)
+        siae_2_detail_display_date = self.tender.tendersiae_set.first().detail_display_date
+        self.assertNotEqual(siae_2_detail_display_date, None)
         self.assertEqual(self.tender.tendersiae_set.last().detail_display_date, None)
+        # reload doesn't update detail_display_date
+        url = reverse("tenders:detail", kwargs={"slug": self.tender.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.tender.tendersiae_set.first().detail_display_date, siae_2_detail_display_date)
+
+
+class TenderDetailContactClickStatView(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae = SiaeFactory(name="ZZ ESI")
+        cls.user_siae_1 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae])
+        cls.user_siae_2 = UserFactory(kind=User.KIND_SIAE)
+        cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
+        cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
+        cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
+        cls.tender = TenderFactory(author=cls.user_buyer_1, siaes=[cls.siae])
+
+    def test_anonymous_user_cannot_call_tender_contact_click(self):
+        url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith("/accounts/login/"))
+
+    def test_only_siae_user_can_call_tender_contact_click(self):
+        # authorized
+        for user in [self.user_siae_1, self.user_siae_2]:
+            self.client.login(email=user.email, password=DEFAULT_PASSWORD)
+            url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
+            response = self.client.post(url)
+            self.assertEqual(response.status_code, 200)
+        # forbidden
+        for user in [self.user_buyer_1, self.user_buyer_2, self.user_partner]:
+            self.client.login(email=user.email, password=DEFAULT_PASSWORD)
+            url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
+            response = self.client.post(url)
+            self.assertEqual(response.status_code, 403)
+
+    def test_update_tendersiae_stats_on_tender_contact_click(self):
+        siae_2 = SiaeFactory(name="ABC Insertion")
+        self.user_siae_2.siaes.add(siae_2)
+        self.tender.siaes.add(siae_2)
+        self.assertEqual(self.tender.tendersiae_set.count(), 2)
+        self.assertEqual(self.tender.tendersiae_set.first().siae, siae_2)
+        self.assertEqual(self.tender.tendersiae_set.last().siae, self.siae)
+        self.assertIsNone(self.tender.tendersiae_set.first().contact_click_date)
+        self.assertIsNone(self.tender.tendersiae_set.last().contact_click_date)
+        self.client.login(email=self.user_siae_2.email, password=DEFAULT_PASSWORD)
+        url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 200)
+        siae_2_contact_click_date = self.tender.tendersiae_set.first().contact_click_date
+        self.assertNotEqual(siae_2_contact_click_date, None)
+        self.assertEqual(self.tender.tendersiae_set.last().contact_click_date, None)
+        # clicking again on the button doesn't update contact_click_date
+        # Note: button will disappear on reload
+        url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.tender.tendersiae_set.first().contact_click_date, siae_2_contact_click_date)
