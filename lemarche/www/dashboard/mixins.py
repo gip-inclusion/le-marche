@@ -118,3 +118,17 @@ class FavoriteListOwnerRequiredMixin(LoginRequiredUserPassesTestMixin):
 
     def handle_no_permission(self):
         return HttpResponseRedirect(reverse_lazy("dashboard:home"))
+
+
+class TenderOwnerRequiredMixin(LoginRequiredUserPassesTestMixin):
+    """
+    Restrict access to the Tender's user
+    """
+
+    def test_func(self):
+        user = self.request.user
+        tender_slug = self.kwargs.get("slug")
+        return user.is_authenticated and (tender_slug in user.tenders.values_list("slug", flat=True))
+
+    def handle_no_permission(self):
+        return HttpResponseRedirect(reverse_lazy("tenders:list"))

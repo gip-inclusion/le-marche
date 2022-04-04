@@ -4,51 +4,64 @@
 {% block title %}{{ page_title }}{{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
-    <section>
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
-                            <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
-                        </ol>
-                    </nav>
-                </div>
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+                    </ol>
+                </nav>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 {% endblock %}
 
 {% block content %}
 <section>
     <div class="container py-4">
         <div class="row">
-            <div class="col-12 ">
+            <div class="col-12 col-lg">
                 <h1>{{ page_title }}</h1>
-                {% if user.kind != user.KIND_SIAE %}
-                    <a href="{% url 'tenders:create' %}" class="btn btn-primary my-4">
-                        <span>Publier un besoin d'achat</span>
-                    </a>
-                {% endif %}
             </div>
+            <!-- "buyer": can create new tenders -->
+            {% if user.kind != user.KIND_SIAE %}
+                <div class="col-12 col-md-auto">
+                    <a href="{% url 'tenders:create' %}" class="btn btn-primary btn-ico">
+                        <span>Publier un besoin d'achat</span>
+                        <i class="ri-add-fill ri-lg"></i>
+                    </a>
+                </div>
+            {% endif %}
             <div class="col-12 my-5 py-3">
-                {% if tenders %}
+                <!-- "buyer": display tenders which the user is the author -->
+                {% if user.kind != user.KIND_SIAE %}
                     {% for tender in tenders %}
-                        {% include "tenders/list_item.html" with tender=tender %}
+                        {% include "tenders/_list_item_buyer.html" with tender=tender %}
                     {% endfor %}
                     {% include "includes/_pagination.html" %}
+                    {% if not tenders %}
+                        <p class="text-muted">
+                            Publiez un besoin pour trouver des structures près de chez vous.
+                        </p>
+                    {% endif %}
+                <!-- "siae": display opportunities -->
                 {% else %}
-                   <p class="text-muted">
-                        {% if user.kind == user.KIND_SIAE %}
+                    {% for tender in tenders %}
+                        {% include "tenders/_list_item_siae.html" with tender=tender %}
+                    {% endfor %}
+                    {% include "includes/_pagination.html" %}
+                    {% if not tenders %}
+                        <p class="text-muted">
                             Désolé, nous avons aucune opportunités à vous présenter pour le moment.<br>
                             Si ce n'est pas déjà fait, pensez à <a href="{% url 'dashboard:home' %}">compléter votre fiche structure</a>
                             pour optimiser vos chances de trouver de nouvelles opportunités.
-                        {% else %}
-                            Publiez un besoin pour trouver des prestataires près de chez vous.
-                        {% endif %}
-                    </p>
+                        </p>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

@@ -53,7 +53,7 @@ a.disabled {
         max-width: 280px;
         white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis;	
+        text-overflow: ellipsis;
     }
 
     .prof_icon {
@@ -69,4 +69,10 @@ a.disabled {
 */
 *[id] {
     scroll-margin-top: 100px;
+}
+
+.text-overflow-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
