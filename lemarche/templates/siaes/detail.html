@@ -150,12 +150,12 @@
                         <div class="profile_capsule">
                             <div class="map_coordonnees">
                                 {% if user.is_authenticated %}
-                                    <button id="show_data" class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-4" type="button" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
+                                    <button id="show_data" class="btn btn-block btn-primary btn-ico mb-4" type="button" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
                                         <span>Afficher les coordonnées</span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-up"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 8l6 6H6z"/></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-up"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 8l6 6H6z"/></svg>
                                     </button>
-                                    <div class="collapse mb-lg-2" id="collapseCoordonnees">
+                                    <div id="collapseCoordonnees" class="collapse mb-lg-2">
                                         <ul class="list-unstyled fs-sm">
                                             {% if siae.is_missing_contact %}
                                                 <li class="mb-1">
@@ -202,9 +202,9 @@
                                         </ul>
                                     </div>
                                 {% else %}
-                                    <a href="#" id="show_data-modal-btn" class="map_coordonnees__btn btn btn-block btn-primary btn-ico mb-4" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}">
+                                    <a href="#" id="show_data-modal-btn" class="btn btn-block btn-primary btn-ico mb-4" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}">
                                         <span>Afficher les coordonnées</span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="map_coordonnees__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
                                     </a>
                                 {% endif %}
                             </div>
