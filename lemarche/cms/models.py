@@ -42,19 +42,24 @@ class ArticlePage(Page):
     content_panels = Page.content_panels + [
         FieldPanel("intro", classname="full"),
         MultiFieldPanel([FieldPanel("categories", widget=forms.CheckboxSelectMultiple)], heading="Categories"),
-        ImageChooserPanel("image"),
-        MultiFieldPanel(
-            [
-                FieldPanel("is_static_page", classname="full"),
-                FieldPanel("template_name", classname="full"),
-            ],
-            heading="Article statique",
+        ImageChooserPanel(
+            "image",
+            classname="collapsible",
         ),
         MultiFieldPanel(
             [
                 FieldPanel("body", classname="full"),
             ],
             heading="Article normal",
+            classname="collapsible",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel("is_static_page", classname="full"),
+                FieldPanel("template_name", classname="full"),
+            ],
+            heading="Article statique",
+            classname="collapsible collapsed",
         ),
     ]
 
