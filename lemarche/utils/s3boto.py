@@ -189,7 +189,6 @@ class S3BotoStorage(Storage):
     connection_response_error = S3ResponseError
     file_class = S3BotoStorageFile
     key_class = S3Key
-
     # used for looking up the access and secret key from env vars
     access_key_names = ["S3_STORAGE_ACCESS_KEY_ID", "AWS_ACCESS_KEY_ID"]
     secret_key_names = ["S3_STORAGE_SECRET_ACCESS_KEY", "AWS_SECRET_ACCESS_KEY"]
