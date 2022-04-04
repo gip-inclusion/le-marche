@@ -12,7 +12,7 @@ from django.views.generic import CreateView, DetailView, ListView, View
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
-from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin
+from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin, TenderOwnerRequiredMixin
 from lemarche.www.tenders.forms import AddTenderForm
 
 
@@ -20,7 +20,7 @@ from lemarche.www.tenders.forms import AddTenderForm
 
 
 TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
-TITLE_DETAIL_PAGE_OTHERS = "Besoins en cours"
+TITLE_DETAIL_PAGE_OTHERS = "Mes besoins"
 
 
 class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView):
@@ -100,7 +100,7 @@ class TenderListView(LoginRequiredMixin, ListView):
         return context
 
 
-class TenderDetail(LoginRequiredMixin, DetailView):
+class TenderDetailView(LoginRequiredMixin, DetailView):
     model = Tender
     template_name = "tenders/detail.html"
     context_object_name = "tender"
@@ -143,3 +143,20 @@ class TenderDetailContactClickStat(LoginRequiredMixin, View):
             return JsonResponse({"message": "success"})
         else:
             return HttpResponseForbidden()
+
+
+class TenderSiaeInterestedListView(TenderOwnerRequiredMixin, ListView):
+    queryset = TenderSiae.objects.all()
+    template_name = "tenders/siae_interested_list.html"
+    context_object_name = "tendersiaes"
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.filter(tender__slug=self.kwargs.get("slug"), contact_click_date__isnull=False)
+        qs = qs.order_by("-contact_click_date")
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["tender"] = context["tendersiaes"].first().tender
+        return context

@@ -133,7 +133,7 @@ class DashboardSiaeSearchAdoptViewTest(TestCase):
         self.assertEqual(self.user_siae_2.siaes.count(), 0)
 
 
-class DashboardSiaeEditView(TestCase):
+class DashboardSiaeEditViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user_siae = UserFactory(kind=User.KIND_SIAE)
