@@ -44,8 +44,6 @@ class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView
         # find the matching Siaes
         siae_found_list = Siae.objects.filter_with_tender(tender)
         tender.siaes.set(siae_found_list)
-        tender.siae_found_count = siae_found_list.count()
-        tender.save()
 
         # task
         # send_tender_emails(tender)
