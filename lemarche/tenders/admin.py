@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.urls import reverse
+from django.utils.html import format_html
 
 from lemarche.tenders.models import Tender
 
@@ -14,6 +16,7 @@ class TenderAdmin(admin.ModelAdmin):
         "deadline_date",
         "start_working_date",
         "response_kind",
+        "nb_siae",
         "nb_siae_email_send",
         "nb_siae_detail_display",
         "nb_siae_contact_click",
@@ -24,6 +27,7 @@ class TenderAdmin(admin.ModelAdmin):
     search_fields = ["id", "title"]
     search_help_text = "Cherche sur les champs : ID, Titre"
     readonly_fields = [
+        "nb_siae",
         "nb_siae_email_send",
         "nb_siae_detail_display",
         "nb_siae_contact_click",
@@ -65,7 +69,7 @@ class TenderAdmin(admin.ModelAdmin):
         (
             "Stats",
             {
-                "fields": ("nb_siae_email_send", "nb_siae_detail_display", "nb_siae_contact_click"),
+                "fields": ("nb_siae", "nb_siae_email_send", "nb_siae_detail_display", "nb_siae_contact_click"),
             },
         ),
         ("Info", {"fields": ("created_at", "updated_at")}),
@@ -75,6 +79,13 @@ class TenderAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         qs = qs.with_siae_stats()
         return qs
+
+    def nb_siae(self, tender):
+        url = reverse("admin:siaes_siae_changelist") + f"?tenders__in={tender.id}"
+        return format_html(f'<a href="{url}">{tender.siae_count}</a>')
+
+    nb_siae.short_description = "Structures concernées"
+    nb_siae.admin_order_field = "siae_count"
 
     def nb_siae_email_send(self, tender):
         return tender.siae_email_send_count

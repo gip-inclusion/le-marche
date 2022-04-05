@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models, transaction
-from django.db.models import Case, IntegerField, Q, Sum, When
+from django.db.models import Case, Count, IntegerField, Q, Sum, When
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -50,6 +50,7 @@ class TenderQuerySet(models.QuerySet):
         Enrich each Tender with stats on their linked Siae
         """
         return self.annotate(
+            siae_count=Count("siaes", distinct=True),
             siae_email_send_count=Sum(
                 Case(When(tendersiae__email_send_date__isnull=False, then=1), default=0, output_field=IntegerField())
             ),
@@ -126,10 +127,9 @@ class Tender(models.Model):
         "siaes.Siae",
         through="tenders.TenderSiae",
         verbose_name="Structures correspondantes au besoin",
-        related_name="siaes",
+        related_name="tenders",
         blank=True,
     )
-    siae_found_count = models.PositiveIntegerField(verbose_name="Nombre de structures trouvées", default=0)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
