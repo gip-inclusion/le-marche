@@ -1,0 +1,80 @@
+{% extends "layouts/base.html" %}
+{% load static siae_sectors_display %}
+
+{% block title %}Groupements{{ block.super }}{% endblock %}
+{% block body_class %}p-partenaires{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Groupements</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="s-page-menu-01 s-page-menu-01--marche has-illustration-bg-01">
+    <div class="s-page-menu-01__container container">
+        <div class="s-page-menu-01__row row align-items-center">
+            <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-lg-10">
+                <h1 class="h1-hero">
+                    <strong>Retrouver les groupements <br class="d-none d-lg-inline">commerciaux des SIAE</strong>
+                </h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="s-partenaires-02 s-cards-grid-01 pt-0">
+    <div class="s-cards-grid-01__container container">
+        <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3 justify-content-start">
+            {% for group in siaegroups %}
+                <div class="s-cards-grid-01__col col mb-3 mb-md-5">
+                    <div class="card c-card h-100 w-100 c-card--marche">
+                        <div class="card-header">
+                            <img src="{{ group.logo_url }}" class="img-fluid" alt="Logo de {{ group.name }}" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <p class="h3 lh-base">{{ group.name }}</p>
+                            <p title="Secteurs d'activité">
+                                <i class="ri-award-line"></i>
+                                {% siae_sectors_display group display_max=6 output_format='li' %}
+                            </p>
+                            <p>
+                                <i class="ri-hotel-line"></i>
+                                <span>{{ group.siae_count }} structures</span>
+                            </p>
+                        </div>
+                        <hr />
+                        <div class="card-footer">
+                            <ul class="list-unstyled">
+                                <li class="mb-1">
+                                    <i class="ri-window-2-line"></i>
+                                    <a href="{{ group.contact_website }}" id="group_company_website" target="_blank" rel="noopener">{{ group.contact_website }}</a>
+                                </li>
+                                <li class="mb-1">
+                                    <i class="ri-at-line"></i>
+                                    <a href="mailto:{{ group.contact_email }}" id="group_company_email">{{ group.contact_email }}</a>
+                                </li>
+                                <li class="mb-1">
+                                    <i class="ri-phone-line"></i>
+                                    <a href="tel:{{ group.contact_phone }}" id="group_company_phone">{{ group.contact_phone }}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
