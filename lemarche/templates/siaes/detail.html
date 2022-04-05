@@ -236,10 +236,10 @@
                 <!-- profile-detail suite -->
                 <article id="user_detail" class="profile-detail">
 
-                    <!-- Third row : Description -->
+                    <!-- First row : Description -->
                     {% if siae.description %}
                         <div class="row">
-                            <div class="col-sm-12 img-left mb-3">
+                            <div class="col-sm-12 img-left">
                                 <div class="il-l">
                                     <img src="{% static_theme_images 'ico-bicro-marche-descript-act.svg' %}" alt="" height="32" />
                                 </div>
@@ -255,13 +255,12 @@
                                 </div>
                             </div>
                         </div>
-
-                        <hr />
                     {% endif %}
 
-                    <!-- Second Row : Secteurs, Références -->
+                    <!-- Second & Third Row : Secteurs, Références -->
+                    <hr />
                     <div class="row">
-                        <div class="col-sm-6 img-left mb-3">
+                        <div class="col-sm-6 img-left">
                             <div class="il-l">
                                 <img src="{% static_theme_images 'ico-bicro-secteur.svg' %}" alt="" height="32" />
                             </div>
@@ -276,7 +275,7 @@
                             </div>
                         </div>
                         {% if siae.client_reference_count %}
-                            <div class="col-sm-6 img-left mb-3">
+                            <div class="col-sm-6 img-left">
                                 <div class="il-l">
                                     <img src="{% static_theme_images 'ico-bicro-marche-ref-clients.svg' %}" alt="" height="32" />
                                 </div>
@@ -292,12 +291,11 @@
                         {% endif %}
                     </div>
 
-                    <hr />
-
                     <!-- Fourth Row : Prestations -->
                     {% if siae.offer_count %}
+                        <hr />
                         <div class="row">
-                            <div class="col-sm-12 img-left mb-3">
+                            <div class="col-sm-12 img-left">
                                 <div class="il-l">
                                     <img src="{% static_theme_images 'ico-bicro-detail.svg' %}" alt="" height="32" />
                                 </div>
@@ -319,15 +317,14 @@
                                 </div>
                             </div>
                         </div>
-
-                        <hr />
                     {% endif %}
 
                     <!-- Fifth Row : Réseaux, Labels -->
                     {% if siae.network_count or siae.label_count %}
+                        <hr />
                         <div class="row">
                             {% if siae.network_count %}
-                                <div class="col-12 col-md-6 img-left mb-3">
+                                <div class="col-12 col-md-6 img-left">
                                     <div class="il-l">
                                         <img src="{% static_theme_images 'ico-bicro-reseaux.svg' %}" alt="" height="32" />
                                     </div>
@@ -347,7 +344,7 @@
                                 </div>
                             {% endif %}
                             {% if siae.label_count %}
-                                <div class="col-12 col-md-6 img-left mb-3">
+                                <div class="col-12 col-md-6 img-left">
                                     <div class="il-l">
                                         <img src="{% static_theme_images 'ico-bicro-labels.svg' %}" alt="" height="32" />
                                     </div>
@@ -362,12 +359,11 @@
                                 </div>
                             {% endif %}
                         </div>
-
-                        <hr />
                     {% endif %}
 
                     <!-- Sixth Row : Réalisations -->
                     {% if siae.images.count %}
+                        <hr />
                         <div class="row">
                             <div class="col-12 img-left">
                                 <div class="il-l">
@@ -388,25 +384,25 @@
                     {% endif %}
 
                     {% if not siae.user_count and not user.is_authenticated %}
-                    <div id="user_update_cta" class="row justify-content-center mb-5 mb-lg-3 mt-lg-5">
-                        <div class="col-12 col-lg-10">
-                            <div class="card c-card c-card--mini h-100 p-3 p-lg-5 pr-lg-7">
-                                <div class="card-body text-center">
-                                    <h3 class="h2 m-0">
-                                        C'est votre structure et vous souhaitez modifier ses informations.
-                                    </h3>
-                                </div>
-                                <div class="card-footer text-center">
-                                    <a href="{% url 'auth:signup' %}" class="btn btn-primary btn-ico stretched-link">
-                                        <span>Inscrivez-vous dès maintenant</span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-                                            <path fill="currentColor" fill-rule="nonzero" stroke="currentColor" d="M1.964 8.95h11.03L9.51 12.737a.451.451 0 00.037.646.474.474 0 00.66-.037L14.386 8.8l.035-.043.033-.05.013-.05V8.539c0-.012.033-.02.033-.044v-.151l-.014-.05-.019-.03-.034-.045-4.193-4.566a.474.474 0 00-.66-.037.452.452 0 00-.036.646l3.45 3.777H1.963a.46.46 0 00-.464.455.46.46 0 00.464.455z"></path>
-                                        </svg>
-                                    </a>
+                        <div id="user_update_cta" class="row justify-content-center mb-5 mb-lg-3 mt-lg-5">
+                            <div class="col-12 col-lg-10">
+                                <div class="card c-card c-card--mini h-100 p-3 p-lg-5 pr-lg-7">
+                                    <div class="card-body text-center">
+                                        <h3 class="h2 m-0">
+                                            C'est votre structure et vous souhaitez modifier ses informations.
+                                        </h3>
+                                    </div>
+                                    <div class="card-footer text-center">
+                                        <a href="{% url 'auth:signup' %}" class="btn btn-primary btn-ico stretched-link">
+                                            <span>Inscrivez-vous dès maintenant</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+                                                <path fill="currentColor" fill-rule="nonzero" stroke="currentColor" d="M1.964 8.95h11.03L9.51 12.737a.451.451 0 00.037.646.474.474 0 00.66-.037L14.386 8.8l.035-.043.033-.05.013-.05V8.539c0-.012.033-.02.033-.044v-.151l-.014-.05-.019-.03-.034-.045-4.193-4.566a.474.474 0 00-.66-.037.452.452 0 00-.036.646l3.45 3.777H1.963a.46.46 0 00-.464.455.46.46 0 00.464.455z"></path>
+                                            </svg>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                     {% endif %}
                 </article>
             </div>
