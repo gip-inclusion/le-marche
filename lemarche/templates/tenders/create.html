@@ -4,22 +4,22 @@
 {% block title %}Déposer un besoin{{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
-    <section>
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
-                            <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
-                            <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">Besoins en cours</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Déposer un besoin</li>
-                        </ol>
-                    </nav>
-                </div>
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">Besoins en cours</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Déposer un besoin</li>
+                    </ol>
+                </nav>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 {% endblock %}
 
 {% block content %}
@@ -39,7 +39,7 @@
                     <fieldset class="py-2 pb-lg-4">
                         {% bootstrap_field form.kind %}
                         {% bootstrap_field form.title placeholder="Ex: Rénovation de façade" %}
-                        {% bootstrap_field form.sectors form_group_class="use-multiselect" %}
+                        {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
                         <div id="dir_form_perimeter_name" class="form-group form-group-required mb-2">
                             <label for="perimeter_name">{{ form.perimeters.label }}</label>
                             <div class="field-holder">

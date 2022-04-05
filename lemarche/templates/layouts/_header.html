@@ -28,14 +28,16 @@
                                 {% include "includes/_newsletter_button.html" %}
                             </li>
                         {% endif %}
-                        <li>
-                            <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser">
-                                Valoriser vos achats
-                            </a>
-                        </li>
+                        {% if not user.is_authenticated or user.kind != user.KIND_SIAE %}
+                            <li>
+                                <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser" rel="noopener">
+                                    Valoriser vos achats
+                                </a>
+                            </li>
+                        {% endif %}
                         {% if user.is_authenticated %}
                             <li>
-                                <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites">
+                                <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites" rel="noopener">
                                     <i class="ri-star-line ri-lg"></i>
                                     Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
                                 </a>
@@ -85,11 +87,13 @@
                                 {% include "includes/_newsletter_button.html" with custom_class="p-0" %}
                             </li>
                         {% endif %}
-                        <li>
-                            <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser">
-                                Valoriser vos achats
-                            </a>
-                        </li>
+                        {% if not user.is_authenticated or user.kind != user.KIND_SIAE %}
+                            <li>
+                                <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser" rel="noopener">
+                                    Valoriser vos achats
+                                </a>
+                            </li>
+                        {% endif %}
                         {% if user.is_authenticated %}
                             <li>
                                 <a href="{% url 'dashboard:home' %}" id="h_dashboard" rel="noopener">
@@ -97,7 +101,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites">
+                                <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites" rel="noopener">
                                     <i class="ri-star-line ri-lg"></i>
                                     Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
                                 </a>
