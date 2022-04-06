@@ -23,3 +23,6 @@ ALLOWED_HOSTS = [
 sentry_init(dsn=env.str("SENTRY_DSN_STAGING"))
 
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", True)
+
+MEDIA_URL = f"https://{S3_STORAGE_ENDPOINT_DOMAIN}/"  # noqa
+DEFAULT_FILE_STORAGE = "lemarche.utils.s3boto.S3BotoStorage"
