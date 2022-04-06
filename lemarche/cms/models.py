@@ -91,7 +91,7 @@ class ArticleList(RoutablePageMixin, Page):
             request,
         )
 
-    @route(r"^categorie/(?P<cat_slug>[-\w]*)/$", name="category_view")
+    @route(r"^categories/(?P<cat_slug>[-\w]*)/$", name="category_view")
     def category_view(self, request, cat_slug, *args, **kwargs):
         """Find blog posts based on a category."""
         self.posts = self.get_posts()
