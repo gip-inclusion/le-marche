@@ -52,7 +52,7 @@ def reverse_update_amount(apps, schema_editor):
 class Migration(migrations.Migration):
     # atomic = False
     dependencies = [
-        ("tenders", "0003_rename_nb_siaes_found_tender_siae_found_count_and_more"),
+        ("tenders", "0005_remove_tender_siae_found_count"),
     ]
 
     operations = [
@@ -68,7 +68,7 @@ class Migration(migrations.Migration):
                     (AMOUNT_RANGE_3, "1M-5M €"),
                     (AMOUNT_RANGE_4, "> 5M €"),
                 ],
-                max_length=6,
+                max_length=9,
                 null=True,
                 verbose_name="Montant du marché",
             ),

@@ -116,7 +116,7 @@ class Tender(models.Model):
     deadline_date = models.DateField(verbose_name="Date de clôture des réponses")
     start_working_date = models.DateField(verbose_name="Date idéale de début des prestations", blank=True, null=True)
     amount = models.CharField(
-        verbose_name="Montant du marché", max_length=6, choices=AMOUNT_RANGE_CHOICES, blank=True, null=True
+        verbose_name="Montant du marché", max_length=9, choices=AMOUNT_RANGE_CHOICES, blank=True, null=True
     )
     response_kind = ArrayField(
         models.CharField(max_length=6, choices=RESPONSE_KIND_CHOICES),
