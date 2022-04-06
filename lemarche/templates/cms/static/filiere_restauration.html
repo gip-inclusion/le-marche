@@ -1,0 +1,110 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block title %}Filière : Restauration{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Filière : restauration</li>
+                </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="s-filiere-01">
+    <div class="s-filiere-01__container container">
+        <div class="s-filiere-01__row row">
+            <div class="s-filiere-01__col s-filiere-01__col--article col-12 col-lg-8">
+                <h1 class="h1 mb-3 mb-lg-5">
+                    <strong>Restaurants, trouvez des renforts du personnel</strong>
+                </h1>
+                <article>
+                    <p class="lead">Il y a en France plus de 6000 personnes en insertion qui sont accompagnées chaque année sur les métiers de la restauration et sont mobilisables par les employeurs.</p>
+                </article>
+            </div>
+            <div class="s-filiere-01__col s-filiere-01__col--card col-12 col-lg-4">
+                <div class="d-flex flex-column justify-content-between h-100 w-100 p-5 pt-3 shadow-lg rounded-lg bg-white position-relative">
+                    <h2 class="h2 mb-3 mb-lg-5">Entreprise sociale inclusive, complétez votre fiche entreprise pour être  encore plus visible</h2>
+                    <p class="s-filiere-01__col__cta">
+                        <a href="{% url 'auth:login' %}" target="_blank" class="btn btn-block btn-primary btn-ico">
+                            <span>Je m'inscris</span>
+                            <i class="ri-arrow-right-up-line ri-lg"></i>
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="s-article-picture-03 s-article-picture-03--marche">
+    <div class="s-article-picture-03__container container">
+        <div class="s-article-picture-03__row row">
+            <div class="s-article-picture-03__col s-article-picture-03__col--article col-12 col-lg-6 d-flex align-items-center">
+                <article>
+                    <h2 class="s-article-picture-03__col--article__title h1" data-subtitle="Focus sur">Responsabilité sociale des entreprises</h2>
+                    <p>
+                        <strong>Le Gouvernement renforce son soutien financier pour favoriser le recrutement de salariés en insertion dans les métiers de la restauration.</strong>
+                    </p>
+                    <p> 
+                        Ainsi, à compter du <b>1er juillet et jusqu’au 30 septembre 2021</b>, l’Etat apportera <b>un soutien financier de 1,5 euro supplémentaires pour chaque heure effectuée par un salarié en structure d’insertion</b> disposant d’une expérience sur les métiers de la restauration et <b>mis à disposition par des</b>
+                        <a href="https://travail-emploi.gouv.fr/emploi/insertion-activite-economique/article/associations-intermediaires-ai" target="_blank" rel="noopener" class="font-weight-bold">associations intermédiaires (AI)</a> ou par des entreprises de travail
+                        <a href="https://travail-emploi.gouv.fr/emploi/insertion-activite-economique/article/entreprises-de-travail-temporaire-d-insertion-etti" target="_blank" rel="noopener" class="font-weight-bold">temporaire d’insertion (ETTI).</a>
+                    </p>
+                </article>
+            </div>
+            <div class="s-article-picture-03__col s-article-picture-03__col--picture col-12 col-lg-6 d-flex align-items-center">
+                <picture>
+                    <img src="{% static 'img/restauration_1.min.png' %}" class="img-fluid img-fitcover" loading="lazy" alt="">
+                </picture>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="s-article-picture-01 s-article-picture-01--marche">
+    <div class="s-article-picture-01__container container">
+        <div class="s-article-picture-01__row row">
+            <div class="s-article-picture-01__col s-article-picture-01__col--picture col-12 col-lg-5 d-flex align-items-center px-lg-4">
+                <picture class="w-100">
+                    <a href="" target="_blank" rel="noopener">
+                        <img src="{% static 'img/filiere_map.min.png' %}" class="img-fluid img-fitcover" loading="lazy" alt="">
+                    </a>
+                </picture>
+            </div>
+            <div class="s-article-picture-01__col s-article-picture-01__col--article col-12 col-lg-7 d-flex align-items-center">
+                <article>
+                    <h2 class="s-article-picture-01__col--article__title h1">Mise à disposition de personnel pour les restaurants !</h2>
+                    <p>
+                        A travers le pays, de nombreuses expériences locales illustrent combien les relations nouées entre les structures d’insertion et les restaurants participent utilement à la relance par l’inclusion :
+                    </p>
+                    <ul>
+                        <li><a href="https://latabledecana.com/" target="_blank" rel="noopener" class="font-weight-bold">Le réseau de restaurants d’insertion «la Table de Canal»</a>, présent dans 10 villes et en relation avec plusieurs dizaines de restaurants.</li>
+                        <li><a href="http://www.grafie.org/" target="_blank" rel="noopener" class="font-weight-bold">Le Grafie</a> (groupement francilien de structures d’insertion) ayant organisé une collaboration avec Hippopotamus</li>
+                        <li><a href="https://www.resto-passerelle.org/" target="_blank" rel="noopener" class="font-weight-bold">Resto-passerelle</a> : un groupement d’une vingtaine de structures d’insertion de Paris, Seine Saint Denis et Val de Marne (soit 350 salariés en insertion)</li>
+                    </ul>
+                    <p>
+                        <strong>Grâce au marché, trouver du personnel qualifié. Retrouvez la liste des structures qui mettent à disposition du personnel ( AI &amp; ETTI )</strong>
+                    </p>
+                    <p class="s-article-picture-01__col--article__cta">
+                        <a href="{% url 'siae:search_results' %}?sectors=restaurants-cantines&kind=ETTI&kind=AI" target="_blank" class="btn btn-primary btn-ico">
+                            <span>Accéder aux résultats</span>
+                            <i class="ri-arrow-right-line ri-lg"></i>
+                        </a>
+                    </p>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
