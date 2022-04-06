@@ -14,8 +14,9 @@ def update_amount(apps, schema_editor):
     Tender = apps.get_model("tenders", "Tender")
     tenders = Tender.objects.all()
     for t in tenders:
-        amount = int(t.amount)
+        amount = t.amount
         if amount:
+            amount = int(amount)
             if amount < 25000:
                 t.amount = AMOUNT_RANGE_0
             elif amount < 100000:
@@ -49,7 +50,7 @@ def reverse_update_amount(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
+    # atomic = False
     dependencies = [
         ("tenders", "0003_rename_nb_siaes_found_tender_siae_found_count_and_more"),
     ]
