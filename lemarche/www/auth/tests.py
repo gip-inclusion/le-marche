@@ -3,7 +3,7 @@ from django.urls import reverse
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 
-from lemarche.users.factories import UserFactory
+from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
 
 
@@ -222,7 +222,9 @@ class SignupFormTest(StaticLiveServerTestCase):
 class LoginFormTest(StaticLiveServerTestCase):
     @classmethod
     def setUpTestData(cls):
-        UserFactory(email="siae@example.com", password="Erls92#32")
+        cls.user_siae = UserFactory(email="siae@example.com", kind=User.KIND_SIAE)
+        cls.user_buyer = UserFactory(email="buyer@example.com", kind=User.KIND_BUYER)
+        # user pre-migration from cocorico
         existing_user = UserFactory(email="existing-user@example.com", password="")
         existing_user.set_password("")
         existing_user.save()
@@ -237,16 +239,28 @@ class LoginFormTest(StaticLiveServerTestCase):
         # other init
         cls.setUpTestData()
 
+    def test_user_can_sign_in(self):
+        driver = self.driver
+        driver.get(f"{self.live_server_url}{reverse('auth:login')}")
+
+        driver.find_element_by_css_selector("input#id_username").send_keys(self.user_siae.email)
+        driver.find_element_by_css_selector("input#id_password").send_keys(DEFAULT_PASSWORD)
+
+        driver.find_element_by_css_selector("form button").click()
+
+        # should redirect SIAE to profil
+        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('dashboard:home')}")
+
     def test_user_can_sign_in_with_email_containing_capital_letters(self):
         driver = self.driver
         driver.get(f"{self.live_server_url}{reverse('auth:login')}")
 
-        driver.find_element_by_css_selector("input#id_username").send_keys("SIAE@example.com")
-        driver.find_element_by_css_selector("input#id_password").send_keys("Erls92#32")
+        driver.find_element_by_css_selector("input#id_username").send_keys("BUYER@example.com")
+        driver.find_element_by_css_selector("input#id_password").send_keys(DEFAULT_PASSWORD)
 
         driver.find_element_by_css_selector("form button").click()
 
-        # should redirect to home
+        # should redirect BUYER to home
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('pages:home')}")
 
     def test_user_empty_credentials_should_see_error_message(self):
