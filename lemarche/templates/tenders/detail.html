@@ -67,7 +67,7 @@
 
             <div class="py-2">
                 <h2>Montant du marché</h2>
-                <p>{{ tender.amount.value|intcomma|default:"-" }}&nbsp;€</p>
+                <p>{{ tender.get_amount_display|default:"-" }}</p>
             </div>
 
             <hr class="my-5">
