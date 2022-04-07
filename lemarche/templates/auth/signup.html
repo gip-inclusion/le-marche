@@ -46,6 +46,7 @@
                         <div class="col-12 px-5 px-lg-6">
                             {% bootstrap_field form.accept_rgpd %}
                             {% bootstrap_field form.accept_survey form_group_class="form-group accept-survey-form-group d-none" %}
+                            {% bootstrap_field form.accept_share_contact_to_external_partners form_group_class="form-group accept-survey-form-group d-none" %}
                         </div>
                         <div class="col-12 col-lg-auto px-5 px-lg-6">
                             <button type="submit" id="signup-submit-btn" class="btn btn-primary btn-block btn-ico">
@@ -81,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let positionInput = document.getElementById('id_position');
     let partnerKindInput = document.getElementById('id_partner_kind');
     let acceptSurveyInput = document.getElementById('id_accept_survey');
+    let acceptShareContactInput = document.getElementById('id_accept_share_contact_to_external_partners');
 
 
     let toggleRequiredClasses = (toggle, element) => {
@@ -112,10 +114,12 @@ document.addEventListener('DOMContentLoaded', function() {
             companyNameSiaeFormGroupDiv.classList.remove('d-none');
             toggleInputElement(false, element=companyNameInput, required=false);
             toggleInputElement(false, element=acceptSurveyInput);
+            toggleInputElement(true, element=acceptShareContactInput);
         } else {
             companyNameSiaeFormGroupDiv.classList.add('d-none');
             toggleInputElement(true, element=companyNameInput, required=true);
             toggleInputElement(true, element=acceptSurveyInput);
+            toggleInputElement(false, element=acceptShareContactInput);
         }
 
         if (radio.value === 'BUYER') {
