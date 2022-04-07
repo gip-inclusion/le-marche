@@ -159,6 +159,12 @@ class User(AbstractUser):
         default=False,
     )
 
+    accept_share_contact_to_external_partners = models.BooleanField(
+        verbose_name="Partage de contact à des partenaires externes",
+        help_text="J'accepte que mes coordonnées de contact soient partagées avec les partenaires externes du Marché de l'inclusion afin de recevoir des opportunités commerciales (appels d'offres, marché ...)",  # noqa
+        default=False,
+    )
+
     image_name = models.CharField(verbose_name="Nom de l'image", max_length=255, blank=True)
     image_url = models.URLField(verbose_name="Lien vers l'image", max_length=500, blank=True)
 
