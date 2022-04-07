@@ -70,6 +70,20 @@ class TenderQuerySet(models.QuerySet):
 class Tender(models.Model):
     """Appel d'offre et devis"""
 
+    AMOUNT_RANGE_0 = "<25K"
+    AMOUNT_RANGE_1 = "<100K"
+    AMOUNT_RANGE_2 = "<1M"
+    AMOUNT_RANGE_3 = "<5M"
+    AMOUNT_RANGE_4 = ">5M"
+
+    AMOUNT_RANGE_CHOICES = (
+        (AMOUNT_RANGE_0, "0-25K €"),
+        (AMOUNT_RANGE_1, "25K-100K €"),
+        (AMOUNT_RANGE_2, "100K-1M €"),
+        (AMOUNT_RANGE_3, "1M-5M €"),
+        (AMOUNT_RANGE_4, "> 5M €"),
+    )
+
     TENDER_KIND_TENDER = "TENDER"
     TENDER_KIND_QUOTE = "QUOTE"
     TENDER_KIND_BOAMP = "BOAMP"
@@ -101,7 +115,9 @@ class Tender(models.Model):
     external_link = models.URLField(verbose_name="Lien vers l'appel d'offre", blank=True)
     deadline_date = models.DateField(verbose_name="Date de clôture des réponses")
     start_working_date = models.DateField(verbose_name="Date idéale de début des prestations", blank=True, null=True)
-    amount = models.PositiveIntegerField(verbose_name="Montant du marché", blank=True, null=True)
+    amount = models.CharField(
+        verbose_name="Montant du marché", max_length=9, choices=AMOUNT_RANGE_CHOICES, blank=True, null=True
+    )
     response_kind = ArrayField(
         models.CharField(max_length=6, choices=RESPONSE_KIND_CHOICES),
         verbose_name="Comment souhaitez-vous être contacté ?",
