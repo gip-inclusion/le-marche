@@ -962,6 +962,7 @@ class SiaeClientReference(models.Model):
     # def __str__(self):
     #     if self.name:
     #         return self.name
+    #     return f"SiaeClientReference object ({self.id})"
 
 
 class SiaeLabel(models.Model):

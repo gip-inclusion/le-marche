@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from lemarche.networks.models import Network
 from lemarche.sectors.models import Sector, SectorGroup
-from lemarche.siaes.models import Siae, SiaeGroup, SiaeLabel, SiaeUser
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeGroup, SiaeLabel, SiaeOffer, SiaeUser
 from lemarche.users.models import User
 
 
@@ -18,7 +18,9 @@ class FixturesTest(TestCase):
         "lemarche/fixtures/django/06_siaegroup_sectors.json",
         "lemarche/fixtures/django/07_networks.json",
         "lemarche/fixtures/django/08_siae_networks.json",
+        "lemarche/fixtures/django/09_siaeclientreferences.json",
         "lemarche/fixtures/django/09_siaelabels.json",
+        "lemarche/fixtures/django/09_siaeoffers.json",
         "lemarche/fixtures/django/20_cms.json",
     ]
 
@@ -34,4 +36,6 @@ class FixturesTest(TestCase):
         self.assertTrue(len(Sector.objects.all()) > 0)
         self.assertTrue(len(SectorGroup.objects.all()) > 0)
         self.assertTrue(len(Network.objects.all()) > 0)
+        self.assertTrue(len(SiaeClientReference.objects.all()) > 0)
         self.assertTrue(len(SiaeLabel.objects.all()) > 0)
+        self.assertTrue(len(SiaeOffer.objects.all()) > 0)
