@@ -3,7 +3,7 @@ from django.urls import reverse
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 
-from lemarche.users.factories import UserFactory
+from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
 
 
@@ -221,39 +221,55 @@ class SignupFormTest(StaticLiveServerTestCase):
 
 class LoginFormTest(StaticLiveServerTestCase):
     @classmethod
-    def setUpTestData(cls):
-        UserFactory(email="siae@example.com", password="Erls92#32")
-        existing_user = UserFactory(email="existing-user@example.com", password="")
-        existing_user.set_password("")
-        existing_user.save()
-
-    @classmethod
     def setUpClass(cls):
         super().setUpClass()
         options = Options()
         options.headless = True
         cls.driver = webdriver.Firefox(options=options)
         cls.driver.implicitly_wait(1)
-        # other init
-        cls.setUpTestData()
 
-    def test_user_can_sign_in_with_email_containing_capital_letters(self):
+    def test_siae_user_can_sign_in_and_is_redirected_to_dashboard(self):
+        user_siae = UserFactory(email="siae5@example.com", kind=User.KIND_SIAE)
         driver = self.driver
         driver.get(f"{self.live_server_url}{reverse('auth:login')}")
 
-        driver.find_element_by_css_selector("input#id_username").send_keys("SIAE@example.com")
-        driver.find_element_by_css_selector("input#id_password").send_keys("Erls92#32")
+        driver.find_element_by_css_selector("input#id_username").send_keys(user_siae.email)
+        driver.find_element_by_css_selector("input#id_password").send_keys(DEFAULT_PASSWORD)
 
         driver.find_element_by_css_selector("form button").click()
 
-        # should redirect to home
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('pages:home')}")
+        # should redirect SIAE to profil
+        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('dashboard:home')}")
 
-    def test_user_empty_credentials_should_see_error_message(self):
+    def test_non_siae_user_can_sign_in_and_is_redirected_to_home(self):
+        user_buyer = UserFactory(email="buyer5@example.com", kind=User.KIND_BUYER)
         driver = self.driver
         driver.get(f"{self.live_server_url}{reverse('auth:login')}")
 
-        driver.find_element_by_css_selector("input#id_username").send_keys("siae@example.com")
+        driver.find_element_by_css_selector("input#id_username").send_keys(user_buyer.email)
+        driver.find_element_by_css_selector("input#id_password").send_keys(DEFAULT_PASSWORD)
+
+        driver.find_element_by_css_selector("form button").click()
+
+        # should redirect BUYER to home
+        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('pages:home')}")
+
+    def test_user_can_sign_in_with_email_containing_capital_letters(self):
+        UserFactory(email="siae5@example.com", kind=User.KIND_SIAE)
+        driver = self.driver
+        driver.get(f"{self.live_server_url}{reverse('auth:login')}")
+
+        driver.find_element_by_css_selector("input#id_username").send_keys("SIAE5@example.com")
+        driver.find_element_by_css_selector("input#id_password").send_keys(DEFAULT_PASSWORD)
+
+        driver.find_element_by_css_selector("form button").click()
+
+    def test_user_wrong_credentials_should_see_error_message(self):
+        user_siae = UserFactory(email="siae5@example.com", kind=User.KIND_SIAE)
+        driver = self.driver
+        driver.get(f"{self.live_server_url}{reverse('auth:login')}")
+
+        driver.find_element_by_css_selector("input#id_username").send_keys(user_siae.email)
         driver.find_element_by_css_selector("input#id_password").send_keys("password")
 
         driver.find_element_by_css_selector("form button").click()
@@ -265,6 +281,9 @@ class LoginFormTest(StaticLiveServerTestCase):
         self.assertTrue("aisissez un Adresse e-mail et un mot de passe valides" in messages.text)
 
     def test_user_empty_credentials_should_see_post_migration_message(self):
+        existing_user = UserFactory(email="existing-user@example.com", password="")
+        # only way to have an empty password field
+        User.objects.filter(id=existing_user.id).update(password="")
         driver = self.driver
         driver.get(f"{self.live_server_url}{reverse('auth:login')}")
 
@@ -275,9 +294,9 @@ class LoginFormTest(StaticLiveServerTestCase):
 
         # should not submit form
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:login')}")
-        # # post-migration message should be displayed  # commented because User count = 0 ??
-        # messages = driver.find_element_by_css_selector("div#post-migration-login-message")
-        # self.assertTrue("Le marché de l'inclusion fait peau neuve" in messages.text)
+        # # post-migration message should be displayed
+        messages = driver.find_element_by_css_selector("div#post-migration-login-message")
+        self.assertTrue("Le marché de l'inclusion fait peau neuve" in messages.text)
 
     @classmethod
     def tearDownClass(cls):
