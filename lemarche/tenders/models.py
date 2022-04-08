@@ -92,7 +92,7 @@ class Tender(models.Model):
     TENDER_KIND_CHOICES = (
         (TENDER_KIND_TENDER, "Appel d'offre"),
         (TENDER_KIND_QUOTE, "Devis"),
-        (TENDER_KIND_PROJECT, "Projet d'achat"),
+        (TENDER_KIND_PROJECT, "Sourcing"),
     )
 
     RESPONSE_KIND_EMAIL = "EMAIL"

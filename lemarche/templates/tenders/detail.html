@@ -24,64 +24,68 @@
 
 {% block content %}
 <section class="container">
-    <div class="card c-card c-card--marche siae-card rounded-lg shadow-lg mt-4">
-        <p class="text-right text-white bg-tertiary fs-sm rounded-t-lg py-3 px-5">
-            Date limite de réponse : {{ tender.deadline_date|default:"" }}
-        </p>
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <div class="card c-card c-card--marche siae-card rounded-lg shadow-lg mt-4">
+                <p class="text-right text-white bg-tertiary fs-sm rounded-t-lg py-3 px-5">
+                    Date limite de réponse : {{ tender.deadline_date|default:"" }}
+                </p>
 
-        <div class="card-body pb-5 px-5">
-            <div class="row py-4">
-                <div class="col-md-12">
-                    <h1>
-                        {{ tender.title }}
-                        <span class="fs-sm badge badge-base badge-pill badge-emploi float-right"  aria-hidden="true">{{ tender.get_kind_display }}</span>
-                    </h1>
+                <div class="card-body pb-5 px-5">
+                    <div class="row py-4">
+                        <div class="col-md-12">
+                            <h1>
+                                {{ tender.title }}
+                                <span class="fs-sm badge badge-base badge-pill badge-emploi float-right"  aria-hidden="true">{{ tender.get_kind_display }}</span>
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="row text-bold">
+                        <div class="col">
+                            <span class="ri-award-line"></span>
+                            {{ tender.get_sectors_names }}
+                        </div>
+                        <div class="col">
+                            <span class="ri-map-pin-2-line"></span>
+                            {{ tender.get_perimeters_names }}
+                        </div>
+                    </div>
+
+                    <hr class="my-5">
+
+                    <div class="py-2">
+                        <h2>Description <span class="float-right fs-sm  text-muted">Début d'intervention : {{ tender.start_working_date|default:"" }}</span></h2>
+                        <p>{{ tender.description }}</p>
+                    </div>
+
+                    <hr class="my-5">
+
+                    <div class="py-2">
+                        <h2>Contraintes techniques spécifiques</h2>
+                        <p>{{ tender.constraints }}</p>
+                    </div>
+
+                    <hr class="my-5">
+
+                    <div class="py-2">
+                        <h2>Montant du marché</h2>
+                        <p>{{ tender.get_amount_display|default:"-" }}</p>
+                    </div>
+
+                    <hr class="my-5">
+
+                    {% if tender.author == request.user or user_has_contact_click_date %}
+                        {% include "tenders/_detail_contact.html" with tender=tender %}
+                    {% else %}
+                        <button type="button" id="show-tender-contact-btn" class="btn btn-primary float-right mb-4" style="display:block">
+                            Afficher les coordonnées
+                        </button>
+                        <div id="show-tender-contact-content" class="py-2" style="display:none">
+                            {% include "tenders/_detail_contact.html" with tender=tender %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
-            <div class="row text-bold">
-                <div class="col">
-                    <span class="ri-award-line"></span>
-                    {{ tender.get_sectors_names }}
-                </div>
-                <div class="col">
-                    <span class="ri-map-pin-2-line"></span>
-                    {{ tender.get_perimeters_names }}
-                </div>
-            </div>
-
-            <hr class="my-5">
-
-            <div class="py-2">
-                <h2>Description <span class="float-right fs-sm  text-muted">Début d'intervention : {{ tender.start_working_date|default:"" }}</span></h2>
-                <p>{{ tender.description }}</p>
-            </div>
-
-            <hr class="my-5">
-
-            <div class="py-2">
-                <h2>Contraintes techniques spécifiques</h2>
-                <p>{{ tender.constraints }}</p>
-            </div>
-
-            <hr class="my-5">
-
-            <div class="py-2">
-                <h2>Montant du marché</h2>
-                <p>{{ tender.get_amount_display|default:"-" }}</p>
-            </div>
-
-            <hr class="my-5">
-
-            {% if tender.author == request.user or user_has_contact_click_date %}
-                {% include "tenders/_detail_contact.html" with tender=tender %}
-            {% else %}
-                <button type="button" id="show-tender-contact-btn" class="btn btn-primary float-right mb-4" style="display:block">
-                    Afficher les coordonnées
-                </button>
-                <div id="show-tender-contact-content" class="py-2" style="display:none">
-                    {% include "tenders/_detail_contact.html" with tender=tender %}
-                </div>
-            {% endif %}
         </div>
     </div>
 </section>
