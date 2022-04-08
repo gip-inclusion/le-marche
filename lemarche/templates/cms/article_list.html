@@ -6,16 +6,40 @@
 {% endblock %}
 
 {% block title %}{{page.seo_title}} | {{ block.super }}{% endblock %}
+{% block body_class %}p-ressources{{ block.super }}{% endblock %}
 
+{% block breadcrumbs %}
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{page.title}}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
 
 {% block content %}
-    <section class="s-page-menu-01 s-page-menu-01--marche pb-5 pb-lg-7">
-        <div class="s-page-menu-01__container container">
-            <div class="s-page-menu-01__row row">
-                <div class="s-page-menu-01__col s-page-menu-01__col--title col-12">
-                    <h1 class="mb-5">
-                        {{page.title}}
-                    </h1>
+    <section class="s-title-01 mb-0">
+        <div class="s-title-01__container container">
+            <div class="s-title-01__row row">
+                <div class="s-title-01__col col-12 col-lg-9">
+                    <h1 class="s-title-01__title h1"><strong>{{page.title}}</strong></h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="s-section mt-0 has-illustration-bg-02">
+        <div class="s-section__container container">
+            <div class="s-section__row row">
+                <div class="s-section__col col-12">
                     <ul class="nav nav-tabs nav-tabs--marche">
                         <li class="nav-item">
                             <a href="{% routablepageurl page "post_list" %}"
@@ -33,8 +57,12 @@
                         {% endfor %}
                     </ul>
                 </div>
+            </div>
+            <div class="s-section__row row row-cols-1 row-cols-md-2 row-cols-lg-3">
                 {% for article in article_list %}
-                    {% include "cms/article_item.html" with article=article %}
+                    <div class="s-section__col col mt-3 mt-md-5">
+                        {% include "cms/article_item.html" with article=article %}
+                    </div>
                 {% endfor %}
             </div>
         </div>

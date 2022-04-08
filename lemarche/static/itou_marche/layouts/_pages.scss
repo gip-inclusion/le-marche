@@ -1,6 +1,8 @@
-.p-partenaires {
+.p-partenaires,
+.p-ressources {
 	.s-page-menu-01.has-illustration-bg-01 .container::before {
 		right: 1rem;
+		bottom: 1rem;
 	}
 }
 
@@ -116,6 +118,32 @@
 
 			@media (min-width:1200px) {
 				left: 8%;
+			}
+		}
+	}
+}
+
+
+.p-ressources {
+	.has-illustration-bg-02 {
+		position: relative;
+
+		&::before {
+			content: '';
+			position: absolute;
+			z-index: -1;
+			width: 437px;
+			height: 663px;
+			background-image: url('/static/img/ressources-bg-01.svg');
+			background-position: center;
+			background-repeat: no-repeat;
+			background-size: cover;
+			display: none;
+			top: 4rem;
+			right: 0;
+
+			@media (min-width:1200px) {
+				display: block;
 			}
 		}
 	}

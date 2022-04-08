@@ -7,25 +7,57 @@
 {% endblock %}
 
 {% block title %}{{page.title}} | {{ block.super }}{% endblock %}
+{% block body_class %}p-ressources{{ block.super }}{% endblock %}
 
-
-{% block content %}
-    <section class="s-page-menu-01 s-page-menu-01--marche pb-5 pb-lg-7">
-        <div class="s-page-menu-01__container container">
-            <div class="s-page-menu-01__row row align-items-center">
-                <div class="s-page-menu-01__col s-page-menu-01__col--title col-md-12 col-lg-9">
-                    <h1 class="h1-hero">
-                        {{page.title}}
-                    </h1>
-                    <h2 class="mb-5 mb-lg-7">
-                        {{page.intro}}
-                    </h2>
-                    {% image page.image fill-800x400 %}
-                </div>
-                <div class="col-md-12 col-lg-9 mt-4">
-                    {{ page.body|richtext }}
+{% block breadcrumbs %}
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                            <li class="breadcrumb-item"><a href="{% slugurl 'ressources' %}">Ressources</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{page.title}}</li>
+                        </ol>
+                    </nav>
                 </div>
             </div>
         </div>
     </section>
+{% endblock %}
+
+
+{% block content %}
+    <section class="s-page-menu-01 s-page-menu-01--marche has-illustration-bg-01">
+        <div class="s-page-menu-01__container container">
+            <div class="s-page-menu-01__row row align-items-center">
+                <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-lg-10">
+                    <h1 class="h1-hero">
+                        {{page.title}}
+                    </h1>
+                    <h2 class="h1">
+                        {{page.intro}}
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="s-cms has-illustration-bg-02">
+        <div class="s-cms__container container container-max-lg">
+            {% if page.image %}
+            <div class="s-cms__row row">
+                <div class="s-cms__col col-12 mb-3 mb-lg-5">
+                    {% image page.image width-960 class="img-fluid img-fitcover" loading="lazy" %}
+                </div>
+            </div>
+            {% endif %}
+            <div class="s-cms__row row">
+                <div class="s-cms__col col-12">
+                    {{ page.body|richtext }}
+                </div>
+            </div>
+        </div>
+    </section>  
 {% endblock %}

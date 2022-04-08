@@ -86,17 +86,17 @@
         {% block breadcrumbs %}{% endblock %}
 
         {% block messages %}
-        {% if messages %}
-            <section>
-                <div class="container">
-                    <div class="row messages">
-                        <div class="col">
-                            {% include 'includes/_messages.html' %}
+            {% if messages %}
+                <section>
+                    <div class="container">
+                        <div class="row messages">
+                            <div class="col">
+                                {% include 'includes/_messages.html' %}
+                            </div>
                         </div>
                     </div>
-                </div>
-            </section>
-        {% endif %}
+                </section>
+            {% endif %}
         {% endblock %}
 
         {% block content %}{% endblock %}

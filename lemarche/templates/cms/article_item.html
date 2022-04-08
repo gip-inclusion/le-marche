@@ -1,23 +1,21 @@
 {% load wagtailimages_tags %}
 {% load inclusion_cms %}
 
-<div class="col-md-4 d-flex align-items-stretch mt-4">
-    <div class="card c-card c-card--marche">
-        <div class="card-header">
-            {% image article.specific.image fill-316x163 class="card-img-top"%}
-        </div>
-        <div class="card-body">
-            <p class="h3 lh-base">{{article.title}}</p>
-            {% show_article_categories_badges article %}
-            <p>
-                {{article.specific.intro}}
-            </p>
-        </div>
-        <div class="card-footer text-right">
-            <a href="{{article.url}}" class="btn btn-outline-primary btn-ico">
-                <span>Lire</span>
-                <i class="ri-arrow-right-up-line ri-lg"></i>
-            </a>
-        </div>
+<div class="card c-card c-card--marche">
+    <div class="card-header">
+        {% image article.specific.image fill-655x388 class="img-fluid img-fitcover" loading="lazy" %}
+    </div>
+    <div class="card-body">
+        <p class="h3 lh-sm">{{article.title}}</p>
+        {% show_article_categories_badges article %}
+        <p>
+            {{article.specific.intro | truncatechars:200 }}
+        </p>
+    </div>
+    <div class="card-footer text-right">
+        <a href="{{article.url}}" class="btn btn-outline-primary btn-ico stretched-link" title="Lire la suite de l'article: {{article.title}}">
+            <span>Lire la suite </span>
+            <i class="ri-arrow-right-up-line ri-lg"></i>
+        </a>
     </div>
 </div>
