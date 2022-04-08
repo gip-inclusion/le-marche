@@ -1,0 +1,23 @@
+[
+    {
+        "model": "cms.articlecategory",
+        "fields": {
+            "name": "Acheteurs",
+            "slug": "acheteurs"
+        }
+    },
+    {
+        "model": "cms.articlecategory",
+        "fields": {
+            "name": "Structures",
+            "slug": "structures"
+        }
+    },
+    {
+        "model": "cms.articlecategory",
+        "fields": {
+            "name": "Solutions",
+            "slug": "solutions"
+        }
+    }
+]

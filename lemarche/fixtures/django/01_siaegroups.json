@@ -1,0 +1,56 @@
+[
+    {
+        "model": "siaes.siaegroup",
+        "pk": 1,
+        "fields": {
+            "name": "Groupement 1",
+            "slug": "groupement-2",
+            "contact_website": "https://example.com",
+            "contact_email": "first@example.com",
+            "contact_phone": "01 02 03 04 05",
+            "year_constitution": 2022,
+            "siae_count": 5,
+            "created_at": "2021-10-26T22:26:52.996Z",
+            "updated_at": "2021-10-26T22:26:52.997Z"
+        }
+    },
+    {
+        "model": "siaes.siaegroup",
+        "pk": 2,
+        "fields": {
+            "name": "Un petit groupement",
+            "slug": "un-petit-groupement",
+            "contact_website": "https://example.com",
+            "contact_email": "group@example.com",
+            "contact_phone": "01 02 03 04 05",
+            "year_constitution": 2022,
+            "siae_count": 1,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaegroup",
+        "pk": 3,
+        "fields": {
+            "name": "Un très très gros groupement",
+            "slug": "un-tres-tres-gros-groupement",
+            "contact_website": "https://example.com",
+            "contact_email": "group@example.com",
+            "year_constitution": 2022,
+            "siae_count": 111,
+            "created_at": "2021-10-26T22:26:53.041Z",
+            "updated_at": "2021-10-26T22:26:53.041Z"
+        }
+    },
+    {
+        "model": "siaes.siaegroup",
+        "pk": 4,
+        "fields": {
+            "name": "Le dernier groupement",
+            "slug": "le-dernier-groupement",
+            "created_at": "2021-10-26T22:26:53.058Z",
+            "updated_at": "2021-10-26T22:26:53.058Z"
+        }
+    }
+]
