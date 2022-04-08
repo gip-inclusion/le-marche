@@ -1,0 +1,102 @@
+[
+    {
+        "model": "siaes.siaeclientreference",
+        "pk": 1,
+        "fields": {
+            "name": "ABC",
+            "siae": 2653,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaeclientreference",
+        "pk": 2,
+        "fields": {
+            "name": "XYZ",
+            "siae": 88,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaeclientreference",
+        "pk": 3,
+        "fields": {
+            "name": "Une entreprise",
+            "siae": 90,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaeclientreference",
+        "pk": 4,
+        "fields": {
+            "name": "Une entreprise",
+            "siae": 3850,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaeclientreference",
+        "pk": 5,
+        "fields": {
+            "name": "Une autre entreprise",
+            "siae": 3850,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaeclientreference",
+        "pk": 6,
+        "fields": {
+            "name": "ABC",
+            "siae": 3853,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaeclientreference",
+        "pk": 7,
+        "fields": {
+            "name": "ISO",
+            "siae": 3853,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaeclientreference",
+        "pk": 8,
+        "fields": {
+            "name": "XYZ",
+            "siae": 3853,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaeclientreference",
+        "pk": 9,
+        "fields": {
+            "name": "ISO",
+            "siae": 3854,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaeclientreference",
+        "pk": 10,
+        "fields": {
+            "name": "ABC",
+            "siae": 3852,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    }
+]

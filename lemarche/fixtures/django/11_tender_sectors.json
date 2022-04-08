@@ -1,0 +1,16 @@
+[
+    {
+        "model": "tenders.tender_sectors",
+        "fields": {
+            "tender": 1,
+            "sector": 1
+        }
+    },
+    {
+        "model": "tenders.tender_sectors",
+        "fields": {
+            "tender": 1,
+            "sector": 2
+        }
+    }
+]
