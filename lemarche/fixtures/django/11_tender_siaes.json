@@ -1,0 +1,50 @@
+[
+    {
+        "model": "tenders.tendersiae",
+        "pk": 1,
+        "fields": {
+            "tender": 1,
+            "siae": 2653,
+            "source": "EMAIL",
+            "email_send_date": "2021-07-02T12:44:39Z",
+            "created_at": "2021-07-01T12:44:39Z",
+            "updated_at": "2021-07-01T12:44:39Z"
+        }
+    },
+    {
+        "model": "tenders.tendersiae",
+        "pk": 2,
+        "fields": {
+            "tender": 1,
+            "siae": 3850,
+            "source": "EMAIL",
+            "email_send_date": "2021-07-02T12:44:39Z",
+            "created_at": "2021-07-01T12:44:39Z",
+            "updated_at": "2021-07-01T12:44:39Z"
+        }
+    },
+    {
+        "model": "tenders.tendersiae",
+        "pk": 2,
+        "fields": {
+            "tender": 1,
+            "siae": 3853,
+            "source": "EMAIL",
+            "email_send_date": "2021-07-02T12:44:39Z",
+            "created_at": "2021-07-01T12:44:39Z",
+            "updated_at": "2021-07-01T12:44:39Z"
+        }
+    },
+    {
+        "model": "tenders.tendersiae",
+        "pk": 2,
+        "fields": {
+            "tender": 1,
+            "siae": 3852,
+            "source": "EMAIL",
+            "email_send_date": "2021-07-02T12:44:39Z",
+            "created_at": "2021-07-01T12:44:39Z",
+            "updated_at": "2021-07-01T12:44:39Z"
+        }
+    }
+]
