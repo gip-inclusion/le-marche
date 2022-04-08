@@ -1,0 +1,102 @@
+[
+    {
+        "model": "siaes.siaelabel",
+        "pk": 1,
+        "fields": {
+            "name": "ISO 9001",
+            "siae": 2653,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 2,
+        "fields": {
+            "name": "ISO 9001",
+            "siae": 88,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 3,
+        "fields": {
+            "name": "ISO 9001",
+            "siae": 90,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 4,
+        "fields": {
+            "name": "ISO 9001",
+            "siae": 3850,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 5,
+        "fields": {
+            "name": "BIO",
+            "siae": 3850,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 6,
+        "fields": {
+            "name": "HACCP",
+            "siae": 3853,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 7,
+        "fields": {
+            "name": "ISO 14001",
+            "siae": 3853,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 8,
+        "fields": {
+            "name": "ESUS",
+            "siae": 3853,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 9,
+        "fields": {
+            "name": "ISO 14001",
+            "siae": 3854,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 10,
+        "fields": {
+            "name": "ISO 14001",
+            "siae": 3852,
+            "created_at": "2021-10-28T12:28:42.408Z",
+            "updated_at": "2021-10-28T12:28:42.416Z"
+        }
+    }
+]
