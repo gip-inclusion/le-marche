@@ -7,7 +7,7 @@ authors = []
 [tool.poetry.dependencies]
 boto3 = "^1.20.24"
 crawlerdetect = "0.1.4"
-Django = "4.0.2"
+Django = "4.0.4"
 django-anymail = "8.5"
 django-bootstrap4 = "21.2"
 django-ckeditor = "6.2.0"
@@ -37,7 +37,7 @@ boto = "^2.49.0"
 django-storages = "1.12.3"
 
 [tool.poetry.dev-dependencies]
-black = "^21.12b0"
+black = "22.3.0"
 coverage = "5.5"
 django-debug-toolbar = "3.2.4"
 django-extensions = "3.1.5"
