@@ -4,16 +4,48 @@ Ressources :
 - [Semantic Versioning](http://semver.org/)
 - [CHANGELOG recommendations](http://keepachangelog.com/).
 
-## [2022.5] - 2022-03-25
+## [2022.7] - 2022-04-08
 
 ### Ajouté
 
-- Données : ajouter la notion de groupement (+ ajouté une liste de 19 groupements)
-- Dépôt des besoins:
-    - Dépôt de besoins des acheteurs
-    - Matching des besoins avec les structures du marché et envoi de mails
-- Mailjet : inscription automatique des utilisateurs inscrits sur des listes de contacts spécifiques mailjet.
-- Admin: ajout de l'option superuser, ajout d'un champs pour stocker la date de génération des tokens
+- Dépôt de besoins
+    - statistiques d'envoi, de clic et d'affichage des coordonnées entre les besoins et les Siae
+- Blog
+    - Nouvelle fonctionnalité CMS
+- Inscription / Connexion
+    - Nouveau champ optin pour partager les données de contacts des Siaes à des partenaires externes
+- Tech
+    - Ajout du script Matomo Tag Manager
+    - Ajout d'ids HTML sur certains liens et boutons
+
+### Modifié
+
+-  Recherche / Fiche
+    - Mettre le bouton "Afficher les coordonnées" en vert
+- Dépôt de besoins
+    - Modifié le champ montant en champ select
+    - Petites modifications d'affichage
+- Inscription / Connexion
+    - Rediriger les utilisateurs SIAE vers leur tableau de bord
+- Tech
+    - Enrichir les données de test pour les recettes jetables
+
+### Supprimé
+
+## [2022.6] - 2022-03-25
+
+### Ajouté
+
+- Données
+    - Ajouter la notion de groupement (+ ajouté une liste de 19 groupements)
+- Dépôt de besoins
+    - Formulaire de dépôt de besoins des acheteurs
+    - Matching des besoins avec les structures du marché et envoi d'e-mails
+- Inscription / Connexion
+    - inscription automatique des utilisateurs inscrits sur des listes de contacts spécifiques mailjet.
+- Admin
+    - Ajout de l'option superuser
+    - Ajout d'un champ pour stocker la date de génération des tokens
 
 ### Modifié
 
@@ -22,7 +54,8 @@ Ressources :
     - Afficher l'Enseigne plutôt que la Raison sociale si l'information est remplie (comme sur les pages recherche & fiche)
 - Espace utilisateur
     - Ajout d'un nouveau champ "Réseau social" pour les structures (formulaire de modification + fiche)
-- Cacher le bouton "Newsletter achat" pour les utilisateurs connectés
+- Inscription / Connexion
+    - Cacher le bouton "Newsletter achat" pour les utilisateurs connectés
 
 ### Supprimé
 
