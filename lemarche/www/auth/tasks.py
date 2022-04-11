@@ -5,20 +5,7 @@ from huey.contrib.djhuey import task
 
 from lemarche.users.models import User
 from lemarche.utils.apis import api_mailjet
-from lemarche.utils.emails import whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url
-
-
-def send_welcome_email(user):
-    email_subject_prefix = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_ENV != "prod" else ""
-    email_subject = email_subject_prefix + f"Bienvenue {user.first_name} !"
-    email_body = render_to_string("auth/signup_welcome_email_body.txt", {})
-
-    _send_mail_async(
-        email_subject=email_subject,
-        email_body=email_body,
-        recipient_list=whitelist_recipient_list([user.email]),
-    )
 
 
 def send_signup_notification_email(user):
