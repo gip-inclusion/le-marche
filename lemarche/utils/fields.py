@@ -3,9 +3,27 @@ from functools import partial
 from itertools import groupby
 from operator import attrgetter
 
+from django import forms
+from django.contrib.postgres.fields import ArrayField
 from django.forms.models import ModelChoiceField, ModelChoiceIterator, ModelMultipleChoiceField
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
+
+
+# taken from https://github.com/MTES-MCT/aides-territoires/blob/master/src/core/fields.py
+class ChoiceArrayField(ArrayField):
+    """
+    Custom ArrayField with a ChoiceField as default field.
+    The default field is a comma-separated InputText, which is not very useful.
+    """
+
+    def formfield(self, **kwargs):
+        defaults = {
+            "form_class": forms.MultipleChoiceField,
+            "choices": self.base_field.choices,
+        }
+        defaults.update(kwargs)
+        return super(ArrayField, self).formfield(**defaults)
 
 
 # taken from https://simpleisbetterthancomplex.com/tutorial/2019/01/02/how-to-implement-grouped-model-choice-field.html

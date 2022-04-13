@@ -5,7 +5,6 @@ from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.contrib.postgres.fields import ArrayField
 from django.db import IntegrityError, models, transaction
 from django.db.models import Count, Q
 from django.db.models.signals import m2m_changed, post_delete, post_save
@@ -21,6 +20,7 @@ from lemarche.siaes.tasks import set_siae_coords
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
+from lemarche.utils.fields import ChoiceArrayField
 
 
 GEO_RANGE_DEPARTMENT = "DEPARTMENT"
@@ -430,7 +430,7 @@ class Siae(models.Model):
     siret_is_valid = models.BooleanField(verbose_name="Siret Valide", default=False)
     naf = models.CharField(verbose_name="Naf", validators=[validate_naf], max_length=5, blank=True)
     nature = models.CharField(verbose_name="Établissement", max_length=20, choices=NATURE_CHOICES, blank=True)
-    presta_type = ArrayField(
+    presta_type = ChoiceArrayField(
         verbose_name="Type de prestation",
         base_field=models.CharField(max_length=20, choices=PRESTA_CHOICES),
         blank=True,

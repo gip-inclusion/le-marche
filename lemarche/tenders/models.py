@@ -4,7 +4,6 @@ from uuid import uuid4
 
 import _operator
 from django.conf import settings
-from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models, transaction
 from django.db.models import Case, Count, IntegerField, Q, Sum, When
@@ -12,6 +11,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.text import slugify
+
+from lemarche.utils.fields import ChoiceArrayField
 
 
 class TenderQuerySet(models.QuerySet):
@@ -118,7 +119,7 @@ class Tender(models.Model):
     amount = models.CharField(
         verbose_name="Montant du marché", max_length=9, choices=AMOUNT_RANGE_CHOICES, blank=True, null=True
     )
-    response_kind = ArrayField(
+    response_kind = ChoiceArrayField(
         models.CharField(max_length=6, choices=RESPONSE_KIND_CHOICES),
         verbose_name="Comment souhaitez-vous être contacté ?",
     )
