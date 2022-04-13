@@ -2,7 +2,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from lemarche.siaes.models import Siae
-from lemarche.tenders.models import Tender
+from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.utils.apis import api_mailjet
 from lemarche.utils.emails import whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url
@@ -12,9 +12,9 @@ EMAIL_SUBJECT_PREFIX = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_
 
 
 # @task()
-def send_tender_emails(tender: Tender):
+def send_tender_emails_to_siaes(tender: Tender):
     """
-    TODO: filter on source="EMAIL" ?
+    All corresponding Siae will be contacted
     """
     for siae in tender.siaes.all():
         send_tender_email_to_siae(tender, siae)
@@ -47,3 +47,16 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae):
             recipient_name=recipient_name,
             variables=variables,
         )
+
+
+def send_siae_interested_email_to_author(tender: Tender):
+    """
+    The author is notified (by intervals) when new Siaes show interest (contact_click_date set)
+    Intervals:
+    - first Siae
+    - every 5 Siae
+    """
+    tender_siae_contact_click_count = TenderSiae.objects.filter(
+        tender=tender, contact_click_date__isnull=False
+    ).count()
+    print(tender_siae_contact_click_count)
