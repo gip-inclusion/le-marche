@@ -2,13 +2,13 @@
 # code_insee --> insee_code
 
 from django.contrib.gis.db import models as gis_models
-from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 
 from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS
+from lemarche.utils.fields import ChoiceArrayField
 
 
 class Perimeter(models.Model):
@@ -36,7 +36,9 @@ class Perimeter(models.Model):
     # Latitude and longitude coordinates.
     # https://docs.djangoproject.com/en/2.2/ref/contrib/gis/model-api/#pointfield
     coords = gis_models.PointField(geography=True, blank=True, null=True)
-    post_codes = ArrayField(models.CharField(max_length=5), verbose_name="Codes postaux", blank=True, default=list)
+    post_codes = ChoiceArrayField(
+        models.CharField(max_length=5), verbose_name="Codes postaux", blank=True, default=list
+    )
     department_code = models.CharField(
         verbose_name="Département (code)", choices=DEPARTMENT_CHOICES, max_length=3, blank=True
     )
