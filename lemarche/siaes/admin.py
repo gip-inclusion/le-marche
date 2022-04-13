@@ -22,7 +22,7 @@ from lemarche.utils.fields import pretty_print_readonly_jsonfield
 class IsLiveFilter(admin.SimpleListFilter):
     """Custom admin filter to target siaes who are live (active and not delisted)."""
 
-    title = "Live ? (active et non délistée)"
+    title = "Live ? (active et non masquée)"
     parameter_name = "is_live"
 
     def lookups(self, request, model_admin):
@@ -84,7 +84,17 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "nb_images",
         "created_at",
     ]
-    list_filter = [IsLiveFilter, "is_first_page", HasUserFilter, "kind", "geo_range", "source", "networks", "sectors"]
+    list_filter = [
+        IsLiveFilter,
+        "is_delisted",
+        "is_first_page",
+        HasUserFilter,
+        "kind",
+        "geo_range",
+        "source",
+        "networks",
+        "sectors",
+    ]
     search_fields = ["id", "name", "slug", "siret"]
     search_help_text = "Cherche sur les champs : ID, Raison sociale, Slug, Siret"
 
@@ -218,16 +228,16 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     ]
 
     add_fieldsets = [
-        (
-            "Affichage",
-            {
-                "fields": (
-                    "is_active",
-                    # "is_delisted",
-                    # "is_first_page"
-                ),
-            },
-        ),
+        # (
+        #     "Affichage",
+        #     {
+        #         "fields": (
+        #             "is_active",
+        #             # "is_delisted",
+        #             # "is_first_page"
+        #         ),
+        #     },
+        # ),
         (
             "Données C1 (ou ESAT ou SEP)",
             {
@@ -342,28 +352,28 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         url = reverse("admin:siaes_siaeoffer_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.offer_count}</a>')
 
-    nb_offers.short_description = "Nombre de prestations"
+    nb_offers.short_description = "Nbr de prestations"
     nb_offers.admin_order_field = "offer_count"
 
     def nb_labels(self, siae):
         url = reverse("admin:siaes_siaelabel_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.label_count}</a>')
 
-    nb_labels.short_description = "Nombre de labels"
+    nb_labels.short_description = "Nbr de labels"
     nb_labels.admin_order_field = "label_count"
 
     def nb_cient_references(self, siae):
         url = reverse("admin:siaes_siaeclientreference_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.client_reference_count}</a>')
 
-    nb_cient_references.short_description = "Nombre de réf. clients"
+    nb_cient_references.short_description = "Nbr de réf. clients"
     nb_cient_references.admin_order_field = "client_reference_count"
 
     def nb_images(self, siae):
         url = reverse("admin:siaes_siaeimage_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.image_count}</a>')
 
-    nb_images.short_description = "Nombre d'images"
+    nb_images.short_description = "Nbr d'images"
     nb_images.admin_order_field = "image_count"
 
     def coords_display(self, siae):

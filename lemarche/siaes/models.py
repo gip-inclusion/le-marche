@@ -284,7 +284,6 @@ class Siae(models.Model):
         "coords",
         "admin_name",
         "admin_email",
-        "is_delisted",
         "is_active",
         "siret_is_valid",
         "asp_id",
@@ -477,9 +476,13 @@ class Siae(models.Model):
     is_cocontracting = models.BooleanField(verbose_name="Co-traitance", default=False)
 
     asp_id = models.IntegerField(verbose_name="ID ASP", blank=True, null=True)
-    is_active = models.BooleanField(verbose_name="Active", default=True)
-    is_delisted = models.BooleanField(verbose_name="Masquée", default=False)
-    is_first_page = models.BooleanField(verbose_name="A la une", default=False)
+    is_active = models.BooleanField(verbose_name="Active", help_text="Convention active (C1) ou import", default=True)
+    is_delisted = models.BooleanField(
+        verbose_name="Masquée", help_text="La structure n'apparaîtra plus dans les résultats", default=False
+    )
+    is_first_page = models.BooleanField(
+        verbose_name="A la une", help_text="La structure apparaîtra sur la page principale", default=False
+    )
 
     admin_name = models.CharField(max_length=255, blank=True)
     admin_email = models.EmailField(max_length=255, blank=True)
