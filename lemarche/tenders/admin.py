@@ -5,27 +5,42 @@ from django.utils.html import format_html
 from lemarche.tenders.models import Tender
 
 
-# Register your models here.
+class ResponseKindFilter(admin.SimpleListFilter):
+    title = Tender._meta.get_field("response_kind").verbose_name
+    parameter_name = "response_kind"
+
+    def lookups(self, request, model_admin):
+        return Tender.RESPONSE_KIND_CHOICES
+
+    def queryset(self, request, queryset):
+        lookup_value = self.value()
+        if lookup_value:
+            queryset = queryset.filter(response_kind__contains=[lookup_value])
+        return queryset
+
+
 @admin.register(Tender)
 class TenderAdmin(admin.ModelAdmin):
     list_display = [
         "id",
         "title",
-        "author",
+        "user_with_link",
         "kind",
         "deadline_date",
         "start_working_date",
-        "response_kind",
         "nb_siae",
         "nb_siae_email_send",
         "nb_siae_detail_display",
         "nb_siae_contact_click",
         "created_at",
     ]
-    list_filter = ["kind", "deadline_date", "start_working_date", "response_kind"]
+    list_filter = ["kind", "deadline_date", "start_working_date", ResponseKindFilter]
     # filter on "perimeters"? (loads ALL the perimeters... Use django-admin-autocomplete-filter instead?)
-    search_fields = ["id", "title"]
-    search_help_text = "Cherche sur les champs : ID, Titre"
+    search_fields = ["id", "title", "author__id", "author__email"]
+    search_help_text = "Cherche sur les champs : ID, Titre, Auteur (ID, E-mail)"
+    ordering = ["-created_at"]
+
+    autocomplete_fields = ["perimeters", "sectors"]
     readonly_fields = [
         "nb_siae",
         "nb_siae_email_send",
@@ -34,8 +49,6 @@ class TenderAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
     ]
-
-    autocomplete_fields = ["perimeters", "sectors"]
 
     fieldsets = (
         (
@@ -80,6 +93,13 @@ class TenderAdmin(admin.ModelAdmin):
         qs = qs.with_siae_stats()
         return qs
 
+    def user_with_link(self, tender):
+        url = reverse("admin:users_user_change", args=[tender.author_id])
+        return format_html(f'<a href="{url}">{tender.author}</a>')
+
+    user_with_link.short_description = "Auteur"
+    user_with_link.admin_order_field = "author"
+
     def nb_siae(self, tender):
         url = reverse("admin:siaes_siae_changelist") + f"?tenders__in={tender.id}"
         return format_html(f'<a href="{url}">{tender.siae_count}</a>')
@@ -90,17 +110,17 @@ class TenderAdmin(admin.ModelAdmin):
     def nb_siae_email_send(self, tender):
         return tender.siae_email_send_count
 
-    nb_siae_email_send.short_description = "Structures contactées"
+    nb_siae_email_send.short_description = "S. contactées"
     nb_siae_email_send.admin_order_field = "siae_email_send_count"
 
     def nb_siae_detail_display(self, tender):
         return tender.siae_detail_display_count
 
-    nb_siae_detail_display.short_description = "Structures vues"
+    nb_siae_detail_display.short_description = "S. vues"
     nb_siae_detail_display.admin_order_field = "siae_detail_display_count"
 
     def nb_siae_contact_click(self, tender):
         return tender.siae_contact_click_count
 
-    nb_siae_contact_click.short_description = "Structures intéressées"
+    nb_siae_contact_click.short_description = "S. intéressées"
     nb_siae_contact_click.admin_order_field = "siae_contact_click_count"

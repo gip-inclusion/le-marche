@@ -84,7 +84,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "nb_images",
         "created_at",
     ]
-    list_filter = [IsLiveFilter, "is_first_page", HasUserFilter, "kind", "networks", "sectors", "geo_range", "source"]
+    list_filter = [IsLiveFilter, "is_first_page", HasUserFilter, "kind", "geo_range", "source", "networks", "sectors"]
     search_fields = ["id", "name", "slug", "siret"]
     search_help_text = "Cherche sur les champs : ID, Raison sociale, Slug, Siret"
 
@@ -129,6 +129,8 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "siret",
                     "naf",
                     "kind",
+                    "nature",
+                    "presta_type",
                     "c1_id",
                     "asp_id",
                     "website",
@@ -236,6 +238,8 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "siret",
                     "naf",
                     "kind",
+                    "nature",
+                    "presta_type",
                     # "c1_id",
                     # "asp_id",
                     "website",
