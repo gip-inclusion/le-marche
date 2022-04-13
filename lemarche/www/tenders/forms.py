@@ -52,6 +52,6 @@ class AddTenderForm(forms.ModelForm):
         super().clean()
         msg_field_missing = "{} est un champ obligatoire"
         if "perimeters" in self.errors:
-            self.errors["perimeters"] = [msg_field_missing.format("Lieux d'exécution")]
+            self.add_error(None, msg_field_missing.format("Lieux d'exécution"))
         if "sectors" in self.errors:
-            self.errors["sectors"] = [msg_field_missing.format(Sector._meta.verbose_name_plural)]
+            self.add_error(None, msg_field_missing.format(Sector._meta.verbose_name_plural))

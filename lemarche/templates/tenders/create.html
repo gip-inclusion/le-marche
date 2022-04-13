@@ -41,7 +41,7 @@
                     <form method="POST" action="{% url 'tenders:create' %}" id="createTenderForm">
 
                         {% csrf_token %}
-                        {% bootstrap_form_errors form type="all" %}
+                        {% bootstrap_form_errors form type="non_fields" %}
 
                         <fieldset>
                             <legend>Informations générales</legend>
@@ -50,13 +50,22 @@
                                 <ul class="list-unstyled mb-1">
                                     {% for pk, choice in form.kind.field.widget.choices %}
                                     <li>
-                                        <div class="custom-control custom-radio">
-                                            <input id="id_{{ form.kind.name }}_{{ forloop.counter0 }}" class="custom-control-input" name="{{ form.kind.name }}" type="{{ form.kind.field.widget.input_type }}" value="{{ pk }}" />
+                                        <div class="custom-control custom-radio ">
+                                            <input id="id_{{ form.kind.name }}_{{ forloop.counter0 }}"
+                                                class="custom-control-input {% if form.kind.errors %} is-invalid{% endif %}"
+                                                name="{{ form.kind.name }}" type="{{ form.kind.field.widget.input_type }}" value="{{ pk }}" />
                                             <label for="id_{{ form.kind.name }}_{{ forloop.counter0 }}" class="custom-control-label">{{ choice }}</label>
                                         </div>
                                     </li>
                                     {% endfor %}
                                 </ul>
+                                {% if form.kind.errors %}
+                                        {% comment %} <p id="error_" class="help-block invalid-feedback">{{ form.kind.errors }}</p> {% endcomment %}
+                                        {% for error in form.kind.errors %}
+                                            <div class="invalid-feedback d-block">{{ error }}</div>
+                                        {% endfor %}
+                                {% endif %}
+
                             </div>
                             {% bootstrap_field form.title placeholder="Ex: Rénovation de façade" form_group_class="form-group form-group-required" %}
                             {% bootstrap_field form.sectors form_group_class="form-group form-group-required use-multiselect" %}
