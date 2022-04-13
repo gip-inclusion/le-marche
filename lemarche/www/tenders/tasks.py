@@ -76,7 +76,7 @@ def send_siae_interested_email_to_author(tender: Tender):
                 variables = {
                     "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
                     "TENDER_TITLE": tender.title,
-                    "TENDER_SIAE_INTERESTED_LIST_URL": f"https://{get_domain_url()}{tender.get_absolute_url()}structures-interessees",  # noqa
+                    "TENDER_SIAE_INTERESTED_LIST_URL": f"https://{get_domain_url()}{tender.get_absolute_url()}/structures-interessees",  # noqa
                 }
 
                 api_mailjet.send_transactional_email_with_template(
