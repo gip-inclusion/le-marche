@@ -24,8 +24,11 @@ class TenderAdmin(admin.ModelAdmin):
     ]
     list_filter = ["kind", "deadline_date", "start_working_date", "response_kind"]
     # filter on "perimeters"? (loads ALL the perimeters... Use django-admin-autocomplete-filter instead?)
-    search_fields = ["id", "title"]
-    search_help_text = "Cherche sur les champs : ID, Titre"
+    search_fields = ["id", "title", "author__id", "author__email"]
+    search_help_text = "Cherche sur les champs : ID, Titre, Auteur (ID, E-mail)"
+    ordering = ["-created_at"]
+
+    autocomplete_fields = ["perimeters", "sectors"]
     readonly_fields = [
         "nb_siae",
         "nb_siae_email_send",
@@ -34,8 +37,6 @@ class TenderAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
     ]
-
-    autocomplete_fields = ["perimeters", "sectors"]
 
     fieldsets = (
         (
