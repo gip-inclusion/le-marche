@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("siaes", "0053_siae_contact_social_website_and_more"),
+        ("siaes", "0054_alter_siae_presta_type"),
     ]
 
     operations = [
