@@ -5,7 +5,20 @@ from django.utils.html import format_html
 from lemarche.tenders.models import Tender
 
 
-# Register your models here.
+class ResponseKindFilter(admin.SimpleListFilter):
+    title = Tender._meta.get_field("response_kind").verbose_name
+    parameter_name = "response_kind"
+
+    def lookups(self, request, model_admin):
+        return Tender.RESPONSE_KIND_CHOICES
+
+    def queryset(self, request, queryset):
+        lookup_value = self.value()
+        if lookup_value:
+            queryset = queryset.filter(response_kind__contains=[lookup_value])
+        return queryset
+
+
 @admin.register(Tender)
 class TenderAdmin(admin.ModelAdmin):
     list_display = [
@@ -21,7 +34,7 @@ class TenderAdmin(admin.ModelAdmin):
         "nb_siae_contact_click",
         "created_at",
     ]
-    list_filter = ["kind", "deadline_date", "start_working_date", "response_kind"]
+    list_filter = ["kind", "deadline_date", "start_working_date", ResponseKindFilter]
     # filter on "perimeters"? (loads ALL the perimeters... Use django-admin-autocomplete-filter instead?)
     search_fields = ["id", "title", "author__id", "author__email"]
     search_help_text = "Cherche sur les champs : ID, Titre, Auteur (ID, E-mail)"
