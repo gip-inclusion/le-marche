@@ -352,28 +352,28 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         url = reverse("admin:siaes_siaeoffer_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.offer_count}</a>')
 
-    nb_offers.short_description = "Nombre de prestations"
+    nb_offers.short_description = "Nbr de prestations"
     nb_offers.admin_order_field = "offer_count"
 
     def nb_labels(self, siae):
         url = reverse("admin:siaes_siaelabel_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.label_count}</a>')
 
-    nb_labels.short_description = "Nombre de labels"
+    nb_labels.short_description = "Nbr de labels"
     nb_labels.admin_order_field = "label_count"
 
     def nb_cient_references(self, siae):
         url = reverse("admin:siaes_siaeclientreference_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.client_reference_count}</a>')
 
-    nb_cient_references.short_description = "Nombre de réf. clients"
+    nb_cient_references.short_description = "Nbr de réf. clients"
     nb_cient_references.admin_order_field = "client_reference_count"
 
     def nb_images(self, siae):
         url = reverse("admin:siaes_siaeimage_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.image_count}</a>')
 
-    nb_images.short_description = "Nombre d'images"
+    nb_images.short_description = "Nbr d'images"
     nb_images.admin_order_field = "image_count"
 
     def coords_display(self, siae):
