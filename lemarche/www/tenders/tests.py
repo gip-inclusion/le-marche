@@ -13,7 +13,7 @@ from lemarche.tenders.factories import TenderFactory
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
-from lemarche.www.tenders.contants import match_tender_for_parteners
+from lemarche.www.tenders.constants import match_tender_for_partners
 
 
 class TenderCreateViewTest(TestCase):
@@ -330,18 +330,18 @@ class TenderMatchPartnersTest(TestCase):
 
     def test_send_to_partners_without_filters(self):
         tender = TenderFactory(amount=Tender.AMOUNT_RANGE_4)
-        partners_interested = match_tender_for_parteners(tender)
+        partners_interested = match_tender_for_partners(tender)
         self.assertEqual(len(partners_interested), self.nb_partners_without_filters)
 
     def test_send_to_partners_with_filter_amount(self):
         tender_range_0 = TenderFactory(amount=Tender.AMOUNT_RANGE_0)
-        partners_interested = match_tender_for_parteners(tender_range_0)
+        partners_interested = match_tender_for_partners(tender_range_0)
         self.assertEqual(
             len(partners_interested), self.nb_partners_without_filters + self.nb_partners_with_filters_amount_range_0_1
         )
 
         tender_range_1 = TenderFactory(amount=Tender.AMOUNT_RANGE_1)
-        partners_interested = match_tender_for_parteners(tender_range_1)
+        partners_interested = match_tender_for_partners(tender_range_1)
         self.assertEqual(
             len(partners_interested), self.nb_partners_without_filters + self.nb_partners_with_filters_amount_range_0_1
         )
@@ -349,7 +349,7 @@ class TenderMatchPartnersTest(TestCase):
     def test_send_to_partners_with_filter_perimeter(self):
         def test_perimeter(perimeters, nb_more_partners=1):
             tender = TenderFactory(amount=Tender.AMOUNT_RANGE_4, perimeters=perimeters)
-            partners_interested = match_tender_for_parteners(tender)
+            partners_interested = match_tender_for_partners(tender)
             self.assertEqual(len(partners_interested), self.nb_partners_without_filters + nb_more_partners)
 
         # Hauts-de-France

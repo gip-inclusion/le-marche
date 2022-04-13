@@ -8,7 +8,7 @@ from lemarche.tenders.models import Tender
 """
 
 
-def match_tender_for_parteners(tender: Tender, send_email_func=None):
+def match_tender_for_partners(tender: Tender, send_email_func=None):
     """Manage the matching from tender to partners
 
     Args:

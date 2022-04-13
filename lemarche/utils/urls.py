@@ -2,6 +2,7 @@
 
 from django.conf import settings
 from django.contrib.sites.models import Site
+from django.db.models import Model
 from django.utils.http import url_has_allowed_host_and_scheme
 
 
@@ -49,3 +50,7 @@ def get_safe_url(request, param_name=None, fallback_url=None, url=None):
                 return url
 
     return fallback_url
+
+
+def get_share_url_object(obj: Model):
+    return f"https://{get_domain_url()}{obj.get_absolute_url()}"

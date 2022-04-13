@@ -5,8 +5,8 @@ from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.utils.apis import api_mailjet
 from lemarche.utils.emails import whitelist_recipient_list
-from lemarche.utils.urls import get_domain_url
-from lemarche.www.tenders.contants import match_tender_for_parteners
+from lemarche.utils.urls import get_share_url_object
+from lemarche.www.tenders.constants import match_tender_for_partners
 
 
 EMAIL_SUBJECT_PREFIX = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_ENV != "prod" else ""
@@ -21,8 +21,8 @@ def send_tender_emails_to_siaes(tender: Tender):
         send_tender_email_to_siae(tender, siae)
 
     tender.tendersiae_set.update(email_send_date=timezone.now())
-
-    match_tender_for_parteners(tender=tender, send_email_func=send_tender_email_to_partner)
+    # will be moved on global action in backoffice admin
+    match_tender_for_partners(tender=tender, send_email_func=send_tender_email_to_partner)
 
 
 def send_tender_email_to_partner(tender: Tender, partner: dict):
@@ -33,7 +33,7 @@ def send_tender_email_to_partner(tender: Tender, partner: dict):
             "BUYER_COMPANY": tender.author.company_name,
             "SECTORS": tender.get_sectors_names,
             "PERIMETERS": tender.get_perimeters_names,
-            "TENDER_URL": f"https://{get_domain_url()}{tender.get_absolute_url()}",
+            "TENDER_URL": get_share_url_object(tender),
         }
 
         api_mailjet.send_transactional_email_many_recipient_with_template(
@@ -60,7 +60,7 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae):
             "TENDER_KIND": tender.get_kind_display(),
             "TENDER_SECTORS": tender.get_sectors_names,
             "TENDER_PERIMETERS": tender.get_perimeters_names,
-            "TENDER_URL": f"https://{get_domain_url()}{tender.get_absolute_url()}",
+            "TENDER_URL": get_share_url_object(tender),
         }
 
         api_mailjet.send_transactional_email_with_template(
@@ -99,7 +99,7 @@ def send_siae_interested_email_to_author(tender: Tender):
                 variables = {
                     "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
                     "TENDER_TITLE": tender.title,
-                    "TENDER_SIAE_INTERESTED_LIST_URL": f"https://{get_domain_url()}{tender.get_absolute_url()}/structures-interessees",  # noqa
+                    "TENDER_SIAE_INTERESTED_LIST_URL": f"{get_share_url_object(tender)}/structures-interessees",  # noqa
                 }
 
                 api_mailjet.send_transactional_email_with_template(
