@@ -14,9 +14,7 @@ from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin, TenderOwnerRequiredMixin
 from lemarche.www.tenders.forms import AddTenderForm
-
-
-# from lemarche.www.tenders.tasks import send_tender_emails
+from lemarche.www.tenders.tasks import send_siae_interested_email_to_author  # , send_tender_emails_to_siaes
 
 
 TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
@@ -46,7 +44,7 @@ class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView
         tender.siaes.set(siae_found_list)
 
         # task
-        # send_tender_emails(tender)
+        # send_tender_emails_to_siaes(tender)
 
         messages.add_message(
             self.request,
@@ -129,15 +127,22 @@ class TenderDetailView(LoginRequiredMixin, DetailView):
 
 
 class TenderDetailContactClickStat(LoginRequiredMixin, View):
+    """
+    Endpoint to track contact_clicks by interested Siaes
+    We might also send a notification to the buyer
+    """
+
     def get_object(self):
         return get_object_or_404(Tender, slug=self.kwargs.get("slug"))
 
     def post(self, request, *args, **kwargs):
         if self.request.user.kind == User.KIND_SIAE:
+            # update contact_click_date
             tender = self.get_object()
             TenderSiae.objects.filter(
                 tender=tender, siae__in=self.request.user.siaes.all(), contact_click_date__isnull=True
             ).update(contact_click_date=timezone.now())
+            send_siae_interested_email_to_author(tender)
             return JsonResponse({"message": "success"})
         else:
             return HttpResponseForbidden()
