@@ -136,7 +136,11 @@ class Tender(models.Model):
     )
 
     author = models.ForeignKey(
-        to=settings.AUTH_USER_MODEL, related_name="tenders", on_delete=models.CASCADE, blank=True
+        to=settings.AUTH_USER_MODEL,
+        verbose_name="Auteur",
+        related_name="tenders",
+        on_delete=models.CASCADE,
+        blank=True,
     )
 
     siaes = models.ManyToManyField(

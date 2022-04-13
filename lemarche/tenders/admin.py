@@ -11,7 +11,7 @@ class TenderAdmin(admin.ModelAdmin):
     list_display = [
         "id",
         "title",
-        "author",
+        "user_with_link",
         "kind",
         "deadline_date",
         "start_working_date",
@@ -79,6 +79,13 @@ class TenderAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         qs = qs.with_siae_stats()
         return qs
+
+    def user_with_link(self, tender):
+        url = reverse("admin:users_user_change", args=[tender.author_id])
+        return format_html(f'<a href="{url}">{tender.author}</a>')
+
+    user_with_link.short_description = "Auteur"
+    user_with_link.admin_order_field = "author"
 
     def nb_siae(self, tender):
         url = reverse("admin:siaes_siae_changelist") + f"?tenders__in={tender.id}"
