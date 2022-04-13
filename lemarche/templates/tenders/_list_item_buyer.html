@@ -32,7 +32,7 @@
             </div>
             <div class="col-md-4 text-center my-auto">
                 <i class="ri-thumb-up-line ri-xl"></i>
-                <h4>{{ tender.siae_contact_click_count }} prestataires intéressés</h4>
+                <h4>{{ tender.siae_contact_click_count }} structures intéressées</h4>
                 {% if tender.siae_contact_click_count %}
                     <a href="{% url 'tenders:detail-siae-interested' tender.slug %}" id="show-tender-siae-list-btn" class="btn btn-sm btn-primary">
                         Voir la liste

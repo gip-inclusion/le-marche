@@ -114,15 +114,20 @@ class TenderDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        tender = self.get_object()
         user_kind = self.request.user.kind if self.request.user.is_authenticated else "anonymous"
         context["parent_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
         if self.request.user.kind == User.KIND_SIAE:
             context["user_has_detail_display_date"] = TenderSiae.objects.filter(
-                tender=self.get_object(), siae__in=self.request.user.siaes.all(), detail_display_date__isnull=False
+                tender=tender, siae__in=self.request.user.siaes.all(), detail_display_date__isnull=False
             ).exists()
             context["user_has_contact_click_date"] = TenderSiae.objects.filter(
-                tender=self.get_object(), siae__in=self.request.user.siaes.all(), contact_click_date__isnull=False
+                tender=tender, siae__in=self.request.user.siaes.all(), contact_click_date__isnull=False
             ).exists()
+        if tender.author == self.request.user:
+            context["siae_contact_click_count"] = TenderSiae.objects.filter(
+                tender=tender, contact_click_date__isnull=False
+            ).count()
         return context
 
 
@@ -158,6 +163,14 @@ class TenderSiaeInterestedListView(TenderOwnerRequiredMixin, ListView):
         qs = qs.filter(tender__slug=self.kwargs.get("slug"), contact_click_date__isnull=False)
         qs = qs.order_by("-contact_click_date")
         return qs
+
+    def get(self, request, *args, **kwargs):
+        """
+        Check if the User has any Siae contacted for this Tender. If yes, update 'detail_display_date'
+        """
+        if not self.get_queryset().count():
+            return HttpResponseRedirect(reverse_lazy("tenders:list"))
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
