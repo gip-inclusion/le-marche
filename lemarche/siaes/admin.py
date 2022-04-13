@@ -22,7 +22,7 @@ from lemarche.utils.fields import pretty_print_readonly_jsonfield
 class IsLiveFilter(admin.SimpleListFilter):
     """Custom admin filter to target siaes who are live (active and not delisted)."""
 
-    title = "Live ? (active et non délistée)"
+    title = "Live ? (active et non masquée)"
     parameter_name = "is_live"
 
     def lookups(self, request, model_admin):
@@ -84,7 +84,17 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "nb_images",
         "created_at",
     ]
-    list_filter = [IsLiveFilter, "is_first_page", HasUserFilter, "kind", "geo_range", "source", "networks", "sectors"]
+    list_filter = [
+        IsLiveFilter,
+        "is_delisted",
+        "is_first_page",
+        HasUserFilter,
+        "kind",
+        "geo_range",
+        "source",
+        "networks",
+        "sectors",
+    ]
     search_fields = ["id", "name", "slug", "siret"]
     search_help_text = "Cherche sur les champs : ID, Raison sociale, Slug, Siret"
 
@@ -218,16 +228,16 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     ]
 
     add_fieldsets = [
-        (
-            "Affichage",
-            {
-                "fields": (
-                    "is_active",
-                    # "is_delisted",
-                    # "is_first_page"
-                ),
-            },
-        ),
+        # (
+        #     "Affichage",
+        #     {
+        #         "fields": (
+        #             "is_active",
+        #             # "is_delisted",
+        #             # "is_first_page"
+        #         ),
+        #     },
+        # ),
         (
             "Données C1 (ou ESAT ou SEP)",
             {
