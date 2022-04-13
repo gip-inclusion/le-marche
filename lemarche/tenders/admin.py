@@ -15,7 +15,6 @@ class TenderAdmin(admin.ModelAdmin):
         "kind",
         "deadline_date",
         "start_working_date",
-        "response_kind",
         "nb_siae",
         "nb_siae_email_send",
         "nb_siae_detail_display",
@@ -98,17 +97,17 @@ class TenderAdmin(admin.ModelAdmin):
     def nb_siae_email_send(self, tender):
         return tender.siae_email_send_count
 
-    nb_siae_email_send.short_description = "Structures contactées"
+    nb_siae_email_send.short_description = "S. contactées"
     nb_siae_email_send.admin_order_field = "siae_email_send_count"
 
     def nb_siae_detail_display(self, tender):
         return tender.siae_detail_display_count
 
-    nb_siae_detail_display.short_description = "Structures vues"
+    nb_siae_detail_display.short_description = "S. vues"
     nb_siae_detail_display.admin_order_field = "siae_detail_display_count"
 
     def nb_siae_contact_click(self, tender):
         return tender.siae_contact_click_count
 
-    nb_siae_contact_click.short_description = "Structures intéressées"
+    nb_siae_contact_click.short_description = "S. intéressées"
     nb_siae_contact_click.admin_order_field = "siae_contact_click_count"
