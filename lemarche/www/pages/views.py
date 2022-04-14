@@ -65,7 +65,7 @@ class ContactView(SuccessMessageMixin, FormView):
 
 class SiaeGroupListView(ListView):
     template_name = "pages/groupements.html"
-    queryset = SiaeGroup.objects.all().order_by("name")
+    queryset = SiaeGroup.objects.prefetch_related("sectors").all().order_by("name")
     context_object_name = "siaegroups"
 
 

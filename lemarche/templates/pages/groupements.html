@@ -41,7 +41,7 @@
                 <div class="s-cards-grid-01__col col mb-3 mb-md-5">
                     <div class="card c-card h-100 w-100 c-card--marche">
                         <div class="card-header">
-                            {% if group.logo_url  %}
+                            {% if group.logo_url %}
                                 <img src="{{ group.logo_url }}" class="img-fluid" alt="Logo de {{ group.name }}" loading="lazy" />
                             {% else %}
                                 <img src="{% static 'img/default-listing.png' %}" class="img-fluid" alt="{{ siae.name }}" loading="lazy" />
@@ -49,15 +49,17 @@
                         </div>
                         <div class="card-body">
                             <p class="h3 lh-sm">{{ group.name }}</p>
-                            <div class="d-flex">
-                                <i class="ri-award-line ri-xl mr-1" title="Secteurs d'activité"></i>
-                                <ul class="list-unstyled">
-                                    {% siae_sectors_display group display_max=6 output_format='li' %}
-                                </ul>
-                            </div>
-                            {% if group.siae_count  %}
-                                <p>
-                                    <i class="ri-hotel-line ri-xl mr-1" title="Structures"></i>
+                            {% if group.sectors.count %}
+                                <div class="d-flex" title="Secteurs d'activité">
+                                    <i class="ri-award-line ri-xl mr-1"></i>
+                                    <ul class="list-unstyled">
+                                        {% siae_sectors_display group display_max=6 output_format='li' %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                            {% if group.siae_count %}
+                                <p title="Nombre de structures">
+                                    <i class="ri-hotel-line ri-xl mr-1"></i>
                                     <span>{{ group.siae_count }} structures</span>
                                 </p>
                             {% endif %}
@@ -65,19 +67,19 @@
                         <div class="card-footer pt-0">
                             <hr />
                             <ul class="list-unstyled m-0">
-                                {% if group.contact_website  %}
+                                {% if group.contact_website %}
                                     <li class="mb-2 font-weight-bold">
                                         <i class="ri-window-2-line ri-xl mr-1"></i>
                                         <a href="{{ group.contact_website }}" class="text-decoration-none" id="group_company_website" target="_blank" rel="noopener">{{ group.contact_website }}</a>
                                     </li>
                                 {% endif %}
-                                {% if group.contact_email  %}
+                                {% if group.contact_email %}
                                     <li class="mb-2 font-weight-bold">
                                         <i class="ri-at-line ri-xl mr-1"></i>
                                         <a href="mailto:{{ group.contact_email }}" class="text-decoration-none" id="group_company_email">{{ group.contact_email }}</a>
                                     </li>
                                 {% endif %}
-                                {% if group.contact_phone  %}
+                                {% if group.contact_phone %}
                                     <li class="font-weight-bold">
                                         <i class="ri-phone-line ri-xl mr-1"></i>
                                         <a href="tel:{{ group.contact_phone }}" class="text-decoration-none" id="group_company_phone">{{ group.contact_phone }}</a>
