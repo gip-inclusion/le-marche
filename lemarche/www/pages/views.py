@@ -3,10 +3,10 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404, HttpResponsePermanentRedirect
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, FormView, TemplateView
+from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from lemarche.pages.models import Page
-from lemarche.siaes.models import Siae
+from lemarche.siaes.models import Siae, SiaeGroup
 from lemarche.www.pages.forms import ContactForm
 from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
 
@@ -61,6 +61,12 @@ class ContactView(SuccessMessageMixin, FormView):
         if form_dict["kind"] == "SIAE":
             send_contact_form_receipt(form_dict)
         return response
+
+
+class SiaeGroupListView(ListView):
+    template_name = "pages/groupements.html"
+    queryset = SiaeGroup.objects.prefetch_related("sectors").all().order_by("name")
+    context_object_name = "siaegroups"
 
 
 class StatsView(TemplateView):
