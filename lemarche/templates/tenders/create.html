@@ -45,7 +45,7 @@
 
                         <fieldset>
                             <legend>Informations générales</legend>
-                            {% include "layouts/forms/_form_input_checkbox.html" with field=form.kind %}
+                            {% include "includes/forms/_bootstrap_field_radio.html" with form_field=form.kind form_group_class="form-group form-group-required" %}
                             {% bootstrap_field form.title placeholder="Ex: Rénovation de façade" form_group_class="form-group form-group-required" %}
                             {% bootstrap_field form.sectors form_group_class="form-group form-group-required use-multiselect" %}
                             <div class="form-group form-group-required">
@@ -84,19 +84,7 @@
                                 {% bootstrap_field form.contact_email form_group_class="form-group col-12 col-md-6" %}
                                 {% bootstrap_field form.contact_phone form_group_class="form-group col-12 col-md-6" %}
                             </div>
-                            <div class="form-group">
-                                {{ form.response_kind.label_tag }}
-                                <ul class="list-unstyled mb-1">
-                                    {% for pk, choice in form.response_kind.field.widget.choices %}
-                                    <li>
-                                        <div class="custom-control custom-checkbox">
-                                            <input id="id_{{ form.response_kind.name }}_{{ forloop.counter0 }}" class="custom-control-input" name="{{ form.response_kind.name }}" type="{{ form.response_kind.field.widget.input_type }}" value="{{ pk }}" />
-                                            <label for="id_{{ form.response_kind.name }}_{{ forloop.counter0 }}" class="custom-control-label">{{ choice }}</label>
-                                        </div>
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
+                            {% include "includes/forms/_bootstrap_field_checkbox.html" with form_field=form.response_kind %}
                             <div class="form-group">
                                 {{ form.deadline_date.label_tag }}
                                 <div class="input-group">

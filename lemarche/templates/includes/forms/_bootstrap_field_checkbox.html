@@ -1,0 +1,25 @@
+{% comment %}
+    takes one argument : fields
+{% endcomment %}
+
+
+<div class="{% if form_group_class %}{{form_group_class}}{% else %}form-group{% endif %}">
+    {{ form_field.label_tag }}
+    <ul class="list-unstyled mb-1">
+        {% for pk, choice in form_field.field.widget.choices %}
+        <li>
+            <div class="custom-control custom-checkbox">
+                <input id="id_{{ form_field.name }}_{{ forloop.counter0 }}"
+                    class="custom-control-input {% if form_field.errors %} is-invalid{% endif %}"
+                    name="{{ form_field.name }}" type="{{ form_field.field.widget.input_type }}" value="{{ pk }}" />
+                <label for="id_{{ form_field.name }}_{{ forloop.counter0 }}" class="custom-control-label">{{ choice }}</label>
+                {% if forloop.last and form_field.errors %}
+                    {% for error in form_field.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}					
+                {% endif %}
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
