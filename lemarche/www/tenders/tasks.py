@@ -60,7 +60,7 @@ def send_siae_interested_email_to_author(tender: Tender):
         tender=tender, contact_click_date__isnull=False
     ).count()
 
-    if tender_siae_contact_click_count > 0:
+    if (tender_siae_contact_click_count > 0) and (tender_siae_contact_click_count < 50):
         if (tender_siae_contact_click_count == 1) or (tender_siae_contact_click_count % 5 == 0):
             if tender_siae_contact_click_count == 1:
                 email_subject = EMAIL_SUBJECT_PREFIX + "Une première structure intéressée !"
