@@ -70,18 +70,3 @@ a.disabled {
 *[id] {
     scroll-margin-top: 100px;
 }
-
-.text-overflow-ellipsis {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.is-invalid-custom-js input {
-    // important is dirty but autocomplete js use important so no choice
-    border-color: $danger!important;
-}
-
-.is-invalid-custom-js .form-text {
-    color: $danger!important;
-}
