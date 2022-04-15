@@ -58,9 +58,9 @@
                     </ul>
                 </div>
             </div>
-            <div class="s-section__row row row-cols-1 row-cols-md-2 row-cols-lg-3">
+            <div class="s-section__row row row-cols-1 row-cols-md-2 row-cols-lg-3 mt-5">
                 {% for article in article_list %}
-                    <div class="s-section__col col mt-3 mt-md-5">
+                    <div class="s-section__col col mb-3 mb-lg-5">
                         {% include "cms/article_item.html" with article=article %}
                     </div>
                 {% endfor %}
