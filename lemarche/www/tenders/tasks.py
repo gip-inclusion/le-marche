@@ -6,7 +6,7 @@ from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.utils.apis import api_mailjet
 from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX, send_mail_async, whitelist_recipient_list
-from lemarche.utils.urls import get_share_url_object, get_domain_url
+from lemarche.utils.urls import get_admin_url_object, get_share_url_object
 from lemarche.www.tenders.constants import match_tender_for_partners
 
 
@@ -111,6 +111,7 @@ def send_siae_interested_email_to_author(tender: Tender):
 
 def notify_admin_tender_created(tender: Tender):
     email_subject = f"Marché de l'inclusion : dépôt de besoin, ajout d'un nouveau {tender.get_kind_display()}"
+    admin_url = get_admin_url_object(tender)
     email_body = render_to_string(
         "tenders/create_notification_email_admin_body.txt",
         {
@@ -119,7 +120,7 @@ def notify_admin_tender_created(tender: Tender):
             "tender_kind": tender.get_kind_display(),
             "tender_contact": tender.get_contact_full_name,
             "tender_company": tender.author.company_name,
-            "domain": get_domain_url(),
+            "admin_url": admin_url,
         },
     )
     send_mail_async(
