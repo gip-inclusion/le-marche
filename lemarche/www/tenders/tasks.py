@@ -30,9 +30,9 @@ def send_tender_email_to_partner(tender: Tender, partner: dict):
     recipient_list = whitelist_recipient_list(partner.get("contacts_email"))
     if recipient_list:
         variables = {
-            "BUYER_COMPANY": tender.author.company_name,
-            "SECTORS": tender.get_sectors_names,
-            "PERIMETERS": tender.get_perimeters_names,
+            "TENDER_AUTHOR_COMPANY": tender.author.company_name,
+            "TENDER_SECTORS": tender.get_sectors_names,
+            "TENDER_PERIMETERS": tender.get_perimeters_names,
             "TENDER_URL": get_share_url_object(tender),
         }
 
