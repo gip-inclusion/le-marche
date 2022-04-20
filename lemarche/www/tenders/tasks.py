@@ -4,7 +4,7 @@ from django.utils import timezone
 
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender, TenderSiae
-from lemarche.utils.apis import api_mailjet
+from lemarche.utils.apis import api_mailjet, api_slack
 from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX, send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_admin_url_object, get_share_url_object
 from lemarche.www.tenders.constants import match_tender_for_partners
@@ -128,3 +128,5 @@ def notify_admin_tender_created(tender: Tender):
         email_body=email_body,
         recipient_list=[settings.NOTIFY_EMAIL],
     )
+
+    api_slack.send_message_to_channel(text=email_body, service_id=settings.SLACK_WEBHOOK_C4_CHANNEL)

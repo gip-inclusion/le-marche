@@ -27,7 +27,7 @@ def get_default_client(params={}):
 
 
 @task()
-def send_message_to_channel(payload: dict, service_id: str, client: httpx.Client = None):
+def send_message_to_channel(text: str, service_id: str, client: httpx.Client = None):
     """Huey task to send message to specific payload for specific slack service
 
     Args:
@@ -38,17 +38,17 @@ def send_message_to_channel(payload: dict, service_id: str, client: httpx.Client
     Raises:
         e: httpx.HTTPStatusError
     """
+    if settings.SLACK_NOTIF_IS_ACTIVE:
+        if not client:
+            client = get_default_client()
 
-    if not client:
-        client = get_default_client()
-
-    try:
-        data = {"payload": payload}
-        response = client.post(f"{BASE_URL}{service_id}", json=data)
-        response.raise_for_status()
-        logger.info("send message to slack")
-        logger.info(response.json())
-        return response.json()
-    except httpx.HTTPStatusError as e:
-        logger.error("Error while fetching `%s`: %s", e.request.url, e)
-        raise e
+        try:
+            data = {"text": text}
+            response = client.post(f"{BASE_URL}{service_id}", json=data)
+            response.raise_for_status()
+            logger.info("send message to slack")
+            logger.info(response.json())
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            logger.error("Error while fetching `%s`: %s", e.request.url, e)
+            raise e

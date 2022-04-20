@@ -7,5 +7,5 @@ contact: {{ tender_contact }}
 entreprise: {{ tender_company }}
 ---
 
-Lien dans l'admin : https://{{ domain }}{% url 'admin:tenders_tender_change' tender_id %}
+Lien dans l'admin : {{ admin_url }}
 
