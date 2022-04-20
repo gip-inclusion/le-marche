@@ -13,6 +13,7 @@ from lemarche.tenders.factories import TenderFactory
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
+from lemarche.www.tenders.constants import match_tender_for_partners
 
 
 class TenderCreateViewTest(TestCase):
@@ -319,3 +320,61 @@ class TenderSiaeInterestedListView(TestCase):
         url = reverse("tenders:detail-siae-interested", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.context["tendersiaes"][0].id, self.tendersiae_1_1.id)
+
+
+class TenderMatchPartnersTest(TestCase):
+    def setUp(self):
+        # for adie
+        self.nb_partners_without_filters = 3
+        self.nb_partners_with_filters_amount_range_0_1 = 1
+
+    def test_send_to_partners_without_filters(self):
+        tender = TenderFactory(amount=Tender.AMOUNT_RANGE_4)
+        partners_interested = match_tender_for_partners(tender)
+        self.assertEqual(len(partners_interested), self.nb_partners_without_filters)
+
+    def test_send_to_partners_with_filter_amount(self):
+        tender_range_0 = TenderFactory(amount=Tender.AMOUNT_RANGE_0)
+        partners_interested = match_tender_for_partners(tender_range_0)
+        self.assertEqual(
+            len(partners_interested), self.nb_partners_without_filters + self.nb_partners_with_filters_amount_range_0_1
+        )
+
+        tender_range_1 = TenderFactory(amount=Tender.AMOUNT_RANGE_1)
+        partners_interested = match_tender_for_partners(tender_range_1)
+        self.assertEqual(
+            len(partners_interested), self.nb_partners_without_filters + self.nb_partners_with_filters_amount_range_0_1
+        )
+
+    def test_send_to_partners_with_filter_perimeter(self):
+        def test_perimeter(perimeters, nb_more_partners=1):
+            tender = TenderFactory(amount=Tender.AMOUNT_RANGE_4, perimeters=perimeters)
+            partners_interested = match_tender_for_partners(tender)
+            self.assertEqual(len(partners_interested), self.nb_partners_without_filters + nb_more_partners)
+
+        # Hauts-de-France
+        perimeter_hdf = PerimeterFactory(region_code="32")
+        test_perimeter(perimeters=[perimeter_hdf], nb_more_partners=1)
+
+        perimeter_hdf_region = PerimeterFactory(name="Hauts-de-France")
+        test_perimeter(perimeters=[perimeter_hdf_region], nb_more_partners=1)
+
+        # La Réunion
+        perimeter_reunion = PerimeterFactory(region_code="04")
+        test_perimeter(perimeters=[perimeter_reunion], nb_more_partners=1)
+
+        perimeter_reunion_region = PerimeterFactory(name="La Réunion")
+        test_perimeter(perimeters=[perimeter_reunion_region], nb_more_partners=1)
+
+        # Grand Est
+        perimeter_grand_est = PerimeterFactory(region_code="04")
+        test_perimeter(perimeters=[perimeter_grand_est], nb_more_partners=1)
+
+        perimeter_grand_est_region = PerimeterFactory(name="Grand Est")
+        test_perimeter(perimeters=[perimeter_grand_est_region], nb_more_partners=1)
+
+        # Grand Est + La réunion
+        test_perimeter(perimeters=[perimeter_grand_est_region, perimeter_reunion], nb_more_partners=2)
+
+        # Grand Est + La réunion +  Hauts-de-France
+        test_perimeter(perimeters=[perimeter_grand_est_region, perimeter_reunion, perimeter_hdf], nb_more_partners=3)
