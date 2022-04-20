@@ -438,6 +438,11 @@ MAILJET_NL_CL_PARTNER_DREETS_ID = env.int("MAILJET_NL_CL_PARTNER_DREETS_ID", 250
 # contact list "acheteurs ayant téléchargés la liste excel des structure"
 MAILJET_NL_CL_BUYER_DOWNLOAD_SIAE_LIST_ID = env.int("MAILJET_NL_CL_BUYER_DOWNLOAD_SIAE_LIST_ID", 2500034)
 
+
+# API slack
+SLACK_WEBHOOK_C4_CHANNEL = env.str("SLACK_WEBHOOK_C4_CHANNEL", "set-it")
+
+
 # Django REST Framework (DRF)
 # https://www.django-rest-framework.org/
 # ------------------------------------------------------------------------------
