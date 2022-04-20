@@ -7,7 +7,7 @@ from django.utils.html import format_html
 
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
-from lemarche.www.tenders.tasks import send_tender_emails_to_siaes
+from lemarche.www.tenders.tasks import notify_admin_tender_created, send_tender_emails_to_siaes
 
 
 class ResponseKindFilter(admin.SimpleListFilter):

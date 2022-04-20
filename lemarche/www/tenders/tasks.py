@@ -1,15 +1,13 @@
 from django.conf import settings
+from django.template.loader import render_to_string
 from django.utils import timezone
 
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.utils.apis import api_mailjet
-from lemarche.utils.emails import whitelist_recipient_list
-from lemarche.utils.urls import get_share_url_object
+from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX, send_mail_async, whitelist_recipient_list
+from lemarche.utils.urls import get_share_url_object, get_domain_url
 from lemarche.www.tenders.constants import match_tender_for_partners
-
-
-EMAIL_SUBJECT_PREFIX = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_ENV != "prod" else ""
 
 
 # @task()
@@ -47,7 +45,7 @@ def send_tender_email_to_partner(tender: Tender, partner: dict):
 # @task()
 def send_tender_email_to_siae(tender: Tender, siae: Siae):
     email_subject = (
-        EMAIL_SUBJECT_PREFIX + f"{tender.author.company_name} a besoin de vous sur le marché de l'inclusion"
+        f"{EMAIL_SUBJECT_PREFIX} {tender.author.company_name} a besoin de vous sur le marché de l'inclusion"
     )
     recipient_list = whitelist_recipient_list([siae.contact_email])
     if recipient_list:
@@ -109,3 +107,23 @@ def send_siae_interested_email_to_author(tender: Tender):
                     recipient_name=recipient_name,
                     variables=variables,
                 )
+
+
+def notify_admin_tender_created(tender: Tender):
+    email_subject = f"Marché de l'inclusion : dépôt de besoin, ajout d'un nouveau {tender.get_kind_display()}"
+    email_body = render_to_string(
+        "tenders/create_notification_email_admin_body.txt",
+        {
+            "tender_id": tender.id,
+            "tender_title": tender.title,
+            "tender_kind": tender.get_kind_display(),
+            "tender_contact": tender.get_contact_full_name,
+            "tender_company": tender.author.company_name,
+            "domain": get_domain_url(),
+        },
+    )
+    send_mail_async(
+        email_subject=email_subject,
+        email_body=email_body,
+        recipient_list=[settings.NOTIFY_EMAIL],
+    )
