@@ -97,3 +97,37 @@ def send_transactional_email_with_template(
             raise e
     else:
         logger.info("Email not sent (DEV environment detected)")
+
+
+@task()
+def send_transactional_email_many_recipient_with_template(
+    template_id, subject, recipient_email_list, variables, client=None
+):
+    data = {
+        "Messages": [
+            {
+                "From": {"Email": settings.DEFAULT_FROM_EMAIL, "Name": settings.DEFAULT_FROM_NAME},
+                "To": [{"Email": recipient_email} for recipient_email in recipient_email_list],
+                "TemplateID": template_id,
+                "TemplateLanguage": True,
+                "Subject": subject,
+                "Variables": variables,
+                # "Variables": {}
+            }
+        ]
+    }
+    if not client:
+        client = get_default_client()
+
+    if settings.BITOUBI_ENV != "dev":
+        try:
+            response = client.post(SEND_URL, json=data)
+            response.raise_for_status()
+            logger.info("Mailjet: send transactional email with template")
+            logger.info(response.json())
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            logger.error("Error while fetching `%s`: %s", e.request.url, e)
+            raise e
+    else:
+        logger.info("Email not sent (DEV environment detected)")
