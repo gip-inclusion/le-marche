@@ -154,6 +154,7 @@ class Tender(models.Model):
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+    validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
 
     objects = models.Manager.from_queryset(TenderQuerySet)()
 
