@@ -1,0 +1,12 @@
+{% extends 'admin/change_form.html' %}
+
+{% block after_related_objects %}
+    {{ block.super }}
+    <div class="submit-row">
+        {% if original.validated_at %}
+            <i>Validé et envoyé le {{original.validated_at}}</i>
+        {% else %}
+            <input type="submit" value="Valider (sauvegarder) et envoyer aux structures" name="_validate_tender">
+        {% endif %}
+    </div>
+{% endblock %}

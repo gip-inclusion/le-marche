@@ -1,8 +1,13 @@
+from datetime import datetime
+
 from django.contrib import admin
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.html import format_html
 
+from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
+from lemarche.www.tenders.tasks import send_tender_emails_to_siaes
 
 
 class ResponseKindFilter(admin.SimpleListFilter):
@@ -19,10 +24,21 @@ class ResponseKindFilter(admin.SimpleListFilter):
         return queryset
 
 
+def update_and_send_tender_task(tender: Tender):
+    tender.validated_at = datetime.now()
+    tender.save()
+    # find the matching Siaes
+    siae_found_list = Siae.objects.filter_with_tender(tender)
+    tender.siaes.set(siae_found_list)
+    # send the tender to all matching Siaes
+    send_tender_emails_to_siaes(tender)
+
+
 @admin.register(Tender)
 class TenderAdmin(admin.ModelAdmin):
     list_display = [
         "id",
+        "is_validate",
         "title",
         "user_with_link",
         "kind",
@@ -49,6 +65,8 @@ class TenderAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
     ]
+
+    change_form_template = "tenders/admin_change_form.html"
 
     fieldsets = (
         (
@@ -93,6 +111,12 @@ class TenderAdmin(admin.ModelAdmin):
         qs = qs.with_siae_stats()
         return qs
 
+    def is_validate(self, tender: Tender):
+        return tender.validated_at is not None
+
+    is_validate.boolean = True
+    is_validate.short_description = "Validé"
+
     def user_with_link(self, tender):
         url = reverse("admin:users_user_change", args=[tender.author_id])
         return format_html(f'<a href="{url}">{tender.author}</a>')
@@ -124,3 +148,10 @@ class TenderAdmin(admin.ModelAdmin):
 
     nb_siae_contact_click.short_description = "S. intéressées"
     nb_siae_contact_click.admin_order_field = "siae_contact_click_count"
+
+    def response_change(self, request, obj: Tender):
+        if "_validate_tender" in request.POST:
+            update_and_send_tender_task(tender=obj)
+            self.message_user(request, "Ce dépôt de besoin a été validé et envoyé aux structures")
+            return HttpResponseRedirect(".")
+        return super().response_change(request, obj)
