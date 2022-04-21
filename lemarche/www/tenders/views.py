@@ -9,7 +9,6 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.generic import CreateView, DetailView, ListView, View
 
-from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin, TenderOwnerRequiredMixin
@@ -39,12 +38,7 @@ class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView
         tender.save()
         form.save_m2m()
 
-        # find the matching Siaes
-        siae_found_list = Siae.objects.filter_with_tender(tender)
-        tender.siaes.set(siae_found_list)
-
-        # task
-        # send_tender_emails_to_siaes(tender)
+        # task to send tender was made in django admin task
 
         messages.add_message(
             self.request,

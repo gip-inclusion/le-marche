@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.html import format_html
 
+from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
 from lemarche.www.tenders.tasks import send_tender_emails_to_siaes
 
@@ -21,6 +22,16 @@ class ResponseKindFilter(admin.SimpleListFilter):
         if lookup_value:
             queryset = queryset.filter(response_kind__contains=[lookup_value])
         return queryset
+
+
+def update_and_send_tender_task(tender: Tender):
+    tender.validated_at = datetime.now()
+    tender.save()
+    # find the matching Siaes
+    siae_found_list = Siae.objects.filter_with_tender(tender)
+    tender.siaes.set(siae_found_list)
+    # send the tender to all matching Siaes
+    send_tender_emails_to_siaes(tender)
 
 
 @admin.register(Tender)
@@ -140,9 +151,7 @@ class TenderAdmin(admin.ModelAdmin):
 
     def response_change(self, request, obj: Tender):
         if "_validate_tender" in request.POST:
-            obj.validated_at = datetime.now()
-            obj.save()
-            send_tender_emails_to_siaes(obj)
+            update_and_send_tender_task(tender=obj)
             self.message_user(request, "Ce dépôt de besoin a été validé et envoyé aux structures")
             return HttpResponseRedirect(".")
         return super().response_change(request, obj)
