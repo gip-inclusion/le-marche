@@ -20,9 +20,7 @@ def get_default_client(params={}):
     headers = {
         "user-agent": "betagouv-lemarche/0.0.1",
     }
-    client = httpx.Client(
-        params=params, headers=headers, auth=(settings.MAILJET_MASTER_API_KEY, settings.MAILJET_MASTER_API_SECRET)
-    )
+    client = httpx.Client(params=params, headers=headers)
     return client
 
 
