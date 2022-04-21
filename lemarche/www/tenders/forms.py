@@ -6,7 +6,6 @@ from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
 class AddTenderForm(forms.ModelForm):
-
     sectors = GroupedModelMultipleChoiceField(
         label=Sector._meta.verbose_name_plural,
         queryset=Sector.objects.form_filter_queryset(),
@@ -49,10 +48,10 @@ class AddTenderForm(forms.ModelForm):
             "kind": forms.RadioSelect(),
         }
 
-    def clean(self):
-        super().clean()
-        msg_field_missing = "{} est un champ obligatoire"
-        if "perimeters" in self.errors:
-            self.errors["perimeters"] = [msg_field_missing.format("Lieux d'exécution")]
-        if "sectors" in self.errors:
-            self.errors["sectors"] = [msg_field_missing.format(Sector._meta.verbose_name_plural)]
+    # def clean(self):
+    #     super().clean()
+    #     msg_field_missing = "{} est un champ obligatoire"
+    #     if "perimeters" in self.errors:
+    #         self.add_error("perimeters", msg_field_missing.format("Lieux d'exécution"))
+    #     if "sectors" in self.errors:
+    #         self.add_error("sectors", msg_field_missing.format(Sector._meta.verbose_name_plural))
