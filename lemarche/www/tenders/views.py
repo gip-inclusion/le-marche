@@ -26,7 +26,7 @@ class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView
     context_object_name = "tender"
     success_message = """
         Votre besoin <strong>{}</strong> est déposé sur le marché et les structures
-        correspondants à vos critères seront notifiés
+        correspondants à vos critères seront notifiés dès la validation de votre besoin.
     """
     success_url = reverse_lazy("tenders:list")
 
