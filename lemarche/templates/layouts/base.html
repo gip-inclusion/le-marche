@@ -86,17 +86,17 @@
         {% block breadcrumbs %}{% endblock %}
 
         {% block messages %}
-        {% if messages %}
-            <section>
-                <div class="container">
-                    <div class="row messages">
-                        <div class="col">
-                            {% include 'includes/_messages.html' %}
+            {% if messages %}
+                <section>
+                    <div class="container">
+                        <div class="row messages">
+                            <div class="col">
+                                {% include 'includes/_messages.html' %}
+                            </div>
                         </div>
                     </div>
-                </div>
-            </section>
-        {% endif %}
+                </section>
+            {% endif %}
         {% endblock %}
 
         {% block content %}{% endblock %}
@@ -128,7 +128,6 @@
     <script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/kind_multiselect_field.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/territory_multiselect_field.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/home_partner_slider.js' %}"></script>
     {% endcompress %}
     <script type="text/javascript" src="{% static 'js/utils.js'%}"></script>
     {% if BITOUBI_ENV not in "dev" %}
