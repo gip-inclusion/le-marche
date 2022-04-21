@@ -25,7 +25,7 @@ def send_mail_async(
     fail_silently=False,
 ):
     send_mail(
-        subject=f"{EMAIL_SUBJECT_PREFIX} {email_subject}",
+        subject=f"{EMAIL_SUBJECT_PREFIX}{email_subject}",
         message=email_body,
         from_email=from_email,
         recipient_list=recipient_list,

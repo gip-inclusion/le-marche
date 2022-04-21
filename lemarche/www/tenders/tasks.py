@@ -24,7 +24,7 @@ def send_tender_emails_to_siaes(tender: Tender):
 
 
 def send_tender_email_to_partner(tender: Tender, partner: dict):
-    email_subject = EMAIL_SUBJECT_PREFIX + f"{tender.author.company_name} recherchent des structures inclusives"
+    email_subject = f"{EMAIL_SUBJECT_PREFIX}{tender.author.company_name} recherchent des structures inclusives"
     recipient_list = whitelist_recipient_list(partner.get("contacts_email"))
     if recipient_list:
         variables = {
@@ -44,9 +44,7 @@ def send_tender_email_to_partner(tender: Tender, partner: dict):
 
 # @task()
 def send_tender_email_to_siae(tender: Tender, siae: Siae):
-    email_subject = (
-        f"{EMAIL_SUBJECT_PREFIX} {tender.author.company_name} a besoin de vous sur le marché de l'inclusion"
-    )
+    email_subject = f"{EMAIL_SUBJECT_PREFIX}{tender.author.company_name} a besoin de vous sur le marché de l'inclusion"
     recipient_list = whitelist_recipient_list([siae.contact_email])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
@@ -111,7 +109,7 @@ def send_siae_interested_email_to_author(tender: Tender):
 
 def notify_admin_tender_created(tender: Tender):
     email_subject = f"Marché de l'inclusion : dépôt de besoin, ajout d'un nouveau {tender.get_kind_display()}"
-    admin_url = get_admin_url_object(tender)
+    tender_admin_url = get_admin_url_object(tender)
     email_body = render_to_string(
         "tenders/create_notification_email_admin_body.txt",
         {
@@ -120,7 +118,7 @@ def notify_admin_tender_created(tender: Tender):
             "tender_kind": tender.get_kind_display(),
             "tender_contact": tender.get_contact_full_name,
             "tender_company": tender.author.company_name,
-            "admin_url": admin_url,
+            "tender_admin_url": tender_admin_url,
         },
     )
     send_mail_async(
