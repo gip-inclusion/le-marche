@@ -6,33 +6,40 @@
 {% block meta_description %}{{ flatpage.meta_description }}{% endblock %}
 
 {% block breadcrumbs %}
-<section>
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ flatpage.title }}</li>
-                    </ol>
-                </nav>
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ flatpage.title }}</li>
+                        </ol>
+                    </nav>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 {% endblock %}
 
 {% block content %}
-<section class="s-flatpage">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <h1 class="h1 mb-3 mb-lg-5"><strong>{{ flatpage.title }}</strong></h1>
-                <div class="s-flatpage-content">
+    <section class="s-title-01">
+        <div class="s-title-01__container container">
+            <div class="s-title-01__row row">
+                <div class="s-title-01__col col-12">
+                    <h1 class="s-title-01__title h1"><strong>{{ flatpage.title }}</strong></h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="s-cms">
+        <div class="s-cms__container container container-max-lg">
+            <div class="s-cms__row row">
+                <div class="s-cms__col col-12">
                     {{ flatpage.content | safe }}
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>  
 {% endblock %}
