@@ -3,11 +3,8 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 
 from lemarche.utils.apis import api_mailjet
-from lemarche.utils.emails import whitelist_recipient_list
+from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX, whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url
-
-
-EMAIL_SUBJECT_PREFIX = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_ENV != "prod" else ""
 
 
 def send_siae_user_request_email_to_assignee(siae_user_request):
