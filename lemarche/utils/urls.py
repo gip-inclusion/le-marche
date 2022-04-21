@@ -3,6 +3,7 @@
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.db.models import Model
+from django.urls import reverse_lazy
 from django.utils.http import url_has_allowed_host_and_scheme
 
 
@@ -54,3 +55,8 @@ def get_safe_url(request, param_name=None, fallback_url=None, url=None):
 
 def get_share_url_object(obj: Model):
     return f"https://{get_domain_url()}{obj.get_absolute_url()}"
+
+
+def get_admin_url_object(obj: Model):
+    admin_url = reverse_lazy(f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change", args=[obj.id])
+    return f"https://{get_domain_url()}{admin_url}"

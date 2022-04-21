@@ -13,7 +13,10 @@ from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin, TenderOwnerRequiredMixin
 from lemarche.www.tenders.forms import AddTenderForm
-from lemarche.www.tenders.tasks import send_siae_interested_email_to_author  # , send_tender_emails_to_siaes
+from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
+    notify_admin_tender_created,
+    send_siae_interested_email_to_author,
+)
 
 
 TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
@@ -39,6 +42,7 @@ class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView
         form.save_m2m()
 
         # task to send tender was made in django admin task
+        notify_admin_tender_created(tender)
 
         messages.add_message(
             self.request,

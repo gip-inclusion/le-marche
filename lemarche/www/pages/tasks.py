@@ -2,13 +2,12 @@ from django.conf import settings
 from django.core.mail import EmailMessage, send_mail
 from django.template.loader import render_to_string
 
-from lemarche.utils.emails import whitelist_recipient_list
+from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX, whitelist_recipient_list
 
 
 # TODO: make async (celery)
 def send_contact_form_email(contact_form_dict):
-    email_subject_prefix = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_ENV != "prod" else ""
-    email_subject = email_subject_prefix + "Marché de l'inclusion : demande d'information"
+    email_subject = EMAIL_SUBJECT_PREFIX + "Marché de l'inclusion : demande d'information"
     email_body = render_to_string("pages/contact_form_email_body.txt", {"form_dict": contact_form_dict})
 
     # send_mail(
@@ -32,8 +31,7 @@ def send_contact_form_email(contact_form_dict):
 
 # TODO: make async (celery)
 def send_contact_form_receipt(contact_form_dict):
-    email_subject_prefix = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_ENV != "prod" else ""
-    email_subject = email_subject_prefix + "Suite à votre demande sur le Marché de l'inclusion"
+    email_subject = EMAIL_SUBJECT_PREFIX + "Suite à votre demande sur le Marché de l'inclusion"
     email_body = render_to_string("pages/contact_form_receipt_email_body.txt", {"form_dict": contact_form_dict})
 
     send_mail(
