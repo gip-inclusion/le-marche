@@ -1,7 +1,15 @@
 from django.urls import include, path
 from django.views.generic import RedirectView, TemplateView
 
-from lemarche.www.pages.views import ContactView, HomeView, PageView, SiaeGroupListView, StatsView, trigger_error
+from lemarche.www.pages.views import (
+    ContactView,
+    HomeView,
+    PageView,
+    SiaeGroupListView,
+    StatsView,
+    TrackView,
+    trigger_error,
+)
 
 
 # https://docs.djangoproject.com/en/dev/topics/http/urls/#url-namespaces-and-included-urlconfs
@@ -141,6 +149,8 @@ urlpatterns = [
             ]
         ),
     ),
+    # Tracking endpoint for the frontend
+    path("track/", TrackView.as_view(), name="track_frontend"),
     # Flatpages (created in the admin)
     # path("", include("django.contrib.flatpages.urls")),
     path("<path:url>", PageView.as_view(), name="flatpage"),

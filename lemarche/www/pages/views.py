@@ -1,12 +1,15 @@
+import json
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import Http404, HttpResponsePermanentRedirect
+from django.http import Http404, HttpResponsePermanentRedirect, JsonResponse
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, FormView, ListView, TemplateView
+from django.views.generic import DetailView, FormView, ListView, TemplateView, View
 
 from lemarche.pages.models import Page
 from lemarche.siaes.models import Siae, SiaeGroup
+from lemarche.utils.tracker import track
 from lemarche.www.pages.forms import ContactForm
 from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
 
@@ -102,6 +105,18 @@ class PageView(DetailView):
             raise Http404("Page inconnue")
 
         return page
+
+
+class TrackView(View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        track(
+            page=data.get("page", ""),
+            action=data.get("action", ""),
+            meta=data,
+            session_id=data.get("sessionid", None),
+        )
+        return JsonResponse({"message": "success"})
 
 
 def trigger_error(request):

@@ -29,7 +29,10 @@ VERSION = 1
 
 TRACKER_IGNORE_LIST = [
     "static/",
+    "admin/",
+    "select2/",
     "api/perimeters/autocomplete",
+    "track/",  # avoid duplicate tracking
 ]
 
 USER_KIND_MAPPING = {
@@ -48,8 +51,6 @@ DEFAULT_PAYLOAD = {
     "page": "",
     "action": "load",
     "meta": {"source": "bitoubi_api"},  # needs to be stringifyed...
-    "client_context": {},
-    "server_context": {},
 }
 
 
@@ -69,7 +70,6 @@ def track(
     action: str,
     meta: dict = {},
     session_id: str = None,
-    client_context: dict = {},
 ):  # noqa B006
 
     # Don't log in dev
@@ -91,7 +91,6 @@ def track(
             "session_id": session_id,
             "action": action,
             "meta": json.dumps(meta | DEFAULT_PAYLOAD["meta"]),
-            "client_context": client_context,
         }
 
         payload = DEFAULT_PAYLOAD | set_payload
@@ -122,14 +121,11 @@ class TrackerMiddleware:
                 # build meta & co
                 meta = extract_meta_from_request(request)
                 session_id = request.COOKIES.get("sessionid", None)
-                request_referer = request.META.get("HTTP_REFERER", "")
-                client_context = {"referer": request_referer, "user_agent": request_ua}
                 track(
                     page=page,
                     action="load",
                     meta=meta,
                     session_id=session_id,
-                    client_context=client_context,
                 )
 
         response = self.get_response(request)
