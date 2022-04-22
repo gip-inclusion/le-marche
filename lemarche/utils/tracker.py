@@ -29,6 +29,8 @@ VERSION = 1
 
 TRACKER_IGNORE_LIST = [
     "static/",
+    "admin/",
+    "select2/",
     "api/perimeters/autocomplete",
 ]
 
