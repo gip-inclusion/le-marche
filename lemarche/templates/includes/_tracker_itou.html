@@ -7,7 +7,6 @@ const getCookieValueByName = function(cookieName) {
 
 var ORDER = 1;
 var SESSION_ID = '';
-var VERSION = 1;
 
 const uTypeMapping = {
     'SIAE': '4',
@@ -42,15 +41,16 @@ document.cookie = `${USER_TYPE_COOKIE_NAME}=${window.uType}; expires=Fri, 31 Dec
 document.cookie = `${USER_ID_COOKIE_NAME}=${window.uID}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
 
 async function track(page, action, meta={}) {
-    const body = computeRequestBody(page, action, meta);
+    const data = computeRequestBody(page, action, meta);
 
     if (typeof window !== 'undefined') {
-        await fetch('{{ TRACKER_HOST }}/track', {
+        await fetch(`${window.location.origin}/track/`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'text/plain',
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify(body),
+            body: JSON.stringify(data)
         });
     }
 }
@@ -71,7 +71,7 @@ function computeRequestBody(page, action, metaIn) {
     // Optionnaly add meta data (in key/value pairs) from url query string
     const meta = Object.assign(metaIn, getUrlMeta());
     // user info
-    // meta['user_id'] = {% if user.is_authenticated %}'{{ user.id }}'{% else %}null{% endif %};  // privacy concerns...
+    // meta['user_id'] = {% if user.is_authenticated %}'{{ user.id }}'{% else %}null{% endif %};
     meta['is_admin'] = getCookieValueByName(IS_ADMIN_COOKIE_NAME) == 'true';
     meta['user_type'] = getCookieValueByName(USER_TYPE_COOKIE_NAME);
     meta['user_id'] = getCookieValueByName(USER_ID_COOKIE_NAME);
@@ -79,16 +79,11 @@ function computeRequestBody(page, action, metaIn) {
     meta['source'] = 'bitoubi_frontend';
 
     return {
-        _v: VERSION,
-        timestamp: timeNow.toISOString(),
         order: ORDER += 1,
-        env: '{{ BITOUBI_ENV }}',
         session_id: getSessionId(),
         page: page,
         action: action,
-        meta: JSON.stringify(meta),
-        client_context: {},
-        server_context: {},
+        meta: meta,
     }
 }
 
@@ -137,10 +132,12 @@ function getUrlMeta() {
     }
 }
 
+// track each page load
 document.addEventListener('DOMContentLoaded', () => {
-    track(window.location.pathname, Steps.LOAD);
+    track(page=window.location.pathname, action=Steps.LOAD);
 }, false);
 
+// track each link & button click
 document.addEventListener('click', async (event) => {
     event = event || window.event;
     var target = event.target || event.srcElement;
@@ -160,9 +157,9 @@ document.addEventListener('click', async (event) => {
     }
 
     await track(
-        window.location.pathname,
-        Steps.CLICK,
-        meta
+        page=window.location.pathname,
+        action=Steps.CLICK,
+        meta=meta
     );
 }, false);
 </script>
