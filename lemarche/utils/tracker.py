@@ -45,12 +45,12 @@ USER_KIND_MAPPING = {
 DEFAULT_PAYLOAD = {
     "_v": VERSION,
     "timestamp": datetime.now().astimezone().isoformat(),
-    "order": 0,
-    "session_id": None,
     "env": settings.BITOUBI_ENV,
     "page": "",
     "action": "load",
     "meta": {"source": "bitoubi_api"},  # needs to be stringifyed...
+    "session_id": None,
+    "order": 0,
 }
 
 
@@ -65,12 +65,7 @@ def extract_meta_from_request(request):
     }
 
 
-def track(
-    page: str,
-    action: str,
-    meta: dict = {},
-    session_id: str = None,
-):  # noqa B006
+def track(page: str = "", action: str = "load", meta: dict = {}, session_id: str = None, order: int = 0):  # noqa B006
 
     # Don't log in dev
     if settings.BITOUBI_ENV != "dev":
@@ -88,9 +83,10 @@ def track(
         set_payload = {
             "timestamp": datetime.now().isoformat(),
             "page": page,
-            "session_id": session_id,
             "action": action,
-            "meta": json.dumps(meta | DEFAULT_PAYLOAD["meta"]),
+            "session_id": session_id,
+            "order": order,
+            "meta": json.dumps(DEFAULT_PAYLOAD["meta"] | meta),
         }
 
         payload = DEFAULT_PAYLOAD | set_payload

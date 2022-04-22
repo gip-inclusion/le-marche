@@ -113,8 +113,9 @@ class TrackView(View):
         track(
             page=data.get("page", ""),
             action=data.get("action", ""),
-            meta=data,
+            meta=data.get("meta", None),
             session_id=data.get("sessionid", None),
+            order=data.get("order", None),
         )
         return JsonResponse({"message": "success"})
 
