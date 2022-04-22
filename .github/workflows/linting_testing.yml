@@ -26,7 +26,7 @@ jobs:
     services:
       postgres:
         # Docker Hub image
-        image: postgis/postgis:14-master
+        image: postgis/postgis:14-3.2
         env:
           POSTGRES_PASSWORD: postgres
         ports:
