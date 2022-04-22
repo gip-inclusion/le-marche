@@ -32,6 +32,7 @@ TRACKER_IGNORE_LIST = [
     "admin/",
     "select2/",
     "api/perimeters/autocomplete",
+    "track/",  # avoid duplicate tracking
 ]
 
 USER_KIND_MAPPING = {
@@ -50,8 +51,6 @@ DEFAULT_PAYLOAD = {
     "page": "",
     "action": "load",
     "meta": {"source": "bitoubi_api"},  # needs to be stringifyed...
-    "client_context": {},
-    "server_context": {},
 }
 
 
@@ -74,7 +73,7 @@ def track(
 ):  # noqa B006
 
     # Don't log in dev
-    if settings.BITOUBI_ENV == "dev":
+    if settings.BITOUBI_ENV != "dev":
 
         # extract_sessionid_from_request
         if session_id:
