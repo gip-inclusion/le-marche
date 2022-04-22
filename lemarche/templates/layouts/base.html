@@ -130,7 +130,7 @@
     <script type="text/javascript" src="{% static 'js/territory_multiselect_field.js' %}"></script>
     {% endcompress %}
     <script type="text/javascript" src="{% static 'js/utils.js'%}"></script>
-    {% if BITOUBI_ENV not in "dev" %}
+    {% if BITOUBI_ENV in "dev" %}
         {% include "includes/_tracker_tarteaucitron.html" %}
         {% include "includes/_tracker_itou.html" %}
     {% endif %}

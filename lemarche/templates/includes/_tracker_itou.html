@@ -71,7 +71,7 @@ function computeRequestBody(page, action, metaIn) {
     // Optionnaly add meta data (in key/value pairs) from url query string
     const meta = Object.assign(metaIn, getUrlMeta());
     // user info
-    // meta['user_id'] = {% if user.is_authenticated %}'{{ user.id }}'{% else %}null{% endif %};  // privacy concerns...
+    // meta['user_id'] = {% if user.is_authenticated %}'{{ user.id }}'{% else %}null{% endif %};
     meta['is_admin'] = getCookieValueByName(IS_ADMIN_COOKIE_NAME) == 'true';
     meta['user_type'] = getCookieValueByName(USER_TYPE_COOKIE_NAME);
     meta['user_id'] = getCookieValueByName(USER_ID_COOKIE_NAME);
@@ -88,7 +88,7 @@ function computeRequestBody(page, action, metaIn) {
         action: action,
         meta: JSON.stringify(meta),
         client_context: {},
-        server_context: {},
+        server_context: {}
     }
 }
 
@@ -137,10 +137,12 @@ function getUrlMeta() {
     }
 }
 
+// track each page load
 document.addEventListener('DOMContentLoaded', () => {
     track(window.location.pathname, Steps.LOAD);
 }, false);
 
+// track each link & button click
 document.addEventListener('click', async (event) => {
     event = event || window.event;
     var target = event.target || event.srcElement;

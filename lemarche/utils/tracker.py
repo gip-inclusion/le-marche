@@ -69,11 +69,10 @@ def track(
     action: str,
     meta: dict = {},
     session_id: str = None,
-    client_context: dict = {},
 ):  # noqa B006
 
     # Don't log in dev
-    if settings.BITOUBI_ENV != "dev":
+    if settings.BITOUBI_ENV == "dev":
 
         # extract_sessionid_from_request
         if session_id:
@@ -91,7 +90,6 @@ def track(
             "session_id": session_id,
             "action": action,
             "meta": json.dumps(meta | DEFAULT_PAYLOAD["meta"]),
-            "client_context": client_context,
         }
 
         payload = DEFAULT_PAYLOAD | set_payload
@@ -122,14 +120,11 @@ class TrackerMiddleware:
                 # build meta & co
                 meta = extract_meta_from_request(request)
                 session_id = request.COOKIES.get("sessionid", None)
-                request_referer = request.META.get("HTTP_REFERER", "")
-                client_context = {"referer": request_referer, "user_agent": request_ua}
                 track(
                     page=page,
                     action="load",
                     meta=meta,
                     session_id=session_id,
-                    client_context=client_context,
                 )
 
         response = self.get_response(request)
