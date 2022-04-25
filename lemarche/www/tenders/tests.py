@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import date, timedelta
 
 from django.contrib.gis.geos import Point
 from django.test import TestCase
@@ -126,7 +126,11 @@ class TenderListViewTest(TestCase):
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
-        cls.tender = TenderFactory(author=cls.user_buyer_1)
+        cls.tender = TenderFactory(author=cls.user_buyer_1, validated_at=date.today())
+        cls.tender_2 = TenderFactory(author=cls.user_buyer_1, deadline_date=date.today() - timedelta(days=5))
+        cls.tender_3 = TenderFactory(
+            author=cls.user_buyer_1, validated_at=date.today(), deadline_date=date.today() - timedelta(days=5)
+        )
 
     def test_anonymous_user_cannot_list_tenders(self):
         url = reverse("tenders:list")
@@ -154,7 +158,7 @@ class TenderListViewTest(TestCase):
         url = reverse("tenders:list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["tenders"]), 1)
+        self.assertEqual(len(response.context["tenders"]), 3)
 
     def test_other_user_without_tender_should_not_see_any_tenders(self):
         self.client.login(email=self.user_partner.email, password=DEFAULT_PASSWORD)

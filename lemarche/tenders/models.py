@@ -1,10 +1,9 @@
-import datetime
+from datetime import datetime
 from functools import reduce
 from uuid import uuid4
 
 import _operator
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models, transaction
 from django.db.models import Case, Count, IntegerField, Q, Sum, When
 from django.urls import reverse
@@ -18,6 +17,9 @@ from lemarche.utils.fields import ChoiceArrayField
 class TenderQuerySet(models.QuerySet):
     def by_user(self, user):
         return self.filter(author=user)
+
+    def is_live(self):
+        return self.filter(Q(validated_at__isnull=False) & Q(deadline_date__gte=datetime.today()))
 
     def in_perimeters(self, post_code, department, region):
         filters = (
@@ -162,16 +164,6 @@ class Tender(models.Model):
         verbose_name = "Besoin d'acheteur"
         verbose_name_plural = "Besoins des acheteurs"
         ordering = ["-updated_at", "deadline_date"]
-
-    def clean(self):
-        today = datetime.date.today()
-        if self.deadline_date and (self.deadline_date < today):
-            raise ValidationError("La date de cloture des réponses ne doit pas être antérieure à aujourd'hui.")
-
-        if self.deadline_date and self.start_working_date and (self.start_working_date < self.deadline_date):
-            raise ValidationError(
-                "La date idéale de début des prestations ne doit pas être antérieure de cloture des réponses."
-            )
 
     def __str__(self):
         return self.title
