@@ -1,4 +1,4 @@
-import datetime
+from datetime import date, datetime
 from functools import reduce
 from uuid import uuid4
 
@@ -18,6 +18,9 @@ from lemarche.utils.fields import ChoiceArrayField
 class TenderQuerySet(models.QuerySet):
     def by_user(self, user):
         return self.filter(author=user)
+
+    def is_live(self):
+        return self.filter(Q(validated_at__isnull=False) & Q(deadline_date__gte=datetime.today()))
 
     def in_perimeters(self, post_code, department, region):
         filters = (
@@ -164,7 +167,7 @@ class Tender(models.Model):
         ordering = ["-updated_at", "deadline_date"]
 
     def clean(self):
-        today = datetime.date.today()
+        today = date.today()
         if self.deadline_date and (self.deadline_date < today):
             raise ValidationError("La date de cloture des réponses ne doit pas être antérieure à aujourd'hui.")
 
