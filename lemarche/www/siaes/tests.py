@@ -306,9 +306,9 @@ class SiaePerimeterSearchFilterTest(TestCase):
             coords=Point(-4.0916, 47.9914),
         )
 
-    # def test_object_count(self):
-    #     self.assertEqual(Perimeter.objects.count(), 4)
-    #     self.assertEqual(Siae.objects.count(), 14)
+    def test_object_count(self):
+        self.assertEqual(Perimeter.objects.count(), 4)
+        self.assertEqual(Siae.objects.count(), 14)
 
     def test_search_perimeter_empty(self):
         form = SiaeSearchForm({"perimeter": "", "perimeter_name": ""})
