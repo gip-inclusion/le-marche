@@ -17,19 +17,7 @@
 
         <div class="row">
             <div class="col-12 col-lg-7">
-                <div class="form-group form-group-required">
-                    {{ form.presta_type.label_tag }}
-                    <ul class="list-unstyled mb-1">
-                        {% for pk, choice in form.presta_type.field.widget.choices %}
-                        <li>
-                            <div class="custom-control custom-checkbox">
-                                <input id="id_{{form.presta_type.name}}_{{ forloop.counter0 }}" name="{{form.presta_type.name}}" type="{{form.presta_type.field.widget.input_type}}" value="{{pk}}" class="custom-control-input" />
-                                <label for="id_{{form.presta_type.name}}_{{ forloop.counter0 }}" class="custom-control-label">{{ choice }}</label>
-                            </div>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
+                {% include "includes/forms/_bootstrap_field_checkbox.html" with form_field=form.presta_type form_group_class="form-group form-group-required" %}            
             </div>
             <div class="col-12 col-lg-5">
                 <div class="c-form-conseil">
@@ -48,20 +36,8 @@
 
         <div class="row">
             <div class="col-12 col-lg-7">
-                <div class="form-group form-group-required">
-                    {{ form.geo_range.label_tag }}
-                    <ul class="list-unstyled mb-1">
-                        {% for pk, choice in form.geo_range.field.widget.choices %}
-                        <li>
-                            <div class="custom-control custom-radio">
-                                <input id="id_{{form.geo_range.name}}_{{ forloop.counter0 }}" name="{{form.geo_range.name}}" type="{{form.geo_range.field.widget.input_type}}" value="{{pk}}" class="custom-control-input" />
-                                <label for="id_{{form.geo_range.name}}_{{ forloop.counter0 }}" class="custom-control-label">{{ choice }}</label>
-                            </div>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    {% bootstrap_field form.geo_range_custom_distance show_label="skip" size="small" form_group_class="form-group col-12 col-md-6" %}
-                </div>
+                {% include "includes/forms/_bootstrap_field_radio.html" with form_field=form.geo_range form_group_class="form-group form-group-required" %}    
+                {% bootstrap_field form.geo_range_custom_distance show_label="skip" size="small" form_group_class="form-group col-12 col-md-6" %}
             </div>
             <div class="col-12 col-lg-4">
                 <div class="c-form-conseil">
@@ -81,29 +57,7 @@
 
         <div class="row">
             <div class="col-12 col-lg-7">
-
-                <div class="form-group">
-                    {{ form.sectors.label_tag }}
-                    <ul class="list-group c-list-group-collapse c-list-group-form">
-                        {% for pk, choices in form.sectors.field.widget.choices %}
-                        <li class="list-group-item list-group-item-action">
-                            <a data-toggle="collapse" href="#id_{{form.sectors.name}}_{{ forloop.counter0 }}" role="button" aria-expanded="false" aria-controls="id_{{form.sectors.name}}_{{ forloop.counter0 }}">{{pk}}</a>
-                            <div class="collapse" id="id_{{form.sectors.name}}_{{ forloop.counter0 }}">
-                                <ul>
-                                    {% for pk, choice in choices %}
-                                    <li>
-                                        <div class="custom-control custom-checkbox">
-                                            <input id="id_{{form.sectors.name}}_{{ forloop.parentloop.counter0 }}_{{ forloop.counter0 }}" name="id_{{form.sectors.name}}_{{ forloop.parentloop.counter0 }}_{{ forloop.counter0 }}" type="{{form.presta_type.field.widget.input_type}}" value="{{pk}}" class="custom-control-input" />
-                                            <label for="id_{{form.sectors.name}}_{{ forloop.parentloop.counter0 }}_{{ forloop.counter0 }}" class="custom-control-label">{{ choice }}</label>
-                                        </div>
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
+                {% include "includes/forms/_bootstrap_field_grouplist_checkbox.html" with form_field=form.sectors form_group_class="form-group" %}
             </div>
             <div class="col-12 col-lg-5">
                 <div class="c-form-conseil">

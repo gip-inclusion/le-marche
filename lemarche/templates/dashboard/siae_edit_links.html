@@ -42,19 +42,7 @@
         </div>
         <div class="row">
             <div class="col-12 col-lg-7">
-                <div class="form-group">
-                    {{ form.is_cocontracting.label_tag }}
-                    <ul class="list-unstyled mb-1">
-                        {% for pk, choice in form.is_cocontracting.field.widget.choices %}
-                        <li>
-                            <div class="custom-control custom-radio">
-                                <input id="id_{{form.is_cocontracting.name}}_{{ forloop.counter0 }}" name="{{form.is_cocontracting.name}}" type="{{form.is_cocontracting.field.widget.input_type}}" value="{{pk}}" class="custom-control-input" />
-                                <label for="id_{{form.is_cocontracting.name}}_{{ forloop.counter0 }}" class="custom-control-label">{{ choice }}</label>
-                            </div>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
+                {% include "includes/forms/_bootstrap_field_radio.html" with form_field=form.is_cocontracting form_group_class="form-group" %}   
             </div>
             <div class="col-12 col-lg-5">
                 <div class="c-form-conseil">
