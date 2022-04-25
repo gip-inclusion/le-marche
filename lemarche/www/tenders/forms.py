@@ -1,3 +1,5 @@
+from datetime import date
+
 from django import forms
 
 from lemarche.sectors.models import Sector
@@ -48,10 +50,25 @@ class AddTenderForm(forms.ModelForm):
             "kind": forms.RadioSelect(),
         }
 
-    # def clean(self):
-    #     super().clean()
-    #     msg_field_missing = "{} est un champ obligatoire"
-    #     if "perimeters" in self.errors:
-    #         self.add_error("perimeters", msg_field_missing.format("Lieux d'exécution"))
-    #     if "sectors" in self.errors:
-    #         self.add_error("sectors", msg_field_missing.format(Sector._meta.verbose_name_plural))
+    def clean(self):
+        super().clean()
+        msg_field_missing = "{} est un champ obligatoire"
+        if "perimeters" in self.errors:
+            self.add_error("perimeters", msg_field_missing.format("Lieux d'exécution"))
+        if "sectors" in self.errors:
+            self.add_error("sectors", msg_field_missing.format(Sector._meta.verbose_name_plural))
+        today = date.today()
+        if self.cleaned_data.get("deadline_date") and (self.cleaned_data.get("deadline_date") < today):
+            self.add_error(
+                "deadline_date", "La date de clôture des réponses ne doit pas être antérieure à aujourd'hui."
+            )
+
+        if (
+            self.cleaned_data.get("deadline_date")
+            and self.cleaned_data.get("start_working_date")
+            and (self.cleaned_data.get("start_working_date") < self.cleaned_data.get("deadline_date"))
+        ):
+            self.add_error(
+                "start_working_date",
+                "La date idéale de début des prestations ne doit pas être antérieure de clôture des réponses.",
+            )
