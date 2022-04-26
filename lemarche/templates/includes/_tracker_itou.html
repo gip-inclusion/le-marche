@@ -8,13 +8,6 @@ const getCookieValueByName = function(cookieName) {
 var ORDER = 1;
 var SESSION_ID = '';
 
-const uTypeMapping = {
-    'SIAE': '4',
-    'BUYER': '3',
-    'PARTNER': '6',
-    'ADMIN': '5',
-};
-
 const IS_ADMIN_COOKIE_NAME = 'isAdmin';
 const USER_TYPE_COOKIE_NAME = 'uType';
 const USER_ID_COOKIE_NAME = 'uID';
@@ -26,9 +19,6 @@ var sessionId = getCookieValueByName(SESSION_ID_COOKIE_NAME);
     var isAdmin = {% if user.kind == 'ADMIN' %}true{% else %}false{% endif %};
     var uType = '{{ user.kind }}';
     var uID = '{{ user.id }}';
-    if (uType) {
-        uType = uTypeMapping[uType];
-    }
 {% else %}
     var isAdmin = false;
     var uType = '';
@@ -53,17 +43,6 @@ async function track(page, action, meta={}) {
             body: JSON.stringify(data)
         });
     }
-}
-
-
-// export const Steps = {
-const Steps = {
-    LOAD: 'load',
-    CLICK: 'click',
-    SCROLL: 'scroll',
-    INSCRIPTION: 'inscription',
-    NEW_LISTING: 'new_listing',
-    USER_TYPE: 'user_type',
 }
 
 function computeRequestBody(page, action, metaIn) {
@@ -151,7 +130,7 @@ document.addEventListener('click', async (event) => {
             // send track
             await track(
                 page=window.location.pathname,
-                action=Steps.CLICK,
+                action='click',
                 meta=meta
             );
         }
