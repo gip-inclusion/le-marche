@@ -1,35 +1,4 @@
 <script type="text/javascript">
-const getCookieValueByName = function(cookieName) {
-    if (document.cookie.split('; ').find(row => row.startsWith(cookieName))) {
-        return document.cookie.split('; ').find(row => row.startsWith(`${cookieName}=`)).split('=')[1];
-    }
-}
-
-var ORDER = 1;
-var SESSION_ID = '';
-
-const IS_ADMIN_COOKIE_NAME = 'isAdmin';
-const USER_TYPE_COOKIE_NAME = 'uType';
-const USER_ID_COOKIE_NAME = 'uID';
-const SESSION_ID_COOKIE_NAME = 'sessionid';
-
-// set global variables
-var sessionId = getCookieValueByName(SESSION_ID_COOKIE_NAME);
-{% if user.is_authenticated %}
-    var isAdmin = {% if user.kind == 'ADMIN' %}true{% else %}false{% endif %};
-    var uType = '{{ user.kind }}';
-    var uID = '{{ user.id }}';
-{% else %}
-    var isAdmin = false;
-    var uType = '';
-    var uID = '';
-{% endif %}
-
-// update cookie
-document.cookie = `${IS_ADMIN_COOKIE_NAME}=${window.isAdmin}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
-document.cookie = `${USER_TYPE_COOKIE_NAME}=${window.uType}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
-document.cookie = `${USER_ID_COOKIE_NAME}=${window.uID}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure`;
-
 async function track(page, action, meta={}) {
     const data = computeRequestBody(page, action, meta);
 
@@ -50,48 +19,20 @@ function computeRequestBody(page, action, metaIn) {
     // Optionnaly add meta data (in key/value pairs) from url query string
     const meta = Object.assign(metaIn, getUrlMeta());
     // user info
-    // meta['user_id'] = {% if user.is_authenticated %}'{{ user.id }}'{% else %}null{% endif %};
-    meta['is_admin'] = getCookieValueByName(IS_ADMIN_COOKIE_NAME) == 'true';
-    meta['user_type'] = getCookieValueByName(USER_TYPE_COOKIE_NAME);
-    meta['user_id'] = getCookieValueByName(USER_ID_COOKIE_NAME);
+    meta['is_admin'] = {% if user.is_authenticated %}{% if user.kind == 'ADMIN' %}true{% else %}false{% endif %}{% else %}false{% endif %};
+    meta['user_type'] = {% if user.is_authenticated %}'{{ user.kind }}'{% else %}null{% endif %};
+    meta['user_id'] = {% if user.is_authenticated %}{{ user.id }}{% else %}null{% endif %};
+    meta['siae_id'] = {% if siae %}{{ siae.id }}{% else %}null{% endif %};
     // default data
     meta['source'] = 'bitoubi_frontend';
 
     return {
-        order: ORDER += 1,
-        session_id: getSessionId(),
         page: page,
         action: action,
         meta: meta,
     }
 }
 
-
-function uuidv4() {
-    try {
-        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-            (c ^ ( crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)
-        );
-    } catch {
-        return 'ANONYMOUS';
-    }
-}
-
-// export function getSessionId() {
-function getSessionId() {
-    if (SESSION_ID === '') {
-        if (typeof document !== `undefined`) {
-            SESSION_ID = (new URL(document.location)).searchParams.get('sid') || false;
-        }
-
-        if (!SESSION_ID && window.sessionId !== undefined) {
-            SESSION_ID = window.sessionId;
-        } else {
-            SESSION_ID = uuidv4();
-        }
-    }
-    return SESSION_ID;
-}
 
 function getUrlMeta() {
     // Avoid using JSON and interpreting user-provided values

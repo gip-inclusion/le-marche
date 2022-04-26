@@ -91,7 +91,6 @@ class SignupView(SuccessMessageMixin, CreateView):
             "backend",
             "inscription",
             meta=extract_meta_from_request(self.request),
-            session_id=self.request.COOKIES.get("sessionid", None),
         )
         # response
         messages.add_message(self.request, messages.SUCCESS, self.get_success_message(form.cleaned_data))
