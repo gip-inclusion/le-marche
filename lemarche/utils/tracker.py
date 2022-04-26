@@ -35,13 +35,6 @@ TRACKER_IGNORE_LIST = [
     "track/",  # avoid duplicate tracking
 ]
 
-USER_KIND_MAPPING = {
-    "SIAE": "4",
-    "BUYER": "3",
-    "PARTNER": "6",
-    "ADMIN": "5",
-}
-
 DEFAULT_PAYLOAD = {
     "_v": VERSION,
     "timestamp": datetime.now().astimezone().isoformat(),
@@ -58,7 +51,7 @@ def extract_meta_from_request(request):
     return {
         **request.GET,
         "is_admin": request.COOKIES.get("isAdmin", "false") == "true",
-        "user_type": USER_KIND_MAPPING.get(request.user.kind) if request.user.id else "",
+        "user_type": request.user.kind if request.user.id else "",
         "user_id": request.user.id if request.user.id else None,
         "token": request.GET.get("token", ""),
         "cmp": request.GET.get("cmp", ""),
