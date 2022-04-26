@@ -23,8 +23,8 @@ CONTENT_TYPE_MAPPING = {
     "xls": "application/ms-excel",
     "csv": "text/csv",
 }
-FILENAME = f"liste_telechargements_{date.today()}"
-FILENAME_PREVIOUS = f"liste_telechargements_{date.today() - timedelta(days=1)}"
+FILENAME = f"liste_recherches_{date.today()}"
+FILENAME_PREVIOUS = f"liste_recherches_{date.today() - timedelta(days=1)}"
 
 
 def build_file_url(endpoint, bucket_name, file_key):
@@ -33,17 +33,17 @@ def build_file_url(endpoint, bucket_name, file_key):
 
 class Command(BaseCommand):
     """
-    Export all download events to a file (XLS or CSV)
+    Export all search events to a file (XLS or CSV)
 
     Steps:
-    1. Query the stats DB to get all the download events
+    1. Query the stats DB to get all the search events
     2. Enrich with the user details
     3. Generate the file (.xls or .csv or both)
     4. Upload to S3
     5. Cleanup
 
     Usage:
-    poetry run python manage.py get_user_download_list
+    poetry run python manage.py get_user_search_list
     """
 
     # def add_arguments(self, parser):
@@ -60,27 +60,27 @@ class Command(BaseCommand):
             raise CommandError("Missing STATS_DSN in env")
 
         self.stdout.write("-" * 80)
-        self.stdout.write("Step 1: fetching download list from stats DB")
-        download_list = self.fetch_download_list()
+        self.stdout.write("Step 1: fetching search list from stats DB")
+        search_list = self.fetch_search_list()
 
         self.stdout.write("-" * 80)
-        self.stdout.write("Step 2: enrich download list")
-        download_list_enriched = self.enrich_download_list(download_list)
+        self.stdout.write("Step 2: enrich search list")
+        search_list_enriched = self.enrich_search_list(search_list)
 
         self.stdout.write("-" * 80)
-        self.stdout.write("Step 3: export download list to csv")  # + Step 4
-        self.generate_download_list_file(download_list_enriched, "csv")
+        self.stdout.write("Step 3: export search list to csv")  # + Step 4
+        self.generate_search_list_file(search_list_enriched, "csv")
 
         self.stdout.write("-" * 80)
         self.stdout.write("Step 5: cleanup")
         self.cleanup()
 
-    def fetch_download_list(self):
+    def fetch_search_list(self):
         sql = """
         SELECT *
         FROM trackers
         WHERE env = 'prod'
-        AND action = 'directory_csv'
+        AND action = 'directory_search'
         AND date_created >= '2022-01-01'
         ORDER BY -date_created;
         """
@@ -89,19 +89,19 @@ class Command(BaseCommand):
         cursor.execute(sql)
         response = cursor.fetchall()
 
-        download_list_temp = list()
+        search_list_temp = list()
         for row in response:
-            download_list_temp.append(dict(row))
+            search_list_temp.append(dict(row))
 
-        return download_list_temp
+        return search_list_temp
 
-    def enrich_download_list(self, download_list):
-        download_list_enriched = list()
+    def enrich_search_list(self, search_list):
+        search_list_enriched = list()
 
-        for item in download_list:
-            download_item = {}
+        for item in search_list:
+            search_item = {}
             # search
-            download_item.update(
+            search_item.update(
                 {
                     "search_sectors": ", ".join(item["data"]["meta"].get("sectors", [])),
                     # "search_perimeter": ", ".join(item["data"]["meta"].get("perimeter", [])),
@@ -117,7 +117,7 @@ class Command(BaseCommand):
             try:
                 user_id = item["data"]["meta"]["user_id"]
                 user = User.objects.get(id=user_id)
-                download_item.update(
+                search_item.update(
                     {
                         "user_first_name": user.first_name,
                         "user_last_name": user.last_name,
@@ -132,25 +132,25 @@ class Command(BaseCommand):
             except:  # noqa
                 pass
             # other
-            download_item.update(
+            search_item.update(
                 {
                     "cmp": item["data"]["meta"]["cmp"],
                     "timestamp": item["date_created"],
                     "stats_id": item["id_internal"],
                 }
             )
-            download_list_enriched.append(download_item)
+            search_list_enriched.append(search_item)
 
-        return download_list_enriched
+        return search_list_enriched
 
-    def generate_download_list_file(self, download_list_enriched, format):
+    def generate_search_list_file(self, search_list_enriched, format):
         if format in ["csv", "all"]:
             self.stdout.write("Generating the CSV file")
             filename_with_extension = f"{FILENAME}.csv"
             file = open(filename_with_extension, "w")
-            writer = csv.DictWriter(file, fieldnames=list(download_list_enriched[0].keys()))
+            writer = csv.DictWriter(file, fieldnames=list(search_list_enriched[0].keys()))
             writer.writeheader()
-            for item in download_list_enriched:
+            for item in search_list_enriched:
                 writer.writerow(item)
             file.close()
             self.stdout.write(f"Generated {filename_with_extension}")
