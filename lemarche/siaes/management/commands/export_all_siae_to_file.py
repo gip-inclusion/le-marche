@@ -23,6 +23,9 @@ CONTENT_TYPE_MAPPING = {
     "csv": "text/csv",
 }
 
+FILENAME = f"liste_structures_{date.today()}"
+FILENAME_PREVIOUS = f"liste_structures_{date.today() - timedelta(days=1)}"
+
 
 def build_file_url(endpoint, bucket_name, file_key):
     return f"{endpoint}/{bucket_name}/{file_key}"
@@ -57,8 +60,6 @@ class Command(BaseCommand):
         self.stdout.write("-" * 80)
         self.stdout.write("Task: export Siae list...")
 
-        filename = f"liste_structures_{date.today()}"
-
         self.stdout.write("Step 1: fetching Siae list")
         filter_form = SiaeSearchForm({})
         siae_list = filter_form.filter_queryset()
@@ -66,7 +67,7 @@ class Command(BaseCommand):
 
         if options["format"] in ["csv", "all"]:
             self.stdout.write("Step 2: generating the CSV file")
-            filename_with_extension = f"{filename}.csv"
+            filename_with_extension = f"{FILENAME}.csv"
             file = open(filename_with_extension, "w")
             writer = csv.writer(file)
             export_siae_to_csv(writer, siae_list)
@@ -78,7 +79,7 @@ class Command(BaseCommand):
 
         if options["format"] in ["xls", "all"]:
             self.stdout.write("Step 2: generating the XLS file")
-            filename_with_extension = f"{filename}.xls"
+            filename_with_extension = f"{FILENAME}.xls"
             wb = export_siae_to_excel(siae_list)
             wb.save(filename_with_extension)
             self.stdout.write(f"Generated {filename_with_extension}")
@@ -87,12 +88,10 @@ class Command(BaseCommand):
             self.upload_file_to_s3(filename_with_extension)
 
         # Step 4: delete local file(s) & previous S3 file(s)
-        files_to_remove = glob.glob(f"{filename}.*")
+        files_to_remove = glob.glob(f"{FILENAME}.*")
         for file_path in files_to_remove:
             os.remove(file_path)
-        bucket.objects.filter(
-            Prefix=f"{settings.SIAE_EXPORT_FOLDER_NAME}/liste_structures_{date.today() - timedelta(days=1)}"
-        ).delete()
+        bucket.objects.filter(Prefix=f"{settings.SIAE_EXPORT_FOLDER_NAME}/{FILENAME_PREVIOUS}").delete()
 
     def upload_file_to_s3(self, filename_with_extension):
         file_extension = filename_with_extension.split(".")[1]

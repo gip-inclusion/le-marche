@@ -126,6 +126,8 @@ LOCAL_APPS = [
     "lemarche.pages",
     # Api
     "lemarche.api",
+    # Stats
+    "lemarche.stats",
     # wagtail cms
     "lemarche.cms",
 ]
