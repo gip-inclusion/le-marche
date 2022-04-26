@@ -28,11 +28,11 @@ crawler_detect = CrawlerDetect()
 VERSION = 1
 
 TRACKER_IGNORE_LIST = [
-    "static/",
-    "admin/",
-    "select2/",
-    "api/perimeters/autocomplete",
-    "track/",  # avoid duplicate tracking
+    "/static",
+    "/admin",
+    "/select2",
+    "/api/perimeters/autocomplete",
+    "/track",  # avoid duplicate tracking
 ]
 
 DEFAULT_PAYLOAD = {
