@@ -82,7 +82,7 @@ class Command(BaseCommand):
         WHERE env = 'prod'
         AND action = 'directory_search'
         AND date_created >= '2022-01-01'
-        ORDER BY -date_created;
+        ORDER BY date_created DESC;
         """
         connection = psycopg2.connect(os.environ.get("STATS_DSN"))
         cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -117,20 +117,20 @@ class Command(BaseCommand):
             try:
                 user_id = item["data"]["meta"]["user_id"]
                 user = User.objects.get(id=user_id)
-                search_item.update(
-                    {
-                        "user_first_name": user.first_name,
-                        "user_last_name": user.last_name,
-                        "user_kind": user.kind,
-                        "user_email": user.email,
-                        "user_phone": user.phone,
-                        "user_company_name": user.company_name,
-                        "user_siae_count": user.siaes.count(),
-                        "user_created_at": user.created_at,
-                    }
-                )
             except:  # noqa
-                pass
+                user = {}
+            search_item.update(
+                {
+                    "user_first_name": user.first_name if user else "",
+                    "user_last_name": user.last_name if user else "",
+                    "user_kind": user.kind if user else "",
+                    "user_email": user.email if user else "",
+                    "user_phone": user.phone if user else "",
+                    "user_company_name": user.company_name if user else "",
+                    "user_siae_count": user.siaes.count() if user else "",
+                    "user_created_at": user.created_at if user else "",
+                }
+            )
             # other
             search_item.update(
                 {
