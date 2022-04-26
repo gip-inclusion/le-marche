@@ -132,11 +132,6 @@ function getUrlMeta() {
     }
 }
 
-// track each page load
-document.addEventListener('DOMContentLoaded', () => {
-    track(page=window.location.pathname, action=Steps.LOAD);
-}, false);
-
 // track each link & button click
 document.addEventListener('click', async (event) => {
     var event = event || window.event;
