@@ -110,7 +110,7 @@ class Command(BaseCommand):
                     "search_presta_type": ", ".join(item["data"]["meta"].get("presta_type", [])),
                     "search_territory": ", ".join(item["data"]["meta"].get("territory", [])),
                     "search_networks": ", ".join(item["data"]["meta"].get("networks", [])),
-                    # "search_results_count"
+                    "search_results_count": item["data"]["meta"].get("results_count", None),
                 }
             )
             # user
