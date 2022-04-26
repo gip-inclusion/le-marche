@@ -139,11 +139,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // track each link & button click
 document.addEventListener('click', async (event) => {
-    event = event || window.event;
+    var event = event || window.event;
     var target = event.target || event.srcElement;
 
     var loops = 3;
-    var meta = {}
+    var meta = {};
     while (target && loops > 0) {
         if (target instanceof HTMLAnchorElement || target instanceof HTMLButtonElement) {
             meta = {
@@ -151,15 +151,17 @@ document.addEventListener('click', async (event) => {
                 'id' : target.id,
                 'class': target.className
             }
+            // stop loop
+            loops = 0;
+            // send track
+            await track(
+                page=window.location.pathname,
+                action=Steps.CLICK,
+                meta=meta
+            );
         }
         target = target.parentNode;
         loops -= 1;
     }
-
-    await track(
-        page=window.location.pathname,
-        action=Steps.CLICK,
-        meta=meta
-    );
 }, false);
 </script>
