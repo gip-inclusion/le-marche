@@ -47,12 +47,13 @@ DEFAULT_PAYLOAD = {
 }
 
 
-def extract_meta_from_request(request):
+def extract_meta_from_request(request, siae=None):
     return {
         **request.GET,
         "is_admin": request.COOKIES.get("isAdmin", "false") == "true",
         "user_type": request.user.kind if request.user.id else "",
         "user_id": request.user.id if request.user.id else None,
+        "siae_id": siae.id if siae else None,
         "token": request.GET.get("token", ""),
         "cmp": request.GET.get("cmp", ""),
     }
@@ -61,7 +62,7 @@ def extract_meta_from_request(request):
 def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
 
     # Don't log in dev
-    if settings.BITOUBI_ENV != "dev":
+    if settings.BITOUBI_ENV == "dev":
         set_payload = {
             "timestamp": datetime.now().isoformat(),
             "page": page,
@@ -85,6 +86,7 @@ class TrackerMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        response = self.get_response(request)
         page = request.path
         request_ua = request.META.get("HTTP_USER_AGENT", "")
 
@@ -95,12 +97,16 @@ class TrackerMiddleware:
             is_crawler = crawler_detect.isCrawler(request_ua)
             if not is_crawler:
                 # build meta & co
-                meta = extract_meta_from_request(request)
+                siae = (
+                    getattr(response, "context_data", {}).get("siae", None)
+                    if getattr(response, "context_data", None)
+                    else None
+                )
+                meta = extract_meta_from_request(request, siae=siae)
                 track(
                     page=page,
                     action="load",
                     meta=meta,
                 )
 
-        response = self.get_response(request)
         return response
