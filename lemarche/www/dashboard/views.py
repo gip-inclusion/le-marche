@@ -189,7 +189,6 @@ class SiaeSearchBySiretView(SiaeUserRequiredMixin, FormMixin, ListView):
             "backend",
             "adopt_search",
             meta=extract_meta_from_request(self.request),
-            session_id=request.COOKIES.get("sessionid", None),
         )
         return super().get(request, *args, **kwargs)
 

@@ -80,7 +80,6 @@ class SiaeSearchResultsView(FormMixin, ListView):
             "backend",
             "directory_search",
             meta=extract_meta_from_request(self.request),
-            session_id=request.COOKIES.get("sessionid", None),
         )
         return super().get(request, *args, **kwargs)
 
@@ -112,7 +111,6 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
             "backend",
             "directory_csv",
             meta=extract_meta_from_request(self.request),
-            session_id=request.COOKIES.get("sessionid", None),
         )
         user = self.request.user
         if user.kind == user.KIND_BUYER:

@@ -11,7 +11,6 @@
 
 import json
 import logging
-import uuid
 from datetime import datetime
 
 import httpx
@@ -29,6 +28,7 @@ VERSION = 1
 
 TRACKER_IGNORE_LIST = [
     "/static",
+    "/favicon.ico",
     "/admin",
     "/select2",
     "/api/perimeters/autocomplete",
@@ -42,7 +42,7 @@ DEFAULT_PAYLOAD = {
     "page": "",
     "action": "load",
     "meta": {"source": "bitoubi_api"},  # needs to be stringifyed...
-    "session_id": None,
+    "session_id": "00000000-1111-2222-aaaa-444444444444",
     "order": 0,
 }
 
@@ -58,27 +58,14 @@ def extract_meta_from_request(request):
     }
 
 
-def track(page: str = "", action: str = "load", meta: dict = {}, session_id: str = None, order: int = 0):  # noqa B006
+def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
 
     # Don't log in dev
     if settings.BITOUBI_ENV != "dev":
-
-        # extract_sessionid_from_request
-        if session_id:
-            # transform the django sessionid to a uuid
-            session_id = str(uuid.uuid3(uuid.NAMESPACE_OID, session_id))
-        else:
-            # TODO: generate and use uuid4-style session_ids, unique to a user's session
-            # https://data-flair.training/blogs/django-sessions/
-            token = meta.get("token") or "0"
-            session_id = f"{token.ljust(8,'0')}-1111-2222-AAAA-444444444444"
-
         set_payload = {
             "timestamp": datetime.now().isoformat(),
             "page": page,
             "action": action,
-            "session_id": session_id,
-            "order": order,
             "meta": json.dumps(DEFAULT_PAYLOAD["meta"] | meta),
         }
 
@@ -109,12 +96,10 @@ class TrackerMiddleware:
             if not is_crawler:
                 # build meta & co
                 meta = extract_meta_from_request(request)
-                session_id = request.COOKIES.get("sessionid", None)
                 track(
                     page=page,
                     action="load",
                     meta=meta,
-                    session_id=session_id,
                 )
 
         response = self.get_response(request)
