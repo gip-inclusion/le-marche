@@ -47,13 +47,14 @@ DEFAULT_PAYLOAD = {
 }
 
 
-def extract_meta_from_request(request, siae=None):
+def extract_meta_from_request(request, siae=None, results_count=None):
     return {
         **request.GET,
         "is_admin": request.COOKIES.get("isAdmin", "false") == "true",
         "user_type": request.user.kind if request.user.id else "",
         "user_id": request.user.id if request.user.id else None,
         "siae_id": siae.id if siae else None,
+        "results_count": results_count,
         "token": request.GET.get("token", ""),
         "cmp": request.GET.get("cmp", ""),
     }
@@ -97,12 +98,18 @@ class TrackerMiddleware:
             is_crawler = crawler_detect.isCrawler(request_ua)
             if not is_crawler:
                 # build meta & co
+                results_count = (
+                    getattr(response, "context_data", {}).get("paginator").count
+                    if getattr(response, "context_data", None)
+                    and getattr(response, "context_data", {}).get("paginator")
+                    else None
+                )
                 siae = (
                     getattr(response, "context_data", {}).get("siae", None)
                     if getattr(response, "context_data", None)
                     else None
                 )
-                meta = extract_meta_from_request(request, siae=siae)
+                meta = extract_meta_from_request(request, siae=siae, results_count=results_count)
                 track(
                     page=page,
                     action="load",
