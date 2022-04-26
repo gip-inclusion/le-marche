@@ -60,7 +60,7 @@ def extract_meta_from_request(request):
         "is_admin": request.COOKIES.get("isAdmin", "false") == "true",
         "user_type": USER_KIND_MAPPING.get(request.user.kind) if request.user.id else "",
         "user_id": request.user.id if request.user.id else None,
-        "token": request.GET.get("token", "0"),
+        "token": request.GET.get("token", ""),
         "cmp": request.GET.get("cmp", ""),
     }
 
