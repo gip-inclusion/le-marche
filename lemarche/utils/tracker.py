@@ -63,7 +63,7 @@ def extract_meta_from_request(request, siae=None, results_count=None):
 def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
 
     # Don't log in dev
-    if settings.BITOUBI_ENV == "dev":
+    if settings.BITOUBI_ENV != "dev":
         set_payload = {
             "timestamp": datetime.now().isoformat(),
             "page": page,
