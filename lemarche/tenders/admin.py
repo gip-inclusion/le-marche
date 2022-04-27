@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.html import format_html
 
+from lemarche.common.admin import admin_site
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
 from lemarche.www.tenders.tasks import send_tender_emails_to_siaes
@@ -34,7 +35,7 @@ def update_and_send_tender_task(tender: Tender):
     send_tender_emails_to_siaes(tender)
 
 
-@admin.register(Tender)
+@admin.register(Tender, site=admin_site)
 class TenderAdmin(admin.ModelAdmin):
     list_display = [
         "id",
@@ -65,8 +66,6 @@ class TenderAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
     ]
-
-    change_form_template = "tenders/admin_change_form.html"
 
     fieldsets = (
         (
@@ -105,6 +104,8 @@ class TenderAdmin(admin.ModelAdmin):
         ),
         ("Info", {"fields": ("created_at", "updated_at")}),
     )
+
+    change_form_template = "tenders/admin_change_form.html"
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

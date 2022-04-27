@@ -1,9 +1,10 @@
 from django.contrib import admin
 
+from lemarche.common.admin import admin_site
 from lemarche.perimeters.models import Perimeter
 
 
-@admin.register(Perimeter)
+@admin.register(Perimeter, site=admin_site)
 class PerimeterAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "kind", "insee_code", "post_codes", "department_code", "region_code", "created_at"]
     list_filter = ["kind", "region_code", "department_code"]

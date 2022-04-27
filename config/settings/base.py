@@ -113,6 +113,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     # Core
+    "lemarche.common",
     "lemarche.utils",
     "lemarche.cocorico",
     "lemarche.users",
@@ -126,6 +127,8 @@ LOCAL_APPS = [
     "lemarche.pages",
     # Api
     "lemarche.api",
+    # Stats
+    "lemarche.stats",
     # wagtail cms
     "lemarche.cms",
 ]
@@ -370,6 +373,7 @@ SIAE_IMAGE_FOLDER_NAME = "siae_image"
 SIAE_CLIENT_REFERENCE_LOGO_FOLDER_NAME = "client_reference_logo"
 USER_IMAGE_FOLDER_NAME = "user_image"
 SIAE_EXPORT_FOLDER_NAME = "siae_export"
+STAT_EXPORT_FOLDER_NAME = "stat_export"
 
 STORAGE_UPLOAD_KINDS = {
     "default": {
