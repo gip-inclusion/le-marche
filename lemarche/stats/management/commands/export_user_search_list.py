@@ -43,7 +43,7 @@ class Command(BaseCommand):
     5. Cleanup
 
     Usage:
-    poetry run python manage.py get_user_search_list
+    poetry run python manage.py export_user_search_list
     """
 
     # def add_arguments(self, parser):
