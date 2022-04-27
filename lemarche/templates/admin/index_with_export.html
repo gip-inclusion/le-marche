@@ -1,0 +1,28 @@
+<!-- https://github.com/django/django/blob/master/django/contrib/admin/templates/admin/index.html -->
+{% extends "admin/index.html" %}
+
+{% block extrahead %}
+{{ block.super }}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelector('#content-related').prepend(document.querySelector('#seperator-actions'));
+        document.querySelector('#content-related').prepend(document.querySelector('#extra-actions-module'));
+    });
+</script>
+{% endblock %}
+
+{% block sidebar %}
+{{ block.super }}
+<div id="extra-actions-module" class="module">
+    <h2>Actions</h2>
+    <p>
+        <button><a href="">Statistiques de téléchargements</a></button>
+    </p>
+    <p>
+        <button><a href="">Statistiques de recherches</a></button>
+    </p>
+</div>
+<div id="seperator-actions" style="background-color:white">
+    <br />
+</div>
+{% endblock %}

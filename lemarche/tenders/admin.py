@@ -66,8 +66,6 @@ class TenderAdmin(admin.ModelAdmin):
         "updated_at",
     ]
 
-    change_form_template = "tenders/admin_change_form.html"
-
     fieldsets = (
         (
             None,
@@ -105,6 +103,8 @@ class TenderAdmin(admin.ModelAdmin):
         ),
         ("Info", {"fields": ("created_at", "updated_at")}),
     )
+
+    change_form_template = "tenders/admin_change_form.html"
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
