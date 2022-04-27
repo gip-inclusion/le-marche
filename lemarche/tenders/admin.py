@@ -8,7 +8,7 @@ from django.utils.html import format_html
 from lemarche.common.admin import admin_site
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
-from lemarche.www.tenders.tasks import send_tender_emails_to_siaes
+from lemarche.www.tenders.tasks import send_confirmation_published_email_to_author, send_tender_emails_to_siaes
 
 
 class ResponseKindFilter(admin.SimpleListFilter):
@@ -33,6 +33,7 @@ def update_and_send_tender_task(tender: Tender):
     tender.siaes.set(siae_found_list)
     # send the tender to all matching Siaes
     send_tender_emails_to_siaes(tender)
+    send_confirmation_published_email_to_author(tender, nb_matched_siaes=len(siae_found_list))
 
 
 @admin.register(Tender, site=admin_site)

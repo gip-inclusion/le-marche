@@ -68,6 +68,31 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae):
         )
 
 
+def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes: int):
+    """Send email to the author when the tender is published to the siaes
+
+    Args:
+        tender (Tender): Tender published
+        nb_matched (int): number of siaes match
+    """
+    email_subject = f"{EMAIL_SUBJECT_PREFIX}Votre {tender.get_kind_display()} a été publié !"
+    recipient_list = whitelist_recipient_list([tender.author.email])
+    if recipient_list:
+        variables = {
+            "TENDER_TITLE": tender.title,
+            "TENDER_KIND": tender.get_kind_display(),
+            "TENDER_NB_MATCH": nb_matched_siaes,
+            "TENDER_URL": get_share_url_object(tender),
+        }
+
+        api_mailjet.send_transactional_email_many_recipient_with_template(
+            template_id=settings.MAILJET_TENDERS_AUTHOR_CONFIRMATION_PUBLISHED_TEMPLATE_ID,
+            subject=email_subject,
+            recipient_email_list=recipient_list,
+            variables=variables,
+        )
+
+
 def send_siae_interested_email_to_author(tender: Tender):
     """
     The author is notified (by intervals) when new Siaes show interest (contact_click_date set)
