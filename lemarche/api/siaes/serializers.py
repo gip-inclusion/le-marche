@@ -92,6 +92,9 @@ class SiaeListSerializer(SiaeDetailSerializer):
             "post_code",
             "department",
             "region",
+            # "is_qpv",
+            # "is_cocontracting",
+            "is_active",
             # boolean stuff available in detail
             # M2M stuff available in detail
             "created_at",
