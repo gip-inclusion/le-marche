@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
+from lemarche.common.admin import admin_site
 from lemarche.siaes.models import (
     Siae,
     SiaeClientReference,
@@ -69,7 +70,7 @@ class SiaeUserInline(admin.TabularInline):
     user_with_link.short_description = User._meta.verbose_name
 
 
-@admin.register(Siae)
+@admin.register(Siae, site=admin_site)
 class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     list_display = [
         "id",
@@ -402,7 +403,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     import_raw_object_display.short_description = "Donnée brute importée"
 
 
-@admin.register(SiaeUserRequest)
+@admin.register(SiaeUserRequest, site=admin_site)
 class SiaeUserRequestAdmin(admin.ModelAdmin):
     list_display = ["id", "siae", "initiator", "assignee", "response", "created_at", "updated_at"]
     search_fields = [
@@ -439,7 +440,7 @@ class SiaeUserRequestAdmin(admin.ModelAdmin):
         return False
 
 
-@admin.register(SiaeOffer)
+@admin.register(SiaeOffer, site=admin_site)
 class SiaeOfferAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "source", "created_at"]
     list_filter = ["source"]
@@ -457,7 +458,7 @@ class SiaeOfferAdmin(admin.ModelAdmin):
     siae_with_link.admin_order_field = "siae"
 
 
-@admin.register(SiaeLabel)
+@admin.register(SiaeLabel, site=admin_site)
 class SiaeLabelAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
     search_fields = ["id", "name", "siae__id", "siae__name"]
@@ -474,7 +475,7 @@ class SiaeLabelAdmin(admin.ModelAdmin):
     siae_with_link.admin_order_field = "siae"
 
 
-@admin.register(SiaeClientReference)
+@admin.register(SiaeClientReference, site=admin_site)
 class SiaeClientReferenceAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
     search_fields = ["id", "name", "siae__id", "siae__name"]
@@ -502,7 +503,7 @@ class SiaeClientReferenceAdmin(admin.ModelAdmin):
     logo_url_display.short_description = "Logo"
 
 
-@admin.register(SiaeImage)
+@admin.register(SiaeImage, site=admin_site)
 class SiaeImageAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
     search_fields = ["id", "name", "siae__id", "siae__name"]
@@ -530,7 +531,7 @@ class SiaeImageAdmin(admin.ModelAdmin):
     image_url_display.short_description = "Image"
 
 
-@admin.register(SiaeGroup)
+@admin.register(SiaeGroup, site=admin_site)
 class SiaeGroupAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "nb_siaes", "created_at"]
     search_fields = ["id", "name"]

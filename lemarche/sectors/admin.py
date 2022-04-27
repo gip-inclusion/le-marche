@@ -3,10 +3,11 @@ from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html
 
+from lemarche.common.admin import admin_site
 from lemarche.sectors.models import Sector, SectorGroup
 
 
-@admin.register(SectorGroup)
+@admin.register(SectorGroup, site=admin_site)
 class SectorGroupAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "nb_sectors", "created_at"]
     search_fields = ["id", "name"]
@@ -28,7 +29,7 @@ class SectorGroupAdmin(admin.ModelAdmin):
     nb_sectors.admin_order_field = "sector_count"
 
 
-@admin.register(Sector)
+@admin.register(Sector, site=admin_site)
 class SectorAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "nb_siaes", "group", "created_at"]
     list_filter = ["group"]

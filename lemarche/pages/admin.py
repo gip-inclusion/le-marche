@@ -1,13 +1,13 @@
+from ckeditor.widgets import CKEditorWidget
 from django.contrib import admin
 from django.contrib.flatpages.admin import FlatPageAdmin
-from django.contrib.flatpages.models import FlatPage
 from django.db import models
 
-from ckeditor.widgets import CKEditorWidget
-
+from lemarche.common.admin import admin_site
 from lemarche.pages.models import Page
 
 
+@admin.register(Page, site=admin_site)
 class PageAdmin(FlatPageAdmin):
     list_display = ["url", "title", "created_at", "updated_at"]
 
@@ -24,7 +24,3 @@ class PageAdmin(FlatPageAdmin):
         ("SEO", {"fields": ("meta_title", "meta_description")}),
         ("Info", {"fields": ("created_at", "updated_at")}),
     )
-
-
-admin.site.unregister(FlatPage)
-admin.site.register(Page, PageAdmin)
