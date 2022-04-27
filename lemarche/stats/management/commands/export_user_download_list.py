@@ -8,6 +8,7 @@ import psycopg2
 import psycopg2.extras
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+from django.db.models import Count
 
 from lemarche.users.models import User
 from lemarche.utils.s3 import API_CONNECTION_DICT
@@ -62,6 +63,7 @@ class Command(BaseCommand):
         self.stdout.write("-" * 80)
         self.stdout.write("Step 1: fetching download list from stats DB")
         download_list = self.fetch_download_list()
+        self.stdout.write(f"Found {len(download_list)} items")
 
         self.stdout.write("-" * 80)
         self.stdout.write("Step 2: enrich download list")
@@ -96,7 +98,10 @@ class Command(BaseCommand):
         return download_list_temp
 
     def enrich_download_list(self, download_list):
+        # init
         download_list_enriched = list()
+        # we store the users in a list to avoid querying the DB on every iteration
+        user_list = User.objects.prefetch_related("siaes").annotate(siae_count=Count("siaes")).values()
 
         for item in download_list:
             download_item = {}
@@ -111,24 +116,22 @@ class Command(BaseCommand):
                     "search_territory": ", ".join(item["data"]["meta"].get("territory", [])),
                     "search_networks": ", ".join(item["data"]["meta"].get("networks", [])),
                     "search_results_count": item["data"]["meta"].get("results_count", None),
+                    "search_page": ", ".join(item["data"]["meta"].get("page", [])),
                 }
             )
             # user
-            try:
-                user_id = item["data"]["meta"]["user_id"]
-                user = User.objects.get(id=user_id)
-            except:  # noqa
-                user = {}
+            user_id = item["data"]["meta"]["user_id"]
+            user_dict = next((user for user in user_list if user["id"] == user_id), {})
             download_item.update(
                 {
-                    "user_first_name": user.first_name if user else "",
-                    "user_last_name": user.last_name if user else "",
-                    "user_kind": user.kind if user else "",
-                    "user_email": user.email if user else "",
-                    "user_phone": user.phone if user else "",
-                    "user_company_name": user.company_name if user else "",
-                    "user_siae_count": user.siaes.count() if user else "",
-                    "user_created_at": user.created_at if user else "",
+                    "user_first_name": user_dict.get("first_name", ""),
+                    "user_last_name": user_dict.get("last_name", ""),
+                    "user_kind": user_dict.get("kind", ""),
+                    "user_email": user_dict.get("email", ""),
+                    "user_phone": user_dict.get("phone", ""),
+                    "user_company_name": user_dict.get("company_name", ""),
+                    "user_siae_count": user_dict.get("siae_count", ""),
+                    "user_created_at": user_dict.get("created_at", ""),
                 }
             )
             # other
