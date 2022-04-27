@@ -15,9 +15,6 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     Données d'une structure d'insertion par l'activité économique (SIAE).
     """
 
-    # ModelViewSet needs 'queryset' to be set otherwise the router won't be
-    # able to derive the model Basename. To avoid loading data on object
-    # initialisation we load an empty queryset.
     queryset = Siae.objects.prefetch_many_to_many()
     serializer_class = SiaeListSerializer
     filter_class = SiaeFilter

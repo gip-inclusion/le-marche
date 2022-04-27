@@ -52,7 +52,7 @@ class SiaeListFilterApiTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         # default_siae = {"kind": Siae.KIND_EI, "presta_type": [Siae.PRESTA_DISP], "department": "01"}
-        SiaeFactory(kind=Siae.KIND_EI, presta_type=[Siae.PRESTA_DISP], department="01")
+        SiaeFactory(kind=Siae.KIND_EI, presta_type=[Siae.PRESTA_DISP], department="01", is_active=False)
         SiaeFactory(kind=Siae.KIND_ETTI, presta_type=[Siae.PRESTA_DISP], department="01")  # siae_with_kind
         SiaeFactory(kind=Siae.KIND_ACI, presta_type=[Siae.PRESTA_BUILD], department="01")  # siae_with_presta_type
         SiaeFactory(kind=Siae.KIND_EI, presta_type=[Siae.PRESTA_PREST], department="38")  # siae_with_department
@@ -83,6 +83,16 @@ class SiaeListFilterApiTest(TestCase):
         # self.assertEqual(response.data["count"], 1)
         # self.assertEqual(len(response.data["results"]), 4 + 2 + 2)  # results aren't paginated
         self.assertEqual(len(response.data), 4 + 2 + 2)
+
+    def test_should_filter_siae_list_by_is_active(self):
+        url = reverse("api:siae-list") + "?is_active=false&token=admin"
+        response = self.client.get(url)
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(len(response.data["results"]), 1)
+        url = reverse("api:siae-list") + "?is_active=true&token=admin"
+        response = self.client.get(url)
+        self.assertEqual(response.data["count"], 3 + 2 + 2)
+        self.assertEqual(len(response.data["results"]), 3 + 2 + 2)
 
     def test_should_filter_siae_list_by_kind(self):
         # single
