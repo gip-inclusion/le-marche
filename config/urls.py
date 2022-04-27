@@ -1,22 +1,15 @@
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib import admin
 from django.urls import include, path
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
-
-# Admin
-admin.site.site_header = "Administration du Marché de l'Inclusion"  # default: "Django Administration"  # noqa
-admin.site.index_title = "Accueil"  # default: "Site administration"  # noqa
-admin.site.site_title = "Administration du Marché de l'Inclusion"  # default: "Django site admin"  # noqa
-# admin.site.enable_nav_sidebar = False
-admin.site.index_template = "admin/index_with_export.html"
+from lemarche.common.admin import admin_site
 
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("admin/", admin_site.urls),
     path("api/", include("lemarche.api.urls")),
     path("accounts/", include("lemarche.www.auth.urls")),
     path("besoins/", include("lemarche.www.tenders.urls")),

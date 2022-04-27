@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
+from lemarche.common.admin import admin_site
 from lemarche.favorites.models import FavoriteItem, FavoriteList
 
 
@@ -14,7 +15,7 @@ class FavoriteItemInline(admin.TabularInline):
     extra = 0
 
 
-@admin.register(FavoriteList)
+@admin.register(FavoriteList, site=admin_site)
 class FavoriteListAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     list_display = ["id", "name", "user_with_link", "nb_siaes", "created_at", "updated_at"]
     search_fields = ["id", "name", "slug", "user__id", "user__email"]

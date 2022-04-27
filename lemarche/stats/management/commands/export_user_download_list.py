@@ -172,7 +172,7 @@ class Command(BaseCommand):
 
     def upload_file_to_s3(self, filename_with_extension):
         file_extension = filename_with_extension.split(".")[1]
-        s3_file_key = settings.SIAE_EXPORT_FOLDER_NAME + "/" + filename_with_extension
+        s3_file_key = settings.STAT_EXPORT_FOLDER_NAME + "/" + filename_with_extension
         bucket.upload_file(
             filename_with_extension,
             s3_file_key,
@@ -185,4 +185,4 @@ class Command(BaseCommand):
         files_to_remove = glob.glob(f"{FILENAME}.*")
         for file_path in files_to_remove:
             os.remove(file_path)
-        bucket.objects.filter(Prefix=f"{settings.SIAE_EXPORT_FOLDER_NAME}/{FILENAME_PREVIOUS}").delete()
+        bucket.objects.filter(Prefix=f"{settings.STAT_EXPORT_FOLDER_NAME}/{FILENAME_PREVIOUS}").delete()
