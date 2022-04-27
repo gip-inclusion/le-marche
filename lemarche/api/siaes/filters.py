@@ -23,8 +23,9 @@ class SiaeFilter(django_filters.FilterSet):
         to_field_name="slug",
         queryset=Network.objects.all(),
     )
+    is_active = django_filters.BooleanFilter(label="Convention active (ASP) ou import")
     updated_at = django_filters.IsoDateTimeFromToRangeFilter(label="Date de dernière mise à jour")
 
     class Meta:
         model = Siae
-        fields = ["kind", "presta_type", "department", "updated_at"]
+        fields = ["kind", "presta_type", "department", "is_active", "updated_at"]
