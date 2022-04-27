@@ -14,3 +14,26 @@ $(document).ready(() => {
         return this.nodeType == 3;
     }).wrap('<span class="group-title"></span>');
 });
+
+let toggleRequiredClasses = (toggle, element) => {
+    element.required = required;
+    elementToToggle = element.parentNode.classList.contains("form-group") ? element.parentNode : element.parentNode.parentNode;
+    if (required) {
+        elementToToggle.classList.add('form-group-required');
+    } else {
+        elementToToggle.classList.remove('form-group-required');
+    }
+};
+
+let toggleInputElement = (toggle, element, required = undefined) => {
+    // function usefull to find element form-group of bootstrap forms
+    elementToToggle = element.parentNode.classList.contains("form-group") ? element.parentNode : element.parentNode.parentNode;
+    if (toggle) {
+        elementToToggle.classList.remove('d-none');
+    } else {
+        elementToToggle.classList.add('d-none');
+    }
+    if (required != undefined) {
+        toggleRequiredClasses(required, element);
+    }
+}
