@@ -45,9 +45,12 @@ class Command(BaseCommand):
 
     Usage:
     poetry run python manage.py export_user_download_list
+    poetry run python manage.py export_user_download_list --start_date 2022-03-01
     """
 
-    # def add_arguments(self, parser):
+    def add_arguments(self, parser):
+        parser.add_argument("--start_date", type=str, default="2022-01-01")
+
     #     parser.add_argument(
     #         "--format",
     #         type=str,
@@ -62,7 +65,7 @@ class Command(BaseCommand):
 
         self.stdout.write("-" * 80)
         self.stdout.write("Step 1: fetching download list from stats DB")
-        download_list = self.fetch_download_list()
+        download_list = self.fetch_download_list(options["start_date"])
         self.stdout.write(f"Found {len(download_list)} items")
 
         self.stdout.write("-" * 80)
@@ -77,13 +80,13 @@ class Command(BaseCommand):
         self.stdout.write("Step 5: cleanup")
         self.cleanup()
 
-    def fetch_download_list(self):
-        sql = """
+    def fetch_download_list(self, start_date):
+        sql = f"""
         SELECT *
         FROM trackers
         WHERE env = 'prod'
         AND action = 'directory_csv'
-        AND date_created >= '2022-01-01'
+        AND date_created >= '{start_date}'
         ORDER BY date_created DESC;
         """
         connection = psycopg2.connect(os.environ.get("STATS_DSN"))

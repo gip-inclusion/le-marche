@@ -19,8 +19,8 @@ class MarcheAdminSite(admin.AdminSite):
     index_template = "admin/index_with_export.html"
 
     def index(self, request, extra_context=None):
-        user_download_list_file_path = f"{API_CONNECTION_DICT['endpoint_url']}/{settings.S3_STORAGE_BUCKET_NAME}/{settings.SIAE_EXPORT_FOLDER_NAME}/liste_telechargements_{date.today()}.csv"  # noqa
-        user_search_list_file_path = f"{API_CONNECTION_DICT['endpoint_url']}/{settings.S3_STORAGE_BUCKET_NAME}/{settings.SIAE_EXPORT_FOLDER_NAME}/liste_recherches_{date.today()}.csv"  # noqa
+        user_download_list_file_path = f"{API_CONNECTION_DICT['endpoint_url']}/{settings.S3_STORAGE_BUCKET_NAME}/{settings.STAT_EXPORT_FOLDER_NAME}/liste_telechargements_{date.today()}.csv"  # noqa
+        user_search_list_file_path = f"{API_CONNECTION_DICT['endpoint_url']}/{settings.S3_STORAGE_BUCKET_NAME}/{settings.STAT_EXPORT_FOLDER_NAME}/liste_recherches_{date.today()}.csv"  # noqa
         extra_context = extra_context or {
             "user_download_list_file_path": user_download_list_file_path,
             "user_search_list_file_path": user_search_list_file_path,
