@@ -41,6 +41,7 @@ class AddTenderForm(forms.ModelForm):
             "contact_last_name",
             "contact_email",
             "contact_phone",
+            "is_country_area",
         ]
 
         widgets = {

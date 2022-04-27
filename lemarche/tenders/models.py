@@ -131,9 +131,12 @@ class Tender(models.Model):
     contact_email = models.EmailField(verbose_name="E-mail du contact", blank=True)
     contact_phone = models.CharField(verbose_name="Téléphone du contact", max_length=20, blank=True)
 
+    is_country_area = models.BooleanField(verbose_name="France entière", default=False)
+
     perimeters = models.ManyToManyField(
-        "perimeters.Perimeter", verbose_name="Lieux d'exécution", related_name="tenders", blank=False
+        "perimeters.Perimeter", verbose_name="Lieux d'exécution", related_name="tenders", blank=True
     )
+
     sectors = models.ManyToManyField(
         "sectors.Sector", verbose_name="Secteurs d'activité", related_name="tenders", blank=False
     )
