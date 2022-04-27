@@ -75,11 +75,12 @@ class SiaeSearchResultsView(FormMixin, ListView):
         return context
 
     def get(self, request, *args, **kwargs):
+        siae_list = self.get_queryset()
         # Track search event
         track(
             "backend",
             "directory_search",
-            meta=extract_meta_from_request(self.request),
+            meta=extract_meta_from_request(self.request, results_count=siae_list.count()),
         )
         return super().get(request, *args, **kwargs)
 
@@ -110,7 +111,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         track(
             "backend",
             "directory_csv",
-            meta=extract_meta_from_request(self.request),
+            meta=extract_meta_from_request(self.request, results_count=siae_list.count()),
         )
         user = self.request.user
         if user.kind == user.KIND_BUYER:
