@@ -209,6 +209,7 @@ DEPLOY_URL = env.str("DEPLOY_URL", None)
 if env.str("DATABASE_URL", None):
     database_url = env.str("DATABASE_URL")
     DATABASES = {"default": dj_database_url.config()}
+    DATABASES["default"]["ENGINE"] = "django.contrib.gis.db.backends.postgis"
 else:
     DATABASES = {
         "default": {
