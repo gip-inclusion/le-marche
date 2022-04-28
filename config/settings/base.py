@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 
+import dj_database_url
 import environ
 from django.contrib.messages import constants as messages
 
@@ -205,16 +206,20 @@ DEPLOY_URL = env.str("DEPLOY_URL", None)
 # Compatible with clevercloud add-ons
 # TODO: Use django-environ DSN parsing functionality
 # Something like env.db("POSTGRESQL_ADDON_URI")
-DATABASES = {
-    "default": {
-        "ENGINE": "django.contrib.gis.db.backends.postgis",
-        "HOST": env.str("POSTGRESQL_ADDON_HOST", "localhost"),
-        "PORT": env.str("POSTGRESQL_ADDON_PORT", "5432"),
-        "NAME": env.str("POSTGRESQL_ADDON_DB", "marche"),
-        "USER": env.str("POSTGRESQL_ADDON_USER", "user"),
-        "PASSWORD": env.str("POSTGRESQL_ADDON_PASSWORD", "password"),
-    },
-}
+if env.str("DATABASE_URL", None):
+    database_url = env.str("DATABASE_URL")
+    DATABASES = {"default": dj_database_url.config()}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.contrib.gis.db.backends.postgis",
+            "HOST": env.str("POSTGRESQL_ADDON_HOST", "localhost"),
+            "PORT": env.str("POSTGRESQL_ADDON_PORT", "5432"),
+            "NAME": env.str("POSTGRESQL_ADDON_DB", "marche"),
+            "USER": env.str("POSTGRESQL_ADDON_USER", "user"),
+            "PASSWORD": env.str("POSTGRESQL_ADDON_PASSWORD", "password"),
+        },
+    }
 
 # controls how many objects are updated in a single query
 # avoid timeout exception
