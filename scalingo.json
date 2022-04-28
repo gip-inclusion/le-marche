@@ -1,0 +1,12 @@
+{
+    "name": "Le marché",
+    "description": "Application de fou",
+    "repository": "https://github.com/betagouv/itou-marche/",
+    "website": "https://lemarche.inclusion.beta.gouv.fr/",
+    "formation": {
+        "web": {
+            "amount": 1,
+            "size": "S"
+        }
+    }
+}
