@@ -12,6 +12,7 @@ ALLOWED_HOSTS = [
     "lemarche.inclusion.beta.gouv.fr",
     "api.lemarche.inclusion.beta.gouv.fr",
     "bitoubi-django.cleverapps.io",
+    "*.scalingo.io",
 ]
 
 
