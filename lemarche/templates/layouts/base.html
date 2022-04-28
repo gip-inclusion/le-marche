@@ -43,14 +43,12 @@
     <!-- itou theme -->
     {% import_static_CSS_theme_inclusion %}
 
-    {% compress css %}
     <!-- third party css -->
     <link rel="stylesheet" href="{% static 'vendor/bootstrap-multiselect-1.1.1/bootstrap-multiselect.min.css' %}" type="text/css" />
     <link rel="stylesheet" href="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.css' %}" type="text/css" />
     <link rel="stylesheet" href="{% static 'vendor/leaflet-1.7.1/leaflet.css' %}" type="text/css" />
     <!-- custom css -->
     <link rel="stylesheet" href="{% static 'itou_marche/itou_marche.scss' %}" type="text/x-scss" />
-    {% endcompress %}
 
     {% block extra_css %}{% endblock %}
 
