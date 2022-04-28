@@ -35,6 +35,7 @@ django-select2 = "^7.10.0"
 wagtail = "^2.16.1"
 boto = "^2.49.0"
 django-storages = "1.12.3"
+gunicorn = "^20.1.0"
 
 [tool.poetry.dev-dependencies]
 black = "22.3.0"
