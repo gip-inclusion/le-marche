@@ -29,13 +29,7 @@
     <!-- https://metatags.io Facebook -->
     <meta property="fb:page_id" content="inclusion.gouv" />
 
-    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
-    <link rel="icon" href="{% static 'img/favicon.png' %}" type="image/png">
-    <link rel="icon" sizes="16x16" href="{% static 'img/favicon-16x16.png' %}" type="image/png">
-    <link rel="icon" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}" type="image/png">
-    <link rel="icon" sizes="96x96" href="{% static 'img/favicon-96x96.png' %}" type="image/png">
-    <link rel="icon" sizes="256x256" href="{% static 'img/favicon-256x256.png' %}" type="image/png">
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/favicon-180x180.png' %}" type="image/png">
+    <link rel="shortcut icon" href="{% static_theme_images "favicon.ico" %}" type="image/ico">
 
     <!-- Use this to get the value of the CSRF token in JavaScript. -->
     <meta name="csrf-token" content="{{ csrf_token }}">
