@@ -71,7 +71,7 @@ class TenderQuerySet(models.QuerySet):
 
 
 class Tender(models.Model):
-    """Appel d'offre et devis"""
+    """Appel d'offres et devis"""
 
     AMOUNT_RANGE_0 = "<25K"
     AMOUNT_RANGE_1 = "<100K"
@@ -93,7 +93,7 @@ class Tender(models.Model):
     TENDER_KIND_PROJECT = "PROJ"
 
     TENDER_KIND_CHOICES = (
-        (TENDER_KIND_TENDER, "Appel d'offre"),
+        (TENDER_KIND_TENDER, "Appel d'offres"),
         (TENDER_KIND_QUOTE, "Devis"),
         (TENDER_KIND_PROJECT, "Sourcing"),
     )
@@ -115,7 +115,7 @@ class Tender(models.Model):
     )
     description = models.TextField(verbose_name="Description du besoin", blank=True)
     constraints = models.TextField(verbose_name="Contraintes techniques spécifiques", blank=True)
-    external_link = models.URLField(verbose_name="Lien vers l'appel d'offre", blank=True)
+    external_link = models.URLField(verbose_name="Lien vers l'appel d'offres", blank=True)
     deadline_date = models.DateField(verbose_name="Date de clôture des réponses")
     start_working_date = models.DateField(verbose_name="Date idéale de début des prestations", blank=True, null=True)
     amount = models.CharField(
