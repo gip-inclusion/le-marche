@@ -59,7 +59,7 @@
 
                     <div class="py-2">
                         <h2>Description <span class="float-right fs-sm  text-muted">Début d'intervention : {{ tender.start_working_date|default:"" }}</span></h2>
-                        <p>{{ tender.description }}</p>
+                        <p>{{ tender.description|linebreaks }}</p>
                     </div>
 
                     <hr class="my-5">
