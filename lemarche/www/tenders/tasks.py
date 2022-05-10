@@ -75,7 +75,7 @@ def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes
         tender (Tender): Tender published
         nb_matched (int): number of siaes match
     """
-    email_subject = f"{EMAIL_SUBJECT_PREFIX}Votre {tender.get_kind_display()} a été publié !"
+    email_subject = f"{EMAIL_SUBJECT_PREFIX}Votre {tender.get_kind_display().lower()} a été publié !"
     recipient_list = whitelist_recipient_list([tender.author.email])
     if recipient_list:
         variables = {
