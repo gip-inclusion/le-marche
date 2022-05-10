@@ -58,7 +58,10 @@
                     <hr class="my-5">
 
                     <div class="py-2">
-                        <h2>Description <span class="float-right fs-sm  text-muted">Début d'intervention : {{ tender.start_working_date|default:"" }}</span></h2>
+                        <h2>
+                            Description
+                            {% if tender.start_working_date %}<span class="float-right fs-sm text-muted">Début d'intervention : {{ tender.start_working_date }}</span>{% endif %}
+                        </h2>
                         <p>{{ tender.description|linebreaks }}</p>
                     </div>
 
