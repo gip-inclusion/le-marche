@@ -291,7 +291,7 @@ class Command(BaseCommand):
             self.stdout.write(f"New Siae created / {siae.id} / {siae.name} / {siae.siret}")
 
     def add_siae_to_contact_list(self, siae: Siae):
-        if siae.kind != "OPCS":
+        if siae.kind != "OPCS" and siae.is_active:
             properties = {
                 "pays": "france",
                 "nomsiae": siae.name,
