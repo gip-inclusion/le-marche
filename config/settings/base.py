@@ -444,6 +444,8 @@ MAILJET_NL_CL_PARTNER_NETWORKS_IAE_HANDICAP_ID = env.int("MAILJET_NL_CL_PARTNER_
 MAILJET_NL_CL_PARTNER_DREETS_ID = env.int("MAILJET_NL_CL_PARTNER_DREETS_ID", 2500034)
 # contact list "acheteurs ayant téléchargés la liste excel des structure"
 MAILJET_NL_CL_BUYER_DOWNLOAD_SIAE_LIST_ID = env.int("MAILJET_NL_CL_BUYER_DOWNLOAD_SIAE_LIST_ID", 2500034)
+# contact list "acheteurs ayant recherchés des structure"
+MAILJET_NL_CL_BUYER_SEARCH_SIAE_LIST_ID = env.int("MAILJET_NL_CL_BUYER_SEARCH_SIAE_LIST_ID", 2504377)
 
 
 # API slack

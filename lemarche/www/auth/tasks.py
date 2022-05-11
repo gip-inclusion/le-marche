@@ -47,10 +47,12 @@ def add_to_contact_list(user: User, type: str):
 
     Args:
         user (User): the user how will be added in the contact list
-        type (String): "signup", OR "buyer_download" else raise ValueError
+        type (String): "signup", OR "buyer_download" or "buyer_search" else raise ValueError
     """
     if type == "signup":
         contact_list_id = get_mailjet_cl_on_signup(user)
+    elif type == "buyer_search":
+        contact_list_id = settings.MAILJET_NL_CL_BUYER_SEARCH_SIAE_LIST_ID
     elif type == "buyer_download":
         contact_list_id = settings.MAILJET_NL_CL_BUYER_DOWNLOAD_SIAE_LIST_ID
     else:
