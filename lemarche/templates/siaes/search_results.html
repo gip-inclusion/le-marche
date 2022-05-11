@@ -145,13 +145,6 @@
                 {% endif %}
                 </div>
                 <div class="col-12 col-md-4 siae-info mt-6 mt-sm-0">
-                    <section class="bg-primary p-4 mb-4">
-                        <span class="badge badge-pill badge-pilotage text-primary">Nouveauté</span>
-                        <p class="h2 mt-2 mb-3 text-white lh-lg">Gagnez du temps pour contacter les prestataires du marché.</p>
-                        <a href="" id="new-favorite-list-modal-btn" data-toggle="modal" data-target="#envoiGroupeModal">
-                            <img src="{% static 'img/mea-envoi-groupe.png' %}" class="img-fluid" alt="" loading="lazy">
-                        </a>
-                    </section>
                     <div class="siae-info-sticky">
                         <div class="map-holder mb-4">
                             <div id="map-siae-list" class="map-canvas"></div>
@@ -200,7 +193,6 @@
 
 {% block modals %}
     {% include "auth/_login_or_signup_modal.html" %}
-    {% include "siaes/_envoi_groupe_modal.html" %}
     {% include "siaes/_favorite_item_add_modal.html" %}
     {% include "siaes/_favorite_item_remove_modal.html" %}
 {% endblock %}
