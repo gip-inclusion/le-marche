@@ -81,6 +81,7 @@ class TenderAdmin(admin.ModelAdmin):
                 "fields": (
                     "description",
                     "constraints",
+                    "is_country_area",
                     "perimeters",
                     "sectors",
                     "external_link",
