@@ -172,9 +172,6 @@ class TenderSiaeInterestedListView(TenderOwnerRequiredMixin, ListView):
         return qs
 
     def get(self, request, *args, **kwargs):
-        """
-        Check if the User has any Siae contacted for this Tender. If yes, update 'detail_display_date'
-        """
         if not self.get_queryset().count():
             return HttpResponseRedirect(reverse_lazy("tenders:list"))
         return super().get(request, *args, **kwargs)

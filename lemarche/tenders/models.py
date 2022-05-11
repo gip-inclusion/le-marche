@@ -157,6 +157,11 @@ class Tender(models.Model):
         blank=True,
     )
 
+    # stats
+    siae_interested_list_last_seen_date = models.DateTimeField(
+        "Date de dernière visite de l'auteur sur la page 'structures intéressées'", blank=True, null=True
+    )
+
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
     validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
@@ -239,6 +244,8 @@ class TenderSiae(models.Model):
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
 
     source = models.CharField(max_length=20, choices=TENDER_SIAE_SOURCE_CHOICES, default=TENDER_SIAE_SOURCE_EMAIL)
+
+    # stats
     email_send_date = models.DateTimeField("Date d'envoi de l'e-mail", blank=True, null=True)
     detail_display_date = models.DateTimeField("Date de visualisation du besoin", blank=True, null=True)
     contact_click_date = models.DateTimeField("Date de clic sur les coordonnées du besoin", blank=True, null=True)
