@@ -208,6 +208,18 @@ class Tender(models.Model):
     def get_perimeters_names(self):
         return ", ".join(self.perimeters.values_list("name", flat=True))
 
+    @cached_property
+    def can_display_contact_email(self):
+        return self.RESPONSE_KIND_EMAIL in self.response_kind and self.contact_email
+
+    @cached_property
+    def can_display_contact_phone(self):
+        return self.RESPONSE_KIND_TEL in self.response_kind and self.contact_phone
+
+    @cached_property
+    def can_display_contact_external_link(self):
+        return self.RESPONSE_KIND_EXTERNAL in self.response_kind and self.external_link
+
     def get_absolute_url(self):
         return reverse("tenders:detail", kwargs={"slug": self.slug})
 
