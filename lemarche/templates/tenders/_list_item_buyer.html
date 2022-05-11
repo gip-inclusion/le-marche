@@ -6,6 +6,9 @@
             <div class="col-md-8" style="border-right:1px solid">
                 <p class="mb-1">
                     Date de clôture : {{ tender.deadline_date|default:"" }}
+                    {% if not tender.validated_at %}
+                        <span class="float-right badge badge-base badge-pill badge-pilotage">En cours de validation</span>
+                    {% endif %}
                 </p>
 
                 <a href="{% url 'tenders:detail' tender.slug %}" class="text-decoration-none">
