@@ -70,9 +70,6 @@
                                 {{ form.start_working_date.label_tag }}
                                 <div class="input-group">
                                     <input id="id_{{ form.start_working_date.name }}" class="form-control{% if form.start_working_date.errors %} is-invalid{% endif %}" name="{{ form.start_working_date.name }}" type="{{ form.start_working_date.field.widget.input_type }}" value="{{ form.start_working_date.value}}" />
-                                    <div class="input-group-append">
-                                        <span class="input-group-text"><i class="ri-calendar-2-line ri-lg"></i></span>
-                                    </div>
                                     {% for error in form.start_working_date.errors %}
                                         <div class="invalid-feedback">{{ error }}</div>
                                     {% endfor %}
@@ -94,9 +91,6 @@
                                 {{ form.deadline_date.label_tag }}
                                 <div class="input-group">
                                     <input id="id_{{ form.deadline_date.name }}" class="form-control{% if form.deadline_date.errors %} is-invalid{% endif %}" name="{{ form.deadline_date.name }}" type="{{ form.deadline_date.field.widget.input_type }}" value="{{ form.deadline_date.value}}" />
-                                    <div class="input-group-append">
-                                        <span class="input-group-text"><i class="ri-calendar-2-line ri-lg"></i></span>
-                                    </div>
                                     {% for error in form.deadline_date.errors %}
                                         <div class="invalid-feedback">{{ error }}</div>
                                     {% endfor %}
