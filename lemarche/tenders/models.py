@@ -5,7 +5,8 @@ from uuid import uuid4
 import _operator
 from django.conf import settings
 from django.db import IntegrityError, models, transaction
-from django.db.models import Case, Count, IntegerField, Q, Sum, When
+from django.db.models import Case, Count, F, IntegerField, Q, Sum, When
+from django.db.models.functions import Greatest
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -65,6 +66,18 @@ class TenderQuerySet(models.QuerySet):
             siae_contact_click_count=Sum(
                 Case(
                     When(tendersiae__contact_click_date__isnull=False, then=1), default=0, output_field=IntegerField()
+                )
+            ),
+            siae_contact_click_since_last_seen_date_count=Sum(
+                Case(
+                    When(
+                        tendersiae__contact_click_date__gte=Greatest(
+                            F("siae_interested_list_last_seen_date"), F("created_at")
+                        ),
+                        then=1,
+                    ),
+                    default=0,
+                    output_field=IntegerField(),
                 )
             ),
         )
