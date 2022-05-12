@@ -12,20 +12,20 @@
             {{ tender.author.company_name }}
         </div>
     {% endif %}
-    {% if tender.contact_email %}
+    {% if tender.can_display_contact_email %}
         <div class="col-md-6">
             <span class="ri-at-line"></span>
             {{ tender.contact_email }}
         </div>
     {% endif %}
-    {% if tender.contact_phone %}
+    {% if tender.can_display_contact_phone %}
         <div class="col-md-6">
             <span class="ri-phone-line"></span>
             {{ tender.contact_phone }}
         </div>
     {% endif %}
 </div>
-{% if tender.external_link %}
+{% if tender.can_display_contact_external_link %}
     <div class="row">
         <div class="col-12">
             <a href="{{ tender.external_link }}" target="_blank" class="btn btn-outline-primary float-right">
