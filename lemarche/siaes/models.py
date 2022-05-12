@@ -234,7 +234,7 @@ class SiaeQuerySet(models.QuerySet):
     def within(self, point, distance_km=0):
         return self.filter(coords__dwithin=(point, D(km=distance_km)))
 
-    def with_country_geo_rang(self):
+    def with_country_geo_range(self):
         return self.filter(Q(geo_range=GEO_RANGE_COUNTRY))
 
     def annotate_with_user_favorite_list_count(self, user):
@@ -260,7 +260,7 @@ class SiaeQuerySet(models.QuerySet):
         """Filter Siaes with tenders
         - First we filter live and the SIAE that can be contacted
         - Then we make filtering with the sectors
-        - Then, If tender is made for county area, we make filtering with siae_geo_range=country
+        - Then, if tender is made for country area, we make filtering with siae_geo_range=country
                 else we make the filtering with perimeters
 
         Args:
@@ -269,7 +269,7 @@ class SiaeQuerySet(models.QuerySet):
         """
         queryset = self.prefetch_related("sectors").is_live().has_contact_email().filter_sectors(tender.sectors.all())
         if tender.is_country_area:
-            queryset = queryset.with_country_geo_rang()
+            queryset = queryset.with_country_geo_range()
         else:
             queryset = queryset.in_perimeters_area(tender.perimeters.all(), with_country=True)
 
