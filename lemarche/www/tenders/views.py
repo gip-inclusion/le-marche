@@ -21,6 +21,7 @@ from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
 
 TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
 TITLE_DETAIL_PAGE_OTHERS = "Mes besoins"
+TITLE_KIND_SOURCING_SIAE = "Consultation en vue d’un achat"
 
 
 class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView):
@@ -93,6 +94,7 @@ class TenderListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         user_kind = self.request.user.kind if self.request.user.is_authenticated else "anonymous"
         context["page_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
+        context["title_kind_sourcing_siae"] = TITLE_KIND_SOURCING_SIAE
         return context
 
 
@@ -117,6 +119,11 @@ class TenderDetailView(LoginRequiredMixin, DetailView):
         tender = self.get_object()
         user_kind = self.request.user.kind if self.request.user.is_authenticated else "anonymous"
         context["parent_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
+        context["kind_title"] = (
+            TITLE_KIND_SOURCING_SIAE
+            if user_kind == User.KIND_SIAE and tender.kind == Tender.TENDER_KIND_PROJECT
+            else tender.get_kind_display()
+        )
         if self.request.user.kind == User.KIND_SIAE:
             context["user_has_detail_display_date"] = TenderSiae.objects.filter(
                 tender=tender, siae__in=self.request.user.siaes.all(), detail_display_date__isnull=False
