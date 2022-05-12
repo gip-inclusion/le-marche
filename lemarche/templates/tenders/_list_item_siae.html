@@ -6,7 +6,13 @@
             <div class="col-md-12">
                 <p>
                     Date de clôture : {{ tender.deadline_date|default:"" }}
-                    <span class="float-right badge badge-base badge-pill badge-emploi">{{ tender.get_kind_display }}</span>
+                    <span class="float-right badge badge-base badge-pill badge-emploi">
+                        {% if tender.kind == "PROJ" %}
+                            {{ title_kind_sourcing_siae }}
+                        {% else %}
+                            {{ tender.get_kind_display }}
+                        {% endif %}
+                    </span>
                 </p>
             </div>
         </div>

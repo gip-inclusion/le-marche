@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load bootstrap4 static humanize %}
 
-{% block title %}{{ tender.get_kind_display }} {{ tender.title }}{{ block.super }}{% endblock %}
+{% block title %}{{ kind_title }} {{ tender.title }}{{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
 <section>
@@ -36,7 +36,7 @@
                         <div class="col-md-12">
                             <h1>
                                 {{ tender.title }}
-                                <span class="fs-sm badge badge-base badge-pill badge-emploi float-right"  aria-hidden="true">{{ tender.get_kind_display }}</span>
+                                <span class="fs-sm badge badge-base badge-pill badge-emploi float-right"  aria-hidden="true">{{ kind_title }}</span>
                             </h1>
                         </div>
                     </div>
