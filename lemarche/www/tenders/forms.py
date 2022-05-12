@@ -41,6 +41,7 @@ class AddTenderForm(forms.ModelForm):
             "contact_last_name",
             "contact_email",
             "contact_phone",
+            "is_country_area",
         ]
 
         widgets = {
@@ -53,7 +54,9 @@ class AddTenderForm(forms.ModelForm):
     def clean(self):
         super().clean()
         msg_field_missing = "{} est un champ obligatoire"
-        if "perimeters" in self.errors:
+        if "perimeters" in self.errors or not (
+            self.cleaned_data.get("is_country_area") or self.cleaned_data.get("perimeters")
+        ):
             self.add_error("perimeters", msg_field_missing.format("Lieux d'exécution"))
         if "sectors" in self.errors:
             self.add_error("sectors", msg_field_missing.format(Sector._meta.verbose_name_plural))

@@ -38,6 +38,8 @@ class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView
         tender.author = self.request.user
         # we need to save before because the matching of Siaes needs
         # the sectors and perimeters of tender (relation ManyToMany)
+        if tender.is_country_area:
+            form.cleaned_data.pop("perimeters")
         tender.save()
         form.save_m2m()
 
