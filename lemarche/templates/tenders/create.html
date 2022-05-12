@@ -48,7 +48,6 @@
                             {% bootstrap_field form.kind form_group_class="form-group form-group-required" %}
                             {% bootstrap_field form.title placeholder="Ex: Rénovation de façade" form_group_class="form-group form-group-required" %}
                             {% bootstrap_field form.sectors form_group_class="form-group form-group-required use-multiselect" %}
-                            {% bootstrap_field form.is_country_area %}
                             <div class="form-group form-group-required{% if form.perimeters.errors %} is-invalid{% endif %}">
                                 <label for="perimeter_name">{{ form.perimeters.label }}</label>
                                 <div id="dir_form_perimeter_name">
@@ -58,6 +57,7 @@
                                 <div class="invalid-feedback">Ce champ est obligatoire.</div>
                                 <div id="perimeters-selected" class="mt-1"></div>
                             </div>
+                            {% bootstrap_field form.is_country_area %}
                         </fieldset>
                         <hr>
                         <fieldset>
@@ -164,12 +164,25 @@
         let external_link = document.getElementById('id_external_link');
         let is_in_country_area = document.getElementById('id_is_country_area');
         let perimeters = document.getElementById('dir_form_perimeter_name');
+        let perimetersInput = document.getElementById('perimeter_name');
 
+        function disablePerimeters(){
+            $(perimetersInput).prop("disabled", true );
+            // Provide from perimeters autocomplete field
+            cleanPerimeters();
+        }
+
+        // init of the page
+        if(is_in_country_area.checked){
+            disablePerimeters();
+        }
+
+        // on change
         is_in_country_area.addEventListener('change', () => {
             if (is_in_country_area.checked) {
-                toggleInputElement(false, element = perimeters, required = false);
+                disablePerimeters();
             } else {
-                toggleInputElement(true, element = perimeters, required = false);
+                $(perimetersInput).prop("disabled", false );
             }
 
 
