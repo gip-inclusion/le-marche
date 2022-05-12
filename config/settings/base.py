@@ -697,3 +697,15 @@ WAGTAILSEARCH_BACKENDS = {
 }
 
 SITE_ID = 1
+
+WAGTAIL_RICHTEXT_FIELD_FEATURES = [
+    "h2",
+    "h3",
+    "bold",
+    "italic",
+    "link",
+    "image",
+    "embed",
+]
+
+WAGTAILEMBEDS_RESPONSIVE_HTML = True
