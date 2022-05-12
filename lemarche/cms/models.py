@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from modelcluster.fields import ParentalManyToManyField
@@ -28,7 +29,9 @@ class ArticlePage(Page):
         blank=True,
     )
     # Database fields
-    body = RichTextField(blank=True, verbose_name="Contenu de l'article")
+    body = RichTextField(
+        blank=True, verbose_name="Contenu de l'article", features=settings.WAGTAIL_RICHTEXT_FIELD_FEATURES
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
