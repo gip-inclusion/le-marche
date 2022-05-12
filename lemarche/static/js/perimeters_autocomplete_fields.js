@@ -1,10 +1,11 @@
+const perimeterAutocompleteContainer = document.querySelector('#dir_form_perimeter_name');
+const perimetersContainer = document.querySelector('#perimeters-selected');
+
 document.addEventListener("DOMContentLoaded", function() {
    /**
    * Accessible autocomplete for the perimeter search form field
    */
 
-  const perimeterAutocompleteContainer = document.querySelector('#dir_form_perimeter_name');
-  const perimetersContainer = document.querySelector('#perimeters-selected');
 
 
   // let perimeterInput = document.getElementById('id_perimeters');  // hidden
@@ -147,3 +148,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
 });
+
+function cleanPerimeters() {
+  $(perimetersContainer).empty();
+}

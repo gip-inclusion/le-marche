@@ -47,7 +47,11 @@
                         </div>
                         <div class="col">
                             <span class="ri-map-pin-2-line"></span>
-                            {{ tender.get_perimeters_names }}
+                            {% if tender.is_country_area %}
+                                France entière
+                            {% else %}
+                                {{ tender.get_perimeters_names }}
+                            {% endif %}
                         </div>
                     </div>
 
