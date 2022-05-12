@@ -83,7 +83,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
             meta=extract_meta_from_request(self.request, results_count=siae_list.count()),
         )
         user = self.request.user
-        if user and user.kind == user.KIND_BUYER:
+        if not user.is_anonymous and user.kind == user.KIND_BUYER:
             add_to_contact_list(user, "buyer_search")
 
         return super().get(request, *args, **kwargs)
