@@ -342,6 +342,15 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         """
         return {"is_active": False, "source": Siae.SOURCE_STAFF_C4_CREATED}
 
+    def lookup_allowed(self, lookup, *args, **kwargs):
+        if lookup in [
+            "tendersiae__email_send_date__isnull",
+            "tendersiae__detail_display_date__isnull",
+            "tendersiae__contact_click_date__isnull",
+        ]:
+            return True
+        return super().lookup_allowed(lookup, *args, **kwargs)
+
     def nb_users(self, siae):
         url = reverse("admin:users_user_changelist") + f"?siaes__in={siae.id}"
         return format_html(f'<a href="{url}">{siae.user_count}</a>')
