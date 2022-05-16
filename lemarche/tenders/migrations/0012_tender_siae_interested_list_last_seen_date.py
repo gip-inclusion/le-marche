@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("tenders", "0010_alter_tender_choice_plural_fix"),
+        ("tenders", "0011_merge_20220512_1802"),
     ]
 
     operations = [
