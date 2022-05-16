@@ -173,10 +173,12 @@ class TenderSiaeInterestedListView(TenderOwnerRequiredMixin, ListView):
 
     def get(self, request, *args, **kwargs):
         """
-        Check if the User has any Siae contacted for this Tender. If yes, update 'detail_display_date'
+        - if there isn't any Siae interested, redirect
+        - user should be tender owner : update siae_interested_list_last_seen_date
         """
         if not self.get_queryset().count():
             return HttpResponseRedirect(reverse_lazy("tenders:list"))
+        Tender.objects.filter(slug=self.kwargs.get("slug")).update(siae_interested_list_last_seen_date=timezone.now())
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

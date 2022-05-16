@@ -64,6 +64,7 @@ class TenderAdmin(admin.ModelAdmin):
         "nb_siae_email_send",
         "nb_siae_detail_display",
         "nb_siae_contact_click",
+        "siae_interested_list_last_seen_date",
         "created_at",
         "updated_at",
     ]

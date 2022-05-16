@@ -31,8 +31,10 @@
                 </div>
             </div>
             <div class="col-md-4 text-center my-auto">
-                <i class="ri-thumb-up-line ri-xl"></i>
-                <h4>{{ tender.siae_contact_click_count }} structures intéressées</h4>
+                {% if tender.siae_contact_click_since_last_seen_date_count %}
+                    <span class="badge badge-base badge-pill badge-pilotage"><i class="ri-thumb-up-line ri-xl"></i> {{ tender.siae_contact_click_since_last_seen_date_count }} nouvelles structures</span>
+                {% endif %}
+                <h4 class="mt-2">{{ tender.siae_contact_click_count }} structures intéressées</h4>
                 {% if tender.siae_contact_click_count %}
                     <a href="{% url 'tenders:detail-siae-interested' tender.slug %}" id="show-tender-siae-list-btn" class="btn btn-sm btn-primary">
                         Voir la liste
