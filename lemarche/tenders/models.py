@@ -5,7 +5,8 @@ from uuid import uuid4
 import _operator
 from django.conf import settings
 from django.db import IntegrityError, models, transaction
-from django.db.models import Case, Count, IntegerField, Q, Sum, When
+from django.db.models import Case, Count, F, IntegerField, Q, Sum, When
+from django.db.models.functions import Greatest
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -65,6 +66,18 @@ class TenderQuerySet(models.QuerySet):
             siae_contact_click_count=Sum(
                 Case(
                     When(tendersiae__contact_click_date__isnull=False, then=1), default=0, output_field=IntegerField()
+                )
+            ),
+            siae_contact_click_since_last_seen_date_count=Sum(
+                Case(
+                    When(
+                        tendersiae__contact_click_date__gte=Greatest(
+                            F("siae_interested_list_last_seen_date"), F("created_at")
+                        ),
+                        then=1,
+                    ),
+                    default=0,
+                    output_field=IntegerField(),
                 )
             ),
         )
@@ -157,6 +170,11 @@ class Tender(models.Model):
         blank=True,
     )
 
+    # stats
+    siae_interested_list_last_seen_date = models.DateTimeField(
+        "Date de dernière visite de l'auteur sur la page 'structures intéressées'", blank=True, null=True
+    )
+
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
     validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
@@ -239,6 +257,8 @@ class TenderSiae(models.Model):
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
 
     source = models.CharField(max_length=20, choices=TENDER_SIAE_SOURCE_CHOICES, default=TENDER_SIAE_SOURCE_EMAIL)
+
+    # stats
     email_send_date = models.DateTimeField("Date d'envoi de l'e-mail", blank=True, null=True)
     detail_display_date = models.DateTimeField("Date de visualisation du besoin", blank=True, null=True)
     contact_click_date = models.DateTimeField("Date de clic sur les coordonnées du besoin", blank=True, null=True)

@@ -316,6 +316,15 @@ class TenderSiaeInterestedListView(TestCase):
             self.assertEqual(response.status_code, 302)
             self.assertEqual(response.url, "/besoins/")
 
+    def test_viewing_tender_siae_interested_list_should_update_stats(self):
+        self.assertIsNone(self.tender_1.siae_interested_list_last_seen_date)
+        self.client.login(email=self.user_buyer_1.email, password=DEFAULT_PASSWORD)
+        url = reverse("tenders:detail-siae-interested", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["tendersiaes"]), 2)
+        self.assertIsNotNone(Tender.objects.get(id=self.tender_1.id).siae_interested_list_last_seen_date)
+
     def test_order_tender_siae_by_last_contact_click_date(self):
         # TenderSiae are ordered by -created_at by default
         self.assertEqual(self.tender_1.tendersiae_set.first().id, self.tendersiae_1_3.id)

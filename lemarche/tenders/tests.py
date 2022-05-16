@@ -139,10 +139,12 @@ class TenderModelQuerysetTest(TestCase):
         self.assertEqual(tender_with_siae.siae_email_send_count, 3)
         self.assertEqual(tender_with_siae.siae_detail_display_count, 2)
         self.assertEqual(tender_with_siae.siae_contact_click_count, 1)
+        self.assertEqual(tender_with_siae.siae_contact_click_since_last_seen_date_count, 1)
         tender_without_siae = Tender.objects.with_siae_stats().last()
         self.assertEqual(tender_without_siae.siae_email_send_count, 0)
         self.assertEqual(tender_without_siae.siae_detail_display_count, 0)
         self.assertEqual(tender_without_siae.siae_contact_click_count, 0)
+        self.assertEqual(tender_without_siae.siae_contact_click_since_last_seen_date_count, 0)
 
 
 class TenderMigrationToSelectTest(TestCase):
