@@ -4,12 +4,12 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-8" style="border-right:1px solid">
-                <div class="row">
-                    <div class="col-12">
-                        Date de clôture : {{ tender.deadline_date|default:"" }}
-                        <span class="float-right badge badge-base badge-pill badge-emploi">{{ tender.get_kind_display }}</span>
-                    </div>
-                </div>
+                <p class="mb-1">
+                    Date de clôture : {{ tender.deadline_date|default:"" }}
+                    {% if not tender.validated_at %}
+                        <span class="float-right badge badge-base badge-pill badge-pilotage">En cours de validation</span>
+                    {% endif %}
+                </p>
 
                 <a href="{% url 'tenders:detail' tender.slug %}" class="text-decoration-none">
                     <h2 class="py-2">{{ tender.title }}</h2>
