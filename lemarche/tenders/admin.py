@@ -135,19 +135,31 @@ class TenderAdmin(admin.ModelAdmin):
     nb_siae.admin_order_field = "siae_count"
 
     def nb_siae_email_send(self, tender):
-        return tender.siae_email_send_count
+        url = (
+            reverse("admin:siaes_siae_changelist")
+            + f"?tenders__in={tender.id}&tendersiae__email_send_date__isnull=False"
+        )
+        return format_html(f'<a href="{url}">{tender.siae_email_send_count}</a>')
 
     nb_siae_email_send.short_description = "S. contactées"
     nb_siae_email_send.admin_order_field = "siae_email_send_count"
 
     def nb_siae_detail_display(self, tender):
-        return tender.siae_detail_display_count
+        url = (
+            reverse("admin:siaes_siae_changelist")
+            + f"?tenders__in={tender.id}&tendersiae__detail_display_date__isnull=False"
+        )
+        return format_html(f'<a href="{url}">{tender.siae_detail_display_count}</a>')
 
     nb_siae_detail_display.short_description = "S. vues"
     nb_siae_detail_display.admin_order_field = "siae_detail_display_count"
 
     def nb_siae_contact_click(self, tender):
-        return tender.siae_contact_click_count
+        url = (
+            reverse("admin:siaes_siae_changelist")
+            + f"?tenders__in={tender.id}&tendersiae__contact_click_date__isnull=False"
+        )
+        return format_html(f'<a href="{url}">{tender.siae_contact_click_count}</a>')
 
     nb_siae_contact_click.short_description = "S. intéressées"
     nb_siae_contact_click.admin_order_field = "siae_contact_click_count"
