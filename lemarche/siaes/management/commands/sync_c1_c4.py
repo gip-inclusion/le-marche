@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 
 import psycopg2
 import psycopg2.extras
+from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
@@ -11,6 +12,7 @@ from stdnum.fr import siret
 
 from lemarche.siaes.constants import DEPARTMENT_TO_REGION
 from lemarche.siaes.models import Siae
+from lemarche.utils.apis import api_mailjet
 from lemarche.utils.data import rename_dict_key
 
 
@@ -285,7 +287,20 @@ class Command(BaseCommand):
         # create object
         if not dry_run:
             siae = Siae.objects.create(**c1_siae)
+            self.add_siae_to_contact_list(siae)
             self.stdout.write(f"New Siae created / {siae.id} / {siae.name} / {siae.siret}")
+
+    def add_siae_to_contact_list(self, siae: Siae):
+        if siae.kind != "OPCS" and siae.is_active:
+            properties = {
+                "pays": "france",
+                "nomsiae": siae.name,
+            }
+            mailjet_contact_list_id = settings.MAILJET_NL_CL_IMPORT_C1_SIAE_LIST_ID
+            if siae.contact_email:
+                api_mailjet.add_to_contact_list_async(siae.contact_email, properties, mailjet_contact_list_id)
+            if siae.admin_email:
+                api_mailjet.add_to_contact_list_async(siae.admin_email, properties, mailjet_contact_list_id)
 
     def c4_update_siae(self, c1_siae, c4_siae, dry_run):
         """
