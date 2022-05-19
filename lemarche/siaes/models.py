@@ -161,8 +161,6 @@ class SiaeQuerySet(models.QuerySet):
     def filter_siret_startswith(self, siret):
         return self.filter(siret__startswith=siret)
 
-    # def filter_full_text(self, full_text_string):
-
     def filter_full_text(self, full_text_string):
         # Simple method 1: SearchVectors
         #     return self.annotate(

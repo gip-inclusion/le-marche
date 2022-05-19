@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function() {
       element: perimeterAutocompleteContainer,
       id: 'perimeter_name',
       name: 'perimeter_name',  // url GET param name
-      placeholder: 'Région, département, ville',  // 'Autour de (Arras, Bobigny, Strasbourg…)',
+      placeholder: 'Région, ville…',  // 'Autour de (Arras, Bobigny, Strasbourg…)', 'Région, département, ville'
       minLength: 2,
       defaultValue: perimeterNameParamInitial,
       source: async (query, populateResults) => {  // TODO; use debounce ?

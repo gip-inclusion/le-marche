@@ -27,7 +27,7 @@
             <form method="GET" action="{% url 'siae:search_results' %}" id="search-form" aria-label="Rechercher des structures de l’insertion et du handicap" role="search">
                 {% bootstrap_form_errors form type="all" %}
                 <div class="row">
-                    <div class="col-12 col-lg-8">
+                    <div class="col-12 col-lg-10">
                         <div class="row first-row">
                             <div class="col-12 col-md-6 mt-lg-3 pr-md-0">
                                 {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
@@ -39,8 +39,22 @@
                                     <div id="perimeters-selected" class="mt-1"></div>
                                 </div>
                             </div>
+                            <div class="col-12 col-md-3 mt-lg-3 pr-md-0">
+                                {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
+                            </div>
+                            <div class="col-12 col-md-1 mt-lg-7 pr-md-0 text-center">
+                                ou
+                            </div>
+                            <div class="col-12 col-md-5 mt-lg-3 pr-md-0">
+                                {% bootstrap_field form.q %}
+                            </div>
                         </div>
-                        <div class="row">
+                        <p data-toggle="collapse" data-target="#collapseFormExtra" aria-expanded="false" aria-controls="collapseFormExtra">
+                            <a href="#">Plus de critères</a>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-up"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 8l6 6H6z"/></svg>
+                        </p>
+                        <div id="collapseFormExtra" class="row collapse">
                             <div class="col-12 col-md-3 mt-lg-2 pr-md-0">
                                 {% bootstrap_field form.kind %}
                             </div>
@@ -54,13 +68,6 @@
                                 {% bootstrap_field form.networks %}
                             </div>
                         </div>
-                        {% if user.is_authenticated and user.kind == 'ADMIN' %}
-                            <div class="row">
-                                <div class="col-12 col-md-6 mt-lg-2 pr-md-0">
-                                    {% bootstrap_field form.q %}
-                                </div>
-                            </div>
-                        {% endif %}
                     </div>
                     <div class="col-12 col-sm-6 col-lg-2 mt-3 mt-3 mt-md-0 mt-lg-3 pr-sm-0 pr-lg-2">
                         <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
@@ -68,13 +75,6 @@
                             <span>Rechercher</span>
                             <i class="ri-search-line ri-lg"></i>
                         </button>
-                    </div>
-                    <div class="col-12 col-sm-6 col-lg-2 mt-3  mt-3 mt-md-0 mt-lg-3 pl-lg-2">
-                        <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
-                        <a href="{% url 'siae:search_results' %}" class="btn btn-outline-primary btn-block reset btn-ico">
-                            <span>Réinitialiser</span>
-                            <i class="ri-refresh-line ri-lg"></i>
-                        </a>
                     </div>
                 </div>
             </form>
@@ -252,7 +252,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // set map bounds
     geoBounds = geojson.getBounds();
-    if(geoBounds.isValid()) {
+    if (geoBounds.isValid()) {
         map.fitBounds(geoBounds);
     }
 });

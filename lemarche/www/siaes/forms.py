@@ -25,9 +25,9 @@ class SiaeSearchForm(forms.Form):
     )
 
     q = forms.CharField(
-        label="Recherche texte",
+        label="Numéro de SIRET ou le nom de votre structure",
         required=False,
-        widget=forms.TextInput(attrs={"placeholder": "Nom, SIRET"}),
+        widget=forms.TextInput(attrs={"placeholder": "Ex : 888 888 888 88888"}),
     )
     sectors = GroupedModelMultipleChoiceField(
         label=Sector._meta.verbose_name_plural,
