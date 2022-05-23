@@ -3,12 +3,14 @@ document.addEventListener('DOMContentLoaded', function() {
      * Multiselect dropdown for the kind search form field
      */
 
-    const kindFormElement = document.querySelector('#filter-search-form #id_kind');
-    const kindFormPlaceholder = 'Insertion, handicap';
+    const FORM_INPUT_ID = "id_kind";
+    const FORM_MULTISELECT_ID = `${FORM_INPUT_ID}_multiselect`;
+    const FORM_ELEMENT = document.querySelector(`#filter-search-form #${FORM_INPUT_ID}`);
+    const FORM_PLACEHOLDER = 'Insertion, handicap';
 
     const buttonTextAndTitle = function(options, select) {
         if (options.length === 0) {
-            return kindFormPlaceholder;
+            return FORM_PLACEHOLDER;
         }
         else if (options.length > 2) {
             return `${options.length} types sélectionnés`;
@@ -27,9 +29,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // only on pages with id_kind
-    if (document.body.contains(kindFormElement)) {
-        $('#id_kind').multiselect({
+    if (document.body.contains(FORM_ELEMENT)) {
+        $(`#${FORM_INPUT_ID}`).multiselect({
             // height & width
             maxHeight: 400,
             buttonWidth: '100%',
@@ -41,19 +42,19 @@ document.addEventListener('DOMContentLoaded', function() {
             // ability to select all group's child options in 1 click
             enableClickableOptGroups: true,
             // other
-            buttonContainer: '<div id="id_kind_multiselect" class="btn-group" />',
+            buttonContainer: `<div id="${FORM_MULTISELECT_ID}" class="btn-group" />`,
             widthSynchronizationMode: 'ifPopupIsSmaller',
             // enableHTML: true,
-            // nonSelectedText: `<span class="fake-placeholder">${kindFormPlaceholder}</span>`,
+            // nonSelectedText: `<span class="fake-placeholder">${FORM_PLACEHOLDER}</span>`,
         });
 
-        // hack to set the placeholder color to grey when there is no kind selected
-        const multiselectSelectedText = document.querySelector('#id_kind_multiselect .multiselect-selected-text');
-        if (multiselectSelectedText.innerText === kindFormPlaceholder) {
+        // hack to set the placeholder color to grey when there is no item selected
+        const multiselectSelectedText = document.querySelector(`#${FORM_MULTISELECT_ID} .multiselect-selected-text`);
+        if (multiselectSelectedText.innerText === FORM_PLACEHOLDER) {
             multiselectSelectedText.classList.add('fake-placeholder');
         }
         multiselectSelectedText.addEventListener('DOMSubtreeModified', function () {
-            if (this.innerText === kindFormPlaceholder) {
+            if (this.innerText === FORM_PLACEHOLDER) {
                 this.classList.add('fake-placeholder');
             } else {
                 this.classList.remove('fake-placeholder');

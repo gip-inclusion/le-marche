@@ -9,7 +9,6 @@ from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
-from lemarche.utils.constants import EMPTY_CHOICE
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
@@ -18,7 +17,6 @@ class SiaeSearchForm(forms.Form):
         ("Insertion par l'activité économique", Siae.KIND_CHOICES_WITH_EXTRA_INSERTION),
         ("Handicap", Siae.KIND_CHOICES_WITH_EXTRA_HANDICAP),
     )
-    FORM_PRESTA_CHOICES = EMPTY_CHOICE + siae_constants.PRESTA_CHOICES
     FORM_TERRITORY_CHOICES = (
         ("QPV", "Quartier prioritaire de la politique de la ville (QPV)"),
         ("ZRR", "Zone de revitalisation rurale (ZRR)"),
@@ -49,9 +47,9 @@ class SiaeSearchForm(forms.Form):
         choices=FORM_KIND_CHOICES_GROUPED,
         required=False,
     )
-    presta_type = forms.ChoiceField(
+    presta_type = forms.MultipleChoiceField(
         label=Siae._meta.get_field("presta_type").verbose_name,
-        choices=FORM_PRESTA_CHOICES,
+        choices=siae_constants.PRESTA_CHOICES,
         required=False,
     )
     territory = forms.MultipleChoiceField(
@@ -59,11 +57,10 @@ class SiaeSearchForm(forms.Form):
         choices=FORM_TERRITORY_CHOICES,
         required=False,
     )
-    networks = forms.ModelChoiceField(
+    networks = forms.ModelMultipleChoiceField(
         label="Réseau",
         queryset=Network.objects.all().order_by("name"),
         to_field_name="slug",
-        empty_label="",
         required=False,
     )
 
