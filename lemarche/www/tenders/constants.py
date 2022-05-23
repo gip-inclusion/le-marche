@@ -1,6 +1,6 @@
 from django.db.models import Q
 
-from lemarche.tenders.models import Tender
+from lemarche.tenders.models import PartnerShareTender, Tender
 
 
 """ Constants for tenders:
@@ -54,6 +54,65 @@ PARTNER_FILTERS = [
         FILTER_KIND_PERIMETERS: Q(name="Grand Est") | Q(region_code="44"),
     },
 ]
+
+
+def match_tender_for_partners_2(tender: Tender, send_email_func=None):
+    """Manage the matching from tender to partners
+
+    Args:
+        tender (Tender): _description_
+        send_email_func : function which takes two arguments tender, and dict of partner (see PARTNERS_FILTERS)
+
+    Returns:
+        list<Dict>: list of partners
+    """
+    partner_list_interested = []
+    conditions = Q()
+    if tender.amount:
+        if tender.amount == tender.AMOUNT_RANGE_0:
+            conditions |= Q(amount_in=tender.AMOUNT_RANGE_0)
+        elif tender.amount == tender.AMOUNT_RANGE_1:
+            conditions |= Q(amount_in=tender.AMOUNT_RANGE_0) | Q(amount_in=tender.AMOUNT_RANGE_1)
+        elif tender.amount == tender.AMOUNT_RANGE_2:
+            conditions |= Q(amount_in=tender.AMOUNT_RANGE_0) | Q(amount_in=tender.AMOUNT_RANGE_1)
+        elif tender.amount == tender.AMOUNT_RANGE_3:
+            conditions |= (
+                Q(amount_in=tender.AMOUNT_RANGE_0)
+                | Q(amount_in=tender.AMOUNT_RANGE_1)
+                | Q(amount_in=tender.AMOUNT_RANGE_2)
+                | Q(amount_in=tender.AMOUNT_RANGE_3)
+            )
+        elif tender.amount == tender.AMOUNT_RANGE_4:
+            conditions |= (
+                Q(amount_in=tender.AMOUNT_RANGE_0)
+                | Q(amount_in=tender.AMOUNT_RANGE_1)
+                | Q(amount_in=tender.AMOUNT_RANGE_2)
+                | Q(amount_in=tender.AMOUNT_RANGE_3)
+                | Q(amount_in=tender.AMOUNT_RANGE_4)
+            )
+    if tender.is_country_area:
+        conditions &= Q(perimeters__isnull=True)
+    else:
+        conditions &= Q(perimeters__in=tender.perimeters.all())
+
+    partners = PartnerShareTender.objects.filter(conditions)
+    for partner in partners:
+        send_email = True
+
+        if FILTER_KIND_AMOUNT in partner.get("filter_kind"):
+            send_email = tender.amount in partner.get(FILTER_KIND_AMOUNT)
+
+        if FILTER_KIND_PERIMETERS in partner.get("filter_kind") and send_email:
+            send_email = tender.perimeters.filter(partner.get(FILTER_KIND_PERIMETERS)).exists()
+
+        if send_email:
+            partner_list_interested.append(partner)
+            if send_email_func:
+                # avoid circular import
+                # + more modular, can use differents functions to send email
+                send_email_func(tender, partner)
+
+    return partner_list_interested
 
 
 def match_tender_for_partners(tender: Tender, send_email_func=None):

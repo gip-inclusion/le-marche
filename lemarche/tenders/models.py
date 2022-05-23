@@ -11,7 +11,20 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 
-from lemarche.utils.fields import ChoiceArrayField
+from lemarche.utils.fields import ArrayField, ChoiceArrayField
+
+
+AMOUNT_RANGE_0 = "<25K"
+AMOUNT_RANGE_1 = "<100K"
+AMOUNT_RANGE_2 = "<1M"
+AMOUNT_RANGE_3 = "<5M"
+AMOUNT_RANGE_4 = ">5M"
+
+AMOUNT_RANGE_0_LABEL = "0-25K €"
+AMOUNT_RANGE_1_LABEL = "25K-100K €"
+AMOUNT_RANGE_2_LABEL = "100K-1M €"
+AMOUNT_RANGE_3_LABEL = "1M-5M €"
+AMOUNT_RANGE_4_LABEL = "> 5M €"
 
 
 class TenderQuerySet(models.QuerySet):
@@ -73,11 +86,11 @@ class TenderQuerySet(models.QuerySet):
 class Tender(models.Model):
     """Appel d'offres et devis"""
 
-    AMOUNT_RANGE_0 = "<25K"
-    AMOUNT_RANGE_1 = "<100K"
-    AMOUNT_RANGE_2 = "<1M"
-    AMOUNT_RANGE_3 = "<5M"
-    AMOUNT_RANGE_4 = ">5M"
+    AMOUNT_RANGE_0 = AMOUNT_RANGE_0
+    AMOUNT_RANGE_1 = AMOUNT_RANGE_1
+    AMOUNT_RANGE_2 = AMOUNT_RANGE_2
+    AMOUNT_RANGE_3 = AMOUNT_RANGE_3
+    AMOUNT_RANGE_4 = AMOUNT_RANGE_4
 
     AMOUNT_RANGE_CHOICES = (
         (AMOUNT_RANGE_0, "0-25K €"),
@@ -250,3 +263,33 @@ class TenderSiae(models.Model):
         verbose_name = "Structure correspondant au besoin"
         verbose_name_plural = "Structures correspondantes au besoin"
         ordering = ["-created_at"]
+
+
+class PartnerShareTender(models.Model):
+    AMOUNT_RANGE_0 = AMOUNT_RANGE_0
+    AMOUNT_RANGE_1 = AMOUNT_RANGE_1
+    AMOUNT_RANGE_2 = AMOUNT_RANGE_2
+    AMOUNT_RANGE_3 = AMOUNT_RANGE_3
+    AMOUNT_RANGE_4 = AMOUNT_RANGE_4
+
+    AMOUNT_RANGE_CHOICES = (
+        (AMOUNT_RANGE_0, AMOUNT_RANGE_0_LABEL),
+        (AMOUNT_RANGE_1, AMOUNT_RANGE_1_LABEL),
+        (AMOUNT_RANGE_2, AMOUNT_RANGE_2_LABEL),
+        (AMOUNT_RANGE_3, AMOUNT_RANGE_3_LABEL),
+        (AMOUNT_RANGE_4, AMOUNT_RANGE_4_LABEL),
+    )
+    name = models.CharField(max_length=120, verbose_name="Nom du partenaire")
+    perimeters = models.ManyToManyField(
+        "perimeters.Perimeter", verbose_name="Lieux de filtrage", related_name="partners_share_tenders", blank=True
+    )
+
+    amount_in = models.CharField(
+        verbose_name="Montant du marché limite", max_length=9, choices=AMOUNT_RANGE_CHOICES, blank=True, null=True
+    )
+    # contact list
+    contact_list = ArrayField(base_field=models.EmailField(max_length=255), verbose_name="Liste de contact")
+
+    class Meta:
+        verbose_name = "Partenaire intéressé des dépôts de besoins"
+        verbose_name_plural = "Partenaires intéressés des dépôts de besoins"

@@ -7,7 +7,8 @@ from django.utils.html import format_html
 
 from lemarche.common.admin import admin_site
 from lemarche.siaes.models import Siae
-from lemarche.tenders.models import Tender
+from lemarche.tenders.forms import TenderAdminForm
+from lemarche.tenders.models import PartnerShareTender, Tender
 from lemarche.www.tenders.tasks import send_confirmation_published_email_to_author, send_tender_emails_to_siaes
 
 
@@ -158,3 +159,10 @@ class TenderAdmin(admin.ModelAdmin):
             self.message_user(request, "Ce dépôt de besoin a été validé et envoyé aux structures")
             return HttpResponseRedirect(".")
         return super().response_change(request, obj)
+
+
+@admin.register(PartnerShareTender, site=admin_site)
+class PartnerShareTenderAdmin(admin.ModelAdmin):
+    form = TenderAdminForm
+    autocomplete_fields = ["perimeters"]
+    list_display = ["id", "name"]
