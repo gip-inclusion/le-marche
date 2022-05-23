@@ -23,61 +23,95 @@
 {% block content %}
 <section class="s-siae-01">
     <div class="container">
-        <div id="dir_form" class="dir_form">
-            <form method="GET" action="{% url 'siae:search_results' %}" id="search-form" aria-label="Rechercher des structures de l’insertion et du handicap" role="search">
-                {% bootstrap_form_errors form type="all" %}
-                <div class="row">
-                    <div class="col-12 col-lg-10">
-                        <div class="row first-row">
-                            <div class="col-12 col-md-6 mt-lg-3 pr-md-0">
-                                {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
-                            </div>
-                            <div class="col-12 col-md-6 mt-lg-3">
-                                <div class="form-group">
-                                    <label for="id_perimeters">{{ form.perimeters.label }}</label>
-                                    <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
-                                    <div id="perimeters-selected" class="mt-1"></div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-3 mt-lg-3 pr-md-0">
-                                {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
-                            </div>
-                            <div class="col-12 col-md-1 mt-lg-7 pr-md-0 text-center">
-                                ou
-                            </div>
-                            <div class="col-12 col-md-5 mt-lg-3 pr-md-0">
-                                {% bootstrap_field form.q %}
-                            </div>
-                        </div>
-                        <p data-toggle="collapse" data-target="#collapseFormExtra" aria-expanded="false" aria-controls="collapseFormExtra">
-                            <a href="#">Plus de critères</a>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-up"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 8l6 6H6z"/></svg>
-                        </p>
-                        <div id="collapseFormExtra" class="row collapse">
-                            <div class="col-12 col-md-3 mt-lg-2 pr-md-0">
-                                {% bootstrap_field form.kind %}
-                            </div>
-                            <div class="col-12 col-md-3 mt-lg-2 pr-md-0">
-                                {% bootstrap_field form.presta_type %}
-                            </div>
-                            <div class="col-12 col-md-3 mt-lg-2 pr-md-0">
-                                {% bootstrap_field form.territory %}
-                            </div>
-                            <div class="col-12 col-md-3 mt-lg-2">
-                                {% bootstrap_field form.networks %}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-lg-2 mt-3 mt-3 mt-md-0 mt-lg-3 pr-sm-0 pr-lg-2">
-                        <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
-                        <button id="filter-submit" class="btn btn-primary btn-block btn-ico" type="submit">
-                            <span>Rechercher</span>
-                            <i class="ri-search-line ri-lg"></i>
-                        </button>
+        <div class="card c-card">
+            <div class="card-body">
+                <div class="row mb-3 mb-lg-5">
+                    <div class="col-12">
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a href="#" id="filter-nav-item" class="nav-link">
+                                    J'ai un projet d'achat
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" id="text-nav-item" class="nav-link">
+                                    Je cherche une structure
+                                    <span class="fs-xs badge badge-base badge-pill badge-pilotage">Nouveauté</span>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            </form>
+
+                <form method="GET" action="{% url 'siae:search_results' %}" id="filter-search-form" aria-label="Rechercher des structures de l’insertion et du handicap" role="search">
+                    {% bootstrap_form_errors form type="all" %}
+                    <div class="row">
+                        <div class="col-12 col-lg-8">
+                            <div class="row">
+                                <div class="col-12 col-md-6 mt-lg-3">
+                                    <div class="form-group">
+                                        <label for="id_perimeters">{{ form.perimeters.label }}</label>
+                                        <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
+                                        <div id="perimeters-selected" class="mt-1"></div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-4 d-none d-md-block">
+                            <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
+                            <button id="filter-submit" class="btn btn-primary btn-block btn-ico" type="submit">
+                                <span>Rechercher</span>
+                                <i class="ri-search-line ri-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-md-3 mt-lg-2 pr-md-0">
+                            {% bootstrap_field form.kind %}
+                        </div>
+                        <div class="col-12 col-md-3 mt-lg-2 pr-md-0">
+                            {% bootstrap_field form.presta_type %}
+                        </div>
+                        <div class="col-12 col-md-3 mt-lg-2 pr-md-0">
+                            {% bootstrap_field form.territory %}
+                        </div>
+                        <div class="col-12 col-md-3 mt-lg-2">
+                            {% bootstrap_field form.networks %}
+                        </div>
+                    </div>
+                    <div class="row d-md-none">
+                        <div class="col-12 col-lg-4">
+                            <button id="filter-submit" class="btn btn-primary btn-block btn-ico" type="submit">
+                                <span>Rechercher</span>
+                                <i class="ri-search-line ri-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <form method="GET" action="{% url 'siae:search_results' %}" id="text-search-form" style="display:none" aria-label="Rechercher des structures de l’insertion et du handicap" role="search">
+                    {% bootstrap_form_errors form type="all" %}
+                    <div class="row">
+                        <div class="col-12 col-lg-8">
+                            <div class="row">
+                                <div class="col-12">
+                                    {% bootstrap_field form.q %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-4">
+                            <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
+                            <button id="text-search-submit" class="btn btn-primary btn-block btn-ico" type="submit">
+                                <span>Rechercher</span>
+                                <i class="ri-search-line ri-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </section>
@@ -209,6 +243,46 @@
 {% block extra_js %}
 {{ current_perimeters|json_script:"current-perimeters" }}
 <script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    let filterSearchForm = document.getElementById('filter-search-form');
+    let filterNavItem = document.getElementById('filter-nav-item');
+    let perimeterInput = document.getElementById('perimeter_name');
+    let sectorsInput = document.getElementById('id_sectors');  // id_sectors_multiselect
+
+    let textSearchForm = document.getElementById('text-search-form');
+    let textNavItem = document.getElementById('text-nav-item');
+    let qInput = document.getElementById('id_q');
+
+    function showFilterSearchForm() {
+        filterNavItem.classList.add("active", "font-weight-bold");
+        textNavItem.classList.remove("active", "font-weight-bold");
+        filterSearchForm.style.display = "";
+        textSearchForm.style.display = "none";
+    }
+    function showTextSearchForm() {
+        filterNavItem.classList.remove("active", "font-weight-bold");
+        textNavItem.classList.add("active", "font-weight-bold");
+        filterSearchForm.style.display = "none";
+        textSearchForm.style.display = "";
+    }
+
+    // init
+    if (qInput.value) {
+        showTextSearchForm();
+    } else {
+        showFilterSearchForm();
+    }
+
+    // toggle nav
+    filterNavItem.addEventListener("click", function(e) {
+        showFilterSearchForm();
+    });
+    textNavItem.addEventListener("click", function(e) {
+        showTextSearchForm();
+    });
+});
+</script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
     // Set listings markers on load

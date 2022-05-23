@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function() {
    * Accessible autocomplete for the perimeter search form field
    */
 
-  const perimeterAutocompleteContainer = document.querySelector('#search-form #dir_form_perimeter_name');
+  const perimeterAutocompleteContainer = document.querySelector('#filter-search-form #dir_form_perimeter_name');
   // let perimeterNameInput = document.getElementById('perimeter_name');  // autocomplete // not yet inititated (see bottom)
   let perimeterInput = document.getElementById('id_perimeter');  // hidden
 

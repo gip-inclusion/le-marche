@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * Multiselect dropdown for the kind search form field
      */
 
-    const kindFormElement = document.querySelector('#search-form #id_kind');
+    const kindFormElement = document.querySelector('#filter-search-form #id_kind');
     const kindFormPlaceholder = 'Insertion, handicap';
 
     const buttonTextAndTitle = function(options, select) {
