@@ -198,8 +198,7 @@ class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, SuccessMessa
     template_name = "dashboard/siae_search_adopt_confirm.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
-    success_message = "Votre structure a été rajoutée dans votre espace."
-    success_url = reverse_lazy("dashboard:home")
+    success_message = "Rattachement confirmé ! Vous pouvez dès à présent mettre à jour sa fiche."
 
     def get_context_data(self, **kwargs):
         """
@@ -232,7 +231,10 @@ class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, SuccessMessa
                 f"<i>Cet utilisateur ne fait plus partie de la structure ? <a href=\"{reverse_lazy('dashboard:siae_search_by_siret')}?siret={self.object.siret}\">Contactez le support</a></i>"  # noqa
             )
             messages.add_message(self.request, messages.SUCCESS, success_message)
-            return HttpResponseRedirect(self.get_success_url())
+            return HttpResponseRedirect(reverse_lazy("dashboard:home"))
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard:siae_edit", args=[self.kwargs.get("slug")])
 
 
 class SiaeUsersView(SiaeMemberRequiredMixin, DetailView):
