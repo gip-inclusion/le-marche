@@ -13,9 +13,10 @@ from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes.factories import SiaeFactory
-from lemarche.tenders.factories import TenderFactory
-from lemarche.tenders.models import Tender, TenderSiae
+from lemarche.tenders.factories import PartnerShareTenderFactory, TenderFactory
+from lemarche.tenders.models import AMOUNT_RANGE_0, AMOUNT_RANGE_2, AMOUNT_RANGE_3, AMOUNT_RANGE_4, Tender, TenderSiae
 from lemarche.users.factories import UserFactory
+from lemarche.www.tenders.constants import match_tender_for_partners_2
 
 
 class TenderModelTest(TestCase):
@@ -177,3 +178,52 @@ class TenderMigrationToSelectTest(TestCase):
         migration.reverse_update_amount(apps, None)
         tender_amount_range_0.refresh_from_db()
         self.assertEqual(int(tender_amount_range_0.amount), 24999)
+
+
+class TenderPartnerMatchingTest(TestCase):
+    @classmethod
+    def setUpTestData(self):
+        # perimeters
+        self.perimeter_1 = PerimeterFactory()
+        self.perimeter_2 = PerimeterFactory()
+        # partners
+        PartnerShareTenderFactory(perimeters=[self.perimeter_1])
+        PartnerShareTenderFactory(perimeters=[])
+        PartnerShareTenderFactory(perimeters=[self.perimeter_1])
+        PartnerShareTenderFactory(perimeters=[self.perimeter_2])
+        PartnerShareTenderFactory(perimeters=[], amount_in=AMOUNT_RANGE_0)
+        PartnerShareTenderFactory(perimeters=[], amount_in=AMOUNT_RANGE_2)
+        PartnerShareTenderFactory(perimeters=[], amount_in=AMOUNT_RANGE_3)
+        PartnerShareTenderFactory(perimeters=[self.perimeter_1, self.perimeter_2], amount_in=AMOUNT_RANGE_2)
+        # tenders
+        self.tender_1 = TenderFactory(perimeters=[self.perimeter_1, self.perimeter_2])
+        self.tender_2 = TenderFactory(perimeters=[self.perimeter_1], amount=AMOUNT_RANGE_0)
+        self.tender_3 = TenderFactory(perimeters=[self.perimeter_2], amount=AMOUNT_RANGE_2)
+        self.tender_4 = TenderFactory(is_country_area=True, amount=AMOUNT_RANGE_2)
+        self.tender_5 = TenderFactory(is_country_area=True, amount=AMOUNT_RANGE_4)
+
+    def test_partner_1_matching(self):
+        result = match_tender_for_partners_2(self.tender_1)
+        # partner 1, 2, 3, 4, 5, 6, 7, 8
+        self.assertEqual(len(result), 8)
+
+    def test_partner_2_matching(self):
+
+        result = match_tender_for_partners_2(self.tender_2)
+        # partner 1, 2, 3, 5, 6, 7, 8
+        self.assertEqual(len(result), 7)
+
+    def test_partner_3_matching(self):
+        result = match_tender_for_partners_2(self.tender_3)
+        # partner 2, 4, 6, 7, 8
+        self.assertEqual(len(result), 5)
+
+    def test_partner_4_matching(self):
+        result = match_tender_for_partners_2(self.tender_4)
+        # partner 2, 6, 7
+        self.assertEqual(len(result), 3)
+
+    def test_partner_5_matching(self):
+        result = match_tender_for_partners_2(self.tender_5)
+        # partner 2
+        self.assertEqual(len(result), 1)

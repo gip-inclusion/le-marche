@@ -1,3 +1,5 @@
+from random import uniform
+
 import factory
 import factory.fuzzy
 from django.contrib.gis.geos import Point
@@ -16,5 +18,5 @@ class PerimeterFactory(DjangoModelFactory):
     kind = Perimeter.KIND_CITY
     insee_code = factory.Sequence(lambda n: n)
     # paris
-    coords = Point(48.86385199985207, 2.337071483848432)
+    coords = factory.LazyFunction(lambda: Point(uniform(0, 100), uniform(0, 100)))
     department_code = factory.fuzzy.FuzzyChoice([key for (key, value) in Siae.DEPARTMENT_CHOICES])
