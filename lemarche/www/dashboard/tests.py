@@ -111,7 +111,7 @@ class DashboardSiaeSearchAdoptViewTest(TestCase):
         url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_without_user.slug])
         response = self.client.post(url)  # data={}
         self.assertEqual(response.status_code, 302)  # redirect to success_url
-        self.assertEqual(response.url, "/profil/")
+        self.assertEqual(response.url, f"/profil/prestataires/{self.siae_without_user.slug}/modifier/")
         self.assertEqual(self.siae_without_user.users.count(), 1)
         self.assertEqual(self.user_siae.siaes.count(), 1 + 1)
 
