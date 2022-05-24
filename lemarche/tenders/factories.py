@@ -2,6 +2,7 @@ import datetime
 import random
 
 import factory.fuzzy
+from django.utils import timezone
 from factory.django import DjangoModelFactory
 
 from lemarche.perimeters.factories import PerimeterFactory
@@ -27,6 +28,7 @@ class TenderFactory(DjangoModelFactory):
     constraints = factory.Faker("paragraph", nb_sentences=5, locale="fr_FR")
     deadline_date = datetime.date.today() + datetime.timedelta(days=10)
     author = factory.SubFactory(UserFactory)
+    validated_at = timezone.now()
 
     @factory.post_generation
     def perimeters(self, create, extracted, **kwargs):

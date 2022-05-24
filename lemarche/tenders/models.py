@@ -5,6 +5,8 @@ from django.conf import settings
 from django.db import IntegrityError, models, transaction
 from django.db.models import Case, Count, F, IntegerField, Q, Sum, When
 from django.db.models.functions import Greatest
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -14,6 +16,7 @@ from django_better_admin_arrayfield.models.fields import ArrayField
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
+from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.utils.fields import ChoiceArrayField
 
@@ -212,6 +215,11 @@ class Tender(models.Model):
         if with_uuid:
             self.slug += f"-{str(uuid4())[:4]}"
 
+    def set_siae_found_list(self):
+        # if not self.validated_at:
+        siae_found_list = Siae.objects.filter_with_tender(self)
+        self.siaes.set(siae_found_list)
+
     def save(self, *args, **kwargs):
         """
         - update the object stats
@@ -257,6 +265,12 @@ class Tender(models.Model):
 
     def get_absolute_url(self):
         return reverse("tenders:detail", kwargs={"slug": self.slug})
+
+
+@receiver(post_save, sender=Tender)
+def tender_post_save(sender, instance, **kwargs):
+    if not instance.validated_at:
+        instance.set_siae_found_list()
 
 
 class TenderSiae(models.Model):

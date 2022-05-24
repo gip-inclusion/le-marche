@@ -49,8 +49,8 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
     instance = None
     success_url = reverse_lazy("tenders:list")
     success_message = """
-        Votre besoin <strong>{}</strong> est déposé sur le marché ! Les structures
-        correspondants à vos critères seront notifiés dès sa validation.
+        Votre besoin <strong>{tender_title}</strong> a été déposé sur le marché !<br />
+        Les {tender_siae_count} structures correspondants à vos critères seront notifiés dès qu'il sera validé par notre équipe.  # noqa
     """
 
     STEP_GENERAL = "general"
@@ -121,23 +121,25 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
         return kwargs
 
     def done(self, *args, **kwargs):
+        cleaned_data = self.get_all_cleaned_data()
         # when it's done we save the tender
-        tender = create_tender_from_dict(self.get_all_cleaned_data() | {"author": self.request.user})
-
-        # task to send tender was made in django admin task
+        tender = create_tender_from_dict(cleaned_data | {"author": self.request.user})
+        # we notify the admin team
         if settings.BITOUBI_ENV == "prod":
             notify_admin_tender_created(tender)
-
+        # validation & siae contacted? in tenders/admin.py
+        # success message & response
         messages.add_message(
             self.request,
             messages.SUCCESS,
-            self.get_success_message(tender),
+            self.get_success_message(cleaned_data, tender),
         )
-
         return HttpResponseRedirect(self.success_url)
 
-    def get_success_message(self, tender: Tender):
-        return mark_safe(self.success_message.format(tender.title))
+    def get_success_message(self, cleaned_data, tender):
+        return mark_safe(
+            self.success_message.format(tender_title=tender.title, tender_siae_count=tender.siaes.count())
+        )
 
 
 class TenderListView(LoginRequiredMixin, ListView):
