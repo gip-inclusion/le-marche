@@ -7,7 +7,7 @@ from lemarche.siaes.models import SiaeGroup
 from lemarche.utils.data import rename_dict_key, reset_app_sql_sequences
 
 
-SIAE_GROUP_FIELDS = [field.name for field in SiaeGroup._meta.fields]
+SIAE_GROUP_FIELDS = [field.name for field in SiaeGroup._meta.fields if field.name not in ["id"]]
 FILE_NAME = "siaegroups.csv"
 FILE_PATH = os.path.dirname(os.path.realpath(__file__)) + "/" + FILE_NAME
 
@@ -26,6 +26,11 @@ def read_csv(file_path):
 
 class Command(BaseCommand):
     """
+    How-to:
+    - build a csv file with the list of the SiaeGroups you want to import
+    - the file should be in the same folder as this management command file
+    - make sure the column names correspond
+
     Usage: poetry run python manage.py import_siae_groups
     """
 
