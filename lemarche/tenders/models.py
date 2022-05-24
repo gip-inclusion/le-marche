@@ -265,6 +265,45 @@ class TenderSiae(models.Model):
         ordering = ["-created_at"]
 
 
+class PartnerShareTenderQuerySet(models.QuerySet):
+    def filter_by_tender(self, tender: Tender):
+        conditions = Q()
+        if tender.amount:
+            if tender.amount == tender.AMOUNT_RANGE_0:
+                conditions |= (
+                    Q(amount_in=tender.AMOUNT_RANGE_0)
+                    | Q(amount_in=tender.AMOUNT_RANGE_1)
+                    | Q(amount_in=tender.AMOUNT_RANGE_2)
+                    | Q(amount_in=tender.AMOUNT_RANGE_3)
+                    | Q(amount_in=tender.AMOUNT_RANGE_4)
+                )
+            elif tender.amount == tender.AMOUNT_RANGE_1:
+                conditions |= (
+                    Q(amount_in=tender.AMOUNT_RANGE_1)
+                    | Q(amount_in=tender.AMOUNT_RANGE_2)
+                    | Q(amount_in=tender.AMOUNT_RANGE_3)
+                    | Q(amount_in=tender.AMOUNT_RANGE_4)
+                )
+            elif tender.amount == tender.AMOUNT_RANGE_2:
+                conditions |= (
+                    Q(amount_in=tender.AMOUNT_RANGE_2)
+                    | Q(amount_in=tender.AMOUNT_RANGE_3)
+                    | Q(amount_in=tender.AMOUNT_RANGE_4)
+                )
+            elif tender.amount == tender.AMOUNT_RANGE_3:
+                conditions |= Q(amount_in=tender.AMOUNT_RANGE_3) | Q(amount_in=tender.AMOUNT_RANGE_4)
+            elif tender.amount == tender.AMOUNT_RANGE_4:
+                conditions |= Q(amount_in=tender.AMOUNT_RANGE_4)
+
+            conditions |= Q(amount_in__isnull=True)
+
+        if tender.is_country_area:
+            conditions &= Q(perimeters__isnull=True)
+        else:
+            conditions &= Q(perimeters__in=tender.perimeters.all()) | Q(perimeters__isnull=True)
+        return self.filter(conditions).distinct()
+
+
 class PartnerShareTender(models.Model):
     AMOUNT_RANGE_0 = AMOUNT_RANGE_0
     AMOUNT_RANGE_1 = AMOUNT_RANGE_1
@@ -289,6 +328,8 @@ class PartnerShareTender(models.Model):
     )
     # contact list
     contact_list = ArrayField(base_field=models.EmailField(max_length=255), verbose_name="Liste de contact")
+
+    objects = models.Manager.from_queryset(PartnerShareTenderQuerySet)()
 
     class Meta:
         verbose_name = "Partenaire intéressé des dépôts de besoins"
