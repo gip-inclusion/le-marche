@@ -21,14 +21,14 @@
                         </a>
                     {% else %}
                         <a href="#" id="home-demande-modal-btn" class="btn btn-primary btn-ico" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'tenders:create' %}">
-                            <i class="ri-mail-send-line ri-lg"></i>
+                            <i class="ri-mail-send-line ri-xl"></i>
                             <span>Publier un besoin d'achat</span>
                         </a>
                     {% endif %}
-                    <span class="d-block d-md-inline px-4">ou</span>
+                    <span class="d-block d-sm-inline pl-4 py-2">ou</span>
                     <a href="{% url 'siae:search_results' %}" id="home-siae-search" class="btn btn-link btn-ico">
-                        <i class="ri-search-line ri-lg"></i>
-                        <strong style="text-decoration:underline">Rechercher un prestataire</strong>
+                        <i class="ri-search-line ri-xl"></i>
+                        <span>Rechercher un prestataire</span>
                     </a>
                 </p>
             </div>
@@ -40,7 +40,7 @@
     <div class="s-section__container container">
         <div class="s-section__row row">
             <div class="s-section__col col-12 py-5 py-lg-7">
-                <h2 class="h1 font-weight-bolder m-0">Le marché, c'est <strong class="text-accent-01">{{ user_buyer_count }} acheteurs</strong> inscrits, <strong class="text-accent-01">{{ siae_count }} prestataires</strong> référencés, <strong class="text-accent-01">{{ tender_count }} besoins</strong> publiés.</h1>
+                <h2 class="h1 font-weight-bolder m-0">Le marché, c'est <span class="text-accent-01">{{ user_buyer_count }} acheteurs</span> inscrits, <span class="text-accent-01">{{ siae_count }} prestataires</span> référencés, <span class="text-accent-01">{{ tender_count }} besoins</span> publiés.</h1>
             </div>
         </div>
     </div>
