@@ -12,7 +12,7 @@
         <div class="s-page-menu-01__row row py-5 pb-md-4 pt-md-3">
             <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-md-8">
                 <h1 class="h1-hero lh-sm">Votre recherche <br class="d-none d-lg-inline">de prestataires inclusifs <br class="d-none d-lg-inline">est chronophage ?</h1>
-                <h2 class="h2">Retrouvez toutes les structures d'insertion et du handicap.</h2>
+                <h2 class="h2">En moins de 24h, obtenez une réponse à votre besoin <br class="d-none d-lg-inline">parmi toutes les structures de l'insertion et du handicap.</h2>
                 <p class="mb-0 mt-5">
                     {% if user.is_authenticated %}
                         <a href="{% url 'tenders:create' %}" id="home-demande" class="btn btn-primary btn-ico d-block d-md-inline-block mb-2">
@@ -39,7 +39,7 @@
 <section class="s-section m-0 bg-nuance-09">
     <div class="s-section__container container">
         <div class="s-section__row row">
-            <div class="s-section__col col-12 py-3 py-lg-4">
+            <div class="s-section__col col-12 py-5">
                 <h2 class="h1 font-weight-bolder m-0">Le marché c'est <span class="text-accent-01">{{ user_buyer_count }}&nbsp;acheteurs</span> inscrits, <span class="text-accent-01">{{ siae_count }}&nbsp;prestataires</span> référencés, <span class="text-accent-01">{{ tender_count }}&nbsp;besoins</span> publiés.</h1>
             </div>
         </div>
