@@ -11,7 +11,7 @@
 	color: #3f3e62 !important;
 	background-color: #fff !important;
 	background-clip: padding-box !important;
-	border: 2px solid #80829c !important;
+	border: 2px solid #3f3e62 !important;
 	border-radius: .25rem !important;
 	box-shadow: none !important;
 	transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out !important;
@@ -21,4 +21,5 @@
 	background-position: right 1rem center;
 	background-repeat: no-repeat;
 	background-image: url('/static/images/dir_form_ico_map.png');
+	// TODO David: a remplacer par le svg de ri-map-pin-fill
 }

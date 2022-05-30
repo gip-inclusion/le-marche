@@ -20,13 +20,14 @@ button.multiselect {
     button.multiselect {
         background-position: right 1rem center;
         background-repeat: no-repeat;
-        // background-image: url('/static/vendor/theme-inclusion/images/ico-file-list-2-line.svg');
         background-image: url('/static/images/dir_form_ico_shape.png');
+        background-size: 11px 15px;
+        // TODO David: a remplacer par le svg de ri-file-list-line
     }
 }
 
 // fix scrolling bug on mobile when maxHeight is set: https://github.com/davidstutz/bootstrap-multiselect/issues/1191
-@media screen and (max-width:1023px){ 
+@media screen and (max-width:1023px){
     .multiselect-container button.dropdown-item {
         pointer-events: none;
     }
