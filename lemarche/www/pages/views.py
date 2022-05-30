@@ -5,6 +5,8 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404, HttpResponsePermanentRedirect, JsonResponse
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.views.generic import DetailView, FormView, ListView, TemplateView, View
 
 from lemarche.pages.models import Page
@@ -16,6 +18,7 @@ from lemarche.www.pages.forms import ContactForm
 from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
 
 
+@method_decorator(cache_page(60 * 60), name="dispatch")  # cache 1 hour
 class HomeView(TemplateView):
     template_name = "pages/home.html"
 
