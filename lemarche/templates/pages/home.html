@@ -11,7 +11,7 @@
     <div class="s-page-menu-01__container container">
         <div class="s-page-menu-01__row row py-5 pb-md-8 pt-md-7">
             <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-md-8">
-                <h1 class="h1-hero lh-sm"><strong>Votre recherche <br class="d-none d-lg-inline">de prestataires inclusifs <br class="d-none d-lg-inline">est chronophage ?</strong></h1>
+                <h1 class="h1-hero lh-sm">Votre recherche <br class="d-none d-lg-inline">de prestataires inclusifs <br class="d-none d-lg-inline">est chronophage chronophage ?</h1>
                 <h2 class="h2">Retrouvez toutes les structures d'insertion et du handicap. <br class="d-none d-lg-inline">Une démarche 100% ESS.</h2>
                 <p class="mb-0 mt-5">
                     {% if user.is_authenticated %}
@@ -20,13 +20,13 @@
                             <span>Publier un besoin d'achat</span>
                         </a>
                     {% else %}
-                        <a href="#" id="home-demande-modal-btn" class="btn btn-primary btn-ico d-block d-md-inline-block mb-2" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'tenders:create' %}">
+                        <a href="#" id="home-demande-modal-btn" class="btn btn-primary btn-ico" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'tenders:create' %}">
                             <i class="ri-mail-send-line ri-lg"></i>
                             <span>Publier un besoin d'achat</span>
                         </a>
                     {% endif %}
-                    <span>&nbsp;&nbsp;&nbsp;ou&nbsp;&nbsp;&nbsp;</span>
-                    <a href="{% url 'siae:search_results' %}" id="home-siae-search" class="mr-md-2 mb-2 text-decoration-none">
+                    <span class="d-block d-md-inline px-4">ou</span>
+                    <a href="{% url 'siae:search_results' %}" id="home-siae-search" class="btn btn-link btn-ico">
                         <i class="ri-search-line ri-lg"></i>
                         <strong style="text-decoration:underline">Rechercher un prestataire</strong>
                     </a>
@@ -36,11 +36,11 @@
     </div>
 </section>
 
-<section class="s-page-menu-01 s-page-menu-01--marche p-0 bg-gray-400">
-    <div class="s-page-menu-01__container container">
-        <div class="s-page-menu-01__row row py-5 pb-md-4 pt-md-4">
-            <div class="s-page-menu-01__col s-page-menu-01__col--title col-12">
-                <h2 class="h1">Le marché, c'est <strong class="text-accent-01">{{ user_buyer_count }} acheteurs</strong> inscrits, <strong class="text-accent-01">{{ siae_count }} prestataires</strong> référencés, <strong class="text-accent-01">{{ tender_count }} besoins</strong> publiés.</h1>
+<section class="s-section bg-nuance-09">
+    <div class="s-section__container container">
+        <div class="s-section__row row">
+            <div class="s-section__col col-12 py-5 py-lg-7">
+                <h2 class="h1 font-weight-bolder m-0">Le marché, c'est <strong class="text-accent-01">{{ user_buyer_count }} acheteurs</strong> inscrits, <strong class="text-accent-01">{{ siae_count }} prestataires</strong> référencés, <strong class="text-accent-01">{{ tender_count }} besoins</strong> publiés.</h1>
             </div>
         </div>
     </div>
@@ -69,7 +69,7 @@
                             <i class="ri-arrow-right-up-line ri-lg"></i>
                         </a>
                     </div>
-                </div>            
+                </div>
             </div>
             <div class="s-cards-grid-01__col col mb-3 mb-lg-5">
                 <div class="card c-card h-100 w-100 c-card--marche">
@@ -153,7 +153,7 @@
                     </div>
                 </div>
             </div>
-            <div class="s-cards-grid-01__col col mb-3 mb-lg-5">               
+            <div class="s-cards-grid-01__col col mb-3 mb-lg-5">
                 <div class="card c-card h-100 w-100 c-card--marche">
                     <div class="card-header">
                         <img src="{% static 'img/hp-02-photo-01.min.jpg' %}" class="img-fluid img-fitcover" alt="" loading="lazy" />
@@ -172,8 +172,8 @@
                         </a>
                     </div>
                 </div>
-            </div>           
-            <div class="s-cards-grid-01__col col mb-3 mb-lg-5">               
+            </div>
+            <div class="s-cards-grid-01__col col mb-3 mb-lg-5">
                 <div class="card c-card h-100 w-100 c-card--marche">
                     <div class="card-body d-flex align-items-center">
                         <div class="w-100 text-center py-5">
@@ -185,7 +185,7 @@
                         </div>
                     </div>
                 </div>
-            </div>           
+            </div>
         </div>
     </div>
 </section>
