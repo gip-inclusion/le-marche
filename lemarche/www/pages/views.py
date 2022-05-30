@@ -5,15 +5,20 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404, HttpResponsePermanentRedirect, JsonResponse
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.views.generic import DetailView, FormView, ListView, TemplateView, View
 
 from lemarche.pages.models import Page
 from lemarche.siaes.models import Siae, SiaeGroup
+from lemarche.tenders.models import Tender
+from lemarche.users.models import User
 from lemarche.utils.tracker import track
 from lemarche.www.pages.forms import ContactForm
 from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
 
 
+@method_decorator(cache_page(60 * 60), name="dispatch")  # cache 1 hour
 class HomeView(TemplateView):
     template_name = "pages/home.html"
 
@@ -30,6 +35,9 @@ class HomeView(TemplateView):
         - add SIAE that should appear in the section "à la une"
         """
         context = super().get_context_data(**kwargs)
+        context["siae_count"] = Siae.objects.is_live().count()
+        context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
+        context["tender_count"] = Tender.objects.validated().count() + 30  # historic number (before form)
         context["siaes_first_page"] = Siae.objects.filter(is_first_page=True)
         return context
 
