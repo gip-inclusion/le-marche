@@ -52,7 +52,7 @@ class TenderQuerySet(models.QuerySet):
         Return the list of tenders corresponding to the Siae
         Filters on its sectors & perimeter
         """
-        sectors = Sector.objects.filter(siae_groups__contains=siaes).distinct()
+        sectors = Sector.objects.prefetch_related("siaes").filter(siaes__in=siaes).distinct()
         qs = self.prefetch_related("sectors", "perimeters").in_sectors(sectors)
         conditions = Q()
         for siae in siaes:

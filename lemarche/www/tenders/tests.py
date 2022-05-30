@@ -120,16 +120,22 @@ class TenderMatchingTest(TestCase):
 class TenderListViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
+        perimeter = PerimeterFactory(post_codes=["43705"], insee_code="06", name="Auvergne-Rhône-Alpes")
         cls.user_siae_1 = UserFactory(kind=User.KIND_SIAE)
-        cls.siae = SiaeFactory()
+        cls.siae = SiaeFactory(post_code=perimeter.post_codes[0])
         cls.user_siae_2 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae])
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
-        cls.tender = TenderFactory(author=cls.user_buyer_1, validated_at=date.today())
-        cls.tender_2 = TenderFactory(author=cls.user_buyer_1, deadline_date=date.today() - timedelta(days=5))
+        cls.tender = TenderFactory(author=cls.user_buyer_1, validated_at=date.today(), perimeters=[perimeter])
+        cls.tender_2 = TenderFactory(
+            author=cls.user_buyer_1, deadline_date=date.today() - timedelta(days=5), perimeters=[perimeter]
+        )
         cls.tender_3 = TenderFactory(
-            author=cls.user_buyer_1, validated_at=date.today(), deadline_date=date.today() - timedelta(days=5)
+            author=cls.user_buyer_1,
+            validated_at=date.today(),
+            deadline_date=date.today() - timedelta(days=5),
+            perimeters=[perimeter],
         )
 
     def test_anonymous_user_cannot_list_tenders(self):
