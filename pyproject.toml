@@ -19,7 +19,6 @@ django-filter = "21.1"
 django-libsass = "0.9"
 djangorestframework = "3.13.1"
 drf-spectacular = "0.21.1"
-httpx = "0.22.0"
 huey = "2.4.3"
 psycopg2-binary = "2.9.3"
 PyMySQL = "1.0.2"
@@ -34,6 +33,8 @@ django-select2 = "^7.10.0"
 wagtail = "^2.16.1"
 boto = "^2.49.0"
 django-storages = "1.12.3"
+pydotplus = "^2.0.2"
+httpx = "0.23"
 
 [tool.poetry.dev-dependencies]
 black = "22.3.0"
@@ -48,6 +49,7 @@ poethepoet = "0.12.2"
 pre-commit = "2.17.0"
 pyproject-flake8 = "0.0.1a2"
 pytest-django = "4.5.2"
+click = "8.1.2"
 
 [tool.poetry.scripts]
 
