@@ -19,8 +19,11 @@ class TenderQuerySet(models.QuerySet):
     def by_user(self, user):
         return self.filter(author=user)
 
+    def validated(self):
+        return self.filter(validated_at__isnull=False)
+
     def is_live(self):
-        return self.filter(Q(validated_at__isnull=False) & Q(deadline_date__gte=datetime.today()))
+        return self.validated().filter(deadline_date__gte=datetime.today())
 
     def in_perimeters(self, post_code, department, region):
         filters = (
