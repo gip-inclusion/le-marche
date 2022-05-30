@@ -12,7 +12,16 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 
+from lemarche.sectors.models import Sector
 from lemarche.utils.fields import ChoiceArrayField
+
+
+def get_filter_perimeter(siae):
+    return (
+        Q(perimeters__post_codes__contains=[siae.post_code])
+        | Q(perimeters__insee_code=siae.department)
+        | Q(perimeters__name=siae.region)
+    )
 
 
 class TenderQuerySet(models.QuerySet):
@@ -38,16 +47,19 @@ class TenderQuerySet(models.QuerySet):
         else:
             return self
 
-    def filter_with_siae(self, siae):
+    def filter_with_siae(self, siaes):
         """
         Return the list of tenders corresponding to the Siae
         Filters on its sectors & perimeter
         """
-        sectors = siae.sectors.all()
+        sectors = Sector.objects.filter(siae_groups__contains=siaes).distinct()
         qs = self.prefetch_related("sectors", "perimeters").in_sectors(sectors)
-        if siae.geo_range != siae.GEO_RANGE_COUNTRY:
-            qs.in_perimeters(post_code=siae.post_code, department=siae.department, region=siae.region)
-        return qs.distinct()
+        conditions = Q()
+        for siae in siaes:
+            if siae.geo_range != siae.GEO_RANGE_COUNTRY:
+                conditions |= get_filter_perimeter(siae)
+        return qs.filter(conditions).distinct()
+        # return qs.distinct()
 
     def with_siae_stats(self):
         """
