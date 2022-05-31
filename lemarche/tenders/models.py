@@ -1,8 +1,6 @@
 from datetime import datetime
-from functools import reduce
 from uuid import uuid4
 
-import _operator
 from django.conf import settings
 from django.db import IntegrityError, models, transaction
 from django.db.models import Case, Count, F, IntegerField, Q, Sum, When
@@ -42,8 +40,7 @@ class TenderQuerySet(models.QuerySet):
 
     def in_sectors(self, sectors):
         if sectors:
-            query = reduce(_operator.or_, (Q(sectors__id__contains=item.id) for item in sectors))
-            return self.filter(query).distinct()
+            return self.filter(sectors__in=sectors).distinct()
         else:
             return self
 

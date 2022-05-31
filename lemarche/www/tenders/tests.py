@@ -46,7 +46,7 @@ class TenderMatchingTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.sectors = [SectorFactory() for i in range(10)]
-        cls.perimeters = [PerimeterFactory(department_code="75"), PerimeterFactory()]
+        cls.perimeters = [PerimeterFactory(department_code="75", post_codes=["75019", "75018"]), PerimeterFactory()]
         # by default is Paris
         coords_paris = Point(48.86385199985207, 2.337071483848432)
 
@@ -97,8 +97,9 @@ class TenderMatchingTest(TestCase):
         siae.sectors.add(self.sectors[0])
         siae_found_list_marseille = Siae.objects.filter_with_tender(tender_marseille)
         self.assertEqual(len(siae_found_list_marseille), 1)
-        # opportunities_for_siae = Tender.objects.filter_with_siae(siae_found_list_marseille[0])
-        # self.assertEqual(len(opportunities_for_siae), 1)
+        opportunities_for_siae = Tender.objects.filter_with_siae(siae_found_list_marseille[:1])
+        #
+        self.assertEqual(len(opportunities_for_siae), 1)
 
     def test_with_no_contact_email(self):
         # test when siae doesn't have contact email
@@ -107,8 +108,8 @@ class TenderMatchingTest(TestCase):
         siae_country.sectors.add(self.sectors[0])
         siae_found_list = Siae.objects.filter_with_tender(tender)
         self.assertEqual(len(siae_found_list), 2)
-        # opportunities_for_siae = Tender.objects.filter_with_siae(siae_found_list[0])
-        # self.assertEqual(len(opportunities_for_siae), 1)
+        opportunities_for_siae = Tender.objects.filter_with_siae(siae_found_list[:1])
+        self.assertEqual(len(opportunities_for_siae), 0)
 
     # def test_number_queries(self):
     #     tender = TenderFactory(sectors=self.sectors)
