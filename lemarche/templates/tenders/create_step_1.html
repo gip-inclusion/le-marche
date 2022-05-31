@@ -1,0 +1,78 @@
+{% extends "layouts/multistep_form.html" %}
+{% load bootstrap4 static %}
+
+{% block title %}Déposer un besoin{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">Besoins en cours</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Déposer un besoin</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content_form %}
+    <fieldset>
+        <legend>Informations générales</legend>
+        {% bootstrap_field form.kind form_group_class="form-group form-group-required" %}
+        {% bootstrap_field form.title placeholder="Ex: Rénovation de façade" form_group_class="form-group form-group-required" %}
+        {% bootstrap_field form.sectors form_group_class="form-group form-group-required use-multiselect" %}
+        <div class="form-group form-group-required{% if form.perimeters.errors %} is-invalid{% endif %}">
+            <label for="perimeter_name">{{ form.perimeters.label }}</label>
+            <div id="dir_form_perimeter_name">
+                <div class="field-holder">{{ form.perimeter_name }}</div>
+            </div>
+            <small class="form-text text-muted">Ajouter un ou plusieurs lieux d'exécutions</small>
+            <div class="invalid-feedback">Ce champ est obligatoire.</div>
+            <div id="perimeters-selected" class="mt-1"></div>
+        </div>
+        {% bootstrap_field form.is_country_area %}
+    </fieldset>
+{% endblock content_form %}
+
+{% block extra_js %}
+<script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // get all usefull elements
+        let is_in_country_area = document.getElementById('id_is_country_area');
+        let perimeters = document.getElementById('dir_form_perimeter_name');
+        let perimetersInput = document.getElementById('perimeter_name');
+
+        function disablePerimeters(){
+            $(perimetersInput).prop("disabled", true );
+            // Provide from perimeters autocomplete field
+            cleanPerimeters();
+        }
+
+        // init of the page
+        if(is_in_country_area.checked){
+            disablePerimeters();
+        }
+
+        // on change
+        is_in_country_area.addEventListener('change', () => {
+            if (is_in_country_area.checked) {
+                disablePerimeters();
+            } else {
+                $(perimetersInput).prop("disabled", false );
+            }
+
+
+        });
+    });
+</script>
+
+{% endblock %}

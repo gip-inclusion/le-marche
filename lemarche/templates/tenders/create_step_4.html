@@ -1,0 +1,35 @@
+{% extends "layouts/multistep_form.html" %}
+{% load bootstrap4 static %}
+
+{% block title %}Déposer un besoin{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">Besoins en cours</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Déposer un besoin</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content_form %}
+<div class="form-row justify-content-end">
+    <div class="form-group col-12 col-lg-auto">
+        <button type="button" id="btnAddTender" class="btn btn-primary btn-block btn-ico">
+            <span>Publier et diffuser ce besoin</span>
+            <i class="ri-arrow-right-line ri-lg"></i>
+        </button>
+    </div>
+</div>
+{% endblock %}
+

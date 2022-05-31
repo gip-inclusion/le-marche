@@ -3,16 +3,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponseForbidden, HttpResponseRedirect, JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.generic import CreateView, DetailView, ListView, View
+from formtools.wizard.views import SessionWizardView
 
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin, TenderOwnerRequiredMixin
-from lemarche.www.tenders.forms import AddTenderForm
+from lemarche.www.tenders.forms import AddTenderForm, AddTenderStep1Form, AddTenderStep2Form, AddTenderStep3Form
 from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
     notify_admin_tender_created,
     send_siae_interested_email_to_author,
@@ -22,6 +23,65 @@ from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
 TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
 TITLE_DETAIL_PAGE_OTHERS = "Mes besoins"
 TITLE_KIND_SOURCING_SIAE = "Consultation en vue d’un achat"
+
+
+class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
+
+    STEP_GENERAL = "general"
+    STEP_CONTACT = "contact"
+    STEP_DESCRIPTION = "description"
+    STEP_CONFIRMATION = "confirmation"
+
+    form_list = [
+        (STEP_GENERAL, AddTenderStep1Form),
+        (STEP_CONTACT, AddTenderStep2Form),
+        (STEP_DESCRIPTION, AddTenderStep3Form),
+        (STEP_CONFIRMATION, AddTenderForm),
+    ]
+
+    TEMPLATES = {
+        STEP_GENERAL: "tenders/create_step_1.html",
+        STEP_CONTACT: "tenders/create_step_2.html",
+        STEP_DESCRIPTION: "tenders/create_step_3.html",
+        STEP_CONFIRMATION: "tenders/create_step_4.html",
+    }
+
+    def get_template_names(self):
+        return [self.TEMPLATES[self.steps.current]]
+
+    def get_form_initial(self, step):
+        initial = self.initial_dict.get(step, {})
+
+        if step == self.STEP_CONTACT:
+            # import ipdb
+
+            # ipdb.set_trace()
+            user = self.request.user
+            initial.update(
+                {
+                    self.STEP_CONTACT: {
+                        "contact_first_name": user.first_name,
+                        "contact_last_name": user.last_name,
+                        "contact_email": user.email,
+                        "contact_phone": user.phone,
+                    }
+                }
+            )
+        elif step == self.STEP_CONFIRMATION:
+            import ipdb
+
+            ipdb.set_trace()
+            return {form.cleaned_data for form in self.form_list}
+        return initial
+
+    def done(self, form_list, form_dict, **kwargs):
+        return render(
+            self.request,
+            "tenders/multistep_done.html",
+            {
+                "form_data": [form.cleaned_data for form in form_list],
+            },
+        )
 
 
 class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView):

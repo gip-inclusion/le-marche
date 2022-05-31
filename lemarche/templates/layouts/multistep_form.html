@@ -1,0 +1,97 @@
+{% extends "layouts/base.html" %}
+{% load bootstrap4 static %}
+
+{% block title %}{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">Besoins en cours</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Déposer un besoin</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="s-title-01">
+    <div class="s-title-01__container container">
+        <div class="s-title-01__row row">
+            <div class="s-title-01__col col-12">
+                <h1 class="s-title-01__title h1 mb-0"><strong><p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p></strong></h1>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="s-section">
+    <div class="s-section__container container">
+        <div class="s-section__row row">
+            <div class="s-section__col col-12 col-lg-7">
+                <div class="c-form" id="formAddTender">
+                    <div class="progress progress--marche">
+                        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+                            style="width: {% widthratio wizard.steps.step1 wizard.steps.count 100 %}%"
+                            aria-valuenow="{% widthratio wizard.steps.step1 wizard.steps.count 100 %}"></div>
+                    </div>
+                    <p class="py-3"><b>Etape {{wizard.steps.step1}}/{{wizard.steps.count}}</b>: {{wizard.steps.current}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="s-section">
+    <div class="s-section__container container">
+        <div class="s-section__row row">
+            <div class="s-section__col col-12 col-lg-7">
+                <div class="c-form" id="formAddTender">
+                    {% block form %}
+                        <form action="" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ wizard.management_form }}
+                            {% block content_form %}
+                                <table>
+                                    {% if wizard.form.forms %}
+                                        {{ wizard.form.management_form }}
+                                        {% for form in wizard.form.forms %}
+                                            {{ form }}
+                                        {% endfor %}
+                                    {% else %}
+                                        {{ wizard.form }}
+                                    {% endif %}
+                                </table>
+                            {% endblock content_form %}
+
+                            {% block action_form %}
+                                <div class="form-row justify-content-end">
+                                    <div class="form-group col-12 col-lg-auto">
+                                        {% if wizard.steps.prev %}
+                                            <button name="wizard_goto_step" type="submit" class="btn btn-outline-primary" value="{{ wizard.steps.first }}"> Première étape</button>
+                                            <button name="wizard_goto_step" type="submit" class="btn btn-outline-primary" value="{{ wizard.steps.prev }}"> Précédente étape</button>
+                                        {% endif %}
+                                        <input type="submit" class="btn btn-primary" value="Suivant"/>
+                                        {% comment %} <button type="button" id="btnAddTender" class="btn btn-primary btn-block btn-ico">
+                                            <span>Publier et diffuser ce besoin</span>
+                                            <i class="ri-arrow-right-line ri-lg"></i>
+                                        </button> {% endcomment %}
+                                    </div>
+                                </div>
+
+                            {% endblock action_form %}
+                        </form>
+                    {% endblock form %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
