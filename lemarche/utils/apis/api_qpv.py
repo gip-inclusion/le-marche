@@ -2,7 +2,7 @@
 
 import logging
 
-import httpx
+import requests
 
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ def get_default_params():
 
 def get_default_client(params={}):
     params |= get_default_params()
-    client = httpx.Client(params=params)
+    client = requests.Client(params=params)
     return client
 
 
@@ -48,6 +48,6 @@ def is_in_qpv(latitude, longitude, distance=DISTANCE_TO_VALIDATE_QPV, client=Non
             qpv = records[0]
             return {IS_QPV_KEY: True, QPV_NAME_KEY: qpv["fields"]["nom_qp"], QPV_CODE_KEY: qpv["fields"]["code_qp"]}
         return {IS_QPV_KEY: False}
-    except httpx.HTTPStatusError as e:
+    except requests.HTTPStatusError as e:
         logger.error("Error while fetching `%s`: %s", e.request.url, e)
         raise e

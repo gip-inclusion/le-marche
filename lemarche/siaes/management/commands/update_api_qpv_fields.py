@@ -1,7 +1,7 @@
 import argparse
 from datetime import timedelta
 
-import httpx
+import requests
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db.models import Q
@@ -71,10 +71,10 @@ class Command(BaseCommand):
                 if (count_siae_to_update % 50) == 0:
                     self.stdout_info(f"{count_siae_to_update}...")
 
-        except httpx.HTTPStatusError as e:
+        except requests.HTTPStatusError as e:
             if e.response.status_code == 429:
                 # the real exceed request error have code=10005, with the api
-                # but httpx send error code 429 "Unknown Status Code"
+                # but requests send error code 429 "Unknown Status Code"
                 self.stdout_error("exceeded the requests limit for today (5000/per day)")
         finally:
             client.close()

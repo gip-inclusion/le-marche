@@ -1,6 +1,6 @@
 import logging
 
-import httpx
+import requests
 
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ def get_default_params():
 
 def get_default_client(params={}):
     params |= get_default_params()
-    client = httpx.Client(params=params)
+    client = requests.Client(params=params)
     return client
 
 
@@ -51,6 +51,6 @@ def is_in_zrr(latitude, longitude, distance=DISTANCE_TO_VALIDATE_ZRR, client=Non
                 ZRR_CODE_KEY: zrr["com17"],
             }
         return {IS_ZRR_KEY: False}
-    except httpx.HTTPStatusError as e:
+    except requests.HTTPStatusError as e:
         logger.error("Error while fetching `%s`: %s", e.request.url, e)
         raise e

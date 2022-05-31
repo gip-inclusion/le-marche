@@ -1,6 +1,6 @@
 import logging
 
-import httpx
+import requests
 from django.conf import settings
 from huey.contrib.djhuey import task
 
@@ -20,21 +20,21 @@ def get_default_client(params={}):
     headers = {
         "user-agent": "betagouv-lemarche/0.0.1",
     }
-    client = httpx.Client(params=params, headers=headers)
+    client = requests.Client(params=params, headers=headers)
     return client
 
 
 @task()
-def send_message_to_channel(text: str, service_id: str, client: httpx.Client = None):
+def send_message_to_channel(text: str, service_id: str, client: requests.Client = None):
     """Huey task to send message to specific payload for specific slack service
 
     Args:
         payload (dict): payload for serivce
         service_id (str): service id of the service (ex of service: Webhook)
-        client (httpx.Client, optional): client to send requests. Defaults to None.
+        client (requests.Client, optional): client to send requests. Defaults to None.
 
     Raises:
-        e: httpx.HTTPStatusError
+        e: requests.HTTPStatusError
     """
     if settings.SLACK_NOTIF_IS_ACTIVE:
         if not client:
@@ -44,9 +44,10 @@ def send_message_to_channel(text: str, service_id: str, client: httpx.Client = N
             data = {"text": text}
             response = client.post(f"{BASE_URL}{service_id}", json=data)
             response.raise_for_status()
-            logger.info("send message to slack")
             # logger.info(response.json())  // you'll receive a "HTTP 200" response with a plain text ok indicating that your message posted successfully  # noqa
-            return True
-        except httpx.HTTPStatusError as e:
+            logger.info("send message to slack")
+            logger.info(response.json())
+            return response.json()
+        except requests.HTTPStatusError as e:
             logger.error("Error while fetching `%s`: %s", e.request.url, e)
             raise e
