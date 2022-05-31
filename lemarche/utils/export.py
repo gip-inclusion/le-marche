@@ -22,7 +22,7 @@ SIAE_FIELDS_TO_EXPORT = [
     "is_qpv",
     "sectors",
 ]
-SIAE_CUSTOM_FIELDS = ["Inscrite", "Lien sur le marché"]
+SIAE_CUSTOM_FIELDS = ["Inscrite", "Lien vers le marché"]
 SIAE_HEADER = [
     Siae._meta.get_field(field_name).verbose_name for field_name in SIAE_FIELDS_TO_EXPORT
 ] + SIAE_CUSTOM_FIELDS
@@ -43,8 +43,8 @@ def generate_siae_row(siae: Siae):
             col_value = siae.sectors_list_to_string()
         elif field_name == "Inscrite":
             col_value = "Oui" if siae.user_count else "Non"
-        elif field_name == "Lien sur le marché":
-            col_value = siae.get_absolute_url()
+        elif field_name == "Lien vers le marché":
+            col_value = f"{siae.get_absolute_url()}?cmp=export-excel"
         else:
             col_value = getattr(siae, field_name, "")
         siae_row.append(col_value)
