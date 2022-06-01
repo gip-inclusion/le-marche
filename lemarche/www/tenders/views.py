@@ -13,7 +13,13 @@ from formtools.wizard.views import SessionWizardView
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin, TenderOwnerRequiredMixin
-from lemarche.www.tenders.forms import AddTenderForm, AddTenderStep1Form, AddTenderStep2Form, AddTenderStep3Form
+from lemarche.www.tenders.forms import (
+    AddTenderForm,
+    AddTenderStepConfirmationForm,
+    AddTenderStepContactForm,
+    AddTenderStepDescriptionForm,
+    AddTenderStepGeneralForm,
+)
 from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
     notify_admin_tender_created,
     send_siae_interested_email_to_author,
@@ -33,48 +39,88 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
     STEP_CONFIRMATION = "confirmation"
 
     form_list = [
-        (STEP_GENERAL, AddTenderStep1Form),
-        (STEP_CONTACT, AddTenderStep2Form),
-        (STEP_DESCRIPTION, AddTenderStep3Form),
-        (STEP_CONFIRMATION, AddTenderForm),
+        (STEP_GENERAL, AddTenderStepGeneralForm),
+        (STEP_CONTACT, AddTenderStepContactForm),
+        (STEP_DESCRIPTION, AddTenderStepDescriptionForm),
+        (STEP_CONFIRMATION, AddTenderStepConfirmationForm),
     ]
 
     TEMPLATES = {
-        STEP_GENERAL: "tenders/create_step_1.html",
-        STEP_CONTACT: "tenders/create_step_2.html",
-        STEP_DESCRIPTION: "tenders/create_step_3.html",
-        STEP_CONFIRMATION: "tenders/create_step_4.html",
+        STEP_GENERAL: "tenders/create_step_general.html",
+        STEP_CONTACT: "tenders/create_step_contact.html",
+        STEP_DESCRIPTION: "tenders/create_step_description.html",
+        STEP_CONFIRMATION: "tenders/create_step_confirmation.html",
     }
 
     def get_template_names(self):
         return [self.TEMPLATES[self.steps.current]]
 
-    def get_form_initial(self, step):
-        initial = self.initial_dict.get(step, {})
+    def get_context_data(self, form, **kwargs):
+        context = super().get_context_data(form=form, **kwargs)
+        # if self.steps.current == "my_step_name":
+        #     context.update({"another_var": True})
+        return context
 
+    def get_form_instance(self, step):
+        print("DEBUG_STEPS", step, self.steps.current, self.steps.next)
+        # import ipdb
+
+        # ipdb.set_trace()
+        initial = self.instance_dict.get(step, None)
+        print("DEBUG_INSTANCE", self.instance_dict, initial)
         if step == self.STEP_CONTACT:
-            # import ipdb
-
-            # ipdb.set_trace()
             user = self.request.user
-            initial.update(
-                {
-                    self.STEP_CONTACT: {
-                        "contact_first_name": user.first_name,
-                        "contact_last_name": user.last_name,
-                        "contact_email": user.email,
-                        "contact_phone": user.phone,
-                    }
+            print("DEBUG_INSTANCE", self.instance_dict, initial)
+            return Tender(
+                **{
+                    "contact_first_name": user.first_name,
+                    "contact_last_name": user.last_name,
+                    "contact_email": user.email,
+                    "contact_phone": user.phone,
                 }
             )
-        elif step == self.STEP_CONFIRMATION:
-            import ipdb
+            # initial.update(
+            #     {
+            #         "contact_first_name": user.first_name,
+            #         "contact_last_name": user.last_name,
+            #         "contact_email": user.email,
+            #         "contact_phone": user.phone,
+            #     }
+            # )
+            # return initial
+        return self.instance_dict.get(step, None)
 
-            ipdb.set_trace()
-            return {form.cleaned_data for form in self.form_list}
-        return initial
+    # def get_initial_dict(self, step):
+    #     initial = self.initial_dict.get(step, {})
+    #     import ipdb
+
+    #     ipdb.set_trace()
+    #     if step == self.STEP_CONTACT:
+    #         # import ipdb
+
+    #         # ipdb.set_trace()
+    #         user = self.request.user
+    #         initial.update(
+    #             {
+    #                 self.STEP_CONTACT: {
+    #                     "contact_first_name": user.first_name,
+    #                     "contact_last_name": user.last_name,
+    #                     "contact_email": user.email,
+    #                     "contact_phone": user.phone,
+    #                 }
+    #             }
+    #         )
+    #     elif step == self.STEP_CONFIRMATION:
+    #         # import ipdb
+
+    #         # ipdb.set_trace()
+    #         return {form.cleaned_data for form in self.form_list}
+    #     return initial
 
     def done(self, form_list, form_dict, **kwargs):
+        test = [form.cleaned_data for form in form_list]
+        print(test)
+
         return render(
             self.request,
             "tenders/multistep_done.html",

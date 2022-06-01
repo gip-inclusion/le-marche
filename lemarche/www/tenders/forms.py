@@ -7,7 +7,7 @@ from lemarche.tenders.models import Tender
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
-class AddTenderStep1Form(forms.ModelForm):
+class AddTenderStepGeneralForm(forms.ModelForm):
     # General information
 
     sectors = GroupedModelMultipleChoiceField(
@@ -35,7 +35,7 @@ class AddTenderStep1Form(forms.ModelForm):
         }
 
 
-class AddTenderStep2Form(forms.ModelForm):
+class AddTenderStepDescriptionForm(forms.ModelForm):
     # Description
     class Meta:
         model = Tender
@@ -53,7 +53,7 @@ class AddTenderStep2Form(forms.ModelForm):
         }
 
 
-class AddTenderStep3Form(forms.ModelForm):
+class AddTenderStepContactForm(forms.ModelForm):
 
     response_kind = forms.MultipleChoiceField(
         label="Comment répondre",
@@ -76,6 +76,10 @@ class AddTenderStep3Form(forms.ModelForm):
             # "perimeters": forms.HiddenInput(),
             "deadline_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
         }
+
+
+class AddTenderStepConfirmationForm(forms.Form):
+    pass
 
 
 class AddTenderForm(forms.ModelForm):
