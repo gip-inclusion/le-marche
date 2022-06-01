@@ -25,9 +25,10 @@ def get_default_client(params={}):
     headers = {
         "user-agent": "betagouv-lemarche/0.0.1",
     }
-    client = requests.Client(
-        params=params, headers=headers, auth=(settings.MAILJET_MASTER_API_KEY, settings.MAILJET_MASTER_API_SECRET)
-    )
+    client = requests.Session()
+    client.params = params
+    client.headers = headers
+    client.auth = (settings.MAILJET_MASTER_API_KEY, settings.MAILJET_MASTER_API_SECRET)
     return client
 
 

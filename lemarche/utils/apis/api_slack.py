@@ -20,7 +20,9 @@ def get_default_client(params={}):
     headers = {
         "user-agent": "betagouv-lemarche/0.0.1",
     }
-    client = requests.Client(params=params, headers=headers)
+    client = requests.Session()
+    client.params = params
+    client.headers = headers
     return client
 
 

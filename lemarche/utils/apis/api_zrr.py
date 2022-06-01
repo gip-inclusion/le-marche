@@ -25,7 +25,8 @@ def get_default_params():
 
 def get_default_client(params={}):
     params |= get_default_params()
-    client = requests.Client(params=params)
+    client = requests.Session()
+    client.params = params
     return client
 
 
