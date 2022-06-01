@@ -45,7 +45,7 @@ class TenderMatchingTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.sectors = [SectorFactory() for i in range(10)]
-        cls.perimeters = [PerimeterFactory(department_code="75"), PerimeterFactory()]
+        cls.perimeters = [PerimeterFactory(department_code="75", post_codes=["75019", "75018"]), PerimeterFactory()]
         # by default is Paris
         coords_paris = Point(48.86385199985207, 2.337071483848432)
 
@@ -96,7 +96,8 @@ class TenderMatchingTest(TestCase):
         siae.sectors.add(self.sectors[0])
         siae_found_list_marseille = Siae.objects.filter_with_tender(tender_marseille)
         self.assertEqual(len(siae_found_list_marseille), 1)
-        opportunities_for_siae = Tender.objects.filter_with_siae(siae_found_list_marseille[0])
+        opportunities_for_siae = Tender.objects.filter_with_siae(siae_found_list_marseille[:1])
+        #
         self.assertEqual(len(opportunities_for_siae), 1)
 
     def test_with_no_contact_email(self):
@@ -106,8 +107,8 @@ class TenderMatchingTest(TestCase):
         siae_country.sectors.add(self.sectors[0])
         siae_found_list = Siae.objects.filter_with_tender(tender)
         self.assertEqual(len(siae_found_list), 2)
-        opportunities_for_siae = Tender.objects.filter_with_siae(siae_found_list[0])
-        self.assertEqual(len(opportunities_for_siae), 1)
+        opportunities_for_siae = Tender.objects.filter_with_siae(siae_found_list[:1])
+        self.assertEqual(len(opportunities_for_siae), 0)
 
     # def test_number_queries(self):
     #     tender = TenderFactory(sectors=self.sectors)
@@ -119,16 +120,22 @@ class TenderMatchingTest(TestCase):
 class TenderListViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
+        perimeter = PerimeterFactory(post_codes=["43705"], insee_code="06", name="Auvergne-Rhône-Alpes")
         cls.user_siae_1 = UserFactory(kind=User.KIND_SIAE)
-        cls.siae = SiaeFactory()
+        cls.siae = SiaeFactory(post_code=perimeter.post_codes[0])
         cls.user_siae_2 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae])
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
-        cls.tender = TenderFactory(author=cls.user_buyer_1, validated_at=date.today())
-        cls.tender_2 = TenderFactory(author=cls.user_buyer_1, deadline_date=date.today() - timedelta(days=5))
+        cls.tender = TenderFactory(author=cls.user_buyer_1, validated_at=date.today(), perimeters=[perimeter])
+        cls.tender_2 = TenderFactory(
+            author=cls.user_buyer_1, deadline_date=date.today() - timedelta(days=5), perimeters=[perimeter]
+        )
         cls.tender_3 = TenderFactory(
-            author=cls.user_buyer_1, validated_at=date.today(), deadline_date=date.today() - timedelta(days=5)
+            author=cls.user_buyer_1,
+            validated_at=date.today(),
+            deadline_date=date.today() - timedelta(days=5),
+            perimeters=[perimeter],
         )
 
     def test_anonymous_user_cannot_list_tenders(self):

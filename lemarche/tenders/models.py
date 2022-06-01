@@ -1,9 +1,8 @@
 from datetime import datetime
-from functools import reduce
 from uuid import uuid4
 
-import _operator
 from django.conf import settings
+from django.contrib.postgres.fields import ArrayField
 from django.db import IntegrityError, models, transaction
 from django.db.models import Case, Count, F, IntegerField, Q, Sum, When
 from django.db.models.functions import Greatest
@@ -12,7 +11,8 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 
-from lemarche.utils.fields import ArrayField, ChoiceArrayField
+from lemarche.sectors.models import Sector
+from lemarche.utils.fields import ChoiceArrayField
 
 
 AMOUNT_RANGE_0 = "<25K"
@@ -26,6 +26,14 @@ AMOUNT_RANGE_1_LABEL = "25K-100K €"
 AMOUNT_RANGE_2_LABEL = "100K-1M €"
 AMOUNT_RANGE_3_LABEL = "1M-5M €"
 AMOUNT_RANGE_4_LABEL = "> 5M €"
+
+
+def get_filter_perimeter(siae):
+    return (
+        Q(perimeters__post_codes__contains=[siae.post_code])
+        | Q(perimeters__insee_code=siae.department)
+        | Q(perimeters__name=siae.region)
+    )
 
 
 class TenderQuerySet(models.QuerySet):
@@ -49,21 +57,23 @@ class TenderQuerySet(models.QuerySet):
 
     def in_sectors(self, sectors):
         if sectors:
-            query = reduce(_operator.or_, (Q(sectors__id__contains=item.id) for item in sectors))
-            return self.filter(query).distinct()
+            return self.filter(sectors__in=sectors).distinct()
         else:
             return self
 
-    def filter_with_siae(self, siae):
+    def filter_with_siae(self, siaes):
         """
         Return the list of tenders corresponding to the Siae
         Filters on its sectors & perimeter
         """
-        sectors = siae.sectors.all()
+        sectors = Sector.objects.prefetch_related("siaes").filter(siaes__in=siaes).distinct()
         qs = self.prefetch_related("sectors", "perimeters").in_sectors(sectors)
-        if siae.geo_range != siae.GEO_RANGE_COUNTRY:
-            qs.in_perimeters(post_code=siae.post_code, department=siae.department, region=siae.region)
-        return qs.distinct()
+        conditions = Q()
+        for siae in siaes:
+            if siae.geo_range != siae.GEO_RANGE_COUNTRY:
+                conditions |= get_filter_perimeter(siae)
+        return qs.filter(conditions).distinct()
+        # return qs.distinct()
 
     def with_siae_stats(self):
         """

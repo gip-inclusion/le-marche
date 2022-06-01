@@ -83,9 +83,9 @@ class TenderListView(LoginRequiredMixin, ListView):
         queryset = Tender.objects.none()
         if user.kind == User.KIND_SIAE and user.siaes:
             # TODO: manage many siaes
-            siae = user.siaes.first()
-            if siae:
-                queryset = Tender.objects.filter_with_siae(siae).is_live()
+            siaes = user.siaes.all()
+            if siaes:
+                queryset = Tender.objects.filter_with_siae(siaes).is_live()
         else:
             queryset = Tender.objects.by_user(user).with_siae_stats()
         return queryset
