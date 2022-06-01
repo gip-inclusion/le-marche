@@ -6,7 +6,7 @@ from factory.django import DjangoModelFactory
 
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.sectors.factories import SectorFactory
-from lemarche.tenders.models import Tender
+from lemarche.tenders.models import PartnerShareTender, Tender
 from lemarche.users.factories import UserFactory
 
 
@@ -50,3 +50,23 @@ class TenderFactory(DjangoModelFactory):
         if extracted:
             # Add the iterable of groups using bulk addition
             self.siaes.add(*extracted)
+
+
+class PartnerShareTenderFactory(DjangoModelFactory):
+    class Meta:
+        model = PartnerShareTender
+
+    name = factory.Faker("name", locale="fr_FR")
+
+    contact_email_list = factory.LazyFunction(
+        lambda: [factory.Faker("email", locale="fr_FR") for i in range(random.randint(1, 4))]
+    )
+
+    @factory.post_generation
+    def perimeters(self, create, extracted, **kwargs):
+        if not create:
+            self.perimeters.add(*[PerimeterFactory() for i in range(random.randint(1, 9))])
+            return
+
+        # Add the iterable of groups using bulk addition
+        self.perimeters.add(*extracted)
