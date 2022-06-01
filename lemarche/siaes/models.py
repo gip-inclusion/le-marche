@@ -154,7 +154,7 @@ class SiaeQuerySet(models.QuerySet):
         return self.prefetch_related("offers", "client_references", "labels", "images")
 
     def search_query_set(self):
-        return self.is_live().prefetch_many_to_many()
+        return self.is_live().exclude(kind="OPCS").prefetch_many_to_many()
 
     def filter_sectors(self, sectors):
         return self.filter(sectors__in=sectors)

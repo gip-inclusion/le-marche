@@ -276,7 +276,7 @@ class Command(BaseCommand):
         # init fields
         c1_siae["description"] = ""
         c1_siae["contact_website"] = c1_siae["website"]
-        c1_siae["contact_email"] = c1_siae["email"]
+        c1_siae["contact_email"] = c1_siae["admin_email"] or c1_siae["email"]
         c1_siae["contact_phone"] = c1_siae["phone"]
 
         # TODO: call API Entreprise

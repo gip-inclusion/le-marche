@@ -32,13 +32,20 @@ class Command(BaseCommand):
     - make sure the column names correspond
 
     Usage: poetry run python manage.py import_siae_groups
+    Usage: poetry run python manage.py import_siae_groups --delete
     """
 
-    def handle(self, *args, **options):
-        print("-" * 80)
-        SiaeGroup.objects.all().delete()
-        reset_app_sql_sequences("siaes")
+    def add_arguments(self, parser):
+        parser.add_argument("--delete", action="store_true", help="Clear the SiaeGroups first")
 
+    def handle(self, *args, **options):
+        if options["delete"]:
+            print("-" * 80)
+            print(f"Deleting {SiaeGroup.objects.count()} existing SiaeGroups...")
+            SiaeGroup.objects.all().delete()
+            reset_app_sql_sequences("siaes")
+
+        print("-" * 80)
         print("Importing Siae Groups...")
         siae_group_list = read_csv(FILE_PATH)
         progress = 0
@@ -48,6 +55,7 @@ class Command(BaseCommand):
                 print(f"{progress}...")
             self.import_siae_groups(siae_group)
 
+        print("-" * 80)
         print("Done !")
         print(f"Imported {SiaeGroup.objects.count()} Siae Groups")
 

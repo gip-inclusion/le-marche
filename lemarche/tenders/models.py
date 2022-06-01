@@ -14,6 +14,19 @@ from lemarche.sectors.models import Sector
 from lemarche.utils.fields import ChoiceArrayField
 
 
+AMOUNT_RANGE_0 = "<25K"
+AMOUNT_RANGE_1 = "<100K"
+AMOUNT_RANGE_2 = "<1M"
+AMOUNT_RANGE_3 = "<5M"
+AMOUNT_RANGE_4 = ">5M"
+
+AMOUNT_RANGE_0_LABEL = "0-25K €"
+AMOUNT_RANGE_1_LABEL = "25K-100K €"
+AMOUNT_RANGE_2_LABEL = "100K-1M €"
+AMOUNT_RANGE_3_LABEL = "1M-5M €"
+AMOUNT_RANGE_4_LABEL = "> 5M €"
+
+
 def get_filter_perimeter(siae):
     return (
         Q(perimeters__post_codes__contains=[siae.post_code])
@@ -26,8 +39,11 @@ class TenderQuerySet(models.QuerySet):
     def by_user(self, user):
         return self.filter(author=user)
 
+    def validated(self):
+        return self.filter(validated_at__isnull=False)
+
     def is_live(self):
-        return self.filter(Q(validated_at__isnull=False) & Q(deadline_date__gte=datetime.today()))
+        return self.validated().filter(deadline_date__gte=datetime.today())
 
     def in_perimeters(self, post_code, department, region):
         filters = (
@@ -95,11 +111,11 @@ class TenderQuerySet(models.QuerySet):
 class Tender(models.Model):
     """Appel d'offres et devis"""
 
-    AMOUNT_RANGE_0 = "<25K"
-    AMOUNT_RANGE_1 = "<100K"
-    AMOUNT_RANGE_2 = "<1M"
-    AMOUNT_RANGE_3 = "<5M"
-    AMOUNT_RANGE_4 = ">5M"
+    AMOUNT_RANGE_0 = AMOUNT_RANGE_0
+    AMOUNT_RANGE_1 = AMOUNT_RANGE_1
+    AMOUNT_RANGE_2 = AMOUNT_RANGE_2
+    AMOUNT_RANGE_3 = AMOUNT_RANGE_3
+    AMOUNT_RANGE_4 = AMOUNT_RANGE_4
 
     AMOUNT_RANGE_CHOICES = (
         (AMOUNT_RANGE_0, "0-25K €"),
@@ -279,3 +295,74 @@ class TenderSiae(models.Model):
         verbose_name = "Structure correspondant au besoin"
         verbose_name_plural = "Structures correspondantes au besoin"
         ordering = ["-created_at"]
+
+
+class PartnerShareTenderQuerySet(models.QuerySet):
+    def filter_by_tender(self, tender: Tender):
+        conditions = Q()
+        if tender.amount:
+            if tender.amount == tender.AMOUNT_RANGE_0:
+                conditions |= (
+                    Q(amount_in=tender.AMOUNT_RANGE_0)
+                    | Q(amount_in=tender.AMOUNT_RANGE_1)
+                    | Q(amount_in=tender.AMOUNT_RANGE_2)
+                    | Q(amount_in=tender.AMOUNT_RANGE_3)
+                    | Q(amount_in=tender.AMOUNT_RANGE_4)
+                )
+            elif tender.amount == tender.AMOUNT_RANGE_1:
+                conditions |= (
+                    Q(amount_in=tender.AMOUNT_RANGE_1)
+                    | Q(amount_in=tender.AMOUNT_RANGE_2)
+                    | Q(amount_in=tender.AMOUNT_RANGE_3)
+                    | Q(amount_in=tender.AMOUNT_RANGE_4)
+                )
+            elif tender.amount == tender.AMOUNT_RANGE_2:
+                conditions |= (
+                    Q(amount_in=tender.AMOUNT_RANGE_2)
+                    | Q(amount_in=tender.AMOUNT_RANGE_3)
+                    | Q(amount_in=tender.AMOUNT_RANGE_4)
+                )
+            elif tender.amount == tender.AMOUNT_RANGE_3:
+                conditions |= Q(amount_in=tender.AMOUNT_RANGE_3) | Q(amount_in=tender.AMOUNT_RANGE_4)
+            elif tender.amount == tender.AMOUNT_RANGE_4:
+                conditions |= Q(amount_in=tender.AMOUNT_RANGE_4)
+
+            conditions |= Q(amount_in__isnull=True)
+
+        if tender.is_country_area:
+            conditions &= Q(perimeters__isnull=True)
+        else:
+            conditions &= Q(perimeters__in=tender.perimeters.all()) | Q(perimeters__isnull=True)
+        return self.filter(conditions).distinct()
+
+
+class PartnerShareTender(models.Model):
+    AMOUNT_RANGE_0 = AMOUNT_RANGE_0
+    AMOUNT_RANGE_1 = AMOUNT_RANGE_1
+    AMOUNT_RANGE_2 = AMOUNT_RANGE_2
+    AMOUNT_RANGE_3 = AMOUNT_RANGE_3
+    AMOUNT_RANGE_4 = AMOUNT_RANGE_4
+
+    AMOUNT_RANGE_CHOICES = (
+        (AMOUNT_RANGE_0, AMOUNT_RANGE_0_LABEL),
+        (AMOUNT_RANGE_1, AMOUNT_RANGE_1_LABEL),
+        (AMOUNT_RANGE_2, AMOUNT_RANGE_2_LABEL),
+        (AMOUNT_RANGE_3, AMOUNT_RANGE_3_LABEL),
+        (AMOUNT_RANGE_4, AMOUNT_RANGE_4_LABEL),
+    )
+    name = models.CharField(max_length=120, verbose_name="Nom du partenaire")
+    perimeters = models.ManyToManyField(
+        "perimeters.Perimeter", verbose_name="Lieux de filtrage", related_name="partner_share_tenders", blank=True
+    )
+
+    amount_in = models.CharField(
+        verbose_name="Montant du marché limite", max_length=9, choices=AMOUNT_RANGE_CHOICES, blank=True, null=True
+    )
+    # contact email list
+    contact_email_list = ArrayField(base_field=models.EmailField(max_length=255), verbose_name="Liste de contact")
+
+    objects = models.Manager.from_queryset(PartnerShareTenderQuerySet)()
+
+    class Meta:
+        verbose_name = "Partenaire intéressé des dépôts de besoins"
+        verbose_name_plural = "Partenaires intéressés des dépôts de besoins"
