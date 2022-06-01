@@ -58,7 +58,7 @@ class PartnerShareTenderFactory(DjangoModelFactory):
 
     name = factory.Faker("name", locale="fr_FR")
 
-    contact_list = factory.LazyFunction(
+    contact_email_list = factory.LazyFunction(
         lambda: [factory.Faker("email", locale="fr_FR") for i in range(random.randint(1, 4))]
     )
 
