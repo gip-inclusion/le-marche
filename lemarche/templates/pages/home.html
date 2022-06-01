@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load static bootstrap4 cache %}
+{% load static bootstrap4 %}
 {% load theme_inclusion %}
 {% load wagtailcore_tags %}
 
@@ -36,7 +36,6 @@
     </div>
 </section>
 
-{% cache 3600 home_stats %}
 <section class="s-section m-0 bg-nuance-09">
     <div class="s-section__container container">
         <div class="s-section__row row">
@@ -46,7 +45,6 @@
         </div>
     </div>
 </section>
-{% endcache %}
 
 <section class="s-cards-grid-01">
     <div class="s-cards-grid-01__container container">
