@@ -22,7 +22,7 @@ SIAE_FIELDS_TO_EXPORT = [
     "is_qpv",
     "sectors",
 ]
-SIAE_CUSTOM_FIELDS = ["Inscrite"]
+SIAE_CUSTOM_FIELDS = ["Inscrite", "Lien vers le marché"]
 SIAE_HEADER = [
     Siae._meta.get_field(field_name).verbose_name for field_name in SIAE_FIELDS_TO_EXPORT
 ] + SIAE_CUSTOM_FIELDS
@@ -31,19 +31,23 @@ SIAE_HEADER = [
 def generate_siae_row(siae: Siae):
     siae_row = []
     for field_name in SIAE_FIELDS_TO_EXPORT + SIAE_CUSTOM_FIELDS:
+        col_value = ""
         # Improve display of some fields: ChoiceFields, BooleanFields, ArrayFields, ManyToManyFields
         if field_name in ["nature"]:
-            siae_row.append(getattr(siae, f"get_{field_name}_display")())
+            col_value = getattr(siae, f"get_{field_name}_display")()
         elif field_name in ["presta_type"]:
-            siae_row.append(siae.presta_type_display)
+            col_value = siae.presta_type_display
         elif field_name in ["is_qpv"]:
-            siae_row.append("Oui" if getattr(siae, field_name, None) else "Non")
+            col_value = "Oui" if getattr(siae, field_name, None) else "Non"
         elif field_name == "sectors":
-            siae_row.append(siae.sectors_list_to_string())
+            col_value = siae.sectors_list_to_string()
         elif field_name == "Inscrite":
-            siae_row.append("Oui" if siae.user_count else "Non")
+            col_value = "Oui" if siae.user_count else "Non"
+        elif field_name == "Lien vers le marché":
+            col_value = f"{siae.get_absolute_url()}?cmp=export-excel"
         else:
-            siae_row.append(getattr(siae, field_name, ""))
+            col_value = getattr(siae, field_name, "")
+        siae_row.append(col_value)
     return siae_row
 
 
