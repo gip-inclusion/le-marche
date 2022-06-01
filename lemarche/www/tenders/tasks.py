@@ -3,11 +3,28 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 
 from lemarche.siaes.models import Siae
-from lemarche.tenders.models import Tender, TenderSiae
+from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
 from lemarche.utils.apis import api_mailjet, api_slack
 from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX, send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_admin_url_object, get_share_url_object
-from lemarche.www.tenders.constants import match_tender_for_partners
+
+
+def match_tender_for_partners(tender: Tender, send_email_func=None):
+    """Manage the matching from tender to partners
+
+    Args:
+        tender (Tender): _description_
+        send_email_func : function which takes two arguments tender, and dict of partner (see PARTNERS_FILTERS)
+
+    Returns:
+        list<Dict>: list of partners
+    """
+    partners = PartnerShareTender.objects.filter_by_tender(tender)
+    for partner in partners:
+        if send_email_func:
+            send_email_func(tender, partner)
+
+    return partners
 
 
 # @task()
@@ -23,9 +40,9 @@ def send_tender_emails_to_siaes(tender: Tender):
     match_tender_for_partners(tender=tender, send_email_func=send_tender_email_to_partner)
 
 
-def send_tender_email_to_partner(tender: Tender, partner: dict):
+def send_tender_email_to_partner(tender: Tender, partner: PartnerShareTender):
     email_subject = f"{EMAIL_SUBJECT_PREFIX}{tender.author.company_name} recherchent des structures inclusives"
-    recipient_list = whitelist_recipient_list(partner.get("contacts_email"))
+    recipient_list = whitelist_recipient_list(partner.contact_email_list)
     if recipient_list:
         variables = {
             "TENDER_AUTHOR_COMPANY": tender.author.company_name,
