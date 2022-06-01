@@ -57,8 +57,11 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
 
     def get_context_data(self, form, **kwargs):
         context = super().get_context_data(form=form, **kwargs)
-        # if self.steps.current == "my_step_name":
-        #     context.update({"another_var": True})
+        if self.steps.current == self.STEP_CONFIRMATION:
+            # import ipdb
+
+            # ipdb.set_trace()
+            context.update({"tender": self.get_all_cleaned_data()})
         return context
 
     def get_form_instance(self, step):
@@ -118,9 +121,13 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
     #     return initial
 
     def done(self, form_list, form_dict, **kwargs):
-        test = [form.cleaned_data for form in form_list]
-        print(test)
+        # test = [form.cleaned_data for form in form_list]
+        # test = dict(ChainMap(*test))
+        # print(test)
+        # tender = Tender(**test)
+        # import ipdb
 
+        # ipdb.set_trace()
         return render(
             self.request,
             "tenders/multistep_done.html",

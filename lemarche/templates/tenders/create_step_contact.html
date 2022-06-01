@@ -32,15 +32,8 @@
         {% bootstrap_field form.contact_phone form_group_class="form-group col-12 col-md-6" %}
     </div>
     {% bootstrap_field form.response_kind %}
-    <div class="form-group form-group-required">
-        {{ form.deadline_date.label_tag }}
-        <div class="input-group">
-            <input id="id_{{ form.deadline_date.name }}" class="form-control{% if form.deadline_date.errors %} is-invalid{% endif %}" name="{{ form.deadline_date.name }}" type="{{ form.deadline_date.field.widget.input_type }}" value="{{ form.deadline_date.value}}" />
-            {% for error in form.deadline_date.errors %}
-                <div class="invalid-feedback">{{ error }}</div>
-            {% endfor %}
-        </div>
-    </div>
+    {% bootstrap_field form.deadline_date %}
+
 </fieldset>
 
 {% endblock %}
