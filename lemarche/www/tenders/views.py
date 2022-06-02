@@ -92,10 +92,16 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
             )
         return self.instance
 
-    def done(self, form_list, form_dict, **kwargs):
-        tender = create_tender_from_dict(self.get_all_cleaned_data() | {"author": self.request.user})
-        print(tender)
-        # tender = Tender(**test)
+    def get_form_kwargs(self, step):
+        kwargs = super().get_form_kwargs(step)
+
+        if step == self.STEP_DESCRIPTION:
+            kwargs["min_start_working_date"] = self.get_cleaned_data_for_step(self.STEP_CONTACT).get("deadline_date")
+        return kwargs
+
+    def done(self, **kwargs):
+        # when it's done we save the tender
+        create_tender_from_dict(self.get_all_cleaned_data() | {"author": self.request.user})
         return HttpResponseRedirect(self.success_url)
 
 

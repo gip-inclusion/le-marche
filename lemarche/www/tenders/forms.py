@@ -37,6 +37,12 @@ class AddTenderStepGeneralForm(forms.ModelForm):
 
 class AddTenderStepDescriptionForm(forms.ModelForm):
     # Description
+    min_start_working_date = None
+
+    def __init__(self, min_start_working_date, *args, **kwargs):
+        super(AddTenderStepDescriptionForm, self).__init__(*args, **kwargs)
+        self.min_start_working_date = min_start_working_date
+
     class Meta:
         model = Tender
         fields = [
@@ -51,6 +57,18 @@ class AddTenderStepDescriptionForm(forms.ModelForm):
             # "perimeters": forms.HiddenInput(),
             "start_working_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
         }
+
+    def clean(self):
+        super().clean()
+        if (
+            self.min_start_working_date
+            and self.cleaned_data.get("start_working_date")
+            and (self.cleaned_data.get("start_working_date") < self.min_start_working_date)
+        ):
+            self.add_error(
+                "start_working_date",
+                "La date idéale de début des prestations ne doit pas être antérieure de clôture des réponses.",
+            )
 
 
 class AddTenderStepContactForm(forms.ModelForm):
@@ -76,6 +94,14 @@ class AddTenderStepContactForm(forms.ModelForm):
             # "perimeters": forms.HiddenInput(),
             "deadline_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
         }
+
+    def clean(self):
+        super().clean()
+        today = date.today()
+        if self.cleaned_data.get("deadline_date") and (self.cleaned_data.get("deadline_date") < today):
+            self.add_error(
+                "deadline_date", "La date de clôture des réponses ne doit pas être antérieure à aujourd'hui."
+            )
 
 
 class AddTenderStepConfirmationForm(forms.Form):
