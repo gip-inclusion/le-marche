@@ -78,11 +78,9 @@
                                             <button name="wizard_goto_step" type="submit" class="btn btn-outline-primary" value="{{ wizard.steps.first }}"> Première étape</button>
                                             <button name="wizard_goto_step" type="submit" class="btn btn-outline-primary" value="{{ wizard.steps.prev }}"> Précédente étape</button>
                                         {% endif %}
-                                        <input type="submit" class="btn btn-primary" value="Suivant"/>
-                                        {% comment %} <button type="button" id="btnAddTender" class="btn btn-primary btn-block btn-ico">
-                                            <span>Publier et diffuser ce besoin</span>
-                                            <i class="ri-arrow-right-line ri-lg"></i>
-                                        </button> {% endcomment %}
+                                        {% block submit_btn %}
+                                            <input type="submit" class="btn btn-primary" value="Suivant"/>
+                                        {% endblock submit_btn %}
                                     </div>
                                 </div>
 

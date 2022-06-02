@@ -25,15 +25,14 @@
 {% block content_form %}
 
 <div class="form-row justify-content-end">
-    {{tender}}
     {% include "tenders/detail_card.html" with tender=tender %}
 
-    <div class="form-group col-12 col-lg-auto">
-        <button type="button" id="btnAddTender" class="btn btn-primary btn-block btn-ico">
-            <span>Publier et diffuser ce besoin</span>
-            <i class="ri-arrow-right-line ri-lg"></i>
-        </button>
-    </div>
 </div>
 {% endblock %}
 
+{% block submit_btn %}
+    <button type="submit" id="btnAddTender" class="btn btn-primary btn-ico">
+        <span>Publier et diffuser</span>
+        <i class="ri-arrow-right-line ri-lg"></i>
+    </button>
+{% endblock submit_btn %}
