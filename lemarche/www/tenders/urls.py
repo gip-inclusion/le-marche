@@ -2,7 +2,6 @@ from django.urls import path
 
 from lemarche.www.tenders.views import (
     TenderCreateMultiStepView,
-    TenderCreateView,
     TenderDetailContactClickStat,
     TenderDetailView,
     TenderListView,
@@ -14,8 +13,7 @@ from lemarche.www.tenders.views import (
 app_name = "tenders"
 
 urlpatterns = [
-    path("ajouter", TenderCreateView.as_view(), name="create"),
-    path("ajouter2", TenderCreateMultiStepView.as_view(), name="create"),
+    path("ajouter", TenderCreateMultiStepView.as_view(), name="create"),
     path("", TenderListView.as_view(), name="list"),
     path("<str:slug>", TenderDetailView.as_view(), name="detail"),
     path("<str:slug>/structures-interessees", TenderSiaeInterestedListView.as_view(), name="detail-siae-interested"),

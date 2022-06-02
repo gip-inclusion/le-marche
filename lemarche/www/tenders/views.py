@@ -1,20 +1,18 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
-from django.views.generic import CreateView, DetailView, ListView, View
+from django.views.generic import DetailView, ListView, View
 from formtools.wizard.views import SessionWizardView
 
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin, TenderOwnerRequiredMixin
 from lemarche.www.tenders.forms import (
-    AddTenderForm,
     AddTenderStepConfirmationForm,
     AddTenderStepContactForm,
     AddTenderStepDescriptionForm,
@@ -47,6 +45,10 @@ def create_tender_from_dict(tender_dict: dict):
 class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
     instance = None
     success_url = reverse_lazy("tenders:list")
+    success_message = """
+        Votre besoin <strong>{}</strong> est déposé sur le marché et les structures
+        correspondants à vos critères seront notifiés dès la validation de votre besoin.
+    """
 
     STEP_GENERAL = "general"
     STEP_CONTACT = "contact"
@@ -99,31 +101,9 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
             kwargs["min_start_working_date"] = self.get_cleaned_data_for_step(self.STEP_CONTACT).get("deadline_date")
         return kwargs
 
-    def done(self, **kwargs):
+    def done(self, *args, **kwargs):
         # when it's done we save the tender
-        create_tender_from_dict(self.get_all_cleaned_data() | {"author": self.request.user})
-        return HttpResponseRedirect(self.success_url)
-
-
-class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView):
-    template_name = "tenders/create.html"
-    form_class = AddTenderForm
-    context_object_name = "tender"
-    success_message = """
-        Votre besoin <strong>{}</strong> est déposé sur le marché et les structures
-        correspondants à vos critères seront notifiés dès la validation de votre besoin.
-    """
-    success_url = reverse_lazy("tenders:list")
-
-    def form_valid(self, form):
-        tender = form.save(commit=False)
-        tender.author = self.request.user
-        # we need to save before because the matching of Siaes needs
-        # the sectors and perimeters of tender (relation ManyToMany)
-        if tender.is_country_area:
-            form.cleaned_data.pop("perimeters")
-        tender.save()
-        form.save_m2m()
+        tender = create_tender_from_dict(self.get_all_cleaned_data() | {"author": self.request.user})
 
         # task to send tender was made in django admin task
         notify_admin_tender_created(tender)
@@ -131,20 +111,12 @@ class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView
         messages.add_message(
             self.request,
             messages.SUCCESS,
-            self.get_success_message(form.cleaned_data, tender),
+            self.get_success_message(tender),
         )
+
         return HttpResponseRedirect(self.success_url)
 
-    def get_initial(self):
-        user = self.request.user
-        return {
-            "contact_first_name": user.first_name,
-            "contact_last_name": user.last_name,
-            "contact_email": user.email,
-            "contact_phone": user.phone,
-        }
-
-    def get_success_message(self, cleaned_data, tender):
+    def get_success_message(self, tender: Tender):
         return mark_safe(self.success_message.format(tender.title))
 
 
