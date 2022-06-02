@@ -13,8 +13,9 @@ from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes.factories import SiaeFactory
+from lemarche.tenders.constants import AMOUNT_RANGE_0, AMOUNT_RANGE_1, AMOUNT_RANGE_2, AMOUNT_RANGE_3, AMOUNT_RANGE_4
 from lemarche.tenders.factories import PartnerShareTenderFactory, TenderFactory
-from lemarche.tenders.models import AMOUNT_RANGE_0, AMOUNT_RANGE_2, AMOUNT_RANGE_3, AMOUNT_RANGE_4, Tender, TenderSiae
+from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.factories import UserFactory
 from lemarche.www.tenders.tasks import match_tender_for_partners
 
@@ -170,11 +171,11 @@ class TenderMigrationToSelectTest(TestCase):
         tender_amount_range_4.refresh_from_db()
 
         self.assertIsNone(tender_amount_none.amount)
-        self.assertEqual(tender_amount_range_0.amount, Tender.AMOUNT_RANGE_0)
-        self.assertEqual(tender_amount_range_1.amount, Tender.AMOUNT_RANGE_1)
-        self.assertEqual(tender_amount_range_2.amount, Tender.AMOUNT_RANGE_2)
-        self.assertEqual(tender_amount_range_3.amount, Tender.AMOUNT_RANGE_3)
-        self.assertEqual(tender_amount_range_4.amount, Tender.AMOUNT_RANGE_4)
+        self.assertEqual(tender_amount_range_0.amount, AMOUNT_RANGE_0)
+        self.assertEqual(tender_amount_range_1.amount, AMOUNT_RANGE_1)
+        self.assertEqual(tender_amount_range_2.amount, AMOUNT_RANGE_2)
+        self.assertEqual(tender_amount_range_3.amount, AMOUNT_RANGE_3)
+        self.assertEqual(tender_amount_range_4.amount, AMOUNT_RANGE_4)
 
         # test reverse method
         migration.reverse_update_amount(apps, None)
