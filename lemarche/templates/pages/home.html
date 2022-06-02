@@ -12,7 +12,21 @@
         <div class="s-page-menu-01__row row py-5 pb-md-4 pt-md-3">
             <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-md-8">
                 <h1 class="h1-hero lh-sm">Votre recherche <br class="d-none d-lg-inline">de prestataires inclusifs <br class="d-none d-lg-inline">est chronophage ?</h1>
-                <h2 class="h2">En moins de 24h, obtenez une réponse à votre besoin <br class="d-none d-lg-inline">parmi toutes les structures de l'insertion et du handicap.</h2>
+                <h2 class="h2">Confiez votre sourcing au marché de l'inclusion !</h2>
+                <ul class="list-unstyled mb-5">
+                    <li class="d-flex mb-2">
+                        <i class="text-success ri-checkbox-circle-fill display-2"></i>
+                        <span class="ml-2">Obtenez des réponses en moins de 24 heures.</span>
+                    </li>
+                    <li class="d-flex mb-2">
+                        <i class="text-success ri-checkbox-circle-fill display-2"></i>
+                        <span class="ml-2">Uniquement des prestataires conventionnés par l'Etat.</span>
+                    </li>
+                    <li class="d-flex mb-2">
+                        <i class="text-success ri-checkbox-circle-fill display-2"></i>
+                        <span class="ml-2">Impact social garanti.</span>
+                    </li>
+                </ul>
                 <p class="mb-0 mt-5">
                     {% if user.is_authenticated %}
                         <a href="{% url 'tenders:create' %}" id="home-demande" class="btn btn-primary btn-ico d-block d-md-inline-block mb-2">
