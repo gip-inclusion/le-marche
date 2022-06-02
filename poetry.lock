@@ -127,14 +127,14 @@ python-versions = "*"
 
 [[package]]
 name = "boto3"
-version = "1.24.1"
+version = "1.24.5"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.27.1,<1.28.0"
+botocore = ">=1.27.5,<1.28.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -143,7 +143,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.27.1"
+version = "1.27.5"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -600,7 +600,7 @@ doc = ["sphinx", "sphinx-rtd-theme", "sphinxcontrib-spelling"]
 
 [[package]]
 name = "faker"
-version = "13.12.0"
+version = "13.12.1"
 description = "Faker is a Python package that generates fake data for you."
 category = "main"
 optional = false
@@ -1455,7 +1455,7 @@ test = ["pre-commit", "pytest"]
 
 [[package]]
 name = "trio"
-version = "0.20.0"
+version = "0.21.0"
 description = "A friendly Python library for async concurrency and I/O"
 category = "main"
 optional = false
@@ -1656,7 +1656,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "9b3ebb80eaf8cfbd548c6bbaa81621b3e061a79324c5c9d55bec37b4dda2e4e7"
+content-hash = "3a7b7a6ef7c2ca05d7e021b01e5a07b0a37e410106cdd3f907641017401cff70"
 
 [metadata.files]
 anyascii = [
@@ -1726,12 +1726,12 @@ boto = [
     {file = "boto-2.49.0.tar.gz", hash = "sha256:ea0d3b40a2d852767be77ca343b58a9e3a4b00d9db440efb8da74b4e58025e5a"},
 ]
 boto3 = [
-    {file = "boto3-1.24.1-py3-none-any.whl", hash = "sha256:ce924b71306a98ff9fb49645f98ddafe50f297d7aecbf7d4d9b08f4d79c3f855"},
-    {file = "boto3-1.24.1.tar.gz", hash = "sha256:cf705c0c2d049b0adb564b2cd60b9ac0d4405653b29c33e2a1f1fdde37f476c0"},
+    {file = "boto3-1.24.5-py3-none-any.whl", hash = "sha256:c414013899a63a2d1574e6405fbdc2a8379dae71b7d4defdfdc6682ad75df079"},
+    {file = "boto3-1.24.5.tar.gz", hash = "sha256:7d9f636f4a3327968fec2ba1d556c0d4644917a7f041e8ecc1adf299603093f4"},
 ]
 botocore = [
-    {file = "botocore-1.27.1-py3-none-any.whl", hash = "sha256:628a3176103b7b233bb456bed4d495c445e7eaa801faecf63989698ecc2e8bae"},
-    {file = "botocore-1.27.1.tar.gz", hash = "sha256:2702181c3b7cad75b64b4a758f862d46da50ed8dd5329870d69c8c187b877b94"},
+    {file = "botocore-1.27.5-py3-none-any.whl", hash = "sha256:326f3fae882524007edf2c9e352169abe4cb8fb87c148ca559522b99d8dfdc74"},
+    {file = "botocore-1.27.5.tar.gz", hash = "sha256:2cc567c453eca85a7140bd984be4c761fddd938f4fb26e4747655f0849d64f25"},
 ]
 certifi = [
     {file = "certifi-2022.5.18.1-py3-none-any.whl", hash = "sha256:f1d53542ee8cbedbe2118b5686372fb33c297fcd6379b050cca0ef13a597382a"},
@@ -1999,8 +1999,8 @@ factory-boy = [
     {file = "factory_boy-3.2.1.tar.gz", hash = "sha256:a98d277b0c047c75eb6e4ab8508a7f81fb03d2cb21986f627913546ef7a2a55e"},
 ]
 faker = [
-    {file = "Faker-13.12.0-py3-none-any.whl", hash = "sha256:5cbb89fc6a16793b2bd98252c03a86098c7426beab0a20382709a815651b8804"},
-    {file = "Faker-13.12.0.tar.gz", hash = "sha256:1f6478011ac8a8273e0f9cd6da03d9ea6391c622db340eca015339512e9cde29"},
+    {file = "Faker-13.12.1-py3-none-any.whl", hash = "sha256:0122b75e7960cbb1e2bbbf10ef9b8c183377878e38466854953539c6d822e7c0"},
+    {file = "Faker-13.12.1.tar.gz", hash = "sha256:fb95f956bac59c90f54543919d5c5ef41625e12a0773e5aa08c9b9c62ba58fb3"},
 ]
 filelock = [
     {file = "filelock-3.7.1-py3-none-any.whl", hash = "sha256:37def7b658813cda163b56fc564cdc75e86d338246458c4c28ae84cabefa2404"},
@@ -2472,8 +2472,8 @@ traitlets = [
     {file = "traitlets-5.2.2.post1.tar.gz", hash = "sha256:74803a1baa59af70f023671d86d5c7a834c931186df26d50d362ee6a1ff021fd"},
 ]
 trio = [
-    {file = "trio-0.20.0-py3-none-any.whl", hash = "sha256:fb2d48e4eab0dfb786a472cd514aaadc71e3445b203bc300bad93daa75d77c1a"},
-    {file = "trio-0.20.0.tar.gz", hash = "sha256:670a52d3115d0e879e1ac838a4eb999af32f858163e3a704fe4839de2a676070"},
+    {file = "trio-0.21.0-py3-none-any.whl", hash = "sha256:4dc0bf9d5cc78767fc4516325b6d80cc0968705a31d0eec2ecd7cdda466265b0"},
+    {file = "trio-0.21.0.tar.gz", hash = "sha256:523f39b7b69eef73501cebfe1aafd400a9aad5b03543a0eded52952488ff1c13"},
 ]
 trio-websocket = [
     {file = "trio-websocket-0.9.2.tar.gz", hash = "sha256:a3d34de8fac26023eee701ed1e7bf4da9a8326b61a62934ec9e53b64970fd8fe"},
