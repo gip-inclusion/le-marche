@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function() {
     $('<input>', {
         type: 'hidden',
         id: idResult,
-        name: "perimeters",
+        name: "general-perimeters",
         value: result.id
     }).appendTo(perimetersContainer);
     let button = $('<button>', {

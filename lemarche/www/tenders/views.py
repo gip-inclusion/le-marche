@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponseForbidden, HttpResponseRedirect, JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
@@ -31,7 +31,22 @@ TITLE_DETAIL_PAGE_OTHERS = "Mes besoins"
 TITLE_KIND_SOURCING_SIAE = "Consultation en vue d’un achat"
 
 
+def create_tender_from_dict(tender_dict: dict):
+    perimeters = tender_dict.pop("perimeters", [])
+    sectors = tender_dict.pop("sectors", [])
+    tender = Tender(**tender_dict)
+
+    tender.save()
+    for perimeter in perimeters:
+        tender.perimeters.add(perimeter)
+    for sector in sectors:
+        tender.sectors.add(sector)
+    return tender
+
+
 class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
+    instance = None
+    success_url = reverse_lazy("tenders:list")
 
     STEP_GENERAL = "general"
     STEP_CONTACT = "contact"
@@ -58,22 +73,15 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super().get_context_data(form=form, **kwargs)
         if self.steps.current == self.STEP_CONFIRMATION:
-            # import ipdb
-
-            # ipdb.set_trace()
             context.update({"tender": self.get_all_cleaned_data()})
         return context
 
     def get_form_instance(self, step):
-        print("DEBUG_STEPS", step, self.steps.current, self.steps.next)
-        # import ipdb
+        if self.instance is None:
+            self.instance = Tender()
 
-        # ipdb.set_trace()
-        initial = self.instance_dict.get(step, None)
-        print("DEBUG_INSTANCE", self.instance_dict, initial)
         if step == self.STEP_CONTACT:
             user = self.request.user
-            print("DEBUG_INSTANCE", self.instance_dict, initial)
             return Tender(
                 **{
                     "contact_first_name": user.first_name,
@@ -82,59 +90,13 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
                     "contact_phone": user.phone,
                 }
             )
-            # initial.update(
-            #     {
-            #         "contact_first_name": user.first_name,
-            #         "contact_last_name": user.last_name,
-            #         "contact_email": user.email,
-            #         "contact_phone": user.phone,
-            #     }
-            # )
-            # return initial
-        return self.instance_dict.get(step, None)
-
-    # def get_initial_dict(self, step):
-    #     initial = self.initial_dict.get(step, {})
-    #     import ipdb
-
-    #     ipdb.set_trace()
-    #     if step == self.STEP_CONTACT:
-    #         # import ipdb
-
-    #         # ipdb.set_trace()
-    #         user = self.request.user
-    #         initial.update(
-    #             {
-    #                 self.STEP_CONTACT: {
-    #                     "contact_first_name": user.first_name,
-    #                     "contact_last_name": user.last_name,
-    #                     "contact_email": user.email,
-    #                     "contact_phone": user.phone,
-    #                 }
-    #             }
-    #         )
-    #     elif step == self.STEP_CONFIRMATION:
-    #         # import ipdb
-
-    #         # ipdb.set_trace()
-    #         return {form.cleaned_data for form in self.form_list}
-    #     return initial
+        return self.instance
 
     def done(self, form_list, form_dict, **kwargs):
-        # test = [form.cleaned_data for form in form_list]
-        # test = dict(ChainMap(*test))
-        # print(test)
+        tender = create_tender_from_dict(self.get_all_cleaned_data() | {"author": self.request.user})
+        print(tender)
         # tender = Tender(**test)
-        # import ipdb
-
-        # ipdb.set_trace()
-        return render(
-            self.request,
-            "tenders/multistep_done.html",
-            {
-                "form_data": [form.cleaned_data for form in form_list],
-            },
-        )
+        return HttpResponseRedirect(self.success_url)
 
 
 class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView):

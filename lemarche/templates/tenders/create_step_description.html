@@ -28,17 +28,8 @@
         {% bootstrap_field form.external_link %}
         {% bootstrap_field form.constraints %}
         {% bootstrap_field form.amount %}
+        {% bootstrap_field form.start_working_date%}
         {% comment %} {% bootstrap_field form.perimeters %} {% endcomment %}
-        <div class="form-group">
-            {{ form.start_working_date.label_tag }}
-            <div class="input-group">
-                <input id="id_{{ form.start_working_date.name }}" class="form-control{% if form.start_working_date.errors %} is-invalid{% endif %}" name="{{ form.start_working_date.name }}" type="{{ form.start_working_date.field.widget.input_type }}" value="{{ form.start_working_date.value}}" />
-                {% for error in form.start_working_date.errors %}
-                    <div class="invalid-feedback">{{ error }}</div>
-                {% endfor %}
-
-            </div>
-        </div>
     </fieldset>
 {% endblock content_form %}
 
