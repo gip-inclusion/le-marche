@@ -8,6 +8,7 @@ core
 env.local.sh
 start_docker.sh
 env.docker.local
+list_partners_share_tenders.csv
 
 # Environment variables
 envs/dev.env
