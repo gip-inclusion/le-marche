@@ -190,43 +190,32 @@ class TenderPartnerMatchingTest(TestCase):
         self.perimeter_1 = PerimeterFactory()
         self.perimeter_2 = PerimeterFactory()
         # partners
-        PartnerShareTenderFactory(perimeters=[self.perimeter_1])
         PartnerShareTenderFactory(perimeters=[])
+        PartnerShareTenderFactory(perimeters=[self.perimeter_1])
         PartnerShareTenderFactory(perimeters=[self.perimeter_1])
         PartnerShareTenderFactory(perimeters=[self.perimeter_2])
         PartnerShareTenderFactory(perimeters=[], amount_in=AMOUNT_RANGE_0)
         PartnerShareTenderFactory(perimeters=[], amount_in=AMOUNT_RANGE_2)
         PartnerShareTenderFactory(perimeters=[], amount_in=AMOUNT_RANGE_3)
         PartnerShareTenderFactory(perimeters=[self.perimeter_1, self.perimeter_2], amount_in=AMOUNT_RANGE_2)
-        # tenders
-        self.tender_1 = TenderFactory(perimeters=[self.perimeter_1, self.perimeter_2])
-        self.tender_2 = TenderFactory(perimeters=[self.perimeter_1], amount=AMOUNT_RANGE_0)
-        self.tender_3 = TenderFactory(perimeters=[self.perimeter_2], amount=AMOUNT_RANGE_2)
-        self.tender_4 = TenderFactory(is_country_area=True, amount=AMOUNT_RANGE_2)
-        self.tender_5 = TenderFactory(is_country_area=True, amount=AMOUNT_RANGE_4)
 
-    def test_partner_1_matching(self):
-        result = match_tender_for_partners(self.tender_1)
-        # partner 1, 2, 3, 4, 5, 6, 7, 8
-        self.assertEqual(len(result), 8)
+    def test_tender_perimeters_matching(self):
+        tender_1 = TenderFactory(perimeters=[self.perimeter_1, self.perimeter_2])
+        result = match_tender_for_partners(tender_1)
+        self.assertEqual(len(result), 8)  # partner 1, 2, 3, 4, 5, 6, 7, 8
 
-    def test_partner_2_matching(self):
+    def test_tender_perimeters_and_amount_matching(self):
+        tender_2 = TenderFactory(perimeters=[self.perimeter_1], amount=AMOUNT_RANGE_0)
+        result = match_tender_for_partners(tender_2)
+        self.assertEqual(len(result), 7)  # partner 1, 2, 3, 5, 6, 7, 8
+        tender_3 = TenderFactory(perimeters=[self.perimeter_2], amount=AMOUNT_RANGE_2)
+        result = match_tender_for_partners(tender_3)
+        self.assertEqual(len(result), 5)  # partner 1, 4, 6, 7, 8
 
-        result = match_tender_for_partners(self.tender_2)
-        # partner 1, 2, 3, 5, 6, 7, 8
-        self.assertEqual(len(result), 7)
-
-    def test_partner_3_matching(self):
-        result = match_tender_for_partners(self.tender_3)
-        # partner 2, 4, 6, 7, 8
-        self.assertEqual(len(result), 5)
-
-    def test_partner_4_matching(self):
-        result = match_tender_for_partners(self.tender_4)
-        # partner 2, 6, 7
-        self.assertEqual(len(result), 3)
-
-    def test_partner_5_matching(self):
-        result = match_tender_for_partners(self.tender_5)
-        # partner 2
-        self.assertEqual(len(result), 1)
+    def test_tender_contry_and_amount_matching(self):
+        tender_4 = TenderFactory(is_country_area=True, amount=AMOUNT_RANGE_2)
+        result = match_tender_for_partners(tender_4)
+        self.assertEqual(len(result), 3)  # partner 1, 6, 7
+        tender_5 = TenderFactory(is_country_area=True, amount=AMOUNT_RANGE_4)
+        result = match_tender_for_partners(tender_5)
+        self.assertEqual(len(result), 1)  # partner 1
