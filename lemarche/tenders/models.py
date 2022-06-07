@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 
+from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.tenders import constants as tender_constants
 from lemarche.utils.fields import ChoiceArrayField
@@ -294,22 +295,31 @@ class PartnerShareTenderQuerySet(models.QuerySet):
     def filter_by_perimeter(self, tender: Tender):
         """
         Return partners with:
-        - an empty 'perimeters' if the tenders' perimeter is 'is_country_area'
+        - an empty 'perimeters'
         - or with 'perimeters' that overlaps with the tenders' 'perimeters'
+        (we suppose that tenders always have 'is_country_area' or 'perimeters' filled)
         """
-        conditions = Q()
-        if tender.is_country_area:
-            conditions = Q(perimeters__isnull=True)
-        else:
-            conditions = Q(perimeters__in=tender.perimeters.all()) | Q(perimeters__isnull=True)
+        conditions = Q(perimeters__isnull=True)
+        if not tender.is_country_area:
+            # conditions = Q(perimeters__in=tender.perimeters.all()) | Q(perimeters__isnull=True)
+            for perimeter in tender.perimeters.all():
+                if perimeter.kind == Perimeter.KIND_CITY:
+                    conditions |= Q(perimeters__in=[perimeter])
+                    conditions |= Q(perimeters__insee_code=perimeter.department_code)
+                    conditions |= Q(perimeters__insee_code=f"R{perimeter.region_code}")
+                elif perimeter.kind == Perimeter.KIND_DEPARTMENT:
+                    conditions |= Q(perimeters__in=[perimeter])
+                    conditions |= Q(perimeters__insee_code=f"R{perimeter.region_code}")
+                elif perimeter.kind == Perimeter.KIND_REGION:
+                    conditions |= Q(perimeters__in=[perimeter])
         return self.filter(conditions)
 
     def filter_by_tender(self, tender: Tender):
         return self.filter_by_amount(tender).filter_by_perimeter(tender).distinct()
+        # return self.filter_by_amount(tender).distinct()
 
 
 class PartnerShareTender(models.Model):
-
     name = models.CharField(max_length=120, verbose_name="Nom du partenaire")
     perimeters = models.ManyToManyField(
         "perimeters.Perimeter", verbose_name="Lieux de filtrage", related_name="partner_share_tenders", blank=True
