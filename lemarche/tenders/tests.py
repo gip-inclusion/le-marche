@@ -212,7 +212,7 @@ class TenderPartnerMatchingTest(TestCase):
         result = match_tender_for_partners(tender_3)
         self.assertEqual(len(result), 5)  # partner 1, 4, 6, 7, 8
 
-    def test_tender_contry_and_amount_matching(self):
+    def test_tender_country_and_amount_matching(self):
         tender_4 = TenderFactory(is_country_area=True, amount=AMOUNT_RANGE_2)
         result = match_tender_for_partners(tender_4)
         self.assertEqual(len(result), 3)  # partner 1, 6, 7

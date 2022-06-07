@@ -12,11 +12,11 @@ from django.utils.functional import cached_property
 from django.utils.text import slugify
 
 from lemarche.sectors.models import Sector
-from lemarche.tenders import constants as constants_tenders
+from lemarche.tenders import constants as tender_constants
 from lemarche.utils.fields import ChoiceArrayField
 
 
-def get_filter_perimeter(siae):
+def get_perimeter_filter(siae):
     return (
         Q(perimeters__post_codes__contains=[siae.post_code])
         | Q(perimeters__insee_code=siae.department)
@@ -59,7 +59,7 @@ class TenderQuerySet(models.QuerySet):
         conditions = Q()
         for siae in siaes:
             if siae.geo_range != siae.GEO_RANGE_COUNTRY:
-                conditions |= get_filter_perimeter(siae)
+                conditions |= get_perimeter_filter(siae)
         return qs.filter(conditions).distinct()
         # return qs.distinct()
 
@@ -134,7 +134,7 @@ class Tender(models.Model):
     amount = models.CharField(
         verbose_name="Montant du marché",
         max_length=9,
-        choices=constants_tenders.AMOUNT_RANGE_CHOICES,
+        choices=tender_constants.AMOUNT_RANGE_CHOICES,
         blank=True,
         null=True,
     )
@@ -277,44 +277,35 @@ class TenderSiae(models.Model):
 
 
 class PartnerShareTenderQuerySet(models.QuerySet):
-    def filter_by_tender(self, tender: Tender):
+    def filter_by_amount(self, tender: Tender):
+        """
+        Return partners with:
+        - an empty 'amount_in'
+        - or an 'amount_in' at least equal or greater than the tenders' 'amount_in'
+        """
         conditions = Q()
         if tender.amount:
-            if tender.amount == constants_tenders.AMOUNT_RANGE_0:
-                conditions |= (
-                    Q(amount_in=constants_tenders.AMOUNT_RANGE_0)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_1)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_2)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_3)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_4)
-                )
-            elif tender.amount == constants_tenders.AMOUNT_RANGE_1:
-                conditions |= (
-                    Q(amount_in=constants_tenders.AMOUNT_RANGE_1)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_2)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_3)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_4)
-                )
-            elif tender.amount == constants_tenders.AMOUNT_RANGE_2:
-                conditions |= (
-                    Q(amount_in=constants_tenders.AMOUNT_RANGE_2)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_3)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_4)
-                )
-            elif tender.amount == constants_tenders.AMOUNT_RANGE_3:
-                conditions |= Q(amount_in=constants_tenders.AMOUNT_RANGE_3) | Q(
-                    amount_in=constants_tenders.AMOUNT_RANGE_4
-                )
-            elif tender.amount == constants_tenders.AMOUNT_RANGE_4:
-                conditions |= Q(amount_in=constants_tenders.AMOUNT_RANGE_4)
-
             conditions |= Q(amount_in__isnull=True)
+            for (index, amount) in enumerate(tender_constants.AMOUNT_RANGE_LIST):
+                if tender.amount == amount:
+                    conditions |= Q(amount_in__in=tender_constants.AMOUNT_RANGE_LIST[index:])
+        return self.filter(conditions)
 
+    def filter_by_perimeter(self, tender: Tender):
+        """
+        Return partners with:
+        - an empty 'perimeters' if the tenders' perimeter is 'is_country_area'
+        - or with 'perimeters' that overlaps with the tenders' 'perimeters'
+        """
+        conditions = Q()
         if tender.is_country_area:
-            conditions &= Q(perimeters__isnull=True)
+            conditions = Q(perimeters__isnull=True)
         else:
-            conditions &= Q(perimeters__in=tender.perimeters.all()) | Q(perimeters__isnull=True)
-        return self.filter(conditions).distinct()
+            conditions = Q(perimeters__in=tender.perimeters.all()) | Q(perimeters__isnull=True)
+        return self.filter(conditions)
+
+    def filter_by_tender(self, tender: Tender):
+        return self.filter_by_amount(tender).filter_by_perimeter(tender).distinct()
 
 
 class PartnerShareTender(models.Model):
@@ -327,7 +318,7 @@ class PartnerShareTender(models.Model):
     amount_in = models.CharField(
         verbose_name="Montant du marché limite",
         max_length=9,
-        choices=constants_tenders.AMOUNT_RANGE_CHOICES,
+        choices=tender_constants.AMOUNT_RANGE_CHOICES,
         blank=True,
         null=True,
     )
