@@ -4,8 +4,10 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.html import format_html
+from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 
 from lemarche.common.admin import admin_site
+from lemarche.perimeters.admin import PerimeterRegionFilter
 from lemarche.siaes.models import Siae
 from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import PartnerShareTender, Tender
@@ -175,7 +177,22 @@ class TenderAdmin(admin.ModelAdmin):
 
 
 @admin.register(PartnerShareTender, site=admin_site)
-class PartnerShareTenderAdmin(admin.ModelAdmin):
+class PartnerShareTenderAdmin(admin.ModelAdmin, DynamicArrayMixin):
     form = TenderAdminForm
+    list_display = ["id", "name", "perimeters_string", "amount_in", "created_at"]
+    list_filter = [PerimeterRegionFilter, "amount_in"]
+    search_fields = ["id", "name"]
+    search_help_text = "Cherche sur les champs : ID, Nom"
+
+    readonly_fields = ["perimeters_string", "created_at", "updated_at"]
     autocomplete_fields = ["perimeters"]
-    list_display = ["id", "name"]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.prefetch_related("perimeters")
+        return qs
+
+    def perimeters_string(self, partnersharetender):
+        return partnersharetender.get_perimeters_names
+
+    perimeters_string.short_description = "Périmètres"
