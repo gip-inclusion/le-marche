@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 
 from lemarche.common.admin import admin_site
+from lemarche.perimeters.admin import PerimeterRegionFilter
 from lemarche.siaes.models import Siae
 from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import PartnerShareTender, Tender
@@ -177,7 +178,8 @@ class TenderAdmin(admin.ModelAdmin):
 @admin.register(PartnerShareTender, site=admin_site)
 class PartnerShareTenderAdmin(admin.ModelAdmin):
     form = TenderAdminForm
-    list_display = ["id", "name", "perimeters_string", "created_at"]
+    list_display = ["id", "name", "perimeters_string", "amount_in", "created_at"]
+    list_filter = [PerimeterRegionFilter, "amount_in"]
     search_fields = ["id", "name"]
     search_help_text = "Cherche sur les champs : ID, Nom"
 
