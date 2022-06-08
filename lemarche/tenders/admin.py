@@ -177,5 +177,19 @@ class TenderAdmin(admin.ModelAdmin):
 @admin.register(PartnerShareTender, site=admin_site)
 class PartnerShareTenderAdmin(admin.ModelAdmin):
     form = TenderAdminForm
+    list_display = ["id", "name", "perimeters_string", "created_at"]
+    search_fields = ["id", "name"]
+    search_help_text = "Cherche sur les champs : ID, Nom"
+
+    readonly_fields = ["perimeters_string", "created_at", "updated_at"]
     autocomplete_fields = ["perimeters"]
-    list_display = ["id", "name"]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.prefetch_related("perimeters")
+        return qs
+
+    def perimeters_string(self, partnersharetender):
+        return partnersharetender.get_perimeters_names
+
+    perimeters_string.short_description = "Périmètres"

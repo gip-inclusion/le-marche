@@ -335,8 +335,15 @@ class PartnerShareTender(models.Model):
     # contact email list
     contact_email_list = ArrayField(base_field=models.EmailField(max_length=255), verbose_name="Liste de contact")
 
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
     objects = models.Manager.from_queryset(PartnerShareTenderQuerySet)()
 
     class Meta:
         verbose_name = "Partenaire intéressé des dépôts de besoins"
         verbose_name_plural = "Partenaires intéressés des dépôts de besoins"
+
+    @cached_property
+    def get_perimeters_names(self) -> str:
+        return ", ".join(self.perimeters.values_list("name", flat=True))
