@@ -109,6 +109,7 @@ THIRD_PARTY_APPS = [
     "ckeditor",  # django-ckeditor
     "fieldsets_with_inlines",  # django-fieldsets-with-inlines
     "huey.contrib.djhuey",  # Async tasks lib
+    "django_better_admin_arrayfield",
 ]
 
 LOCAL_APPS = [

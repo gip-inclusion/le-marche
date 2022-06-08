@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.html import format_html
+from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 
 from lemarche.common.admin import admin_site
 from lemarche.perimeters.admin import PerimeterRegionFilter
@@ -176,7 +177,7 @@ class TenderAdmin(admin.ModelAdmin):
 
 
 @admin.register(PartnerShareTender, site=admin_site)
-class PartnerShareTenderAdmin(admin.ModelAdmin):
+class PartnerShareTenderAdmin(admin.ModelAdmin, DynamicArrayMixin):
     form = TenderAdminForm
     list_display = ["id", "name", "perimeters_string", "amount_in", "created_at"]
     list_filter = [PerimeterRegionFilter, "amount_in"]
