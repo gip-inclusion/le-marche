@@ -2,7 +2,6 @@ from datetime import datetime
 from uuid import uuid4
 
 from django.conf import settings
-from django.contrib.postgres.fields import ArrayField
 from django.db import IntegrityError, models, transaction
 from django.db.models import Case, Count, F, IntegerField, Q, Sum, When
 from django.db.models.functions import Greatest
@@ -10,13 +9,15 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.text import slugify
+from django_better_admin_arrayfield.models.fields import ArrayField
 
+from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
-from lemarche.tenders import constants as constants_tenders
+from lemarche.tenders import constants as tender_constants
 from lemarche.utils.fields import ChoiceArrayField
 
 
-def get_filter_perimeter(siae):
+def get_perimeter_filter(siae):
     return (
         Q(perimeters__post_codes__contains=[siae.post_code])
         | Q(perimeters__insee_code=siae.department)
@@ -59,7 +60,7 @@ class TenderQuerySet(models.QuerySet):
         conditions = Q()
         for siae in siaes:
             if siae.geo_range != siae.GEO_RANGE_COUNTRY:
-                conditions |= get_filter_perimeter(siae)
+                conditions |= get_perimeter_filter(siae)
         return qs.filter(conditions).distinct()
         # return qs.distinct()
 
@@ -134,7 +135,7 @@ class Tender(models.Model):
     amount = models.CharField(
         verbose_name="Montant du marché",
         max_length=9,
-        choices=constants_tenders.AMOUNT_RANGE_CHOICES,
+        choices=tender_constants.AMOUNT_RANGE_CHOICES,
         blank=True,
         null=True,
     )
@@ -277,48 +278,48 @@ class TenderSiae(models.Model):
 
 
 class PartnerShareTenderQuerySet(models.QuerySet):
-    def filter_by_tender(self, tender: Tender):
+    def filter_by_amount(self, tender: Tender):
+        """
+        Return partners with:
+        - an empty 'amount_in'
+        - or an 'amount_in' at least equal or greater than the tenders' 'amount_in'
+        """
         conditions = Q()
         if tender.amount:
-            if tender.amount == constants_tenders.AMOUNT_RANGE_0:
-                conditions |= (
-                    Q(amount_in=constants_tenders.AMOUNT_RANGE_0)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_1)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_2)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_3)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_4)
-                )
-            elif tender.amount == constants_tenders.AMOUNT_RANGE_1:
-                conditions |= (
-                    Q(amount_in=constants_tenders.AMOUNT_RANGE_1)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_2)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_3)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_4)
-                )
-            elif tender.amount == constants_tenders.AMOUNT_RANGE_2:
-                conditions |= (
-                    Q(amount_in=constants_tenders.AMOUNT_RANGE_2)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_3)
-                    | Q(amount_in=constants_tenders.AMOUNT_RANGE_4)
-                )
-            elif tender.amount == constants_tenders.AMOUNT_RANGE_3:
-                conditions |= Q(amount_in=constants_tenders.AMOUNT_RANGE_3) | Q(
-                    amount_in=constants_tenders.AMOUNT_RANGE_4
-                )
-            elif tender.amount == constants_tenders.AMOUNT_RANGE_4:
-                conditions |= Q(amount_in=constants_tenders.AMOUNT_RANGE_4)
-
             conditions |= Q(amount_in__isnull=True)
+            for (index, amount) in enumerate(tender_constants.AMOUNT_RANGE_LIST):
+                if tender.amount == amount:
+                    conditions |= Q(amount_in__in=tender_constants.AMOUNT_RANGE_LIST[index:])
+        return self.filter(conditions)
 
-        if tender.is_country_area:
-            conditions &= Q(perimeters__isnull=True)
-        else:
-            conditions &= Q(perimeters__in=tender.perimeters.all()) | Q(perimeters__isnull=True)
-        return self.filter(conditions).distinct()
+    def filter_by_perimeter(self, tender: Tender):
+        """
+        Return partners with:
+        - an empty 'perimeters'
+        - or with 'perimeters' that overlaps with the tenders' 'perimeters'
+        (we suppose that tenders always have 'is_country_area' or 'perimeters' filled)
+        """
+        conditions = Q(perimeters__isnull=True)
+        if not tender.is_country_area:
+            # conditions = Q(perimeters__in=tender.perimeters.all()) | Q(perimeters__isnull=True)
+            for perimeter in tender.perimeters.all():
+                if perimeter.kind == Perimeter.KIND_CITY:
+                    conditions |= Q(perimeters__in=[perimeter])
+                    conditions |= Q(perimeters__insee_code=perimeter.department_code)
+                    conditions |= Q(perimeters__insee_code=f"R{perimeter.region_code}")
+                elif perimeter.kind == Perimeter.KIND_DEPARTMENT:
+                    conditions |= Q(perimeters__in=[perimeter])
+                    conditions |= Q(perimeters__insee_code=f"R{perimeter.region_code}")
+                elif perimeter.kind == Perimeter.KIND_REGION:
+                    conditions |= Q(perimeters__in=[perimeter])
+        return self.filter(conditions)
+
+    def filter_by_tender(self, tender: Tender):
+        return self.filter_by_amount(tender).filter_by_perimeter(tender).distinct()
+        # return self.filter_by_amount(tender).distinct()
 
 
 class PartnerShareTender(models.Model):
-
     name = models.CharField(max_length=120, verbose_name="Nom du partenaire")
     perimeters = models.ManyToManyField(
         "perimeters.Perimeter", verbose_name="Lieux de filtrage", related_name="partner_share_tenders", blank=True
@@ -327,15 +328,24 @@ class PartnerShareTender(models.Model):
     amount_in = models.CharField(
         verbose_name="Montant du marché limite",
         max_length=9,
-        choices=constants_tenders.AMOUNT_RANGE_CHOICES,
+        choices=tender_constants.AMOUNT_RANGE_CHOICES,
         blank=True,
         null=True,
     )
     # contact email list
-    contact_email_list = ArrayField(base_field=models.EmailField(max_length=255), verbose_name="Liste de contact")
+    contact_email_list = ArrayField(
+        base_field=models.EmailField(max_length=255), verbose_name="Liste de contact", blank=True, default=list
+    )
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
     objects = models.Manager.from_queryset(PartnerShareTenderQuerySet)()
 
     class Meta:
         verbose_name = "Partenaire intéressé des dépôts de besoins"
         verbose_name_plural = "Partenaires intéressés des dépôts de besoins"
+
+    @cached_property
+    def get_perimeters_names(self) -> str:
+        return ", ".join(self.perimeters.values_list("name", flat=True))
