@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
@@ -48,8 +49,8 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
     instance = None
     success_url = reverse_lazy("tenders:list")
     success_message = """
-        Votre besoin <strong>{}</strong> est déposé sur le marché et les structures
-        correspondants à vos critères seront notifiés dès la validation de votre besoin.
+        Votre besoin <strong>{}</strong> est déposé sur le marché ! Les structures
+        correspondants à vos critères seront notifiés dès sa validation.
     """
 
     STEP_GENERAL = "general"
@@ -116,7 +117,8 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
         tender = create_tender_from_dict(self.get_all_cleaned_data() | {"author": self.request.user})
 
         # task to send tender was made in django admin task
-        notify_admin_tender_created(tender)
+        if settings.BITOUBI_ENV == "prod":
+            notify_admin_tender_created(tender)
 
         messages.add_message(
             self.request,
