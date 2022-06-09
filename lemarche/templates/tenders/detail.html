@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load bootstrap4 static humanize %}
 
-{% block title %}{{ kind_title }} {{ tender.title }}{{ block.super }}{% endblock %}
+{% block title %}{{ tender_kind_display }} {{ tender.title }}{{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
 <section>

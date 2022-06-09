@@ -1,4 +1,4 @@
-{% extends "layouts/multistep_form.html" %}
+{% extends "tenders/create_base.html" %}
 {% load bootstrap4 static %}
 
 {% block title %}Déposer un besoin{{ block.super }}{% endblock %}
@@ -21,15 +21,17 @@
     </div>
 </section>
 {% endblock %}
-{% block content_form %}
-    <fieldset>
-        <legend>Description du besoin</legend>
-        {% bootstrap_field form.description %}
-        {% bootstrap_field form.external_link %}
-        {% bootstrap_field form.constraints %}
-        {% bootstrap_field form.amount %}
-        {% bootstrap_field form.start_working_date%}
-        {% comment %} {% bootstrap_field form.perimeters %} {% endcomment %}
-    </fieldset>
-{% endblock content_form %}
 
+{% block step_title %}Description du besoin{% endblock %}
+{% block step_title_again %}Description du besoin{% endblock %}
+{% block step_subtitle %}Veuillez remplir les informations que nous partagerons aux structures pour qu'elles puissent vous contacter.{% endblock %}
+
+{% block content_form %}
+<fieldset>
+    {% bootstrap_field form.description %}
+    {% bootstrap_field form.start_working_date %}
+    {% bootstrap_field form.external_link %}
+    {% bootstrap_field form.constraints %}
+    {% bootstrap_field form.amount %}
+</fieldset>
+{% endblock content_form %}

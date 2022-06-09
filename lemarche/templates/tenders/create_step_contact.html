@@ -1,4 +1,4 @@
-{% extends "layouts/multistep_form.html" %}
+{% extends "tenders/create_base.html" %}
 {% load bootstrap4 static %}
 
 {% block title %}Déposer un besoin{{ block.super }}{% endblock %}
@@ -22,9 +22,12 @@
 </section>
 {% endblock %}
 
+{% block step_title %}Contacts{% endblock %}
+{% block step_title_again %}Contacts{% endblock %}
+{% block step_subtitle %}Vous y êtes presque ! Veuillez détailler au maximum votre besoin pour que les structures puissent se positionner.{% endblock %}
+
 {% block content_form %}
 <fieldset>
-    <legend>Contact</legend>
     {% bootstrap_field form.contact_first_name %}
     {% bootstrap_field form.contact_last_name %}
     <div class="form-row">
@@ -33,8 +36,5 @@
     </div>
     {% bootstrap_field form.response_kind %}
     {% bootstrap_field form.deadline_date %}
-
 </fieldset>
-
 {% endblock %}
-

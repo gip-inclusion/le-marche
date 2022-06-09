@@ -9,8 +9,10 @@ from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, ListView, View
 from formtools.wizard.views import SessionWizardView
 
+from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
+from lemarche.utils.data import get_choice
 from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin, TenderOwnerRequiredMixin
 from lemarche.www.tenders.forms import (
     AddTenderStepConfirmationForm,
@@ -51,23 +53,23 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
     """
 
     STEP_GENERAL = "general"
-    STEP_CONTACT = "contact"
     STEP_DESCRIPTION = "description"
+    STEP_CONTACT = "contact"
     STEP_CONFIRMATION = "confirmation"
-
-    form_list = [
-        (STEP_GENERAL, AddTenderStepGeneralForm),
-        (STEP_CONTACT, AddTenderStepContactForm),
-        (STEP_DESCRIPTION, AddTenderStepDescriptionForm),
-        (STEP_CONFIRMATION, AddTenderStepConfirmationForm),
-    ]
 
     TEMPLATES = {
         STEP_GENERAL: "tenders/create_step_general.html",
-        STEP_CONTACT: "tenders/create_step_contact.html",
         STEP_DESCRIPTION: "tenders/create_step_description.html",
+        STEP_CONTACT: "tenders/create_step_contact.html",
         STEP_CONFIRMATION: "tenders/create_step_confirmation.html",
     }
+
+    form_list = [
+        (STEP_GENERAL, AddTenderStepGeneralForm),
+        (STEP_DESCRIPTION, AddTenderStepDescriptionForm),
+        (STEP_CONTACT, AddTenderStepContactForm),
+        (STEP_CONFIRMATION, AddTenderStepConfirmationForm),
+    ]
 
     def get_template_names(self):
         return [self.TEMPLATES[self.steps.current]]
@@ -75,7 +77,14 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super().get_context_data(form=form, **kwargs)
         if self.steps.current == self.STEP_CONFIRMATION:
-            context.update({"tender": self.get_all_cleaned_data()})
+            tender_dict = self.get_all_cleaned_data()
+            tender_dict["get_sectors_names"] = ", ".join(tender_dict["sectors"].values_list("name", flat=True))
+            tender_dict["get_perimeters_names"] = ", ".join(tender_dict["perimeters"].values_list("name", flat=True))
+            tender_dict["get_kind_display"] = get_choice(Tender.TENDER_KIND_CHOICES, tender_dict["kind"])
+            tender_dict["get_amount_display"] = get_choice(
+                tender_constants.AMOUNT_RANGE_CHOICES, tender_dict["amount"]
+            )
+            context.update({"tender": tender_dict})
         return context
 
     def get_form_instance(self, step):
@@ -96,9 +105,10 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
 
     def get_form_kwargs(self, step):
         kwargs = super().get_form_kwargs(step)
-
-        if step == self.STEP_DESCRIPTION:
-            kwargs["min_start_working_date"] = self.get_cleaned_data_for_step(self.STEP_CONTACT).get("deadline_date")
+        if step == self.STEP_CONTACT:
+            kwargs["max_deadline_date"] = self.get_cleaned_data_for_step(self.STEP_DESCRIPTION).get(
+                "start_working_date"
+            )
         return kwargs
 
     def done(self, *args, **kwargs):
@@ -172,7 +182,7 @@ class TenderDetailView(LoginRequiredMixin, DetailView):
         tender = self.get_object()
         user_kind = self.request.user.kind if self.request.user.is_authenticated else "anonymous"
         context["parent_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
-        context["kind_title"] = (
+        context["tender_kind_display"] = (
             TITLE_KIND_SOURCING_SIAE
             if user_kind == User.KIND_SIAE and tender.kind == Tender.TENDER_KIND_PROJECT
             else tender.get_kind_display()
