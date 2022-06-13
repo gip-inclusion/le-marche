@@ -28,7 +28,5 @@ def rename_dict_key(dict, key_name_before, key_name_after):
 def get_choice(choices, key):
     choices = dict(choices)
     if key in choices:
-        # FIXME: we dropped translations, this should be easier now.
-        # return gettext(choices[key])
         return choices[key]
     return None

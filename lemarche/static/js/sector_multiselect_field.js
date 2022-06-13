@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let selector = ".use-multiselect #id_sectors";
     let sectorFormElement = document.querySelector(selector);
     // need to be updated and use data attributes instead
-    if(!sectorFormElement){
+    if (!sectorFormElement) {
         selector = ".use-multiselect select";
         sectorFormElement = document.querySelector(selector);
     }
