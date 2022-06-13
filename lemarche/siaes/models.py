@@ -270,15 +270,17 @@ class SiaeQuerySet(models.QuerySet):
         """
         qs = self.prefetch_related("sectors").is_live().has_contact_email()
         # filter by sectors
-        qs = qs.filter_sectors(tender.sectors.all())
+        if tender.sectors.count():
+            qs = qs.filter_sectors(tender.sectors.all())
         # filter by perimeters
         if tender.is_country_area:
             qs = qs.with_country_geo_range()
         else:
-            qs = qs.in_perimeters_area(tender.perimeters.all(), with_country=True)
+            if tender.perimeters.count():
+                qs = qs.in_perimeters_area(tender.perimeters.all(), with_country=True)
         # filter by presta_type
-        if tender.presta_type:
-            qs = qs.filter(presta_type__overlap=[tender.presta_type])
+        if len(tender.presta_type):
+            qs = qs.filter(presta_type__overlap=tender.presta_type)
         # return
         return qs.distinct()
 

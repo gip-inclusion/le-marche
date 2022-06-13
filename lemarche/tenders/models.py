@@ -68,7 +68,7 @@ class TenderQuerySet(models.QuerySet):
         qs = qs.filter(conditions)
         # filter by presta_type ?
         # return
-        qs.distinct()
+        return qs.distinct()
 
     def with_siae_stats(self):
         """

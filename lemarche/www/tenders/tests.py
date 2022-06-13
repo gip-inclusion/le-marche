@@ -51,7 +51,11 @@ class TenderMatchingTest(TestCase):
         coords_paris = Point(48.86385199985207, 2.337071483848432)
 
         siae_one = SiaeFactory(
-            is_active=True, geo_range=GEO_RANGE_CUSTOM, coords=coords_paris, geo_range_custom_distance=100
+            is_active=True,
+            geo_range=GEO_RANGE_CUSTOM,
+            coords=coords_paris,
+            geo_range_custom_distance=100,
+            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
         )
         siae_two = SiaeFactory(
             is_active=True,
@@ -65,13 +69,17 @@ class TenderMatchingTest(TestCase):
             siae_two.sectors.add(cls.sectors[i + 5])
 
     def test_matching_siae_presta_type(self):
-        tender = TenderFactory(presta_type=[])
+        tender = TenderFactory(presta_type=[], sectors=self.sectors, perimeters=self.perimeters)
         siae_found_list = Siae.objects.filter_with_tender(tender)
         self.assertEqual(len(siae_found_list), 2)
-        tender = TenderFactory(presta_type=[siae_constants.PRESTA_BUILD])
+        tender = TenderFactory(
+            presta_type=[siae_constants.PRESTA_BUILD], sectors=self.sectors, perimeters=self.perimeters
+        )
         siae_found_list = Siae.objects.filter_with_tender(tender)
         self.assertEqual(len(siae_found_list), 2)
-        tender = TenderFactory(presta_type=[siae_constants.PRESTA_PREST])
+        tender = TenderFactory(
+            presta_type=[siae_constants.PRESTA_PREST], sectors=self.sectors, perimeters=self.perimeters
+        )
         siae_found_list = Siae.objects.filter_with_tender(tender)
         self.assertEqual(len(siae_found_list), 1)
 
