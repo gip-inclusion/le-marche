@@ -1,0 +1,40 @@
+{% extends "tenders/create_base.html" %}
+{% load bootstrap4 static %}
+
+{% block title %}Déposer un besoin{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">Besoins en cours</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Déposer un besoin</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block step_title %}Contacts{% endblock %}
+{% block step_title_again %}Contacts{% endblock %}
+{% block step_subtitle %}Vous y êtes presque ! Veuillez remplir les informations que nous partagerons aux prestataires inclusifs pour qu'elles puissent vous contacter.{% endblock %}
+
+{% block content_form %}
+<fieldset>
+    {% bootstrap_field form.contact_first_name %}
+    {% bootstrap_field form.contact_last_name %}
+    <div class="form-row">
+        {% bootstrap_field form.contact_email form_group_class="form-group col-12 col-md-6" %}
+        {% bootstrap_field form.contact_phone form_group_class="form-group col-12 col-md-6" %}
+    </div>
+    {% bootstrap_field form.response_kind %}
+    {% bootstrap_field form.deadline_date %}
+</fieldset>
+{% endblock %}

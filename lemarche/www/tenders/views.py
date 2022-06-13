@@ -1,18 +1,26 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
-from django.views.generic import CreateView, DetailView, ListView, View
+from django.views.generic import DetailView, ListView, View
+from formtools.wizard.views import SessionWizardView
 
+from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
+from lemarche.utils.data import get_choice
 from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin, TenderOwnerRequiredMixin
-from lemarche.www.tenders.forms import AddTenderForm
+from lemarche.www.tenders.forms import (
+    AddTenderStepConfirmationForm,
+    AddTenderStepContactForm,
+    AddTenderStepDescriptionForm,
+    AddTenderStepGeneralForm,
+)
 from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
     notify_admin_tender_created,
     send_siae_interested_email_to_author,
@@ -24,46 +32,104 @@ TITLE_DETAIL_PAGE_OTHERS = "Mes besoins"
 TITLE_KIND_SOURCING_SIAE = "Consultation en vue d’un achat"
 
 
-class TenderCreateView(NotSiaeUserRequiredMixin, SuccessMessageMixin, CreateView):
-    template_name = "tenders/create.html"
-    form_class = AddTenderForm
-    context_object_name = "tender"
-    success_message = """
-        Votre besoin <strong>{}</strong> est déposé sur le marché et les structures
-        correspondants à vos critères seront notifiés dès la validation de votre besoin.
-    """
-    success_url = reverse_lazy("tenders:list")
+def create_tender_from_dict(tender_dict: dict):
+    perimeters = tender_dict.pop("perimeters", [])
+    sectors = tender_dict.pop("sectors", [])
+    tender = Tender(**tender_dict)
 
-    def form_valid(self, form):
-        tender = form.save(commit=False)
-        tender.author = self.request.user
-        # we need to save before because the matching of Siaes needs
-        # the sectors and perimeters of tender (relation ManyToMany)
-        if tender.is_country_area:
-            form.cleaned_data.pop("perimeters")
-        tender.save()
-        form.save_m2m()
+    tender.save()
+    for perimeter in perimeters:
+        tender.perimeters.add(perimeter)
+    for sector in sectors:
+        tender.sectors.add(sector)
+    return tender
+
+
+class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
+    instance = None
+    success_url = reverse_lazy("tenders:list")
+    success_message = """
+        Votre besoin <strong>{}</strong> est déposé sur le marché ! Les structures
+        correspondants à vos critères seront notifiés dès sa validation.
+    """
+
+    STEP_GENERAL = "general"
+    STEP_DESCRIPTION = "description"
+    STEP_CONTACT = "contact"
+    STEP_CONFIRMATION = "confirmation"
+
+    TEMPLATES = {
+        STEP_GENERAL: "tenders/create_step_general.html",
+        STEP_DESCRIPTION: "tenders/create_step_description.html",
+        STEP_CONTACT: "tenders/create_step_contact.html",
+        STEP_CONFIRMATION: "tenders/create_step_confirmation.html",
+    }
+
+    form_list = [
+        (STEP_GENERAL, AddTenderStepGeneralForm),
+        (STEP_DESCRIPTION, AddTenderStepDescriptionForm),
+        (STEP_CONTACT, AddTenderStepContactForm),
+        (STEP_CONFIRMATION, AddTenderStepConfirmationForm),
+    ]
+
+    def get_template_names(self):
+        return [self.TEMPLATES[self.steps.current]]
+
+    def get_context_data(self, form, **kwargs):
+        context = super().get_context_data(form=form, **kwargs)
+        if self.steps.current == self.STEP_CONFIRMATION:
+            tender_dict = self.get_all_cleaned_data()
+            tender_dict["get_sectors_names"] = ", ".join(tender_dict["sectors"].values_list("name", flat=True))
+            tender_dict["get_perimeters_names"] = ", ".join(tender_dict["perimeters"].values_list("name", flat=True))
+            tender_dict["get_kind_display"] = get_choice(Tender.TENDER_KIND_CHOICES, tender_dict["kind"])
+            tender_dict["get_amount_display"] = get_choice(
+                tender_constants.AMOUNT_RANGE_CHOICES, tender_dict["amount"]
+            )
+            context.update({"tender": tender_dict})
+        return context
+
+    def get_form_instance(self, step):
+        if self.instance is None:
+            self.instance = Tender()
+
+        if step == self.STEP_CONTACT:
+            user = self.request.user
+            return Tender(
+                **{
+                    "contact_first_name": user.first_name,
+                    "contact_last_name": user.last_name,
+                    "contact_email": user.email,
+                    "contact_phone": user.phone,
+                }
+            )
+        return self.instance
+
+    def get_form_kwargs(self, step):
+        kwargs = super().get_form_kwargs(step)
+        if step == self.STEP_CONTACT:
+            kwargs["max_deadline_date"] = self.get_cleaned_data_for_step(self.STEP_DESCRIPTION).get(
+                "start_working_date"
+            )
+            kwargs["external_link"] = self.get_cleaned_data_for_step(self.STEP_DESCRIPTION).get("external_link")
+        return kwargs
+
+    def done(self, *args, **kwargs):
+        # when it's done we save the tender
+        tender = create_tender_from_dict(self.get_all_cleaned_data() | {"author": self.request.user})
 
         # task to send tender was made in django admin task
-        notify_admin_tender_created(tender)
+        if settings.BITOUBI_ENV == "prod":
+            notify_admin_tender_created(tender)
 
         messages.add_message(
             self.request,
             messages.SUCCESS,
-            self.get_success_message(form.cleaned_data, tender),
+            self.get_success_message(tender),
         )
+
         return HttpResponseRedirect(self.success_url)
 
-    def get_initial(self):
-        user = self.request.user
-        return {
-            "contact_first_name": user.first_name,
-            "contact_last_name": user.last_name,
-            "contact_email": user.email,
-            "contact_phone": user.phone,
-        }
-
-    def get_success_message(self, cleaned_data, tender):
+    def get_success_message(self, tender: Tender):
         return mark_safe(self.success_message.format(tender.title))
 
 
@@ -119,7 +185,7 @@ class TenderDetailView(LoginRequiredMixin, DetailView):
         tender = self.get_object()
         user_kind = self.request.user.kind if self.request.user.is_authenticated else "anonymous"
         context["parent_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
-        context["kind_title"] = (
+        context["tender_kind_display"] = (
             TITLE_KIND_SOURCING_SIAE
             if user_kind == User.KIND_SIAE and tender.kind == Tender.TENDER_KIND_PROJECT
             else tender.get_kind_display()

@@ -1,0 +1,37 @@
+{% extends "tenders/create_base.html" %}
+{% load static bootstrap4 %}
+
+{% block title %}Déposer un besoin{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">Besoins en cours</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Déposer un besoin</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block step_title %}Aperçu du besoin{% endblock %}
+{% block step_title_again %}Aperçu du besoin{% endblock %}
+{% block step_subtitle %}C'est tout bon ! Vérifier quand même que toutes les informations soient exactes.{% endblock %}
+
+{% block content_form %}
+{% include "tenders/detail_card.html" with tender=tender hide_cta="true" %}
+{% endblock %}
+
+{% block submit_btn %}
+<button type="submit" id="btnAddTender" class="btn btn-primary">
+    <span>Publier et diffuser</span>
+</button>
+{% endblock submit_btn %}

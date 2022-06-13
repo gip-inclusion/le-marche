@@ -2,8 +2,13 @@ document.addEventListener('DOMContentLoaded', function() {
     /**
      * Multiselect dropdown for the sector search form field
      */
-
-    const sectorFormElement = document.querySelector('.use-multiselect #id_sectors');
+    let selector = ".use-multiselect #id_sectors";
+    let sectorFormElement = document.querySelector(selector);
+    // need to be updated and use data attributes instead
+    if (!sectorFormElement) {
+        selector = ".use-multiselect select";
+        sectorFormElement = document.querySelector(selector);
+    }
     const sectorFormPlaceholder = 'Espaces verts, informatique, restauration…';
 
     const buttonTextAndTitle = function(options, select) {
@@ -29,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // only on pages with id_sectors
     if (document.body.contains(sectorFormElement)) {
-        $('#id_sectors').multiselect({
+        $(selector).multiselect({
             // height & width
             maxHeight: 400,
             buttonWidth: '100%',

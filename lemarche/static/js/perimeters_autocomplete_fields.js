@@ -67,21 +67,21 @@ document.addEventListener("DOMContentLoaded", function() {
     return "";
   }
 
-  function removeInputOnClick(){
-    let idRefInput = $(this).data("refinput");
+  function removeInputOnClick() {
+    let idRefInput = $(this).data('refinput');
     // remove the input
     $(`#${idRefInput}`).remove();
     $(this).remove();
   }
 
 
-  function createHiddenInputPerimeter(result){
-    let removeIcon = $('<i>', { class: "ri-close-line ml-2", "aria-hidden":true });
+  function createHiddenInputPerimeter(result) {
+    let removeIcon = $('<i>', { class: "ri-close-line ml-2", "aria-hidden": true });
     let idResult = `hiddenPermeter-${result.id}`;
     $('<input>', {
         type: 'hidden',
         id: idResult,
-        name: "perimeters",
+        name: 'general-perimeters',
         value: result.id
     }).appendTo(perimetersContainer);
     let button = $('<button>', {
@@ -91,10 +91,9 @@ document.addEventListener("DOMContentLoaded", function() {
         text: `${result.name}`,
         'data-refInput': idResult,
         click: removeInputOnClick
-    })
+    });
     removeIcon.appendTo(button);
     button.appendTo(perimetersContainer);
-
   }
 
   function inputValueHiddenField(result) {
