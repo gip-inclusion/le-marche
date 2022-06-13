@@ -343,7 +343,7 @@ class PartnerShareTender(models.Model):
     )
     # contact email list
     contact_email_list = ArrayField(
-        base_field=models.EmailField(max_length=255), verbose_name="Liste de contact", blank=True, default=list
+        verbose_name="Liste de contact", base_field=models.EmailField(max_length=255), blank=True, default=list
     )
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
