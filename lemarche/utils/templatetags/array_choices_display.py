@@ -1,7 +1,7 @@
 from django import template
 from django.utils.encoding import force_str
 
-from lemarche.siaes.models import Siae
+from lemarche.siaes import constants as siae_constants
 
 
 register = template.Library()
@@ -14,7 +14,7 @@ def array_choices_display(obj, field):
     choices_dict = dict()
 
     if field == "presta_type":
-        choices_dict = dict(Siae.PRESTA_CHOICES)
+        choices_dict = dict(siae_constants.PRESTA_CHOICES)
 
     try:
         keys = obj.get(field, [])

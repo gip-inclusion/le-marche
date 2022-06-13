@@ -10,6 +10,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from stdnum.fr import siret
 
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.constants import DEPARTMENT_TO_REGION
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis import api_mailjet
@@ -47,8 +48,8 @@ C1_EXTRA_KEYS = ["convention_is_active", "convention_asp_id"]
 def map_siae_presta_type(siae_kind):
     if siae_kind:
         if siae_kind in ["ETTI", "AI"]:
-            return [Siae.PRESTA_DISP]
-        return [Siae.PRESTA_PREST, Siae.PRESTA_BUILD]
+            return [siae_constants.PRESTA_DISP]
+        return [siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD]
     return []
 
 

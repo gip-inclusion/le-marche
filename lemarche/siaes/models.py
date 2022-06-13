@@ -15,6 +15,7 @@ from django.utils.encoding import force_str
 from django.utils.text import slugify
 
 from lemarche.perimeters.models import Perimeter
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY, get_department_code_from_name
 from lemarche.siaes.tasks import set_siae_coords
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
@@ -407,16 +408,6 @@ class Siae(models.Model):
         (NATURE_ANTENNA, "Rattaché à un autre conventionnement"),
     )
 
-    PRESTA_DISP = "DISP"
-    PRESTA_PREST = "PREST"
-    PRESTA_BUILD = "BUILD"
-
-    PRESTA_CHOICES = (
-        (PRESTA_DISP, "Mise à disposition - Interim"),  # 0010
-        (PRESTA_PREST, "Prestation de service"),  # 0100
-        (PRESTA_BUILD, "Fabrication et commercialisation de biens"),  # 1000
-    )
-
     DEPARTMENT_CHOICES = DEPARTMENTS_PRETTY.items()
     REGION_CHOICES = REGIONS_PRETTY.items()
     GEO_RANGE_COUNTRY = GEO_RANGE_COUNTRY  # 3
@@ -443,7 +434,7 @@ class Siae(models.Model):
     nature = models.CharField(verbose_name="Établissement", max_length=20, choices=NATURE_CHOICES, blank=True)
     presta_type = ChoiceArrayField(
         verbose_name="Type de prestation",
-        base_field=models.CharField(max_length=20, choices=PRESTA_CHOICES),
+        base_field=models.CharField(max_length=20, choices=siae_constants.PRESTA_CHOICES),
         blank=True,
         null=True,
     )
@@ -723,7 +714,9 @@ class Siae(models.Model):
         if self.kind == Siae.KIND_AI:
             return "Mise à disposition du personnel"
         if self.presta_type:
-            presta_type_values = [force_str(dict(Siae.PRESTA_CHOICES).get(key, "")) for key in self.presta_type]
+            presta_type_values = [
+                force_str(dict(siae_constants.PRESTA_CHOICES).get(key, "")) for key in self.presta_type
+            ]
             return ", ".join(filter(None, presta_type_values))
         return ""
 
