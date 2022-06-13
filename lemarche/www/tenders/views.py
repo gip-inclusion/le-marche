@@ -77,6 +77,14 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
 
     def get_context_data(self, form, **kwargs):
         context = super().get_context_data(form=form, **kwargs)
+        # needed to display the perimeters selected in the previous page
+        if self.steps.current == self.STEP_GENERAL:
+            if self.get_cleaned_data_for_step(self.STEP_GENERAL):
+                tender_perimeters = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("perimeters")
+                tender_is_country_area = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("is_country_area")
+                if not tender_is_country_area:
+                    context["current_perimeters"] = list(tender_perimeters.values("id", "name"))
+        # needed to display the Tender preview template
         if self.steps.current == self.STEP_CONFIRMATION:
             tender_dict = self.get_all_cleaned_data()
             tender_dict["get_sectors_names"] = ", ".join(tender_dict["sectors"].values_list("name", flat=True))
@@ -91,7 +99,6 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
     def get_form_instance(self, step):
         if self.instance is None:
             self.instance = Tender()
-
         if step == self.STEP_CONTACT:
             user = self.request.user
             return Tender(
