@@ -33,6 +33,12 @@ class SiaeFactory(DjangoModelFactory):
     region = factory.fuzzy.FuzzyChoice([key for (key, value) in Siae.REGION_CHOICES])
     contact_email = factory.Sequence("email{0}@example.com".format)
 
+    @factory.post_generation
+    def sectors(self, create, extracted, **kwargs):
+        if extracted:
+            # Add the iterable of groups using bulk addition
+            self.sectors.add(*extracted)
+
 
 class SiaeOfferFactory(DjangoModelFactory):
     class Meta:

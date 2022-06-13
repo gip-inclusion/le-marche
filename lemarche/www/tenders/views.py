@@ -109,7 +109,6 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
                     "contact_phone": user.phone,
                 }
             )
-        print(self.instance.__dict__)
         return self.instance
 
     def get_form_kwargs(self, step):

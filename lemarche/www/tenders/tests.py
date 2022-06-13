@@ -125,14 +125,12 @@ class TenderMatchingTest(TestCase):
         self.assertEqual(len(opportunities_for_siae), 1)
 
     def test_with_no_contact_email(self):
-        # test when siae doesn't have contact email
         tender = TenderFactory(sectors=self.sectors, perimeters=self.perimeters)
-        siae_country = SiaeFactory(is_active=True, geo_range=GEO_RANGE_COUNTRY, contact_email="")
-        siae_country.sectors.add(self.sectors[0])
+        siae = SiaeFactory(is_active=True, geo_range=GEO_RANGE_COUNTRY, contact_email="", sectors=[self.sectors[0]])
         siae_found_list = Siae.objects.filter_with_tender(tender)
-        self.assertEqual(len(siae_found_list), 2)
-        opportunities_for_siae = Tender.objects.filter_with_siae(siae_found_list[:1])
-        self.assertEqual(len(opportunities_for_siae), 0)
+        self.assertEqual(len(siae_found_list), 2 + 0)
+        opportunities_for_siae = Tender.objects.filter_with_siae([siae])
+        self.assertEqual(len(opportunities_for_siae), 1)
 
     # def test_number_queries(self):
     #     tender = TenderFactory(sectors=self.sectors)
