@@ -6,6 +6,7 @@ from lemarche.favorites.models import FavoriteList
 from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 from lemarche.utils.constants import EMPTY_CHOICE
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
@@ -16,7 +17,7 @@ class SiaeSearchForm(forms.Form):
         ("Insertion par l'activité économique", Siae.KIND_CHOICES_WITH_EXTRA_INSERTION),
         ("Handicap", Siae.KIND_CHOICES_WITH_EXTRA_HANDICAP),
     )
-    FORM_PRESTA_CHOICES = EMPTY_CHOICE + Siae.PRESTA_CHOICES
+    FORM_PRESTA_CHOICES = EMPTY_CHOICE + siae_constants.PRESTA_CHOICES
     FORM_TERRITORY_CHOICES = (
         ("QPV", "Quartier prioritaire de la politique de la ville (QPV)"),
         ("ZRR", "Zone de revitalisation rurale (ZRR)"),

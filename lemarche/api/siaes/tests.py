@@ -3,6 +3,7 @@ from django.urls import reverse
 
 from lemarche.networks.factories import NetworkFactory
 from lemarche.sectors.factories import SectorFactory
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.siaes.models import Siae
 from lemarche.users.factories import UserFactory
@@ -51,22 +52,26 @@ class SiaeListApiTest(TestCase):
 class SiaeListFilterApiTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        # default_siae = {"kind": Siae.KIND_EI, "presta_type": [Siae.PRESTA_DISP], "department": "01"}
-        SiaeFactory(kind=Siae.KIND_EI, presta_type=[Siae.PRESTA_DISP], department="01", is_active=False)
-        SiaeFactory(kind=Siae.KIND_ETTI, presta_type=[Siae.PRESTA_DISP], department="01")  # siae_with_kind
-        SiaeFactory(kind=Siae.KIND_ACI, presta_type=[Siae.PRESTA_BUILD], department="01")  # siae_with_presta_type
-        SiaeFactory(kind=Siae.KIND_EI, presta_type=[Siae.PRESTA_PREST], department="38")  # siae_with_department
+        # default_siae = {"kind": Siae.KIND_EI, "presta_type": [siae_constants.PRESTA_DISP], "department": "01"}
+        SiaeFactory(kind=Siae.KIND_EI, presta_type=[siae_constants.PRESTA_DISP], department="01", is_active=False)
+        SiaeFactory(kind=Siae.KIND_ETTI, presta_type=[siae_constants.PRESTA_DISP], department="01")  # siae_with_kind
+        SiaeFactory(
+            kind=Siae.KIND_ACI, presta_type=[siae_constants.PRESTA_BUILD], department="01"
+        )  # siae_with_presta_type
+        SiaeFactory(
+            kind=Siae.KIND_EI, presta_type=[siae_constants.PRESTA_PREST], department="38"
+        )  # siae_with_department
         cls.sector_1 = SectorFactory()
         cls.sector_2 = SectorFactory()
-        siae_with_sector_1 = SiaeFactory(kind=Siae.KIND_EI, presta_type=[Siae.PRESTA_DISP], department="01")
+        siae_with_sector_1 = SiaeFactory(kind=Siae.KIND_EI, presta_type=[siae_constants.PRESTA_DISP], department="01")
         siae_with_sector_1.sectors.add(cls.sector_1)
-        siae_with_sector_2 = SiaeFactory(kind=Siae.KIND_EI, presta_type=[Siae.PRESTA_DISP], department="01")
+        siae_with_sector_2 = SiaeFactory(kind=Siae.KIND_EI, presta_type=[siae_constants.PRESTA_DISP], department="01")
         siae_with_sector_2.sectors.add(cls.sector_2)
         cls.network_1 = NetworkFactory()
         cls.network_2 = NetworkFactory()
-        siae_with_network_1 = SiaeFactory(kind=Siae.KIND_EI, presta_type=[Siae.PRESTA_DISP], department="01")
+        siae_with_network_1 = SiaeFactory(kind=Siae.KIND_EI, presta_type=[siae_constants.PRESTA_DISP], department="01")
         siae_with_network_1.networks.add(cls.network_1)
-        siae_with_network_2 = SiaeFactory(kind=Siae.KIND_EI, presta_type=[Siae.PRESTA_DISP], department="01")
+        siae_with_network_2 = SiaeFactory(kind=Siae.KIND_EI, presta_type=[siae_constants.PRESTA_DISP], department="01")
         siae_with_network_2.networks.add(cls.network_2)
         UserFactory(api_key="admin")
 
@@ -108,13 +113,14 @@ class SiaeListFilterApiTest(TestCase):
 
     def test_should_filter_siae_list_by_presta_type(self):
         # single
-        url = reverse("api:siae-list") + f"?presta_type={Siae.PRESTA_BUILD}&token=admin"
+        url = reverse("api:siae-list") + f"?presta_type={siae_constants.PRESTA_BUILD}&token=admin"
         response = self.client.get(url)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
         # multiple
         url = (
-            reverse("api:siae-list") + f"?presta_type={Siae.PRESTA_BUILD}&presta_type={Siae.PRESTA_PREST}&token=admin"
+            reverse("api:siae-list")
+            + f"?presta_type={siae_constants.PRESTA_BUILD}&presta_type={siae_constants.PRESTA_PREST}&token=admin"
         )
         response = self.client.get(url)
         self.assertEqual(response.data["count"], 1 + 1)

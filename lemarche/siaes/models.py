@@ -15,6 +15,7 @@ from django.utils.encoding import force_str
 from django.utils.text import slugify
 
 from lemarche.perimeters.models import Perimeter
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY, get_department_code_from_name
 from lemarche.siaes.tasks import set_siae_coords
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
@@ -257,23 +258,31 @@ class SiaeQuerySet(models.QuerySet):
         return self.exclude(contact_email__isnull=True).exclude(contact_email__exact="")
 
     def filter_with_tender(self, tender: Tender):
-        """Filter Siaes with tenders
-        - First we filter live and the SIAE that can be contacted
-        - Then we make filtering with the sectors
-        - Then, if tender is made for country area, we make filtering with siae_geo_range=country
-                else we make the filtering with perimeters
+        """
+        Filter Siaes with tenders
+        - First we filter the Siae that are live + can be contacted
+        - Then we filter on the sectors
+        - Then, if tender is made for country area, we filter with siae_geo_range=country, else we filter on the perimeters  # noqa
+        - Finally on presta_type
 
         Args:
             tender (Tender): Tender used to make the matching
-
         """
-        queryset = self.prefetch_related("sectors").is_live().has_contact_email().filter_sectors(tender.sectors.all())
+        qs = self.prefetch_related("sectors").is_live().has_contact_email()
+        # filter by sectors
+        if tender.sectors.count():
+            qs = qs.filter_sectors(tender.sectors.all())
+        # filter by perimeters
         if tender.is_country_area:
-            queryset = queryset.with_country_geo_range()
+            qs = qs.with_country_geo_range()
         else:
-            queryset = queryset.in_perimeters_area(tender.perimeters.all(), with_country=True)
-
-        return queryset.distinct()
+            if tender.perimeters.count():
+                qs = qs.in_perimeters_area(tender.perimeters.all(), with_country=True)
+        # filter by presta_type
+        if len(tender.presta_type):
+            qs = qs.filter(presta_type__overlap=tender.presta_type)
+        # return
+        return qs.distinct()
 
 
 class Siae(models.Model):
@@ -407,16 +416,6 @@ class Siae(models.Model):
         (NATURE_ANTENNA, "Rattaché à un autre conventionnement"),
     )
 
-    PRESTA_DISP = "DISP"
-    PRESTA_PREST = "PREST"
-    PRESTA_BUILD = "BUILD"
-
-    PRESTA_CHOICES = (
-        (PRESTA_DISP, "Mise à disposition - Interim"),  # 0010
-        (PRESTA_PREST, "Prestation de service"),  # 0100
-        (PRESTA_BUILD, "Fabrication et commercialisation de biens"),  # 1000
-    )
-
     DEPARTMENT_CHOICES = DEPARTMENTS_PRETTY.items()
     REGION_CHOICES = REGIONS_PRETTY.items()
     GEO_RANGE_COUNTRY = GEO_RANGE_COUNTRY  # 3
@@ -443,7 +442,7 @@ class Siae(models.Model):
     nature = models.CharField(verbose_name="Établissement", max_length=20, choices=NATURE_CHOICES, blank=True)
     presta_type = ChoiceArrayField(
         verbose_name="Type de prestation",
-        base_field=models.CharField(max_length=20, choices=PRESTA_CHOICES),
+        base_field=models.CharField(max_length=20, choices=siae_constants.PRESTA_CHOICES),
         blank=True,
         null=True,
     )
@@ -723,7 +722,9 @@ class Siae(models.Model):
         if self.kind == Siae.KIND_AI:
             return "Mise à disposition du personnel"
         if self.presta_type:
-            presta_type_values = [force_str(dict(Siae.PRESTA_CHOICES).get(key, "")) for key in self.presta_type]
+            presta_type_values = [
+                force_str(dict(siae_constants.PRESTA_CHOICES).get(key, "")) for key in self.presta_type
+            ]
             return ", ".join(filter(None, presta_type_values))
         return ""
 

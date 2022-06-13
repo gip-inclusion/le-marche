@@ -10,6 +10,7 @@ from django.utils.text import slugify
 
 from lemarche.networks.models import Network
 from lemarche.sectors.models import Sector, SectorGroup
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae, SiaeClientReference, SiaeImage, SiaeLabel, SiaeOffer
 from lemarche.users.models import User
 from lemarche.utils.data import rename_dict_key, reset_app_sql_sequences
@@ -115,13 +116,13 @@ def map_siae_presta_type(input_value_byte):
         presta_type_mapping = {
             None: None,
             "0": [],
-            "2": [Siae.PRESTA_DISP],
-            "4": [Siae.PRESTA_PREST],
-            "6": [Siae.PRESTA_DISP, Siae.PRESTA_PREST],
-            "8": [Siae.PRESTA_BUILD],
-            "10": [Siae.PRESTA_DISP, Siae.PRESTA_BUILD],
-            "12": [Siae.PRESTA_PREST, Siae.PRESTA_BUILD],
-            "14": [Siae.PRESTA_DISP, Siae.PRESTA_PREST, Siae.PRESTA_BUILD],
+            "2": [siae_constants.PRESTA_DISP],
+            "4": [siae_constants.PRESTA_PREST],
+            "6": [siae_constants.PRESTA_DISP, siae_constants.PRESTA_PREST],
+            "8": [siae_constants.PRESTA_BUILD],
+            "10": [siae_constants.PRESTA_DISP, siae_constants.PRESTA_BUILD],
+            "12": [siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
+            "14": [siae_constants.PRESTA_DISP, siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
         }
         try:
             return presta_type_mapping[input_value_string]

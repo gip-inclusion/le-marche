@@ -6,6 +6,7 @@ from lemarche.networks.factories import NetworkFactory
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeFactory, SiaeOfferFactory
 from lemarche.siaes.models import Siae
 from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
@@ -59,8 +60,8 @@ class SiaeKindSearchFilterTest(TestCase):
 class SiaePrestaTypeSearchFilterTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        SiaeFactory(presta_type=[Siae.PRESTA_DISP])
-        SiaeFactory(presta_type=[Siae.PRESTA_DISP, Siae.PRESTA_BUILD])
+        SiaeFactory(presta_type=[siae_constants.PRESTA_DISP])
+        SiaeFactory(presta_type=[siae_constants.PRESTA_DISP, siae_constants.PRESTA_BUILD])
 
     def test_search_presta_type_empty(self):
         url = reverse("siae:search_results")
@@ -75,11 +76,11 @@ class SiaePrestaTypeSearchFilterTest(TestCase):
         self.assertEqual(len(siaes), 2)
 
     def test_search_presta_type_should_filter(self):
-        url = reverse("siae:search_results") + f"?presta_type={Siae.PRESTA_BUILD}"
+        url = reverse("siae:search_results") + f"?presta_type={siae_constants.PRESTA_BUILD}"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 1)
-        url = reverse("siae:search_results") + f"?presta_type={Siae.PRESTA_DISP}"
+        url = reverse("siae:search_results") + f"?presta_type={siae_constants.PRESTA_DISP}"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 1 + 1)

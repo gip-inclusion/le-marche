@@ -1,4 +1,4 @@
-{% load bootstrap4 static humanize %}
+{% load bootstrap4 static array_choices_display humanize %}
 <div class="card c-card c-card--marche siae-card rounded-lg shadow-lg">
     <p class="text-right text-white bg-tertiary fs-sm rounded-top rounded-lg py-3 px-5 mb-0">
         Date limite de réponse : {{ tender.deadline_date|default:"" }}
@@ -15,17 +15,23 @@
         </div>
         <div class="row text-bold">
             <div class="col">
-                <span class="ri-award-line"></span>
+                <i class="ri-award-line"></i>
                 {{ tender.get_sectors_names }}
             </div>
             <div class="col">
-                <span class="ri-map-pin-2-line"></span>
+                <i class="ri-map-pin-2-line"></i>
                 {% if tender.is_country_area %}
                     France entière
                 {% else %}
                     {{ tender.get_perimeters_names }}
                 {% endif %}
             </div>
+            {% if tender.presta_type %}
+                <div class="col">
+                    <i class="ri-briefcase-4-line"></i>
+                    {% array_choices_display tender 'presta_type' %}
+                </div>
+            {% endif %}
         </div>
 
         <hr class="my-5">
