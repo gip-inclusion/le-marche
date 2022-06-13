@@ -218,3 +218,14 @@ def format_district(post_code, department):
     # Could use ordinal from humanize but it would be overkill
     number = int(post_code) - (int(department) * 1000)
     return "1er" if number == 1 else f"{number}e"
+
+
+PRESTA_DISP = "DISP"
+PRESTA_PREST = "PREST"
+PRESTA_BUILD = "BUILD"
+
+PRESTA_CHOICES = (
+    (PRESTA_DISP, "Mise à disposition - Interim"),  # 0010
+    (PRESTA_PREST, "Prestation de service"),  # 0100
+    (PRESTA_BUILD, "Fabrication et commercialisation de biens"),  # 1000
+)

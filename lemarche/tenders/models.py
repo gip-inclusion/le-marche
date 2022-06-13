@@ -13,6 +13,7 @@ from django_better_admin_arrayfield.models.fields import ArrayField
 
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
+from lemarche.siaes import constants as siae_constants
 from lemarche.tenders import constants as tender_constants
 from lemarche.utils.fields import ChoiceArrayField
 
@@ -52,17 +53,22 @@ class TenderQuerySet(models.QuerySet):
 
     def filter_with_siae(self, siaes):
         """
-        Return the list of tenders corresponding to the Siae
+        Return the list of tenders corresponding to the list of Siae
         Filters on its sectors & perimeter
         """
+        qs = self.prefetch_related("sectors", "perimeters")
+        # filter by sectors
         sectors = Sector.objects.prefetch_related("siaes").filter(siaes__in=siaes).distinct()
-        qs = self.prefetch_related("sectors", "perimeters").in_sectors(sectors)
+        qs = qs.in_sectors(sectors)
+        # filter by perimeters
         conditions = Q()
         for siae in siaes:
             if siae.geo_range != siae.GEO_RANGE_COUNTRY:
                 conditions |= get_perimeter_filter(siae)
-        return qs.filter(conditions).distinct()
-        # return qs.distinct()
+        qs = qs.filter(conditions)
+        # filter by presta_type ?
+        # return
+        return qs.distinct()
 
     def with_siae_stats(self):
         """
@@ -140,8 +146,8 @@ class Tender(models.Model):
         null=True,
     )
     response_kind = ChoiceArrayField(
-        models.CharField(max_length=6, choices=RESPONSE_KIND_CHOICES),
         verbose_name="Comment souhaitez-vous être contacté ?",
+        base_field=models.CharField(max_length=6, choices=RESPONSE_KIND_CHOICES),
     )
 
     contact_first_name = models.CharField(verbose_name="Prénom du contact", max_length=255, blank=True)
@@ -149,14 +155,16 @@ class Tender(models.Model):
     contact_email = models.EmailField(verbose_name="E-mail du contact", blank=True)
     contact_phone = models.CharField(verbose_name="Téléphone du contact", max_length=20, blank=True)
 
-    is_country_area = models.BooleanField(verbose_name="France entière", default=False)
-
+    sectors = models.ManyToManyField(
+        "sectors.Sector", verbose_name="Secteurs d'activité", related_name="tenders", blank=False
+    )
     perimeters = models.ManyToManyField(
         "perimeters.Perimeter", verbose_name="Lieux d'exécution", related_name="tenders", blank=True
     )
-
-    sectors = models.ManyToManyField(
-        "sectors.Sector", verbose_name="Secteurs d'activité", related_name="tenders", blank=False
+    is_country_area = models.BooleanField(verbose_name="France entière", default=False)
+    presta_type = ChoiceArrayField(
+        verbose_name="Type de prestation",
+        base_field=models.CharField(max_length=20, choices=siae_constants.PRESTA_CHOICES),
     )
 
     author = models.ForeignKey(
@@ -180,9 +188,10 @@ class Tender(models.Model):
         "Date de dernière visite de l'auteur sur la page 'structures intéressées'", blank=True, null=True
     )
 
+    validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
+
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
-    validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
 
     objects = models.Manager.from_queryset(TenderQuerySet)()
 

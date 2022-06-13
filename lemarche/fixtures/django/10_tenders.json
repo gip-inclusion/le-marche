@@ -6,6 +6,7 @@
             "title": "Entretien des espaces verts de la commune de Grenoble",
             "slug": "entretien-espaces-verts-commune-grenoble",
             "kind": "TENDER",
+            "presta_type": ["DISP", "PREST"],
             "description": "Une courte description",
             "external_link": "https://example.com/",
             "amount": "<100K",

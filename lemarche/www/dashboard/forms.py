@@ -5,6 +5,7 @@ from django_select2.forms import ModelSelect2MultipleWidget
 from lemarche.favorites.models import FavoriteList
 from lemarche.networks.models import Network
 from lemarche.sectors.models import Sector
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import (
     Siae,
     SiaeClientReference,
@@ -92,7 +93,7 @@ class SiaeSearchAdoptConfirmForm(forms.ModelForm):
 class SiaeEditSearchForm(forms.ModelForm):
     presta_type = forms.MultipleChoiceField(
         label=Siae._meta.get_field("presta_type").verbose_name,
-        choices=Siae.PRESTA_CHOICES,
+        choices=siae_constants.PRESTA_CHOICES,
         required=True,
         widget=forms.CheckboxSelectMultiple,
     )

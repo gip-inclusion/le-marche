@@ -5,6 +5,7 @@ import time
 from django.core.management.base import BaseCommand
 
 from lemarche.sectors.models import Sector
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.constants import DEPARTMENT_TO_REGION, department_from_postcode
 from lemarche.siaes.models import Siae
 from lemarche.siaes.validators import validate_siret
@@ -21,8 +22,8 @@ SECTOR_COLUMN_NAME_LIST = ["Secteurs d'act 1", "Secteurs d'act 2", "Secteurs d'a
 USER_COLUMN_NAME_LIST = ["Nom", "Prénom", "Email"]
 PRESTA_TYPE_NAME_LIST = ["Type de prestation 1", "Type de prestation 2"]
 PRESTA_TYPE_MAPPING = {
-    "Prestation de services": Siae.PRESTA_PREST,
-    "Fabrication et commercialisation de biens": Siae.PRESTA_BUILD,
+    "Prestation de services": siae_constants.PRESTA_PREST,
+    "Fabrication et commercialisation de biens": siae_constants.PRESTA_BUILD,
 }
 
 

@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from lemarche.api.siaes.filters import SiaeFilter
 from lemarche.api.siaes.serializers import SiaeChoiceSerializer, SiaeDetailSerializer, SiaeListSerializer
 from lemarche.api.utils import check_user_token
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 
 
@@ -148,7 +149,7 @@ class SiaePrestaTypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Siae.objects.none()
 
     def get_queryset(self):
-        siae_kinds = [{"id": id, "name": name} for (id, name) in Siae.PRESTA_CHOICES]
+        siae_kinds = [{"id": id, "name": name} for (id, name) in siae_constants.PRESTA_CHOICES]
         return siae_kinds
 
     @extend_schema(summary="Lister tous les types de prestations", tags=[Siae._meta.verbose_name_plural])

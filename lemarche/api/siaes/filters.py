@@ -2,13 +2,14 @@ import django_filters
 
 from lemarche.networks.models import Network
 from lemarche.sectors.models import Sector
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 
 
 class SiaeFilter(django_filters.FilterSet):
     kind = django_filters.MultipleChoiceFilter(label="Type(s) de structure", choices=Siae.KIND_CHOICES)
     presta_type = django_filters.MultipleChoiceFilter(
-        label="Type(s) de prestation", choices=Siae.PRESTA_CHOICES, lookup_expr="icontains"
+        label="Type(s) de prestation", choices=siae_constants.PRESTA_CHOICES, lookup_expr="icontains"
     )
     department = django_filters.CharFilter(label="Numéro du département")
     sectors = django_filters.ModelMultipleChoiceFilter(
