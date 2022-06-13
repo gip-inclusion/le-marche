@@ -23,3 +23,10 @@ def reset_app_sql_sequences(app_name):
 def rename_dict_key(dict, key_name_before, key_name_after):
     dict[key_name_after] = dict[key_name_before]
     dict.pop(key_name_before)
+
+
+def get_choice(choices, key):
+    choices = dict(choices)
+    if key in choices:
+        return choices[key]
+    return None

@@ -1,0 +1,37 @@
+{% extends "tenders/create_base.html" %}
+{% load bootstrap4 static %}
+
+{% block title %}Déposer un besoin{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">Besoins en cours</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Déposer un besoin</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block step_title %}Description du besoin{% endblock %}
+{% block step_title_again %}Description du besoin{% endblock %}
+{% block step_subtitle %}Veuillez détailler au maximum votre besoin pour que les prestataires inclusifs puissent se positionner.{% endblock %}
+
+{% block content_form %}
+<fieldset>
+    {% bootstrap_field form.description %}
+    {% bootstrap_field form.start_working_date %}
+    {% bootstrap_field form.external_link %}
+    {% bootstrap_field form.constraints %}
+    {% bootstrap_field form.amount %}
+</fieldset>
+{% endblock content_form %}
