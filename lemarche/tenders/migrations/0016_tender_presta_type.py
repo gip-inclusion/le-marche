@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 ),
                 default=[],
                 size=None,
-                verbose_name="Type(s) de prestation(s)",
+                verbose_name="Type de prestation",
             ),
             preserve_default=False,
         ),

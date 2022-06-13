@@ -258,23 +258,29 @@ class SiaeQuerySet(models.QuerySet):
         return self.exclude(contact_email__isnull=True).exclude(contact_email__exact="")
 
     def filter_with_tender(self, tender: Tender):
-        """Filter Siaes with tenders
-        - First we filter live and the SIAE that can be contacted
-        - Then we make filtering with the sectors
-        - Then, if tender is made for country area, we make filtering with siae_geo_range=country
-                else we make the filtering with perimeters
+        """
+        Filter Siaes with tenders
+        - First we filter the Siae that are live + can be contacted
+        - Then we filter on the sectors
+        - Then, if tender is made for country area, we filter with siae_geo_range=country, else we filter on the perimeters  # noqa
+        - Finally on presta_type
 
         Args:
             tender (Tender): Tender used to make the matching
-
         """
-        queryset = self.prefetch_related("sectors").is_live().has_contact_email().filter_sectors(tender.sectors.all())
+        qs = self.prefetch_related("sectors").is_live().has_contact_email()
+        # filter by sectors
+        qs = qs.filter_sectors(tender.sectors.all())
+        # filter by perimeters
         if tender.is_country_area:
-            queryset = queryset.with_country_geo_range()
+            qs = qs.with_country_geo_range()
         else:
-            queryset = queryset.in_perimeters_area(tender.perimeters.all(), with_country=True)
-
-        return queryset.distinct()
+            qs = qs.in_perimeters_area(tender.perimeters.all(), with_country=True)
+        # filter by presta_type
+        if tender.presta_type:
+            qs = qs.filter(presta_type__overlap=[tender.presta_type])
+        # return
+        return qs.distinct()
 
 
 class Siae(models.Model):

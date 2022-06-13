@@ -17,6 +17,7 @@ class TenderFactory(DjangoModelFactory):
     title = factory.Faker("name", locale="fr_FR")
     # slug auto-generated
     kind = Tender.TENDER_KIND_QUOTE
+    presta_type = []
     response_kind = factory.List(
         [
             factory.fuzzy.FuzzyChoice([key for (key, value) in Tender.RESPONSE_KIND_CHOICES]),

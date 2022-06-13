@@ -53,17 +53,22 @@ class TenderQuerySet(models.QuerySet):
 
     def filter_with_siae(self, siaes):
         """
-        Return the list of tenders corresponding to the Siae
+        Return the list of tenders corresponding to the list of Siae
         Filters on its sectors & perimeter
         """
+        qs = self.prefetch_related("sectors", "perimeters")
+        # filter by sectors
         sectors = Sector.objects.prefetch_related("siaes").filter(siaes__in=siaes).distinct()
-        qs = self.prefetch_related("sectors", "perimeters").in_sectors(sectors)
+        qs = qs.in_sectors(sectors)
+        # filter by perimeters
         conditions = Q()
         for siae in siaes:
             if siae.geo_range != siae.GEO_RANGE_COUNTRY:
                 conditions |= get_perimeter_filter(siae)
-        return qs.filter(conditions).distinct()
-        # return qs.distinct()
+        qs = qs.filter(conditions)
+        # filter by presta_type ?
+        # return
+        qs.distinct()
 
     def with_siae_stats(self):
         """
@@ -158,7 +163,7 @@ class Tender(models.Model):
     )
     is_country_area = models.BooleanField(verbose_name="France entière", default=False)
     presta_type = ChoiceArrayField(
-        verbose_name="Type(s) de prestation(s)",
+        verbose_name="Type de prestation",
         base_field=models.CharField(max_length=20, choices=siae_constants.PRESTA_CHOICES),
     )
 
