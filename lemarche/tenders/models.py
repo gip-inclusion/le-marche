@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db import IntegrityError, models, transaction
 from django.db.models import Case, Count, F, IntegerField, Q, Sum, When
 from django.db.models.functions import Greatest
-from django.db.models.signals import post_save
+from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
@@ -269,8 +269,18 @@ class Tender(models.Model):
 
 @receiver(post_save, sender=Tender)
 def tender_post_save(sender, instance, **kwargs):
+    print("tender_post_save", instance, sender)
     if not instance.validated_at:
         instance.set_siae_found_list()
+
+
+@receiver(m2m_changed, sender=Tender.sectors.through)
+@receiver(m2m_changed, sender=Tender.perimeters.through)
+def tender_m2m_changed(sender, instance, action, **kwargs):
+    if action in ("post_add", "post_remove", "post_clear"):
+        print("tender_m2m_changed", instance, sender)
+        if not instance.validated_at:
+            instance.set_siae_found_list()
 
 
 class TenderSiae(models.Model):
