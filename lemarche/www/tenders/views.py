@@ -36,16 +36,9 @@ def create_tender_from_dict(tender_dict: dict):
     perimeters = tender_dict.pop("perimeters", [])
     sectors = tender_dict.pop("sectors", [])
     tender = Tender(**tender_dict)
-
     tender.save()
-    # for perimeter in perimeters:
-    #     tender.perimeters.add(perimeter)
-    # for sector in sectors:
-    #     tender.sectors.add(sector)
-    print(perimeters)
     if perimeters:
         tender.perimeters.set(perimeters)
-    print(sectors)
     if sectors:
         tender.sectors.set(sectors)
     return tender
@@ -56,7 +49,7 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
     success_url = reverse_lazy("tenders:list")
     success_message = """
         Votre besoin <strong>{tender_title}</strong> a été déposé sur le marché !<br />
-        Les {tender_siae_count} structures qui correspondent à vos critères seront notifiées
+        Les <strong>{tender_siae_count} structures</strong> qui correspondent à vos critères seront notifiées
         dès que votre besoin sera validé par notre équipe.
     """
 

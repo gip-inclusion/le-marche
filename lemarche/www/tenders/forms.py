@@ -90,8 +90,8 @@ class AddTenderStepContactForm(forms.ModelForm):
 
     def __init__(self, max_deadline_date, external_link, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.max_deadline_date = kwargs.get("max_deadline_date")
-        self.external_link = kwargs.get("external_link")
+        self.max_deadline_date = max_deadline_date
+        self.external_link = external_link
 
     def clean(self):
         super().clean()
@@ -100,7 +100,7 @@ class AddTenderStepContactForm(forms.ModelForm):
         if (
             self.max_deadline_date
             and self.cleaned_data.get("deadline_date")
-            and (self.cleaned_data.get("deadline_date") > self.kwargs.get("max_deadline_date"))
+            and (self.cleaned_data.get("deadline_date") > self.max_deadline_date)
         ):
             self.add_error(
                 "deadline_date",
