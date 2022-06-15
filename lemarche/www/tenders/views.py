@@ -50,7 +50,8 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
     success_url = reverse_lazy("tenders:list")
     success_message = """
         Votre besoin <strong>{tender_title}</strong> a été déposé sur le marché !<br />
-        Les {tender_siae_count} structures correspondants à vos critères seront notifiés dès qu'il sera validé par notre équipe.  # noqa
+        Les {tender_siae_count} structures qui correspondent à vos critères seront notifiés
+        dès qu'il sera validé par notre équipe.
     """
 
     STEP_GENERAL = "general"
