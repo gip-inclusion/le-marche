@@ -7,25 +7,25 @@
 <div class="row">
     {% if tender.get_contact_full_name %}
         <div class="col-md-6">
-            <span class="ri-account-circle-line"></span>
+            <i class="ri-account-circle-line"></i>
             {{ tender.get_contact_full_name }}
         </div>
     {% endif %}
     {% if tender.author.company_name %}
         <div class="col-md-6">
-            <span class="ri-building-2-line"></span>
+            <i class="ri-building-4-line"></i>
             {{ tender.author.company_name }}
         </div>
     {% endif %}
     {% if tender.can_display_contact_email %}
         <div class="col-md-6">
-            <span class="ri-at-line"></span>
+            <i class="ri-at-line"></i>
             {{ tender.contact_email }}
         </div>
     {% endif %}
     {% if tender.can_display_contact_phone %}
         <div class="col-md-6">
-            <span class="ri-phone-line"></span>
+            <i class="ri-phone-line"></i>
             {{ tender.contact_phone }}
         </div>
     {% endif %}
@@ -34,7 +34,7 @@
     <div class="row">
         <div class="col-12">
             <a href="{{ tender.external_link }}" target="_blank" class="btn btn-outline-primary float-right">
-                Voir l'appel d'offres <span class="ri-external-link-line" aria-hidden="true"></span>
+                Voir l'appel d'offres <i class="ri-external-link-line" aria-hidden="true"></i>
             </a>
         </div>
     </div>

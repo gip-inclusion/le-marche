@@ -26,19 +26,19 @@
             <div class="row">
                 {% if tender.get_sectors_names %}
                     <div class="col-md-4">
-                        <span class="ri-award-line"></span>
+                        <i class="ri-award-line"></i>
                         {{ tender.get_sectors_names }}
                     </div>
                 {% endif %}
                 {% if tender.get_perimeters_names %}
                     <div class="col-md-4 text-center">
-                        <span class="ri-map-pin-2-line"></span>
+                        <i class="ri-map-pin-2-line"></i>
                         {{ tender.get_perimeters_names }}
                     </div>
                 {% endif %}
                 {% if tender.amount %}
                     <div class="col-md-4 text-center">
-                        <span class="ri-money-euro-circle-line"></span>
+                        <i class="ri-money-euro-circle-line"></i>
                         {{ tender.get_amount_display|default:"-" }}
                     </div>
                 {% endif %}
