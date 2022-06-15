@@ -19,7 +19,6 @@ from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY, get_department_code_from_name
 from lemarche.siaes.tasks import set_siae_coords
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
-from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.utils.fields import ChoiceArrayField
 
@@ -257,7 +256,7 @@ class SiaeQuerySet(models.QuerySet):
     def has_contact_email(self):
         return self.exclude(contact_email__isnull=True).exclude(contact_email__exact="")
 
-    def filter_with_tender(self, tender: Tender):
+    def filter_with_tender(self, tender):
         """
         Filter Siaes with tenders
         - First we filter the Siae that are live + can be contacted

@@ -8,7 +8,6 @@ from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 
 from lemarche.common.admin import admin_site
 from lemarche.perimeters.admin import PerimeterRegionFilter
-from lemarche.siaes.models import Siae
 from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import PartnerShareTender, Tender
 from lemarche.www.tenders.tasks import send_confirmation_published_email_to_author, send_tender_emails_to_siaes
@@ -29,14 +28,13 @@ class ResponseKindFilter(admin.SimpleListFilter):
 
 
 def update_and_send_tender_task(tender: Tender):
+    # 1) validate the tender
     tender.validated_at = datetime.now()
     tender.save()
-    # find the matching Siaes
-    siae_found_list = Siae.objects.filter_with_tender(tender)
-    tender.siaes.set(siae_found_list)
-    # send the tender to all matching Siaes
+    # 2) find the matching Siaes? done in Tender post_save signal
+    # 3) send the tender to all matching Siaes
     send_tender_emails_to_siaes(tender)
-    send_confirmation_published_email_to_author(tender, nb_matched_siaes=len(siae_found_list))
+    send_confirmation_published_email_to_author(tender, nb_matched_siaes=tender.siaes.count())
 
 
 @admin.register(Tender, site=admin_site)

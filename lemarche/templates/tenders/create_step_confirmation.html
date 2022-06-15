@@ -31,7 +31,17 @@
 {% endblock %}
 
 {% block submit_btn %}
-<button type="submit" id="btnAddTender" class="btn btn-primary">
+<button type="submit" id="tender-create-form-submit-btn" class="btn btn-primary">
     <span>Publier et diffuser</span>
 </button>
 {% endblock submit_btn %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    $('form').submit(function() {
+        $(this).find('button[type=submit]').prop('disabled', true);
+    });
+});
+</script>
+{% endblock %}
