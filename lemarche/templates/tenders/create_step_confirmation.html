@@ -31,7 +31,7 @@
 {% endblock %}
 
 {% block submit_btn %}
-<button type="submit" id="tender-create-form-submit-btn" class="btn btn-primary">
+<button type="submit" id="tender-create-form-submit-btn" class="btn btn-primary btn-ico">
     <span>Publier et diffuser</span>
 </button>
 {% endblock submit_btn %}
@@ -39,8 +39,12 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    let formPreviousButton = document.getElementById('tender-create-form-previous-step-btn');
+    let formSubmitButton = document.getElementById('tender-create-form-submit-btn');
     $('form').submit(function() {
-        $(this).find('button[type=submit]').prop('disabled', true);
+        $(formPreviousButton).prop('disabled', true);
+        $(formSubmitButton).prop('disabled', true);
+        formSubmitButton.innerHTML += "<i class='ri-loader-4-line ri-spinner ri-lg'></i>"
     });
 });
 </script>

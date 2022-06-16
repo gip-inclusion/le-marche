@@ -82,7 +82,7 @@
                         <div class="form-row justify-content-end">
                             <div class="form-group col-12 col-lg-auto">
                                 {% if wizard.steps.prev %}
-                                    <button type="submit" id="tender-create-form-previous-step-btn" class="btn btn-outline-primary" name="wizard_goto_step" value="{{ wizard.steps.prev }}" formnovalidate>Étape Précédente</button>
+                                    <button id="tender-create-form-previous-step-btn" class="btn btn-outline-primary" name="wizard_goto_step" value="{{ wizard.steps.prev }}" formnovalidate>Étape Précédente</button>
                                 {% endif %}
                                 {% block submit_btn %}
                                 <input type="submit" id="tender-create-form-next-step-btn" class="btn btn-primary" value="Étape Suivante" />

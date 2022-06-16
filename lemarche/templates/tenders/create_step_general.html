@@ -29,7 +29,7 @@
 {% block content_form %}
 <fieldset>
     {% bootstrap_field form.kind form_group_class="form-group form-group-required" %}
-    {% bootstrap_field form.title placeholder="Ex: Rénovation de façade" form_group_class="form-group form-group-required" %}
+    {% bootstrap_field form.title form_group_class="form-group form-group-required" %}
     {% bootstrap_field form.sectors form_group_class="form-group form-group-required use-multiselect" %}
     {% bootstrap_field form.presta_type %}
     <div class="form-group form-group-required {% if form.perimeters.errors %}is-invalid{% endif %}">
@@ -37,7 +37,7 @@
         <div id="dir_form_perimeter_name">
             <div class="field-holder">{{ form.perimeter_name }}</div>
         </div>
-        <small class="form-text text-muted">Ajouter un ou plusieurs lieux d'exécutions</small>
+        <small class="form-text text-muted">{{ form.perimeters.help_text }}</small>
         <div class="invalid-feedback">Ce champ est obligatoire.</div>
         <div id="perimeters-selected" class="mt-1"></div>
     </div>
