@@ -44,19 +44,19 @@ document.addEventListener('DOMContentLoaded', function() {
             buttonContainer: '<div id="id_kind_multiselect" class="btn-group" />',
             widthSynchronizationMode: 'ifPopupIsSmaller',
             // enableHTML: true,
-            // nonSelectedText: `<span class="text-muted">${kindFormPlaceholder}</span>`,
+            // nonSelectedText: `<span class="fake-placeholder">${kindFormPlaceholder}</span>`,
         });
 
         // hack to set the placeholder color to grey when there is no kind selected
         const multiselectSelectedText = document.querySelector('#id_kind_multiselect .multiselect-selected-text');
         if (multiselectSelectedText.innerText === kindFormPlaceholder) {
-            multiselectSelectedText.classList.add('text-muted');
+            multiselectSelectedText.classList.add('fake-placeholder');
         }
         multiselectSelectedText.addEventListener('DOMSubtreeModified', function () {
             if (this.innerText === kindFormPlaceholder) {
-                this.classList.add('text-muted');
+                this.classList.add('fake-placeholder');
             } else {
-                this.classList.remove('text-muted');
+                this.classList.remove('fake-placeholder');
             }
         })
     }
