@@ -269,7 +269,6 @@ class Tender(models.Model):
 
 @receiver(post_save, sender=Tender)
 def tender_post_save(sender, instance, **kwargs):
-    print("tender_post_save", instance, sender)
     if not instance.validated_at:
         instance.set_siae_found_list()
 
@@ -278,7 +277,6 @@ def tender_post_save(sender, instance, **kwargs):
 @receiver(m2m_changed, sender=Tender.perimeters.through)
 def tender_m2m_changed(sender, instance, action, **kwargs):
     if action in ("post_add", "post_remove", "post_clear"):
-        print("tender_m2m_changed", instance, sender)
         if not instance.validated_at:
             instance.set_siae_found_list()
 
