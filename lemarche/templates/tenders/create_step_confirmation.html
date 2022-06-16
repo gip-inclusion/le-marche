@@ -41,10 +41,11 @@
 document.addEventListener('DOMContentLoaded', function () {
     let formPreviousButton = document.getElementById('tender-create-form-previous-step-btn');
     let formSubmitButton = document.getElementById('tender-create-form-submit-btn');
-    $('form').submit(function() {
+    formSubmitButton.addEventListener('click', function(e) {
         $(formPreviousButton).prop('disabled', true);
         $(formSubmitButton).prop('disabled', true);
-        formSubmitButton.innerHTML += "<i class='ri-loader-4-line ri-spinner ri-lg'></i>"
+        formSubmitButton.innerHTML += "<i class='ri-loader-4-line ri-spinner ri-lg'></i>";
+        $('form').submit();
     });
 });
 </script>

@@ -120,7 +120,7 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
             kwargs["external_link"] = self.get_cleaned_data_for_step(self.STEP_DESCRIPTION).get("external_link")
         return kwargs
 
-    def done(self, *args, **kwargs):
+    def done(self, form_list, form_dict, **kwargs):
         cleaned_data = self.get_all_cleaned_data()
         # when it's done we save the tender
         tender = create_tender_from_dict(cleaned_data | {"author": self.request.user})
