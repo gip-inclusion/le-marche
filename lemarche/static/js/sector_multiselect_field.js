@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
             buttonContainer: '<div id="id_sectors_multiselect" class="btn-group" />',
             widthSynchronizationMode: 'ifPopupIsSmaller',
             // enableHTML: true,
-            // nonSelectedText: `<span class="text-muted">${sectorFormPlaceholder}</span>`,
+            // nonSelectedText: `<span class="fake-placeholder">${sectorFormPlaceholder}</span>`,
             templates: {
                 resetButton: '<div class="multiselect-reset p-2"><button type="button" class="btn btn-sm btn-block btn-outline-primary"></button></div>',
                 // buttonGroupReset: '<button type="button" class="multiselect-reset btn btn-outline-primary btn-block"></button>'
@@ -74,13 +74,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // hack to set the placeholder color to grey when there is no sector selected
         const multiselectSelectedText = document.querySelector('#id_sectors_multiselect .multiselect-selected-text');
         if (multiselectSelectedText.innerText === sectorFormPlaceholder) {
-            multiselectSelectedText.classList.add('text-muted');
+            multiselectSelectedText.classList.add('fake-placeholder');
         }
         multiselectSelectedText.addEventListener('DOMSubtreeModified', function () {
             if (this.innerText === sectorFormPlaceholder) {
-                this.classList.add('text-muted');
+                this.classList.add('fake-placeholder');
             } else {
-                this.classList.remove('text-muted');
+                this.classList.remove('fake-placeholder');
             }
         })
     }
