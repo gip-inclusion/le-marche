@@ -64,6 +64,21 @@ a.disabled {
     }
 }
 
+// spinner icon
+.ri-spinner {
+    animation: spin 2s infinite linear;
+    display: inline-block;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 /**
   In some places we use anchors to scroll the page to a certain id
   BUT the header (height=115px) hides the top of the div
