@@ -162,7 +162,7 @@ class TenderListView(LoginRequiredMixin, ListView):
             if siaes:
                 queryset = Tender.objects.filter_with_siae(siaes).is_live()
         else:
-            queryset = Tender.objects.by_user(user).with_siae_stats()
+            queryset = Tender.objects.by_user(user)  # .with_siae_stats()
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -248,15 +248,12 @@ class TenderSiaeInterestedListView(TenderOwnerRequiredMixin, ListView):
 
     def get(self, request, *args, **kwargs):
         """
-        - if there isn't any Siae interested, redirect
-        - user should be tender owner : update siae_interested_list_last_seen_date
+        User should be tender owner : we update siae_interested_list_last_seen_date
         """
-        if not self.get_queryset().count():
-            return HttpResponseRedirect(reverse_lazy("tenders:list"))
         Tender.objects.filter(slug=self.kwargs.get("slug")).update(siae_interested_list_last_seen_date=timezone.now())
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["tender"] = context["tendersiaes"].first().tender
+        context["tender"] = Tender.objects.get(slug=self.kwargs.get("slug"))
         return context

@@ -24,14 +24,16 @@
 {% endblock %}
 
 {% block content %}
-<section>
-    <div class="container py-4">
+<section class="pt-4 pb-6">
+    <div class="container">
         <div class="row">
-            <div class="col-12 col-lg">
-                <h1>{{ tendersiaes.count }} structures intéressées</h1>
+            <div class="col-12 col-lg-8">
+                <h1 class="mb-3 mb-lg-5">{{ tendersiaes.count }} structures intéressées</h1>
             </div>
+        </div>
 
-            <div class="col-12 my-5 py-3">
+        <div class="row">
+            <div class="col-12">
                 {% for tendersiae in tendersiaes %}
                     {% include "siaes/_card_tender.html" with siae=tendersiae.siae %}
                 {% endfor %}
