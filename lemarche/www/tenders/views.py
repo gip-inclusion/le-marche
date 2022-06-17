@@ -162,7 +162,7 @@ class TenderListView(LoginRequiredMixin, ListView):
             if siaes:
                 queryset = Tender.objects.filter_with_siae(siaes).is_live()
         else:
-            queryset = Tender.objects.by_user(user)  # .with_siae_stats()
+            queryset = Tender.objects.by_user(user).with_siae_stats()
         return queryset
 
     def get_context_data(self, **kwargs):

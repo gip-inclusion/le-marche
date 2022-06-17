@@ -103,6 +103,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         """Build and return a CSV or XLS."""
         siae_list = self.get_queryset()
         format = self.request.GET.get("format", "xls")
+        with_contact_info = True if self.request.GET.get("tender", None) else False
         filename = f"liste_structures_{date.today()}"
         filename_with_extension = f"{filename}.{format}"
 
@@ -132,13 +133,13 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
                 response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
 
                 writer = csv.writer(response)
-                export_siae_to_csv(writer, siae_list)
+                export_siae_to_csv(writer, siae_list, with_contact_info)
 
             else:  # "xls"
                 response = HttpResponse(content_type="application/ms-excel")
                 response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename_with_extension)
 
-                wb = export_siae_to_excel(siae_list)
+                wb = export_siae_to_excel(siae_list, with_contact_info)
                 wb.save(response)
 
             return response
