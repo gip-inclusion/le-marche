@@ -32,16 +32,17 @@
                             <div class="col-12 col-md-6 mt-lg-3 pr-md-0">
                                 {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
                             </div>
-                            {% bootstrap_field form.perimeter %}
+                            {% comment %} {% bootstrap_field form.perimeters %} {% endcomment %}
                             <div class="col-12 col-md-6 mt-lg-3">
-                                <div id="dir_form_perimeter_name" class="form-group">
-                                    <label for="perimeter_name">{{ form.perimeter_name.label }}</label>
+                                <div id="dir_form_perimeter_name" data-input-name="{{ form.perimeters.name }}" class="form-group">
+                                    <label for="perimeter_name">{{ form.perimeters.label }}</label>
                                     <div class="field-holder">
                                         <div>
                                             {# {{ form.perimeter_name }} #}
                                         </div>
                                     </div>
                                 </div>
+                                <div id="perimeters-selected" class="mt-1"></div>
                             </div>
                         </div>
                         <div class="row">
@@ -117,7 +118,7 @@
                     {% for siae in siaes %}
                         {% include "siaes/_card_search_result.html" with siae=siae %}
                     {% endfor %}
-    
+
                     {% include "includes/_pagination.html" %}
                 {% else %}
                     <div class="no-results">
@@ -199,6 +200,10 @@
 {% endblock %}
 
 {% block extra_js %}
+{% comment %} <script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script> {% endcomment %}
+{{ current_perimeters|json_script:"current-perimeters" }}
+<script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
+
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
     // Set listings markers on load
@@ -239,7 +244,13 @@ document.addEventListener("DOMContentLoaded", function() {
             layer.bindPopup(`<a href="/prestataires/${feature.properties.slug}/"><p class="h6">${featureDisplayName}</p></a>`);
         }
     }).addTo(map);
-    map.fitBounds(geojson.getBounds());
+    geoBounds = geojson.getBounds();
+    if(geoBounds.isValid()){
+        map.fitBounds(geoBounds);
+    }
+
+
+
 });
 </script>
 <script type="text/javascript" src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
