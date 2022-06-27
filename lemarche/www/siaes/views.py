@@ -43,9 +43,8 @@ class SiaeSearchResultsView(FormMixin, ListView):
         - if the user is authenticated, annotate with favorite info
         """
         filter_form = SiaeSearchForm(data=self.request.GET)
-        perimeter = filter_form.get_perimeter()
-        results = filter_form.filter_queryset(perimeter)
-        results_ordered = filter_form.order_queryset(results, perimeter)
+        results = filter_form.filter_queryset()
+        results_ordered = filter_form.order_queryset(results)
         if self.request.user.is_authenticated:
             results_ordered = results_ordered.annotate_with_user_favorite_list_count(self.request.user)
         return results_ordered
@@ -58,7 +57,12 @@ class SiaeSearchResultsView(FormMixin, ListView):
         """
         context = super().get_context_data(**kwargs)
         if len(self.request.GET.keys()):
-            context["form"] = SiaeSearchForm(data=self.request.GET)
+            siae_search_form = SiaeSearchForm(data=self.request.GET)
+            context["form"] = siae_search_form
+            if siae_search_form.is_valid():
+                tender_perimeters = siae_search_form.cleaned_data.get("perimeters")
+                if tender_perimeters:
+                    context["current_perimeters"] = list(tender_perimeters.values("id", "name"))
         # store the current search query in the session
         current_search_query = self.request.GET.urlencode()
         self.request.session[CURRENT_SEARCH_QUERY_COOKIE_NAME] = current_search_query
@@ -72,6 +76,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         context["siaes_json"] = serialize(
             "geojson", context["siaes"], geometry_field="coords", fields=("id", "name", "brand", "slug")
         )
+
         return context
 
     def get(self, request, *args, **kwargs):
@@ -95,8 +100,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
     def get_queryset(self):
         """Filter results."""
         filter_form = SiaeSearchForm(data=self.request.GET)
-        perimeter = filter_form.get_perimeter()
-        results = filter_form.filter_queryset(perimeter)
+        results = filter_form.filter_queryset()
         return results
 
     def get(self, request, *args, **kwargs):

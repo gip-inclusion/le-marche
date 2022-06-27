@@ -29,15 +29,15 @@ GEO_RANGE_COUNTRY = "COUNTRY"
 
 
 def get_filter_city(perimeter, with_country=False):
-    filters = (
-        Q(post_code__in=perimeter.post_codes)
-        | (
+    filters = Q(post_code__in=perimeter.post_codes) | (
+        Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=perimeter.department_code)
+    )
+    if perimeter.coords:
+        filters |= (
             Q(geo_range=GEO_RANGE_CUSTOM)
             # why distance / 1000 ? because convert from meter to km
             & Q(geo_range_custom_distance__gte=Distance("coords", perimeter.coords) / 1000)
         )
-        | (Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=perimeter.department_code))
-    )
     if with_country:
         filters |= Q(geo_range=GEO_RANGE_COUNTRY)
     return filters
