@@ -281,7 +281,7 @@
                                 </div>
                                 <div class="il-r">
                                     <h3 class="h2 mb-1 mt-1">Références clients</h3>
-                                    {% if siae.client_reference_count < 6 %}
+                                    {% if siae.client_reference_count <= 6 %}
                                         <ul class="list-unstyled row row-cols-3 align-items-center">
                                         {% for image in siae.client_references.all %}
                                             <li class="col">
