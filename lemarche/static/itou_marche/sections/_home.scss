@@ -51,7 +51,19 @@
     overflow: visible;
 }
 
-
+.s-hp-slider-partners-tenders {
+	padding-top: 3rem;
+	padding-bottom: 0rem;
+	&__container{
+		&:after{
+			content: '';
+			display: inherit;
+			width: 50%;
+			margin: 2rem auto;
+			border-top: 1px solid $gray-200;
+		}
+	}
+}
 .s-hp-slider-partners {
 	padding-top: 1.5rem;
 	padding-bottom: 1.5rem;
