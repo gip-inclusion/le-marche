@@ -129,18 +129,27 @@
     
                 {% else %}
                     <div class="no-results">
-                        <p class="lead">
-                            Malheureusement, nous n'avons pas encore de prestataires correspondant à votre recherche sur La place de marché de l'inclusion.
+                        <p>
+                            Il y a encore de l'espoir ❤️
                         </p>
                         <p>
-                            <strong>Faites nous part de votre besoin et nous vous recontacterons rapidement</strong>
+                            Certaines structures n'ont pas mis à jour leurs informations sur le marché de l'inclusion !
                         </p>
-                        <div class="mt-3 mt-lg-5">
-                            <a href="{{ TYPEFORM_BESOIN_ACHAT_RECHERCHE }}" id="siae-search-empty-demande" class="btn btn-primary btn-ico">
-                                <span>Déposez votre demande</span>
-                                <i class="ri-arrow-right-line ri-lg"></i>
+                        <p>
+                            En déposant votre besoin, vous pouvez toutes les solliciter automatiquement.
+                            Ce sont elles qui reviendront vers vous si elles peuvent se positionner.
+                        </p>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'tenders:create' %}" id="siae-search-empty-demande" class="btn btn-primary btn-ico d-block d-md-inline-block mb-2">
+                                <i class="ri-mail-send-line ri-lg"></i>
+                                <span>Publier un besoin d'achat</span>
                             </a>
-                        </div>
+                        {% else %}
+                            <a href="#" id="siae-search-empty-demande-modal-btn" class="btn btn-primary btn-ico" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'tenders:create' %}">
+                                <i class="ri-mail-send-line ri-xl"></i>
+                                <span>Publier un besoin d'achat</span>
+                            </a>
+                        {% endif %}
                     </div>
                 {% endif %}
                 </div>
