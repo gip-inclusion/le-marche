@@ -190,6 +190,7 @@ class Tender(models.Model):
     siae_interested_list_last_seen_date = models.DateTimeField(
         "Date de dernière visite de l'auteur sur la page 'structures intéressées'", blank=True, null=True
     )
+    logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
 
     validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
 

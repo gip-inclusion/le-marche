@@ -14,6 +14,7 @@ from lemarche.tenders.factories import TenderFactory
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
+from lemarche.www.tenders.tasks import send_tenders_author_feedback_30_days
 
 
 class TenderCreateViewTest(TestCase):
@@ -318,6 +319,20 @@ class TenderDetailContactClickStatViewTest(TestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.tender.tendersiae_set.first().contact_click_date, siae_2_contact_click_date)
+
+
+class TenderTasksTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.tender = TenderFactory()
+
+    def test_send_email_for_feedbacks_set_log(self):
+        self.assertEqual(len(self.tender.logs), 0)
+        send_tenders_author_feedback_30_days(self.tender)
+        # fetch tender to be sure to have the last version of tender
+        tender: Tender = Tender.objects.get(pk=self.tender.pk)
+        self.assertEqual(len(tender.logs), 1)
+        self.assertEqual(tender.logs[0]["action"], "email_feedback_30d_sent")
 
 
 class TenderSiaeInterestedListView(TestCase):
