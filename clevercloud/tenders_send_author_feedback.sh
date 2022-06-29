@@ -3,8 +3,8 @@
 # Send email for tender feedback
 
 # Do not run if this env var is not set:
-if [[ -z "$CRON_SIAE_SEND_USER_REQUEST_REMINDERS_ENABLED" ]]; then
-    echo "CRON_SIAE_SEND_USER_REQUEST_REMINDERS_ENABLED not set. Exiting..."
+if [[ -z "$CRON_SEND_TENDER_FEEDBACKS_ENABLED" ]]; then
+    echo "CRON_SEND_TENDER_FEEDBACKS_ENABLED not set. Exiting..."
     exit 0
 fi
 
