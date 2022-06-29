@@ -8,6 +8,7 @@ from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
+from lemarche.tenders.models import Tender
 from lemarche.utils.constants import EMPTY_CHOICE
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
@@ -62,6 +63,9 @@ class SiaeSearchForm(forms.Form):
         required=False,
     )
 
+    tender = forms.ModelChoiceField(
+        queryset=Tender.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
+    )
     favorite_list = forms.ModelChoiceField(
         queryset=FavoriteList.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
     )
@@ -127,6 +131,10 @@ class SiaeSearchForm(forms.Form):
         network = self.cleaned_data.get("networks", None)
         if network:
             qs = qs.filter(networks__in=[network])
+
+        tender = self.cleaned_data.get("tender", None)
+        if tender:
+            qs = qs.filter(tendersiae__tender=tender, tendersiae__contact_click_date__isnull=False)
 
         favorite_list = self.cleaned_data.get("favorite_list", None)
         if favorite_list:

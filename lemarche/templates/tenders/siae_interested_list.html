@@ -24,14 +24,32 @@
 {% endblock %}
 
 {% block content %}
-<section>
-    <div class="container py-4">
+<section class="pt-4 pb-6">
+    <div class="container">
         <div class="row">
-            <div class="col-12 col-lg">
-                <h1>{{ tendersiaes.count }} structures intéressées</h1>
+            <div class="col-12 col-lg-8">
+                <h1 class="mb-3 mb-lg-5">{{ tendersiaes.count }} structures intéressées</h1>
             </div>
+            <div class="col-12 col-lg-4">
+                <div class="btn-group w-100 mb-3">
+                    <a href="{% url 'siae:search_results_download' %}?tender={{ tender.slug }}&format=xls" id="tender-siae-interested-export-xls" class="btn btn-outline-primary btn-ico btn-block {% if tendersiaes.count == 0 %}disabled{% endif %}" target="_blank">
+                        <span>Télécharger la liste (.xls)</span>
+                        <i class="ri-download-line ri-lg"></i>
+                    </a>
+                    <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="sr-only">Plus d'options de téléchargement</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a href="{% url 'siae:search_results_download' %}?tender={{ tender.slug }}&format=csv" id="tender-siae-interested-export-csv" class="dropdown-item {% if tendersiaes.count == 0 %}disabled{% endif %}" target="_blank">
+                            Télécharger la liste (.csv)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            <div class="col-12 my-5 py-3">
+        <div class="row">
+            <div class="col-12">
                 {% for tendersiae in tendersiaes %}
                     {% include "siaes/_card_tender.html" with siae=tendersiae.siae %}
                 {% endfor %}
