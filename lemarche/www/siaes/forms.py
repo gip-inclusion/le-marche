@@ -122,6 +122,14 @@ class SiaeSearchForm(forms.Form):
 
         return qs
 
+    def clean(self):
+        """
+        We override the clean method to manage the error of perimeters doesn't exit
+        """
+        super().clean()
+        if "perimeters" in self.errors:
+            self.errors["perimeters"][0] = "Périmètre inconnu"
+
     # def get_perimeter(self):
     #     """
     #     Method to extract the perimeter searched by the user.
