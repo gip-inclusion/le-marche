@@ -45,8 +45,8 @@ def send_message_to_channel(text: str, service_id: str, client: httpx.Client = N
             response = client.post(f"{BASE_URL}{service_id}", json=data)
             response.raise_for_status()
             logger.info("send message to slack")
-            logger.info(response.json())
-            return response.json()
+            # logger.info(response.json())  // you'll receive a "HTTP 200" response with a plain text ok indicating that your message posted successfully  # noqa
+            return True
         except httpx.HTTPStatusError as e:
             logger.error("Error while fetching `%s`: %s", e.request.url, e)
             raise e

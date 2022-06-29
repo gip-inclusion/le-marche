@@ -57,7 +57,7 @@ def add_to_contact_list_async(email_address, properties, contact_list_id, client
     try:
         response = client.post(contact_list_endpoint(contact_list_id), json=data)
         response.raise_for_status()
-        logger.info("add user to newsletter")
+        logger.info("add user to contact list")
         logger.info(response.json())
         return response.json()
     except httpx.HTTPStatusError as e:
