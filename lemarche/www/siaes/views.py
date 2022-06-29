@@ -42,9 +42,9 @@ class SiaeSearchResultsView(FormMixin, ListView):
         - filter and order using the SiaeSearchForm
         - if the user is authenticated, annotate with favorite info
         """
-        filter_form = SiaeSearchForm(data=self.request.GET)
-        results = filter_form.filter_queryset()
-        results_ordered = filter_form.order_queryset(results)
+        self.filter_form = SiaeSearchForm(data=self.request.GET)
+        results = self.filter_form.filter_queryset()
+        results_ordered = self.filter_form.order_queryset(results)
         if self.request.user.is_authenticated:
             results_ordered = results_ordered.annotate_with_user_favorite_list_count(self.request.user)
         return results_ordered
@@ -57,7 +57,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         """
         context = super().get_context_data(**kwargs)
         if len(self.request.GET.keys()):
-            siae_search_form = SiaeSearchForm(data=self.request.GET)
+            siae_search_form = self.filter_form if self.filter_form else SiaeSearchForm(data=self.request.GET)
             context["form"] = siae_search_form
             if siae_search_form.is_valid():
                 current_perimeters = siae_search_form.cleaned_data.get("perimeters")
@@ -80,18 +80,19 @@ class SiaeSearchResultsView(FormMixin, ListView):
         return context
 
     def get(self, request, *args, **kwargs):
-        siae_list = self.get_queryset()
+        self.object_list = self.get_queryset()
         # Track search event
         track(
             "backend",
             "directory_search",
-            meta=extract_meta_from_request(self.request, results_count=siae_list.count()),
+            meta=extract_meta_from_request(self.request, results_count=self.object_list.count()),
         )
-        user = self.request.user
+        user = request.user
         if not user.is_anonymous and user.kind == user.KIND_BUYER:
             add_to_contact_list(user, "buyer_search")
 
-        return super().get(request, *args, **kwargs)
+        context = self.get_context_data()
+        return self.render_to_response(context)
 
 
 class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
