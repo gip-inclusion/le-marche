@@ -83,9 +83,8 @@ def send_tenders_author_feedback_30_days(tender: Tender):
 
     # log email
     log_item = {
-        "action": "email_sent",
+        "action": "email_feedback_30d_sent",
         "email_to": recipient_email,
-        "email_subject": email_subject,
         # "email_body": email_body,
         "email_timestamp": timezone.now().isoformat(),
     }
