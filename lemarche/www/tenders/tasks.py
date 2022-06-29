@@ -4,6 +4,7 @@ from django.utils import timezone
 
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
+from lemarche.users.models import User
 from lemarche.utils.apis import api_mailjet, api_slack
 from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX, send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_admin_url_object, get_share_url_object
@@ -57,6 +58,38 @@ def send_tender_email_to_partner(tender: Tender, partner: PartnerShareTender):
             recipient_email_list=recipient_list,
             variables=variables,
         )
+
+
+def send_tenders_author_feedback_30_days(tender: Tender):
+    email_subject = EMAIL_SUBJECT_PREFIX + "Concernant votre dépôt de besoin sur le marché de l'inclusion"
+    author_tender: User = tender.author
+    recipient_list = whitelist_recipient_list([author_tender.email])
+    recipient_email = recipient_list[0] if recipient_list else ""
+    recipient_name = author_tender.full_name
+
+    variables = {
+        "TENDER_TITLE": tender.title,
+        "TENDER_VALIDATE_AT": tender.validated_at,
+        "USER_FIRST_NAME": author_tender.full_name,
+    }
+
+    api_mailjet.send_transactional_email_with_template(
+        template_id=settings.MAILJET_TENDERS_USERS_FEEDBACKS_30D_TEMPLATE_ID,
+        subject=email_subject,
+        recipient_email=recipient_email,
+        recipient_name=recipient_name,
+        variables=variables,
+    )
+
+    # log email
+    log_item = {
+        "action": "email_feedback_30d_sent",
+        "email_to": recipient_email,
+        # "email_body": email_body,
+        "email_timestamp": timezone.now().isoformat(),
+    }
+    tender.logs.append(log_item)
+    tender.save()
 
 
 # @task()
