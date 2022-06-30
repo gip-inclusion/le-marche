@@ -227,7 +227,6 @@ class SiaeQuerySet(models.QuerySet):
         **REGION**
         return only the Siae in this region
         """
-        print("in_perimeters_area", perimeters)
         conditions = Q()
         for perimeter in perimeters:
             if perimeter.kind == Perimeter.KIND_CITY:

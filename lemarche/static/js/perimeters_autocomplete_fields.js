@@ -116,8 +116,8 @@ document.addEventListener("DOMContentLoaded", function() {
   if (document.body.contains(perimeterAutocompleteContainer)) {
     accessibleAutocomplete({
       element: perimeterAutocompleteContainer,
-      id: 'perimeters',
-      name: 'perimeters',  // url GET param name
+      id: 'id_perimeters',
+      name: '',  // url GET param name. empty to avoid having the default value appearing ('input-autocomplete')
       placeholder: 'Région, département, ville',  // 'Autour de (Arras, Bobigny, Strasbourg…)',
       minLength: 2,
       defaultValue: "",
