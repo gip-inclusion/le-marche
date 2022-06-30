@@ -31,19 +31,21 @@ class SiaeSearchForm(forms.Form):
         to_field_name="slug",
         required=False,
     )
-    # The hidden `perimeter` field is populated by the JS autocomplete library, see `perimeters_autocomplete_field.js`
+    # The hidden `perimeters` field is populated by the JS autocomplete library, see `perimeters_autocomplete_field.js`
     perimeters = forms.ModelMultipleChoiceField(
         label=Perimeter._meta.verbose_name_plural,
         queryset=Perimeter.objects.all(),
+        to_field_name="slug",
         required=False,
+        # widget=forms.HiddenInput()
     )
     kind = forms.MultipleChoiceField(
-        label="Type de structure",
+        label=Siae._meta.get_field("kind").verbose_name,
         choices=FORM_KIND_CHOICES_GROUPED,
         required=False,
     )
     presta_type = forms.ChoiceField(
-        label="Type de prestation",
+        label=Siae._meta.get_field("presta_type").verbose_name,
         choices=FORM_PRESTA_CHOICES,
         required=False,
     )
@@ -120,52 +122,6 @@ class SiaeSearchForm(forms.Form):
         qs = qs.distinct()
 
         return qs
-
-    def clean(self):
-        """
-        We override the clean method to manage the error of perimeters doesn't exit
-        """
-        super().clean()
-        if "perimeters" in self.errors:
-            self.errors["perimeters"][0] = "Périmètre inconnu"
-
-    # def get_perimeter(self):
-    #     """
-    #     Method to extract the perimeter searched by the user.
-    #     Useful to avoid duplicate DB queries on the Perimeter model.
-    #     """
-    #     perimeters = None
-    #     search_perimeters = self.data.getlist("perimeters", None)
-    #     # A valid perimeter search must have both the `perimeter` & `perimeter_name` fields in the querystring
-    #     if search_perimeters:
-    #         try:
-    #             # perimeters = Perimeter.objects.in_bulk(search_perimeters)
-    #             perimeters = Perimeter.objects.filter(id__in=search_perimeters)
-    #         except Perimeter.DoesNotExist:
-    #             pass
-    #     return perimeters
-
-    def perimeter_filter(self, qs, perimeters):
-        """
-        Method to filter the Siaes depending on the perimeter filter.
-        The search_perimeter should be a Perimeter slug.
-        Depending on the type of Perimeter that was chosen, different cases arise:
-
-        **CITY**
-        return the Siae with the post code in Perimeter.post_codes+department
-        OR the Siae with geo_range=GEO_RANGE_CUSTOM and a perimeter radius that overlaps with the search_perimeter
-        OR the Siae with geo_range=GEO_RANGE_DEPARTMENT and a department equal to the search_perimeter's
-
-        **DEPARTMENT**
-        return only the Siae in this department
-
-        **REGION**
-        return only the Siae in this region
-        """
-        if not perimeters:
-            return qs
-
-        return qs.in_perimeters_area(perimeters)
 
     def order_queryset(self, qs):
         """

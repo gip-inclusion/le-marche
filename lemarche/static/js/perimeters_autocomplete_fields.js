@@ -1,6 +1,6 @@
 // need to setup "current-perimeters" div which contains the currents perimeters selected to manage the refresh page
 
-const perimeterAutocompleteContainer = document.querySelector('#dir_form_perimeter_name');
+const perimeterAutocompleteContainer = document.querySelector('#dir_form_perimeters');
 const perimetersContainer = document.querySelector('#perimeters-selected');
 const inputName = perimeterAutocompleteContainer.dataset.inputName;
 
@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function() {
       //   perimeterInput.value = result.slug;
       // }
       // debugger
-      createHiddenInputPerimeter(result.id, result.name);
+      createHiddenInputPerimeter(result.slug, result.name);  // result.id
       // // Edge case: if there is an initial value and it is selected again (!)  // commented out because the hidden input value is already set, no need to re-set it
       // if (typeof result === 'string') {
       //   perimeterInput.value = perimeterParamInitial;
@@ -116,8 +116,8 @@ document.addEventListener("DOMContentLoaded", function() {
   if (document.body.contains(perimeterAutocompleteContainer)) {
     accessibleAutocomplete({
       element: perimeterAutocompleteContainer,
-      id: 'perimeter_name',
-      name: 'perimeter_name',  // url GET param name
+      id: 'perimeters',
+      name: 'perimeters',  // url GET param name
       placeholder: 'Région, département, ville',  // 'Autour de (Arras, Bobigny, Strasbourg…)',
       minLength: 2,
       defaultValue: "",
@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function() {
   let currentPerimeters = JSON.parse(document.getElementById('current-perimeters').textContent);
   if (currentPerimeters) {
       currentPerimeters.forEach(perimeter => {
-          createHiddenInputPerimeter(parseInt(perimeter['id']), perimeter['name']);
+          createHiddenInputPerimeter(perimeter['slug'], perimeter['name']);  // parseInt(perimeter['id'])
       });
   }
 });

@@ -212,6 +212,22 @@ class SiaeQuerySet(models.QuerySet):
         return self.filter(get_filter_city(perimeter))
 
     def in_perimeters_area(self, perimeters: models.QuerySet, with_country=False):
+        """
+        Method to filter the Siaes depending on the perimeter filter.
+        Depending on the type of Perimeter that were chosen, different cases arise:
+
+        **CITY**
+        return the Siae with the post code in Perimeter.post_codes+department
+        OR the Siae with geo_range=GEO_RANGE_CUSTOM and a perimeter radius that overlaps with the search_perimeter
+        OR the Siae with geo_range=GEO_RANGE_DEPARTMENT and a department equal to the search_perimeter's
+
+        **DEPARTMENT**
+        return only the Siae in this department
+
+        **REGION**
+        return only the Siae in this region
+        """
+        print("in_perimeters_area", perimeters)
         conditions = Q()
         for perimeter in perimeters:
             if perimeter.kind == Perimeter.KIND_CITY:

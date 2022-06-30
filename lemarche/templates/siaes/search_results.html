@@ -33,11 +33,11 @@
                                 {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
                             </div>
                             <div class="col-12 col-md-6 mt-lg-3">
-                                <div id="dir_form_perimeter_name" data-input-name="{{ form.perimeters.name }}" class="form-group">
-                                    <label for="perimeter_name">{{ form.perimeters.label }}</label>
-                                    <div class="field-holder">{# {{ form.perimeter_name }} #}</div>
+                                <div class="form-group">
+                                    <label for="id_perimeters">{{ form.perimeters.label }}</label>
+                                    <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
+                                    <div id="perimeters-selected" class="mt-1"></div>
                                 </div>
-                                <div id="perimeters-selected" class="mt-1"></div>
                             </div>
                         </div>
                         <div class="row">
