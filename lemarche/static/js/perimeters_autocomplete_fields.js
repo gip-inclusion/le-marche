@@ -1,5 +1,8 @@
+// need to setup "current-perimeters" div which contains the currents perimeters selected to manage the refresh page
+
 const perimeterAutocompleteContainer = document.querySelector('#dir_form_perimeter_name');
 const perimetersContainer = document.querySelector('#perimeters-selected');
+const inputName = perimeterAutocompleteContainer.dataset.inputName;
 
 function removeInputOnClick() {
   let idRefInput = $(this).data('refinput');
@@ -14,13 +17,13 @@ function createHiddenInputPerimeter(resultId, resultName) {
   $('<input>', {
       type: 'hidden',
       id: resultIdString,
-      name: 'general-perimeters',
+      name: inputName,
       value: resultId
   }).appendTo(perimetersContainer);
   let button = $('<button>', {
       type: 'button',
-      class: "btn btn-sm btn-outline-primary btn-warning mr-2",
-      title: `Retirer ${resultName} du besoin`,
+      class: "btn btn-sm btn-outline-primary btn-warning mr-2 mb-2",
+      title: `Retirer ${resultName}`,
       text: `${resultName}`,
       'data-refInput': resultIdString,
       click: removeInputOnClick
@@ -141,6 +144,14 @@ document.addEventListener("DOMContentLoaded", function() {
       // tStatusResults:
       // tAssistiveHint:
     });
+  }
+
+
+  let currentPerimeters = JSON.parse(document.getElementById('current-perimeters').textContent);
+  if (currentPerimeters) {
+      currentPerimeters.forEach(perimeter => {
+          createHiddenInputPerimeter(parseInt(perimeter['id']), perimeter['name']);
+      });
   }
 });
 

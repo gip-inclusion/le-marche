@@ -33,12 +33,10 @@ class SiaeSearchForm(forms.Form):
     )
     # The hidden `perimeter` field is populated by the autocomplete JavaScript mechanism,
     # see `perimeter_autocomplete_field.js`.
-    perimeter = forms.CharField(required=False, widget=forms.HiddenInput())
-    # Most of the field will be overridden by the autocomplete mechanism
-    perimeter_name = forms.CharField(
-        label="Lieu d'intervention",
+    perimeters = forms.ModelMultipleChoiceField(
+        label=Perimeter._meta.verbose_name_plural,
+        queryset=Perimeter.objects.all(),
         required=False,
-        widget=forms.TextInput(attrs={"placeholder": "Région, département, ville"}),
     )
     kind = forms.MultipleChoiceField(
         label="Type de structure",
@@ -70,29 +68,7 @@ class SiaeSearchForm(forms.Form):
         queryset=FavoriteList.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
     )
 
-    def clean(self):
-        """
-        We override the clean method to manage 2 edge cases:
-        a) if perimeter is empty but perimeter_name is not
-            - how come? the user used the typeahead but didn't select a perimeter option
-            - result? show an error
-        b) if perimeter_name is empty but perimeter is not
-            - how come? the user had previously searched a valid perimeter option, but erased it
-            - result? erase the perimeter data. also managed in get_perimeter()
-            - TODO: manage this case in the frontend?
-        """
-        cleaned_data = super().clean()
-        perimeter = cleaned_data.get("perimeter", "")
-        perimeter_name = cleaned_data.get("perimeter_name", "")
-        if not perimeter and perimeter_name:
-            raise forms.ValidationError(
-                {"perimeter_name": "Périmètre inconnu. Veuillez en choisir un dans la liste, ou effacer le texte."}
-            )
-        if perimeter and not perimeter_name:
-            self.cleaned_data["perimeter"] = ""
-            return self.cleaned_data
-
-    def filter_queryset(self, perimeter=None):  # noqa C901
+    def filter_queryset(self):  # noqa C901
         """
         Method to filter the Siaes depending on the search filters.
         We also make sure there are no duplicates.
@@ -107,8 +83,9 @@ class SiaeSearchForm(forms.Form):
         if sectors:
             qs = qs.filter_sectors(sectors)
 
-        if perimeter:
-            qs = self.perimeter_filter(qs, perimeter)
+        perimeters = self.cleaned_data.get("perimeters", None)
+        if perimeters:
+            qs = qs.in_perimeters_area(perimeters)
 
         kind = self.cleaned_data.get("kind", None)
         if kind:
@@ -145,23 +122,31 @@ class SiaeSearchForm(forms.Form):
 
         return qs
 
-    def get_perimeter(self):
+    def clean(self):
         """
-        Method to extract the perimeter searched by the user.
-        Useful to avoid duplicate DB queries on the Perimeter model.
+        We override the clean method to manage the error of perimeters doesn't exit
         """
-        perimeter = None
-        search_perimeter = self.data.get("perimeter", None)
-        search_perimeter_name = self.data.get("perimeter_name", None)
-        # A valid perimeter search must have both the `perimeter` & `perimeter_name` fields in the querystring
-        if search_perimeter and search_perimeter_name:
-            try:
-                perimeter = Perimeter.objects.get(slug=search_perimeter)
-            except Perimeter.DoesNotExist:
-                pass
-        return perimeter
+        super().clean()
+        if "perimeters" in self.errors:
+            self.errors["perimeters"][0] = "Périmètre inconnu"
 
-    def perimeter_filter(self, qs, perimeter):
+    # def get_perimeter(self):
+    #     """
+    #     Method to extract the perimeter searched by the user.
+    #     Useful to avoid duplicate DB queries on the Perimeter model.
+    #     """
+    #     perimeters = None
+    #     search_perimeters = self.data.getlist("perimeters", None)
+    #     # A valid perimeter search must have both the `perimeter` & `perimeter_name` fields in the querystring
+    #     if search_perimeters:
+    #         try:
+    #             # perimeters = Perimeter.objects.in_bulk(search_perimeters)
+    #             perimeters = Perimeter.objects.filter(id__in=search_perimeters)
+    #         except Perimeter.DoesNotExist:
+    #             pass
+    #     return perimeters
+
+    def perimeter_filter(self, qs, perimeters):
         """
         Method to filter the Siaes depending on the perimeter filter.
         The search_perimeter should be a Perimeter slug.
@@ -178,21 +163,12 @@ class SiaeSearchForm(forms.Form):
         **REGION**
         return only the Siae in this region
         """
-        if not perimeter:
+        if not perimeters:
             return qs
-        if perimeter.kind == Perimeter.KIND_CITY:
-            # qs = qs.in_range_of_point(city_coords=perimeter.coords)
-            qs = qs.in_city_area(perimeter=perimeter)
-        elif perimeter.kind == Perimeter.KIND_DEPARTMENT:
-            qs = qs.in_department(department_code=perimeter.insee_code)
-        elif perimeter.kind == Perimeter.KIND_REGION:
-            qs = qs.in_region(region_name=perimeter.name)
-        else:
-            # unknown perimeter kind, don't filter
-            pass
-        return qs
 
-    def order_queryset(self, qs, perimeter):
+        return qs.in_perimeters_area(perimeters)
+
+    def order_queryset(self, qs):
         """
         Method to order the search results (can depend on the search filters).
 
@@ -220,7 +196,10 @@ class SiaeSearchForm(forms.Form):
         )
 
         # annotate on distance to siae if CITY searched
-        if perimeter:
+        # TODO: QUID des distances
+        perimeters = self.cleaned_data.get("perimeters", None)
+        if perimeters and len(perimeters) == 1:
+            perimeter = perimeters[0]
             if perimeter and perimeter.kind == Perimeter.KIND_CITY:
                 qs = qs.annotate(
                     distance=Case(
