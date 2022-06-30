@@ -29,15 +29,15 @@ GEO_RANGE_COUNTRY = "COUNTRY"
 
 
 def get_filter_city(perimeter, with_country=False):
-    filters = (
-        Q(post_code__in=perimeter.post_codes)
-        | (
+    filters = Q(post_code__in=perimeter.post_codes) | (
+        Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=perimeter.department_code)
+    )
+    if perimeter.coords:
+        filters |= (
             Q(geo_range=GEO_RANGE_CUSTOM)
             # why distance / 1000 ? because convert from meter to km
             & Q(geo_range_custom_distance__gte=Distance("coords", perimeter.coords) / 1000)
         )
-        | (Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=perimeter.department_code))
-    )
     if with_country:
         filters |= Q(geo_range=GEO_RANGE_COUNTRY)
     return filters
@@ -212,23 +212,15 @@ class SiaeQuerySet(models.QuerySet):
         return self.filter(get_filter_city(perimeter))
 
     def in_perimeters_area(self, perimeters: models.QuerySet, with_country=False):
-        cities = perimeters.filter(kind=Perimeter.KIND_CITY)
-        departments = perimeters.filter(kind=Perimeter.KIND_DEPARTMENT)
-        regions = perimeters.filter(kind=Perimeter.KIND_REGION)
         conditions = Q()
-        if cities:
-            # https://stackoverflow.com/questions/20222457/django-building-a-queryset-with-q-objects
-            conditions |= get_filter_city(cities[0], with_country)
-            for c in cities[1:]:
-                conditions |= get_filter_city(c, with_country)
-        if departments:
-            conditions |= Q(department=departments[0].insee_code)
-            for d in departments[1:]:
-                conditions |= Q(department=d.insee_code)
-        if regions:
-            conditions |= Q(region=regions[0].name)
-            for r in regions[1:]:
-                conditions |= Q(region=r.name)
+        for perimeter in perimeters:
+            if perimeter.kind == Perimeter.KIND_CITY:
+                # https://stackoverflow.com/questions/20222457/django-building-a-queryset-with-q-objects
+                conditions |= get_filter_city(perimeter, with_country)
+            if perimeter.kind == Perimeter.KIND_DEPARTMENT:
+                conditions |= Q(department=perimeter.insee_code)
+            if perimeter.kind == Perimeter.KIND_REGION:
+                conditions |= Q(region=perimeter.name)
         return self.filter(conditions)
 
     def within(self, point, distance_km=0):

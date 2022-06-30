@@ -183,20 +183,17 @@ class SiaeNetworkSearchFilterTest(TestCase):
 
     def test_search_network_empty(self):
         form = SiaeSearchForm({"networks": ""})
-        perimeter = form.get_perimeter()
-        qs = form.filter_queryset(perimeter)
+        qs = form.filter_queryset()
         self.assertEqual(qs.count(), 2)
 
     def test_search_network(self):
         form = SiaeSearchForm({"networks": f"{self.network.slug}"})
-        perimeter = form.get_perimeter()
-        qs = form.filter_queryset(perimeter)
+        qs = form.filter_queryset()
         self.assertEqual(qs.count(), 1)
 
     def test_search_unknown_network_ignores_filter(self):
         form = SiaeSearchForm({"networks": "coucou"})
-        perimeter = form.get_perimeter()
-        qs = form.filter_queryset(perimeter)
+        qs = form.filter_queryset()
         self.assertEqual(qs.count(), 2)
 
 
@@ -204,10 +201,12 @@ class SiaePerimeterSearchFilterTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         # create the Perimeters
-        auvergne_rhone_alpes_perimeter = PerimeterFactory(
+        cls.auvergne_rhone_alpes_perimeter = PerimeterFactory(
             name="Auvergne-Rhône-Alpes", kind=Perimeter.KIND_REGION, insee_code="R84"
         )
-        PerimeterFactory(name="Isère", kind=Perimeter.KIND_DEPARTMENT, insee_code="38", region_code="84")
+        cls.isere_perimeter = PerimeterFactory(
+            name="Isère", kind=Perimeter.KIND_DEPARTMENT, insee_code="38", region_code="84"
+        )
         cls.grenoble_perimeter = PerimeterFactory(
             name="Grenoble",
             kind=Perimeter.KIND_CITY,
@@ -217,7 +216,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
             post_codes=["38000", "38100", "38700"],
             coords=Point(5.7301, 45.1825),
         )
-        chamrousse_perimeter = PerimeterFactory(
+        cls.chamrousse_perimeter = PerimeterFactory(
             name="Chamrousse",
             kind=Perimeter.KIND_CITY,
             insee_code="38567",
@@ -226,32 +225,45 @@ class SiaePerimeterSearchFilterTest(TestCase):
             post_codes=["38410"],
             coords=Point(5.8862, 45.1106),
         )
+        cls.bretagne_perimeter = PerimeterFactory(name="Bretagne", kind=Perimeter.KIND_REGION, insee_code="R53")
+        cls.finister_perimeter = PerimeterFactory(
+            name="Finistère", kind=Perimeter.KIND_DEPARTMENT, insee_code="29", region_code="53"
+        )
+        cls.quimper_perimeter = PerimeterFactory(
+            insee_code="29232",
+            name="Quimper",
+            kind=Perimeter.KIND_CITY,
+            department_code="29",
+            region_code="53",
+            post_codes=["2923", "2924"],
+            coords=Point(47.9911, -4.1126),
+        )
         # create the Siaes
         SiaeFactory(
             city=cls.grenoble_perimeter.name,
             department=cls.grenoble_perimeter.department_code,
-            region=auvergne_rhone_alpes_perimeter.name,
+            region=cls.auvergne_rhone_alpes_perimeter.name,
             post_code=cls.grenoble_perimeter.post_codes[0],
             geo_range=Siae.GEO_RANGE_COUNTRY,
         )
         SiaeFactory(
             city=cls.grenoble_perimeter.name,
             department=cls.grenoble_perimeter.department_code,
-            region=auvergne_rhone_alpes_perimeter.name,
+            region=cls.auvergne_rhone_alpes_perimeter.name,
             post_code=cls.grenoble_perimeter.post_codes[0],
             geo_range=Siae.GEO_RANGE_REGION,
         )
         SiaeFactory(
             city=cls.grenoble_perimeter.name,
             department=cls.grenoble_perimeter.department_code,
-            region=auvergne_rhone_alpes_perimeter.name,
+            region=cls.auvergne_rhone_alpes_perimeter.name,
             post_code=cls.grenoble_perimeter.post_codes[1],
             geo_range=Siae.GEO_RANGE_DEPARTMENT,
         )
         SiaeFactory(
             city=cls.grenoble_perimeter.name,
             department=cls.grenoble_perimeter.department_code,
-            region=auvergne_rhone_alpes_perimeter.name,
+            region=cls.auvergne_rhone_alpes_perimeter.name,
             post_code=cls.grenoble_perimeter.post_codes[2],
             geo_range=Siae.GEO_RANGE_CUSTOM,
             geo_range_custom_distance=10,
@@ -261,104 +273,98 @@ class SiaePerimeterSearchFilterTest(TestCase):
         SiaeFactory(
             city="La Tronche",
             department="38",
-            region=auvergne_rhone_alpes_perimeter.name,
+            region=cls.auvergne_rhone_alpes_perimeter.name,
             geo_range=Siae.GEO_RANGE_CUSTOM,
             geo_range_custom_distance=10,
             coords=Point(5.746, 45.2124),
         )
         # Chamrousse is a city located further away from Grenoble
         SiaeFactory(
-            city=chamrousse_perimeter.name,
+            city=cls.chamrousse_perimeter.name,
             department="38",
-            region=auvergne_rhone_alpes_perimeter.name,
+            region=cls.auvergne_rhone_alpes_perimeter.name,
             geo_range=Siae.GEO_RANGE_CUSTOM,
             geo_range_custom_distance=5,
             coords=Point(5.8862, 45.1106),
         )
         SiaeFactory(
-            city="Lyon", department="69", region=auvergne_rhone_alpes_perimeter.name, geo_range=Siae.GEO_RANGE_COUNTRY
-        )
-        SiaeFactory(
-            city="Lyon", department="69", region=auvergne_rhone_alpes_perimeter.name, geo_range=Siae.GEO_RANGE_REGION
+            city="Lyon",
+            department="69",
+            region=cls.auvergne_rhone_alpes_perimeter.name,
+            geo_range=Siae.GEO_RANGE_COUNTRY,
         )
         SiaeFactory(
             city="Lyon",
             department="69",
-            region=auvergne_rhone_alpes_perimeter.name,
+            region=cls.auvergne_rhone_alpes_perimeter.name,
+            geo_range=Siae.GEO_RANGE_REGION,
+        )
+        SiaeFactory(
+            city="Lyon",
+            department="69",
+            region=cls.auvergne_rhone_alpes_perimeter.name,
             geo_range=Siae.GEO_RANGE_DEPARTMENT,
         )
         SiaeFactory(
             city="Lyon",
             department="69",
-            region=auvergne_rhone_alpes_perimeter.name,
+            region=cls.auvergne_rhone_alpes_perimeter.name,
             geo_range=Siae.GEO_RANGE_CUSTOM,
             geo_range_custom_distance=50,
             coords=Point(4.8236, 45.7685),
         )
-        SiaeFactory(city="Quimper", department="29", region="Bretagne", geo_range=Siae.GEO_RANGE_COUNTRY)
-        SiaeFactory(city="Quimper", department="29", region="Bretagne", geo_range=Siae.GEO_RANGE_REGION)
-        SiaeFactory(city="Quimper", department="29", region="Bretagne", geo_range=Siae.GEO_RANGE_DEPARTMENT)
         SiaeFactory(
-            city="Quimper",
-            department="29",
-            region="Bretagne",
+            city=cls.quimper_perimeter.name,
+            department=cls.quimper_perimeter.department_code,
+            region=cls.bretagne_perimeter.name,
+            geo_range=Siae.GEO_RANGE_COUNTRY,
+        )
+        SiaeFactory(
+            city=cls.quimper_perimeter.name,
+            department=cls.quimper_perimeter.department_code,
+            region=cls.bretagne_perimeter.name,
+            geo_range=Siae.GEO_RANGE_REGION,
+        )
+        SiaeFactory(
+            city=cls.quimper_perimeter.name,
+            department=cls.quimper_perimeter.department_code,
+            region=cls.bretagne_perimeter.name,
+            geo_range=Siae.GEO_RANGE_DEPARTMENT,
+        )
+        SiaeFactory(
+            city=cls.quimper_perimeter.name,
+            department=cls.quimper_perimeter.department_code,
+            region=cls.bretagne_perimeter.name,
             geo_range=Siae.GEO_RANGE_CUSTOM,
             geo_range_custom_distance=50,
-            coords=Point(-4.0916, 47.9914),
+            coords=Point(47.9914, -4.0916),
         )
 
     def test_object_count(self):
-        self.assertEqual(Perimeter.objects.count(), 4)
+        self.assertEqual(Perimeter.objects.count(), 7)
         self.assertEqual(Siae.objects.count(), 14)
 
     def test_search_perimeter_empty(self):
-        form = SiaeSearchForm({"perimeter": "", "perimeter_name": ""})
-        perimeter = form.get_perimeter()
-        qs = form.filter_queryset(perimeter)
+        form = SiaeSearchForm({"perimeters": [""]})
+        qs = form.filter_queryset()
         self.assertEqual(qs.count(), 14)
-
-    def test_search_perimeter_name_empty(self):
-        form = SiaeSearchForm({"perimeter": "old-search", "perimeter_name": ""})
-        perimeter = form.get_perimeter()
-        qs = form.filter_queryset(perimeter)
-        self.assertEqual(qs.count(), 14)
-
-    def test_search_perimeter_name_empty_but_perimeter_valid(self):
-        form = SiaeSearchForm({"perimeter": "auvergne-rhone-alpes-region", "perimeter_name": ""})
-        perimeter = form.get_perimeter()
-        qs = form.filter_queryset(perimeter)
-        self.assertEqual(qs.count(), 14)  # perimeter filter is also ignored
-
-    def test_search_perimeter_name_not_empty(self):
-        form = SiaeSearchForm({"perimeter": "", "perimeter_name": "Old Search"})
-        perimeter = form.get_perimeter()
-        qs = form.filter_queryset(perimeter)
-        self.assertEqual(qs.count(), 14)
-        self.assertFalse(form.is_valid())
-        self.assertIn("perimeter_name", form.errors.keys())
-        self.assertIn("Périmètre inconnu", form.errors["perimeter_name"][0])
-
-    def test_search_perimeter_name_not_empty_but_perimeter_name_valid(self):
-        form = SiaeSearchForm({"perimeter": "", "perimeter_name": "Auvergne-Rhône-Alpes (région)"})
-        perimeter = form.get_perimeter()
-        qs = form.filter_queryset(perimeter)
-        self.assertEqual(qs.count(), 14)  # perimeter filter is also ignored
-        self.assertFalse(form.is_valid())
-        self.assertIn("perimeter_name", form.errors.keys())
-        self.assertIn("Périmètre inconnu", form.errors["perimeter_name"][0])
 
     def test_search_perimeter_region(self):
-        form = SiaeSearchForm(
-            {"perimeter": "auvergne-rhone-alpes-region", "perimeter_name": "Auvergne-Rhône-Alpes (région)"}
-        )
-        perimeter = form.get_perimeter()
-        qs = form.filter_queryset(perimeter)
+        form = SiaeSearchForm({"perimeters": [self.auvergne_rhone_alpes_perimeter.id]})
+        qs = form.filter_queryset()
         self.assertEqual(qs.count(), 10)
 
+    def test_search_perimeter_not_exist(self):
+        form = SiaeSearchForm({"perimeters": ["-1"]})
+        qs = form.filter_queryset()
+        self.assertEqual(qs.count(), 14)
+        self.assertFalse(form.is_valid())
+        self.assertIn("perimeters", form.errors.keys())
+        self.assertIn("Périmètre inconnu", form.errors["perimeters"][0])
+
     def test_search_perimeter_department(self):
-        form = SiaeSearchForm({"perimeter": "isere", "perimeter_name": "Isère (département)"})
-        perimeter = form.get_perimeter()
-        qs = form.filter_queryset(perimeter)
+        form = SiaeSearchForm({"perimeters": [self.isere_perimeter]})
+        qs = form.filter_queryset()
         self.assertEqual(qs.count(), 6)
 
     def test_search_perimeter_city(self):
@@ -368,9 +374,9 @@ class SiaePerimeterSearchFilterTest(TestCase):
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble (2 SIAE: Grenoble & La Tronche. Chamrousse is outside)  # noqa
         + all the Siae with geo_range=GEO_RANGE_DEPARTMENT + department=38 (1 SIAE)
         """
-        form = SiaeSearchForm({"perimeter": "grenoble-38", "perimeter_name": "Grenoble (38)"})
-        perimeter = form.get_perimeter()
-        qs = form.filter_queryset(perimeter)
+        form = SiaeSearchForm({"perimeters": [self.grenoble_perimeter.id]})
+        self.assertTrue(form.is_valid())
+        qs = form.filter_queryset()
         self.assertEqual(qs.count(), 2 + 2 + 1)
 
     def test_search_perimeter_city_2(self):
@@ -380,10 +386,43 @@ class SiaePerimeterSearchFilterTest(TestCase):
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble (1 SIAE: Chamrousse. Grenoble & La Tronche are outside)  # noqa
         + all the Siae with geo_range=GEO_RANGE_DEPARTMENT + department=38 (1 SIAE)
         """
-        form = SiaeSearchForm({"perimeter": "chamrousse-38", "perimeter_name": "Chamrousse (38)"})
-        perimeter = form.get_perimeter()
-        qs = form.filter_queryset(perimeter)
+        form = SiaeSearchForm({"perimeters": [self.chamrousse_perimeter]})
+        qs = form.filter_queryset()
         self.assertEqual(qs.count(), 0 + 1 + 1)
+
+    def test_search_perimeter_multiperimeter_1(self):
+        """
+        We should return:
+        - all the Siae exactly in this city+department of Grenoble or Chamrousse (2 SIAE)
+        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble or Chamrousse (2 SIAE) # noqa
+        + all the Siae with geo_range=GEO_RANGE_DEPARTMENT + department of Grenoble or chamrousse (2 SIAE)
+        """
+        form = SiaeSearchForm({"perimeters": [self.grenoble_perimeter, self.chamrousse_perimeter]})
+        qs = form.filter_queryset()
+        self.assertEqual(qs.count(), 2 + 2 + 2)
+
+    def test_search_perimeter_multiperimeter_2(self):
+        """
+        We should return:
+        - all the Siae exactly in this city+department of Grenoble or quimper (2 SIAE)
+        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble or Quimper (2 SIAE) # noqa
+        + all the Siae with geo_range=GEO_RANGE_DEPARTMENT + department of Grenoble or Quimper (3 SIAE)
+        """
+        form = SiaeSearchForm({"perimeters": [self.grenoble_perimeter, self.quimper_perimeter]})
+        qs = form.filter_queryset()
+        self.assertEqual(qs.count(), 2 + 2 + 3)
+
+    def test_search_perimeter_multiperimeter_error(self):
+        """
+        test one perimeter is good and the other one is not
+        We should return the default qs with error
+        """
+        form = SiaeSearchForm({"perimeters": [self.grenoble_perimeter, "-1"]})
+        qs = form.filter_queryset()
+        self.assertFalse(form.is_valid())
+        self.assertIn("perimeters", form.errors.keys())
+        self.assertIn("Périmètre inconnu", form.errors["perimeters"][0])
+        self.assertEqual(qs.count(), 14)
 
 
 class SiaeSearchOrderTest(TestCase):
@@ -425,7 +464,7 @@ class SiaeSearchOrderTest(TestCase):
         self.assertEqual(siaes[0].name, "ZZ ESI 3")
 
     def test_should_bring_the_siae_closer_to_the_city_to_the_top(self):
-        PerimeterFactory(
+        grenoble_perimeter = PerimeterFactory(
             name="Grenoble",
             kind=Perimeter.KIND_CITY,
             insee_code="38185",
@@ -453,7 +492,7 @@ class SiaeSearchOrderTest(TestCase):
             geo_range_custom_distance=10,
             coords=Point(5.7301, 45.1825),
         )
-        url = reverse("siae:search_results") + "?perimeter=grenoble-38&perimeter_name=Grenoble+%2838%29"
+        url = reverse("siae:search_results") + f"?perimeters={grenoble_perimeter.id}"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 3)
