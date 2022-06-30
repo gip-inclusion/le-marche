@@ -312,6 +312,30 @@ class SiaeQuerySet(models.QuerySet):
         return qs.distinct()
 
 
+SIAE_COMPLETION_SCORE_GRID = {
+    "presta_type": 3,
+    "presta_type": 3,
+    "website": 1,
+    "email": 1,
+    "phone": 1,
+    "address": 1,
+    "city": 1,
+    "department": 1,
+    "region": 1,
+    "post_code": 1,
+    "users": 2,
+    "contact_first_name": 1,
+    "contact_last_name": 1,
+    "contact_website": 1,
+    "contact_email": 1,
+    "contact_phone": 1,
+    "contact_social_website": 1,
+    "image_name": 1,
+    "logo_url": 1,
+    # "sectors": 3,
+}
+
+
 class Siae(models.Model):
     READONLY_FIELDS_FROM_C1 = [
         "name",
@@ -851,6 +875,16 @@ class Siae(models.Model):
             return "l'ATIGIP"
         else:
             return "l'ASP"
+
+    @property
+    def completion_percent(self):
+        score, total = 0, 0
+        for key, value in SIAE_COMPLETION_SCORE_GRID.items():
+            if getattr(self, key):
+                # print(key, value)
+                score += value
+            total += value
+        return round(score / total, 2) * 100
 
     @cached_property
     def sectors_list_string(self):
