@@ -52,8 +52,7 @@ class SignupForm(UserCreationForm):
         label=User._meta.get_field("accept_survey").help_text, help_text="", required=False
     )
 
-    # accept_share_contact_to_external_partners is hidden by default in the frontend.
-    # Shown if the user choses kind SIAE
+    # accept_share_contact_to_external_partners is hidden by default in the frontend. Shown if the user choses kind SIAE  # noqa
     accept_share_contact_to_external_partners = forms.BooleanField(
         label=User._meta.get_field("accept_share_contact_to_external_partners").help_text, help_text="", required=False
     )
