@@ -46,7 +46,7 @@ class PerimeterListFilterApiTest(TestCase):
         self.assertEqual(len(response.data["results"]), 1 + 1)
 
 
-class PerimeterAutocompleteFilterApiTest(TestCase):
+class PerimetersAutocompleteFilterApiTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.perimeter_city = PerimeterFactory(
@@ -65,14 +65,14 @@ class PerimeterAutocompleteFilterApiTest(TestCase):
         )
         UserFactory(api_key="admin")
 
-    def test_perimeter_autocomplete_should_not_paginate(self):
+    def test_perimeters_autocomplete_should_not_paginate(self):
         url = reverse("api:perimeters-autocomplete-list")  # anonymous user
         response = self.client.get(url)
         self.assertTrue("previous" not in response.data)
         self.assertTrue("next" not in response.data)
         self.assertTrue("count" not in response.data)
 
-    def test_perimeter_autocomplete_should_have_q(self):
+    def test_perimeters_autocomplete_should_have_q(self):
         url = reverse("api:perimeters-autocomplete-list")  # anonymous user
         response = self.client.get(url)
         self.assertEqual(response.status_code, 400)
@@ -80,28 +80,28 @@ class PerimeterAutocompleteFilterApiTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 400)
 
-    def test_should_filter_perimeter_autocomplete_by_q_name(self):
+    def test_should_filter_perimeters_autocomplete_by_q_name(self):
         url = reverse("api:perimeters-autocomplete-list") + "?q=grenob"  # anonymous user
         response = self.client.get(url)
         self.assertEqual(len(response.data), 1)
 
-    def test_should_filter_perimeter_autocomplete_by_q_code(self):
+    def test_should_filter_perimeters_autocomplete_by_q_code(self):
         url = reverse("api:perimeters-autocomplete-list") + "?q=38"  # anonymous user
         response = self.client.get(url)
         self.assertEqual(len(response.data), 1 + 1)
         self.assertEqual(response.data[0]["name"], "Isère")
 
-    def test_should_filter_perimeter_autocomplete_by_q_post_code(self):
+    def test_should_filter_perimeters_autocomplete_by_q_post_code(self):
         url = reverse("api:perimeters-autocomplete-list") + "?q=38100"  # anonymous user
         response = self.client.get(url)
         self.assertEqual(len(response.data), 1)
 
-    def test_should_filter_perimeter_autocomplete_by_q_post_code_incomplete_success(self):
+    def test_should_filter_perimeters_autocomplete_by_q_post_code_incomplete_success(self):
         url = reverse("api:perimeters-autocomplete-list") + "?q=3800"  # anonymous user
         response = self.client.get(url)
         self.assertEqual(len(response.data), 1)
 
-    def test_should_filter_perimeter_autocomplete_by_q_post_code_incomplete_failure(self):
+    def test_should_filter_perimeters_autocomplete_by_q_post_code_incomplete_failure(self):
         """
         Edge case...
         This search doesn't return any results because we only filter on the
@@ -111,7 +111,7 @@ class PerimeterAutocompleteFilterApiTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(len(response.data), 0)
 
-    def test_should_filter_perimeter_autocomplete_by_result_count(self):
+    def test_should_filter_perimeters_autocomplete_by_result_count(self):
         url = reverse("api:perimeters-autocomplete-list") + "?results=1"  # anonymous user
         response = self.client.get(url)
         self.assertEqual(len(response.data), 1)

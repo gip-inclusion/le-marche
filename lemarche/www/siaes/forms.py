@@ -31,8 +31,7 @@ class SiaeSearchForm(forms.Form):
         to_field_name="slug",
         required=False,
     )
-    # The hidden `perimeter` field is populated by the autocomplete JavaScript mechanism,
-    # see `perimeter_autocomplete_field.js`.
+    # The hidden `perimeter` field is populated by the JS autocomplete library, see `perimeters_autocomplete_field.js`
     perimeters = forms.ModelMultipleChoiceField(
         label=Perimeter._meta.verbose_name_plural,
         queryset=Perimeter.objects.all(),

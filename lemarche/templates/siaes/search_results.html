@@ -32,15 +32,10 @@
                             <div class="col-12 col-md-6 mt-lg-3 pr-md-0">
                                 {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
                             </div>
-                            {% comment %} {% bootstrap_field form.perimeters %} {% endcomment %}
                             <div class="col-12 col-md-6 mt-lg-3">
                                 <div id="dir_form_perimeter_name" data-input-name="{{ form.perimeters.name }}" class="form-group">
                                     <label for="perimeter_name">{{ form.perimeters.label }}</label>
-                                    <div class="field-holder">
-                                        <div>
-                                            {# {{ form.perimeter_name }} #}
-                                        </div>
-                                    </div>
+                                    <div class="field-holder">{# {{ form.perimeter_name }} #}</div>
                                 </div>
                                 <div id="perimeters-selected" class="mt-1"></div>
                             </div>
@@ -202,10 +197,8 @@
 {% endblock %}
 
 {% block extra_js %}
-{% comment %} <script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script> {% endcomment %}
 {{ current_perimeters|json_script:"current-perimeters" }}
 <script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
-
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
     // Set listings markers on load
@@ -246,13 +239,12 @@ document.addEventListener("DOMContentLoaded", function() {
             layer.bindPopup(`<a href="/prestataires/${feature.properties.slug}/"><p class="h6">${featureDisplayName}</p></a>`);
         }
     }).addTo(map);
+
+    // set map bounds
     geoBounds = geojson.getBounds();
-    if(geoBounds.isValid()){
+    if(geoBounds.isValid()) {
         map.fitBounds(geoBounds);
     }
-
-
-
 });
 </script>
 <script type="text/javascript" src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
