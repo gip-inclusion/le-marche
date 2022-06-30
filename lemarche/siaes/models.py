@@ -176,6 +176,9 @@ class SiaeQuerySet(models.QuerySet):
     def filter_sectors(self, sectors):
         return self.filter(sectors__in=sectors)
 
+    def filter_networks(self, networks):
+        return self.filter(networks__in=networks)
+
     def has_user(self):
         """Only return siaes who have at least 1 User."""
         return self.filter(users__isnull=False).distinct()

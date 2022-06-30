@@ -48,7 +48,7 @@
                     <div class="row">
                         <div class="col-12 col-lg-8">
                             <div class="row">
-                                <div class="col-12 col-md-6 mt-lg-3">
+                                <div class="col-12 col-md-6">
                                     <div class="form-group">
                                         <label for="id_perimeters">{{ form.perimeters.label }}</label>
                                         <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
@@ -146,8 +146,9 @@
                                     </div>
                                 </div>
                             {% else %}
-                                <a href="#" id="siae-export-anon" class="btn btn-outline-primary ml-3" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}">
-                                    Télécharger la liste
+                                <a href="#" id="siae-export-anon" class="btn btn-outline-primary btn-ico ml-3" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}">
+                                    <span>Télécharger la liste</span>
+                                    <i class="ri-download-line ri-lg"></i>
                                 </a>
                             {% endif %}
                         {% endif %}

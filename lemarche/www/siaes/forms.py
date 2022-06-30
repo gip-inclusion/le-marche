@@ -97,13 +97,13 @@ class SiaeSearchForm(forms.Form):
         if perimeters:
             qs = qs.in_perimeters_area(perimeters)
 
-        kind = self.cleaned_data.get("kind", None)
-        if kind:
-            qs = qs.filter(kind__in=kind)
+        kinds = self.cleaned_data.get("kind", None)
+        if kinds:
+            qs = qs.filter(kind__in=kinds)
 
-        presta_type = self.cleaned_data.get("presta_type", None)
-        if presta_type:
-            qs = qs.filter(presta_type__overlap=[presta_type])
+        presta_types = self.cleaned_data.get("presta_type", None)
+        if presta_types:
+            qs = qs.filter(presta_type__overlap=presta_types)
 
         territory = self.cleaned_data.get("territory", None)
         if territory:
@@ -115,9 +115,9 @@ class SiaeSearchForm(forms.Form):
             elif len(territory) == 2:
                 qs = qs.filter(Q(is_qpv=True) | Q(is_zrr=True))
 
-        network = self.cleaned_data.get("networks", None)
-        if network:
-            qs = qs.filter(networks__in=[network])
+        networks = self.cleaned_data.get("networks", None)
+        if networks:
+            qs = qs.filter_networks(networks)
 
         tender = self.cleaned_data.get("tender", None)
         if tender:

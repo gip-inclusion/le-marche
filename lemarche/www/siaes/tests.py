@@ -172,6 +172,12 @@ class SiaeSectorSearchFilterTest(TestCase):
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 1 + 1)  # OR
 
+    def test_search_unknown_sector_ignores_filter(self):
+        url = reverse("siae:search_results") + "?sectors=coucou"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 4)
+
 
 class SiaeNetworkSearchFilterTest(TestCase):
     @classmethod
@@ -182,19 +188,28 @@ class SiaeNetworkSearchFilterTest(TestCase):
         siae_with_network.networks.add(cls.network)
 
     def test_search_network_empty(self):
-        form = SiaeSearchForm({"networks": ""})
-        qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 2)
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
 
-    def test_search_network(self):
-        form = SiaeSearchForm({"networks": f"{self.network.slug}"})
-        qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 1)
+    def test_search_network_empty_string(self):
+        url = reverse("siae:search_results") + "?networks="
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+
+    def test_search_network_should_filter(self):
+        url = reverse("siae:search_results") + f"?networks={self.network.slug}"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
 
     def test_search_unknown_network_ignores_filter(self):
-        form = SiaeSearchForm({"networks": "coucou"})
-        qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 2)
+        url = reverse("siae:search_results") + "?networks=coucou"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
 
 
 class SiaePerimeterSearchFilterTest(TestCase):
