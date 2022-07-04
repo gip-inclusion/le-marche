@@ -1,7 +1,7 @@
 {% extends "tenders/create_base.html" %}
 {% load static bootstrap4 %}
 
-{% block title %}Déposer un besoin{{ block.super }}{% endblock %}
+{% block title %}Publier un besoin{{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
 <section>
@@ -13,7 +13,7 @@
                         <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">Besoins en cours</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Déposer un besoin</li>
+                        <li class="breadcrumb-item active" aria-current="page">Publier un besoin</li>
                     </ol>
                 </nav>
             </div>

@@ -151,8 +151,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
                 "fields": (
                     "accept_rgpd",
                     "accept_survey",
-                    "accept_offers_for_pro_sector",
-                    "accept_quote_promise",
                     "accept_share_contact_to_external_partners",
                 )
             },
