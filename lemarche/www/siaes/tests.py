@@ -350,7 +350,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
         self.assertEqual(qs.count(), 14)
 
     def test_search_perimeter_region(self):
-        form = SiaeSearchForm({"perimeters": [self.auvergne_rhone_alpes_perimeter.id]})
+        form = SiaeSearchForm({"perimeters": [self.auvergne_rhone_alpes_perimeter.slug]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 10)
 
@@ -360,7 +360,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
         self.assertEqual(qs.count(), 14)
         self.assertFalse(form.is_valid())
         self.assertIn("perimeters", form.errors.keys())
-        self.assertIn("Périmètre inconnu", form.errors["perimeters"][0])
+        self.assertIn("Sélectionnez un choix valide", form.errors["perimeters"][0])
 
     def test_search_perimeter_department(self):
         form = SiaeSearchForm({"perimeters": [self.isere_perimeter]})
@@ -374,7 +374,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble (2 SIAE: Grenoble & La Tronche. Chamrousse is outside)  # noqa
         + all the Siae with geo_range=GEO_RANGE_DEPARTMENT + department=38 (1 SIAE)
         """
-        form = SiaeSearchForm({"perimeters": [self.grenoble_perimeter.id]})
+        form = SiaeSearchForm({"perimeters": [self.grenoble_perimeter.slug]})
         self.assertTrue(form.is_valid())
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 2 + 2 + 1)
@@ -421,7 +421,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
         qs = form.filter_queryset()
         self.assertFalse(form.is_valid())
         self.assertIn("perimeters", form.errors.keys())
-        self.assertIn("Périmètre inconnu", form.errors["perimeters"][0])
+        self.assertIn("Sélectionnez un choix valide", form.errors["perimeters"][0])
         self.assertEqual(qs.count(), 14)
 
 
@@ -492,7 +492,7 @@ class SiaeSearchOrderTest(TestCase):
             geo_range_custom_distance=10,
             coords=Point(5.7301, 45.1825),
         )
-        url = reverse("siae:search_results") + f"?perimeters={grenoble_perimeter.id}"
+        url = reverse("siae:search_results") + f"?perimeters={grenoble_perimeter.slug}"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 3)

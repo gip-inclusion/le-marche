@@ -62,7 +62,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
             if siae_search_form.is_valid():
                 current_perimeters = siae_search_form.cleaned_data.get("perimeters")
                 if current_perimeters:
-                    context["current_perimeters"] = list(current_perimeters.values("id", "name"))
+                    context["current_perimeters"] = list(current_perimeters.values("id", "slug", "name"))
         # store the current search query in the session
         current_search_query = self.request.GET.urlencode()
         self.request.session[CURRENT_SEARCH_QUERY_COOKIE_NAME] = current_search_query
