@@ -35,6 +35,10 @@
 </section>
 {% endblock %}
 
+{% block modals %}
+    {% include "auth/_login_or_signup_siae_tender_modal.html" %}
+{% endblock %}
+
 {% block extra_js %}
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {

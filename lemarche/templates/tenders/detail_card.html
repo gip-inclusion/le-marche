@@ -82,6 +82,10 @@
                         </div>
                     </div>
                 {% endif %}
+            {% else %}
+                <a href="#" id="show-tender-contact-modal-btn" class="btn btn-primary float-right mb-4" data-toggle="modal" data-target="#login_or_signup_siae_tender_modal" data-next-params="{% url 'tenders:detail' tender.slug %}">
+                    <span>Afficher les coordonnées</span>
+                </a>
             {% endif %}
         {% endif %}
     </div>
