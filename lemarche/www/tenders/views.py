@@ -173,7 +173,7 @@ class TenderListView(LoginRequiredMixin, ListView):
         return context
 
 
-class TenderDetailView(LoginRequiredMixin, DetailView):
+class TenderDetailView(DetailView):  # LoginRequiredMixin
     model = Tender
     template_name = "tenders/detail.html"
     context_object_name = "tender"
@@ -182,7 +182,7 @@ class TenderDetailView(LoginRequiredMixin, DetailView):
         """
         Check if the User has any Siae contacted for this Tender. If yes, update 'detail_display_date'
         """
-        if self.request.user.kind == User.KIND_SIAE:
+        if self.request.user.is_authenticated and self.request.user.kind == User.KIND_SIAE:
             tender = self.get_object()
             TenderSiae.objects.filter(
                 tender=tender, siae__in=self.request.user.siaes.all(), detail_display_date__isnull=True
@@ -199,7 +199,7 @@ class TenderDetailView(LoginRequiredMixin, DetailView):
             if user_kind == User.KIND_SIAE and tender.kind == Tender.TENDER_KIND_PROJECT
             else tender.get_kind_display()
         )
-        if self.request.user.kind == User.KIND_SIAE:
+        if self.request.user.is_authenticated and self.request.user.kind == User.KIND_SIAE:
             context["user_has_detail_display_date"] = TenderSiae.objects.filter(
                 tender=tender, siae__in=self.request.user.siaes.all(), detail_display_date__isnull=False
             ).exists()
