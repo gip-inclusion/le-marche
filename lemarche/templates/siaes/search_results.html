@@ -82,7 +82,11 @@
                 <div class="col-12">
                     <h1 class="meta h2 mb-3 mb-md-5 font-weight-bold text-center text-md-left">
                         {% with paginator.count as siae_count %}
-                            {{ siae_count }} structure{% if siae_count > 1 %}s{% endif %} correspond{% if siae_count > 1 %}ent{% endif %} à vos critères
+                            {% if siae_count > 0 %}
+                                {{ siae_count }} structure{% if siae_count > 1 %}s{% endif %} correspond{% if siae_count > 1 %}ent{% endif %} à vos critères
+                            {% else %}
+                                Oups, nous n'avons pas trouvé de prestataires !
+                            {% endif %}
                         {% endwith %}
                         {% if siaes %}
                             {% if user.is_authenticated %}
@@ -123,11 +127,10 @@
                             Il y a encore de l'espoir ❤️
                         </p>
                         <p>
-                            Certaines structures n'ont pas mis à jour leurs informations sur le marché de l'inclusion !
+                            Publiez votre besoin, et on s'occupe de vous trouver des prestataires inclusifs.
                         </p>
                         <p>
-                            En publiant votre besoin, vous pouvez toutes les solliciter automatiquement.
-                            Ce sont elles qui reviendront vers vous si elles peuvent se positionner.
+                            Obtenez des réponses en moins de 24 heures (en moyenne).
                         </p>
                         {% if user.is_authenticated %}
                             <a href="{% url 'tenders:create' %}" id="siae-search-empty-demande" class="btn btn-primary btn-ico d-block d-md-inline-block mb-2">
