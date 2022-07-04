@@ -432,6 +432,13 @@ class SiaeSearchOrderTest(TestCase):
         SiaeFactory(name="Une autre structure")
         SiaeFactory(name="ABC Insertion")
 
+    def test_should_order_by_last_updated(self):
+        url = reverse("siae:search_results", kwargs={})
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 3)
+        self.assertEqual(siaes[0].name, "ABC Insertion")
+
     def test_should_bring_the_siae_with_users_to_the_top(self):
         siae_with_user = SiaeFactory(name="ZZ ESI")
         user = UserFactory()
