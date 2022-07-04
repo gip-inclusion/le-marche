@@ -83,7 +83,7 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
                 tender_perimeters = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("perimeters")
                 tender_is_country_area = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("is_country_area")
                 if not tender_is_country_area:
-                    context["current_perimeters"] = list(tender_perimeters.values("id", "name"))
+                    context["current_perimeters"] = list(tender_perimeters.values("id", "slug", "name"))
         # needed to display the Tender preview template
         if self.steps.current == self.STEP_CONFIRMATION:
             tender_dict = self.get_all_cleaned_data()

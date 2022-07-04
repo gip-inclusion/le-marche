@@ -36,6 +36,7 @@ class AddTenderStepGeneralForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["perimeters"].to_field_name = "slug"
         self.fields["sectors"].required = True
         # self.fields["perimeters"].required = True  # JS
         self.fields["title"].widget.attrs["placeholder"] = "Ex : Devis rénovation façade"
