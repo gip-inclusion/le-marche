@@ -2,49 +2,49 @@
 {% load theme_inclusion %}
 
 {% if BITOUBI_ENV not in "prod" %}
-{% include "includes/_header_env_notice.html" %}
+    {% include "includes/_header_env_notice.html" %}
 {% endif %}
 
 <section class="s-preheader d-none d-xl-block">
     <div class="container s-preheader__container">
-      <div class="row">
-        <div class="col-12 s-preheader__col d-flex align-items-center justify-content-end">
-          <ul>
-            <li>
-              <a href="https://inclusion.beta.gouv.fr" class="is-plateforme" rel="noopener" target="_blank" title="La Plateforme de l'inclusion (lien externe)">
-                <span>La plateforme</span>
-                <i class="ri-arrow-right-up-line ri-lg"></i>
-              </a>
-            </li>
-            <li>
-              <a href="https://emplois.inclusion.beta.gouv.fr" class="is-emploi" rel="noopener" target="_blank" title="Les emplois de l'inclusion (lien externe)">
-                <span>Les emplois</span>
-                <i class="ri-arrow-right-up-line ri-lg"></i>
-              </a>
-            </li>
-            <li>
-              <a href="https://communaute.inclusion.beta.gouv.fr" class="is-communaute" rel="noopener" target="_blank" title="La communauté de l'inclusion (lien externe)">
-                <span>La communauté</span>
-                <i class="ri-arrow-right-up-line ri-lg"></i>
-              </a>
-            </li>
-            <li>
-              <a href="https://lemarche.inclusion.beta.gouv.fr" class="is-marche" rel="noopener" target="_blank" title="Le pilotage de l'inclusion (lien externe)">
-                <span>Le marché</span>
-                <i class="ri-arrow-right-up-line ri-lg"></i>
-              </a>
-            </li>
-            <li>
-              <a href="https://pilotage.inclusion.beta.gouv.fr" class="is-pilotage" rel="noopener" target="_blank" title="Le marché de l'inclusion (lien externe)">
-                <span>Le pilotage</span>
-                <i class="ri-arrow-right-up-line ri-lg"></i>
-              </a>
-            </li>
-          </ul>
+        <div class="row">
+            <div class="col-12 s-preheader__col d-flex align-items-center justify-content-end">
+                <ul>
+                    <li>
+                        <a href="https://inclusion.beta.gouv.fr" class="is-plateforme" rel="noopener" target="_blank" title="La Plateforme de l'inclusion (lien externe)">
+                            <span>La plateforme</span>
+                            <i class="ri-arrow-right-up-line ri-lg"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://emplois.inclusion.beta.gouv.fr" class="is-emploi" rel="noopener" target="_blank" title="Les emplois de l'inclusion (lien externe)">
+                            <span>Les emplois</span>
+                            <i class="ri-arrow-right-up-line ri-lg"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://communaute.inclusion.beta.gouv.fr" class="is-communaute" rel="noopener" target="_blank" title="La communauté de l'inclusion (lien externe)">
+                            <span>La communauté</span>
+                            <i class="ri-arrow-right-up-line ri-lg"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://lemarche.inclusion.beta.gouv.fr" class="is-marche" rel="noopener" target="_blank" title="Le pilotage de l'inclusion (lien externe)">
+                            <span>Le marché</span>
+                            <i class="ri-arrow-right-up-line ri-lg"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://pilotage.inclusion.beta.gouv.fr" class="is-pilotage" rel="noopener" target="_blank" title="Le marché de l'inclusion (lien externe)">
+                            <span>Le pilotage</span>
+                            <i class="ri-arrow-right-up-line ri-lg"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
-      </div>
     </div>
-  </section>
+</section>
 
 <header id="header" class="s-header s-header--marche sticky-top" role="banner">
     <section class="s-header__container container">
@@ -89,10 +89,8 @@
                                         Mon espace
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <!-- <div class="dropdown-header">Bonjour user.full_name</div> -->
-                                        <a href="{% url 'dashboard:home' %}" class="dropdown-item">
-                                            Tableau de bord
-                                        </a>
+                                        <a href="{% url 'dashboard:profile_edit' %}" class="dropdown-item">Mon profil</a>
+                                        <a href="{% url 'dashboard:home' %}" class="dropdown-item">Tableau de bord</a>
                                         <div class="dropdown-divider"></div>
                                         <a href="{% url 'auth:logout' %}" class="dropdown-item">Déconnexion</a>
                                     </div>
@@ -148,37 +146,42 @@
             <div id="burgerNav">
                 <nav role="navigation">
                     <ul>
-                        {% if not user.is_authenticated %}
-                            <li>
-                                {% include "includes/_newsletter_button.html" with custom_class="btn-sm p-0" %}
-                            </li>
-                        {% endif %}
-                        {% if not user.is_authenticated or user.kind != user.KIND_SIAE %}
-                            <li>
-                                <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser" rel="noopener">
-                                    Valoriser vos achats
-                                </a>
-                            </li>
-                        {% endif %}
                         {% if user.is_authenticated %}
                             <li>
-                                <a href="{% url 'dashboard:home' %}" id="h_dashboard" rel="noopener">
-                                    <span>Tableau de bord</span>
-                                </a>
+                                <a href="{% url 'dashboard:profile_edit' %}" rel="noopener">Mon profil</a>
                             </li>
+                            <li>
+                                <a href="{% url 'dashboard:home' %}" id="h_dashboard" rel="noopener">Tableau de bord</a>
+                            </li>
+                            <hr />
                             <li>
                                 <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites" rel="noopener">
                                     <i class="ri-star-line ri-lg"></i>
                                     Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
                                 </a>
                             </li>
+                            {% if user.kind != user.KIND_SIAE %}
+                                <li>
+                                    <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser" rel="noopener">
+                                        Valoriser vos achats
+                                    </a>
+                                </li>
+                            {% endif %}
                             <hr />
                             <li>
-                                <a href="{% url 'auth:logout' %}"  id="h_logout" rel="noopener">
+                                <a href="{% url 'auth:logout' %}" id="h_logout" rel="noopener">
                                     <span>Déconnexion</span>
                                 </a>
                             </li>
                         {% else %}
+                            <li>
+                                {% include "includes/_newsletter_button.html" with custom_class="btn-sm p-0" %}
+                            </li>
+                            <li>
+                                <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser" rel="noopener">
+                                    Valoriser vos achats
+                                </a>
+                            </li>
                             <li>
                                 <a href="{% url 'auth:login' %}" id="h_login" rel="noopener">
                                     <span>Connexion</span>
@@ -196,36 +199,36 @@
                 </nav>
                 <div>
                     <ul>
-                      <li>
-                        <a href="https://inclusion.beta.gouv.fr" class="is-plateforme" rel="noopener" target="_blank" title="La Plateforme de l'inclusion (lien externe)">
-                          <span>La plateforme</span>
-                          <i class="ri-arrow-right-up-line ri-lg"></i>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="https://emplois.inclusion.beta.gouv.fr" class="is-emploi" rel="noopener" target="_blank" title="Les emplois de l'inclusion (lien externe)">
-                          <span>Les emplois</span>
-                          <i class="ri-arrow-right-up-line ri-lg"></i>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="https://communaute.inclusion.beta.gouv.fr" class="is-communaute" rel="noopener" target="_blank" title="La communauté de l'inclusion (lien externe)">
-                          <span>La communauté</span>
-                          <i class="ri-arrow-right-up-line ri-lg"></i>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="https://lemarche.inclusion.beta.gouv.fr" class="is-marche" rel="noopener" target="_blank" title="Le pilotage de l'inclusion (lien externe)">
-                          <span>Le marché</span>
-                          <i class="ri-arrow-right-up-line ri-lg"></i>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="https://pilotage.inclusion.beta.gouv.fr" class="is-pilotage" rel="noopener" target="_blank" title="Le marché de l'inclusion (lien externe)">
-                          <span>Le pilotage</span>
-                          <i class="ri-arrow-right-up-line ri-lg"></i>
-                        </a>
-                      </li>
+                        <li>
+                            <a href="https://inclusion.beta.gouv.fr" class="is-plateforme" rel="noopener" target="_blank" title="La Plateforme de l'inclusion (lien externe)">
+                                <span>La plateforme</span>
+                                <i class="ri-arrow-right-up-line ri-lg"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://emplois.inclusion.beta.gouv.fr" class="is-emploi" rel="noopener" target="_blank" title="Les emplois de l'inclusion (lien externe)">
+                                <span>Les emplois</span>
+                                <i class="ri-arrow-right-up-line ri-lg"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://communaute.inclusion.beta.gouv.fr" class="is-communaute" rel="noopener" target="_blank" title="La communauté de l'inclusion (lien externe)">
+                                <span>La communauté</span>
+                                <i class="ri-arrow-right-up-line ri-lg"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://lemarche.inclusion.beta.gouv.fr" class="is-marche" rel="noopener" target="_blank" title="Le pilotage de l'inclusion (lien externe)">
+                                <span>Le marché</span>
+                                <i class="ri-arrow-right-up-line ri-lg"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://pilotage.inclusion.beta.gouv.fr" class="is-pilotage" rel="noopener" target="_blank" title="Le marché de l'inclusion (lien externe)">
+                                <span>Le pilotage</span>
+                                <i class="ri-arrow-right-up-line ri-lg"></i>
+                            </a>
+                        </li>
                     </ul>
                   </div>
             </div>
