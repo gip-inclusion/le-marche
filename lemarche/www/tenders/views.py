@@ -173,7 +173,7 @@ class TenderListView(LoginRequiredMixin, ListView):
         return context
 
 
-class TenderDetailView(DetailView):  # LoginRequiredMixin
+class TenderDetailView(DetailView):
     model = Tender
     template_name = "tenders/detail.html"
     context_object_name = "tender"

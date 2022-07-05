@@ -215,13 +215,12 @@ class TenderDetailViewTest(TestCase):
             tender=cls.tender_1, siae=cls.siae_1, contact_click_date=timezone.now()
         )
 
-    def test_anonymous_user_cannot_view_tender(self):
+    def test_anyone_can_view_tenders(self):
+        # anonymous
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith("/accounts/login/"))
-
-    def test_any_user_can_view_tenders(self):
+        self.assertEqual(response.status_code, 200)
+        # users
         for user in User.objects.all():
             self.client.login(email=user.email, password=DEFAULT_PASSWORD)
             url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
