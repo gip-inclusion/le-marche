@@ -89,8 +89,8 @@
                                         Mon espace
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <a href="{% url 'dashboard:profile_edit' %}" class="dropdown-item">Mon profil</a>
                                         <a href="{% url 'dashboard:home' %}" class="dropdown-item">Tableau de bord</a>
+                                        <a href="{% url 'dashboard:profile_edit' %}" class="dropdown-item">Mon profil</a>
                                         <div class="dropdown-divider"></div>
                                         <a href="{% url 'auth:logout' %}" class="dropdown-item">Déconnexion</a>
                                     </div>
@@ -148,10 +148,10 @@
                     <ul>
                         {% if user.is_authenticated %}
                             <li>
-                                <a href="{% url 'dashboard:profile_edit' %}" rel="noopener">Mon profil</a>
+                                <a href="{% url 'dashboard:home' %}" id="h_dashboard" rel="noopener">Tableau de bord</a>
                             </li>
                             <li>
-                                <a href="{% url 'dashboard:home' %}" id="h_dashboard" rel="noopener">Tableau de bord</a>
+                                <a href="{% url 'dashboard:profile_edit' %}" rel="noopener">Mon profil</a>
                             </li>
                             <hr />
                             <li>
