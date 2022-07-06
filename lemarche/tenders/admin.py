@@ -67,6 +67,7 @@ class TenderAdmin(admin.ModelAdmin):
         "nb_siae_detail_display",
         "nb_siae_contact_click",
         "siae_interested_list_last_seen_date",
+        "logs_display",
         "created_at",
         "updated_at",
     ]
@@ -105,7 +106,13 @@ class TenderAdmin(admin.ModelAdmin):
         (
             "Stats",
             {
-                "fields": ("nb_siae", "nb_siae_email_send", "nb_siae_detail_display", "nb_siae_contact_click"),
+                "fields": (
+                    "nb_siae",
+                    "nb_siae_email_send",
+                    "nb_siae_detail_display",
+                    "nb_siae_contact_click",
+                    "logs_display",
+                ),
             },
         ),
         ("Info", {"fields": ("created_at", "updated_at")}),
@@ -115,7 +122,7 @@ class TenderAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.with_siae_stats()
+        # qs = qs.with_siae_stats()
         return qs
 
     def is_validate(self, tender: Tender):
@@ -167,6 +174,13 @@ class TenderAdmin(admin.ModelAdmin):
 
     nb_siae_contact_click.short_description = "S. intéressées"
     nb_siae_contact_click.admin_order_field = "siae_contact_click_count"
+
+    def logs_display(self, tender=None):
+        if tender:
+            return pretty_print_readonly_jsonfield(tender.logs)
+        return "-"
+
+    logs_display.short_description = Tender._meta.get_field("logs").verbose_name
 
     def response_change(self, request, obj: Tender):
         if "_validate_tender" in request.POST:
