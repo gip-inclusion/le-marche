@@ -27,13 +27,13 @@ def get_default_client(params={}):
 
 
 @task()
-def send_message_to_channel(text: str, service_id: str, client: requests.Client = None):
+def send_message_to_channel(text: str, service_id: str, client: requests.Session = None):
     """Huey task to send message to specific payload for specific slack service
 
     Args:
         payload (dict): payload for serivce
         service_id (str): service id of the service (ex of service: Webhook)
-        client (requests.Client, optional): client to send requests. Defaults to None.
+        client (requests.Session, optional): client to send requests. Defaults to None.
 
     Raises:
         e: requests.HTTPStatusError
@@ -50,6 +50,6 @@ def send_message_to_channel(text: str, service_id: str, client: requests.Client 
             logger.info("send message to slack")
             logger.info(response.json())
             return response.json()
-        except requests.HTTPStatusError as e:
+        except requests.exceptions.HTTPError as e:
             logger.error("Error while fetching `%s`: %s", e.request.url, e)
             raise e

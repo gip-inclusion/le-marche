@@ -52,6 +52,6 @@ def is_in_zrr(latitude, longitude, distance=DISTANCE_TO_VALIDATE_ZRR, client=Non
                 ZRR_CODE_KEY: zrr["com17"],
             }
         return {IS_ZRR_KEY: False}
-    except requests.HTTPStatusError as e:
+    except requests.exceptions.HTTPError as e:
         logger.error("Error while fetching `%s`: %s", e.request.url, e)
         raise e

@@ -48,10 +48,12 @@ def etablissement_get_or_error(siret, reason="Inscription au marché de l'inclus
         r = requests.get(url, headers=headers)
         r.raise_for_status()
         data = r.json()
-    except requests.HTTPStatusError as e:
-        if e.response.status_code == 422:
+    except requests.exceptions.HTTPError as e:
+        status_code = e.response.status_code
+
+        if status_code == 422:
             error = f"SIRET « {siret} » non reconnu."
-        elif e.response.status_code == 404:
+        elif status_code == 404:
             error = f"SIRET « {siret} » 404 ?"
         else:
             # logger.error("Error while fetching `%s`: %s", url, e)
@@ -148,8 +150,10 @@ def exercice_get_or_error(siret, reason="Inscription au marché de l'inclusion")
         r = requests.get(url, headers=headers)
         r.raise_for_status()
         data = r.json()
-    except requests.HTTPStatusError as e:
-        if e.response.status_code == 422:
+    except requests.exceptions.HTTPError as e:
+        status_code = e.response.status_code
+
+        if status_code == 422:
             error = f"SIRET {siret} non reconnu."
         else:
             # logger.error("Error while fetching `%s`: %s", url, e)
@@ -175,7 +179,7 @@ def exercice_get_or_error(siret, reason="Inscription au marché de l'inclusion")
 
 
 def siae_update_exercice(siae):
-    exercice, error = exercice_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)  # noqa
+    exercice, _ = exercice_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)  # noqa
 
     update_data = dict()
 

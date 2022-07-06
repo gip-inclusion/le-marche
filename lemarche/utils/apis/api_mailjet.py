@@ -41,7 +41,7 @@ def add_to_contact_list_async(email_address, properties, contact_list_id, client
         email_address (String): e-mail of contact
         properties (Dict): {"nom": "", "prénom": "", "pays": "france", "nomsiae": "", "poste": ""}
         contact_list_id (int): Mailjet id of contact list
-        client (requests.Client, optional): client to send requests. Defaults to None.
+        client (requests.Session, optional): client to send requests. Defaults to None.
 
     Raises:
         e: requests.HTTPStatusError
@@ -61,7 +61,7 @@ def add_to_contact_list_async(email_address, properties, contact_list_id, client
         logger.info("add user to contact list")
         logger.info(response.json())
         return response.json()
-    except requests.HTTPStatusError as e:
+    except requests.exceptions.HTTPError as e:
         logger.error("Error while fetching `%s`: %s", e.request.url, e)
         raise e
 
@@ -93,7 +93,7 @@ def send_transactional_email_with_template(
             logger.info("Mailjet: send transactional email with template")
             logger.info(response.json())
             return response.json()
-        except requests.HTTPStatusError as e:
+        except requests.exceptions.HTTPError as e:
             logger.error("Error while fetching `%s`: %s", e.request.url, e)
             raise e
     else:
@@ -127,7 +127,7 @@ def send_transactional_email_many_recipient_with_template(
             logger.info("Mailjet: send transactional email with template")
             logger.info(response.json())
             return response.json()
-        except requests.HTTPStatusError as e:
+        except requests.exceptions.HTTPError as e:
             logger.error("Error while fetching `%s`: %s", e.request.url, e)
             raise e
     else:

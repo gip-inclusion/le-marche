@@ -71,8 +71,9 @@ class Command(BaseCommand):
                 if (count_siae_to_update % 50) == 0:
                     self.stdout_info(f"{count_siae_to_update}...")
 
-        except requests.HTTPStatusError as e:
-            if e.response.status_code == 429:
+        except requests.exceptions.HTTPError as e:
+            status_code = e.response.status_code
+            if status_code == 429:
                 # the real exceed request error have code=10005, with the api
                 # but requests send error code 429 "Unknown Status Code"
                 self.stdout_error("exceeded the requests limit for today (5000/per day)")
