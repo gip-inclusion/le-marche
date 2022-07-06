@@ -10,6 +10,7 @@ from lemarche.common.admin import admin_site
 from lemarche.perimeters.admin import PerimeterRegionFilter
 from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import PartnerShareTender, Tender
+from lemarche.utils.fields import pretty_print_readonly_jsonfield
 from lemarche.www.tenders.tasks import send_confirmation_published_email_to_author, send_tender_emails_to_siaes
 
 
@@ -183,7 +184,7 @@ class PartnerShareTenderAdmin(admin.ModelAdmin, DynamicArrayMixin):
     search_fields = ["id", "name"]
     search_help_text = "Cherche sur les champs : ID, Nom"
 
-    readonly_fields = ["perimeters_string", "created_at", "updated_at"]
+    readonly_fields = ["perimeters_string", "logs_display", "created_at", "updated_at"]
     autocomplete_fields = ["perimeters"]
 
     def get_queryset(self, request):
@@ -195,3 +196,10 @@ class PartnerShareTenderAdmin(admin.ModelAdmin, DynamicArrayMixin):
         return partnersharetender.get_perimeters_names
 
     perimeters_string.short_description = "Périmètres"
+
+    def logs_display(self, partnersharetender=None):
+        if partnersharetender:
+            return pretty_print_readonly_jsonfield(partnersharetender.logs)
+        return "-"
+
+    logs_display.short_description = PartnerShareTender._meta.get_field("logs").verbose_name

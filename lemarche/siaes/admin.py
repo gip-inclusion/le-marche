@@ -437,7 +437,7 @@ class SiaeUserRequestAdmin(admin.ModelAdmin):
             return pretty_print_readonly_jsonfield(siaeuserrequest.logs)
         return "-"
 
-    logs_display.short_description = "Logs des échanges"
+    logs_display.short_description = SiaeUserRequest._meta.get_field("logs").verbose_name
 
     def has_add_permission(self, request):
         return False
