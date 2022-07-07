@@ -143,6 +143,7 @@ class SiaeSearchForm(forms.Form):
         **BUT**
         - if a Siae has a a SiaeOffer, or a description, or a User, then it is "boosted"
         - if the search is on a CITY perimeter, we order by coordinates first
+        - if the search is by keyword, order by "similarity" only
         """
         DEFAULT_ORDERING = ["-updated_at"]
         ORDER_BY_FIELDS = ["-has_offer", "-has_description", "-has_user"] + DEFAULT_ORDERING
@@ -176,6 +177,10 @@ class SiaeSearchForm(forms.Form):
                     )
                 )
                 ORDER_BY_FIELDS = ["distance"] + ORDER_BY_FIELDS
+
+        full_text_string = self.cleaned_data.get("q", None)
+        if full_text_string:
+            ORDER_BY_FIELDS = ["-similarity"]
 
         # final ordering
         qs = qs.order_by(*ORDER_BY_FIELDS)

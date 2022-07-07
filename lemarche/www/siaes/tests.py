@@ -515,6 +515,14 @@ class SiaeFullTextSearchTest(TestCase):
         self.assertEqual(len(siaes), 1)
         self.assertEqual(siaes[0].name, self.siae_4.name)
 
+    def test_search_by_siae_name_order_by_similarity(self):
+        SiaeFactory(name="Ma botte", siret="11111111111111")
+        url = reverse("siae:search_results") + "?q=boite"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+        self.assertEqual(siaes[0].name, self.siae_1.name)
+
     def test_search_by_siae_siret(self):
         url = reverse("siae:search_results") + "?q=22222222222222"
         response = self.client.get(url)
