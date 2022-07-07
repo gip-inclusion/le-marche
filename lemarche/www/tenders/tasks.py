@@ -42,7 +42,7 @@ def send_tender_emails_to_siaes(tender: Tender):
 
 
 def send_tender_email_to_partner(tender: Tender, partner: PartnerShareTender):
-    email_subject = f"{EMAIL_SUBJECT_PREFIX}{tender.author.company_name} recherchent des structures inclusives"
+    email_subject = f"{EMAIL_SUBJECT_PREFIX}{tender.author.company_name} recherche des structures inclusives"
     recipient_list = whitelist_recipient_list(partner.contact_email_list)
     if recipient_list:
         variables = {
@@ -59,37 +59,53 @@ def send_tender_email_to_partner(tender: Tender, partner: PartnerShareTender):
             variables=variables,
         )
 
+        # log email
+        log_item = {
+            "action": "email_tender",
+            "email_to": recipient_list,
+            # "email_body": email_body,
+            "email_timestamp": timezone.now().isoformat(),
+            "metadata": {
+                "tender_id": tender.id,
+                "tender_name": tender.name,
+                "tender_author_company_name": tender.author.company_name,
+            },
+        }
+        partner.logs.append(log_item)
+        partner.save()
+
 
 def send_tenders_author_feedback_30_days(tender: Tender):
     email_subject = EMAIL_SUBJECT_PREFIX + "Concernant votre dépôt de besoin sur le marché de l'inclusion"
     author_tender: User = tender.author
     recipient_list = whitelist_recipient_list([author_tender.email])
-    recipient_email = recipient_list[0] if recipient_list else ""
-    recipient_name = author_tender.full_name
+    if recipient_list:
+        recipient_email = recipient_list[0] if recipient_list else ""
+        recipient_name = author_tender.full_name
 
-    variables = {
-        "TENDER_TITLE": tender.title,
-        "TENDER_VALIDATE_AT": tender.validated_at,
-        "USER_FIRST_NAME": author_tender.full_name,
-    }
+        variables = {
+            "TENDER_TITLE": tender.title,
+            "TENDER_VALIDATE_AT": tender.validated_at,
+            "USER_FIRST_NAME": author_tender.full_name,
+        }
 
-    api_mailjet.send_transactional_email_with_template(
-        template_id=settings.MAILJET_TENDERS_USERS_FEEDBACKS_30D_TEMPLATE_ID,
-        subject=email_subject,
-        recipient_email=recipient_email,
-        recipient_name=recipient_name,
-        variables=variables,
-    )
+        api_mailjet.send_transactional_email_with_template(
+            template_id=settings.MAILJET_TENDERS_USERS_FEEDBACKS_30D_TEMPLATE_ID,
+            subject=email_subject,
+            recipient_email=recipient_email,
+            recipient_name=recipient_name,
+            variables=variables,
+        )
 
-    # log email
-    log_item = {
-        "action": "email_feedback_30d_sent",
-        "email_to": recipient_email,
-        # "email_body": email_body,
-        "email_timestamp": timezone.now().isoformat(),
-    }
-    tender.logs.append(log_item)
-    tender.save()
+        # log email
+        log_item = {
+            "action": "email_feedback_30d_sent",
+            "email_to": recipient_email,
+            # "email_body": email_body,
+            "email_timestamp": timezone.now().isoformat(),
+        }
+        tender.logs.append(log_item)
+        tender.save()
 
 
 # @task()

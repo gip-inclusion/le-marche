@@ -10,6 +10,7 @@ from lemarche.common.admin import admin_site
 from lemarche.perimeters.admin import PerimeterRegionFilter
 from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import PartnerShareTender, Tender
+from lemarche.utils.fields import pretty_print_readonly_jsonfield
 from lemarche.www.tenders.tasks import send_confirmation_published_email_to_author, send_tender_emails_to_siaes
 
 
@@ -66,6 +67,7 @@ class TenderAdmin(admin.ModelAdmin):
         "nb_siae_detail_display",
         "nb_siae_contact_click",
         "siae_interested_list_last_seen_date",
+        "logs_display",
         "created_at",
         "updated_at",
     ]
@@ -104,7 +106,13 @@ class TenderAdmin(admin.ModelAdmin):
         (
             "Stats",
             {
-                "fields": ("nb_siae", "nb_siae_email_send", "nb_siae_detail_display", "nb_siae_contact_click"),
+                "fields": (
+                    "nb_siae",
+                    "nb_siae_email_send",
+                    "nb_siae_detail_display",
+                    "nb_siae_contact_click",
+                    "logs_display",
+                ),
             },
         ),
         ("Info", {"fields": ("created_at", "updated_at")}),
@@ -167,6 +175,13 @@ class TenderAdmin(admin.ModelAdmin):
     nb_siae_contact_click.short_description = "S. intéressées"
     nb_siae_contact_click.admin_order_field = "siae_contact_click_count"
 
+    def logs_display(self, tender=None):
+        if tender:
+            return pretty_print_readonly_jsonfield(tender.logs)
+        return "-"
+
+    logs_display.short_description = Tender._meta.get_field("logs").verbose_name
+
     def response_change(self, request, obj: Tender):
         if "_validate_tender" in request.POST:
             update_and_send_tender_task(tender=obj)
@@ -183,7 +198,7 @@ class PartnerShareTenderAdmin(admin.ModelAdmin, DynamicArrayMixin):
     search_fields = ["id", "name"]
     search_help_text = "Cherche sur les champs : ID, Nom"
 
-    readonly_fields = ["perimeters_string", "created_at", "updated_at"]
+    readonly_fields = ["perimeters_string", "logs_display", "created_at", "updated_at"]
     autocomplete_fields = ["perimeters"]
 
     def get_queryset(self, request):
@@ -195,3 +210,10 @@ class PartnerShareTenderAdmin(admin.ModelAdmin, DynamicArrayMixin):
         return partnersharetender.get_perimeters_names
 
     perimeters_string.short_description = "Périmètres"
+
+    def logs_display(self, partnersharetender=None):
+        if partnersharetender:
+            return pretty_print_readonly_jsonfield(partnersharetender.logs)
+        return "-"
+
+    logs_display.short_description = PartnerShareTender._meta.get_field("logs").verbose_name
