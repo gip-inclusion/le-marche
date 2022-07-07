@@ -19,10 +19,22 @@ from django.utils.text import slugify
 
 from lemarche.perimeters.models import Perimeter
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS, REGIONS_PRETTY, get_department_code_from_name
+from lemarche.siaes.constants import (
+    COMPLETION_COMPARE_TO_KEY,
+    COMPLETION_KIND_GREATER_THAN,
+    COMPLETION_KIND_KEY,
+    COMPLETION_KIND_NOT_EMPTY_OR_FALSE,
+    COMPLETION_SCORE_KEY,
+    DEPARTMENTS_PRETTY,
+    REGIONS,
+    REGIONS_PRETTY,
+    SIAE_COMPLETION_SCORE_GRID,
+    get_department_code_from_name,
+)
 from lemarche.siaes.tasks import set_siae_coords
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
 from lemarche.users.models import User
+from lemarche.utils.data import round_by_base
 from lemarche.utils.fields import ChoiceArrayField
 
 
@@ -310,30 +322,6 @@ class SiaeQuerySet(models.QuerySet):
             qs = qs.filter(presta_type__overlap=tender.presta_type)
         # return
         return qs.distinct()
-
-
-SIAE_COMPLETION_SCORE_GRID = {
-    "presta_type": 3,
-    "presta_type": 3,
-    "website": 1,
-    "email": 1,
-    "phone": 1,
-    "address": 1,
-    "city": 1,
-    "department": 1,
-    "region": 1,
-    "post_code": 1,
-    "users": 2,
-    "contact_first_name": 1,
-    "contact_last_name": 1,
-    "contact_website": 1,
-    "contact_email": 1,
-    "contact_phone": 1,
-    "contact_social_website": 1,
-    "image_name": 1,
-    "logo_url": 1,
-    # "sectors": 3,
-}
 
 
 class Siae(models.Model):
@@ -880,11 +868,18 @@ class Siae(models.Model):
     def completion_percent(self):
         score, total = 0, 0
         for key, value in SIAE_COMPLETION_SCORE_GRID.items():
-            if getattr(self, key):
-                # print(key, value)
-                score += value
-            total += value
-        return round(score / total, 2) * 100
+            completion_item_kind = value[COMPLETION_KIND_KEY]
+            score_item = value[COMPLETION_SCORE_KEY]
+            if completion_item_kind == COMPLETION_KIND_NOT_EMPTY_OR_FALSE:
+                if getattr(self, key):
+                    # print(key, value)
+                    score += score_item
+            elif completion_item_kind == COMPLETION_KIND_GREATER_THAN:
+                if getattr(self, key) and getattr(self, key) > value[COMPLETION_COMPARE_TO_KEY]:
+                    score += score_item
+            total += score_item
+        score_percent = round(score / total, 2) * 100
+        return round_by_base(score_percent, base=5)
 
     @cached_property
     def sectors_list_string(self):
