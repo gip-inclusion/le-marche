@@ -67,7 +67,7 @@ def send_tender_email_to_partner(tender: Tender, partner: PartnerShareTender):
             "email_timestamp": timezone.now().isoformat(),
             "metadata": {
                 "tender_id": tender.id,
-                "tender_name": tender.name,
+                "tender_title": tender.title,
                 "tender_author_company_name": tender.author.company_name,
             },
         }
