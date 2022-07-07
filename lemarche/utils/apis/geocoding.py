@@ -3,7 +3,7 @@
 import json
 import logging
 
-import httpx
+import requests
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.utils.http import urlencode
@@ -26,8 +26,8 @@ def call_ban_geocoding_api(address, post_code=None, limit=1):
     url = f"{api_url}?{query_string}"
 
     try:
-        r = httpx.get(url)
-    except httpx.RequestError as e:
+        r = requests.get(url)
+    except requests.RequestError as e:
         logger.info("Error while fetching `%s`: %s", url, e)
         return None
 

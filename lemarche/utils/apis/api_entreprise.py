@@ -3,7 +3,7 @@
 import logging
 from datetime import date, datetime
 
-import httpx
+import requests
 from django.conf import settings
 from django.utils import timezone
 from django.utils.http import urlencode
@@ -45,19 +45,21 @@ def etablissement_get_or_error(siret, reason="Inscription au marché de l'inclus
     headers = {"Authorization": f"Bearer {settings.API_ENTREPRISE_TOKEN}"}
 
     try:
-        r = httpx.get(url, headers=headers)
+        r = requests.get(url, headers=headers)
         r.raise_for_status()
         data = r.json()
-    except httpx.HTTPStatusError as e:
-        if e.response.status_code == 422:
+    except requests.exceptions.HTTPError as e:
+        status_code = e.response.status_code
+
+        if status_code == 422:
             error = f"SIRET « {siret} » non reconnu."
-        elif e.response.status_code == 404:
+        elif status_code == 404:
             error = f"SIRET « {siret} » 404 ?"
         else:
             # logger.error("Error while fetching `%s`: %s", url, e)
             error = "Problème de connexion à la base Sirene. Essayez ultérieurement."
         return None, error
-    except httpx.ReadTimeout as e:  # noqa
+    except requests.ReadTimeout as e:  # noqa
         # logger.error("Error while fetching `%s`: %s", url, e)
         error = "The read operation timed out"
         return None, error
@@ -145,17 +147,19 @@ def exercice_get_or_error(siret, reason="Inscription au marché de l'inclusion")
     headers = {"Authorization": f"Bearer {settings.API_ENTREPRISE_TOKEN}"}
 
     try:
-        r = httpx.get(url, headers=headers)
+        r = requests.get(url, headers=headers)
         r.raise_for_status()
         data = r.json()
-    except httpx.HTTPStatusError as e:
-        if e.response.status_code == 422:
+    except requests.exceptions.HTTPError as e:
+        status_code = e.response.status_code
+
+        if status_code == 422:
             error = f"SIRET {siret} non reconnu."
         else:
             # logger.error("Error while fetching `%s`: %s", url, e)
             error = "Problème de connexion à la base Sirene. Essayez ultérieurement."
         return None, error
-    except httpx.ReadTimeout as e:  # noqa
+    except requests.ReadTimeout as e:  # noqa
         # logger.error("Error while fetching `%s`: %s", url, e)
         error = "The read operation timed out"
         return None, error
@@ -175,7 +179,7 @@ def exercice_get_or_error(siret, reason="Inscription au marché de l'inclusion")
 
 
 def siae_update_exercice(siae):
-    exercice, error = exercice_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)  # noqa
+    exercice, _ = exercice_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)  # noqa
 
     update_data = dict()
 
