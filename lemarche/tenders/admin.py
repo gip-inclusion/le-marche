@@ -122,7 +122,7 @@ class TenderAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        # qs = qs.with_siae_stats()
+        qs = qs.with_siae_stats()
         return qs
 
     def is_validate(self, tender: Tender):
