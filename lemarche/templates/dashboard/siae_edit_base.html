@@ -16,12 +16,6 @@
                     </ol>
                 </nav>
             </div>
-            <div class="col-12 col-lg-auto pt-3">
-                <a href="{% url 'siae:detail' siae.slug %}" target="_blank" class="btn btn-outline-primary btn-sm btn-block btn-ico">
-                    <span>Voir la fiche</span>
-                    <i class="ri-eye-line ri-lg"></i>
-                </a>
-            </div>
         </div>
     </div>
 </section>
@@ -53,7 +47,17 @@
                 </ol>
             </div>
         {% endif %}
-
+        <div class="row">
+            <div class="col-xs-12 col-md-10">
+                {% include "dashboard/_siae_completion_progress_bar.html" %}
+            </div>
+            <div class="col-xs-12 col-md-2 mt-2 mt-md-0">
+                <a href="{% url 'siae:detail' siae.slug %}" target="_blank" class="btn btn-outline-primary btn-sm btn-block btn-ico">
+                    <span>Voir la fiche</span>
+                    <i class="ri-eye-line ri-lg"></i>
+                </a>
+            </div>
+        </div>
         <!-- Navigation -->
         <div class="row mb-3 mb-lg-5">
             <div class="col-12">
