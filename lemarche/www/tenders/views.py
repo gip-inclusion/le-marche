@@ -182,31 +182,33 @@ class TenderDetailView(DetailView):
         """
         Check if the User has any Siae contacted for this Tender. If yes, update 'detail_display_date'
         """
-        if self.request.user.is_authenticated and self.request.user.kind == User.KIND_SIAE:
+        user = self.request.user
+        if user.is_authenticated and user.kind == User.KIND_SIAE:
             tender = self.get_object()
             TenderSiae.objects.filter(
-                tender=tender, siae__in=self.request.user.siaes.all(), detail_display_date__isnull=True
+                tender=tender, siae__in=user.siaes.all(), detail_display_date__isnull=True
             ).update(detail_display_date=timezone.now())
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         tender = self.get_object()
-        user_kind = self.request.user.kind if self.request.user.is_authenticated else "anonymous"
+        user = self.request.user
+        user_kind = user.kind if user.is_authenticated else "anonymous"
         context["parent_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
         context["tender_kind_display"] = (
             TITLE_KIND_SOURCING_SIAE
             if user_kind == User.KIND_SIAE and tender.kind == Tender.TENDER_KIND_PROJECT
             else tender.get_kind_display()
         )
-        if self.request.user.is_authenticated and self.request.user.kind == User.KIND_SIAE:
+        if user.is_authenticated and user.kind == User.KIND_SIAE:
             context["user_has_detail_display_date"] = TenderSiae.objects.filter(
-                tender=tender, siae__in=self.request.user.siaes.all(), detail_display_date__isnull=False
+                tender=tender, siae__in=user.siaes.all(), detail_display_date__isnull=False
             ).exists()
             context["user_has_contact_click_date"] = TenderSiae.objects.filter(
-                tender=tender, siae__in=self.request.user.siaes.all(), contact_click_date__isnull=False
+                tender=tender, siae__in=user.siaes.all(), contact_click_date__isnull=False
             ).exists()
-        if tender.author == self.request.user:
+        if tender.author == user:
             context["siae_contact_click_count"] = TenderSiae.objects.filter(
                 tender=tender, contact_click_date__isnull=False
             ).count()
