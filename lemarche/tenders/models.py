@@ -369,6 +369,8 @@ class PartnerShareTender(models.Model):
         verbose_name="Liste de contact", base_field=models.EmailField(max_length=255), blank=True, default=list
     )
 
+    logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
+
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
