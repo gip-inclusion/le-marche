@@ -11,8 +11,10 @@
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">{{ parent_title }}</a></li>
+                        {% if user.is_authenticated %}
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">{{ parent_title }}</a></li>
+                        {% endif %}
                         <li class="breadcrumb-item active" aria-current="page">{{ tender.title|truncatechars:25 }}</li>
                     </ol>
                 </nav>
@@ -31,6 +33,10 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block modals %}
+    {% include "auth/_login_or_signup_siae_tender_modal.html" %}
 {% endblock %}
 
 {% block extra_js %}
