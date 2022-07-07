@@ -35,7 +35,7 @@ class Command(BaseCommand):
 
         base_url = f"{settings.API_GEO_BASE_URL}/communes"
         fields = ""  # "?fields=nom,code,codesPostaux,codeDepartement,codeRegion,centre"
-        extra = "&format=json"
+        extra = "?format=json"
         url = f"{base_url}{fields}{extra}"
 
         r = requests.get(url)
