@@ -6,7 +6,7 @@
 
 import os
 
-import httpx
+import requests
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
@@ -35,10 +35,10 @@ class Command(BaseCommand):
 
         base_url = f"{settings.API_GEO_BASE_URL}/communes"
         fields = ""  # "?fields=nom,code,codesPostaux,codeDepartement,codeRegion,centre"
-        extra = "&format=json"
+        extra = "?format=json"
         url = f"{base_url}{fields}{extra}"
 
-        r = httpx.get(url)
+        r = requests.get(url)
 
         file_path = f"{CURRENT_DIR}/data/communes.json"
         with open(file_path, "wb") as f:

@@ -13,7 +13,7 @@ import json
 import logging
 from datetime import datetime
 
-import httpx
+import requests
 from crawlerdetect import CrawlerDetect
 from django.conf import settings
 
@@ -74,10 +74,10 @@ def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
         payload = DEFAULT_PAYLOAD | set_payload
 
         try:
-            r = httpx.post(f"{settings.TRACKER_HOST}/track", json=payload)
+            r = requests.post(f"{settings.TRACKER_HOST}/track", json=payload)
             r.raise_for_status()
             # logger.info("Tracker sent")
-        except httpx.HTTPError as e:
+        except requests.HTTPError as e:
             logger.exception(e)
             logger.warning("Failed to submit tracker")
 

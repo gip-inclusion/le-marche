@@ -1,6 +1,6 @@
 import logging
 
-import httpx
+import requests
 from django.conf import settings
 from huey.contrib.djhuey import task
 
@@ -25,9 +25,10 @@ def get_default_client(params={}):
     headers = {
         "user-agent": "betagouv-lemarche/0.0.1",
     }
-    client = httpx.Client(
-        params=params, headers=headers, auth=(settings.MAILJET_MASTER_API_KEY, settings.MAILJET_MASTER_API_SECRET)
-    )
+    client = requests.Session()
+    client.params = params
+    client.headers = headers
+    client.auth = (settings.MAILJET_MASTER_API_KEY, settings.MAILJET_MASTER_API_SECRET)
     return client
 
 
@@ -40,10 +41,10 @@ def add_to_contact_list_async(email_address, properties, contact_list_id, client
         email_address (String): e-mail of contact
         properties (Dict): {"nom": "", "prénom": "", "pays": "france", "nomsiae": "", "poste": ""}
         contact_list_id (int): Mailjet id of contact list
-        client (httpx.Client, optional): client to send requests. Defaults to None.
+        client (requests.Session, optional): client to send requests. Defaults to None.
 
     Raises:
-        e: httpx.HTTPStatusError
+        e: requests.HTTPStatusError
     """
     data = {
         "name": email_address,
@@ -60,7 +61,7 @@ def add_to_contact_list_async(email_address, properties, contact_list_id, client
         logger.info("add user to contact list")
         logger.info(response.json())
         return response.json()
-    except httpx.HTTPStatusError as e:
+    except requests.exceptions.HTTPError as e:
         logger.error("Error while fetching `%s`: %s", e.request.url, e)
         raise e
 
@@ -92,7 +93,7 @@ def send_transactional_email_with_template(
             logger.info("Mailjet: send transactional email with template")
             logger.info(response.json())
             return response.json()
-        except httpx.HTTPStatusError as e:
+        except requests.exceptions.HTTPError as e:
             logger.error("Error while fetching `%s`: %s", e.request.url, e)
             raise e
     else:
@@ -126,7 +127,7 @@ def send_transactional_email_many_recipient_with_template(
             logger.info("Mailjet: send transactional email with template")
             logger.info(response.json())
             return response.json()
-        except httpx.HTTPStatusError as e:
+        except requests.exceptions.HTTPError as e:
             logger.error("Error while fetching `%s`: %s", e.request.url, e)
             raise e
     else:
