@@ -1,23 +1,19 @@
 document.addEventListener('DOMContentLoaded', function() {
     /**
-     * Multiselect dropdown for the sector search form field
+     * Multiselect dropdown for the network search form field
      */
-    const FORM_INPUT_ID = "id_sectors";
+
+    const FORM_INPUT_ID = "id_networks";
     const FORM_MULTISELECT_ID = `${FORM_INPUT_ID}_multiselect`;
-    let FORM_SELECTOR = `.use-multiselect #${FORM_INPUT_ID}`;
-    let FORM_ELEMENT = document.querySelector(FORM_SELECTOR);
-    if (!FORM_ELEMENT) {
-        FORM_SELECTOR = ".use-multiselect select";
-        FORM_ELEMENT = document.querySelector(FORM_SELECTOR);
-    }
-    const FORM_PLACEHOLDER = 'Espaces verts, informatique, restauration…';
+    const FORM_ELEMENT = document.querySelector(`.use-multiselect #${FORM_INPUT_ID}`);
+    const FORM_PLACEHOLDER = 'Choisir…';
 
     const buttonTextAndTitle = function(options, select) {
         if (options.length === 0) {
             return FORM_PLACEHOLDER;
         }
         else if (options.length > 2) {
-            return `${options.length} secteurs sélectionnés`;
+            return `${options.length} réseaux sélectionnés`;
         }
         else {
             var labels = [];
@@ -34,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (document.body.contains(FORM_ELEMENT)) {
-        $(FORM_SELECTOR).multiselect({
+        $(`#${FORM_INPUT_ID}`).multiselect({
             // height & width
             maxHeight: 400,
             buttonWidth: '100%',
@@ -59,23 +55,23 @@ document.addEventListener('DOMContentLoaded', function() {
             buttonContainer: `<div id="${FORM_MULTISELECT_ID}" class="btn-group" />`,
             widthSynchronizationMode: 'ifPopupIsSmaller',
             // enableHTML: true,
-            // nonSelectedText: `<span class="fake-placeholder">${FORM_PLACEHOLDER}</span>`,
+            // nonSelectedText: `<span class="text-muted">${FORM_PLACEHOLDER}</span>`,
             templates: {
                 resetButton: '<div class="multiselect-reset p-2"><button type="button" class="btn btn-sm btn-block btn-outline-primary"></button></div>',
                 // buttonGroupReset: '<button type="button" class="multiselect-reset btn btn-outline-primary btn-block"></button>'
             }
         });
 
-        // hack to set the placeholder color to grey when there is no item selected
+        // hack to set the placeholder color to grey when there is no sector selected
         const multiselectSelectedText = document.querySelector(`#${FORM_MULTISELECT_ID} .multiselect-selected-text`);
         if (multiselectSelectedText.innerText === FORM_PLACEHOLDER) {
-            multiselectSelectedText.classList.add('fake-placeholder');
+            multiselectSelectedText.classList.add('text-muted');
         }
         multiselectSelectedText.addEventListener('DOMSubtreeModified', function () {
             if (this.innerText === FORM_PLACEHOLDER) {
-                this.classList.add('fake-placeholder');
+                this.classList.add('text-muted');
             } else {
-                this.classList.remove('fake-placeholder');
+                this.classList.remove('text-muted');
             }
         })
     }

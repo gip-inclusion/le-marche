@@ -172,6 +172,12 @@ class SiaeSectorSearchFilterTest(TestCase):
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 1 + 1)  # OR
 
+    def test_search_unknown_sector_ignores_filter(self):
+        url = reverse("siae:search_results") + "?sectors=coucou"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 4)
+
 
 class SiaeNetworkSearchFilterTest(TestCase):
     @classmethod
@@ -182,19 +188,28 @@ class SiaeNetworkSearchFilterTest(TestCase):
         siae_with_network.networks.add(cls.network)
 
     def test_search_network_empty(self):
-        form = SiaeSearchForm({"networks": ""})
-        qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 2)
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
 
-    def test_search_network(self):
-        form = SiaeSearchForm({"networks": f"{self.network.slug}"})
-        qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 1)
+    def test_search_network_empty_string(self):
+        url = reverse("siae:search_results") + "?networks="
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+
+    def test_search_network_should_filter(self):
+        url = reverse("siae:search_results") + f"?networks={self.network.slug}"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
 
     def test_search_unknown_network_ignores_filter(self):
-        form = SiaeSearchForm({"networks": "coucou"})
-        qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 2)
+        url = reverse("siae:search_results") + "?networks=coucou"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
 
 
 class SiaePerimeterSearchFilterTest(TestCase):
@@ -423,6 +438,106 @@ class SiaePerimeterSearchFilterTest(TestCase):
         self.assertIn("perimeters", form.errors.keys())
         self.assertIn("Sélectionnez un choix valide", form.errors["perimeters"][0])
         self.assertEqual(qs.count(), 14)
+
+
+class SiaeFullTextSearchTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae_1 = SiaeFactory(name="Ma boite", siret="11111111111111")
+        cls.siae_2 = SiaeFactory(name="Une autre activité", siret="22222222222222")
+        cls.siae_3 = SiaeFactory(name="ABC Insertion", siret="33333333344444")
+        cls.siae_4 = SiaeFactory(name="Empty", brand="ETHICOFIL", siret="55555555555555")
+
+    def test_search_empty_query(self):
+        url = reverse("siae:search_results") + "?q="
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 4)
+
+    def test_search_by_siae_name(self):
+        # name & brand work similarly
+        url = reverse("siae:search_results") + "?q=boite"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_1.name)
+        # full name with space
+        url = reverse("siae:search_results") + "?q=ma boite"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_1.name)
+
+    def test_search_by_siae_name_partial(self):
+        url = reverse("siae:search_results") + "?q=insert"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_3.name)
+
+    def test_search_by_siae_name_should_be_case_insensitive(self):
+        url = reverse("siae:search_results") + "?q=abc"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_3.name)
+        # with case
+        url = reverse("siae:search_results") + "?q=ABC"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_3.name)
+
+    def test_search_by_siae_name_should_ignore_accents(self):
+        url = reverse("siae:search_results") + "?q=activite"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_2.name)
+        # with accent
+        url = reverse("siae:search_results") + "?q=activité"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_2.name)
+
+    def test_search_by_siae_brand(self):
+        url = reverse("siae:search_results") + "?q=ethicofil"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_4.name)
+
+    def test_search_by_siae_brand_should_accept_typos(self):
+        url = reverse("siae:search_results") + "?q=ethicofl"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].name, self.siae_4.name)
+
+    def test_search_by_siae_name_order_by_similarity(self):
+        SiaeFactory(name="Ma botte", siret="11111111111111")
+        url = reverse("siae:search_results") + "?q=boite"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+        self.assertEqual(siaes[0].name, self.siae_1.name)
+
+    def test_search_by_siae_siret(self):
+        url = reverse("siae:search_results") + "?q=22222222222222"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        # siren search
+        url = reverse("siae:search_results") + "?q=333333333"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        # siret with space
+        url = reverse("siae:search_results") + "?q=333 333 333 44444"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
 
 
 class SiaeSearchOrderTest(TestCase):

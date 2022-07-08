@@ -46,7 +46,7 @@
 {% block extra_js %}
 {{ current_perimeters|json_script:"current-perimeters" }}
 <script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
-<script>
+<script type="text/javascript">
 document.addEventListener('DOMContentLoaded', function () {
     let is_in_country_area = document.getElementById('id_general-is_country_area');
     let perimeters = document.getElementById('dir_form_perimeters');
@@ -71,7 +71,6 @@ document.addEventListener('DOMContentLoaded', function () {
             $(perimetersInput).prop("disabled", false);
         }
     });
-
 });
 </script>
 {% endblock %}
