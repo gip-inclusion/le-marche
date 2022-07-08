@@ -9,7 +9,6 @@ from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
-from lemarche.utils.constants import EMPTY_CHOICE
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
@@ -18,12 +17,16 @@ class SiaeSearchForm(forms.Form):
         ("Insertion par l'activité économique", Siae.KIND_CHOICES_WITH_EXTRA_INSERTION),
         ("Handicap", Siae.KIND_CHOICES_WITH_EXTRA_HANDICAP),
     )
-    FORM_PRESTA_CHOICES = EMPTY_CHOICE + siae_constants.PRESTA_CHOICES
     FORM_TERRITORY_CHOICES = (
         ("QPV", "Quartier prioritaire de la politique de la ville (QPV)"),
         ("ZRR", "Zone de revitalisation rurale (ZRR)"),
     )
 
+    q = forms.CharField(
+        label="Recherche via le numéro de SIRET ou le nom de votre structure",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Votre recherche…"}),
+    )
     sectors = GroupedModelMultipleChoiceField(
         label=Sector._meta.verbose_name_plural,
         queryset=Sector.objects.form_filter_queryset(),
@@ -44,9 +47,9 @@ class SiaeSearchForm(forms.Form):
         choices=FORM_KIND_CHOICES_GROUPED,
         required=False,
     )
-    presta_type = forms.ChoiceField(
+    presta_type = forms.MultipleChoiceField(
         label=Siae._meta.get_field("presta_type").verbose_name,
-        choices=FORM_PRESTA_CHOICES,
+        choices=siae_constants.PRESTA_CHOICES,
         required=False,
     )
     territory = forms.MultipleChoiceField(
@@ -54,11 +57,10 @@ class SiaeSearchForm(forms.Form):
         choices=FORM_TERRITORY_CHOICES,
         required=False,
     )
-    networks = forms.ModelChoiceField(
+    networks = forms.ModelMultipleChoiceField(
         label="Réseau",
         queryset=Network.objects.all().order_by("name"),
         to_field_name="slug",
-        empty_label="",
         required=False,
     )
 
@@ -80,6 +82,13 @@ class SiaeSearchForm(forms.Form):
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
 
+        full_text_string = self.cleaned_data.get("q", None)
+        if full_text_string:
+            # case where a siret search was done, strip all spaces
+            if full_text_string.replace(" ", "").isdigit():
+                full_text_string = full_text_string.replace(" ", "")
+            qs = qs.filter_full_text(full_text_string)
+
         sectors = self.cleaned_data.get("sectors", None)
         if sectors:
             qs = qs.filter_sectors(sectors)
@@ -88,13 +97,13 @@ class SiaeSearchForm(forms.Form):
         if perimeters:
             qs = qs.in_perimeters_area(perimeters)
 
-        kind = self.cleaned_data.get("kind", None)
-        if kind:
-            qs = qs.filter(kind__in=kind)
+        kinds = self.cleaned_data.get("kind", None)
+        if kinds:
+            qs = qs.filter(kind__in=kinds)
 
-        presta_type = self.cleaned_data.get("presta_type", None)
-        if presta_type:
-            qs = qs.filter(presta_type__overlap=[presta_type])
+        presta_types = self.cleaned_data.get("presta_type", None)
+        if presta_types:
+            qs = qs.filter(presta_type__overlap=presta_types)
 
         territory = self.cleaned_data.get("territory", None)
         if territory:
@@ -106,9 +115,9 @@ class SiaeSearchForm(forms.Form):
             elif len(territory) == 2:
                 qs = qs.filter(Q(is_qpv=True) | Q(is_zrr=True))
 
-        network = self.cleaned_data.get("networks", None)
-        if network:
-            qs = qs.filter(networks__in=[network])
+        networks = self.cleaned_data.get("networks", None)
+        if networks:
+            qs = qs.filter_networks(networks)
 
         tender = self.cleaned_data.get("tender", None)
         if tender:
@@ -134,6 +143,7 @@ class SiaeSearchForm(forms.Form):
         **BUT**
         - if a Siae has a a SiaeOffer, or a description, or a User, then it is "boosted"
         - if the search is on a CITY perimeter, we order by coordinates first
+        - if the search is by keyword, order by "similarity" only
         """
         DEFAULT_ORDERING = ["-updated_at"]
         ORDER_BY_FIELDS = ["-has_offer", "-has_description", "-has_user"] + DEFAULT_ORDERING
@@ -167,6 +177,10 @@ class SiaeSearchForm(forms.Form):
                     )
                 )
                 ORDER_BY_FIELDS = ["distance"] + ORDER_BY_FIELDS
+
+        full_text_string = self.cleaned_data.get("q", None)
+        if full_text_string:
+            ORDER_BY_FIELDS = ["-similarity"]
 
         # final ordering
         qs = qs.order_by(*ORDER_BY_FIELDS)

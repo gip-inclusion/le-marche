@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * Multiselect dropdown for the territory search form field
      */
 
-    const territoryFormElement = document.querySelector('#search-form #id_territory');
+    const territoryFormElement = document.querySelector('#filter-search-form #id_territory');
     const territoryFormPlaceholder = 'QPV, ZRR';
 
     const buttonTextAndTitle = function(options, select) {
