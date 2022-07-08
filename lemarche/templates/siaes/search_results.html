@@ -44,7 +44,7 @@
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sTabs01DropdownMoreLink"></div>
                     </li>
                 </ul>
-                <div class="tab-content">
+                <div class="tab-content" style="z-index:2">
                     <div class="tab-pane fade" id="search-filter" role="tabpanel" aria-labelledby="search-filter-tab">
                         <form method="GET" action="{% url 'siae:search_results' %}" id="filter-search-form" aria-label="Rechercher des structures de l’insertion et du handicap" role="search">
                             {% bootstrap_form_errors form type="all" %}
