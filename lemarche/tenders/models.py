@@ -241,15 +241,15 @@ class Tender(models.Model):
                 raise e
 
     @cached_property
-    def get_contact_full_name(self):
+    def contact_full_name(self):
         return f"{self.contact_first_name} {self.contact_last_name}"
 
     @cached_property
-    def get_sectors_names(self):
+    def sectors_list_string(self):
         return ", ".join(self.sectors.values_list("name", flat=True))
 
     @cached_property
-    def get_perimeters_names(self):
+    def perimeters_list_string(self):
         return ", ".join(self.perimeters.values_list("name", flat=True))
 
     @cached_property
@@ -381,5 +381,5 @@ class PartnerShareTender(models.Model):
         verbose_name_plural = "Partenaires intéressés des dépôts de besoins"
 
     @cached_property
-    def get_perimeters_names(self) -> str:
+    def perimeters_list_string(self) -> str:
         return ", ".join(self.perimeters.values_list("name", flat=True))

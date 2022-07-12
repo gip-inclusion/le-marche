@@ -87,8 +87,8 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
         # needed to display the Tender preview template
         if self.steps.current == self.STEP_CONFIRMATION:
             tender_dict = self.get_all_cleaned_data()
-            tender_dict["get_sectors_names"] = ", ".join(tender_dict["sectors"].values_list("name", flat=True))
-            tender_dict["get_perimeters_names"] = ", ".join(tender_dict["perimeters"].values_list("name", flat=True))
+            tender_dict["sectors_list_string"] = ", ".join(tender_dict["sectors"].values_list("name", flat=True))
+            tender_dict["perimeters_list_string"] = ", ".join(tender_dict["perimeters"].values_list("name", flat=True))
             tender_dict["get_kind_display"] = get_choice(Tender.TENDER_KIND_CHOICES, tender_dict["kind"])
             tender_dict["get_amount_display"] = get_choice(
                 tender_constants.AMOUNT_RANGE_CHOICES, tender_dict["amount"]

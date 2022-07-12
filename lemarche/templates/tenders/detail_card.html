@@ -17,14 +17,14 @@
         <div class="row text-bold">
             <div class="col">
                 <i class="ri-award-line"></i>
-                {{ tender.get_sectors_names }}
+                {{ tender.sectors_list_string }}
             </div>
             <div class="col">
                 <i class="ri-map-pin-2-line"></i>
                 {% if tender.is_country_area %}
                     France entière
                 {% else %}
-                    {{ tender.get_perimeters_names }}
+                    {{ tender.perimeters_list_string }}
                 {% endif %}
             </div>
             {% if tender.presta_type %}

@@ -47,8 +47,8 @@ def send_tender_email_to_partner(tender: Tender, partner: PartnerShareTender):
     if recipient_list:
         variables = {
             "TENDER_AUTHOR_COMPANY": tender.author.company_name,
-            "TENDER_SECTORS": tender.get_sectors_names,
-            "TENDER_PERIMETERS": tender.get_perimeters_names,
+            "TENDER_SECTORS": tender.sectors_list_string,
+            "TENDER_PERIMETERS": tender.perimeters_list_string,
             "TENDER_URL": get_share_url_object(tender),
         }
 
@@ -118,10 +118,12 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae):
 
         variables = {
             "SIAE_CONTACT_FIRST_NAME": siae.contact_first_name,
+            "SIAE_SECTORS": siae.sectors_list_string,
+            "SIAE_PERIMETER": siae.geo_range_pretty_display,
             "TENDER_AUTHOR_COMPANY": tender.author.company_name,
             "TENDER_KIND": tender.get_kind_display(),
-            "TENDER_SECTORS": tender.get_sectors_names,
-            "TENDER_PERIMETERS": tender.get_perimeters_names,
+            "TENDER_SECTORS": tender.sectors_list_string,
+            "TENDER_PERIMETERS": tender.perimeters_list_string,
             "TENDER_URL": get_share_url_object(tender),
         }
 
@@ -207,7 +209,7 @@ def notify_admin_tender_created(tender: Tender):
             "tender_id": tender.id,
             "tender_title": tender.title,
             "tender_kind": tender.get_kind_display(),
-            "tender_contact": tender.get_contact_full_name,
+            "tender_contact": tender.contact_full_name,
             "tender_company": tender.author.company_name,
             "tender_admin_url": tender_admin_url,
         },

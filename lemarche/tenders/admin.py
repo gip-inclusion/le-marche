@@ -207,7 +207,7 @@ class PartnerShareTenderAdmin(admin.ModelAdmin, DynamicArrayMixin):
         return qs
 
     def perimeters_string(self, partnersharetender):
-        return partnersharetender.get_perimeters_names
+        return partnersharetender.perimeters_list_string
 
     perimeters_string.short_description = "Périmètres"
 
