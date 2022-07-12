@@ -14,6 +14,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_str
+from django.utils.functional import cached_property
 from django.utils.text import slugify
 
 from lemarche.perimeters.models import Perimeter
@@ -851,8 +852,9 @@ class Siae(models.Model):
         else:
             return "l'ASP"
 
-    def sectors_list_to_string(self):
-        return ", ".join(self.sectors.all().values_list("name", flat=True))
+    @cached_property
+    def sectors_list_string(self):
+        return ", ".join(self.sectors.values_list("name", flat=True))
 
     def siae_user_requests_pending_count(self):
         # TODO: optimize + filter on assignee

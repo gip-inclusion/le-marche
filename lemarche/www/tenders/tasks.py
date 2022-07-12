@@ -118,6 +118,8 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae):
 
         variables = {
             "SIAE_CONTACT_FIRST_NAME": siae.contact_first_name,
+            "SIAE_SECTORS": siae.sectors_list_string,
+            "SIAE_PERIMETER": siae.geo_range_pretty_display,
             "TENDER_AUTHOR_COMPANY": tender.author.company_name,
             "TENDER_KIND": tender.get_kind_display(),
             "TENDER_SECTORS": tender.get_sectors_names,
