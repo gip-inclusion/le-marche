@@ -872,7 +872,6 @@ class Siae(models.Model):
             score_item = value[COMPLETION_SCORE_KEY]
             if completion_item_kind == COMPLETION_KIND_NOT_EMPTY_OR_FALSE:
                 if getattr(self, key):
-                    # print(key, value)
                     score += score_item
             elif completion_item_kind == COMPLETION_KIND_GREATER_THAN:
                 if getattr(self, key) and getattr(self, key) > value[COMPLETION_COMPARE_TO_KEY]:
