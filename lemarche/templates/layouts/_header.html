@@ -89,10 +89,19 @@
                                         Mon espace
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <a href="{% url 'dashboard:home' %}" class="dropdown-item">Tableau de bord</a>
-                                        <a href="{% url 'dashboard:profile_edit' %}" class="dropdown-item">Mon profil</a>
+                                        <a href="{% url 'dashboard:home' %}" class="dropdown-item">
+                                            <i class="ri-dashboard-line"></i>
+                                            Tableau de bord
+                                        </a>
+                                        <a href="{% url 'dashboard:profile_edit' %}" class="dropdown-item">
+                                            <i class="ri-user-line"></i>
+                                            Mon profil
+                                        </a>
                                         <div class="dropdown-divider"></div>
-                                        <a href="{% url 'auth:logout' %}" class="dropdown-item">Déconnexion</a>
+                                        <a href="{% url 'auth:logout' %}" class="dropdown-item">
+                                            <i class="ri-logout-box-line"></i>
+                                            Déconnexion
+                                        </a>
                                     </div>
                                 </div>
                             </li>
