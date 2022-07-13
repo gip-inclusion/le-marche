@@ -229,3 +229,91 @@ PRESTA_CHOICES = (
     (PRESTA_PREST, "Prestation de service"),  # 0100
     (PRESTA_BUILD, "Fabrication et commercialisation de biens"),  # 1000
 )
+
+
+COMPLETION_KIND_KEY = "kind"
+COMPLETION_SCORE_KEY = "score"
+COMPLETION_COMPARE_TO_KEY = "compare_to"
+
+COMPLETION_KIND_NOT_EMPTY_OR_FALSE = "NOT_EMPTY_OR_FALSE"
+COMPLETION_KIND_GREATER_THAN = "GREATER_THAN"
+
+SIAE_COMPLETION_SCORE_GRID = {
+    "logo_url": {
+        COMPLETION_SCORE_KEY: 5,
+        COMPLETION_KIND_KEY: COMPLETION_KIND_NOT_EMPTY_OR_FALSE,
+    },
+    "contact_email": {
+        COMPLETION_SCORE_KEY: 5,
+        COMPLETION_KIND_KEY: COMPLETION_KIND_NOT_EMPTY_OR_FALSE,
+    },
+    "contact_phone": {
+        COMPLETION_SCORE_KEY: 5,
+        COMPLETION_KIND_KEY: COMPLETION_KIND_NOT_EMPTY_OR_FALSE,
+    },
+    "presta_type": {
+        COMPLETION_SCORE_KEY: 5,
+        COMPLETION_KIND_KEY: COMPLETION_KIND_NOT_EMPTY_OR_FALSE,
+    },
+    "geo_range": {
+        COMPLETION_SCORE_KEY: 5,
+        COMPLETION_KIND_KEY: COMPLETION_KIND_NOT_EMPTY_OR_FALSE,
+    },
+    "sector_count": {
+        COMPLETION_SCORE_KEY: 5,
+        COMPLETION_KIND_KEY: COMPLETION_KIND_GREATER_THAN,
+        COMPLETION_COMPARE_TO_KEY: 1,
+    },
+    "description": {
+        COMPLETION_SCORE_KEY: 4,
+        COMPLETION_KIND_KEY: COMPLETION_KIND_NOT_EMPTY_OR_FALSE,
+    },
+    "offer_count": {
+        COMPLETION_SCORE_KEY: 4,
+        COMPLETION_KIND_KEY: COMPLETION_KIND_GREATER_THAN,
+        COMPLETION_COMPARE_TO_KEY: 1,
+    },
+    "client_reference_count": {
+        COMPLETION_SCORE_KEY: 3,
+        COMPLETION_KIND_KEY: COMPLETION_KIND_GREATER_THAN,
+        COMPLETION_COMPARE_TO_KEY: 2,
+    },
+    "ca": {
+        COMPLETION_SCORE_KEY: 3,
+        COMPLETION_KIND_KEY: COMPLETION_KIND_NOT_EMPTY_OR_FALSE,
+    },
+    "employees_insertion_count": {
+        COMPLETION_SCORE_KEY: 3,
+        COMPLETION_KIND_KEY: COMPLETION_KIND_GREATER_THAN,
+        COMPLETION_COMPARE_TO_KEY: 0,
+    },
+    "label_count": {
+        COMPLETION_SCORE_KEY: 3,
+        COMPLETION_KIND_KEY: COMPLETION_KIND_GREATER_THAN,
+        COMPLETION_COMPARE_TO_KEY: 0,
+    },
+    "is_cocontracting": {
+        COMPLETION_SCORE_KEY: 2,
+        COMPLETION_KIND_KEY: COMPLETION_KIND_NOT_EMPTY_OR_FALSE,
+    },
+    "image_count": {
+        COMPLETION_SCORE_KEY: 2,
+        COMPLETION_KIND_KEY: COMPLETION_KIND_GREATER_THAN,
+        COMPLETION_COMPARE_TO_KEY: 2,
+    },
+    "employees_permanent_count": {
+        COMPLETION_SCORE_KEY: 2,
+        COMPLETION_KIND_KEY: COMPLETION_KIND_GREATER_THAN,
+        COMPLETION_COMPARE_TO_KEY: 2,
+    },
+    "network_count": {
+        COMPLETION_SCORE_KEY: 1,
+        COMPLETION_KIND_KEY: COMPLETION_KIND_GREATER_THAN,
+        COMPLETION_COMPARE_TO_KEY: 2,
+    },
+    "year_constitution": {
+        COMPLETION_SCORE_KEY: 1,
+        COMPLETION_KIND_KEY: COMPLETION_KIND_NOT_EMPTY_OR_FALSE,
+    },
+    # groupements 1
+}

@@ -15,6 +15,8 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "0.0.0.0",
     os.environ.get("CURRENT_HOST"),
+    # for review apps (in case you want to change the DEBUG value)
+    ".cleverapps.io",
 ]
 
 INTERNAL_IPS = [
@@ -82,6 +84,7 @@ if is_windows:
     GDAL_LIBRARY_PATH = "C:/OSGeo4W/bin/gdal304.dll"
 
 
+# flake8: noqa F405
 HUEY |= {
     "results": True,
     "store_none": True,

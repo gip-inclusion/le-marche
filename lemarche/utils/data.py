@@ -30,3 +30,7 @@ def get_choice(choices, key):
     if key in choices:
         return choices[key]
     return None
+
+
+def round_by_base(x, base=5):
+    return base * round(x / base)

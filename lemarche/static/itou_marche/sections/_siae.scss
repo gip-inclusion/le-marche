@@ -372,3 +372,14 @@
 		padding-left: 16px;
 	}
 }
+
+// TODO: integrate to the theme
+$purple-marche: #6C38D9;
+
+.progress--purple .progress-bar {
+    background-color: $purple-marche!important;
+}
+
+.text-marche-purple{
+	color: $purple-marche;
+}
