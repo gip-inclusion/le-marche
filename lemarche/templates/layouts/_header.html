@@ -89,10 +89,19 @@
                                         Mon espace
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <a href="{% url 'dashboard:home' %}" class="dropdown-item">Tableau de bord</a>
-                                        <a href="{% url 'dashboard:profile_edit' %}" class="dropdown-item">Mon profil</a>
+                                        <a href="{% url 'dashboard:home' %}" class="dropdown-item">
+                                            <i class="ri-dashboard-line"></i>
+                                            Tableau de bord
+                                        </a>
+                                        <a href="{% url 'dashboard:profile_edit' %}" class="dropdown-item">
+                                            <i class="ri-user-line"></i>
+                                            Mon profil
+                                        </a>
                                         <div class="dropdown-divider"></div>
-                                        <a href="{% url 'auth:logout' %}" class="dropdown-item">Déconnexion</a>
+                                        <a href="{% url 'auth:logout' %}" class="dropdown-item">
+                                            <i class="ri-logout-box-line"></i>
+                                            Déconnexion
+                                        </a>
                                     </div>
                                 </div>
                             </li>
@@ -148,10 +157,16 @@
                     <ul>
                         {% if user.is_authenticated %}
                             <li>
-                                <a href="{% url 'dashboard:home' %}" id="h_dashboard" rel="noopener">Tableau de bord</a>
+                                <a href="{% url 'dashboard:home' %}" id="h_dashboard" rel="noopener">
+                                    <i class="ri-dashboard-line"></i>
+                                    Tableau de bord
+                                </a>
                             </li>
                             <li>
-                                <a href="{% url 'dashboard:profile_edit' %}" rel="noopener">Mon profil</a>
+                                <a href="{% url 'dashboard:profile_edit' %}" rel="noopener">
+                                    <i class="ri-user-line"></i>
+                                    Mon profil
+                                </a>
                             </li>
                             <hr />
                             <li>
@@ -170,7 +185,8 @@
                             <hr />
                             <li>
                                 <a href="{% url 'auth:logout' %}" id="h_logout" rel="noopener">
-                                    <span>Déconnexion</span>
+                                    <i class="ri-logout-box-line"></i>
+                                    Déconnexion
                                 </a>
                             </li>
                         {% else %}

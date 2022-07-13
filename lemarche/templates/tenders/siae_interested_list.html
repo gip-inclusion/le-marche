@@ -11,7 +11,7 @@
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mon espace</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">Mes besoins</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'tenders:detail' tender.slug %}">{{ tender.title|truncatechars:25 }}</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Structures intéressées</li>
