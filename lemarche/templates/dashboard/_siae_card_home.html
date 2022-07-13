@@ -1,12 +1,14 @@
 <div class="s-cards-grid-01__col col d-sm-flex">
     <div class="card c-card c-card--mini mb-3 w-100">
         <div class="card-body">
-            <h3 class="mb-3">{{ siae.name_display }}</h3>
-            <div class="row">
-                <div class="col-6">
-                    <h4 class="mt-2 mb-0">Ma fiche commerciale</h4>
+            <h3>{{ siae.name_display }}</h3>
+            <div class="row mb-3">
+                <div class="col-12">
+                    {% include "includes/_completion_progress_bar.html" with completion_percent=siae.completion_percent %}
                 </div>
-                <div class="col-6 text-right">
+            </div>
+            <div class="row">
+                <div class="col-12 text-right">
                     <a href="{% url 'siae:detail' siae.slug %}" target="_blank" id="dashboard-siae-view-btn" class="btn btn-outline-primary btn-sm btn-ico">
                         <span>Voir</span>
                         <i class="ri-eye-line ri-lg"></i>
@@ -17,12 +19,6 @@
                     </a>
                 </div>
             </div>
-            {% if siae.is_missing_content %}
-                <div class="alert alert-warning mt-3 mb-0" role="alert">
-                    <i class="ri-information-line ri-lg"></i>
-                    Votre fiche n'est pas complète.
-                </div>
-            {% endif %}
             <hr />
             <div class="row">
                 <div class="col-6">
