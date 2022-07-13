@@ -251,17 +251,14 @@ SIAE_COMPLETION_SCORE_GRID = {
         COMPLETION_SCORE_KEY: 5,
         COMPLETION_KIND_KEY: COMPLETION_KIND_NOT_EMPTY_OR_FALSE,
     },
-    # prestations 5pt
     "presta_type": {
         COMPLETION_SCORE_KEY: 5,
         COMPLETION_KIND_KEY: COMPLETION_KIND_NOT_EMPTY_OR_FALSE,
     },
-    # geo_range 5
     "geo_range": {
         COMPLETION_SCORE_KEY: 5,
         COMPLETION_KIND_KEY: COMPLETION_KIND_NOT_EMPTY_OR_FALSE,
     },
-    # sector_count 5
     "sector_count": {
         COMPLETION_SCORE_KEY: 5,
         COMPLETION_KIND_KEY: COMPLETION_KIND_GREATER_THAN,
@@ -276,13 +273,11 @@ SIAE_COMPLETION_SCORE_GRID = {
         COMPLETION_KIND_KEY: COMPLETION_KIND_GREATER_THAN,
         COMPLETION_COMPARE_TO_KEY: 1,
     },
-    # client_ref_count>2 3
     "client_reference_count": {
         COMPLETION_SCORE_KEY: 3,
         COMPLETION_KIND_KEY: COMPLETION_KIND_GREATER_THAN,
         COMPLETION_COMPARE_TO_KEY: 2,
     },
-    # CA 3
     "ca": {
         COMPLETION_SCORE_KEY: 3,
         COMPLETION_KIND_KEY: COMPLETION_KIND_NOT_EMPTY_OR_FALSE,
@@ -292,39 +287,33 @@ SIAE_COMPLETION_SCORE_GRID = {
         COMPLETION_KIND_KEY: COMPLETION_KIND_GREATER_THAN,
         COMPLETION_COMPARE_TO_KEY: 0,
     },
-    # label_count ? 2
     "label_count": {
         COMPLETION_SCORE_KEY: 3,
         COMPLETION_KIND_KEY: COMPLETION_KIND_GREATER_THAN,
         COMPLETION_COMPARE_TO_KEY: 0,
     },
-    # is cocontracting 2
     "is_cocontracting": {
         COMPLETION_SCORE_KEY: 2,
         COMPLETION_KIND_KEY: COMPLETION_KIND_NOT_EMPTY_OR_FALSE,
     },
-    # image_count>2 2
     "image_count": {
         COMPLETION_SCORE_KEY: 2,
         COMPLETION_KIND_KEY: COMPLETION_KIND_GREATER_THAN,
         COMPLETION_COMPARE_TO_KEY: 2,
     },
-    # employees permanent count>2  2
     "employees_permanent_count": {
         COMPLETION_SCORE_KEY: 2,
         COMPLETION_KIND_KEY: COMPLETION_KIND_GREATER_THAN,
         COMPLETION_COMPARE_TO_KEY: 2,
     },
-    # groupements 1
-    # network_count 1
     "network_count": {
         COMPLETION_SCORE_KEY: 1,
         COMPLETION_KIND_KEY: COMPLETION_KIND_GREATER_THAN,
         COMPLETION_COMPARE_TO_KEY: 2,
     },
-    # year_constitution 1
     "year_constitution": {
         COMPLETION_SCORE_KEY: 1,
         COMPLETION_KIND_KEY: COMPLETION_KIND_NOT_EMPTY_OR_FALSE,
     },
+    # groupements 1
 }
