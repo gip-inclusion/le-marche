@@ -79,6 +79,12 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-12">
+                                        {% if siae.is_qpv %}
+                                            <span class="badge badge-pill badge-emploi-lightest" title="Quartier prioritaire de la politique de la ville">QPV</span>
+                                        {% endif %}
+                                        {% if siae.is_zrr %}
+                                            <span class="badge badge-pill badge-emploi-lightest" title="Zone de revitalisation rurale">ZRR</span>
+                                        {% endif %}
                                         {% for group in siae.groups.all %}
                                             <span class="badge badge-pill badge-emploi-light">{{ group.name }}</span>
                                         {% endfor %}
