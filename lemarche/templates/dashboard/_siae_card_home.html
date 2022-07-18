@@ -1,7 +1,22 @@
+{% load static %}
+
 <div class="s-cards-grid-01__col col d-sm-flex">
     <div class="card c-card c-card--mini mb-3 w-100">
         <div class="card-body">
-            <h3>{{ siae.name_display }}</h3>
+            <div class="row no-gutters">
+                <div class="col-auto sc-img">
+                    <span class="p-1 pr-2 d-inline-block">
+                        {% if siae.logo_url %}
+                            <img class="img-fluid" style="width:50px" src="{{ siae.logo_url }}" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
+                        {% else %}
+                            <img class="img-fluid" style="width:50px" src="{% static 'img/default-listing.png' %}" alt="{{ siae.name }}" loading="lazy" />
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="col">
+                    <h3>{{ siae.name_display }}</h3>
+                </div>
+            </div>
             <div class="row mb-3">
                 <div class="col-12">
                     {% include "includes/_completion_progress_bar.html" with completion_percent=siae.completion_percent %}
