@@ -38,7 +38,7 @@
                 <div id="user_profile" class="row align-items-start">
                     <div class="col-12">
                         <div class="row">
-                            <div class="gallery-small slideshow col-12 col-lg-3">
+                            <div class="gallery-small col-12 col-lg-3">
                                 <div class="img-container">
                                     {% if siae.logo_url %}
                                         <img src="{{ siae.logo_url }}" class="img-fluid" alt="Logo de la structure {{ siae.name }}" />
@@ -50,7 +50,7 @@
                             <div class="col-12 col-lg-9">
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <h1 class="h2 mb-3 mt-1">
+                                        <h1 class="h2 mb-3">
                                             {{ siae.name_display }}
                                             <small>(profil mis à jour il y a {{ siae.updated_at|timesince }})</small>
                                         </h1>
@@ -101,21 +101,21 @@
                         <div class="row">
                             <div class="col-12 col-md-6">
                                 <div class="row">
-                                    <div class="col-12 mb-3">
+                                    <div class="col-12">
                                         <i class="ri-calendar-2-fill"></i>
                                         <strong>Année de création :</strong>
                                         <span>{{ siae.year_constitution_display }}</span>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-12 mb-3">
+                                    <div class="col-12">
                                         <i class="ri-bill-line"></i>
                                         <strong>SIRET :</strong>
                                         <span>{{ siae.siret_display }}</span>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-12 mb-3">
+                                    <div class="col-12">
                                         <i class="ri-money-euro-circle-line"></i>
                                         <strong>Chiffre d'affaire :</strong>
                                         <span>{{ siae.ca_display }}</span>
@@ -124,7 +124,7 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="row">
-                                    <div class="col-12 mb-3">
+                                    <div class="col-12">
                                         {% if siae.presta_type %}
                                             <i class="ri-briefcase-4-line"></i>
                                             <strong>{% array_choices_display siae 'presta_type' %}</strong>
@@ -132,14 +132,14 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-12 mb-3">
+                                    <div class="col-12">
                                         <i class="ri-group-line"></i>
                                         <strong>Salariés permanents :</strong>
                                         <span>{{ siae.employees_permanent_count|default:"non disponible" }}</span>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-12 mb-3">
+                                    <div class="col-12">
                                         <i class="ri-user-add-line"></i>
                                         <strong>Salariés en insertion :</strong>
                                         <span>{{ siae.employees_insertion_count|default:"non disponible" }}</span>
