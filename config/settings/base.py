@@ -362,6 +362,8 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://\w+\.gouv\.fr$",
 ]
 
+CSRF_FAILURE_VIEW = "lemarche.www.pages.views.csrf_failure"
+
 
 # S3 uploads
 # ------------------------------------------------------------------------------
@@ -456,6 +458,7 @@ MAILJET_NL_CL_IMPORT_C1_SIAE_LIST_ID = env.int("MAILJET_NL_CL_IMPORT_C1_SIAE_LIS
 # API slack
 SLACK_NOTIF_IS_ACTIVE = env.bool("SLACK_NOTIF_IS_ACTIVE", False)
 SLACK_WEBHOOK_C4_CHANNEL = env.str("SLACK_WEBHOOK_C4_CHANNEL", "set-it")
+SLACK_WEBHOOK_C4_SUPPORT_CHANNEL = env.str("SLACK_WEBHOOK_C4_SUPPORT_CHANNEL", "set-it")
 
 
 # Django REST Framework (DRF)
