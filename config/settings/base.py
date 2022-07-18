@@ -362,6 +362,8 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://\w+\.gouv\.fr$",
 ]
 
+CSRF_FAILURE_VIEW = "lemarche.www.pages.views.csrf_failure"
+
 
 # S3 uploads
 # ------------------------------------------------------------------------------
