@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404, HttpResponsePermanentRedirect, JsonResponse
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, FormView, ListView, TemplateView, View
 
@@ -11,6 +12,7 @@ from lemarche.pages.models import Page
 from lemarche.siaes.models import Siae, SiaeGroup
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
+from lemarche.utils.apis import api_slack
 from lemarche.utils.tracker import track
 from lemarche.www.pages.forms import ContactForm
 from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
@@ -121,6 +123,33 @@ class TrackView(View):
             meta=data.get("meta", None),
         )
         return JsonResponse({"message": "success"})
+
+
+def csrf_failure(request, reason=""):
+    template_name = "403_csrf.html"
+    context = {}  # self.get_context_data()
+
+    if request.path == "/besoins/ajouter":
+        slack_message_body = "Dépôt de besoin : erreur CSRF\n---\n"
+        if request.user.is_authenticated:
+            slack_message_body += f"user_id : {request.user.id}\n"
+            slack_message_body += f"user_email : {request.user.email}\n"
+            slack_message_body += "---\n"
+        formtools_session_step_data = request.session.get("wizard_tender_create_multi_step_view", {}).get(
+            "step_data", {}
+        )
+        for step in formtools_session_step_data.keys():
+            for key in formtools_session_step_data.get(step).keys():
+                slack_message_body += f"{key} : {', '.join(formtools_session_step_data.get(step).get(key))}\n"
+            slack_message_body += "---\n"
+        for key in request.POST.keys():
+            slack_message_body += f"{key} : {', '.join(request.POST.getlist(key))}\n"
+        api_slack.send_message_to_channel(
+            text=slack_message_body, service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL
+        )
+
+    # return HttpResponseForbidden()
+    return render(request, template_name, context)
 
 
 def trigger_error(request):
