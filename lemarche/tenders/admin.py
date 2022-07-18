@@ -60,7 +60,7 @@ class TenderAdmin(admin.ModelAdmin):
     search_help_text = "Cherche sur les champs : ID, Titre, Auteur (ID, E-mail)"
     ordering = ["-created_at"]
 
-    autocomplete_fields = ["perimeters", "sectors"]
+    autocomplete_fields = ["perimeters", "sectors", "author"]
     readonly_fields = [
         "nb_siae",
         "nb_siae_email_send",
