@@ -128,20 +128,24 @@ class TrackView(View):
         return JsonResponse({"message": "success"})
 
 
-def csrf_failure(request, reason=""):
+def csrf_failure(request, reason=""):  # noqa C901
+    """
+    Display a custom message on CSRF errors
+    *BUT* we skip this error if it comes from the Tender create form
+    """
     template_name = "403_csrf.html"
     context = {}  # self.get_context_data()
 
     if request.path == "/besoins/ajouter":
-        formtools_session_step_data = request.session.get("wizard_tender_create_multi_step_view", {}).get(
-            "step_data", {}
-        )
-
         if (
             request.POST.get("tender_create_multi_step_view-current_step")
             == TenderCreateMultiStepView.STEP_CONFIRMATION
         ):
             tender_dict = dict()
+            formtools_session_step_data = request.session.get("wizard_tender_create_multi_step_view", {}).get(
+                "step_data", {}
+            )
+
             for step in formtools_session_step_data.keys():
                 for key in formtools_session_step_data.get(step).keys():
                     if not key.startswith(("csrfmiddlewaretoken", "tender_create_multi_step_view")):
@@ -165,7 +169,7 @@ def csrf_failure(request, reason=""):
                         else:
                             tender_dict[key_cleaned] = list() if value[0] == "" else value
 
-            tender = create_tender_from_dict(tender_dict | {"author": request.user, "source": "FORM_CSRF"})
+            tender = create_tender_from_dict(tender_dict | {"author": request.user, "source": Tender.SOURCE_FORM_CSRF})
 
             if settings.BITOUBI_ENV == "prod":
                 notify_admin_tender_created(tender)

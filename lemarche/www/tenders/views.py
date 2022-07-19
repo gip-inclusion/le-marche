@@ -123,7 +123,7 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
     def done(self, form_list, form_dict, **kwargs):
         cleaned_data = self.get_all_cleaned_data()
         # when it's done we save the tender
-        tender = create_tender_from_dict(cleaned_data | {"author": self.request.user, "source": "FORM"})
+        tender = create_tender_from_dict(cleaned_data | {"author": self.request.user, "source": Tender.SOURCE_FORM})
         # we notify the admin team
         if settings.BITOUBI_ENV == "prod":
             notify_admin_tender_created(tender)
