@@ -58,8 +58,7 @@ def add_to_contact_list_async(email_address, properties, contact_list_id, client
     try:
         response = client.post(contact_list_endpoint(contact_list_id), json=data)
         response.raise_for_status()
-        logger.info("add user to contact list")
-        logger.info(response.json())
+        logger.info("Mailjet: add user to contact list")
         return response.json()
     except requests.exceptions.HTTPError as e:
         logger.error("Error while fetching `%s`: %s", e.request.url, e)
@@ -91,13 +90,12 @@ def send_transactional_email_with_template(
             response = client.post(SEND_URL, json=data)
             response.raise_for_status()
             logger.info("Mailjet: send transactional email with template")
-            logger.info(response.json())
             return response.json()
         except requests.exceptions.HTTPError as e:
             logger.error("Error while fetching `%s`: %s", e.request.url, e)
             raise e
     else:
-        logger.info("Email not sent (DEV environment detected)")
+        logger.info("Mailjet: email not sent (DEV environment detected)")
 
 
 @task()
@@ -124,11 +122,10 @@ def send_transactional_email_many_recipient_with_template(
         try:
             response = client.post(SEND_URL, json=data)
             response.raise_for_status()
-            logger.info("Mailjet: send transactional email with template")
-            logger.info(response.json())
+            logger.info("Mailjet: send transactional email (multiple recipients) with template")
             return response.json()
         except requests.exceptions.HTTPError as e:
             logger.error("Error while fetching `%s`: %s", e.request.url, e)
             raise e
     else:
-        logger.info("Email not sent (DEV environment detected)")
+        logger.info("Mailjet: email not sent (DEV environment detected)")
