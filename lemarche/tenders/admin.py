@@ -125,6 +125,12 @@ class TenderAdmin(admin.ModelAdmin):
         qs = qs.with_siae_stats()
         return qs
 
+    def get_changeform_initial_data(self, request):
+        """
+        Default values in add form.
+        """
+        return {"source": Tender.SOURCE_STAFF_C4_CREATED}
+
     def is_validate(self, tender: Tender):
         return tender.validated_at is not None
 

@@ -3,19 +3,22 @@ import json
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import Http404, HttpResponsePermanentRedirect, JsonResponse
+from django.http import Http404, HttpResponsePermanentRedirect, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, FormView, ListView, TemplateView, View
 
 from lemarche.pages.models import Page
+from lemarche.perimeters.models import Perimeter
+from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae, SiaeGroup
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
-from lemarche.utils.apis import api_slack
 from lemarche.utils.tracker import track
 from lemarche.www.pages.forms import ContactForm
 from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
+from lemarche.www.tenders.tasks import notify_admin_tender_created
+from lemarche.www.tenders.views import TenderCreateMultiStepView, create_tender_from_dict
 
 
 class HomeView(TemplateView):
@@ -125,28 +128,58 @@ class TrackView(View):
         return JsonResponse({"message": "success"})
 
 
-def csrf_failure(request, reason=""):
+def csrf_failure(request, reason=""):  # noqa C901
+    """
+    Display a custom message on CSRF errors
+    *BUT* we skip this error if it comes from the Tender create form
+    """
     template_name = "403_csrf.html"
     context = {}  # self.get_context_data()
 
     if request.path == "/besoins/ajouter":
-        slack_message_body = "Dépôt de besoin : erreur CSRF\n---\n"
-        if request.user.is_authenticated:
-            slack_message_body += f"user_id : {request.user.id}\n"
-            slack_message_body += f"user_email : {request.user.email}\n"
-            slack_message_body += "---\n"
-        formtools_session_step_data = request.session.get("wizard_tender_create_multi_step_view", {}).get(
-            "step_data", {}
-        )
-        for step in formtools_session_step_data.keys():
-            for key in formtools_session_step_data.get(step).keys():
-                slack_message_body += f"{key} : {', '.join(formtools_session_step_data.get(step).get(key))}\n"
-            slack_message_body += "---\n"
-        for key in request.POST.keys():
-            slack_message_body += f"{key} : {', '.join(request.POST.getlist(key))}\n"
-        api_slack.send_message_to_channel(
-            text=slack_message_body, service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL
-        )
+        if (
+            request.POST.get("tender_create_multi_step_view-current_step")
+            == TenderCreateMultiStepView.STEP_CONFIRMATION
+        ):
+            tender_dict = dict()
+            formtools_session_step_data = request.session.get("wizard_tender_create_multi_step_view", {}).get(
+                "step_data", {}
+            )
+
+            for step in formtools_session_step_data.keys():
+                for key in formtools_session_step_data.get(step).keys():
+                    if not key.startswith(("csrfmiddlewaretoken", "tender_create_multi_step_view")):
+                        value = formtools_session_step_data.get(step).get(key)
+                        key_cleaned = key.replace("general-", "").replace("description-", "").replace("contact-", "")
+                        if key_cleaned not in [
+                            "sectors",
+                            "perimeters",
+                            "presta_type",
+                            "response_kind",
+                            "is_country_area",
+                        ]:
+                            if value[0]:
+                                tender_dict[key_cleaned] = value[0]
+                        elif key_cleaned == "is_country_area":
+                            tender_dict[key_cleaned] = value[0] == "on"
+                        elif key_cleaned == "sectors":
+                            tender_dict[key_cleaned] = Sector.objects.filter(slug__in=value)
+                        elif key_cleaned == "perimeters":
+                            tender_dict[key_cleaned] = Perimeter.objects.filter(slug__in=value)
+                        else:
+                            tender_dict[key_cleaned] = list() if value[0] == "" else value
+
+            tender = create_tender_from_dict(tender_dict | {"author": request.user, "source": Tender.SOURCE_FORM_CSRF})
+
+            if settings.BITOUBI_ENV == "prod":
+                notify_admin_tender_created(tender)
+
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                TenderCreateMultiStepView.get_success_message(TenderCreateMultiStepView, tender_dict, tender),
+            )
+            return HttpResponseRedirect(TenderCreateMultiStepView.success_url)
 
     # return HttpResponseForbidden()
     return render(request, template_name, context)
