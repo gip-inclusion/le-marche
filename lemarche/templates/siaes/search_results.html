@@ -28,15 +28,13 @@
                 <ul class="s-tabs-01__nav nav nav-tabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <a class="nav-link" id="search-filter-tab" data-toggle="tab" href="#search-filter" role="tab" aria-controls="search-filter" aria-selected="false">
-                            <span>&nbsp;&nbsp;&nbsp;</span>
-                            <span>J'ai un projet d'achat</span>
-                            <span>&nbsp;&nbsp;&nbsp;</span>
+                            J'ai un projet d'achat
                         </a>
                     </li>
                     <li class="nav-item" role="presentation">
                         <a class="nav-link" id="search-text-tab" data-toggle="tab" href="#search-text" role="tab" aria-controls="search-text" aria-selected="false">
-                            <span>Je cherche une structure</span>
-                            <span class="fs-xs badge badge-base badge-pill badge-pilotage ml-2" style="background-color:#6C38D9">Nouveauté</span>
+                            Je cherche une structure
+                            <span class="badge badge-sm badge-pill badge-important ml-2">Nouveauté</span>
                         </a>
                     </li>
                     <li class="nav-item-dropdown dropdown">
@@ -44,49 +42,44 @@
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sTabs01DropdownMoreLink"></div>
                     </li>
                 </ul>
-                <div class="tab-content" style="z-index:2">
+                <div class="tab-content">
                     <div class="tab-pane fade" id="search-filter" role="tabpanel" aria-labelledby="search-filter-tab">
                         <form method="GET" action="{% url 'siae:search_results' %}" id="filter-search-form" aria-label="Rechercher des structures de l’insertion et du handicap" role="search">
                             {% bootstrap_form_errors form type="all" %}
-                            <div class="row">
-                                <div class="col-12 col-lg-8">
-                                    <div class="row">
-                                        <div class="col-12 col-md-6">
-                                            <div class="form-group">
-                                                <label for="id_perimeters">{{ form.perimeters.label }}</label>
-                                                <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
-                                                <div id="perimeters-selected" class="mt-1"></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-md-6">
-                                            {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
-                                        </div>
+                            <div class="row align-items-end">
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="form-group">
+                                        <label for="id_perimeters">{{ form.perimeters.label }}</label>
+                                        <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
+                                        <div id="perimeters-selected" class="mt-1"></div>
                                     </div>
                                 </div>
-                                <div class="col-12 col-lg-4 d-none d-md-block">
-                                    <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
-                                    <button id="filter-submit" class="btn btn-primary btn-block btn-ico" type="submit">
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
+                                </div>
+                                <div class="col-12 col-md-12 col-lg-4 d-none d-lg-block">
+                                    <button id="filter-submit" class="btn btn-primary btn-block btn-ico mb-3" type="submit">
                                         <span>Rechercher</span>
                                         <i class="ri-search-line ri-lg"></i>
                                     </button>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-12 col-md-3 mt-lg-2 pr-md-0">
+                            <div class="row mt-lg-3">
+                                <div class="col-12 col-md-6 col-lg-3">
                                     {% bootstrap_field form.kind %}
                                 </div>
-                                <div class="col-12 col-md-3 mt-lg-2 pr-md-0">
+                                <div class="col-12 col-md-6 col-lg-3">
                                     {% bootstrap_field form.presta_type %}
                                 </div>
-                                <div class="col-12 col-md-3 mt-lg-2 pr-md-0">
+                                <div class="col-12 col-md-6 col-lg-3">
                                     {% bootstrap_field form.territory %}
                                 </div>
-                                <div class="col-12 col-md-3 mt-lg-2">
+                                <div class="col-12 col-md-6 col-lg-3">
                                     {% bootstrap_field form.networks form_group_class="form-group use-multiselect" %}
                                 </div>
                             </div>
-                            <div class="row d-md-none">
-                                <div class="col-12 col-lg-4">
+                            <div class="row d-lg-none">
+                                <div class="col-12">
                                     <button id="filter-submit" class="btn btn-primary btn-block btn-ico" type="submit">
                                         <span>Rechercher</span>
                                         <i class="ri-search-line ri-lg"></i>
@@ -122,43 +115,51 @@
     </div>
 </section>
 
+
+
 <section class="s-siae-02">
     <div class="container">
         <div id="dir_list">
             <div class="row">
-                <div class="col-12">
-                    <h1 class="meta h2 mb-3 mb-md-5 font-weight-bold text-center text-md-left">
-                        {% with paginator.count as siae_count %}
-                            {% if siae_count > 0 %}
-                                {{ siae_count }} structure{% if siae_count > 1 %}s{% endif %} correspond{% if siae_count > 1 %}ent{% endif %} à vos critères
-                            {% else %}
-                                Oups, nous n'avons pas trouvé de prestataires !
-                            {% endif %}
-                        {% endwith %}
+                <div class="col-12 col-md-8 d-flex mb-3 mb-md-5 ">
+                    <div class="row align-items-center">
+                        <div class="col-12 col-md">
+                            <h1 class="h2 mb-1">
+                                {% with paginator.count as siae_count %}
+                                    {% if siae_count > 0 %}
+                                        {{ siae_count }} structure{% if siae_count > 1 %}s{% endif %} correspond{% if siae_count > 1 %}ent{% endif %} à vos critères
+                                    {% else %}
+                                        Oups, nous n'avons pas trouvé de prestataires !
+                                    {% endif %}
+                                {% endwith %}
+                            </h1>
+                        </div>
                         {% if siaes %}
-                            {% if user.is_authenticated %}
-                                <div class="btn-group ml-3">
-                                    <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}&format=xls" id="siae-export-xls" class="btn btn-block btn-outline-primary btn-ico">
-                                        <span>Télécharger la liste (.xls)</span>
+                            <div class="col-12 col-md-auto">
+                                {% if user.is_authenticated %}
+                                    <div class="btn-group">
+                                        <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}&format=xls" id="siae-export-xls" class="btn btn-block btn-outline-primary btn-ico">
+                                            <span>Télécharger la liste (.xls)</span>
+                                            <i class="ri-download-line ri-lg"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="sr-only">Plus d'options de téléchargement</span>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}&format=csv" id="siae-export-csv" class="dropdown-item">
+                                                Télécharger la liste (.csv)
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <a href="#" id="siae-export-anon" class="btn btn-ico white-space-nowrap text-decoration-none btn-link text-important px-0" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}">
+                                        <span class="text-decoration-none ml-0">Télécharger la liste</span>
                                         <i class="ri-download-line ri-lg"></i>
                                     </a>
-                                    <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <span class="sr-only">Plus d'options de téléchargement</span>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}&format=csv" id="siae-export-csv" class="dropdown-item">
-                                            Télécharger la liste (.csv)
-                                        </a>
-                                    </div>
-                                </div>
-                            {% else %}
-                                <a href="#" id="siae-export-anon" class="btn btn-outline-primary btn-ico ml-3" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}">
-                                    <span>Télécharger la liste</span>
-                                    <i class="ri-download-line ri-lg"></i>
-                                </a>
-                            {% endif %}
+                                {% endif %}
+                            </div>
                         {% endif %}
-                    </h1>
+                    </div>
                 </div>
             </div>
             <div class="row dir_list-row">
@@ -199,7 +200,7 @@
                         <div class="map-holder mb-4">
                             <div id="map-siae-list" class="map-canvas"></div>
                         </div>
-                        <div class="si-separator"></div>
+                        <hr />
                         <div class="si-ideas">
                             <h3 class="h2 my-3">Idées reçues</h3>
                             <p>
