@@ -165,7 +165,7 @@ def csrf_failure(request, reason=""):
                         else:
                             tender_dict[key_cleaned] = list() if value[0] == "" else value
 
-            tender = create_tender_from_dict(tender_dict | {"author": request.user})
+            tender = create_tender_from_dict(tender_dict | {"author": request.user, "source": "FORM_CSRF"})
 
             if settings.BITOUBI_ENV == "prod":
                 notify_admin_tender_created(tender)

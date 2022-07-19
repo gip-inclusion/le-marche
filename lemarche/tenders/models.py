@@ -191,6 +191,7 @@ class Tender(models.Model):
         "Date de dernière visite de l'auteur sur la page 'structures intéressées'", blank=True, null=True
     )
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
+    source = models.CharField(verbose_name="Source", max_length=20, blank=True)
 
     validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
 
