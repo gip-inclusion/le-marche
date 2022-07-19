@@ -46,7 +46,7 @@ def send_message_to_channel(text: str, service_id: str, client: requests.Session
             data = {"text": text}
             response = client.post(f"{BASE_URL}{service_id}", json=data)
             response.raise_for_status()
-            logger.info("send message to slack")
+            logger.info("Slack: send message to channel")
             # logger.info(response.json())  // you'll receive a "HTTP 200" response with a plain text ok indicating that your message posted successfully  # noqa
             return True
         except requests.exceptions.HTTPError as e:
