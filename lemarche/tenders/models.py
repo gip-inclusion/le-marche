@@ -131,6 +131,10 @@ class Tender(models.Model):
         (RESPONSE_KIND_EXTERNAL, "Lien externe"),
     )
 
+    SOURCE_FORM = "FORM"
+    SOURCE_FORM_CSRF = "FORM_CSRF"
+    SOURCE_STAFF_C4_CREATED = "STAFF_C4_CREATED"
+
     title = models.CharField(verbose_name="Titre du besoin", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
     kind = models.CharField(
@@ -191,6 +195,7 @@ class Tender(models.Model):
         "Date de dernière visite de l'auteur sur la page 'structures intéressées'", blank=True, null=True
     )
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
+    source = models.CharField(verbose_name="Source", max_length=20, blank=True)
 
     validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
 
