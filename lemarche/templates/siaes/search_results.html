@@ -46,19 +46,19 @@
                     <div class="tab-pane fade" id="search-filter" role="tabpanel" aria-labelledby="search-filter-tab">
                         <form method="GET" action="{% url 'siae:search_results' %}" id="filter-search-form" aria-label="Rechercher des structures de l’insertion et du handicap" role="search">
                             {% bootstrap_form_errors form type="all" %}
-                            <div class="row align-items-end">
+                            <div class="row align-items-start">
                                 <div class="col-12 col-md-6 col-lg-4">
                                     <div class="form-group">
                                         <label for="id_perimeters">{{ form.perimeters.label }}</label>
                                         <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
-                                        <div id="perimeters-selected" class="mt-1"></div>
+                                        <div id="perimeters-selected" class="mt-2"></div>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6 col-lg-4">
                                     {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
                                 </div>
                                 <div class="col-12 col-md-12 col-lg-4 d-none d-lg-block">
-                                    <button id="filter-submit" class="btn btn-primary btn-block btn-ico mb-3" type="submit">
+                                    <button id="filter-submit" class="btn btn-primary btn-block btn-ico mb-3 mt-5" type="submit">
                                         <span>Rechercher</span>
                                         <i class="ri-search-line ri-lg"></i>
                                     </button>
@@ -121,9 +121,9 @@
     <div class="container">
         <div id="dir_list">
             <div class="row">
-                <div class="col-12 col-md-8 d-flex mb-3 mb-md-5 ">
+                <div class="col-12 col-lg-8 d-flex mb-3 mb-md-5">
                     <div class="row align-items-center">
-                        <div class="col-12 col-md">
+                        <div class="col-12 col-lg">
                             <h1 class="h2 mb-1">
                                 {% with paginator.count as siae_count %}
                                     {% if siae_count > 0 %}
@@ -135,21 +135,19 @@
                             </h1>
                         </div>
                         {% if siaes %}
-                            <div class="col-12 col-md-auto">
+                            <div class="col-12 col-lg-auto">
                                 {% if user.is_authenticated %}
-                                    <div class="btn-group">
-                                        <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}&format=xls" id="siae-export-xls" class="btn btn-block btn-outline-primary btn-ico">
-                                            <span>Télécharger la liste (.xls)</span>
-                                            <i class="ri-download-line ri-lg"></i>
+                                    <button type="button" class="btn btn-ico white-space-nowrap text-decoration-none btn-link text-important px-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="text-decoration-none ml-0">Télécharger la liste</span>
+                                        <i class="ri-download-line ri-lg"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}&format=xls" id="siae-export-xls" class="dropdown-item">
+                                            Télécharger la liste (.xls)
                                         </a>
-                                        <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <span class="sr-only">Plus d'options de téléchargement</span>
-                                        </button>
-                                        <div class="dropdown-menu dropdown-menu-right">
-                                            <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}&format=csv" id="siae-export-csv" class="dropdown-item">
-                                                Télécharger la liste (.csv)
-                                            </a>
-                                        </div>
+                                        <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}&format=csv" id="siae-export-csv" class="dropdown-item">
+                                            Télécharger la liste (.csv)
+                                        </a>
                                     </div>
                                 {% else %}
                                     <a href="#" id="siae-export-anon" class="btn btn-ico white-space-nowrap text-decoration-none btn-link text-important px-0" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}">
@@ -163,7 +161,7 @@
                 </div>
             </div>
             <div class="row dir_list-row">
-                <div class="col-12 col-md-8">
+                <div class="col-12 col-lg-8">
                 {% if siaes %}
                     {% for siae in siaes %}
                         {% include "siaes/_card_search_result.html" with siae=siae %}
@@ -195,7 +193,7 @@
                     </div>
                 {% endif %}
                 </div>
-                <div class="col-12 col-md-4 siae-info mt-6 mt-sm-0">
+                <div class="col-12 col-lg-4 siae-info mt-6 mt-sm-0">
                     <div class="siae-info-sticky">
                         <div class="map-holder mb-4">
                             <div id="map-siae-list" class="map-canvas"></div>
