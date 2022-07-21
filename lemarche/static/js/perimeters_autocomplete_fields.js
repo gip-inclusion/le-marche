@@ -22,7 +22,7 @@ function createHiddenInputPerimeter(resultId, resultName) {
   }).appendTo(perimetersContainer);
   let button = $('<button>', {
       type: 'button',
-      class: "badge badge-base badge-pill badge-outline-primary",
+      class: "badge badge-base badge-pill badge-outline-primary mr-1",
       title: `Retirer ${resultName}`,
       text: `${resultName}`,
       'data-refInput': resultIdString,
