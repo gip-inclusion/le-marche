@@ -12,7 +12,7 @@ function removeInputOnClick() {
 }
 
 function createHiddenInputPerimeter(resultId, resultName) {
-  let removeIcon = $('<i>', { class: "ri-close-line ml-2", "aria-hidden": true });
+  let removeIcon = $('<i>', { class: "ri-close-line font-weight-bold mr-0", "aria-hidden": true });
   let resultIdString = `hiddenPerimeter-${resultId}`;
   $('<input>', {
       type: 'hidden',
@@ -22,7 +22,7 @@ function createHiddenInputPerimeter(resultId, resultName) {
   }).appendTo(perimetersContainer);
   let button = $('<button>', {
       type: 'button',
-      class: "btn btn-sm btn-outline-primary btn-warning mr-2 mb-2",
+      class: "badge badge-base badge-pill badge-outline-primary mr-1",
       title: `Retirer ${resultName}`,
       text: `${resultName}`,
       'data-refInput': resultIdString,

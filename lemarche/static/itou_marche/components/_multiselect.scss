@@ -1,5 +1,23 @@
+.multiselect-container {
+    padding: .5rem 0;
+    margin: .125rem 0 0;
+}
+
+.multiselect-container .multiselect-all:focus, .multiselect-container .multiselect-all:hover, .multiselect-container .multiselect-group:focus, .multiselect-container .multiselect-group:hover, .multiselect-container .multiselect-option:focus, .multiselect-container .multiselect-option:hover {
+    background-color: #000638 !important;
+    color: white;
+  }
+
+.multiselect-container .multiselect-all.active:not(.multiselect-active-item-fallback), .multiselect-container .multiselect-all:not(.multiselect-active-item-fallback):active, .multiselect-container .multiselect-group.active:not(.multiselect-active-item-fallback), .multiselect-container .multiselect-group:not(.multiselect-active-item-fallback):active, .multiselect-container .multiselect-option.active:not(.multiselect-active-item-fallback), .multiselect-container .multiselect-option:not(.multiselect-active-item-fallback):active {
+    background-color: #000091;
+    color: white;
+}
+
 .multiselect-selected-text {
     text-transform: initial;
+}
+.multiselect-container .multiselect-all, .multiselect-container .multiselect-group, .multiselect-container .multiselect-option {
+    padding: .5rem 1rem;
 }
 
 button.multiselect {
@@ -9,7 +27,6 @@ button.multiselect {
 .multiselect-group {
     font-weight: 900;
     font-size: 1rem;
-    padding-bottom: 0 !important;
 }
 .multiselect-option {
     padding-top: 0 !important;
@@ -18,10 +35,23 @@ button.multiselect {
 
 #id_sectors_multiselect {
     button.multiselect {
-        background-position: right 1rem center;
-        background-repeat: no-repeat;
-        background-image: url('/static/images/dir_form_ico_shape.png');
-        background-size: 11px 15px;
+        background: none;
+
+        &::after {
+            display: inline-block;
+            font-family: remixicon !important;
+            font-style: normal;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1;
+            vertical-align: middle;
+            position: absolute;
+            right: 1rem;
+            z-index: 1;
+            font-weight: 400;
+           content: '\ecf1';
+        }
+
         // TODO David: a remplacer par le svg de ri-file-list-line
     }
 }
