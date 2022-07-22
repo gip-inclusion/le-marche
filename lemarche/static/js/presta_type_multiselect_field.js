@@ -45,19 +45,19 @@ document.addEventListener('DOMContentLoaded', function() {
             buttonContainer: `<div id="${FORM_MULTISELECT_ID}" class="btn-group" />`,
             widthSynchronizationMode: 'ifPopupIsSmaller',
             // enableHTML: true,
-            // nonSelectedText: `<span class="text-muted">${FORM_PLACEHOLDER}</span>`,
+            // nonSelectedText: `<span class="fake-placeholder">${FORM_PLACEHOLDER}</span>`,
         });
 
         // hack to set the placeholder color to grey when there is no item selected
         const multiselectSelectedText = document.querySelector(`#${FORM_MULTISELECT_ID} .multiselect-selected-text`);
         if (multiselectSelectedText.innerText === FORM_PLACEHOLDER) {
-            multiselectSelectedText.classList.add('text-muted');
+            multiselectSelectedText.classList.add('fake-placeholder');
         }
         multiselectSelectedText.addEventListener('DOMSubtreeModified', function () {
             if (this.innerText === FORM_PLACEHOLDER) {
-                this.classList.add('text-muted');
+                this.classList.add('fake-placeholder');
             } else {
-                this.classList.remove('text-muted');
+                this.classList.remove('fake-placeholder');
             }
         })
     }
