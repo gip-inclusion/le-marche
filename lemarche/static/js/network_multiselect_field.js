@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const FORM_MULTISELECT_ID = `${FORM_INPUT_ID}_multiselect`;
     const FORM_ELEMENT = document.querySelector(`.use-multiselect #${FORM_INPUT_ID}`);
     const FORM_PLACEHOLDER = 'Choisir…';
+    const FILTER_PLACEHOLDER = 'Filtrer…';
 
     const buttonTextAndTitle = function(options, select) {
         if (options.length === 0) {
@@ -42,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // filter options
             enableFiltering: true,
             enableCaseInsensitiveFiltering: true,
-            filterPlaceholder: FORM_PLACEHOLDER,
+            filterPlaceholder: FILTER_PLACEHOLDER,
             // reset button
             includeResetOption: true,
             includeResetDivider: true,
@@ -55,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
             buttonContainer: `<div id="${FORM_MULTISELECT_ID}" class="btn-group" />`,
             widthSynchronizationMode: 'ifPopupIsSmaller',
             // enableHTML: true,
-            // nonSelectedText: `<span class="text-muted">${FORM_PLACEHOLDER}</span>`,
+            // nonSelectedText: `<span class="fake-placeholder">${FORM_PLACEHOLDER}</span>`,
             templates: {
                 resetButton: '<div class="multiselect-reset p-2"><button type="button" class="btn btn-sm btn-block btn-outline-primary"></button></div>',
                 // buttonGroupReset: '<button type="button" class="multiselect-reset btn btn-outline-primary btn-block"></button>'
@@ -65,13 +66,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // hack to set the placeholder color to grey when there is no sector selected
         const multiselectSelectedText = document.querySelector(`#${FORM_MULTISELECT_ID} .multiselect-selected-text`);
         if (multiselectSelectedText.innerText === FORM_PLACEHOLDER) {
-            multiselectSelectedText.classList.add('text-muted');
+            multiselectSelectedText.classList.add('fake-placeholder');
         }
         multiselectSelectedText.addEventListener('DOMSubtreeModified', function () {
             if (this.innerText === FORM_PLACEHOLDER) {
-                this.classList.add('text-muted');
+                this.classList.add('fake-placeholder');
             } else {
-                this.classList.remove('text-muted');
+                this.classList.remove('fake-placeholder');
             }
         })
     }
