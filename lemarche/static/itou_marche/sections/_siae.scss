@@ -300,7 +300,6 @@
 
 .siae-card {
 	margin-bottom: 1.5rem;
-	border-bottom-width: 5px !important;
 
 	.sc-img {
 		width: 90px;
@@ -326,6 +325,8 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		padding-top: 12px !important;
+		padding-bottom: 12px  !important;
 	}
 }
 
@@ -381,4 +382,9 @@ $purple-marche: #6C38D9;
 .img-left span.il-r {
 	flex-grow:1;
 	display:block;
+}
+
+.s-tabs-01 {
+	position: relative;
+	z-index: 12;
 }
