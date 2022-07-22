@@ -54,6 +54,10 @@ button.multiselect {
 
         // TODO David: a remplacer par le svg de ri-file-list-line
     }
+
+    .multiselect-container {
+        transform: translate3d(0px, 50px, 0px) !important;
+    }
 }
 
 // fix scrolling bug on mobile when maxHeight is set: https://github.com/davidstutz/bootstrap-multiselect/issues/1191
