@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
         FORM_ELEMENT = document.querySelector(FORM_SELECTOR);
     }
     const FORM_PLACEHOLDER = 'Espaces verts, informatique, restauration…';
+    const FILTER_PLACEHOLDER = 'Filtrer…';
 
     const buttonTextAndTitle = function(options, select) {
         if (options.length === 0) {
@@ -46,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // filter options
             enableFiltering: true,
             enableCaseInsensitiveFiltering: true,
-            filterPlaceholder: FORM_PLACEHOLDER,
+            filterPlaceholder: FILTER_PLACEHOLDER,
             // reset button
             includeResetOption: true,
             includeResetDivider: true,
