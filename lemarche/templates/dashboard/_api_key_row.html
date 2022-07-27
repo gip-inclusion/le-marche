@@ -1,0 +1,44 @@
+<div id="api" class="row justify-content-end mb-3 mb-lg-5">
+    <div class="col-12 col-lg">
+        <h2 id="api" class="h1 mb-0">
+            <strong>Accès API</strong>
+        </h2>
+    </div>
+    <div class="col-12 col-md-auto">
+        <a href="{% url 'api:home' %}" class="btn btn-outline-primary btn-block btn-ico">
+            <span>📚 Tous les détails sur l'API</span>
+        </a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 col-md-6">
+        <div class="form-group">
+            <label>Votre token</label>
+            <div class="input-group input-group-sm">
+                <input type="text" id="user-api-key" class="form-control" value="{{ api_key }}" readonly />
+                <div class="input-group-append">
+                    <button id="user-api-key-copy-button" class="btn btn-primary" type="button" id="button-addon2">Copier</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% block extra_js %}
+<script type="text/javascript">
+const copyToClipboard = str => {
+    const el = document.getElementById('user-api-key');
+    el.select();
+    document.execCommand('copy');
+};
+document.addEventListener("DOMContentLoaded", function() {
+    const apiKeyCopyButton = document.getElementById('user-api-key-copy-button');
+    if (apiKeyCopyButton) {
+        apiKeyCopyButton.addEventListener('click', function(e) {
+            copyToClipboard();
+        });
+    }
+});
+</script>
+{% endblock %}
