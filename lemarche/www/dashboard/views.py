@@ -11,6 +11,7 @@ from django.views.generic.edit import CreateView, FormMixin
 
 from lemarche.favorites.models import FavoriteItem, FavoriteList
 from lemarche.siaes.models import Siae, SiaeUser, SiaeUserRequest
+from lemarche.users.models import User
 from lemarche.utils.s3 import S3Upload
 from lemarche.utils.tracker import extract_meta_from_request, track
 from lemarche.www.dashboard.forms import (
@@ -42,11 +43,16 @@ from lemarche.www.dashboard.tasks import (
 
 
 class DashboardHomeView(LoginRequiredMixin, DetailView):
-    template_name = "dashboard/home.html"
+    # template_name = "dashboard/home.html"
     context_object_name = "user"
 
     def get_object(self):
         return self.request.user
+
+    def get_template_names(self):
+        if self.request.user.kind == User.KIND_SIAE:
+            return ["dashboard/home_siae.html"]
+        return ["dashboard/home_buyer.html"]
 
 
 class ProfileEditView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
