@@ -79,8 +79,10 @@
                                 {% for tender in last_3_tenders %}
                                 <ul class="list-group list-group-flush list-group-link">
                                     <li class="list-group-item list-group-item-action">
-                                        <div title="Date de clôture">{{ tender.deadline_date|default:"" }}</div>
-                                        <span>{{ tender.title }}</span>
+                                        <a href="{% url 'tenders:detail' tender.slug %}" class="text-decoration-none">
+                                            <div>{{ tender.title }}</div>
+                                            <span title="Date de clôture">{{ tender.deadline_date|default:"" }}</span>
+                                        </a>
                                     </li>
                                 </ul>
                                 {% endfor %}
@@ -89,6 +91,29 @@
                             <div class="card-footer">
                                 <a href="{% url 'tenders:list' %}" class="btn btn-outline-primary">
                                     <span>Voir toutes les opportunités</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="h3 lh-sm">Solutions et ressources</p>
+
+                                {% for ressource in last_3_ressources %}
+                                    <ul class="list-group list-group-flush list-group-link">
+                                        <li class="list-group-item list-group-item-action">
+                                            <span>{{ ressource.title }}</span>
+                                            <span title="Date de publication">{{ ressource.last_published_at }}</span>
+                                        </li>
+                                    </ul>
+                                {% endfor %}
+                            </div>
+
+                            <div class="card-footer">
+                                <a href="{{ ressource.url_path }}" class="btn btn-outline-primary">
+                                    <span>Voir toutes les ressources</span>
                                 </a>
                             </div>
                         </div>

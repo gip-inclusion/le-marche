@@ -9,6 +9,7 @@ from django.utils.safestring import mark_safe
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView, FormMixin
 
+from lemarche.cms.models import ArticlePage
 from lemarche.favorites.models import FavoriteItem, FavoriteList
 from lemarche.siaes.models import Siae, SiaeUser, SiaeUserRequest
 from lemarche.tenders.models import Tender
@@ -62,6 +63,7 @@ class DashboardHomeView(LoginRequiredMixin, DetailView):
             if siaes:
                 # context["last_3_tenders"] = Tender.objects.filter_with_siae(siaes).is_live()[:3]
                 context["last_3_tenders"] = Tender.objects.filter(tendersiae__siae__in=siaes).distinct()[:3]
+            context["last_3_ressources"] = ArticlePage.objects.all()[:3]
         return context
 
 
