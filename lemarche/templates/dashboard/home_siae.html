@@ -26,27 +26,44 @@
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <!-- Mes structures -->
-                <div id="structures" class="row justify-content-end mb-3 mb-lg-5">
-                    <div class="col-12 col-lg">
-                        <h2 id="structures" class="h1 mb-0">
-                            <strong>{% if user.siaes.count > 1 %}Mes structures{% else %}Ma structure{% endif %}</strong>
-                        </h2>
+                <h1 class="h1 mb-3 mb-lg-5">
+                    <strong>Tableau de bord</strong>
+                </h1>
+
+                <section class="s-tabs-01">
+                    <div class="s-tabs-01__container container">
+                        <div class="s-tabs-01__row row">
+                            <div class="s-tabs-01__col col-12">
+                                <ul class="s-tabs-01__nav nav nav-tabs" role="tablist">
+                                    {% for siaeuser in user.siaeuser_set.all %}
+                                        <li class="nav-item" role="presentation">
+                                            <a class="nav-link {% if forloop.first %}active{% endif %}" id="{{ siaeuser.siae.slug }}-tab" data-toggle="tab" href="#{{ siaeuser.siae.slug }}" role="tab" aria-controls="{{ siaeuser.siae.slug }}" aria-selected="false">
+                                                {{ siaeuser.siae.name_display }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                    <li class="nav-item" role="presentation">
+                                        <a class="nav-link" id="add-siae-btn" data-toggle="tab" href="{% url 'dashboard:siae_search_by_siret' %}" role="tab" aria-selected="false">
+                                            <i class="ri-add-line"></i>
+                                            Ajouter une structure
+                                        </a>
+                                    </li>
+                                    <li class="nav-item-dropdown dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" role="button" id="sTabs01DropdownMoreLink" data-toggle="dropdown" aria-expanded="false">...</a>
+                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sTabs01DropdownMoreLink"></div>
+                                    </li>
+                                </ul>
+                                <div class="tab-content">
+                                    {% for siaeuser in user.siaeuser_set.all %}
+                                        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="{{ siaeuser.siae.slug }}" role="tabpanel" aria-labelledby="{{ siaeuser.siae.slug }}-tab">
+                                            {% include "dashboard/_siae_tab_content.html" with siae=siaeuser.siae %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-12 col-md-auto">
-                        <a href="{% url 'dashboard:siae_search_by_siret' %}" class="btn btn-primary btn-block btn-ico">
-                            <span>Ajouter une structure</span>
-                            <i class="ri-add-fill ri-lg"></i>
-                        </a>
-                    </div>
-                </div>
-                {% if user.siaes.count > 0 %}
-                    <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2">
-                        {% for siaeuser in user.siaeuser_set.all %}
-                            {% include "dashboard/_siae_card_home.html" with siae=siaeuser.siae %}
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                </section>
 
                 <!-- Tenders -->
                 <hr class="mb-3 mb-lg-5">
