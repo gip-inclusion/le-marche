@@ -68,13 +68,29 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="card">
-                            <h2 class="h1 mb-0">
-                                <strong>Trouver de nouvelles opportunités</strong>
-                            </h2>
-                            <a href="{% url 'tenders:list' %}" class="btn btn-outline-primary btn-block btn-ico">
-                                <span>Voir</span>
-                                <i class="ri-eye-line ri-lg"></i>
-                            </a>
+                            <div class="card-body">
+                                <p class="h3 lh-sm">Les opportunités du marché</p>
+
+                                <p>
+                                    Vous trouverez ici les devis, appels d'offre ou projets d'achat qui ont été déposés sur le marché 
+                                    et qui correspondent à vos secteurs d'activité et zone d'intervention.
+                                </p>
+
+                                {% for tender in last_3_tenders %}
+                                <ul class="list-group list-group-flush list-group-link">
+                                    <li class="list-group-item list-group-item-action">
+                                        <div title="Date de clôture">{{ tender.deadline_date|default:"" }}</div>
+                                        <span>{{ tender.title }}</span>
+                                    </li>
+                                </ul>
+                                {% endfor %}
+                            </div>
+
+                            <div class="card-footer">
+                                <a href="{% url 'tenders:list' %}" class="btn btn-outline-primary">
+                                    <span>Voir toutes les opportunités</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
