@@ -41,14 +41,21 @@
                     {% for siaeuser in user.siaeuser_set.all %}
                         <li class="nav-item" role="presentation">
                             <a class="nav-link {% if forloop.first %}active{% endif %}" id="{{ siaeuser.siae.slug }}-tab" data-toggle="tab" href="#{{ siaeuser.siae.slug }}" role="tab" aria-controls="{{ siaeuser.siae.slug }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
-                                {{ siaeuser.siae.name_display }}
+                                <span class="mr-2">
+                                    {% if siae.logo_url %}
+                                        <img class="img-fluid" style="width:20px" src="{{ siae.logo_url }}" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
+                                    {% else %}
+                                        <img class="img-fluid" style="width:20px" src="{% static 'img/default-listing.png' %}" alt="{{ siae.name }}" loading="lazy" />
+                                    {% endif %}
+                                </span>
+                                <span>{{ siaeuser.siae.name_display }}</span>
                             </a>
                         </li>
                     {% endfor %}
                     <li class="nav-item" role="presentation">
                         <a class="nav-link" id="add-siae-btn" href="{% url 'dashboard:siae_search_by_siret' %}" aria-selected="false">
                             <i class="ri-add-line"></i>
-                            Ajouter une structure
+                            <span>Ajouter une structure</span>
                         </a>
                     </li>
                     <li class="nav-item-dropdown dropdown">
