@@ -65,26 +65,28 @@
                     </div>
                 </section>
 
-                <!-- Tenders -->
-                <hr class="mb-3 mb-lg-5">
-                <div id="tenders" class="row justify-content-end mb-3 mb-lg-5">
-                    <div class="col-12 col-lg">
-                        <h2 class="h1 mb-0">
-                            <strong>Trouver de nouvelles opportunités</strong>
-                        </h2>
-                    </div>
-                    <div class="col-12 col-md-auto">
-                        <a href="{% url 'tenders:list' %}" class="btn btn-outline-primary btn-block btn-ico">
-                            <span>Voir</span>
-                            <i class="ri-eye-line ri-lg"></i>
-                        </a>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <h2 class="h1 mb-0">
+                                <strong>Trouver de nouvelles opportunités</strong>
+                            </h2>
+                            <a href="{% url 'tenders:list' %}" class="btn btn-outline-primary btn-block btn-ico">
+                                <span>Voir</span>
+                                <i class="ri-eye-line ri-lg"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-                <!-- API -->
+                <br />
+
                 {% if user.api_key %}
-                    <hr class="mb-3 mb-lg-5">
-                    {% include "dashboard/_api_key_row.html" with api_key=user.api_key %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            {% include "dashboard/_api_key_card.html" with api_key=user.api_key %}
+                        </div>
+                    </div>
                 {% endif %}
             </div>
         </div>
