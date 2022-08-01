@@ -63,7 +63,7 @@ class DashboardHomeView(LoginRequiredMixin, DetailView):
             if siaes:
                 # context["last_3_tenders"] = Tender.objects.filter_with_siae(siaes).is_live()[:3]
                 context["last_3_tenders"] = Tender.objects.filter(tendersiae__siae__in=siaes).distinct()[:3]
-            context["last_3_ressources"] = ArticlePage.objects.all()[:3]
+            context["last_3_ressources"] = ArticlePage.objects.live().public().order_by("-last_published_at")[:3]
         return context
 
 
@@ -110,8 +110,7 @@ class ProfileFavoriteListCreateView(LoginRequiredMixin, SuccessMessageMixin, Cre
             messages.SUCCESS,
             self.get_success_message(form.cleaned_data),
         )
-        # return HttpResponseRedirect(self.get_success_url())  # doesn't work...
-        return HttpResponseRedirect(reverse_lazy("dashboard:profile_favorite_list"))
+        return HttpResponseRedirect(self.success_url)
 
     def get_success_message(self, cleaned_data):
         return mark_safe(f"Votre liste d'achat <strong>{cleaned_data['name']}</strong> a été crée avec succès.")

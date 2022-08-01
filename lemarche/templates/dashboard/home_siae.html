@@ -1,6 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load static get_verbose_name %}
 {% load theme_inclusion %}
+{% load wagtailimages_tags %}
 
 {% block title %}Tableau de bord{{ block.super }}{% endblock %}
 
@@ -22,7 +23,6 @@
 {% endblock %}
 
 {% block content %}
-
 <section class="s-title-01">
     <div class="s-title-01__container container">
         <div class="s-title-01__row row">
@@ -42,10 +42,10 @@
                         <li class="nav-item" role="presentation">
                             <a class="nav-link {% if forloop.first %}active{% endif %}" id="{{ siaeuser.siae.slug }}-tab" data-toggle="tab" href="#{{ siaeuser.siae.slug }}" role="tab" aria-controls="{{ siaeuser.siae.slug }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
                                 <span class="mr-2">
-                                    {% if siae.logo_url %}
-                                        <img class="img-fluid" style="width:20px" src="{{ siae.logo_url }}" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
+                                    {% if siaeuser.siae.logo_url %}
+                                        <img class="img-fluid" style="width:20px" src="{{ siaeuser.siae.logo_url }}" alt="Logo de la structure {{ siaeuser.siae.name }}" loading="lazy" />
                                     {% else %}
-                                        <img class="img-fluid" style="width:20px" src="{% static 'img/default-listing.png' %}" alt="{{ siae.name }}" loading="lazy" />
+                                        <img class="img-fluid" style="width:20px" src="{% static 'img/default-listing.png' %}" alt="{{ siaeuser.siae.name }}" loading="lazy" />
                                     {% endif %}
                                 </span>
                                 <span>{{ siaeuser.siae.name_display }}</span>
@@ -63,13 +63,15 @@
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sTabs01DropdownMoreLink"></div>
                     </li>
                 </ul>
-                <div class="tab-content">
-                    {% for siaeuser in user.siaeuser_set.all %}
-                        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="{{ siaeuser.siae.slug }}" role="tabpanel" aria-labelledby="{{ siaeuser.siae.slug }}-tab">
-                            {% include "dashboard/_siae_tab_content.html" with siae=siaeuser.siae %}
-                        </div>
-                    {% endfor %}
-                </div>
+                {% if user.siaeuser_set.count %}
+                    <div class="tab-content">
+                        {% for siaeuser in user.siaeuser_set.all %}
+                            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="{{ siaeuser.siae.slug }}" role="tabpanel" aria-labelledby="{{ siaeuser.siae.slug }}-tab">
+                                {% include "dashboard/_siae_tab_content.html" with siae=siaeuser.siae %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -86,18 +88,15 @@
                             Vous trouverez ici les devis, appels d'offre ou projets d'achat qui ont été déposés sur le marché
                             et qui correspondent à vos secteurs d'activité et zone d'intervention.
                         </p>
-                        <p>
-                            <span class="badge badge-sm badge-pill badge-important text-white">Nouvelles opportunités à consulter</span>
-                        </p>
                         {% for tender in last_3_tenders %}
-                        <ul class="list-group list-group-flush list-group-link">
-                            <li class="list-group-item list-group-item-action">
-                                <div>
-                                    <time class="fs-sm d-block" aria-label="Date de clôture">{{ tender.deadline_date|default:"" }}</time>
-                                    <a href="{% url 'tenders:detail' tender.slug %}" class="d-block font-weight-bold stretched-link">{{ tender.title }}</a>
-                                </div>
-                            </li>
-                        </ul>
+                            <ul class="list-group list-group-flush list-group-link">
+                                <li class="list-group-item list-group-item-action">
+                                    <div>
+                                        <time class="fs-sm d-block" aria-label="Date de clôture">{{ tender.deadline_date|default:"" }}</time>
+                                        <a href="{% url 'tenders:detail' tender.slug %}" class="d-block font-weight-bold stretched-link">{{ tender.title }}</a>
+                                    </div>
+                                </li>
+                            </ul>
                         {% endfor %}
                     </div>
                     <div class="card-footer pt-0 bg-white text-right">
@@ -117,11 +116,15 @@
                                 <li class="list-group-item list-group-item-action">
                                     <div class="d-flex align-items-center">
                                         <picture class="d-none d-lg-inline-flex mr-2">
-                                            <img src="https://via.placeholder.com/100x60" alt="">
-                                          </picture>
+                                            {% if ressource.image %}
+                                                {% image ressource.specific.image width-100 loading="lazy" %}
+                                            {% else %}
+                                                <img src="https://via.placeholder.com/100x60" alt="">
+                                            {% endif %}
+                                        </picture>
                                         <div>
-                                            <time class="fs-sm d-block" aria-label="Date de publication">aaa {{ ressource.last_published_at }}</time>
-                                            <span class="d-block font-weight-bold">aaa {{ ressource.title }}</span>
+                                            <time class="fs-sm d-block" aria-label="Date de publication">{{ ressource.last_published_at }}</time>
+                                            <a href="{{ ressource.url_path }}" class="d-block font-weight-bold stretched-link">{{ ressource.title }}</a>
                                         </div>
                                     </div>
                                 </li>
@@ -129,7 +132,7 @@
                         {% endfor %}
                     </div>
                     <div class="card-footer pt-0 bg-white text-right">
-                        <a href="{{ ressource.url_path }}" class="btn btn-link btn-ico">
+                        <a href="/ressources" class="btn btn-link btn-ico">
                             <span>Voir toutes les ressources</span>
                             <i class="ri-arrow-right-s-line ri-xl"></i>
                         </a>

@@ -376,7 +376,6 @@ S3_STORAGE_BUCKET_REGION = env.str("S3_STORAGE_BUCKET_REGION", "fr")
 AWS_DEFAULT_ACL = env.str("AWS_DEFAULT_ACL", "public-read")
 AWS_S3_USE_SSL = env.bool("AWS_S3_USE_SSL", False)
 
-
 SIAE_LOGO_FOLDER_NAME = "siae_logo"
 SIAE_IMAGE_FOLDER_NAME = "siae_image"
 SIAE_CLIENT_REFERENCE_LOGO_FOLDER_NAME = "client_reference_logo"
@@ -696,8 +695,10 @@ ENV_COLOR_MAPPING = {
 }
 BITOUBI_ENV_COLOR = ENV_COLOR_MAPPING.get(BITOUBI_ENV, "")
 
+
 # Wagtail
 # ------------------------------------------------------------------------------
+
 WAGTAIL_SITE_NAME = "Le Marché"
 
 WAGTAILSEARCH_BACKENDS = {
