@@ -5,66 +5,64 @@
     <meta name="description" content="{{ page.search_description }}">
 {% endblock %}
 
-{% block title %}{{page.seo_title}} | {{ block.super }}{% endblock %}
+{% block title %}{{ page.seo_title }} | {{ block.super }}{% endblock %}
 {% block body_class %}p-ressources{{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
-    <section>
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">{{page.title}}</li>
-                        </ol>
-                    </nav>
-                </div>
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ page.title }}</li>
+                    </ol>
+                </nav>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 {% endblock %}
 
 {% block content %}
-    <section class="s-title-01 mb-0">
-        <div class="s-title-01__container container">
-            <div class="s-title-01__row row">
-                <div class="s-title-01__col col-12 col-lg-9">
-                    <h1 class="s-title-01__title h1"><strong>{{page.title}}</strong></h1>
-                </div>
+<section class="s-title-01 mb-0">
+    <div class="s-title-01__container container">
+        <div class="s-title-01__row row">
+            <div class="s-title-01__col col-12 col-lg-9">
+                <h1 class="s-title-01__title h1"><strong>{{ page.title }}</strong></h1>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section class="s-section mt-0 has-illustration-bg-02">
-        <div class="s-section__container container">
-            <div class="s-section__row row">
-                <div class="s-section__col col-12">
-                    <ul class="nav nav-tabs nav-tabs--marche">
+<section class="s-section mt-0 has-illustration-bg-02">
+    <div class="s-section__container container">
+        <div class="s-section__row row">
+            <div class="s-section__col col-12">
+                <ul class="nav nav-tabs nav-tabs--marche">
+                    <li class="nav-item">
+                        <a href="{% routablepageurl page "post_list" %}" class="nav-link{% if not category %} active{% endif %}">
+                            Toutes nos ressources
+                        </a>
+                    </li>
+                    {% for cat in categories %}
                         <li class="nav-item">
-                            <a href="{% routablepageurl page "post_list" %}"
-                               class="nav-link{% if not category %} active{% endif %}">
-                                Toutes nos ressources
+                            <a href="{% routablepageurl page "category_view" cat_slug=cat.slug %}" class="nav-link{% if category and cat.slug == category.slug %} active{% endif %}">
+                                {{ cat.name }}
                             </a>
                         </li>
-                        {% for cat in categories %}
-                            <li class="nav-item">
-                                <a href="{% routablepageurl page "category_view" cat_slug=cat.slug %}"
-                                   class="nav-link{% if category and cat.slug == category.slug %} active{% endif %}">
-                                    {{cat.name}}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-            <div class="s-section__row row row-cols-1 row-cols-md-2 row-cols-lg-3 mt-5">
-                {% for article in article_list %}
-                    <div class="s-section__col col mb-3 mb-lg-5">
-                        {% include "cms/article_item.html" with article=article %}
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                </ul>
             </div>
         </div>
-    </section>
+        <div class="s-section__row row row-cols-1 row-cols-md-2 row-cols-lg-3 mt-5">
+            {% for article in article_list %}
+                <div class="s-section__col col mb-3 mb-lg-5">
+                    {% include "cms/article_item.html" with article=article %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
 {% endblock %}

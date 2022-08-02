@@ -6,14 +6,14 @@
         {% image article.specific.image fill-655x388 class="img-fluid img-fitcover" loading="lazy" %}
     </div>
     <div class="card-body">
-        <p class="h3 lh-sm">{{article.title}}</p>
+        <p class="h3 lh-sm">{{ article.title }}</p>
         {% show_article_categories_badges article %}
         <p>
-            {{article.specific.intro | truncatechars:200 }}
+            {{ article.specific.intro | truncatechars:200 }}
         </p>
     </div>
     <div class="card-footer text-right">
-        <a href="{{article.url}}" class="btn btn-link btn-ico stretched-link" title="Lire la suite de l'article: {{article.title}}">
+        <a href="{{ article.url }}" class="btn btn-link btn-ico stretched-link" title="Lire la suite de l'article : {{ article.title }}">
             <span>Lire la suite </span>
             <i class="ri-arrow-right-up-line ri-lg"></i>
         </a>
