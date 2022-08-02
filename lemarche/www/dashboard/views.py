@@ -58,12 +58,16 @@ class DashboardHomeView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # for all users
+        context["last_3_ressources"] = ArticlePage.objects.live().public().order_by("-last_published_at")[:3]
+        # for specific users
         if self.request.user.kind == User.KIND_SIAE:
             siaes = self.request.user.siaes.all()
             if siaes:
                 # context["last_3_tenders"] = Tender.objects.filter_with_siae(siaes).is_live()[:3]
                 context["last_3_tenders"] = Tender.objects.filter(tendersiae__siae__in=siaes).distinct()[:3]
-            context["last_3_ressources"] = ArticlePage.objects.live().public().order_by("-last_published_at")[:3]
+        else:
+            context["last_3_tenders"] = Tender.objects.filter(author=self.request.user)[:3]
         return context
 
 
