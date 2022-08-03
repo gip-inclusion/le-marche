@@ -165,6 +165,15 @@ class TenderListView(LoginRequiredMixin, ListView):
             queryset = Tender.objects.by_user(user).with_siae_stats()
         return queryset
 
+    def get(self, request, *args, **kwargs):
+        """
+        Update 'tender_list_last_seen_date'
+        """
+        user = self.request.user
+        if user.is_authenticated:
+            User.objects.filter(id=user.id).update(tender_list_last_seen_date=timezone.now())
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user_kind = self.request.user.kind if self.request.user.is_authenticated else "anonymous"
@@ -180,7 +189,7 @@ class TenderDetailView(DetailView):
 
     def get(self, request, *args, **kwargs):
         """
-        Check if the User has any Siae contacted for this Tender. If yes, update 'detail_display_date'
+        update 'detail_display_date' (if the User has any Siae linked to this Tender)
         """
         user = self.request.user
         if user.is_authenticated and user.kind == User.KIND_SIAE:
