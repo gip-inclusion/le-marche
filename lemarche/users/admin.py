@@ -109,6 +109,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             "last_login",
             "image_url",
             "image_url_display",
+            "dashboard_last_seen_date",
             "created_at",
             "updated_at",
         ]
@@ -175,8 +176,9 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
                 )
             },
         ),
+        ("Stats", {"fields": ("dashboard_last_seen_date",)}),
         (
-            "Autres",
+            "Dates",
             {
                 "fields": (
                     "last_login",
