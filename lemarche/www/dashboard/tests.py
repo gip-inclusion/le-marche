@@ -59,6 +59,14 @@ class DashboardHomeViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Votre token")
 
+    def test_viewing_dashboard_should_update_stats(self):
+        self.assertIsNone(self.user.dashboard_last_seen_date)
+        self.client.login(email=self.user.email, password=DEFAULT_PASSWORD)
+        url = reverse("dashboard:home")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(User.objects.get(id=self.user.id).dashboard_last_seen_date)
+
 
 class DashboardSiaeSearchAdoptViewTest(TestCase):
     @classmethod
