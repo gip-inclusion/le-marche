@@ -13,17 +13,7 @@ from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes.factories import SiaeFactory
-from lemarche.tenders.constants import (
-    AMOUNT_RANGE_0_1,
-    AMOUNT_RANGE_10_15,
-    AMOUNT_RANGE_100_150,
-    AMOUNT_RANGE_1000_MORE,
-    OLD_AMOUNT_RANGE_0,
-    OLD_AMOUNT_RANGE_1,
-    OLD_AMOUNT_RANGE_2,
-    OLD_AMOUNT_RANGE_3,
-    OLD_AMOUNT_RANGE_4,
-)
+from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.factories import PartnerShareTenderFactory, TenderFactory
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.factories import UserFactory
@@ -184,11 +174,11 @@ class TenderMigrationToSelectTest(TestCase):
         tender_amount_range_4.refresh_from_db()
 
         self.assertIsNone(tender_amount_none.amount)
-        self.assertEqual(tender_amount_range_0.amount, OLD_AMOUNT_RANGE_0)
-        self.assertEqual(tender_amount_range_1.amount, OLD_AMOUNT_RANGE_1)
-        self.assertEqual(tender_amount_range_2.amount, OLD_AMOUNT_RANGE_2)
-        self.assertEqual(tender_amount_range_3.amount, OLD_AMOUNT_RANGE_3)
-        self.assertEqual(tender_amount_range_4.amount, OLD_AMOUNT_RANGE_4)
+        self.assertEqual(tender_amount_range_0.amount, tender_constants.OLD_AMOUNT_RANGE_0)
+        self.assertEqual(tender_amount_range_1.amount, tender_constants.OLD_AMOUNT_RANGE_1)
+        self.assertEqual(tender_amount_range_2.amount, tender_constants.OLD_AMOUNT_RANGE_2)
+        self.assertEqual(tender_amount_range_3.amount, tender_constants.OLD_AMOUNT_RANGE_3)
+        self.assertEqual(tender_amount_range_4.amount, tender_constants.OLD_AMOUNT_RANGE_4)
 
         # test reverse method
         migration.reverse_update_amount(apps, None)
@@ -223,51 +213,59 @@ class TenderPartnerMatchingTest(TestCase):
         PartnerShareTenderFactory(perimeters=[self.auvergne_rhone_alpes_perimeter])
         PartnerShareTenderFactory(perimeters=[self.isere_perimeter])
         PartnerShareTenderFactory(perimeters=[self.grenoble_perimeter])
-        PartnerShareTenderFactory(perimeters=[], amount_in=AMOUNT_RANGE_0_1)
-        PartnerShareTenderFactory(perimeters=[], amount_in=AMOUNT_RANGE_10_15)
-        PartnerShareTenderFactory(perimeters=[], amount_in=AMOUNT_RANGE_100_150)
+        PartnerShareTenderFactory(perimeters=[], amount_in=tender_constants.AMOUNT_RANGE_0_1)
+        PartnerShareTenderFactory(perimeters=[], amount_in=tender_constants.AMOUNT_RANGE_10_15)
+        PartnerShareTenderFactory(perimeters=[], amount_in=tender_constants.AMOUNT_RANGE_100_150)
         PartnerShareTenderFactory(
-            perimeters=[self.isere_perimeter, self.rhone_perimeter], amount_in=AMOUNT_RANGE_10_15
+            perimeters=[self.isere_perimeter, self.rhone_perimeter], amount_in=tender_constants.AMOUNT_RANGE_10_15
         )
 
     def test_tender_country_matching(self):
+        # partners with perimeters=[]
         tender = TenderFactory(is_country_area=True)
         result = match_tender_for_partners(tender)
-        self.assertEqual(len(result), 4)  # partners with perimeters=[]
+        self.assertEqual(len(result), 4)
 
     def test_tender_perimeters_matching(self):
+        # partners with perimeters=[] + aura
         tender = TenderFactory(perimeters=[self.auvergne_rhone_alpes_perimeter])
         result = match_tender_for_partners(tender)
-        self.assertEqual(len(result), 4 + 1)  # partners with perimeters=[] + aura
+        self.assertEqual(len(result), 4 + 1)
+        # partners with perimeters=[] + isere + aura
         tender = TenderFactory(perimeters=[self.rhone_perimeter])
         result = match_tender_for_partners(tender)
-        self.assertEqual(len(result), 4 + 1 + 1)  # partners with perimeters=[] + isere + aura
+        self.assertEqual(len(result), 4 + 1 + 1)
+        # partners with perimeters=[] + isere/rhone + aura
         tender = TenderFactory(perimeters=[self.isere_perimeter, self.rhone_perimeter])
         result = match_tender_for_partners(tender)
-        self.assertEqual(len(result), 4 + 2 + 1)  # partners with perimeters=[] + isere/rhone + aura
+        self.assertEqual(len(result), 4 + 2 + 1)
+        # partners with perimeters=[] + grenoble + isere/rhone + aura
         tender = TenderFactory(perimeters=[self.grenoble_perimeter])
         result = match_tender_for_partners(tender)
-        self.assertEqual(len(result), 4 + 1 + 2 + 1)  # partners with perimeters=[] + grenoble + isere/rhone + aura
+        self.assertEqual(len(result), 4 + 1 + 2 + 1)
 
     def test_tender_country_and_amount_matching(self):
-        tender = TenderFactory(is_country_area=True, amount=AMOUNT_RANGE_0_1)
+        # partners with perimeters=[] & (amount_in empty or >=tender_constants.AMOUNT_RANGE_0_1)
+        tender = TenderFactory(is_country_area=True, amount=tender_constants.AMOUNT_RANGE_0_1)
         result = match_tender_for_partners(tender)
-        self.assertEqual(len(result), 4)  # partners with perimeters=[] & (amount_in empty or >=AMOUNT_RANGE_0_1)
-        tender = TenderFactory(is_country_area=True, amount=AMOUNT_RANGE_10_15)
+        self.assertEqual(len(result), 4)
+        # partners with perimeters=[] & (amount_in empty or >=tender_constants.AMOUNT_RANGE_10_15)
+        tender = TenderFactory(is_country_area=True, amount=tender_constants.AMOUNT_RANGE_10_15)
         result = match_tender_for_partners(tender)
-        self.assertEqual(len(result), 3)  # partners with perimeters=[] & (amount_in empty or >=AMOUNT_RANGE_10_15)
-        tender = TenderFactory(is_country_area=True, amount=AMOUNT_RANGE_1000_MORE)
+        self.assertEqual(len(result), 3)
+        # partners with perimeters=[] & (amount_in empty or >=tender_constants.AMOUNT_RANGE_1000_MORE)
+        tender = TenderFactory(is_country_area=True, amount=tender_constants.AMOUNT_RANGE_1000_MORE)
         result = match_tender_for_partners(tender)
-        self.assertEqual(len(result), 1)  # partners with perimeters=[] & (amount_in empty or >=AMOUNT_RANGE_1000_MORE)
+        self.assertEqual(len(result), 1)
 
     def test_tender_perimeters_and_amount_matching(self):
-        tender = TenderFactory(perimeters=[self.auvergne_rhone_alpes_perimeter], amount=AMOUNT_RANGE_0_1)
+        # partners with (perimeters=[] or aura) & (amount_in empty or >=tender_constants.AMOUNT_RANGE_0_1)
+        tender = TenderFactory(
+            perimeters=[self.auvergne_rhone_alpes_perimeter], amount=tender_constants.AMOUNT_RANGE_0_1
+        )
         result = match_tender_for_partners(tender)
-        self.assertEqual(
-            len(result), 2 + 3
-        )  # partners with (perimeters=[] or aura) & (amount_in empty or >=AMOUNT_RANGE_0_1)
-        tender_3 = TenderFactory(perimeters=[self.isere_perimeter], amount=AMOUNT_RANGE_10_15)
+        self.assertEqual(len(result), 2 + 3)
+        # partners with (perimeters=[] or isere overlap) & (amount_in empty or >=tender_constants.AMOUNT_RANGE_10_15)
+        tender_3 = TenderFactory(perimeters=[self.isere_perimeter], amount=tender_constants.AMOUNT_RANGE_10_15)
         result = match_tender_for_partners(tender_3)
-        self.assertEqual(
-            len(result), 3 + 3
-        )  # partners with (perimeters=[] or isere overlap) & (amount_in empty or >=AMOUNT_RANGE_10_15)
+        self.assertEqual(len(result), 3 + 3)

@@ -324,14 +324,16 @@ class PartnerShareTenderQuerySet(models.QuerySet):
         """
         Return partners with:
         - an empty 'amount_in'
-        - or an 'amount_in' at least equal or greater than the tenders' 'amount_in'
+        - or an 'amount_in' at least equal or greater than the tenders' 'amount'
         """
         conditions = Q()
         if tender.amount:
             conditions |= Q(amount_in__isnull=True)
-            for (index, amount) in enumerate(tender_constants.AMOUNT_RANGE_LIST):
-                if tender.amount == amount:
-                    conditions |= Q(amount_in__in=tender_constants.AMOUNT_RANGE_LIST[index:])
+            try:
+                amount_index = tender_constants.AMOUNT_RANGE_LIST.index(tender.amount)
+                conditions |= Q(amount_in__in=tender_constants.AMOUNT_RANGE_LIST[amount_index:])
+            except ValueError:
+                pass
         return self.filter(conditions)
 
     def filter_by_perimeter(self, tender: Tender):
