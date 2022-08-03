@@ -22,5 +22,5 @@ class PageAdmin(FlatPageAdmin):
             },
         ),
         ("SEO", {"fields": ("meta_title", "meta_description")}),
-        ("Info", {"fields": ("created_at", "updated_at")}),
+        ("Dates", {"fields": ("created_at", "updated_at")}),
     )

@@ -225,7 +225,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
             },
         ),
         ("Si importé", {"fields": ("import_raw_object_display",)}),
-        ("Autres", {"fields": ("created_at", "updated_at")}),
+        ("Dates", {"fields": ("created_at", "updated_at")}),
     ]
 
     add_fieldsets = [
@@ -602,7 +602,7 @@ class SiaeGroupAdmin(admin.ModelAdmin):
                 )
             },
         ),
-        ("Info", {"fields": ("created_at", "updated_at")}),
+        ("Dates", {"fields": ("created_at", "updated_at")}),
     )
 
     def get_queryset(self, request):

@@ -51,6 +51,7 @@ class DashboardHomeViewTest(TestCase):
         self.assertContains(response, "Solutions et ressources")
         self.assertContains(response, "Aides-territoires")
         self.assertNotContains(response, "Mes besoins")
+        # self.assertNotContains(response, "API")
 
     def test_user_with_api_key_should_see_api_token(self):
         self.client.login(email=self.user_buyer_with_api_token.email, password=DEFAULT_PASSWORD)
