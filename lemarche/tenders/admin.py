@@ -91,6 +91,7 @@ class TenderAdmin(admin.ModelAdmin):
                     "perimeters",
                     "external_link",
                     "amount",
+                    "accept_share_amount",
                     "response_kind",
                     "deadline_date",
                     "start_working_date",
