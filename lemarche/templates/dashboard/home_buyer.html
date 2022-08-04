@@ -35,7 +35,7 @@
 <section class="s-section">
     <div class="s-section__container container">
         <div class="s-section__row row">
-            <div class="s-section__col col-12 col-lg-6 pb-5">
+            <div class="s-section__col col-12 col-lg-7 pb-5">
                 <div class="card h-100 w-100">
                     <div class="card-body">
                         <div class="row mb-sm-4">
@@ -68,7 +68,7 @@
                     </div>
                 </div>
             </div>
-            <div class="s-section__col col-12 col-lg-6 pb-5">
+            <div class="s-section__col col-12 col-lg-5 pb-5">
                 <div class="card h-45 w-100 mb-5">
                     <div class="card-body">
                         <p class="h4 lh-sm mb-lg-4">M'informer sur le marché</p>
@@ -106,9 +106,6 @@
             </div>
         </div>
         <div class="s-section__row row">
-            <div class="s-section__col col-12 col-lg-7 pb-5">
-                {% include "dashboard/_ressource_card.html" with user_kind="BUYER" %}
-            </div>
             <div class="s-section__col col-12 col-lg-5 pb-5">
                 <div class="card h-45 w-100 mb-5">
                     <div class="card-body">
@@ -132,6 +129,9 @@
                     </div>
                 </div>
                 {% include "dashboard/_api_key_card.html" with api_key=user.api_key user_kind="BUYER" %}
+            </div>
+            <div class="s-section__col col-12 col-lg-7 pb-5">
+                {% include "dashboard/_ressource_card.html" with user_kind="BUYER" %}
             </div>
         </div>
     </div>
