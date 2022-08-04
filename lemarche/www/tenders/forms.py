@@ -37,9 +37,12 @@ class AddTenderStepGeneralForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["perimeters"].to_field_name = "slug"
+        # required fields
         self.fields["sectors"].required = True
         # self.fields["perimeters"].required = True  # JS
+        # label, placeholder & help_text
         self.fields["title"].widget.attrs["placeholder"] = "Ex : Devis rénovation façade"
+        self.fields["sectors"].help_text = Tender._meta.get_field("sectors").help_text  # else doesn't appear
 
     def clean(self):
         super().clean()
@@ -53,6 +56,9 @@ class AddTenderStepGeneralForm(forms.ModelForm):
 
 
 class AddTenderStepDescriptionForm(forms.ModelForm):
+    # fields from previous step
+    kind = None
+
     class Meta:
         model = Tender
         fields = [
@@ -67,9 +73,14 @@ class AddTenderStepDescriptionForm(forms.ModelForm):
             "start_working_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, kind, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.kind = kind
+        # required fields
         self.fields["description"].required = True
+        if self.kind == Tender.TENDER_KIND_TENDER:
+            self.fields["amount"].required = True
+        # label, placeholder & help_text
         self.fields["accept_share_amount"].label = self.fields["accept_share_amount"].help_text
         self.fields["external_link"].widget.attrs["placeholder"] = "https://www.example.fr"
         self.fields["constraints"].widget.attrs["placeholder"] = "Ex : Déplacements"
@@ -77,8 +88,10 @@ class AddTenderStepDescriptionForm(forms.ModelForm):
 
 
 class AddTenderStepContactForm(forms.ModelForm):
+    # fields from previous step
     max_deadline_date = None
     external_link = None
+    # specific fields
     response_kind = forms.MultipleChoiceField(
         label="Comment répondre",
         choices=Tender._meta.get_field("response_kind").base_field.choices,
