@@ -40,8 +40,6 @@ class AddTenderStepGeneralForm(forms.ModelForm):
         self.fields["sectors"].required = True
         # self.fields["perimeters"].required = True  # JS
         self.fields["title"].widget.attrs["placeholder"] = "Ex : Devis rénovation façade"
-        self.fields["sectors"].help_text = "Sélectionnez un ou plusieurs secteurs d'activité"
-        self.fields["perimeters"].help_text = "Ajoutez un ou plusieurs lieux d'exécutions"
 
     def clean(self):
         super().clean()
@@ -63,6 +61,7 @@ class AddTenderStepDescriptionForm(forms.ModelForm):
             "external_link",
             "constraints",
             "amount",
+            "accept_share_amount",
         ]
         widgets = {
             "start_working_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
@@ -71,14 +70,10 @@ class AddTenderStepDescriptionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["description"].required = True
-        self.fields["external_link"].widget.attrs["constraints"] = "https://www.example.fr"
-        self.fields["constraints"].widget.attrs["constraints"] = "Ex : Déplacements"
-        self.fields["description"].help_text = "Décrivez en quelques mots votre besoin"
-        self.fields["external_link"].help_text = "Ajoutez ici l'URL de votre appel d'offres"
-        self.fields["constraints"].help_text = "Renseignez les contraintes liées à votre besoin"
-        self.fields[
-            "amount"
-        ].help_text = "Selectionnez le montant reservé aux structures d'insertion et/ou de handicap"
+        self.fields["accept_share_amount"].label = self.fields["accept_share_amount"].help_text
+        self.fields["external_link"].widget.attrs["placeholder"] = "https://www.example.fr"
+        self.fields["constraints"].widget.attrs["placeholder"] = "Ex : Déplacements"
+        self.fields["accept_share_amount"].help_text = None
 
 
 class AddTenderStepContactForm(forms.ModelForm):
@@ -108,9 +103,6 @@ class AddTenderStepContactForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.max_deadline_date = max_deadline_date
         self.external_link = external_link
-        self.fields["contact_email"].help_text = "Renseignez votre adresse e-mail professionnelle"
-        self.fields["contact_phone"].help_text = "Renseignez votre numéro de téléphone professionnel"
-        self.fields["deadline_date"].help_text = "Sélectionnez la date jusqu'à laquelle vous acceptez des réponses"
 
     def clean(self):
         super().clean()

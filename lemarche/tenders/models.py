@@ -140,13 +140,25 @@ class Tender(models.Model):
     kind = models.CharField(
         verbose_name="Type de besoin", max_length=6, choices=TENDER_KIND_CHOICES, default=TENDER_KIND_TENDER
     )
-    description = models.TextField(verbose_name="Description du besoin", blank=True)
-    constraints = models.TextField(verbose_name="Contraintes techniques spécifiques", blank=True)
-    external_link = models.URLField(verbose_name="Lien vers l'appel d'offres", blank=True)
-    deadline_date = models.DateField(verbose_name="Date de clôture des réponses")
+    description = models.TextField(
+        verbose_name="Description du besoin", help_text="Décrivez en quelques mots votre besoin", blank=True
+    )
+    constraints = models.TextField(
+        verbose_name="Contraintes techniques spécifiques",
+        help_text="Renseignez les contraintes liées à votre besoin",
+        blank=True,
+    )
+    external_link = models.URLField(
+        verbose_name="Lien vers l'appel d'offres", help_text="Ajoutez ici l'URL de votre appel d'offres", blank=True
+    )
+    deadline_date = models.DateField(
+        verbose_name="Date de clôture des réponses",
+        help_text="Sélectionnez la date jusqu'à laquelle vous acceptez des réponses",
+    )
     start_working_date = models.DateField(verbose_name="Date idéale de début des prestations", blank=True, null=True)
     amount = models.CharField(
         verbose_name="Montant du marché",
+        help_text="Sélectionnez le montant reservé aux structures d'insertion et/ou de handicap",
         max_length=9,
         choices=tender_constants.AMOUNT_RANGE_CHOICES,
         blank=True,
@@ -164,14 +176,29 @@ class Tender(models.Model):
 
     contact_first_name = models.CharField(verbose_name="Prénom du contact", max_length=255, blank=True)
     contact_last_name = models.CharField(verbose_name="Nom de famille du contact", max_length=255, blank=True)
-    contact_email = models.EmailField(verbose_name="E-mail du contact", blank=True)
-    contact_phone = models.CharField(verbose_name="Téléphone du contact", max_length=20, blank=True)
+    contact_email = models.EmailField(
+        verbose_name="E-mail du contact", help_text="Renseignez votre adresse e-mail professionnelle", blank=True
+    )
+    contact_phone = models.CharField(
+        verbose_name="Téléphone du contact",
+        help_text="Renseignez votre numéro de téléphone professionnel",
+        max_length=20,
+        blank=True,
+    )
 
     sectors = models.ManyToManyField(
-        "sectors.Sector", verbose_name="Secteurs d'activité", related_name="tenders", blank=False
+        "sectors.Sector",
+        verbose_name="Secteurs d'activité",
+        related_name="tenders",
+        blank=False,
+        help_text="Sélectionnez un ou plusieurs secteurs d'activité",
     )
     perimeters = models.ManyToManyField(
-        "perimeters.Perimeter", verbose_name="Lieux d'exécution", related_name="tenders", blank=True
+        "perimeters.Perimeter",
+        verbose_name="Lieux d'exécution",
+        related_name="tenders",
+        blank=True,
+        help_text="Ajoutez un ou plusieurs lieux d'exécutions",
     )
     is_country_area = models.BooleanField(verbose_name="France entière", default=False)
     presta_type = ChoiceArrayField(
