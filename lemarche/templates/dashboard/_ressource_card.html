@@ -2,7 +2,7 @@
 
 <div class="card h-100 w-100">
     <div class="card-body">
-        <p class="h4 lh-sm">{% if user_kind == "SIAE" %}Solutions et ressources{% else %}M'informer sur les achats inclusifs{% endif %}</p>
+        <p class="h4 lh-sm mb-lg-4">{% if user_kind == "SIAE" %}Solutions et ressources{% else %}M'informer sur les achats inclusifs{% endif %}</p>
         {% for ressource in last_3_ressources %}
             <ul class="list-group list-group-flush list-group-link">
                 <li class="list-group-item list-group-item-action">
