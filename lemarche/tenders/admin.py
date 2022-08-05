@@ -111,11 +111,12 @@ class TenderAdmin(admin.ModelAdmin):
                     "nb_siae_email_send",
                     "nb_siae_detail_display",
                     "nb_siae_contact_click",
+                    "siae_interested_list_last_seen_date",
                     "logs_display",
                 ),
             },
         ),
-        ("Info", {"fields": ("created_at", "updated_at")}),
+        ("Dates", {"fields": ("created_at", "updated_at")}),
     )
 
     change_form_template = "tenders/admin_change_form.html"
