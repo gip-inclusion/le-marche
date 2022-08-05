@@ -56,6 +56,15 @@ class DashboardHomeView(LoginRequiredMixin, DetailView):
             return ["dashboard/home_siae.html"]
         return ["dashboard/home_buyer.html"]
 
+    def get(self, request, *args, **kwargs):
+        """
+        Update 'dashboard_last_seen_date'
+        """
+        user = self.request.user
+        if user.is_authenticated:
+            User.objects.filter(id=user.id).update(dashboard_last_seen_date=timezone.now())
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # for all users

@@ -37,7 +37,7 @@ class FavoriteListAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         ),
         ("Utilisateur", {"fields": ("user",)}),
         FavoriteItemInline,
-        ("Autres", {"fields": ("created_at", "updated_at")}),
+        ("Dates", {"fields": ("created_at", "updated_at")}),
     ]
 
     def get_queryset(self, request):

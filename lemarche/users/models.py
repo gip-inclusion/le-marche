@@ -178,6 +178,11 @@ class User(AbstractUser):
     c4_email_verified = models.BooleanField(default=False)
     c4_id_card_verified = models.BooleanField(default=False)
 
+    # stats
+    dashboard_last_seen_date = models.DateTimeField(
+        "Date de dernière visite sur la page 'tableau de bord'", blank=True, null=True
+    )
+
     # is_active, is_staff, is_superuser
 
     # date_joined, last_login
