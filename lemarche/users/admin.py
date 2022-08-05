@@ -176,7 +176,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
                 )
             },
         ),
-        ("Stats", {"fields": ("dashboard_last_seen_date",)}),
+        ("Stats", {"fields": ("dashboard_last_seen_date", "tender_list_last_seen_date")}),
         (
             "Dates",
             {
