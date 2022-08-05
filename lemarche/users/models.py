@@ -182,6 +182,9 @@ class User(AbstractUser):
     dashboard_last_seen_date = models.DateTimeField(
         "Date de dernière visite sur la page 'tableau de bord'", blank=True, null=True
     )
+    tender_list_last_seen_date = models.DateTimeField(
+        "Date de dernière visite sur la page 'besoins'", blank=True, null=True
+    )
 
     # is_active, is_staff, is_superuser
 
