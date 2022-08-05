@@ -22,32 +22,116 @@
 {% endblock %}
 
 {% block content %}
-<section class="pt-4 pb-6">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <!-- Tenders -->
-                <div id="tenders" class="row justify-content-end mb-3 mb-lg-5">
-                    <div class="col-12 col-lg">
-                        <h2 class="h1 mb-0">
-                            <strong>Mes besoins</strong>
-                        </h2>
+<section class="s-title-01">
+    <div class="s-title-01__container container">
+        <div class="s-title-01__row row">
+            <div class="s-title-01__col col-12">
+                <h1 class="s-title-01__title h1"><strong>Tableau de bord</strong></h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="s-section">
+    <div class="s-section__container container">
+        <div class="s-section__row row">
+            <div class="s-section__col col-12 col-lg-7 pb-5">
+                <div class="card h-100 w-100">
+                    <div class="card-body">
+                        <div class="row mb-sm-4">
+                            <div class="col-12 col-md">
+                                <p class="h4 lh-sm">Mes besoins</p>
+                            </div>
+                            <div class="col-12 col-md-auto">
+                                <a href="{% url 'tenders:create' %}" id="dashboard-tender-create-btn" class="btn btn-primary btn-ico width-100 width-md-auto">
+                                    <span>Publier un besoin d'achat</span>
+                                    <i class="ri-add-fill ri-lg"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {% for tender in last_3_tenders %}
+                            <ul class="list-group list-group-flush list-group-link">
+                                <li class="list-group-item list-group-item-action">
+                                    <div>
+                                        <time class="fs-sm d-block" aria-label="Date de clôture">{{ tender.deadline_date|default:"" }}</time>
+                                        <a href="{% url 'tenders:detail' tender.slug %}" class="d-block font-weight-bold stretched-link">{{ tender.title }}</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        {% endfor %}
                     </div>
-                    <div class="col-12 col-md-auto">
-                        <a href="{% url 'tenders:list' %}" class="btn btn-outline-primary btn-block btn-ico">
-                            <span>Voir</span>
-                            <i class="ri-eye-line ri-lg"></i>
+                    <div class="card-footer pt-0 bg-white text-right">
+                        <a href="{% url 'tenders:list' %}" class="btn btn-link btn-ico">
+                            <span>Accéder à mes besoins</span>
+                            <i class="ri-arrow-right-s-line ri-xl"></i>
                         </a>
                     </div>
                 </div>
-
-                {% if user.api_key %}
-                    <div class="row">
-                        <div class="col-md-6">
-                            {% include "dashboard/_api_key_card.html" with api_key=user.api_key %}
+            </div>
+            <div class="s-section__col col-12 col-lg-5 pb-5">
+                <div class="card h-45 w-100 mb-5">
+                    <div class="card-body">
+                        <p class="h4 lh-sm mb-lg-4">M'informer sur le marché</p>
+                        <div class="d-flex">
+                            <div class="flex-fill text-center">
+                                <span class="h2 text-info d-block mb-1">{{ user_buyer_count }}</span>
+                                <span class="fs-sm lh-sm d-block">Acheteurs<br>inscrits</span>
+                            </div>
+                            <div class="flex-fill text-center">
+                                <span class="h2 text-info d-block mb-1">{{ siae_count }}</span>
+                                <span class="fs-sm lh-sm d-block">Structures<br>référencées</span>
+                            </div>
+                            <div class="flex-fill text-center">
+                                <span class="h2 text-info d-block mb-1">{{ tender_count }}</span>
+                                <span class="fs-sm lh-sm d-block">Besoins<br>déposés</span>
+                            </div>
                         </div>
                     </div>
-                {% endif %}
+                </div>
+                <div class="card h-45 w-100">
+                    <div class="card-body">
+                        <p class="h4 lh-sm mb-lg-4">Annuaire des facilitateurs</p>
+                        <p>
+                            Besoin d'aide pour travailler avec des structures de l'insertion ou du handicap ?
+                            Trouvez le partenaire qui pourra vous aider.
+                        </p>
+                    </div>
+                    <div class="card-footer pt-0 bg-white">
+                        <a href="{{ FACILITATOR_LIST }}" id="track_dashboard_partners_facilitator_list" class="btn btn-outline-primary btn-ico width-100 width-lg-auto" target="_blank" rel="noopener">
+                            <i class="ri-download-2-line ri-lg"></i>
+                            <span>Télécharger l'annuaire</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="s-section__row row">
+            <div class="s-section__col col-12 col-lg-5 pb-5">
+                <div class="card h-45 w-100 mb-5">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <span class="d-none d-lg-inline-flex mr-3">
+                                <img src="{% static 'images/dashboard-illu-01.svg' %}" height="100" alt=""></li>
+                            </span>
+                            <div>
+                                <p class="h4 lh-sm mb-lg-4">Valoriser mes achats</p>
+                                <p>
+                                    Mesurer, et valoriser vos achats grâce à la liste complète des structures réferencées sur le marché.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer pt-0 bg-white text-right">
+                        <a href="{% url 'pages:valoriser_achats' %}" id="track_dashboard_achats" class="btn btn-link btn-ico">
+                            <span>C'est parti</span>
+                            <i class="ri-arrow-right-s-line ri-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                {% include "dashboard/_api_key_card.html" with api_key=user.api_key user_kind="BUYER" %}
+            </div>
+            <div class="s-section__col col-12 col-lg-7 pb-5">
+                {% include "dashboard/_ressource_card.html" with user_kind="BUYER" %}
             </div>
         </div>
     </div>

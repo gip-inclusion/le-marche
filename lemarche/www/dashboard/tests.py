@@ -13,7 +13,8 @@ class DashboardHomeViewTest(TestCase):
     def setUpTestData(cls):
         cls.user = UserFactory()
         cls.user_buyer = UserFactory(kind=User.KIND_BUYER)
-        cls.user_with_api_token = UserFactory(api_key="admin")
+        cls.user_buyer_with_api_token = UserFactory(kind=User.KIND_BUYER, api_key="admin")
+        cls.user_siae = UserFactory(kind=User.KIND_SIAE)
 
     def test_anonymous_user_cannot_access_profile(self):
         url = reverse("dashboard:home")
@@ -21,25 +22,42 @@ class DashboardHomeViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/accounts/login/?next=/profil/")
 
-    def user_can_access_profile(self):
+    def test_user_can_access_profile(self):
         self.client.login(email=self.user.email, password=DEFAULT_PASSWORD)
-        url = reverse("dashboard:index")
+        url = reverse("dashboard:home")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    def user_buyer_should_not_have_siae_section(self):
+    def test_user_buyer_should_display_custom_dashboard(self):
         self.client.login(email=self.user_buyer.email, password=DEFAULT_PASSWORD)
-        url = reverse("dashboard:index")
+        url = reverse("dashboard:home")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Mes structures")
+        self.assertContains(response, "Mes besoins")
+        self.assertContains(response, "M'informer sur le marché")
+        self.assertContains(response, "Annuaire des facilitateurs")
+        self.assertContains(response, "Valoriser mes achats")
+        self.assertContains(response, "API")
+        self.assertContains(response, "M'informer sur les achats inclusifs")
+        self.assertNotContains(response, "Ajouter une structure")
 
-    def user_with_api_key_should_have_api_section(self):
-        self.client.login(email=self.user_with_api_token.email, password=DEFAULT_PASSWORD)
-        url = reverse("dashboard:index")
+    def test_user_siae_should_display_custom_dashboard(self):
+        self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
+        url = reverse("dashboard:home")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Accès API")
+        self.assertContains(response, "Ajouter une structure")
+        self.assertContains(response, "Les opportunités du marché")
+        self.assertContains(response, "Solutions et ressources")
+        self.assertContains(response, "Aides-territoires")
+        self.assertNotContains(response, "Mes besoins")
+
+    def test_user_with_api_key_should_see_api_token(self):
+        self.client.login(email=self.user_buyer_with_api_token.email, password=DEFAULT_PASSWORD)
+        url = reverse("dashboard:home")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Votre token")
 
 
 class DashboardSiaeSearchAdoptViewTest(TestCase):
