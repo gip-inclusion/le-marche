@@ -1,0 +1,32 @@
+{% load wagtailimages_tags %}
+
+<div class="card h-100 w-100">
+    <div class="card-body">
+        <p class="h4 lh-sm mb-lg-4">{% if user_kind == "SIAE" %}Solutions et ressources{% else %}M'informer sur les achats inclusifs{% endif %}</p>
+        {% for ressource in last_3_ressources %}
+            <ul class="list-group list-group-flush list-group-link">
+                <li class="list-group-item list-group-item-action">
+                    <div class="d-flex align-items-center">
+                        <picture class="d-none d-lg-inline-flex mr-2">
+                            {% if ressource.image %}
+                                {% image ressource.specific.image width-100 loading="lazy" %}
+                            {% else %}
+                                <img src="https://via.placeholder.com/100x60" alt="">
+                            {% endif %}
+                        </picture>
+                        <div>
+                            <time class="fs-sm d-block" aria-label="Date de publication">{{ ressource.last_published_at }}</time>
+                            <a href="{{ ressource.url_path }}" class="d-block font-weight-bold stretched-link">{{ ressource.title }}</a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        {% endfor %}
+    </div>
+    <div class="card-footer pt-0 bg-white text-right">
+        <a href="/ressources" class="btn btn-link btn-ico">
+            <span>Voir toutes les ressources</span>
+            <i class="ri-arrow-right-s-line ri-xl"></i>
+        </a>
+    </div>
+</div>
