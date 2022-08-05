@@ -1,24 +1,33 @@
+{% load static %}
+
 <div class="card h-45 w-100">
     <div class="card-body">
-        <p class="h3 lh-sm">API</p>
-        {% if api_key %}
-            <div class="form-group">
-                <label class="sr-only" for="user-api-key">Votre token</label>
-                <div class="input-group input-group-sm">
-                    <input type="text" id="user-api-key" class="form-control" value="{{ api_key }}" readonly />
-                    <div class="input-group-append">
-                        <button id="user-api-key-copy-button" class="btn btn-primary" type="button" id="button-addon2">Copier</button>
+        <div class="d-flex align-items-center">
+            <span class="d-none d-lg-inline-flex mr-3">
+                <img src="{% static 'images/dashboard-illu-02.svg' %}" height="100" alt=""></li>
+            </span>
+            <div>
+                <p class="h4 lh-sm mb-lg-4">API</p>
+                {% if api_key %}
+                    <div class="form-group">
+                        <label class="sr-only" for="user-api-key">Votre token</label>
+                        <div class="input-group input-group-sm">
+                            <input type="text" id="user-api-key" class="form-control" value="{{ api_key }}" readonly />
+                            <div class="input-group-append">
+                                <button id="user-api-key-copy-button" class="btn btn-primary" type="button" id="button-addon2">Copier</button>
+                            </div>
+                        </div>
+                        <small class="form-text text-muted">Votre token</small>
                     </div>
-                </div>
-                <small class="form-text text-muted">Votre token</small>
+                {% else %}
+                    {% if user_kind == "BUYER" %}
+                        <p>
+                            Vous souhaitez entrer la liste de toutes les structures dans votre système d'information ? Découvrez comment faire.
+                        </p>
+                    {% endif %}
+                {% endif %}
             </div>
-        {% else %}
-            {% if user_kind == "BUYER" %}
-                <p>
-                    Vous souhaitez entrer la liste de toutes les structures dans votre système d'information. Découvrez comment faire.
-                </p>
-            {% endif %}
-        {% endif %}
+        </div>
     </div>
     <div class="card-footer pt-0 bg-white text-right">
         <a href="{% url 'api:home' %}" class="btn btn-link btn-ico">
