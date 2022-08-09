@@ -98,19 +98,19 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    "anymail",
-    "django_filters",
-    "bootstrap4",
-    "django_select2",
-    "rest_framework",
-    "drf_spectacular",
-    "compressor",
+    "anymail",  # django-anymail
+    "django_filters",  # django-filter
+    "bootstrap4",  # django-bootstrap4
+    "django_select2",  # django-select2
+    "rest_framework",  # djangorestframework
+    "drf_spectacular",  # drf-spectacular
+    "compressor",  # django-compressor
     "corsheaders",  # django-cors-headers
     "ckeditor",  # django-ckeditor
+    "huey.contrib.djhuey",  # huey (Async tasks)
+    "formtools",  # django-formtools (Multistep and preview forms)
     "fieldsets_with_inlines",  # django-fieldsets-with-inlines
-    "huey.contrib.djhuey",  # Async tasks lib
-    "formtools",  # Multistep and preview forms (WizardForm)
-    "django_better_admin_arrayfield",
+    "django_better_admin_arrayfield",  # django-better-admin-arrayfield
 ]
 
 LOCAL_APPS = [
@@ -125,13 +125,14 @@ LOCAL_APPS = [
     "lemarche.perimeters",
     "lemarche.favorites",
     "lemarche.tenders",
+    "lemarche.cpv",
     # Flatpages
     "lemarche.pages",
-    # Api
+    # API
     "lemarche.api",
     # Stats
     "lemarche.stats",
-    # wagtail cms
+    # CMS (Wagtail)
     "lemarche.cms",
 ]
 
