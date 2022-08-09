@@ -7,9 +7,9 @@ class Code(models.Model):
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
     code = models.CharField(verbose_name="Code", max_length=8)
 
-    # sectors = models.ManyToManyField(
-    #     "sectors.Sector", verbose_name="Secteurs d'activité", related_name="cpv_codes", blank=True
-    # )
+    sectors = models.ManyToManyField(
+        "sectors.Sector", verbose_name="Secteurs d'activité", related_name="cpv_codes", blank=True
+    )
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
