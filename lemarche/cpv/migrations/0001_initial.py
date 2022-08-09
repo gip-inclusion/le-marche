@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("name", models.CharField(max_length=255, verbose_name="Nom")),
                 ("slug", models.SlugField(max_length=255, unique=True, verbose_name="Slug")),
-                ("code", models.CharField(max_length=8, verbose_name="Code")),
+                ("cpv_code", models.CharField(max_length=8, verbose_name="Code")),
                 (
                     "created_at",
                     models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date de création"),
@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
             options={
                 "verbose_name": "Code CPV",
                 "verbose_name_plural": "Code CPV",
-                "ordering": ["code"],
+                "ordering": ["cpv_code"],
             },
         ),
     ]
