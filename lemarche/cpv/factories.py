@@ -12,5 +12,4 @@ class CodeFactory(DjangoModelFactory):
 
     name = factory.Faker("name", locale="fr_FR")
     # slug is auto-generated
-    # cpv_code = factory.Faker("barcode", length=8)
     cpv_code = factory.fuzzy.FuzzyText(length=8, chars=string.digits)

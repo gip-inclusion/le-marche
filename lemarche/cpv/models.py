@@ -1,4 +1,5 @@
 from django.db import models
+from django.template.defaultfilters import slugify
 from django.utils import timezone
 
 
@@ -21,3 +22,15 @@ class Code(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.cpv_code})"
+
+    def set_slug(self):
+        """
+        The slug field should be unique.
+        """
+        if not self.slug:
+            self.slug = f"{str(self.cpv_code)}-{slugify(self.name)[:40]}"
+
+    def save(self, *args, **kwargs):
+        """Generate the slug field before saving."""
+        self.set_slug()
+        super().save(*args, **kwargs)
