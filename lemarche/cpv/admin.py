@@ -7,9 +7,28 @@ from lemarche.common.admin import admin_site
 from lemarche.cpv.models import Code
 
 
+class HasSectorFilter(admin.SimpleListFilter):
+    """Custom admin filter to target codes who have at least 1 sector."""
+
+    title = "Secteur(s) correspondant ?"
+    parameter_name = "has_sector"
+
+    def lookups(self, request, model_admin):
+        return (("Yes", "Oui"), ("No", "Non"))
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "Yes":
+            return queryset.has_sector()
+        elif value == "No":
+            return queryset.filter(sectors__isnull=True)
+        return queryset
+
+
 @admin.register(Code, site=admin_site)
 class CodeAdmin(admin.ModelAdmin):
     list_display = ["cpv_code", "name", "nb_sectors", "created_at", "updated_at"]
+    list_filter = [HasSectorFilter]
 
     autocomplete_fields = ["sectors"]
     readonly_fields = ["name", "slug", "cpv_code", "created_at", "updated_at"]

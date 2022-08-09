@@ -3,6 +3,12 @@ from django.template.defaultfilters import slugify
 from django.utils import timezone
 
 
+class CodeQuerySet(models.QuerySet):
+    def has_sector(self):
+        """Only return codes who have at least 1 Sector."""
+        return self.prefetch_related("sectors").filter(sectors__isnull=False).distinct()
+
+
 class Code(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
@@ -14,6 +20,8 @@ class Code(models.Model):
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(CodeQuerySet)()
 
     class Meta:
         verbose_name = "Code CPV"

@@ -13,3 +13,9 @@ class CodeFactory(DjangoModelFactory):
     name = factory.Faker("name", locale="fr_FR")
     # slug is auto-generated
     cpv_code = factory.fuzzy.FuzzyText(length=8, chars=string.digits)
+
+    @factory.post_generation
+    def sectors(self, create, extracted, **kwargs):
+        if extracted:
+            # Add the iterable of groups using bulk addition
+            self.sectors.add(*extracted)

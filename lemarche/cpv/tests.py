@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from lemarche.cpv.factories import CodeFactory
 from lemarche.cpv.models import Code
+from lemarche.sectors.factories import SectorFactory
 
 
 class CodeModelTest(TestCase):
@@ -25,3 +26,15 @@ class CodeModelSaveTest(TestCase):
     def test_slug_field_on_save(self):
         code = CodeFactory(name="Un autre test", cpv_code="11111111")
         self.assertEqual(code.slug, "11111111-un-autre-test")
+
+
+class CodeModelQuerySetTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.sector = SectorFactory()
+        cls.code = CodeFactory()
+        cls.code_with_sector = CodeFactory(sectors=[cls.sector])
+
+    def test_has_sector(self):
+        self.assertEqual(Code.objects.count(), 2)
+        self.assertEqual(Code.objects.has_sector().count(), 1)
