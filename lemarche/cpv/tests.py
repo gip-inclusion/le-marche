@@ -27,6 +27,16 @@ class CodeModelSaveTest(TestCase):
         code = CodeFactory(name="Un autre test", cpv_code="11111111")
         self.assertEqual(code.slug, "11111111-un-autre-test")
 
+    def test_hierarchy_level_field_on_save(self):
+        code = CodeFactory(name="Niveau 1", cpv_code="10000000")
+        self.assertEqual(code.hierarchy_level, 1)
+        code = CodeFactory(name="Niveau 1 again", cpv_code="11000000")
+        self.assertEqual(code.hierarchy_level, 1)
+        code = CodeFactory(name="Niveau 2", cpv_code="11200000")
+        self.assertEqual(code.hierarchy_level, 2)
+        code = CodeFactory(name="Niveau 7", cpv_code="11234567")
+        self.assertEqual(code.hierarchy_level, 7)
+
 
 class CodeModelQuerySetTest(TestCase):
     @classmethod

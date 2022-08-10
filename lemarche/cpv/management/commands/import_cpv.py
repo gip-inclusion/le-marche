@@ -4,9 +4,7 @@ from xml.etree import ElementTree
 from django.core.management.base import BaseCommand
 
 from lemarche.cpv.models import Code
-
-
-# from lemarche.utils.data import reset_app_sql_sequences
+from lemarche.utils.data import reset_app_sql_sequences
 
 
 FILE_NAME = "cpv_2008.xml"
@@ -15,6 +13,7 @@ FILE_PATH = os.path.dirname(os.path.realpath(__file__)) + "/" + FILE_NAME
 
 
 def read_xml():
+    print("-" * 80)
     print("Reading XML file...")
     cpv_list = []
 
@@ -43,6 +42,15 @@ def read_xml():
     return cpv_list
 
 
+def cleanup_codes():
+    print("-" * 80)
+    print("Deleting existing Codes...")
+    print(f"Found {Code.objects.count()} codes")
+    print("Deleted!")
+    Code.objects.all().delete()
+    reset_app_sql_sequences("cpv")
+
+
 class Command(BaseCommand):
     """
     How-to
@@ -58,10 +66,14 @@ class Command(BaseCommand):
     """
 
     def handle(self, *args, **options):
-        print("-" * 80)
-        # reset_app_sql_sequences("cpv")
+        # Step 1: delete all existing codes
+        # DANGER: some codes may have already been edited (Sector mapping)...
+        # cleanup_codes()
+
+        # Step 2: read the XML file
         cpv_list = read_xml()
 
+        # Step 3: create the (new) Codes!
         print("-" * 80)
         print("Importing CPV Codes...")
         progress = 0

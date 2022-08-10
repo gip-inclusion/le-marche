@@ -22,6 +22,8 @@ Le vocabulaire principal repose sur une structure arborescente de codes comptant
 - Les cinq premiers chiffres servent à identifier les catégories (XXXXX000-Y)
 - Un neuvième chiffre sert à la vérification des chiffres précédents
 
+Si on ne prend en compte que les 8 premiers chiffres (en ignorant le chiffre de vérification), il y a 7 niveaux de hiérachie.
+
 ### Exemple
 
 03000000-1 : Produits agricoles, de l'élevage, de la pêche, de la sylviculture et produits connexes

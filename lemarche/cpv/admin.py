@@ -27,11 +27,11 @@ class HasSectorFilter(admin.SimpleListFilter):
 
 @admin.register(Code, site=admin_site)
 class CodeAdmin(admin.ModelAdmin):
-    list_display = ["cpv_code", "name", "nb_sectors", "created_at", "updated_at"]
-    list_filter = [HasSectorFilter]
+    list_display = ["cpv_code", "name", "hierarchy_level", "nb_sectors", "created_at", "updated_at"]
+    list_filter = ["hierarchy_level", HasSectorFilter]
 
     autocomplete_fields = ["sectors"]
-    readonly_fields = ["name", "slug", "cpv_code", "created_at", "updated_at"]
+    readonly_fields = ["name", "slug", "cpv_code", "hierarchy_level", "created_at", "updated_at"]
     fieldsets = (
         (
             None,
@@ -40,6 +40,7 @@ class CodeAdmin(admin.ModelAdmin):
                     "name",
                     "slug",
                     "cpv_code",
+                    "hierarchy_level",
                 )
             },
         ),
