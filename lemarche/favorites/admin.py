@@ -42,6 +42,7 @@ class FavoriteListAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
+        qs = qs.prefetch_related("siaes")
         qs = qs.annotate(siae_count=Count("siaes", distinct=True))
         return qs
 
