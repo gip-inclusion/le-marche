@@ -16,7 +16,7 @@ import environ
 from django.contrib.messages import constants as messages
 
 
-locale.setlocale(locale.LC_ALL, "")
+locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
 
 # django-environ eases the application of twelve-factor methodology :
 # it makes it easier and less error-prone to integrate
