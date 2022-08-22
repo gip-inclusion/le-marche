@@ -16,7 +16,11 @@ import environ
 from django.contrib.messages import constants as messages
 
 
-locale.setlocale(locale.LC_TIME, "fr_FR")
+locale.setlocale(locale.LC_TIME, "")
+# locale.setlocale(locale.LC_ALL, "fr_FR")
+# this contig doesn't work, produce this error
+# locale.Error: unsupported locale setting
+
 
 # django-environ eases the application of twelve-factor methodology :
 # it makes it easier and less error-prone to integrate
