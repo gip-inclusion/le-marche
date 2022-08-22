@@ -85,7 +85,7 @@ def send_tenders_author_feedback_30_days(tender: Tender):
 
         variables = {
             "TENDER_TITLE": tender.title,
-            "TENDER_VALIDATE_AT": tender.validated_at.strftime("%d/%m/%Y %H:%M"),
+            "TENDER_VALIDATE_AT": tender.validated_at.strftime("%d %B %Y"),
             "USER_FIRST_NAME": author_tender.full_name,
         }
 

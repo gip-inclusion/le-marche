@@ -9,11 +9,14 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+import locale
 import os
 
 import environ
 from django.contrib.messages import constants as messages
 
+
+locale.setlocale(locale.LC_ALL, "fr_FR")
 
 # django-environ eases the application of twelve-factor methodology :
 # it makes it easier and less error-prone to integrate
