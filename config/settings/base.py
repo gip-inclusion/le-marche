@@ -579,10 +579,10 @@ CONNECTION_MODES_HUEY = {
     },
 }
 
-CONNECTION_MODE_TASKS = env.str("CONNECTION_MODE_TASKS", "redis")
+CONNECTION_MODE_TASKS = env.str("CONNECTION_MODE_TASKS", "direct")
 CC_WORKER_ENV = env.str("CC_WORKER_COMMAND", None)
 
-CONF_HUEY = CONNECTION_MODES_HUEY.get(CONNECTION_MODE_TASKS, CONNECTION_MODES_HUEY["sqlite"])
+CONF_HUEY = CONNECTION_MODES_HUEY.get(CONNECTION_MODE_TASKS)
 
 # Huey instance
 # If any performance issue, increasing the number of workers *can* be a good idea
