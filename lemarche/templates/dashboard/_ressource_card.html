@@ -24,7 +24,7 @@
         {% endfor %}
     </div>
     <div class="card-footer pt-0 bg-white text-right">
-        <a href="/ressources" class="btn btn-link btn-ico">
+        <a href="/ressources/{% if current_slug_cat %}categories/{{current_slug_cat}}/{% endif %}" class="btn btn-link btn-ico">
             <span>Voir toutes les ressources</span>
             <i class="ri-arrow-right-s-line ri-xl"></i>
         </a>
