@@ -10,6 +10,7 @@ from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView, FormMixin
 
 from lemarche.cms.models import ArticlePage
+from lemarche.cms.snippets import ArticleCategory
 from lemarche.favorites.models import FavoriteItem, FavoriteList
 from lemarche.siaes.models import Siae, SiaeUser, SiaeUserRequest
 from lemarche.tenders.models import Tender
@@ -44,6 +45,10 @@ from lemarche.www.dashboard.tasks import (
 )
 
 
+SLUG_RESSOURCES_CAT_SIAES = "solutions"
+SLUG_RESSOURCES_CAT_BUYERS = "acheteurs"
+
+
 class DashboardHomeView(LoginRequiredMixin, DetailView):
     # template_name = "dashboard/home.html"
     context_object_name = "user"
@@ -67,16 +72,36 @@ class DashboardHomeView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # for all users
-        context["last_3_ressources"] = ArticlePage.objects.live().public().order_by("-last_published_at")[:3]
+        r_user = self.request.user
+
+        # filter ressources by user kind
+        category_slug = None
+        if r_user.kind == User.KIND_SIAE:
+            category_slug = SLUG_RESSOURCES_CAT_SIAES
+        elif r_user.kind == User.KIND_BUYER:
+            category_slug = SLUG_RESSOURCES_CAT_BUYERS
+        article_list = ArticlePage.objects.live().public().order_by("-last_published_at")
+
+        if category_slug:
+            try:
+                # Look for the blog category by its slug.
+                category = ArticleCategory.objects.get(slug=category_slug)
+                article_list = article_list.filter(categories__in=[category])
+            except Exception:
+                category_slug = None
+
+        # set context ressources
+        context["current_slug_cat"] = category_slug
+        context["last_3_ressources"] = article_list[:3]
+
         # for specific users
-        if self.request.user.kind == User.KIND_SIAE:
-            siaes = self.request.user.siaes.all()
+        if r_user.kind == User.KIND_SIAE:
+            siaes = r_user.siaes.all()
             if siaes:
                 # context["last_3_tenders"] = Tender.objects.filter_with_siae(siaes).is_live()[:3]
                 context["last_3_tenders"] = Tender.objects.filter(tendersiae__siae__in=siaes).distinct()[:3]
         else:
-            context["last_3_tenders"] = Tender.objects.filter(author=self.request.user)[:3]
+            context["last_3_tenders"] = Tender.objects.filter(author=r_user)[:3]
             context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
             context["siae_count"] = Siae.objects.is_live().count()
             context["tender_count"] = Tender.objects.validated().count() + 30  # historic number (before form)
