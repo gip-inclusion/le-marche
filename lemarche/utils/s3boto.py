@@ -225,7 +225,7 @@ class S3BotoStorage(Storage):
             "image/svg+xml",
         ),
     )
-    url_protocol = setting("AWS_S3_URL_PROTOCOL", "http:")
+    url_protocol = setting("AWS_S3_URL_PROTOCOL", "https:")
     host = setting("S3_STORAGE_ENDPOINT_DOMAIN", S3Connection.DefaultHost)
     use_ssl = setting("AWS_S3_USE_SSL", True)
     port = setting("AWS_S3_PORT")
