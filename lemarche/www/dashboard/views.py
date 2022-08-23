@@ -83,8 +83,12 @@ class DashboardHomeView(LoginRequiredMixin, DetailView):
         article_list = ArticlePage.objects.live().public().order_by("-last_published_at")
 
         if category_slug:
-            category = ArticleCategory.objects.get(slug=category_slug)
-            article_list = article_list.filter(categories__in=[category])
+            try:
+                # Look for the blog category by its slug.
+                category = ArticleCategory.objects.get(slug=category_slug)
+                article_list = article_list.filter(categories__in=[category])
+            except Exception:
+                category_slug = None
 
         # set context ressources
         context["current_slug_cat"] = category_slug
