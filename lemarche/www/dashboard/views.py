@@ -45,8 +45,8 @@ from lemarche.www.dashboard.tasks import (
 )
 
 
-SLUG_RESSOURCES_CAT_SIAES = "Solutions"
-SLUG_RESSOURCES_CAT_BUYERS = "Acheteurs"
+SLUG_RESSOURCES_CAT_SIAES = "solutions"
+SLUG_RESSOURCES_CAT_BUYERS = "acheteurs"
 
 
 class DashboardHomeView(LoginRequiredMixin, DetailView):
