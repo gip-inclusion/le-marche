@@ -19,7 +19,7 @@ env:
   CONFIGURATION_ADDON: ${{ secrets.CLEVER_REVIEW_APPS_CONFIGURATION_ADDON }}
   S3_ADDON: ${{ secrets.CLEVER_REVIEW_APPS_S3_ADDON }}
   BRANCH: ${{ github.head_ref }}
-  PYTHON_VERSION: 3.10
+  PYTHON_VERSION: 3.10.6
 
 jobs:
   create:
