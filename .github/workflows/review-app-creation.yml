@@ -19,7 +19,7 @@ env:
   CONFIGURATION_ADDON: ${{ secrets.CLEVER_REVIEW_APPS_CONFIGURATION_ADDON }}
   S3_ADDON: ${{ secrets.CLEVER_REVIEW_APPS_S3_ADDON }}
   BRANCH: ${{ github.head_ref }}
-  PYTHON_VERSION: 3.9
+  PYTHON_VERSION: 3.10.6
 
 jobs:
   create:
@@ -91,7 +91,7 @@ jobs:
       with:
         message: "🥁 La recette jetable est prête ! [👉 Je veux tester cette PR !](https://${{ env.DEPLOY_URL }})"
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
- 
+
   redeploy:
     runs-on: ubuntu-latest
     # A push event targets a new deployment.
