@@ -5,7 +5,7 @@ attrs==22.1.0; python_version >= "3.7" and python_version < "4.0"
 beautifulsoup4==4.9.3; python_version >= "3.7"
 boto3==1.24.59; python_version >= "3.7"
 boto==2.49.0
-botocore==1.27.59; python_version >= "3.7"
+botocore==1.27.63; python_version >= "3.7"
 certifi==2022.6.15; python_version >= "3.7" and python_version < "4" and (python_version >= "3.7" and python_full_version < "3.0.0" and python_version < "4" or python_full_version >= "3.6.0" and python_version < "4" and python_version >= "3.7")
 cffi==1.15.1; os_name == "nt" and implementation_name != "pypy" and python_version >= "3.7" and python_version < "4.0" and (python_version >= "3.7" and python_full_version < "3.0.0" and python_version < "4" or python_full_version >= "3.6.0" and python_version < "4" and python_version >= "3.7")
 charset-normalizer==2.1.1; python_version >= "3.7" and python_version < "4" and python_full_version >= "3.6.0"
