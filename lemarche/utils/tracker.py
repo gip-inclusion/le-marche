@@ -13,9 +13,11 @@ import json
 import logging
 from datetime import datetime
 
-import requests
 from crawlerdetect import CrawlerDetect
 from django.conf import settings
+from huey.contrib.djhuey import task
+
+from lemarche.stats.models import Tracker
 
 
 logger = logging.getLogger(__name__)
@@ -24,7 +26,7 @@ logger.setLevel(logging.DEBUG)
 crawler_detect = CrawlerDetect()
 
 
-VERSION = 1
+VERSION = 2
 
 TRACKER_IGNORE_LIST = [
     "/static",
@@ -36,14 +38,14 @@ TRACKER_IGNORE_LIST = [
 ]
 
 DEFAULT_PAYLOAD = {
-    "_v": VERSION,
-    "timestamp": datetime.now().astimezone().isoformat(),
+    "version": VERSION,
+    "date_created": datetime.now().astimezone().isoformat(),
     "env": settings.BITOUBI_ENV,
     "page": "",
     "action": "load",
-    "meta": {"source": "bitoubi_api"},  # needs to be stringifyed...
+    "data": {"source": "lemarche"},  # needs to be stringifyed...
     "session_id": "00000000-1111-2222-aaaa-444444444444",
-    "order": 0,
+    "send_order": 0,  # why we use it ?
 }
 
 
@@ -60,26 +62,26 @@ def extract_meta_from_request(request, siae=None, results_count=None):
     }
 
 
+@task()
 def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
 
     # Don't log in dev
-    if settings.BITOUBI_ENV != "dev":
+    if settings.BITOUBI_ENV == "dev":
         set_payload = {
-            "timestamp": datetime.now().isoformat(),
+            "date_created": datetime.now().isoformat(),
             "page": page,
             "action": action,
-            "meta": json.dumps(DEFAULT_PAYLOAD["meta"] | meta),
+            "data": json.dumps(DEFAULT_PAYLOAD["data"] | meta),
         }
 
         payload = DEFAULT_PAYLOAD | set_payload
 
         try:
-            r = requests.post(f"{settings.TRACKER_HOST}/track", json=payload)
-            r.raise_for_status()
-            # logger.info("Tracker sent")
-        except requests.HTTPError as e:
+            Tracker.objects.create(**payload)
+            logger.info("Tracker saved")
+        except Exception as e:
             logger.exception(e)
-            logger.warning("Failed to submit tracker")
+            logger.warning("Failed to save tracker")
 
 
 class TrackerMiddleware:
