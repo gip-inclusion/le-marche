@@ -224,7 +224,17 @@ DATABASES = {
         "USER": env.str("POSTGRESQL_ADDON_USER", "user"),
         "PASSWORD": env.str("POSTGRESQL_ADDON_PASSWORD", "password"),
     },
+    "stats": {
+        "ENGINE": "django.db.backends.postgresql",
+        "HOST": env.str("STATS_POSTGRESQL_ADDON_HOST", "localhost"),
+        "PORT": env.str("STATS_POSTGRESQL_ADDON_PORT", "5432"),
+        "NAME": env.str("STATS_POSTGRESQL_ADDON_DB", "marchetracker"),
+        "USER": env.str("STATS_POSTGRESQL_ADDON_USER", "itou"),
+        "PASSWORD": env.str("STATS_POSTGRESQL_ADDON_PASSWORD", "password"),
+    },
 }
+DATABASE_ROUTERS = ["config.settings.StatsRouter.StatsRouter"]
+
 
 # controls how many objects are updated in a single query
 # avoid timeout exception
@@ -728,3 +738,5 @@ WAGTAIL_RICHTEXT_FIELD_FEATURES = [
 ]
 
 WAGTAILEMBEDS_RESPONSIVE_HTML = True
+
+WAGTAILADMIN_BASE_URL = DEPLOY_URL
