@@ -85,7 +85,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     form = UserChangeForm
     model = User
 
-    list_display = ["id", "first_name", "last_name", "kind", "nb_siaes", "last_login", "created_at"]
+    list_display = ["id", "first_name", "last_name", "kind", "siae_count_with_link", "last_login", "created_at"]
     list_filter = [
         "kind",
         HasSiaeFilter,
@@ -105,7 +105,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         + [f"{field}_last_updated" for field in User.TRACK_UPDATE_FIELDS]
         + [field.name for field in User._meta.fields if field.name.endswith("_last_seen_date")]
         + [
-            "nb_siaes",
+            "siae_count_with_link",
             "user_favorite_list",
             "last_login",
             "image_url",
@@ -219,14 +219,14 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         qs = qs.annotate(siae_count=Count("siaes", distinct=True))
         return qs
 
-    def nb_siaes(self, user):
+    def siae_count_with_link(self, user):
         if user.siae_count:
             url = reverse("admin:siaes_siae_changelist") + f"?users__in={user.id}"
             return format_html(f'<a href="{url}">{user.siae_count}</a>')
         return "-"
 
-    nb_siaes.short_description = "Nombre de structures"
-    nb_siaes.admin_order_field = "siae_count"
+    siae_count_with_link.short_description = "Nombre de structures"
+    siae_count_with_link.admin_order_field = "siae_count"
 
     def user_favorite_list(self, user):
         favorite_lists = user.favorite_lists.all()
