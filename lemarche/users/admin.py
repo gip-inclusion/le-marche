@@ -101,15 +101,15 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
 
     # autocomplete_fields = ["siaes"]
     readonly_fields = (
-        [f"{field}_last_updated" for field in User.TRACK_UPDATE_FIELDS]
-        + [field.name for field in User._meta.fields if field.name.startswith("c4_")]
+        [field.name for field in User._meta.fields if field.name.startswith("c4_")]
+        + [f"{field}_last_updated" for field in User.TRACK_UPDATE_FIELDS]
+        + [field.name for field in User._meta.fields if field.name.endswith("_last_seen_date")]
         + [
             "nb_siaes",
             "user_favorite_list",
             "last_login",
             "image_url",
             "image_url_display",
-            "dashboard_last_seen_date",
             "created_at",
             "updated_at",
         ]
