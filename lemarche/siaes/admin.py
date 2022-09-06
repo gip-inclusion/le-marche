@@ -78,11 +78,11 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "siret",
         "kind",
         "city",
-        "nb_users",
-        "nb_offers",
-        "nb_labels",
-        "nb_cient_references",
-        "nb_images",
+        "user_count_with_link",
+        "offer_count_with_link",
+        "label_count_with_link",
+        "client_reference_count_with_link",
+        "image_count_with_link",
         "created_at",
     ]
     list_filter = [
@@ -102,13 +102,14 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     autocomplete_fields = ["sectors", "networks", "groups"]
     # prepopulated_fields = {"slug": ("name",)}
     readonly_fields = [field for field in Siae.READONLY_FIELDS if field not in ("coords")] + [
-        "sector_count",
-        "network_count",
-        "nb_offers",
-        "nb_labels",
-        "nb_cient_references",
-        "nb_users",
-        "nb_images",
+        # "user_count",
+        "sector_count_with_link",
+        "network_count_with_link",
+        "offer_count_with_link",
+        "label_count_with_link",
+        "client_reference_count_with_link",
+        "user_count_with_link",
+        "image_count_with_link",
         "coords_display",
         "logo_url",
         "logo_url_display",
@@ -171,13 +172,13 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                 "fields": (
                     "description",
                     "sectors",
-                    "sector_count",
+                    "sector_count_with_link",
                     "networks",
-                    "network_count",
-                    "nb_offers",
-                    "nb_labels",
-                    "nb_cient_references",
-                    "nb_images",
+                    "network_count_with_link",
+                    "offer_count_with_link",
+                    "label_count_with_link",
+                    "client_reference_count_with_link",
+                    "image_count_with_link",
                     "groups",
                 )
             },
@@ -201,7 +202,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "contact_phone",
                     "contact_website",
                     "contact_social_website",
-                    "nb_users",
+                    "user_count_with_link",
                 )
             },
         ),
@@ -273,13 +274,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                 "fields": (
                     "description",
                     "sectors",
-                    # "sector_count",
                     "networks",
-                    # "network_count",
-                    # "nb_offers",
-                    # "nb_labels",
-                    # "nb_cient_references",
-                    # "nb_images",
                     # "groups",
                 )
             },
@@ -303,7 +298,6 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "contact_phone",
                     "contact_website",
                     "contact_social_website",
-                    # "nb_users",
                 )
             },
         ),
@@ -351,40 +345,54 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
             return True
         return super().lookup_allowed(lookup, *args, **kwargs)
 
-    def nb_users(self, siae):
+    def user_count_with_link(self, siae):
         url = reverse("admin:users_user_changelist") + f"?siaes__in={siae.id}"
         return format_html(f'<a href="{url}">{siae.user_count}</a>')
 
-    nb_users.short_description = "Nombre d'utilisateurs"
-    nb_users.admin_order_field = "user_count"
+    user_count_with_link.short_description = "Nombre d'utilisateurs"
+    user_count_with_link.admin_order_field = "user_count"
 
-    def nb_offers(self, siae):
+    def sector_count_with_link(self, siae):
+        url = reverse("admin:sectors_sector_changelist") + f"?siaes__in={siae.id}"
+        return format_html(f'<a href="{url}">{siae.sector_count}</a>')
+
+    sector_count_with_link.short_description = "Nbr de secteurs"
+    sector_count_with_link.admin_order_field = "sector_count"
+
+    def network_count_with_link(self, siae):
+        url = reverse("admin:networks_network_changelist") + f"?siaes__in={siae.id}"
+        return format_html(f'<a href="{url}">{siae.network_count}</a>')
+
+    network_count_with_link.short_description = "Nbr de réseaux"
+    network_count_with_link.admin_order_field = "network_count"
+
+    def offer_count_with_link(self, siae):
         url = reverse("admin:siaes_siaeoffer_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.offer_count}</a>')
 
-    nb_offers.short_description = "Nbr de prestations"
-    nb_offers.admin_order_field = "offer_count"
+    offer_count_with_link.short_description = "Nbr de prestations"
+    offer_count_with_link.admin_order_field = "offer_count"
 
-    def nb_labels(self, siae):
+    def label_count_with_link(self, siae):
         url = reverse("admin:siaes_siaelabel_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.label_count}</a>')
 
-    nb_labels.short_description = "Nbr de labels"
-    nb_labels.admin_order_field = "label_count"
+    label_count_with_link.short_description = "Nbr de labels"
+    label_count_with_link.admin_order_field = "label_count"
 
-    def nb_cient_references(self, siae):
+    def client_reference_count_with_link(self, siae):
         url = reverse("admin:siaes_siaeclientreference_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.client_reference_count}</a>')
 
-    nb_cient_references.short_description = "Nbr de réf. clients"
-    nb_cient_references.admin_order_field = "client_reference_count"
+    client_reference_count_with_link.short_description = "Nbr de réf. clients"
+    client_reference_count_with_link.admin_order_field = "client_reference_count"
 
-    def nb_images(self, siae):
+    def image_count_with_link(self, siae):
         url = reverse("admin:siaes_siaeimage_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.image_count}</a>')
 
-    nb_images.short_description = "Nbr d'images"
-    nb_images.admin_order_field = "image_count"
+    image_count_with_link.short_description = "Nbr d'images"
+    image_count_with_link.admin_order_field = "image_count"
 
     def coords_display(self, siae):
         if siae.coords:
