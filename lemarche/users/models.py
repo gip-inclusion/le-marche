@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -242,5 +243,6 @@ class User(AbstractUser):
 
 @receiver(post_save, sender=User)
 def tender_post_save_created_receiver(sender, instance, **kwargs):
-    list_stats_attrs = [field.name for field in instance._meta.fields]
-    StatsUser.objects.update_or_create(id=instance.pk, defaults=model_to_dict(instance, fields=list_stats_attrs))
+    if settings.BITOUBI_ENV not in ("dev", "test"):
+        list_stats_attrs = [field.name for field in instance._meta.fields]
+        StatsUser.objects.update_or_create(id=instance.pk, defaults=model_to_dict(instance, fields=list_stats_attrs))

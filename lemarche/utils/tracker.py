@@ -68,9 +68,8 @@ def extract_meta_from_request(request, siae=None, results_count=None):
 def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
 
     # Don't log in dev
-    if settings.BITOUBI_ENV != "dev":
+    if settings.BITOUBI_ENV not in ("dev", "test"):
         date_created = datetime.now().isoformat()
-        # meta_data = DEFAULT_PAYLOAD["data"] | meta
         set_payload = {
             "date_created": date_created,
             "page": page,
