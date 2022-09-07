@@ -1,3 +1,7 @@
+import argparse
+
+from django.db.utils import IntegrityError
+
 from lemarche.stats.models import StatsUser
 from lemarche.users.models import User
 from lemarche.utils.commands import BaseCommand
@@ -10,17 +14,24 @@ class Command(BaseCommand):
 
     Usage:
     poetry run python manage.py import_users_for_stats
+    poetry run python manage.py import_users_for_stats
     """
 
     def add_arguments(self, parser):
-        # parser.add_argument("--start_date", type=str, default="2022-01-01")
-        pass
+        parser.add_argument(
+            "-C",
+            "--clean",
+            action=argparse.BooleanOptionalAction,
+            default=True,
+            help="Effacer la table des utilisateurs la db de stat",
+        )
 
     def handle(self, *args, **options):
-        self.stdout_success("-" * 80)
-        self.stdout_info("Step 0: clean user table in the stats db")
-        count_delete = self.clean_stats_users()
-        self.stdout_success(f"Deleted {count_delete} from the stats db")
+        if options["clean"]:
+            self.stdout_success("-" * 80)
+            self.stdout_info("Step 0: clean user table in the stats db")
+            count_delete = self.clean_stats_users()
+            self.stdout_success(f"Deleted {count_delete} from the stats db")
 
         self.stdout_info("Step 1: fetching download list of users")
         users_list = self.fetch_users_list()
@@ -28,7 +39,9 @@ class Command(BaseCommand):
 
         self.stdout_info("Step 2: upload user list to stats db")
         stats_users = self.upload_users_to_db_stats(users_list)
-        self.stdout_success(f"Insert {len(stats_users)} items")
+        if stats_users:
+            self.stdout_success(f"Insert {len(stats_users)} items")
+
         self.stdout_success("-" * 80)
 
     def fetch_users_list(self):
@@ -38,7 +51,10 @@ class Command(BaseCommand):
 
     def upload_users_to_db_stats(self, users_list):
         stats_users_list = [StatsUser(**params) for params in users_list]
-        return StatsUser.objects.bulk_create(stats_users_list)
+        try:
+            return StatsUser.objects.bulk_create(stats_users_list, batch_size=50)
+        except IntegrityError as e:
+            self.stdout_error(e)
 
     def clean_stats_users(self):
         count_delete, _ = StatsUser.objects.all().delete()
