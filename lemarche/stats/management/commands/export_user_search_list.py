@@ -4,13 +4,12 @@ import os
 from datetime import date, timedelta
 
 import boto3
-import psycopg2
-import psycopg2.extras
 from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Count
 
+from lemarche.stats.models import Tracker
 from lemarche.users.models import User
+from lemarche.utils.commands import BaseCommand
 from lemarche.utils.s3 import API_CONNECTION_DICT
 
 
@@ -60,43 +59,30 @@ class Command(BaseCommand):
     #     )
 
     def handle(self, *args, **options):
-        if not os.environ.get("STATS_DSN"):
-            raise CommandError("Missing STATS_DSN in env")
-
-        self.stdout.write("-" * 80)
-        self.stdout.write("Step 1: fetching search list from stats DB")
+        self.stdout_info("-" * 80)
+        self.stdout_info("Step 1: fetching search list from stats DB")
         search_list = self.fetch_search_list(options["start_date"])
-        self.stdout.write(f"Found {len(search_list)} items")
+        self.stdout_info(f"Found {len(search_list)} items")
 
-        self.stdout.write("-" * 80)
-        self.stdout.write("Step 2: enrich search list")
+        self.stdout_info("-" * 80)
+        self.stdout_info("Step 2: enrich search list")
         search_list_enriched = self.enrich_search_list(search_list)
 
-        self.stdout.write("-" * 80)
-        self.stdout.write("Step 3: export search list to csv")  # + Step 4
+        self.stdout_info("-" * 80)
+        self.stdout_info("Step 3: export search list to csv")  # + Step 4
         self.generate_search_list_file(search_list_enriched, "csv")
 
-        self.stdout.write("-" * 80)
-        self.stdout.write("Step 5: cleanup")
+        self.stdout_info("-" * 80)
+        self.stdout_info("Step 5: cleanup")
         self.cleanup()
 
     def fetch_search_list(self, start_date):
-        sql = f"""
-        SELECT *
-        FROM trackers
-        WHERE env = 'prod'
-        AND action = 'directory_search'
-        AND date_created >= '{start_date}'
-        ORDER BY date_created DESC;
-        """
-        connection = psycopg2.connect(os.environ.get("STATS_DSN"))
-        cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cursor.execute(sql)
-        response = cursor.fetchall()
-
+        response = Tracker.objects.filter(
+            env="prod", action="directory_search", date_created__gte=start_date
+        ).order_by("date_created")
         search_list_temp = list()
         for row in response:
-            search_list_temp.append(dict(row))
+            search_list_temp.append(row)
 
         return search_list_temp
 
@@ -109,21 +95,22 @@ class Command(BaseCommand):
         for item in search_list:
             search_item = {}
             # search
+            tracker_meta_data = item.data.get("meta")
             search_item.update(
                 {
-                    "search_sectors": ", ".join(item["data"]["meta"].get("sectors", [])),
-                    # "search_perimeter": ", ".join(item["data"]["meta"].get("perimeter", [])),
-                    "search_perimeter_name": ", ".join(item["data"]["meta"].get("perimeter_name", [])),
-                    "search_kind": ", ".join(item["data"]["meta"].get("kind", [])),
-                    "search_presta_type": ", ".join(item["data"]["meta"].get("presta_type", [])),
-                    "search_territory": ", ".join(item["data"]["meta"].get("territory", [])),
-                    "search_networks": ", ".join(item["data"]["meta"].get("networks", [])),
-                    "search_results_count": item["data"]["meta"].get("results_count", None),
-                    "search_page": ", ".join(item["data"]["meta"].get("page", [])),
+                    "search_sectors": ", ".join(tracker_meta_data.get("sectors", [])),
+                    # "search_perimeter": ", ".join(tracker_meta_data.get("perimeter", [])),
+                    "search_perimeter_name": ", ".join(tracker_meta_data.get("perimeter_name", [])),
+                    "search_kind": ", ".join(tracker_meta_data.get("kind", [])),
+                    "search_presta_type": ", ".join(tracker_meta_data.get("presta_type", [])),
+                    "search_territory": ", ".join(tracker_meta_data.get("territory", [])),
+                    "search_networks": ", ".join(tracker_meta_data.get("networks", [])),
+                    "search_results_count": tracker_meta_data.get("results_count", None),
+                    "search_page": ", ".join(tracker_meta_data.get("page", [])),
                 }
             )
             # user
-            user_id = item["data"]["meta"]["user_id"]
+            user_id = tracker_meta_data["user_id"]
             user_dict = next((user for user in user_list if user["id"] == user_id), {})
             search_item.update(
                 {
@@ -140,9 +127,9 @@ class Command(BaseCommand):
             # other
             search_item.update(
                 {
-                    "cmp": item["data"]["meta"]["cmp"],
-                    "timestamp": item["date_created"],
-                    "stats_id": item["id_internal"],
+                    "cmp": tracker_meta_data["cmp"],
+                    "timestamp": item.date_created,
+                    "stats_id": item.id_internal,
                 }
             )
             search_list_enriched.append(search_item)
@@ -151,7 +138,7 @@ class Command(BaseCommand):
 
     def generate_search_list_file(self, search_list_enriched, format):
         if format in ["csv", "all"]:
-            self.stdout.write("Generating the CSV file")
+            self.stdout_info("Generating the CSV file")
             filename_with_extension = f"{FILENAME}.csv"
             file = open(filename_with_extension, "w")
             writer = csv.DictWriter(file, fieldnames=list(search_list_enriched[0].keys()))
@@ -159,21 +146,21 @@ class Command(BaseCommand):
             for item in search_list_enriched:
                 writer.writerow(item)
             file.close()
-            self.stdout.write(f"Generated {filename_with_extension}")
+            self.stdout_success(f"Generated {filename_with_extension}")
 
-            self.stdout.write("-" * 80)
-            self.stdout.write("Step 4: uploading the CSV file to S3")
+            self.stdout_info("-" * 80)
+            self.stdout_info("Step 4: uploading the CSV file to S3")
             self.upload_file_to_s3(filename_with_extension)
 
         # if format in ["xls", "all"]:
-        #     self.stdout.write("Generating the XLS file")
+        #     self.stdout_info("Generating the XLS file")
         #     filename_with_extension = f"{FILENAME}.xls"
         #     wb = export_siae_to_excel(siae_list)
         #     wb.save(filename_with_extension)
-        #     self.stdout.write(f"Generated {filename_with_extension}")
+        #     self.stdout_info(f"Generated {filename_with_extension}")
 
-        #     self.stdout.write("-" * 80)
-        #     self.stdout.write("Step 4: uploading the XLS file to S3")
+        #     self.stdout_info("-" * 80)
+        #     self.stdout_info("Step 4: uploading the XLS file to S3")
         #     self.upload_file_to_s3(filename_with_extension)
 
     def upload_file_to_s3(self, filename_with_extension):
@@ -185,7 +172,7 @@ class Command(BaseCommand):
             ExtraArgs={"ACL": "public-read", "ContentType": CONTENT_TYPE_MAPPING[file_extension]},
         )
         s3_file_url = build_file_url(API_CONNECTION_DICT["endpoint_url"], bucket_name, s3_file_key)
-        self.stdout.write(f"S3 file url: {s3_file_url}")
+        self.stdout_success(f"S3 file url: {s3_file_url}")
 
     def cleanup(self):
         files_to_remove = glob.glob(f"{FILENAME}.*")
