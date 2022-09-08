@@ -1,7 +1,13 @@
+from django.conf import settings
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.forms.models import model_to_dict
 from django.utils import timezone
+
+from lemarche.stats.models import StatsUser
 
 
 class UserQueryset(models.QuerySet):
@@ -233,3 +239,10 @@ class User(AbstractUser):
         if self.first_name and self.last_name:
             return f"{self.first_name.upper()[:1]}. {self.last_name.upper()}"
         return ""
+
+
+@receiver(post_save, sender=User)
+def user_post_save(sender, instance, **kwargs):
+    if settings.BITOUBI_ENV not in ("dev", "test"):
+        list_stats_attrs = [field.name for field in instance._meta.fields]
+        StatsUser.objects.update_or_create(id=instance.pk, defaults=model_to_dict(instance, fields=list_stats_attrs))
