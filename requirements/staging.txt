@@ -16,7 +16,7 @@ django-appconf==1.0.5; python_version >= "3.6"
 django-better-admin-arrayfield==1.4.2
 django-bootstrap4==22.2; python_version >= "3.7"
 django-ckeditor==6.5.0; python_version >= "3.8"
-django-compressor==3.1
+django-compressor==4.1
 django-cors-headers==3.11.0; python_version >= "3.7"
 django-environ==0.8.1; python_version >= "3.4" and python_version < "4"
 django-fieldsets-with-inlines==0.6; python_version >= "3.4"
