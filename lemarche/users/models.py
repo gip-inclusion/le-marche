@@ -243,6 +243,6 @@ class User(AbstractUser):
 
 @receiver(post_save, sender=User)
 def user_post_save(sender, instance, **kwargs):
-    if settings.BITOUBI_ENV not in ("dev", "test"):
+    if settings.BITOUBI_ENV == "prod":
         list_stats_attrs = [field.name for field in instance._meta.fields]
         StatsUser.objects.update_or_create(id=instance.pk, defaults=model_to_dict(instance, fields=list_stats_attrs))
