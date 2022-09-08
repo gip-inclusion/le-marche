@@ -14,7 +14,8 @@ class Command(BaseCommand):
 
     Usage:
     poetry run python manage.py import_users_for_stats
-    poetry run python manage.py import_users_for_stats
+    poetry run python manage.py import_users_for_stats --clean
+    poetry run python manage.py import_users_for_stats --no-clean
     """
 
     def add_arguments(self, parser):
