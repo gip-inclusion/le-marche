@@ -9,13 +9,15 @@
 # However, nothing keeps the Django app from writing
 # to the tracking database directly, which would be magnitudes faster.
 
-import json
 import logging
 from datetime import datetime
 
-import requests
 from crawlerdetect import CrawlerDetect
 from django.conf import settings
+from huey.contrib.djhuey import task
+
+from lemarche.stats.models import Tracker
+from lemarche.users.models import User
 
 
 logger = logging.getLogger(__name__)
@@ -24,7 +26,7 @@ logger.setLevel(logging.DEBUG)
 crawler_detect = CrawlerDetect()
 
 
-VERSION = 1
+VERSION = 2
 
 TRACKER_IGNORE_LIST = [
     "/static",
@@ -36,23 +38,25 @@ TRACKER_IGNORE_LIST = [
 ]
 
 DEFAULT_PAYLOAD = {
-    "_v": VERSION,
-    "timestamp": datetime.now().astimezone().isoformat(),
+    "version": VERSION,
+    "date_created": datetime.now().astimezone().isoformat(),
     "env": settings.BITOUBI_ENV,
     "page": "",
     "action": "load",
-    "meta": {"source": "bitoubi_api"},  # needs to be stringifyed...
+    "data": {"source": "bitoubi_api"},  # needs to be stringifyed...
     "session_id": "00000000-1111-2222-aaaa-444444444444",
-    "order": 0,
+    "send_order": 0,  # why we use it ?
+    "source": "tracker",  # why we use it ?
 }
 
 
 def extract_meta_from_request(request, siae=None, results_count=None):
+    user: User = request.user
     return {
         **request.GET,
-        "is_admin": request.COOKIES.get("isAdmin", "false") == "true",
-        "user_type": request.user.kind if request.user.id else "",
-        "user_id": request.user.id if request.user.id else None,
+        "is_admin": user.id and user.kind == User.KIND_ADMIN,
+        "user_type": user.kind if user.id else "",
+        "user_id": user.id if user.id else None,
         "siae_id": siae.id if siae else None,
         "results_count": results_count,
         "token": request.GET.get("token", ""),
@@ -60,26 +64,38 @@ def extract_meta_from_request(request, siae=None, results_count=None):
     }
 
 
+@task()
 def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
 
     # Don't log in dev
     if settings.BITOUBI_ENV != "dev":
+        date_created = datetime.now().isoformat()
+        # meta_data = DEFAULT_PAYLOAD["data"] | meta
         set_payload = {
-            "timestamp": datetime.now().isoformat(),
+            "date_created": date_created,
             "page": page,
             "action": action,
-            "meta": json.dumps(DEFAULT_PAYLOAD["meta"] | meta),
+            "data": {
+                "_v": 1,
+                "env": settings.BITOUBI_ENV,  # est-ce vraiment utile ?
+                "meta": DEFAULT_PAYLOAD["data"] | meta,
+                "page": page,
+                # "order": 0,
+                "action": action,
+                # "timestamp": date_created,
+                # "session_id": "00000000-1111-2222-aaaa-444444444444",
+            },
+            "isadmin": meta.get("is_admin", False),
         }
 
         payload = DEFAULT_PAYLOAD | set_payload
 
         try:
-            r = requests.post(f"{settings.TRACKER_HOST}/track", json=payload)
-            r.raise_for_status()
-            # logger.info("Tracker sent")
-        except requests.HTTPError as e:
+            Tracker.objects.create(**payload)
+            logger.info("Tracker saved")
+        except Exception as e:
             logger.exception(e)
-            logger.warning("Failed to submit tracker")
+            logger.warning("Failed to save tracker")
 
 
 class TrackerMiddleware:

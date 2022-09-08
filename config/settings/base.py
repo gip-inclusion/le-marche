@@ -224,7 +224,17 @@ DATABASES = {
         "USER": env.str("POSTGRESQL_ADDON_USER", "user"),
         "PASSWORD": env.str("POSTGRESQL_ADDON_PASSWORD", "password"),
     },
+    "stats": {
+        "ENGINE": "django.db.backends.postgresql",
+        "HOST": env.str("STATS_POSTGRESQL_ADDON_HOST", "localhost"),
+        "PORT": env.str("STATS_POSTGRESQL_ADDON_PORT", "5432"),
+        "NAME": env.str("STATS_POSTGRESQL_ADDON_DB", "marchetracker"),
+        "USER": env.str("STATS_POSTGRESQL_ADDON_USER", "itou"),
+        "PASSWORD": env.str("STATS_POSTGRESQL_ADDON_PASSWORD", "password"),
+    },
 }
+DATABASE_ROUTERS = ["config.settings.StatsRouter.StatsRouter"]
+
 
 # controls how many objects are updated in a single query
 # avoid timeout exception
@@ -512,7 +522,6 @@ SPECTACULAR_SETTINGS = {
 # Trackers
 # ------------------------------------------------------------------------------
 
-TRACKER_HOST = env.str("TRACKER_HOST", "http://localhost")
 HOTJAR_ID = int(env.str("HOTJAR_ID", 0))
 MATOMO_SITE_ID = int(env.str("MATOMO_SITE_ID", 0))
 MATOMO_HOST = env.str("MATOMO_HOST", "")
@@ -728,3 +737,5 @@ WAGTAIL_RICHTEXT_FIELD_FEATURES = [
 ]
 
 WAGTAILEMBEDS_RESPONSIVE_HTML = True
+
+WAGTAILADMIN_BASE_URL = DEPLOY_URL
