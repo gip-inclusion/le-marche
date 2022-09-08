@@ -48,10 +48,10 @@ class TenderAdmin(admin.ModelAdmin):
         "kind",
         "deadline_date",
         "start_working_date",
-        "nb_siae",
-        "nb_siae_email_send",
-        "nb_siae_detail_display",
-        "nb_siae_contact_click",
+        "siae_count_with_link",
+        "siae_email_send_count_with_link",
+        "siae_detail_display_count_with_link",
+        "siae_contact_click_count_with_link",
         "created_at",
     ]
     list_filter = ["kind", "deadline_date", "start_working_date", ResponseKindFilter]
@@ -61,12 +61,11 @@ class TenderAdmin(admin.ModelAdmin):
     ordering = ["-created_at"]
 
     autocomplete_fields = ["perimeters", "sectors", "author"]
-    readonly_fields = [
-        "nb_siae",
-        "nb_siae_email_send",
-        "nb_siae_detail_display",
-        "nb_siae_contact_click",
-        "siae_interested_list_last_seen_date",
+    readonly_fields = [field.name for field in Tender._meta.fields if field.name.endswith("_last_seen_date")] + [
+        "siae_count_with_link",
+        "siae_email_send_count_with_link",
+        "siae_detail_display_count_with_link",
+        "siae_contact_click_count_with_link",
         "logs_display",
         "created_at",
         "updated_at",
@@ -107,10 +106,10 @@ class TenderAdmin(admin.ModelAdmin):
             "Stats",
             {
                 "fields": (
-                    "nb_siae",
-                    "nb_siae_email_send",
-                    "nb_siae_detail_display",
-                    "nb_siae_contact_click",
+                    "siae_count_with_link",
+                    "siae_email_send_count_with_link",
+                    "siae_detail_display_count_with_link",
+                    "siae_contact_click_count_with_link",
                     "siae_interested_list_last_seen_date",
                     "logs_display",
                 ),
@@ -145,42 +144,42 @@ class TenderAdmin(admin.ModelAdmin):
     user_with_link.short_description = "Auteur"
     user_with_link.admin_order_field = "author"
 
-    def nb_siae(self, tender):
+    def siae_count_with_link(self, tender):
         url = reverse("admin:siaes_siae_changelist") + f"?tenders__in={tender.id}"
         return format_html(f'<a href="{url}">{getattr(tender, "siae_count", 0)}</a>')
 
-    nb_siae.short_description = "Structures concernées"
-    nb_siae.admin_order_field = "siae_count"
+    siae_count_with_link.short_description = "Structures concernées"
+    siae_count_with_link.admin_order_field = "siae_count"
 
-    def nb_siae_email_send(self, tender):
+    def siae_email_send_count_with_link(self, tender):
         url = (
             reverse("admin:siaes_siae_changelist")
             + f"?tenders__in={tender.id}&tendersiae__email_send_date__isnull=False"
         )
         return format_html(f'<a href="{url}">{getattr(tender, "siae_email_send_count", 0)}</a>')
 
-    nb_siae_email_send.short_description = "S. contactées"
-    nb_siae_email_send.admin_order_field = "siae_email_send_count"
+    siae_email_send_count_with_link.short_description = "S. contactées"
+    siae_email_send_count_with_link.admin_order_field = "siae_email_send_count"
 
-    def nb_siae_detail_display(self, tender):
+    def siae_detail_display_count_with_link(self, tender):
         url = (
             reverse("admin:siaes_siae_changelist")
             + f"?tenders__in={tender.id}&tendersiae__detail_display_date__isnull=False"
         )
         return format_html(f'<a href="{url}">{getattr(tender, "siae_detail_display_count", 0)}</a>')
 
-    nb_siae_detail_display.short_description = "S. vues"
-    nb_siae_detail_display.admin_order_field = "siae_detail_display_count"
+    siae_detail_display_count_with_link.short_description = "S. vues"
+    siae_detail_display_count_with_link.admin_order_field = "siae_detail_display_count"
 
-    def nb_siae_contact_click(self, tender):
+    def siae_contact_click_count_with_link(self, tender):
         url = (
             reverse("admin:siaes_siae_changelist")
             + f"?tenders__in={tender.id}&tendersiae__contact_click_date__isnull=False"
         )
         return format_html(f'<a href="{url}">{getattr(tender, "siae_contact_click_count", 0)}</a>')
 
-    nb_siae_contact_click.short_description = "S. intéressées"
-    nb_siae_contact_click.admin_order_field = "siae_contact_click_count"
+    siae_contact_click_count_with_link.short_description = "S. intéressées"
+    siae_contact_click_count_with_link.admin_order_field = "siae_contact_click_count"
 
     def logs_display(self, tender=None):
         if tender:
