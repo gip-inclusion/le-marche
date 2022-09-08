@@ -14,10 +14,12 @@ from datetime import datetime
 
 from crawlerdetect import CrawlerDetect
 from django.conf import settings
-from huey.contrib.djhuey import task
 
 from lemarche.stats.models import Tracker
 from lemarche.users.models import User
+
+
+# from huey.contrib.djhuey import task
 
 
 logger = logging.getLogger(__name__)
@@ -64,7 +66,7 @@ def extract_meta_from_request(request, siae=None, results_count=None):
     }
 
 
-@task()
+# @task()
 def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
 
     # Don't log in dev
