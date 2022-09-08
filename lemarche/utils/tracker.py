@@ -9,7 +9,6 @@
 # However, nothing keeps the Django app from writing
 # to the tracking database directly, which would be magnitudes faster.
 
-import json
 import logging
 from datetime import datetime
 
@@ -66,12 +65,13 @@ def extract_meta_from_request(request, siae=None, results_count=None):
 def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
 
     # Don't log in dev
-    if settings.BITOUBI_ENV == "dev":
+    if settings.BITOUBI_ENV != "dev":
         set_payload = {
             "date_created": datetime.now().isoformat(),
             "page": page,
             "action": action,
-            "data": json.dumps(DEFAULT_PAYLOAD["data"] | meta),
+            "data": DEFAULT_PAYLOAD["data"] | meta,
+            "isadmin": meta.get("is_admin", False),
         }
 
         payload = DEFAULT_PAYLOAD | set_payload
