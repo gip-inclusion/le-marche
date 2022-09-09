@@ -1,0 +1,22 @@
+<item>
+    <title>FOURNITURE DE GANTS NITRILE, VINYLE ET LATEX POUR LES ETABLISSEMENTS DU GHT YVELINES NORD</title>
+    <link>https://marches.maximilien.fr/?page=Entreprise.EntrepriseAdvancedSearch&AllCons&id=803968&orgAcronyme=a2k</link>
+    <description>Le présent SAD a pour objet de définir les modalités de passation des futurs marchés spécifiques pour les prestations susvisées. Si les marchés spécifiques ne peuvent être conclus qu'avec les entreprises agréées (procédure restreinte), le système d'acquisition dynamique est un système ouvert aux nouvelles candidatures pendant toute sa période de validité, soit jusqu'au 16/03/2026. Un premier marché spécifique sera lancé après l'admission des candidatures, il importe que les candidats potentiels qui souhaiteraient pouvoir s'y positionner puissent être agréés avant 02 Mai 2022. Leur candidature sur le présent SAD devra donc être reçue avant le 18/04/2022, 12 heures au plus tard</description>
+    <pubDate>Thu, 17 Mar 2022 16:56:08 +0100</pubDate>
+    <category domain="Avis">AAPC</category>
+    <category domain="Titre">FOURNITURE DE GANTS NITRILE, VINYLE ET LATEX POUR LES ETABLISSEMENTS DU GHT YVELINES NORD</category>
+    <category domain="Objet">Le présent SAD a pour objet de définir les modalités de passation des futurs marchés spécifiques pour les prestations susvisées. Si les marchés spécifiques ne peuvent être conclus qu'avec les entreprises agréées (procédure restreinte), le système d'acquisition dynamique est un système ouvert aux nouvelles candidatures pendant toute sa période de validité, soit jusqu'au 16/03/2026. Un premier marché spécifique sera lancé après l'admission des candidatures, il importe que les candidats potentiels qui souhaiteraient pouvoir s'y positionner puissent être agréés avant 02 Mai 2022. Leur candidature sur le présent SAD devra donc être reçue avant le 18/04/2022, 12 heures au plus tard</category>
+    <category domain="Procedure">SAD-A</category>
+    <category domain="DateLimite">Sat, 14 Mar 2026 12:00:00 +0100</category>
+    <category domain="DateOuverture">Thu, 17 Mar 2022 16:56:08 +0100</category>
+    <category domain="Category">Fournitures</category>
+    <category domain="Organisme">a2k</category>
+    <category domain="Organisme_nom">Centre Hospitalier Intercommunal de Poissy saint Germain </category>
+    <category domain="Organisme_siren">267805802</category>
+    <category domain="Organisme_code_postal">78303</category>
+    <category domain="EntiteAchat"> - Centre Hospitalier Intercommunal de Poissy saint Germain </category>
+    <category domain="LieuxExecution">78</category>
+    <category domain="ClosureDate">Sat, 14 Mar 2026 12:00:00 +0100</category>
+    <category domain="cpv">18424300</category>
+    <guid isPermaLink="false">803968_2200003</guid>
+</item>

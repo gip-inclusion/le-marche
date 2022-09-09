@@ -8,7 +8,9 @@ import requests
 logger = logging.getLogger(__name__)
 
 
+INFO_URL = "https://www.maximilien.fr/"
 BASE_URL = "https://marches.maximilien.fr/rssCS.xml"
+# Example? api_marche_maximilien_example.txt
 # FIELD_MAPPING = {
 #     "title": "title",
 #     "description": "description",
@@ -52,6 +54,7 @@ def get_offers_list(client=None):
         for item in tree.find("channel").findall("item"):
             offer = {}
 
+            # TODO: finish field mapping
             # basics
             offer["title"] = item.find("title").text
             offer["description"] = item.find("description").text
