@@ -80,6 +80,7 @@ class AddTenderStepDescriptionForm(forms.ModelForm):
         if self.kind == Tender.TENDER_KIND_TENDER:
             self.fields["amount"].required = True
         # label, placeholder & help_text
+        self.fields["amount"].label = "Montant estimé du marché"  # add "estimé"
         self.fields["external_link"].widget.attrs["placeholder"] = "https://www.example.fr"
         self.fields["constraints"].widget.attrs["placeholder"] = "Ex : Déplacements"
 
