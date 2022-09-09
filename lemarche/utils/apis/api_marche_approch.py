@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 INFO_URL = "https://projets-achats.marches-publics.gouv.fr"
 BASE_URL = "https://recette-portail-entreprises.fr/api/public/projects"
-
+# Example? see api_marche_approch_example.txt
 # FIELD_MAPPING = {
 #     "title": "title",
 #     "description": "description",
@@ -52,6 +52,8 @@ def get_offers_list(client=None):
 
         for item in data:
             offer = {}
+
+            # TODO: field mapping
 
             offer_list.append(offer)
 
