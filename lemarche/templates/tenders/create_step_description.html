@@ -6,11 +6,41 @@
 {% block step_subtitle %}Veuillez détailler au maximum votre besoin pour que les prestataires inclusifs puissent se positionner.{% endblock %}
 
 {% block content_form %}
-<fieldset>
-    {% bootstrap_field form.description %}
-    {% bootstrap_field form.start_working_date %}
-    {% bootstrap_field form.external_link %}
-    {% bootstrap_field form.constraints %}
-    {% bootstrap_field form.amount %}
-</fieldset>
+<div class="row mb-3 mb-lg-5">
+    <div class="col-12 col-lg-8">
+        {% bootstrap_field form.description %}
+    </div>
+</div>
+<div class="row mb-3 mb-lg-5">
+    <div class="col-12 col-lg-8">
+        {% bootstrap_field form.start_working_date %}
+    </div>
+</div>
+<div class="row mb-3 mb-lg-5">
+    <div class="col-12 col-lg-8">
+        {% bootstrap_field form.external_link %}
+    </div>
+</div>
+<div class="row mb-3 mb-lg-5">
+    <div class="col-12 col-lg-8">
+        {% bootstrap_field form.constraints %}
+    </div>
+</div>
+<div class="row mb-3 mb-lg-5">
+    <div class="col-12 col-lg-8">
+        {% bootstrap_field form.amount %}
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+            <p class="mb-1">
+                <i class="ri-lightbulb-line ri-lg"></i>
+                <strong>Conseils</strong>
+            </p>
+            <p class="mb-0">
+                Le montant du besoin sert à estimer l'impact du marché de l'inclusion.<br />
+                En effet, comme toutes les entreprises, nous devons calculer notre ROI (retour sur investissement).
+            </p>
+        </div>
+    </div>
+</div>
 {% endblock content_form %}
