@@ -1,0 +1,22 @@
+{% load static %}
+
+<div class="card h-45 w-100">
+    <div class="card-body">
+        <div class="d-flex align-items-center">
+            <span class="d-none d-lg-inline-flex mr-3">
+                <img src="{% static 'images/dashboard-illu-03.svg' %}" height="200" alt="" />
+            </span>
+            <div>
+                <p class="h4 lh-sm mb-lg-4">Ajouter une structure</p>
+                <p>
+                    Ajoutez votre première structure afin d'être visible auprès des acheteurs qui consultent le marché.
+                    Complétez au maximum les informations vous permettra de remonter dans les résultats de recherche.
+                </p>
+                <a href="{% url 'dashboard:siae_search_by_siret' %}" id="add-siae-first-btn" class="btn btn-primary btn-ico width-100 width-md-auto">
+                    <i class="ri-add-fill ri-lg"></i>
+                    <span>Ajouter une structure</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
