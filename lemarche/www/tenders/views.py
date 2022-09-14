@@ -113,6 +113,8 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
 
     def get_form_kwargs(self, step):
         kwargs = super().get_form_kwargs(step)
+        if step == self.STEP_DESCRIPTION:
+            kwargs["kind"] = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("kind")
         if step == self.STEP_CONTACT:
             kwargs["max_deadline_date"] = self.get_cleaned_data_for_step(self.STEP_DESCRIPTION).get(
                 "start_working_date"
