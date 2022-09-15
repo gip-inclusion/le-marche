@@ -1,0 +1,65 @@
+{% load static bootstrap4 %}
+
+<section class="s-hp-studies-cases-tenders py-5">
+    <div class="s-hp-studies-cases-tenders__container container">
+        <div class="s-hp-studies-cases__row row">
+            <div class="col-sm-6 col-md-3 my-4 my-sm-auto">
+                <h2>100% des besoins ont reçu des réponses en 24h</h2>
+                <p>Gagnez du temps en utilisant le marché.</p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'tenders:create' %}" id="home-studie-cases" class="btn btn-sm btn-primary btn-ico d-block d-md-inline-block mb-2">
+                        <i class="ri-mail-send-line"></i>
+                        <span>Publier un besoin d'achat</span>
+                    </a>
+                {% else %}
+                    <a href="#" id="home-studie-cases-modal-btn" class="btn btn-sm btn-primary btn-ico" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'tenders:create' %}">
+                        <i class="ri-mail-send-line"></i>
+                        <span>Publier un besoin d'achat</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div class="col-sm-6 col-md-3 my-4 my-sm-auto">
+                <div class="card">
+                    <img src="{% static 'images/siemens_logo.jpg' %}" class="card-img-top" alt="Logo de Siemens">
+                    <div class="card-body">
+                      <h5 class="card-title">Besoin en développement d’applications IT</h5>
+                    </div>
+                    <div class="card-footer">
+                        <p class="display-1 mb-1">
+                            <i class="ri-arrow-right-line ri-xl"></i> 48
+                        </p>
+                        <p class="display-4">structures répondantes</p>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-sm-6 col-md-3 my-4 my-md-auto">
+                <div class="card">
+                    <img src="{% static 'images/bouygues_construction_logo.jpg' %}" class="card-img-top" alt="Logo de Bouygues construction">
+                    <div class="card-body">
+                      <h5 class="card-title">Recherche d’une entreprise de nettoyage</h5>
+                    </div>
+                    <div class="card-footer">
+                        <p class="display-1 mb-1">
+                            <i class="ri-arrow-right-line ri-xl"></i> 68
+                        </p>
+                        <p class="display-4">structures répondantes</p>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-sm-6 col-md-3 my-4 my-md-auto">
+                <div class="card">
+                    <img src="{% static 'images/ministere_agriculture_logo.jpg' %}" class="card-img-top" alt="Logo du ministère de l'agriculture et de l'alimentation">
+                    <div class="card-body">
+                      <h5 class="card-title">Besoin en prestations de cocktails et de buffets</h5>
+                    </div>
+                    <div class="card-footer">
+                        <p class="display-1 mb-1">
+                            <i class="ri-arrow-right-line ri-xl"></i> 18
+                        </p>
+                        <p class="display-4">structures répondantes</p>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+</section>
