@@ -7,6 +7,14 @@
 
 {% block content_form %}
 {% include "tenders/detail_card.html" with tender=tender hide_cta="true" %}
+
+{% if not user.is_authenticated %}
+    <div class="alert alert-info" role="alert">
+        Un compte sera créé avec l'e-mail <strong>{{ tender.contact_email }}</strong>.
+        <br />
+        Il vous permettra (entre autre !) de suivre les réponses à votre besoin.
+    </div>
+{% endif %}
 {% endblock %}
 
 {% block submit_btn %}

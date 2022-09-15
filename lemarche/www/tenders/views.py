@@ -14,7 +14,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils.data import get_choice
-from lemarche.www.dashboard.mixins import NotSiaeUserRequiredMixin, TenderOwnerRequiredMixin
+from lemarche.www.dashboard.mixins import TenderOwnerRequiredMixin
 from lemarche.www.tenders.forms import (
     AddTenderStepConfirmationForm,
     AddTenderStepContactForm,
@@ -44,7 +44,7 @@ def create_tender_from_dict(tender_dict: dict):
     return tender
 
 
-class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
+class TenderCreateMultiStepView(SessionWizardView):
     instance = None
     success_url = reverse_lazy("tenders:list")
     success_message = """
@@ -100,15 +100,16 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
         if self.instance is None:
             self.instance = Tender()
         if step == self.STEP_CONTACT:
-            user = self.request.user
-            return Tender(
-                **{
-                    "contact_first_name": user.first_name,
-                    "contact_last_name": user.last_name,
-                    "contact_email": user.email,
-                    "contact_phone": user.phone,
-                }
-            )
+            if self.request.user.is_authenticated:
+                user = self.request.user
+                return Tender(
+                    **{
+                        "contact_first_name": user.first_name,
+                        "contact_last_name": user.last_name,
+                        "contact_email": user.email,
+                        "contact_phone": user.phone,
+                    }
+                )
         return self.instance
 
     def get_form_kwargs(self, step):
@@ -124,8 +125,21 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
 
     def done(self, form_list, form_dict, **kwargs):
         cleaned_data = self.get_all_cleaned_data()
+        # anonymous user? create user (or get an existing user by email)
+        if not self.request.user.is_authenticated:
+            user, created = User.objects.get_or_create(
+                email=cleaned_data["contact_email"],
+                defaults={
+                    "first_name": cleaned_data["contact_first_name"],
+                    "last_name": cleaned_data["contact_last_name"],
+                    "phone": cleaned_data["contact_phone"],
+                    "kind": User.KIND_BUYER,
+                },
+            )
+        else:
+            user = self.request.user
         # when it's done we save the tender
-        tender = create_tender_from_dict(cleaned_data | {"author": self.request.user, "source": Tender.SOURCE_FORM})
+        tender = create_tender_from_dict(cleaned_data | {"author": user, "source": Tender.SOURCE_FORM})
         # we notify the admin team
         if settings.BITOUBI_ENV == "prod":
             notify_admin_tender_created(tender)
@@ -136,7 +150,12 @@ class TenderCreateMultiStepView(NotSiaeUserRequiredMixin, SessionWizardView):
             messages.SUCCESS,
             self.get_success_message(cleaned_data, tender),
         )
-        return HttpResponseRedirect(self.success_url)
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        if self.request.user.is_authenticated and not self.request.user.kind == User.KIND_SIAE:
+            return super().get_success_url()
+        return reverse_lazy("pages:home")
 
     def get_success_message(self, cleaned_data, tender):
         return mark_safe(
