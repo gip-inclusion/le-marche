@@ -1,4 +1,4 @@
-{% load static bootstrap4 %}
+{% load static bootstrap4 wagtailcore_tags %}
 
 <section class="s-hp-studies-cases-tenders py-5">
     <div class="s-hp-studies-cases-tenders__container container">
@@ -22,7 +22,9 @@
                 <div class="card">
                     <img src="{% static 'images/siemens_logo.jpg' %}" class="card-img-top" alt="Logo de Siemens">
                     <div class="card-body">
-                      <h5 class="card-title">Besoin en développement d’applications IT</h5>
+                        <a href="{% slugurl "siemens-besoin-en-développement-dapplications-it" %}">
+                          <h5 class="card-title">Besoin en développement d’applications IT</h5>
+                        </a>
                     </div>
                     <div class="card-footer">
                         <p class="display-1 mb-1">
@@ -30,27 +32,32 @@
                         </p>
                         <p class="display-4">structures répondantes</p>
                     </div>
-                  </div>
+                </div>
             </div>
             <div class="col-sm-6 col-md-3 my-4 my-md-auto">
-                <div class="card">
-                    <img src="{% static 'images/bouygues_construction_logo.jpg' %}" class="card-img-top" alt="Logo de Bouygues construction">
-                    <div class="card-body">
-                      <h5 class="card-title">Recherche d’une entreprise de nettoyage</h5>
+                    <div class="card">
+                        <img src="{% static 'images/bouygues_construction_logo.jpg' %}" class="card-img-top" alt="Logo de Bouygues construction">
+                        <div class="card-body">
+                        <a href="{% slugurl "bouygues-construction-recherche-dune-entreprise-de-nettoyage" %}">
+                          <h5 class="card-title">Recherche d’une entreprise de nettoyage</h5>
+                        </a>
+                        </div>
+                        <div class="card-footer">
+                            <p class="display-1 mb-1">
+                                <i class="ri-arrow-right-line ri-xl"></i> 68
+                            </p>
+                            <p class="display-4">structures répondantes</p>
+                        </div>
                     </div>
-                    <div class="card-footer">
-                        <p class="display-1 mb-1">
-                            <i class="ri-arrow-right-line ri-xl"></i> 68
-                        </p>
-                        <p class="display-4">structures répondantes</p>
-                    </div>
-                  </div>
+                </a>
             </div>
             <div class="col-sm-6 col-md-3 my-4 my-md-auto">
                 <div class="card">
                     <img src="{% static 'images/ministere_agriculture_logo.jpg' %}" class="card-img-top" alt="Logo du ministère de l'agriculture et de l'alimentation">
                     <div class="card-body">
-                      <h5 class="card-title">Besoin en prestations de cocktails et de buffets</h5>
+                        <a href="{% slugurl "ministère-de-lagriculture-besoin-en-prestations-de-cocktails-et-de-buffet" %}">
+                            <h5 class="card-title">Besoin en prestations de cocktails et de buffets</h5>
+                        </a>
                     </div>
                     <div class="card-footer">
                         <p class="display-1 mb-1">
