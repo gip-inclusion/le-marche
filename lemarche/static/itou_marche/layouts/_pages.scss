@@ -89,8 +89,33 @@
 			}
 		}
 	}
+
+	.s-hp-studies-cases-tenders {
+		background-image: url('/static/images/home-page-studie-cases.png');
+		background-repeat: no-repeat;
+		.s-hp-studies-cases__row {
+			.card {
+				// background-color: $gray-100;
+				.card-img-top {
+					max-width: 80%;
+					margin: auto;
+				}
+				.card-footer {
+					p {
+						font-weight: 700;
+					}
+					background-color: $marche-gray-10;
+					color: $marche-purple;
+				}
+			}
+		}
+
+	}
 }
 
+.bg-gray-light{
+	background-color: $marche-gray-light;
+}
 
 .p-valoriser-achats {
 	.s-page-menu-01__col--cta {
