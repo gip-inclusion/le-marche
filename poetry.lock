@@ -115,14 +115,14 @@ python-versions = "*"
 
 [[package]]
 name = "boto3"
-version = "1.24.73"
+version = "1.24.75"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.27.73,<1.28.0"
+botocore = ">=1.27.75,<1.28.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -131,7 +131,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.27.73"
+version = "1.27.75"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -1672,7 +1672,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10.4"
-content-hash = "cbe2a93aafe47009b422e72246c3f69bc17216637bb9976ff779fdab2343ba38"
+content-hash = "bc72d3a3874411f529318ffabbd125e5e7910df548d22e311c4f43d7095fcef4"
 
 [metadata.files]
 anyascii = [
