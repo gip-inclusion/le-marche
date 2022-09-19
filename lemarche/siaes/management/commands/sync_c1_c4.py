@@ -13,7 +13,7 @@ from stdnum.fr import siret
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.constants import DEPARTMENT_TO_REGION
 from lemarche.siaes.models import Siae
-from lemarche.utils.apis import api_mailjet
+from lemarche.utils.apis import api_mailjet, api_slack
 from lemarche.utils.data import rename_dict_key
 
 
@@ -137,114 +137,119 @@ class Command(BaseCommand):
         self.stdout.write("Done ! Some stats...")
         created_count = siae_total_after - siae_total_before
         updated_count = len(c1_list) - created_count
-        self.stdout.write(f"Siae total: before {siae_total_before} / after {siae_total_after} / +{created_count}")
-        self.stdout.write(f"Siae updated: {updated_count}")
-        self.stdout.write(f"Siae active: before {siae_active_before} / after {siae_active_after}")
-        self.stdout.write(
-            f"Siae inactive: before {siae_total_before - siae_active_before} / after {siae_total_after - siae_active_after}"  # noqa
+        msg_sucess = (
+            f"Siae total: before {siae_total_before} / after {siae_total_after} / +{created_count}\n"
+            + f"Siae updated: {updated_count}\n"
+            + f"Siae active: before {siae_active_before} / after {siae_active_after}\n"
+            + f"Siae inactive: before {siae_total_before - siae_active_before} / after {siae_total_after - siae_active_after}\n"  # noqa
+            + f"Siae delisted: before {siae_delisted_before} / after {siae_delisted_after}\n"
         )
-        self.stdout.write(f"Siae delisted: before {siae_delisted_before} / after {siae_delisted_after}")
+        self.stdout.write(msg_sucess)
+        api_slack.send_message_to_channel(msg_sucess)
 
     def c1_export(self):
-        sql = """
-        SELECT
-        siae.id as id,
-        siae.siret,
-        siae.naf,
-        siae.kind,
-        siae.name,
-        siae.brand,
-        siae.phone,
-        siae.email,
-        siae.website,
-        siae.description,
-        siae.address_line_1,
-        siae.address_line_2,
-        siae.post_code,
-        siae.city,
-        siae.department,
-        siae.source,
-        ST_X(siae.coords::geometry) AS longitude,
-        ST_Y(siae.coords::geometry) AS latitude,
-        convention.is_active as convention_is_active,
-        convention.asp_id as convention_asp_id,
-        ad.admin_name as admin_name,
-        ad.admin_email as admin_email
-        FROM siaes_siae AS siae
-        LEFT OUTER JOIN siaes_siaeconvention AS convention
-            ON convention.id = siae.convention_id
-        LEFT OUTER JOIN (
+        try:
+            sql = """
             SELECT
-                m.siae_id as siae_id,
-                u.username as admin_name,
-                u.email as admin_email
-            FROM
-            siaes_siaemembership m
-            JOIN users_user u
-                ON m.user_id = u.id
-            WHERE m.is_admin = True
-        ) ad ON ad.siae_id = siae.id
-        """
-        conn = psycopg2.connect(os.environ.get("C1_DSN"))
-        c1_list_temp = list()
+            siae.id as id,
+            siae.siret,
+            siae.naf,
+            siae.kind,
+            siae.name,
+            siae.brand,
+            siae.phone,
+            siae.email,
+            siae.website,
+            siae.description,
+            siae.address_line_1,
+            siae.address_line_2,
+            siae.post_code,
+            siae.city,
+            siae.department,
+            siae.source,
+            ST_X(siae.coords::geometry) AS longitude,
+            ST_Y(siae.coords::geometry) AS latitude,
+            convention.is_active as convention_is_active,
+            convention.asp_id as convention_asp_id,
+            ad.admin_name as admin_name,
+            ad.admin_email as admin_email
+            FROM siaes_siae AS siae
+            LEFT OUTER JOIN siaes_siaeconvention AS convention
+                ON convention.id = siae.convention_id
+            LEFT OUTER JOIN (
+                SELECT
+                    m.siae_id as siae_id,
+                    u.username as admin_name,
+                    u.email as admin_email
+                FROM
+                siaes_siaemembership m
+                JOIN users_user u
+                    ON m.user_id = u.id
+                WHERE m.is_admin = True
+            ) ad ON ad.siae_id = siae.id
+            """
+            conn = psycopg2.connect(os.environ.get("C1_DSN"))
+            c1_list_temp = list()
 
-        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-            cur.execute(sql)
-            response = cur.fetchall()
-            for row in response:
-                c1_list_temp.append(dict(row))
+            with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+                cur.execute(sql)
+                response = cur.fetchall()
+                for row in response:
+                    c1_list_temp.append(dict(row))
 
-        # clean fields
-        c1_list_cleaned = list()
-        for c1_siae in c1_list_temp:
-            c1_siae_cleaned = {
-                **c1_siae,
-                "siret_is_valid": siret.is_valid(c1_siae["siret"]),
-                "presta_type": map_siae_presta_type(c1_siae["kind"]),
-                "nature": map_siae_nature(c1_siae["source"]),
-                "phone": re.sub("[^0-9]", "", c1_siae["phone"]),
-                "email": c1_siae["email"] or "",
-                "website": c1_siae["website"] or "",
-                # "address"
-                "post_code": c1_siae["post_code"],
-                "city": c1_siae["city"],
-                "department": c1_siae["department"],
-                "region": DEPARTMENT_TO_REGION.get(c1_siae["department"], ""),
-                # "coords"
-                "admin_name": c1_siae["admin_name"] or "",
-                "admin_email": c1_siae["admin_email"] or "",
-                "source": c1_siae["source"],
-                "is_active": set_is_active(c1_siae),
-                "asp_id": c1_siae["convention_asp_id"],
-                "is_delisted": set_is_delisted(c1_siae),
-                "c1_last_sync_date": timezone.now(),
-            }
+            # clean fields
+            c1_list_cleaned = list()
+            for c1_siae in c1_list_temp:
+                c1_siae_cleaned = {
+                    **c1_siae,
+                    "siret_is_valid": siret.is_valid(c1_siae["siret"]),
+                    "presta_type": map_siae_presta_type(c1_siae["kind"]),
+                    "nature": map_siae_nature(c1_siae["source"]),
+                    "phone": re.sub("[^0-9]", "", c1_siae["phone"]),
+                    "email": c1_siae["email"] or "",
+                    "website": c1_siae["website"] or "",
+                    # "address"
+                    "post_code": c1_siae["post_code"],
+                    "city": c1_siae["city"],
+                    "department": c1_siae["department"],
+                    "region": DEPARTMENT_TO_REGION.get(c1_siae["department"], ""),
+                    # "coords"
+                    "admin_name": c1_siae["admin_name"] or "",
+                    "admin_email": c1_siae["admin_email"] or "",
+                    "source": c1_siae["source"],
+                    "is_active": set_is_active(c1_siae),
+                    "asp_id": c1_siae["convention_asp_id"],
+                    "is_delisted": set_is_delisted(c1_siae),
+                    "c1_last_sync_date": timezone.now(),
+                }
 
-            # set coords from latitude & longitude
-            c1_siae_cleaned["address"] = c1_siae_cleaned["address_line_1"]
-            if c1_siae_cleaned["address_line_2"]:
-                c1_siae_cleaned["address"] += c1_siae_cleaned["address_line_2"]
-            del c1_siae_cleaned["address_line_1"]
-            del c1_siae_cleaned["address_line_2"]
+                # set coords from latitude & longitude
+                c1_siae_cleaned["address"] = c1_siae_cleaned["address_line_1"]
+                if c1_siae_cleaned["address_line_2"]:
+                    c1_siae_cleaned["address"] += c1_siae_cleaned["address_line_2"]
+                del c1_siae_cleaned["address_line_1"]
+                del c1_siae_cleaned["address_line_2"]
 
-            # set coords from latitude & longitude
-            if "latitude" in c1_siae_cleaned and "longitude" in c1_siae_cleaned:
-                if c1_siae_cleaned["latitude"] and c1_siae_cleaned["longitude"]:
-                    coords = {
-                        "type": "Point",
-                        "coordinates": [float(c1_siae["longitude"]), float(c1_siae_cleaned["latitude"])],
-                    }
-                    c1_siae_cleaned["coords"] = GEOSGeometry(f"{coords}")  # Feed `GEOSGeometry` with GeoJSON.
-                del c1_siae_cleaned["latitude"]
-                del c1_siae_cleaned["longitude"]
+                # set coords from latitude & longitude
+                if "latitude" in c1_siae_cleaned and "longitude" in c1_siae_cleaned:
+                    if c1_siae_cleaned["latitude"] and c1_siae_cleaned["longitude"]:
+                        coords = {
+                            "type": "Point",
+                            "coordinates": [float(c1_siae["longitude"]), float(c1_siae_cleaned["latitude"])],
+                        }
+                        c1_siae_cleaned["coords"] = GEOSGeometry(f"{coords}")  # Feed `GEOSGeometry` with GeoJSON.
+                    del c1_siae_cleaned["latitude"]
+                    del c1_siae_cleaned["longitude"]
 
-            # remove useless keys
-            [c1_siae_cleaned.pop(key) for key in C1_EXTRA_KEYS]
+                # remove useless keys
+                [c1_siae_cleaned.pop(key) for key in C1_EXTRA_KEYS]
 
-            c1_list_cleaned.append(c1_siae_cleaned)
+                c1_list_cleaned.append(c1_siae_cleaned)
 
-        self.stdout.write(f"Found {len(c1_list_cleaned)} Siae in C1")
-        return c1_list_cleaned
+            self.stdout.write(f"Found {len(c1_list_cleaned)} Siae in C1")
+            return c1_list_cleaned
+        except Exception as e:
+            api_slack.send_message_to_channel(f"Erreur lors de la synchronisation C1 <-> C4 : {str(e)}")
 
     def c4_update(self, c1_list, dry_run):
         """
