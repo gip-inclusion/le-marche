@@ -41,19 +41,23 @@ def send_signup_notification_email(user):
     )
 
 
-def send_new_user_password_reset_link(user):
-    email_subject = f"{EMAIL_SUBJECT_PREFIX}Finalisez votre inscription sur le marché de l'inclusion"
+def send_new_user_password_reset_link(user: User):
+    email_subject = EMAIL_SUBJECT_PREFIX + "Finalisez votre inscription sur le marché de l'inclusion"
     recipient_list = whitelist_recipient_list([user.email])
     if recipient_list:
+        recipient_email = recipient_list[0] if recipient_list else ""
+        recipient_name = user.full_name
+
         variables = {
             "USER_FIRST_NAME": user.first_name,
             "PASSWORD_RESET_LINK": generate_password_reset_link(user),
         }
 
-        api_mailjet.send_transactional_email_many_recipient_with_template(
+        api_mailjet.send_transactional_email_with_template(
             template_id=settings.MAILJET_NEW_USER_PASSWORD_RESET_ID,
             subject=email_subject,
-            recipient_email_list=recipient_list,
+            recipient_email=recipient_email,
+            recipient_name=recipient_name,
             variables=variables,
         )
 
