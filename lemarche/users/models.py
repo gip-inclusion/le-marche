@@ -134,6 +134,16 @@ class User(AbstractUser):
         (PARTNER_KIND_OTHER, "Autre"),
     )
 
+    SOURCE_SIGNUP_FORM = "SIGNUP_FORM"
+    SOURCE_TENDER_FORM = "TENDER_FORM"
+    SOURCE_DJANGO_ADMIN = "DJANGO_ADMIN"
+
+    SOURCE_CHOICES = (
+        (SOURCE_SIGNUP_FORM, "Formulaire d'inscription"),
+        (SOURCE_TENDER_FORM, "Formulaire de dépôt de besoin"),
+        (SOURCE_DJANGO_ADMIN, "Admin Django"),
+    )
+
     username = None
     email = models.EmailField(verbose_name="Adresse e-mail", unique=True)
     first_name = models.CharField(verbose_name="Prénom", max_length=150)
@@ -145,6 +155,8 @@ class User(AbstractUser):
     partner_kind = models.CharField(
         verbose_name="Type de partenaire", max_length=20, choices=PARTNER_KIND_CHOICES, blank=True
     )
+
+    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default=SOURCE_SIGNUP_FORM)
 
     api_key = models.CharField(verbose_name="Clé API", max_length=128, unique=True, blank=True, null=True)
     api_key_last_updated = models.DateTimeField(
