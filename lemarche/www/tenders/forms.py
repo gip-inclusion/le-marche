@@ -113,6 +113,10 @@ class AddTenderStepContactForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.max_deadline_date = max_deadline_date
         self.external_link = external_link
+        # required fields
+        self.fields["contact_first_name"].required = True
+        self.fields["contact_last_name"].required = True
+        self.fields["contact_email"].required = True
 
     def clean(self):
         super().clean()

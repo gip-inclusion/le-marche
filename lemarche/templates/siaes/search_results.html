@@ -177,17 +177,10 @@
                         <p>
                             Obtenez des réponses en moins de 24 heures (en moyenne).
                         </p>
-                        {% if user.is_authenticated %}
-                            <a href="{% url 'tenders:create' %}" id="siae-search-empty-demande" class="btn btn-primary btn-ico d-block d-md-inline-block mb-2">
-                                <i class="ri-mail-send-line ri-lg"></i>
-                                <span>Publier un besoin d'achat</span>
-                            </a>
-                        {% else %}
-                            <a href="#" id="siae-search-empty-demande-modal-btn" class="btn btn-primary btn-ico" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'tenders:create' %}">
-                                <i class="ri-mail-send-line ri-xl"></i>
-                                <span>Publier un besoin d'achat</span>
-                            </a>
-                        {% endif %}
+                        <a href="{% url 'tenders:create' %}" id="siae-search-empty-demande" class="btn btn-primary btn-ico d-block d-md-inline-block mb-2">
+                            <i class="ri-mail-send-line ri-lg"></i>
+                            <span>Publier un besoin d'achat</span>
+                        </a>
                     </div>
                 {% endif %}
                 </div>

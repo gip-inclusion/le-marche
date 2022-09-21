@@ -4,7 +4,6 @@ from django.utils import timezone
 
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
-from lemarche.users.models import User
 from lemarche.utils.apis import api_mailjet, api_slack
 from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX, send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_admin_url_object, get_share_url_object
@@ -77,16 +76,16 @@ def send_tender_email_to_partner(tender: Tender, partner: PartnerShareTender):
 
 def send_tenders_author_feedback_30_days(tender: Tender):
     email_subject = EMAIL_SUBJECT_PREFIX + "Concernant votre dépôt de besoin sur le marché de l'inclusion"
-    author_tender: User = tender.author
-    recipient_list = whitelist_recipient_list([author_tender.email])
+    recipient_list = whitelist_recipient_list([tender.author.email])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
-        recipient_name = author_tender.full_name
+        recipient_name = tender.author.full_name
 
         variables = {
+            "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
             "TENDER_TITLE": tender.title,
             "TENDER_VALIDATE_AT": tender.validated_at.strftime("%d %B %Y"),
-            "USER_FIRST_NAME": author_tender.full_name,
+            "TENDER_KIND": tender.get_kind_display(),
         }
 
         api_mailjet.send_transactional_email_with_template(
@@ -147,6 +146,7 @@ def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes
     recipient_list = whitelist_recipient_list([tender.author.email])
     if recipient_list:
         variables = {
+            "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
             "TENDER_TITLE": tender.title,
             "TENDER_KIND": tender.get_kind_display(),
             "TENDER_NB_MATCH": nb_matched_siaes,
