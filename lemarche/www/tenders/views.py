@@ -14,6 +14,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils.data import get_choice
+from lemarche.www.auth.tasks import send_new_user_password_reset_link
 from lemarche.www.dashboard.mixins import TenderOwnerRequiredMixin
 from lemarche.www.tenders.forms import (
     AddTenderStepConfirmationForm,
@@ -136,6 +137,8 @@ class TenderCreateMultiStepView(SessionWizardView):
                     "kind": User.KIND_BUYER,
                 },
             )
+            if created:
+                send_new_user_password_reset_link(user)
         else:
             user = self.request.user
         # when it's done we save the tender

@@ -301,6 +301,9 @@ CONTACT_EMAIL = env("CONTACT_EMAIL", default="contact@example.com")
 NOTIFY_EMAIL = env("NOTIFY_EMAIL", default="notif@example.com")
 
 # Transactional email templates
+# -- new user password reset
+MAILJET_NEW_USER_PASSWORD_RESET_ID = env.int("MAILJET_NEW_USER_PASSWORD_RESET_ID", 4216730)
+
 # -- user invitation emails
 MAILJET_SIAEUSERREQUEST_ASSIGNEE_TEMPLATE_ID = env.int("MAILJET_SIAEUSERREQUEST_ASSIGNEE_TEMPLATE_ID", 3658653)
 MAILJET_SIAEUSERREQUEST_INITIATOR_RESPONSE_POSITIVE_TEMPLATE_ID = env.int(
