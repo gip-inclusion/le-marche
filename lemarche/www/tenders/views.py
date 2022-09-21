@@ -137,7 +137,7 @@ class TenderCreateMultiStepView(SessionWizardView):
                     "kind": User.KIND_BUYER,
                 },
             )
-            if created:
+            if created and settings.BITOUBI_ENV == "prod":
                 send_new_user_password_reset_link(user)
         else:
             user = self.request.user
