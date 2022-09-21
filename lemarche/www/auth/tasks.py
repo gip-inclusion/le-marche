@@ -1,10 +1,23 @@
 from django.conf import settings
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.template.loader import render_to_string
+from django.urls import reverse
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 
 from lemarche.users.models import User
 from lemarche.utils.apis import api_mailjet
-from lemarche.utils.emails import send_mail_async
+from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX, send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url
+
+
+def generate_password_reset_link(user):
+    domain = get_domain_url()
+    base64_encoded_id = urlsafe_base64_encode(force_bytes(user.pk))
+    token = PasswordResetTokenGenerator().make_token(user)
+    reset_url_args = {"uidb64": base64_encoded_id, "token": token}
+    reset_path = reverse("auth:password_reset_confirm", kwargs=reset_url_args)
+    return f"https://{domain}{reset_path}"
 
 
 def send_signup_notification_email(user):
@@ -26,6 +39,23 @@ def send_signup_notification_email(user):
         email_body=email_body,
         recipient_list=[settings.NOTIFY_EMAIL],
     )
+
+
+def send_new_user_password_reset_link(user):
+    email_subject = f"{EMAIL_SUBJECT_PREFIX}Finalisez votre inscription sur le marché de l'inclusion"
+    recipient_list = whitelist_recipient_list([user.email])
+    if recipient_list:
+        variables = {
+            "USER_FIRST_NAME": user.first_name,
+            "PASSWORD_RESET_LINK": generate_password_reset_link(user),
+        }
+
+        api_mailjet.send_transactional_email_many_recipient_with_template(
+            template_id=settings.MAILJET_NEW_USER_PASSWORD_RESET_ID,
+            subject=email_subject,
+            recipient_email_list=recipient_list,
+            variables=variables,
+        )
 
 
 def get_mailjet_cl_on_signup(user: User):

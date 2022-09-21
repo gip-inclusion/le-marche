@@ -22,24 +22,21 @@ class TenderCreateViewTest(TestCase):
         cls.user_siae = UserFactory(kind=User.KIND_SIAE)
         cls.user_buyer = UserFactory(kind=User.KIND_BUYER)
 
-    def test_anonymous_user_cannot_create_tender(self):
+    def test_any_user_can_create_tender(self):
+        # anonymous
         url = reverse("tenders:create")
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith("/accounts/login/"))
-
-    def test_only_non_siae_users_can_create_tender(self):
-        # allowed
+        self.assertEqual(response.status_code, 200)
+        # buyer
         self.client.login(email=self.user_buyer.email, password=DEFAULT_PASSWORD)
         url = reverse("tenders:create")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        # not allowed
+        # siae
         self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
         url = reverse("tenders:create")
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/besoins/")
+        self.assertEqual(response.status_code, 200)
 
 
 class TenderMatchingTest(TestCase):
