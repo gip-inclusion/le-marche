@@ -134,7 +134,8 @@ class TenderCreateMultiStepView(SessionWizardView):
                     "first_name": cleaned_data["contact_first_name"],
                     "last_name": cleaned_data["contact_last_name"],
                     "phone": cleaned_data["contact_phone"],
-                    "kind": User.KIND_BUYER,
+                    "kind": User.KIND_BUYER,  # not necessarily true, could be a PARTNER
+                    "source": User.SOURCE_TENDER_FORM,
                 },
             )
             if created and settings.BITOUBI_ENV == "prod":
