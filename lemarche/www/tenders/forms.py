@@ -88,12 +88,16 @@ class AddTenderStepContactForm(forms.ModelForm):
     # fields from previous step
     max_deadline_date = None
     external_link = None
+    user_is_anonymous = None
+    user_does_not_have_company_name = None
 
     response_kind = forms.MultipleChoiceField(
         label="Comment répondre",
         choices=Tender._meta.get_field("response_kind").base_field.choices,
         widget=forms.CheckboxSelectMultiple,
     )
+
+    contact_company_name = forms.CharField(label="Votre entreprise", widget=forms.HiddenInput(), required=False)
 
     class Meta:
         model = Tender
@@ -102,6 +106,7 @@ class AddTenderStepContactForm(forms.ModelForm):
             "contact_last_name",
             "contact_email",
             "contact_phone",
+            "contact_company_name",
             "response_kind",
             "deadline_date",
         ]
@@ -109,14 +114,28 @@ class AddTenderStepContactForm(forms.ModelForm):
             "deadline_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
         }
 
-    def __init__(self, max_deadline_date, external_link, *args, **kwargs):
+    def __init__(
+        self,
+        max_deadline_date,
+        external_link,
+        user_is_anonymous=False,
+        user_does_not_have_company_name=False,
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self.max_deadline_date = max_deadline_date
         self.external_link = external_link
+        self.user_is_anonymous = user_is_anonymous
+        self.user_does_not_have_company_name = user_does_not_have_company_name
         # required fields
         self.fields["contact_first_name"].required = True
         self.fields["contact_last_name"].required = True
-        self.fields["contact_email"].required = True
+        if self.user_is_anonymous:
+            self.fields["contact_email"].required = True
+        if user_does_not_have_company_name:
+            self.fields["contact_company_name"].widget = forms.TextInput()
+            self.fields["contact_company_name"].required = True
 
     def clean(self):
         super().clean()

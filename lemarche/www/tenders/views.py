@@ -34,6 +34,7 @@ TITLE_KIND_SOURCING_SIAE = "Consultation en vue d’un achat"
 
 
 def create_tender_from_dict(tender_dict: dict):
+    tender_dict.pop("contact_company_name")
     perimeters = tender_dict.pop("perimeters", [])
     sectors = tender_dict.pop("sectors", [])
     tender = Tender(**tender_dict)
@@ -122,6 +123,12 @@ class TenderCreateMultiStepView(SessionWizardView):
                 "start_working_date"
             )
             kwargs["external_link"] = self.get_cleaned_data_for_step(self.STEP_DESCRIPTION).get("external_link")
+            if not self.request.user.is_authenticated:
+                kwargs["user_is_anonymous"] = True
+            if not self.request.user.is_authenticated or (
+                self.request.user.is_authenticated and not self.request.user.company_name
+            ):
+                kwargs["user_does_not_have_company_name"] = True
         return kwargs
 
     def done(self, form_list, form_dict, **kwargs):
@@ -134,6 +141,7 @@ class TenderCreateMultiStepView(SessionWizardView):
                     "first_name": cleaned_data["contact_first_name"],
                     "last_name": cleaned_data["contact_last_name"],
                     "phone": cleaned_data["contact_phone"],
+                    "company_name": cleaned_data["contact_company_name"],
                     "kind": User.KIND_BUYER,  # not necessarily true, could be a PARTNER
                     "source": User.SOURCE_TENDER_FORM,
                 },
