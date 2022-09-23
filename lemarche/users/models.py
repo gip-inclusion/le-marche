@@ -19,6 +19,10 @@ class UserQueryset(models.QuerySet):
         """Only return users who are linked to Siae(s)."""
         return self.filter(siaes__isnull=False).distinct()
 
+    def has_tender(self):
+        """Only return users who have Tender(s)."""
+        return self.filter(tenders__isnull=False).distinct()
+
     def has_favorite_list(self):
         """Only return users who have FavoriteList(s)."""
         return self.filter(favorite_lists__isnull=False).distinct()
@@ -67,6 +71,10 @@ class UserManager(BaseUserManager):
     def has_siae(self):
         """Only return users who are linked to Siae(s)."""
         return self.get_queryset().has_siae()
+
+    def has_tender(self):
+        """Only return users who have Tender(s)."""
+        return self.get_queryset().has_tender()
 
     def has_favorite_list(self):
         """Only return users who have FavoriteList(s)."""
