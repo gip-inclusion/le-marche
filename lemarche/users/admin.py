@@ -29,6 +29,24 @@ class HasSiaeFilter(admin.SimpleListFilter):
         return queryset
 
 
+class HasTenderFilter(admin.SimpleListFilter):
+    """Custom admin filter to target users who have tenders."""
+
+    title = "Besoin déposé ?"
+    parameter_name = "has_tender"
+
+    def lookups(self, request, model_admin):
+        return (("Yes", "Oui"), ("No", "Non"))
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "Yes":
+            return queryset.has_tender()
+        elif value == "No":
+            return queryset.filter(tenders__isnull=True)
+        return queryset
+
+
 class HasFavoriteListFilter(admin.SimpleListFilter):
     """Custom admin filter to target users who have favorite lists."""
 
@@ -85,10 +103,20 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     form = UserChangeForm
     model = User
 
-    list_display = ["id", "first_name", "last_name", "kind", "siae_count_with_link", "last_login", "created_at"]
+    list_display = [
+        "id",
+        "first_name",
+        "last_name",
+        "kind",
+        "siae_count_with_link",
+        "tender_count_with_link",
+        "last_login",
+        "created_at",
+    ]
     list_filter = [
         "kind",
         HasSiaeFilter,
+        HasTenderFilter,
         "partner_kind",
         HasFavoriteListFilter,
         HasApiKeyFilter,
@@ -106,7 +134,8 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         + [field.name for field in User._meta.fields if field.name.endswith("_last_seen_date")]
         + [
             "siae_count_with_link",
-            "user_favorite_list",
+            "tender_count_with_link",
+            "favorite_list_count_with_link",
             "last_login",
             "image_url",
             "image_url_display",
@@ -141,9 +170,15 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         ),
         SiaeUserInline,
         (
+            "Besoins déposés",
+            {
+                "fields": ("tender_count_with_link",),
+            },
+        ),
+        (
             "Listes d'achats favoris",
             {
-                "fields": ("user_favorite_list",),
+                "fields": ("favorite_list_count_with_link",),
             },
         ),
         (
@@ -217,7 +252,11 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.annotate(siae_count=Count("siaes", distinct=True))
+        qs = qs.annotate(
+            siae_count=Count("siaes", distinct=True),
+            tender_count=Count("tenders", distinct=True),
+            favorite_list_count=Count("favorite_lists", distinct=True),
+        )
         return qs
 
     def siae_count_with_link(self, user):
@@ -229,21 +268,23 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     siae_count_with_link.short_description = "Nombre de structures"
     siae_count_with_link.admin_order_field = "siae_count"
 
-    def user_favorite_list(self, user):
-        favorite_lists = user.favorite_lists.all()
-        if not favorite_lists:
-            return "Aucune"
-        else:
-            html = ""
-            for favorite_list in favorite_lists:
-                html += format_html(
-                    '<a href="{obj_url}">{obj_name}</a></br>',
-                    obj_url=reverse("admin:favorites_favoritelist_change", args=[favorite_list.id]),
-                    obj_name=favorite_list,
-                )
-            return format_html(html)
+    def tender_count_with_link(self, user):
+        if user.tender_count:
+            url = reverse("admin:tenders_tender_changelist") + f"?users__in={user.id}"
+            return format_html(f'<a href="{url}">{user.tender_count}</a>')
+        return "-"
 
-    user_favorite_list.short_description = "Listes d'achats"
+    tender_count_with_link.short_description = "Nombre de besoins"
+    tender_count_with_link.admin_order_field = "tender_count"
+
+    def favorite_list_count_with_link(self, user):
+        if user.favorite_list_count:
+            url = reverse("admin:favorites_favoritelist_changelist") + f"?users__in={user.id}"
+            return format_html(f'<a href="{url}">{user.favorite_list_count}</a>')
+        return "-"
+
+    favorite_list_count_with_link.short_description = "Nombre de listes d'achats"
+    favorite_list_count_with_link.admin_order_field = "favorite_list_count"
 
     def image_url_display(self, user):
         if user.image_url:
