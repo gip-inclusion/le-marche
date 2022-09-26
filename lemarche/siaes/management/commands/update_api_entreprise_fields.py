@@ -1,9 +1,9 @@
 import time
 
-from django.core.management.base import BaseCommand
-
 from lemarche.siaes.models import Siae
+from lemarche.utils.apis import api_slack
 from lemarche.utils.apis.api_entreprise import siae_update_etablissement, siae_update_exercice
+from lemarche.utils.commands import BaseCommand
 
 
 class Command(BaseCommand):
@@ -28,8 +28,8 @@ class Command(BaseCommand):
         parser.add_argument("--limit", type=int, default=None, help="Limiter le nombre de structures à processer")
 
     def handle(self, *args, **options):
-        self.stdout.write("-" * 80)
-        self.stdout.write("Populating API Entreprise fields...")
+        self.stdout_info("-" * 80)
+        self.stdout_info("Populating API Entreprise fields...")
 
         if options["siret"]:
             siae_list = list(Siae.objects.filter(siret=options["siret"]))
@@ -46,25 +46,32 @@ class Command(BaseCommand):
         progress = 0
         success_count = {"etablissement": 0, "exercice": 0}
 
-        self.stdout.write(f"Found {len(siae_list)} Siae")
+        self.stdout_info(f"Found {len(siae_list)} Siae")
 
-        for siae in siae_list:
-            progress += 1
-            if (progress % 50) == 0:
-                self.stdout.write(f"{progress}...")
-            # self.stdout.write("-" * 80)
-            # self.stdout.write(f"{siae.id} / {siae.name} / {siae.siret}")
-            if options["scope"] in ("all", "etablissement"):
-                result_etablissement = siae_update_etablissement(siae)
-                success_count["etablissement"] += result_etablissement
-            if options["scope"] in ("all", "exercice"):
-                result_exercice = siae_update_exercice(siae)
-                success_count["exercice"] += result_exercice
-            # small delay to avoid going above the API limitation
-            # "max. 250 requêtes/min/jeton cumulées sur tous les endpoints"
-            time.sleep(0.5)
-
-        self.stdout.write("-" * 80)
-        self.stdout.write(f"Done! Processed {len(siae_list)} siae")
-        self.stdout.write(f"/etablissements success count: {success_count['etablissement']}/{len(siae_list)}")
-        self.stdout.write(f"/exercices success count: {success_count['exercice']}/{len(siae_list)}")
+        try:
+            for siae in siae_list:
+                progress += 1
+                if (progress % 50) == 0:
+                    self.stdout_info(f"{progress}...")
+                # self.stdout_info("-" * 80)
+                # self.stdout_info(f"{siae.id} / {siae.name} / {siae.siret}")
+                if options["scope"] in ("all", "etablissement"):
+                    result_etablissement = siae_update_etablissement(siae)
+                    success_count["etablissement"] += result_etablissement
+                if options["scope"] in ("all", "exercice"):
+                    result_exercice = siae_update_exercice(siae)
+                    success_count["exercice"] += result_exercice
+                # small delay to avoid going above the API limitation
+                # "max. 250 requêtes/min/jeton cumulées sur tous les endpoints"
+                time.sleep(0.5)
+            msg_sucess = (
+                "-" * 80
+                + f"\nDone! Processed {len(siae_list)} siae\n"
+                + f"etablissements success count: {success_count['etablissement']}/{len(siae_list)}\n"
+                + f"exercices success count: {success_count['exercice']}/{len(siae_list)}"
+            )
+            self.stdout_info(msg_sucess)
+            api_slack.send_message_to_channel(msg_sucess)
+        except Exception as e:
+            self.stdout_error(str(e))
+            api_slack.send_message_to_channel("Erreur lors de la synchronisation API entreprises")

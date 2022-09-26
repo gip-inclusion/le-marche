@@ -95,7 +95,8 @@ def etablissement_get_or_error(siret, reason="Inscription au marché de l'inclus
 
 def siae_update_etablissement(siae):
     etablissement, error = etablissement_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)
-
+    if error:
+        raise Exception(error)
     update_data = dict()
 
     if etablissement:

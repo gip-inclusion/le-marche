@@ -6,14 +6,15 @@ import psycopg2
 import psycopg2.extras
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import CommandError
 from django.utils import timezone
 from stdnum.fr import siret
 
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.constants import DEPARTMENT_TO_REGION
 from lemarche.siaes.models import Siae
-from lemarche.utils.apis import api_mailjet
+from lemarche.utils.apis import api_mailjet, api_slack
+from lemarche.utils.commands import BaseCommand
 from lemarche.utils.data import rename_dict_key
 
 
@@ -43,6 +44,46 @@ UPDATE_FIELDS = [
 ]
 
 C1_EXTRA_KEYS = ["convention_is_active", "convention_asp_id"]
+
+REQUEST_SQL = """
+            SELECT
+            siae.id as id,
+            siae.siret,
+            siae.naf,
+            siae.kind,
+            siae.name,
+            siae.brand,
+            siae.phone,
+            siae.email,
+            siae.website,
+            siae.description,
+            siae.address_line_1,
+            siae.address_line_2,
+            siae.post_code,
+            siae.city,
+            siae.department,
+            siae.source,
+            ST_X(siae.coords::geometry) AS longitude,
+            ST_Y(siae.coords::geometry) AS latitude,
+            convention.is_active as convention_is_active,
+            convention.asp_id as convention_asp_id,
+            ad.admin_name as admin_name,
+            ad.admin_email as admin_email
+            FROM siaes_siae AS siae
+            LEFT OUTER JOIN siaes_siaeconvention AS convention
+                ON convention.id = siae.convention_id
+            LEFT OUTER JOIN (
+                SELECT
+                    m.siae_id as siae_id,
+                    u.username as admin_name,
+                    u.email as admin_email
+                FROM
+                siaes_siaemembership m
+                JOIN users_user u
+                    ON m.user_id = u.id
+                WHERE m.is_admin = True
+            ) ad ON ad.siae_id = siae.id
+            """
 
 
 def map_siae_presta_type(siae_kind):
@@ -111,15 +152,15 @@ class Command(BaseCommand):
         if not os.environ.get("C1_DSN"):
             raise CommandError("Missing C1_DSN in env")
 
-        self.stdout.write("-" * 80)
-        self.stdout.write("Sync script between C1 & C4...")
+        self.stdout_info("-" * 80)
+        self.stdout_info("Sync script between C1 & C4...")
 
-        self.stdout.write("-" * 80)
-        self.stdout.write("Step 1: fetching C1 data")
+        self.stdout_info("-" * 80)
+        self.stdout_info("Step 1: fetching C1 data")
         c1_list = self.c1_export()
 
-        self.stdout.write("-" * 80)
-        self.stdout.write("Step 2: update C4 data")
+        self.stdout_info("-" * 80)
+        self.stdout_info("Step 2: update C4 data")
         # count before
         siae_total_before = Siae.objects.all().count()
         siae_active_before = Siae.objects.filter(is_active=True).count()
@@ -133,118 +174,96 @@ class Command(BaseCommand):
         siae_active_after = Siae.objects.filter(is_active=True).count()
         siae_delisted_after = Siae.objects.filter(is_delisted=True).count()
 
-        self.stdout.write("-" * 80)
-        self.stdout.write("Done ! Some stats...")
+        self.stdout_info("Done ! Some stats...")
         created_count = siae_total_after - siae_total_before
         updated_count = len(c1_list) - created_count
-        self.stdout.write(f"Siae total: before {siae_total_before} / after {siae_total_after} / +{created_count}")
-        self.stdout.write(f"Siae updated: {updated_count}")
-        self.stdout.write(f"Siae active: before {siae_active_before} / after {siae_active_after}")
-        self.stdout.write(
-            f"Siae inactive: before {siae_total_before - siae_active_before} / after {siae_total_after - siae_active_after}"  # noqa
-        )
-        self.stdout.write(f"Siae delisted: before {siae_delisted_before} / after {siae_delisted_after}")
+        msg_sucess = [
+            "-" * 80,
+            f"Siae total: before {siae_total_before} / after {siae_total_after} / +{created_count}\n",
+            f"Siae updated: {updated_count}\n",
+            f"Siae active: before {siae_active_before} / after {siae_active_after}\n",
+            f"Siae inactive: before {siae_total_before - siae_active_before} / after {siae_total_after - siae_active_after}\n",  # noqa
+            f"Siae delisted: before {siae_delisted_before} / after {siae_delisted_after}\n",
+        ]
+        self.stdout_messages_sucess(msg_sucess)
+        api_slack.send_message_to_channel("\n".join(msg_sucess))
 
     def c1_export(self):
-        sql = """
-        SELECT
-        siae.id as id,
-        siae.siret,
-        siae.naf,
-        siae.kind,
-        siae.name,
-        siae.brand,
-        siae.phone,
-        siae.email,
-        siae.website,
-        siae.description,
-        siae.address_line_1,
-        siae.address_line_2,
-        siae.post_code,
-        siae.city,
-        siae.department,
-        siae.source,
-        ST_X(siae.coords::geometry) AS longitude,
-        ST_Y(siae.coords::geometry) AS latitude,
-        convention.is_active as convention_is_active,
-        convention.asp_id as convention_asp_id,
-        ad.admin_name as admin_name,
-        ad.admin_email as admin_email
-        FROM siaes_siae AS siae
-        LEFT OUTER JOIN siaes_siaeconvention AS convention
-            ON convention.id = siae.convention_id
-        LEFT OUTER JOIN (
-            SELECT
-                m.siae_id as siae_id,
-                u.username as admin_name,
-                u.email as admin_email
-            FROM
-            siaes_siaemembership m
-            JOIN users_user u
-                ON m.user_id = u.id
-            WHERE m.is_admin = True
-        ) ad ON ad.siae_id = siae.id
-        """
-        conn = psycopg2.connect(os.environ.get("C1_DSN"))
-        c1_list_temp = list()
+        try:
+            conn = self.get_c1_connection()
+            c1_list_temp = list()
 
-        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-            cur.execute(sql)
-            response = cur.fetchall()
-            for row in response:
-                c1_list_temp.append(dict(row))
+            with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+                cur.execute(REQUEST_SQL)
+                response = cur.fetchall()
+                for row in response:
+                    c1_list_temp.append(dict(row))
 
-        # clean fields
-        c1_list_cleaned = list()
-        for c1_siae in c1_list_temp:
-            c1_siae_cleaned = {
-                **c1_siae,
-                "siret_is_valid": siret.is_valid(c1_siae["siret"]),
-                "presta_type": map_siae_presta_type(c1_siae["kind"]),
-                "nature": map_siae_nature(c1_siae["source"]),
-                "phone": re.sub("[^0-9]", "", c1_siae["phone"]),
-                "email": c1_siae["email"] or "",
-                "website": c1_siae["website"] or "",
-                # "address"
-                "post_code": c1_siae["post_code"],
-                "city": c1_siae["city"],
-                "department": c1_siae["department"],
-                "region": DEPARTMENT_TO_REGION.get(c1_siae["department"], ""),
-                # "coords"
-                "admin_name": c1_siae["admin_name"] or "",
-                "admin_email": c1_siae["admin_email"] or "",
-                "source": c1_siae["source"],
-                "is_active": set_is_active(c1_siae),
-                "asp_id": c1_siae["convention_asp_id"],
-                "is_delisted": set_is_delisted(c1_siae),
-                "c1_last_sync_date": timezone.now(),
-            }
+            # clean fields
+            c1_list_cleaned = list()
+            for c1_siae in c1_list_temp:
+                c1_siae_cleaned = {
+                    **c1_siae,
+                    "siret_is_valid": siret.is_valid(c1_siae["siret"]),
+                    "presta_type": map_siae_presta_type(c1_siae["kind"]),
+                    "nature": map_siae_nature(c1_siae["source"]),
+                    "phone": re.sub("[^0-9]", "", c1_siae["phone"]),
+                    "email": c1_siae["email"] or "",
+                    "website": c1_siae["website"] or "",
+                    # "address"
+                    "post_code": c1_siae["post_code"],
+                    "city": c1_siae["city"],
+                    "department": c1_siae["department"],
+                    "region": DEPARTMENT_TO_REGION.get(c1_siae["department"], ""),
+                    # "coords"
+                    "admin_name": c1_siae["admin_name"] or "",
+                    "admin_email": c1_siae["admin_email"] or "",
+                    "source": c1_siae["source"],
+                    "is_active": set_is_active(c1_siae),
+                    "asp_id": c1_siae["convention_asp_id"],
+                    "is_delisted": set_is_delisted(c1_siae),
+                    "c1_last_sync_date": timezone.now(),
+                }
 
-            # set coords from latitude & longitude
-            c1_siae_cleaned["address"] = c1_siae_cleaned["address_line_1"]
-            if c1_siae_cleaned["address_line_2"]:
-                c1_siae_cleaned["address"] += c1_siae_cleaned["address_line_2"]
-            del c1_siae_cleaned["address_line_1"]
-            del c1_siae_cleaned["address_line_2"]
+                # set coords from latitude & longitude
+                c1_siae_cleaned["address"] = c1_siae_cleaned["address_line_1"]
+                if c1_siae_cleaned["address_line_2"]:
+                    c1_siae_cleaned["address"] += c1_siae_cleaned["address_line_2"]
+                del c1_siae_cleaned["address_line_1"]
+                del c1_siae_cleaned["address_line_2"]
 
-            # set coords from latitude & longitude
-            if "latitude" in c1_siae_cleaned and "longitude" in c1_siae_cleaned:
-                if c1_siae_cleaned["latitude"] and c1_siae_cleaned["longitude"]:
-                    coords = {
-                        "type": "Point",
-                        "coordinates": [float(c1_siae["longitude"]), float(c1_siae_cleaned["latitude"])],
-                    }
-                    c1_siae_cleaned["coords"] = GEOSGeometry(f"{coords}")  # Feed `GEOSGeometry` with GeoJSON.
-                del c1_siae_cleaned["latitude"]
-                del c1_siae_cleaned["longitude"]
+                # set coords from latitude & longitude
+                if "latitude" in c1_siae_cleaned and "longitude" in c1_siae_cleaned:
+                    if c1_siae_cleaned["latitude"] and c1_siae_cleaned["longitude"]:
+                        coords = {
+                            "type": "Point",
+                            "coordinates": [float(c1_siae["longitude"]), float(c1_siae_cleaned["latitude"])],
+                        }
+                        c1_siae_cleaned["coords"] = GEOSGeometry(f"{coords}")  # Feed `GEOSGeometry` with GeoJSON.
+                    del c1_siae_cleaned["latitude"]
+                    del c1_siae_cleaned["longitude"]
 
-            # remove useless keys
-            [c1_siae_cleaned.pop(key) for key in C1_EXTRA_KEYS]
+                # remove useless keys
+                [c1_siae_cleaned.pop(key) for key in C1_EXTRA_KEYS]
 
-            c1_list_cleaned.append(c1_siae_cleaned)
+                c1_list_cleaned.append(c1_siae_cleaned)
 
-        self.stdout.write(f"Found {len(c1_list_cleaned)} Siae in C1")
-        return c1_list_cleaned
+            self.stdout_info(f"Found {len(c1_list_cleaned)} Siae in C1")
+            return c1_list_cleaned
+        except psycopg2.OperationalError as e:
+            raise psycopg2.OperationalError(e)
+        except Exception as e:
+            api_slack.send_message_to_channel("Erreur lors de la synchronisation C1 <-> C4")
+            self.stdout_error(e)
+            raise Exception(e)
+
+    def get_c1_connection(self):
+        try:
+            return psycopg2.connect(os.environ.get("C1_DSN"))
+        except psycopg2.OperationalError as e:
+            self.stdout_error(e)
+            api_slack.send_message_to_channel("Erreur de connexion à la db du C1 lors de la synchronisation C1 <-> C4")
+            raise psycopg2.OperationalError(e)
 
     def c4_update(self, c1_list, dry_run):
         """
@@ -254,7 +273,7 @@ class Command(BaseCommand):
         for c1_siae in c1_list:
             progress += 1
             if (progress % 1000) == 0:
-                self.stdout.write(f"{progress}...")
+                self.stdout_info(f"{progress}...")
             # if force_siret and c1['siret'] != force_siret:
             #     continue
             try:
@@ -269,7 +288,7 @@ class Command(BaseCommand):
         """
         Here we create a new Siae with C1 data
         """
-        self.stdout.write("Creating Siae...")
+        self.stdout_info("Creating Siae...")
 
         # clean fields
         rename_dict_key(c1_siae, "id", "c1_id")
@@ -289,7 +308,7 @@ class Command(BaseCommand):
         if not dry_run:
             siae = Siae.objects.create(**c1_siae)
             self.add_siae_to_contact_list(siae)
-            self.stdout.write(f"New Siae created / {siae.id} / {siae.name} / {siae.siret}")
+            self.stdout_info(f"New Siae created / {siae.id} / {siae.name} / {siae.siret}")
 
     def add_siae_to_contact_list(self, siae: Siae):
         if siae.kind != "OPCS" and siae.is_active:
@@ -307,7 +326,7 @@ class Command(BaseCommand):
         """
         Here we update an existing Siae with a subset of C1 data
         """
-        # self.stdout.write("Updating Siae...")
+        # self.stdout_info("Updating Siae...")
 
         if dry_run:
             return
@@ -323,7 +342,7 @@ class Command(BaseCommand):
 
         if not dry_run:
             Siae.objects.filter(c1_id=c4_siae.c1_id).update(**c1_siae_filtered)  # avoid updated_at change
-            # self.stdout.write(f"Siae updated / {c4_siae.id} / {c4_siae.siret}")
+            # self.stdout_info(f"Siae updated / {c4_siae.id} / {c4_siae.siret}")
 
     def c4_delist_old_siae(self, dry_run):
         """

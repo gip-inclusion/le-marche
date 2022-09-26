@@ -4,11 +4,13 @@ from datetime import datetime, timedelta
 import psycopg2
 import psycopg2.extras
 from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import CommandError
 from django.db.models import Q
 from django.utils import timezone
 
 from lemarche.siaes.models import Siae
+from lemarche.utils.apis import api_slack
+from lemarche.utils.commands import BaseCommand
 
 
 UPDATE_FIELDS = [
@@ -39,39 +41,51 @@ class Command(BaseCommand):
 
     def handle(self, dry_run=False, **options):
         if not os.environ.get("C2_DSN"):
+            api_slack.send_message_to_channel(
+                "Erreur de synchro C2 <-> C4, il manque la variable d'environnement C2_DSN"
+            )
             raise CommandError("Missing C2_DSN in env")
 
-        self.stdout.write("-" * 80)
-        self.stdout.write("Sync script between C2 & C4...")
+        try:
+            self.stdout_info("-" * 80)
+            self.stdout_info("Sync script between C2 & C4...")
 
-        self.stdout.write("-" * 80)
-        self.stdout.write("Step 1: fetching C2 ETP data")
-        c2_etp_list = self.c2_etp_export()
+            self.stdout_info("-" * 80)
+            self.stdout_info("Step 1: fetching C2 ETP data")
+            c2_etp_list = self.c2_etp_export()
 
-        self.stdout.write("-" * 80)
-        self.stdout.write("Step 2: update C4 ETP data")
-        # count before
-        siae_total = Siae.objects.all().count()
-        siae_etp_count_before = Siae.objects.filter(c2_etp_count__isnull=False).count()
+            self.stdout_info("-" * 80)
+            self.stdout_info("Step 2: update C4 ETP data")
+            # count before
+            siae_total = Siae.objects.all().count()
+            siae_etp_count_before = Siae.objects.filter(c2_etp_count__isnull=False).count()
 
-        self.c4_etp_update(c2_etp_list, dry_run)
+            self.c4_etp_update(c2_etp_list, dry_run)
 
-        # count after
-        siae_etp_count_after = Siae.objects.filter(c2_etp_count__isnull=False).count()
-        yesterday = datetime.now() - timedelta(days=1)
-        siae_etp_updated = (
-            Siae.objects.filter(c2_etp_count__isnull=False)
-            .filter(c2_etp_count_last_sync_date__gte=timezone.make_aware(yesterday))
-            .count()
-        )
+            # count after
+            siae_etp_count_after = Siae.objects.filter(c2_etp_count__isnull=False).count()
+            yesterday = datetime.now() - timedelta(days=1)
+            siae_etp_updated = (
+                Siae.objects.filter(c2_etp_count__isnull=False)
+                .filter(c2_etp_count_last_sync_date__gte=timezone.make_aware(yesterday))
+                .count()
+            )
 
-        self.stdout.write("-" * 80)
-        self.stdout.write("Done ! Some stats...")
-        siae_etp_added_count = siae_etp_count_after - siae_etp_count_before
-        siae_etp_updated_count = siae_etp_updated - siae_etp_added_count
-        self.stdout.write(f"Siae total: {siae_total}")
-        self.stdout.write(f"ETP count added: {siae_etp_added_count}")
-        self.stdout.write(f"ETP count updated: {siae_etp_updated_count}")
+            self.stdout_info("-" * 80)
+            self.stdout_info("Done ! Some stats...")
+            siae_etp_added_count = siae_etp_count_after - siae_etp_count_before
+            siae_etp_updated_count = siae_etp_updated - siae_etp_added_count
+            msg_success = [
+                f"Siae total: {siae_total}",
+                f"ETP count added: {siae_etp_added_count}",
+                f"ETP count updated: {siae_etp_updated_count}",
+            ]
+            self.stdout_messages_sucess(msg_success)
+            api_slack.send_message_to_channel("\n".join(msg_success))
+        except Exception as e:
+            self.stdout_error(str(e))
+            api_slack.send_message_to_channel("Erreur lors de la synchronisation C2 <-> C4")
+            raise Exception(e)
 
     def c2_etp_export(self):
         """
@@ -98,7 +112,7 @@ class Command(BaseCommand):
         # clean fields
         # needed?
 
-        self.stdout.write(f"Found {len(c2_etp_list_temp)} Unique id_asp / date_saisie")
+        self.stdout_info(f"Found {len(c2_etp_list_temp)} Unique id_asp / date_saisie")
         return c2_etp_list_temp
 
     def c4_etp_update(self, c2_etp_list, dry_run):
@@ -118,7 +132,7 @@ class Command(BaseCommand):
         for c2_siae in c2_etp_list:
             progress += 1
             if (progress % 1000) == 0:
-                self.stdout.write(f"{progress}...")
+                self.stdout_info(f"{progress}...")
             if not dry_run:
                 if c2_siae["id_structure_asp"]:
                     siaes_queryset.filter(asp_id=c2_siae["id_structure_asp"]).update(
