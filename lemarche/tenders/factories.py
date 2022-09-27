@@ -5,8 +5,6 @@ import factory.fuzzy
 from django.utils import timezone
 from factory.django import DjangoModelFactory
 
-from lemarche.perimeters.factories import PerimeterFactory
-from lemarche.sectors.factories import SectorFactory
 from lemarche.tenders.models import PartnerShareTender, Tender
 from lemarche.users.factories import UserFactory
 
@@ -32,21 +30,15 @@ class TenderFactory(DjangoModelFactory):
 
     @factory.post_generation
     def perimeters(self, create, extracted, **kwargs):
-        if not create or not extracted:
-            self.perimeters.add(*[PerimeterFactory() for i in range(random.randint(1, 9))])
-            return
-
-        # Add the iterable of groups using bulk addition
-        self.perimeters.add(*extracted)
+        if extracted:
+            # Add the iterable of groups using bulk addition
+            self.perimeters.add(*extracted)
 
     @factory.post_generation
     def sectors(self, create, extracted, **kwargs):
-        if not create or not extracted:
-            self.sectors.add(*[SectorFactory() for i in range(random.randint(1, 9))])
-            return
-
-        # Add the iterable of groups using bulk addition
-        self.sectors.add(*extracted)
+        if extracted:
+            # Add the iterable of groups using bulk addition
+            self.sectors.add(*extracted)
 
     @factory.post_generation
     def siaes(self, create, extracted, **kwargs):
@@ -67,9 +59,6 @@ class PartnerShareTenderFactory(DjangoModelFactory):
 
     @factory.post_generation
     def perimeters(self, create, extracted, **kwargs):
-        if not create:
-            self.perimeters.add(*[PerimeterFactory() for i in range(random.randint(1, 9))])
-            return
-
-        # Add the iterable of groups using bulk addition
-        self.perimeters.add(*extracted)
+        if extracted:
+            # Add the iterable of groups using bulk addition
+            self.perimeters.add(*extracted)
