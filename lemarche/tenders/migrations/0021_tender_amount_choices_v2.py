@@ -3,6 +3,63 @@
 from django.db import migrations, models
 
 
+OLD_AMOUNT_RANGE_0 = "<25K"
+OLD_AMOUNT_RANGE_1 = "<100K"
+OLD_AMOUNT_RANGE_2 = "<1M"
+OLD_AMOUNT_RANGE_3 = "<5M"
+OLD_AMOUNT_RANGE_4 = ">5M"
+
+AMOUNT_RANGE_15_20 = "15-20K"
+AMOUNT_RANGE_50_100 = "50-100K"
+AMOUNT_RANGE_250_500 = "250-500K"
+AMOUNT_RANGE_1000_MORE = ">1M"
+
+
+def mapping(old_amount):
+    new_amount = old_amount
+    if old_amount == OLD_AMOUNT_RANGE_0:
+        new_amount = AMOUNT_RANGE_15_20
+    elif old_amount == OLD_AMOUNT_RANGE_1:
+        new_amount = AMOUNT_RANGE_50_100
+    elif old_amount == OLD_AMOUNT_RANGE_2:
+        new_amount = AMOUNT_RANGE_250_500
+    elif old_amount == OLD_AMOUNT_RANGE_3:
+        new_amount = AMOUNT_RANGE_1000_MORE
+    elif old_amount == OLD_AMOUNT_RANGE_4:
+        new_amount = AMOUNT_RANGE_1000_MORE
+    # reverse cases
+    elif old_amount == AMOUNT_RANGE_15_20:
+        new_amount = OLD_AMOUNT_RANGE_0
+    elif old_amount == AMOUNT_RANGE_50_100:
+        new_amount = OLD_AMOUNT_RANGE_1
+    elif old_amount == AMOUNT_RANGE_250_500:
+        new_amount = OLD_AMOUNT_RANGE_2
+    elif old_amount == AMOUNT_RANGE_1000_MORE:
+        new_amount = OLD_AMOUNT_RANGE_3
+    return new_amount
+
+
+def update_amount(apps, schema_editor):
+    # Tender
+    Tender = apps.get_model("tenders", "Tender")
+    tenders = Tender.objects.all()
+    for t in tenders:
+        old_amount = t.amount
+        if old_amount:
+            new_amount = mapping(old_amount)
+            # use filter/update to avoid updating the 'updated_at' field
+            Tender.objects.filter(id=t.id).update(amount=new_amount)
+    # PartnerShareTender
+    PartnerShareTender = apps.get_model("tenders", "PartnerShareTender")
+    partner_share_tenders = PartnerShareTender.objects.all()
+    for pst in partner_share_tenders:
+        old_amount_in = t.amount_in
+        if old_amount_in:
+            new_amount_in = mapping(old_amount_in)
+            # use filter/update to avoid updating the 'updated_at' field
+            PartnerShareTender.objects.filter(pst=t.id).update(amount_in=new_amount_in)
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -63,4 +120,5 @@ class Migration(migrations.Migration):
                 verbose_name="Montant du marché",
             ),
         ),
+        migrations.RunPython(code=update_amount, reverse_code=update_amount),
     ]
