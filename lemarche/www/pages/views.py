@@ -18,7 +18,11 @@ from lemarche.utils.tracker import track
 from lemarche.www.pages.forms import ContactForm
 from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
 from lemarche.www.tenders.tasks import notify_admin_tender_created
-from lemarche.www.tenders.views import TenderCreateMultiStepView, create_tender_from_dict
+from lemarche.www.tenders.views import (
+    TenderCreateMultiStepView,
+    create_tender_from_dict,
+    create_user_from_anonymous_content,
+)
 
 
 class HomeView(TemplateView):
@@ -146,11 +150,12 @@ def csrf_failure(request, reason=""):  # noqa C901
         #     request.POST.get("tender_create_multi_step_view-current_step")
         #     == TenderCreateMultiStepView.STEP_CONFIRMATION
         # ):
+
+        # create tender_dict
         tender_dict = dict()
         formtools_session_step_data = request.session.get("wizard_tender_create_multi_step_view", {}).get(
             "step_data", {}
         )
-
         for step in formtools_session_step_data.keys():
             for key in formtools_session_step_data.get(step).keys():
                 if not key.startswith(("csrfmiddlewaretoken", "tender_create_multi_step_view")):
@@ -174,7 +179,14 @@ def csrf_failure(request, reason=""):  # noqa C901
                     else:
                         tender_dict[key_cleaned] = list() if value[0] == "" else value
 
-        tender = create_tender_from_dict(tender_dict | {"author": request.user, "source": Tender.SOURCE_FORM_CSRF})
+        # get user
+        if not request.user.is_authenticated:
+            user = create_user_from_anonymous_content(tender_dict)
+        else:
+            user = request.user
+
+        # create tender
+        tender = create_tender_from_dict(tender_dict | {"author": user, "source": Tender.SOURCE_FORM_CSRF})
 
         if settings.BITOUBI_ENV == "prod":
             notify_admin_tender_created(tender)

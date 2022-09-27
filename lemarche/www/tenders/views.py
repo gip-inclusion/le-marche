@@ -30,11 +30,28 @@ from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
 
 TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
 TITLE_DETAIL_PAGE_OTHERS = "Mes besoins"
-TITLE_KIND_SOURCING_SIAE = "Consultation en vue d’un achat"
+TITLE_KIND_SOURCING_SIAE = "Consultation en vue d'un achat"
 
 
-def create_tender_from_dict(tender_dict: dict):
-    tender_dict.pop("contact_company_name")
+def create_user_from_anonymous_content(tender_dict: dict) -> User:
+    user, created = User.objects.get_or_create(
+        email=tender_dict["contact_email"],
+        defaults={
+            "first_name": tender_dict["contact_first_name"],
+            "last_name": tender_dict["contact_last_name"],
+            "phone": tender_dict["contact_phone"],
+            "company_name": tender_dict["contact_company_name"],
+            "kind": User.KIND_BUYER,  # not necessarily true, could be a PARTNER
+            "source": User.SOURCE_TENDER_FORM,
+        },
+    )
+    if created and settings.BITOUBI_ENV == "prod":
+        send_new_user_password_reset_link(user)
+    return user
+
+
+def create_tender_from_dict(tender_dict: dict) -> Tender:
+    tender_dict.pop("contact_company_name", None)
     perimeters = tender_dict.pop("perimeters", [])
     sectors = tender_dict.pop("sectors", [])
     tender = Tender(**tender_dict)
@@ -47,8 +64,13 @@ def create_tender_from_dict(tender_dict: dict):
 
 
 class TenderCreateMultiStepView(SessionWizardView):
+    """
+    Multi-step Tender create form.
+    Note: there is also some code in pages/views.py > csrf_failure to manage edge cases
+    """
+
     instance = None
-    success_url = reverse_lazy("tenders:list")
+    # success_url = reverse_lazy("tenders:list")
     success_message = """
         Votre besoin <strong>{tender_title}</strong> a été publié sur le marché !<br />
         Les <strong>{tender_siae_count} structures</strong> qui correspondent à vos critères seront notifiées
@@ -135,19 +157,7 @@ class TenderCreateMultiStepView(SessionWizardView):
         cleaned_data = self.get_all_cleaned_data()
         # anonymous user? create user (or get an existing user by email)
         if not self.request.user.is_authenticated:
-            user, created = User.objects.get_or_create(
-                email=cleaned_data["contact_email"],
-                defaults={
-                    "first_name": cleaned_data["contact_first_name"],
-                    "last_name": cleaned_data["contact_last_name"],
-                    "phone": cleaned_data["contact_phone"],
-                    "company_name": cleaned_data["contact_company_name"],
-                    "kind": User.KIND_BUYER,  # not necessarily true, could be a PARTNER
-                    "source": User.SOURCE_TENDER_FORM,
-                },
-            )
-            if created and settings.BITOUBI_ENV == "prod":
-                send_new_user_password_reset_link(user)
+            user = create_user_from_anonymous_content(cleaned_data)
         else:
             user = self.request.user
         # when it's done we save the tender
@@ -166,7 +176,7 @@ class TenderCreateMultiStepView(SessionWizardView):
 
     def get_success_url(self):
         if self.request.user.is_authenticated and not self.request.user.kind == User.KIND_SIAE:
-            return super().get_success_url()
+            return reverse_lazy("tenders:list")  # super().get_success_url()
         return reverse_lazy("pages:home")
 
     def get_success_message(self, cleaned_data, tender):
