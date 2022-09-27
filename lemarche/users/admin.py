@@ -270,7 +270,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
 
     def tender_count_with_link(self, user):
         if user.tender_count:
-            url = reverse("admin:tenders_tender_changelist") + f"?users__in={user.id}"
+            url = reverse("admin:tenders_tender_changelist") + f"?author__id__exact={user.id}"
             return format_html(f'<a href="{url}">{user.tender_count}</a>')
         return "-"
 
