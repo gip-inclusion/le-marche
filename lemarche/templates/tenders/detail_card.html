@@ -40,7 +40,9 @@
         <div class="py-2">
             <h2>
                 Description
-                {% if tender.start_working_date %}<span class="float-right fs-sm text-muted">Début d'intervention : {{ tender.start_working_date }}</span>{% endif %}
+                {% if tender.start_working_date %}
+                    <span class="float-right fs-sm text-muted">Début d'intervention : {{ tender.start_working_date }}</span>
+                {% endif %}
             </h2>
             <p>{{ tender.description|linebreaks }}</p>
         </div>
@@ -52,14 +54,19 @@
             <p>{{ tender.constraints|default:"-" }}</p>
         </div>
 
-        <hr class="my-5">
+        {% if source_form or tender.author == request.user or tender.accept_share_amount %}
+            <hr class="my-5">
 
-        <div class="py-2">
-            <h2>Montant du marché</h2>
-            <p>{{ tender.get_amount_display|default:"-" }}</p>
-        </div>
+            <div class="py-2">
+                <h2>Montant du marché</h2>
+                <p>{{ tender.get_amount_display|default:"-" }}</p>
+                {% if source_form or tender.author == request.user %}
+                    <p>{{ tender.accept_share_amount_display }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
 
-        {% if not hide_cta %}
+        {% if not source_form %}
             <hr class="my-5">
             {% if user.is_authenticated %}
                 {% if tender.author == request.user or user_has_contact_click_date %}

@@ -6,7 +6,7 @@
 {% block step_subtitle %}C'est tout bon ! Vérifiez quand même que toutes les informations soient exactes.{% endblock %}
 
 {% block content_form %}
-{% include "tenders/detail_card.html" with tender=tender hide_cta="true" %}
+{% include "tenders/detail_card.html" with tender=tender source_form="true" %}
 {% endblock %}
 
 {% block submit_btn %}

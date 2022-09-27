@@ -117,6 +117,11 @@ class TenderCreateMultiStepView(SessionWizardView):
             tender_dict["get_amount_display"] = get_choice(
                 tender_constants.AMOUNT_RANGE_CHOICES, tender_dict["amount"]
             )
+            tender_dict["accept_share_amount_display"] = (
+                Tender.TENDER_ACCEPT_SHARE_AMOUNT_TRUE
+                if tender_dict["accept_share_amount"]
+                else Tender.TENDER_ACCEPT_SHARE_AMOUNT_FALSE
+            )
             context.update({"tender": tender_dict})
         return context
 
