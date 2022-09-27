@@ -164,6 +164,11 @@ class Tender(models.Model):
         blank=True,
         null=True,
     )
+    accept_share_amount = models.BooleanField(
+        verbose_name="Partage du montant du marché",
+        help_text="Je souhaite partager ce montant aux partenaires recevant mon besoin",
+        default=False,
+    )
     response_kind = ChoiceArrayField(
         verbose_name="Comment souhaitez-vous être contacté ?",
         base_field=models.CharField(max_length=6, choices=RESPONSE_KIND_CHOICES),
