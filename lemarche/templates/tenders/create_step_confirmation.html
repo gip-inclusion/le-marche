@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
     formSubmitButton.addEventListener('click', function(e) {
         $(formPreviousButton).prop('disabled', true);
         $(formSubmitButton).prop('disabled', true);
-        formSubmitButton.innerHTML += "<i class='ri-loader-4-line ri-spinner ri-lg'></i>";
+        formSubmitButton.innerHTML += "&nbsp;<i class='ri-loader-4-line ri-spinner ri-lg'></i>";
         $('form').submit();
     });
 });
