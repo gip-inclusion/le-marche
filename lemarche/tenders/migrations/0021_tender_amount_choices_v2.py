@@ -53,11 +53,11 @@ def update_amount(apps, schema_editor):
     PartnerShareTender = apps.get_model("tenders", "PartnerShareTender")
     partner_share_tenders = PartnerShareTender.objects.all()
     for pst in partner_share_tenders:
-        old_amount_in = t.amount_in
+        old_amount_in = pst.amount_in
         if old_amount_in:
             new_amount_in = mapping(old_amount_in)
             # use filter/update to avoid updating the 'updated_at' field
-            PartnerShareTender.objects.filter(pst=t.id).update(amount_in=new_amount_in)
+            PartnerShareTender.objects.filter(id=pst.id).update(amount_in=new_amount_in)
 
 
 class Migration(migrations.Migration):
