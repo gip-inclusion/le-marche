@@ -67,6 +67,7 @@ class AddTenderStepDescriptionForm(forms.ModelForm):
             "external_link",
             "constraints",
             "amount",
+            "accept_share_amount",
         ]
         widgets = {
             "start_working_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
@@ -81,8 +82,10 @@ class AddTenderStepDescriptionForm(forms.ModelForm):
             self.fields["amount"].required = True
         # label, placeholder & help_text
         self.fields["amount"].label = "Montant estimé du marché"  # add "estimé"
+        self.fields["accept_share_amount"].label = self.fields["accept_share_amount"].help_text
         self.fields["external_link"].widget.attrs["placeholder"] = "https://www.example.fr"
         self.fields["constraints"].widget.attrs["placeholder"] = "Ex : Déplacements"
+        self.fields["accept_share_amount"].help_text = None
 
 
 class AddTenderStepContactForm(forms.ModelForm):

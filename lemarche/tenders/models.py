@@ -121,6 +121,9 @@ class Tender(models.Model):
         (TENDER_KIND_PROJECT, "Sourcing"),
     )
 
+    TENDER_ACCEPT_SHARE_AMOUNT_TRUE = "✅ Montant partagé"
+    TENDER_ACCEPT_SHARE_AMOUNT_FALSE = "❌ Montant non partagé"
+
     RESPONSE_KIND_EMAIL = "EMAIL"
     RESPONSE_KIND_TEL = "TEL"
     RESPONSE_KIND_EXTERNAL = "EXTERN"
@@ -163,6 +166,11 @@ class Tender(models.Model):
         choices=tender_constants.AMOUNT_RANGE_CHOICES,
         blank=True,
         null=True,
+    )
+    accept_share_amount = models.BooleanField(
+        verbose_name="Partage du montant du marché",
+        help_text="Je souhaite partager ce montant aux partenaires recevant mon besoin",
+        default=False,
     )
     response_kind = ChoiceArrayField(
         verbose_name="Comment souhaitez-vous être contacté ?",
@@ -295,6 +303,12 @@ class Tender(models.Model):
     @cached_property
     def can_display_contact_external_link(self):
         return self.RESPONSE_KIND_EXTERNAL in self.response_kind and self.external_link
+
+    @cached_property
+    def accept_share_amount_display(self):
+        if self.accept_share_amount:
+            return self.TENDER_ACCEPT_SHARE_AMOUNT_TRUE
+        return self.TENDER_ACCEPT_SHARE_AMOUNT_FALSE
 
     def get_absolute_url(self):
         return reverse("tenders:detail", kwargs={"slug": self.slug})
