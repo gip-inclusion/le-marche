@@ -70,7 +70,7 @@ class TenderCreateMultiStepView(SessionWizardView):
     """
 
     instance = None
-    success_url = reverse_lazy("tenders:list")
+    # success_url = reverse_lazy("tenders:list")
     success_message = """
         Votre besoin <strong>{tender_title}</strong> a été publié sur le marché !<br />
         Les <strong>{tender_siae_count} structures</strong> qui correspondent à vos critères seront notifiées
@@ -176,7 +176,7 @@ class TenderCreateMultiStepView(SessionWizardView):
 
     def get_success_url(self):
         if self.request.user.is_authenticated and not self.request.user.kind == User.KIND_SIAE:
-            return super().get_success_url()
+            return reverse_lazy("tenders:list")  # super().get_success_url()
         return reverse_lazy("pages:home")
 
     def get_success_message(self, cleaned_data, tender):
