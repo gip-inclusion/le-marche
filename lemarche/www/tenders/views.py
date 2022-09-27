@@ -30,11 +30,11 @@ from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
 
 TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
 TITLE_DETAIL_PAGE_OTHERS = "Mes besoins"
-TITLE_KIND_SOURCING_SIAE = "Consultation en vue d’un achat"
+TITLE_KIND_SOURCING_SIAE = "Consultation en vue d'un achat"
 
 
 def create_tender_from_dict(tender_dict: dict):
-    tender_dict.pop("contact_company_name")
+    tender_dict.pop("contact_company_name", None)
     perimeters = tender_dict.pop("perimeters", [])
     sectors = tender_dict.pop("sectors", [])
     tender = Tender(**tender_dict)
