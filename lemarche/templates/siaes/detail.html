@@ -2,7 +2,7 @@
 {% load static array_choices_display siae_sectors_display %}
 {% load theme_inclusion %}
 
-{% block title %}{{ siae.name_display }}{{ block.super }}{% endblock %}
+{% block title %}{{ siae.name_display }} est sur le marché de l'inclusion{% endblock %}
 
 {% block extra_head %}
 <meta property="og:url" content="{{ request.build_absolute_uri }}" />
