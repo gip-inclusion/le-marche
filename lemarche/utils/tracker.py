@@ -56,9 +56,9 @@ def extract_meta_from_request(request, siae=None, results_count=None):
     user: User = request.user
     return {
         **request.GET,
-        "is_admin": user.id and user.kind == User.KIND_ADMIN,
-        "user_type": user.kind if user.id else "",
-        "user_id": user.id if user.id else None,
+        "is_admin": user.is_authenticated and user.kind == User.KIND_ADMIN,
+        "user_type": user.kind if user.is_authenticated else "",
+        "user_id": user.id if user.is_authenticated else None,
         "siae_id": siae.id if siae else None,
         "results_count": results_count,
         "token": request.GET.get("token", ""),
