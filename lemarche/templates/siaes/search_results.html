@@ -163,7 +163,8 @@
                 {% if siaes %}
                     {% for siae in siaes %}
                         {% include "siaes/_card_search_result.html" with siae=siae %}
-                        {% if forloop.counter == 5 %}
+                        <!-- insert to nudge tender creation -->
+                        {% if forloop.counter == 5 and page_obj.number == 1 %}
                             <div class="mb-4">
                                 <span class="badge badge-sm badge-pill badge-warning-light mb-2">Information pratique</span>
                                 <h2 class="h2 mb-2">Pas de temps à perdre ?</h1>
@@ -178,7 +179,8 @@
 
                     {% include "includes/_pagination.html" %}
                 {% else %}
-                    <div class="no-results">
+                    <!-- no results -->
+                    <div>
                         <p>
                             Il y a encore de l'espoir ❤️
                         </p>
