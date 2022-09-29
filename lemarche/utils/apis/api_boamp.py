@@ -13,7 +13,9 @@ from django.db.models import Value
 from prettytable import PrettyTable
 
 from lemarche.cpv.models import Code
+from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
+from lemarche.siaes import constants as siae_constants
 from lemarche.tenders.models import Tender
 
 
@@ -91,10 +93,16 @@ def get_offers_list(client=None):
                 offer_saved |= json.loads(offer_saved.get("donnees", "[]"))
                 offer_saved |= json.loads(offer_saved.get("gestion", "[]"))
                 offer_saved["annonces_anterieures"] = json.loads(offer_saved.get("annonces_anterieures", "[]"))
-                saved_data.append(offer_saved)
-                # tender = create_tender_from_record_boamp(offer_saved)
-                dump_to_json_file("offers_saved", saved_data)
-                return saved_data
+                # saved_data.append(offer_saved)
+                tender = create_tender_from_record_boamp(offer_saved)
+                saved_data.append(tender)
+            import ipdb
+
+            ipdb.set_trace()
+            results = Tender.objects.bulk_create(saved_data)
+            print(results)
+            dump_to_json_file("offers_saved", saved_data)
+            return saved_data
 
     except requests.exceptions.HTTPError as e:
         logger.error("Error while fetching `%s`: %s", e.request.url, e)
@@ -104,6 +112,7 @@ def create_tender_from_record_boamp(record: dict) -> Tender:
     identity_tender = record.get("IDENTITE")
     cpv_code = record.get("OBJET").get("CPV").get("PRINCIPAL")
     sectors = Sector.objects.prefetch_related("cpv").filter(cpv_codes=cpv_code)
+    perimeters = Perimeter.objects.filter(department_code=record.get("IDENTITE"))
     tender = Tender(
         title=record.get("OBJET", {}).get("TITRE_MARCHE", ""),
         kind=Tender.TENDER_KIND_BOAMP,
@@ -111,17 +120,24 @@ def create_tender_from_record_boamp(record: dict) -> Tender:
         constraints="???",
         external_link=identity_tender.get("URL_DOCUMENT") or identity_tender.get("URL_PROFIL_ACHETEUR"),
         deadline_date=record.get("datefindiffusion"),
-        response_kind=Tender.RESPONSE_KIND_EXTERNAL,
+        response_kind=[Tender.RESPONSE_KIND_EXTERNAL],
         contact_first_name=identity_tender.get("DENOMINATION"),
         contact_last_name=identity_tender.get("CONTACT"),
-        contact_email="",
-        contact_phone="",
-        sectors=sectors,
-        perimeters=None,
+        contact_email=identity_tender.get("MEL"),
+        contact_phone=identity_tender.get("TEL"),
+        # sectors=sectors,
+        # perimeters=perimeters,
         is_country_area=False,
-        presta_type=None,  # type de prestation, utiliser decripteur_libelle
+        presta_type=siae_constants.PRESTA_CHOICES,  # type de prestation, utiliser decripteur_libelle
         author=None,  # need to precise it ?
+        accept_share_amount=False,
     )
+    tender.save()
+    import ipdb
+
+    ipdb.set_trace()
+    tender.sectors.set(sectors)
+    tender.perimeters.set(perimeters)
 
     return tender
 

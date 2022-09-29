@@ -305,6 +305,7 @@ class Tender(models.Model):
         related_name="tenders",
         on_delete=models.CASCADE,
         blank=True,
+        null=True,
     )
 
     siaes = models.ManyToManyField(
@@ -373,7 +374,8 @@ class Tender(models.Model):
         The slug field should be unique.
         """
         if not self.slug:
-            self.slug = slugify(f"{self.title}-{str(self.author.company_name or '')}")[:40]
+            company_slug = str(self.author.company_name) if self.author else str(uuid4())[:4]
+            self.slug = f"{slugify(self.title)[:40]}-{company_slug}"
         if with_uuid:
             self.slug += f"-{str(uuid4())[:4]}"
 
