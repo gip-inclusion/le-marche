@@ -4,55 +4,83 @@
 {% block title %}Inscription{{ block.super }}{% endblock %}
 
 {% block content %}
-<section class="pt-4 pb-6">
+<section>
     <div class="container">
         <div class="row">
-            <div class="col-12 col-lg-8">
-                <h2 class="mb-3 mb-lg-5"><strong>Inscription</strong></h2>
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Inscription</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
 
+<section class="s-title-01">
+    <div class="s-title-01__container container">
+        <div class="s-title-01__row row">
+            <div class="s-title-01__col col-12">
+                <h1 class="s-title-01__title h1">Inscription</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="s-section">
+    <div class="s-section__container container">
+        <div class="s-section__row row">
+            <div class="s-section__col col-12 col-lg-7">
                 <form method="POST" action="">
                     {% csrf_token %}
 
-                    <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                    <div class="c-form">
                         {% bootstrap_form_errors form type="all" %}
-                        <fieldset class="pb-2 pb-lg-4">
-                            <legend class="h4">Vous êtes <strong class="fs-base">*</strong></legend>
+                        <fieldset>
+                            <legend>Vous êtes <strong class="fs-base">*</strong></legend>
                             {% bootstrap_field form.kind %}
                         </fieldset>
-                        <fieldset class="pb-2 pb-lg-4">
-                            <legend class="h4">Contact et coordonnées de votre structure</legend>
+                        <hr>
+                        <fieldset>
+                            <legend>Contact et coordonnées de votre structure</legend>
                             {% bootstrap_field form.first_name %}
                             {% bootstrap_field form.last_name %}
                             {% bootstrap_field form.phone form_group_class="phone-form-group form-group" %}
                             {% bootstrap_field form.company_name form_group_class="company-name-form-group form-group form-group-required d-none" %}
                             <div class="company-name-siae-form-group form-group d-none">
                                 <label>Le nom de votre structure</label>
-                                <div class="alert alert-info" role="alert">
+                                <div class="alert alert-info" role="status">
                                     Une fois votre compte créé, vous pourrez ajouter puis modifier votre structure.
                                 </div>
                             </div>
                             {% bootstrap_field form.position form_group_class="position-form-group form-group form-group-required d-none" %}
                             {% bootstrap_field form.partner_kind form_group_class="partner-kind-form-group form-group form-group-required d-none" %}
                         </fieldset>
+                        <hr>
                         <fieldset>
-                            <legend class="h4">Création du mot de passe</legend>
+                            <legend>Création du mot de passe</legend>
                             {% bootstrap_field form.email %}
                             {% bootstrap_field form.password1 %}
                             {% bootstrap_field form.password2 %}
                         </fieldset>
-                    </div>
-
-                    <div class="row mt-3 mt-lg-5 justify-content-end">
-                        <div class="col-12 px-5 px-lg-6">
+                        <div class="form-group">
                             {% bootstrap_field form.accept_rgpd %}
                             {% bootstrap_field form.accept_survey form_group_class="form-group accept-survey-form-group d-none" %}
                             {% bootstrap_field form.accept_share_contact_to_external_partners form_group_class="form-group accept-survey-form-group d-none" %}
                         </div>
-                        <div class="col-12 col-lg-auto px-5 px-lg-6">
-                            <button type="submit" id="signup-submit-btn" class="btn btn-primary btn-block btn-ico">
-                                <span>Valider</span>
-                                <i class="ri-arrow-right-line ri-lg"></i>
-                            </button>
+                        <hr>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-row justify-content-end align-items-center">
+                                    <div class="form-group col-12 col-lg-auto">
+                                        <button type="submit" class="btn btn-block btn-primary">
+                                            <span>Valider</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
