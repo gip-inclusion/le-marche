@@ -4,54 +4,87 @@
 {% block title %}Connexion{{ block.super }}{% endblock %}
 
 {% block content %}
-<section class="pt-4 pb-6">
+<section>
     <div class="container">
         <div class="row">
-            <div class="col-12 col-lg-8">
-                <h2 class="mb-3 mb-lg-5"><strong>Connexion</strong></h2>
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Connexion</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
 
-                <form method="POST" action="">
-                    {% if email_exists_password_empty %}
-                    <div id="post-migration-login-message" class="alert alert-success" role="alert">
-                        ❗ Le marché de l'inclusion fait peau neuve !
-                        Pour accompagner les évolutions futures de la plateforme,
-                        nous vous invitons à <a href="{% url 'auth:password_reset' %}"><strong>redéfinir un nouveau mot de passe</strong></a>.
+<section class="s-title-01">
+    <div class="s-title-01__container container">
+        <div class="s-title-01__row row">
+            <div class="s-title-01__col col-12">
+                <h1 class="s-title-01__title h1">Connexion</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="s-section">
+    <div class="s-section__container container">
+        {% if email_exists_password_empty %}
+            <div class="s-section__row row">
+                <div class="s-section__col col-12">
+                    <div id="post-migration-login-message" class="alert alert-success fade show" role="status">
+                        <div class="row">
+                        <div class="col-auto pr-0">
+                            <i class="ri-information-line ri-xl text-success"></i>
+                        </div>
+                        <div class="col">
+                            <p class="mb-0">
+                                Le marché de l'inclusion fait peau neuve ! <br>
+                                Pour accompagner les évolutions futures de la plateforme, nous vous invitons à <a href="{% url 'auth:password_reset' %}"><strong>redéfinir un nouveau mot de passe</strong></a>.!
+                            </p>
+                        </div>
+                        </div>
                     </div>
-                    {% endif %}
-                
-                    <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+                </div>
+            </div>
+        {% endif %}
+        <div class="s-section__row row">
+            <div class="s-section__col col-12 col-lg-7">
+                <div class="c-form">
+                    <form method="POST" action="">
                         {% csrf_token %}
 
                         <!-- TODO: post-migration -->
                         {% if not email_exists_password_empty %}
-                        {% bootstrap_form_errors form type="all" %}
+                            {% bootstrap_form_errors form type="all" %}
                         {% endif %}
 
                         <fieldset>
                             {% bootstrap_field form.username %}
                             {% bootstrap_field form.password %}
-                            <small class="form-text text-muted"><a href="{% url 'auth:password_reset' %}">Mot de passe oublié</a> ?</small>
+                            <a href="{% url 'auth:password_reset' %}" class="btn btn-link pl-0 pt-0">Mot de passe oublié ?</a>
                         </fieldset>
 
-                    </div>
+                        <hr />
 
-                    <div class="row mt-3 mt-lg-5 justify-content-end">
-                        <div class="col-12 col-lg-auto px-5 px-lg-6">
-                            <button type="submit" id="login-submit-btn" class="btn btn-primary btn-block btn-ico">
-                                <span>Valider</span>
-                                <i class="ri-arrow-right-line ri-lg"></i>
-                            </button>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-row justify-content-end align-items-center">
+                                    <div class="form-group col-12 col-lg-auto">
+                                        <button type="submit" class="btn btn-block btn-primary">
+                                            <span>Se connecter</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </form>
-
-                <br />
-
-                <div class="row mt-3 mt-lg-5">
-                    <div class="col-12 text-center text-lg-left">
-                        <p class="lead">Vous n'avez pas de compte ? <a href="{% url 'auth:signup' %}{{ next_param }}">Créer un compte</p>
-                    </div>
+                    </form>
                 </div>
+                <p class="mt-3 mt-lg-5">
+                    <strong>Vous n'avez pas de compte ?</strong><a href="{% url 'auth:signup' %}{{ next_param }}" class="btn btn-link">Créer un compte</a>
+                </p>
             </div>
         </div>
     </div>
