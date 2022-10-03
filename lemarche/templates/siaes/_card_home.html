@@ -2,7 +2,7 @@
 {% load theme_inclusion %}
 
 <div class="s-cards-grid-01__col col mb-3 mb-md-5">
-    <div class="card c-card c-card--mini h-100">
+    <div class="card c-card has-one-link-inside h-100">
         <div class="card-header">
             <div class="d-flex align-items-center">
                 {% if siae.logo_url %}
@@ -10,7 +10,7 @@
                 {% else %}
                     <img src="{% static 'img/default-listing.png' %}" class="rounded-circle mr-2" height="40" alt="{{ siae.name }}" loading="lazy" />
                 {% endif %}
-                <a href="{% url 'siae:detail' siae.slug %}" target="_blank" class="d-block font-weight-bold text-decoration-none lh-sm stretched-link">
+                <a href="{% url 'siae:detail' siae.slug %}" class="d-block font-weight-bold text-decoration-none lh-sm stretched-link">
                     {{ siae.name_display }}
                 </a>
             </div>
