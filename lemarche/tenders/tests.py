@@ -122,6 +122,7 @@ class TenderModelQuerysetTest(TestCase):
         siae_2 = SiaeFactory()
         siae_3 = SiaeFactory()
         siae_4 = SiaeFactory()
+        siae_5 = SiaeFactory()
         tender_with_siae = TenderFactory(siaes=[siae_1])
         TenderSiae.objects.create(tender=tender_with_siae, siae=siae_2, email_send_date=timezone.now())
         TenderSiae.objects.create(
@@ -133,23 +134,34 @@ class TenderModelQuerysetTest(TestCase):
             email_send_date=timezone.now(),
             detail_display_date=timezone.now(),
             contact_click_date=timezone.now(),
+            accept_contact_share=False,
+        )
+        TenderSiae.objects.create(
+            tender=tender_with_siae,
+            siae=siae_5,
+            email_send_date=timezone.now(),
+            detail_display_date=timezone.now(),
+            contact_click_date=timezone.now(),
+            accept_contact_share=True,
         )
         tender_without_siae = TenderFactory()
         self.assertEqual(Tender.objects.count(), 2)
         tender_with_siae = Tender.objects.with_siae_stats().first()
-        self.assertEqual(tender_with_siae.siaes.count(), 4)
-        self.assertEqual(tender_with_siae.siae_count, 4)
-        self.assertEqual(tender_with_siae.siae_email_send_count, 3)
-        self.assertEqual(tender_with_siae.siae_detail_display_count, 2)
-        self.assertEqual(tender_with_siae.siae_contact_click_count, 1)
-        self.assertEqual(tender_with_siae.siae_contact_click_since_last_seen_date_count, 1)
+        self.assertEqual(tender_with_siae.siaes.count(), 5)
+        self.assertEqual(tender_with_siae.siae_count, 5)
+        self.assertEqual(tender_with_siae.siae_email_send_count, 4)
+        self.assertEqual(tender_with_siae.siae_detail_display_count, 3)
+        self.assertEqual(tender_with_siae.siae_contact_click_count, 2)
+        self.assertEqual(tender_with_siae.siae_contact_click_and_accept_contact_share_count, 1)
+        self.assertEqual(tender_with_siae.siae_contact_click_and_accept_contact_share_since_last_seen_date_count, 1)
         tender_without_siae = Tender.objects.with_siae_stats().last()
         self.assertEqual(tender_without_siae.siaes.count(), 0)
         self.assertEqual(tender_without_siae.siae_count, 0)
         self.assertEqual(tender_without_siae.siae_email_send_count, 0)
         self.assertEqual(tender_without_siae.siae_detail_display_count, 0)
         self.assertEqual(tender_without_siae.siae_contact_click_count, 0)
-        self.assertEqual(tender_without_siae.siae_contact_click_since_last_seen_date_count, 0)
+        self.assertEqual(tender_without_siae.siae_contact_click_and_accept_contact_share_count, 0)
+        self.assertEqual(tender_without_siae.siae_contact_click_and_accept_contact_share_since_last_seen_date_count, 0)
 
 
 class TenderMigrationToSelectTest(TestCase):
@@ -184,6 +196,33 @@ class TenderMigrationToSelectTest(TestCase):
         migration.reverse_update_amount(apps, None)
         tender_amount_range_0.refresh_from_db()
         self.assertEqual(int(tender_amount_range_0.amount), 24999)
+
+
+class TenderSiaeModelQuerysetTest(TestCase):
+    @classmethod
+    def setUpTestData(self):
+        self.tender = TenderFactory()
+        self.siae = SiaeFactory()
+        TenderSiae.objects.create(
+            tender=self.tender,
+            siae=self.siae,
+            email_send_date=timezone.now(),
+            detail_display_date=timezone.now(),
+            contact_click_date=timezone.now(),
+            accept_contact_share=False,
+        )
+        TenderSiae.objects.create(
+            tender=self.tender,
+            siae=self.siae,
+            email_send_date=timezone.now(),
+            detail_display_date=timezone.now(),
+            contact_click_date=timezone.now(),
+            accept_contact_share=True,
+        )
+
+    def test_contact_click_and_accept_contact_share(self):
+        self.assertEqual(TenderSiae.objects.count(), 2)
+        self.assertEqual(TenderSiae.objects.contact_click_and_accept_contact_share().count(), 1)
 
 
 class TenderPartnerMatchingTest(TestCase):

@@ -66,6 +66,7 @@ class TenderAdmin(admin.ModelAdmin):
         "siae_email_send_count_with_link",
         "siae_detail_display_count_with_link",
         "siae_contact_click_count_with_link",
+        "siae_contact_click_and_accept_contact_share_count_with_link",
         "logs_display",
         "created_at",
         "updated_at",
@@ -111,6 +112,7 @@ class TenderAdmin(admin.ModelAdmin):
                     "siae_email_send_count_with_link",
                     "siae_detail_display_count_with_link",
                     "siae_contact_click_count_with_link",
+                    "siae_contact_click_and_accept_contact_share_count_with_link",
                     "siae_interested_list_last_seen_date",
                     "logs_display",
                 ),
@@ -181,6 +183,22 @@ class TenderAdmin(admin.ModelAdmin):
 
     siae_contact_click_count_with_link.short_description = "S. intéressées"
     siae_contact_click_count_with_link.admin_order_field = "siae_contact_click_count"
+
+    def siae_contact_click_and_accept_contact_share_count_with_link(self, tender):
+        url = (
+            reverse("admin:siaes_siae_changelist")
+            + f"?tenders__in={tender.id}&tendersiae__contact_click_date__isnull=False&tendersiae__accept_contact_share=True"  # noqa
+        )
+        return format_html(
+            f'<a href="{url}">{getattr(tender, "siae_contact_click_and_accept_contact_share_count", 0)}</a>'
+        )
+
+    siae_contact_click_and_accept_contact_share_count_with_link.short_description = (
+        "S. intéressées (et partage autorisé)"
+    )
+    siae_contact_click_and_accept_contact_share_count_with_link.admin_order_field = (
+        "siae_contact_click_and_accept_contact_share_count"
+    )
 
     def logs_display(self, tender=None):
         if tender:

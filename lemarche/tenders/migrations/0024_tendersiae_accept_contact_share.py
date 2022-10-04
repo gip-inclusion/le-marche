@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 def init_existing_accept_contact_share_to_true(apps, schema_editor):
     TenderSiae = apps.get_model("tenders", "TenderSiae")
-    TenderSiae.objects.exclude(contact_click_date__isnull=True).update(accept_contact_share=True)
+    TenderSiae.objects.filter(contact_click_date__isnull=False).update(accept_contact_share=True)
 
 
 class Migration(migrations.Migration):

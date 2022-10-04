@@ -163,18 +163,22 @@ def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes
 
 def send_siae_interested_email_to_author(tender: Tender):
     """
-    The author is notified (by intervals) when new Siaes show interest (contact_click_date set)
+    The author is notified (by intervals) when new Siaes show interest (contact_click_date set + accept_contact_share)
     Intervals:
     - first Siae
     - every 5 Siae
     """
-    tender_siae_contact_click_count = TenderSiae.objects.filter(
-        tender=tender, contact_click_date__isnull=False
-    ).count()
+    tender_siae_contact_click_and_accept_contact_share_count = (
+        TenderSiae.objects.filter(tender=tender).contact_click_and_accept_contact_share().count()
+    )
 
-    if (tender_siae_contact_click_count > 0) and (tender_siae_contact_click_count < 50):
-        if (tender_siae_contact_click_count == 1) or (tender_siae_contact_click_count % 5 == 0):
-            if tender_siae_contact_click_count == 1:
+    if (tender_siae_contact_click_and_accept_contact_share_count > 0) and (
+        tender_siae_contact_click_and_accept_contact_share_count < 50
+    ):
+        if (tender_siae_contact_click_and_accept_contact_share_count == 1) or (
+            tender_siae_contact_click_and_accept_contact_share_count % 5 == 0
+        ):
+            if tender_siae_contact_click_and_accept_contact_share_count == 1:
                 email_subject = EMAIL_SUBJECT_PREFIX + "Une première structure intéressée !"
                 template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_1_TEMPLATE_ID
             else:

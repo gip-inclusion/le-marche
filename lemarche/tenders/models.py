@@ -92,12 +92,20 @@ class TenderQuerySet(models.QuerySet):
                     When(tendersiae__contact_click_date__isnull=False, then=1), default=0, output_field=IntegerField()
                 )
             ),
-            siae_contact_click_since_last_seen_date_count=Sum(
+            siae_contact_click_and_accept_contact_share_count=Sum(
+                Case(
+                    When(tendersiae__contact_click_date__isnull=False, tendersiae__accept_contact_share=True, then=1),
+                    default=0,
+                    output_field=IntegerField(),
+                )
+            ),
+            siae_contact_click_and_accept_contact_share_since_last_seen_date_count=Sum(
                 Case(
                     When(
                         tendersiae__contact_click_date__gte=Greatest(
                             F("siae_interested_list_last_seen_date"), F("created_at")
                         ),
+                        tendersiae__accept_contact_share=True,
                         then=1,
                     ),
                     default=0,
@@ -328,6 +336,11 @@ def tender_m2m_changed(sender, instance, action, **kwargs):
             instance.set_siae_found_list()
 
 
+class TenderSiaeQuerySet(models.QuerySet):
+    def contact_click_and_accept_contact_share(self):
+        return self.filter(contact_click_date__isnull=False).filter(accept_contact_share=True)
+
+
 class TenderSiae(models.Model):
     TENDER_SIAE_SOURCE_EMAIL = "EMAIL"
     TENDER_SIAE_SOURCE_DASHBOARD = "DASHBOARD"
@@ -352,6 +365,8 @@ class TenderSiae(models.Model):
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(TenderSiaeQuerySet)()
 
     class Meta:
         verbose_name = "Structure correspondant au besoin"

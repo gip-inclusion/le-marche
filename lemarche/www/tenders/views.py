@@ -266,9 +266,9 @@ class TenderDetailView(DetailView):
                 tender=tender, siae__in=user.siaes.all(), contact_click_date__isnull=False
             ).exists()
         if tender.author == user:
-            context["siae_contact_click_count"] = TenderSiae.objects.filter(
-                tender=tender, contact_click_date__isnull=False
-            ).count()
+            context["siae_contact_click_and_accept_contact_share_count"] = (
+                TenderSiae.objects.filter(tender=tender).contact_click_and_accept_contact_share().count()
+            )
         return context
 
 

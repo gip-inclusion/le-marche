@@ -79,12 +79,12 @@
                         {% include "tenders/_detail_contact.html" with tender=tender %}
                     </div>
                 {% endif %}
-                {% if tender.author == request.user and siae_contact_click_count %}
+                {% if tender.author == request.user and siae_contact_click_and_accept_contact_share_count %}
                     <hr class="my-5" />
                     <div class="row">
                         <div class="col-12">
                             <a href="{% url 'tenders:detail-siae-interested' tender.slug %}" id="show-tender-siae-list-from-detail-btn" class="btn btn-primary">
-                                {{ siae_contact_click_count }} structures intéressées
+                                {{ siae_contact_click_and_accept_contact_share_count }} structures intéressées
                             </a>
                         </div>
                     </div>
