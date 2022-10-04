@@ -345,6 +345,10 @@ class TenderSiae(models.Model):
     email_send_date = models.DateTimeField("Date d'envoi de l'e-mail", blank=True, null=True)
     detail_display_date = models.DateTimeField("Date de visualisation du besoin", blank=True, null=True)
     contact_click_date = models.DateTimeField("Date de clic sur les coordonnées du besoin", blank=True, null=True)
+    accept_contact_share = models.BooleanField(
+        verbose_name="Partage des informations de contact à l'acheteur",
+        default=False,
+    )
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
