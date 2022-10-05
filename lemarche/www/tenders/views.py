@@ -1,3 +1,5 @@
+import json
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -244,7 +246,7 @@ class TenderDetailView(DetailView):
             tender = self.get_object()
             TenderSiae.objects.filter(
                 tender=tender, siae__in=user.siaes.all(), detail_display_date__isnull=True
-            ).update(detail_display_date=timezone.now())
+            ).update(detail_display_date=timezone.now(), updated_at=timezone.now())
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -282,12 +284,17 @@ class TenderDetailContactClickStat(LoginRequiredMixin, View):
         return get_object_or_404(Tender, slug=self.kwargs.get("slug"))
 
     def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        contact_share_answer = data.get("contact_share_answer", False)
         if self.request.user.kind == User.KIND_SIAE:
             # update contact_click_date
             tender = self.get_object()
             TenderSiae.objects.filter(
                 tender=tender, siae__in=self.request.user.siaes.all(), contact_click_date__isnull=True
-            ).update(contact_click_date=timezone.now())
+            ).update(
+                contact_click_date=timezone.now(), accept_contact_share=contact_share_answer, updated_at=timezone.now()
+            )
+            # notify the tender author
             send_siae_interested_email_to_author(tender)
             return JsonResponse({"message": "success"})
         else:
