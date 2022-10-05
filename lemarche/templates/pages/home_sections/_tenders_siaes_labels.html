@@ -1,0 +1,21 @@
+{% load static %}
+
+<section class="bg-gray-light py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6 col-md-8 my-sm-auto">
+                <img src="{% static 'images/hp-logos-labels.png' %}" class="img-fluid" loading="lazy" alt="Logos de différents labels et certifications">
+            </div>
+            <div class="col-sm-6 col-md-4 my-4 my-sm-auto">
+                <h2 class="h2 mb-3 mb-lg-5">Les prestataires inclusifs, des partenaires d'excellence</h2>
+                <p>
+                    Faire appel à nos 8500 prestaires inclusifs, c'est la garantie d'être accompagné par des professionnels reconnus et certifiés dans leur domaine.
+                </p>
+                <a href="{% url 'tenders:create' %}" id="home-siaes-labels" class="btn btn-primary btn-ico d-block d-md-inline-block mb-2">
+                    <i class="ri-mail-send-line"></i>
+                    <span>Publier un besoin d'achat</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
