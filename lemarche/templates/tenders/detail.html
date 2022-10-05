@@ -39,37 +39,3 @@
 {% include "auth/_login_or_signup_siae_tender_modal.html" %}
 {% include "tenders/_contact_click_and_accept_contact_share_modal.html" %}
 {% endblock %}
-
-{% block extra_js %}
-<script type="text/javascript">
-document.addEventListener("DOMContentLoaded", function() {
-    function sendTenderSiaeContactShareAnswer(contactShareAnswer=false) {
-        // hide button, show content
-        tenderContactCollapseModalButton.style.display = 'none';
-        tenderContactCollapseContent.style.display = '';
-        // send click stat to backend
-        fetch(`${window.location.href}/contact-click-stat`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({
-                "contact_share_answer": contactShareAnswer
-            }),
-        });
-    }
-    var tenderContactCollapseModalButton = document.getElementById('show-tender-contact-modal-btn');
-    var tenderContactCollapseContent = document.getElementById('show-tender-contact-content');
-    var tenderSiaeAcceptContactShareModalButton = document.getElementById('tender-siae-accept-contact-share-btn');
-    var tenderSiaeDeclineContactShareModalButton = document.getElementById('tender-siae-decline-contact-share-btn');
-    if (tenderContactCollapseModalButton) {
-        tenderSiaeAcceptContactShareModalButton.addEventListener('click', function() {
-            sendTenderSiaeContactShareAnswer(contactShareAnswer=true);
-        });
-        tenderSiaeDeclineContactShareModalButton.addEventListener('click', function() {
-            sendTenderSiaeContactShareAnswer(contactShareAnswer=false);
-        });
-    }
-});
-</script>
-{% endblock %}

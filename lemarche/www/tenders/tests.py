@@ -1,4 +1,3 @@
-import json
 from datetime import date, timedelta
 
 from django.contrib.gis.geos import Point
@@ -304,13 +303,13 @@ class TenderDetailContactClickStatViewTest(TestCase):
         for user in [self.siae_user_1, self.siae_user_2]:
             self.client.login(email=user.email, password=DEFAULT_PASSWORD)
             url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
-            response = self.client.post(url, data=json.dumps({"contact_share_answer": False}))
-            self.assertEqual(response.status_code, 200)
+            response = self.client.post(url, data={"contact_share_answer": "false"})
+            self.assertEqual(response.status_code, 302)  # redirect
         # forbidden
         for user in [self.user_buyer_1, self.user_buyer_2, self.user_partner]:
             self.client.login(email=user.email, password=DEFAULT_PASSWORD)
             url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
-            response = self.client.post(url, data=json.dumps({"contact_share_answer": False}))
+            response = self.client.post(url, data={"contact_share_answer": "false"})
             self.assertEqual(response.status_code, 403)
 
     def test_update_tendersiae_stats_on_tender_contact_click(self):
@@ -324,8 +323,8 @@ class TenderDetailContactClickStatViewTest(TestCase):
         self.assertIsNone(self.tender.tendersiae_set.last().contact_click_date)
         self.client.login(email=self.siae_user_2.email, password=DEFAULT_PASSWORD)
         url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
-        response = self.client.post(url, data=json.dumps({"contact_share_answer": False}))
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post(url, data={"contact_share_answer": "false"})
+        self.assertEqual(response.status_code, 302)  # redirect
         siae_2_contact_click_date = self.tender.tendersiae_set.first().contact_click_date
         siae_2_accept_contact_share = self.tender.tendersiae_set.first().accept_contact_share
         self.assertNotEqual(siae_2_contact_click_date, None)
@@ -334,8 +333,8 @@ class TenderDetailContactClickStatViewTest(TestCase):
         # clicking again on the button doesn't update contact_click_date
         # Note: button will disappear on reload
         url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
-        response = self.client.post(url, data=json.dumps({"contact_share_answer": True}))
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post(url, data={"contact_share_answer": "true"})
+        self.assertEqual(response.status_code, 302)  # redirect
         self.assertEqual(self.tender.tendersiae_set.first().contact_click_date, siae_2_contact_click_date)
         self.assertEqual(self.tender.tendersiae_set.first().accept_contact_share, siae_2_accept_contact_share)
 

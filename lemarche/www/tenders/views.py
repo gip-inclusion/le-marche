@@ -1,15 +1,13 @@
-import json
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.http import HttpResponseForbidden, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
-from django.views.generic import DetailView, ListView, View
+from django.views.generic import DetailView, ListView, UpdateView
 from formtools.wizard.views import SessionWizardView
 
 from lemarche.tenders import constants as tender_constants
@@ -274,31 +272,46 @@ class TenderDetailView(DetailView):
         return context
 
 
-class TenderDetailContactClickStat(LoginRequiredMixin, View):
+class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
     """
     Endpoint to track contact_clicks by interested Siaes
     We might also send a notification to the buyer
     """
 
+    template_name = "tenders/_contact_click_and_accept_contact_share_modal.html"
+    model = Tender
+
     def get_object(self):
         return get_object_or_404(Tender, slug=self.kwargs.get("slug"))
 
     def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        contact_share_answer = data.get("contact_share_answer", False)
+        accept_contact_share = self.request.POST.get("accept_contact_share", False) == "true"
         if self.request.user.kind == User.KIND_SIAE:
             # update contact_click_date
             tender = self.get_object()
             TenderSiae.objects.filter(
                 tender=tender, siae__in=self.request.user.siaes.all(), contact_click_date__isnull=True
             ).update(
-                contact_click_date=timezone.now(), accept_contact_share=contact_share_answer, updated_at=timezone.now()
+                contact_click_date=timezone.now(), accept_contact_share=accept_contact_share, updated_at=timezone.now()
             )
             # notify the tender author
             send_siae_interested_email_to_author(tender)
-            return JsonResponse({"message": "success"})
+            # redirect
+            if accept_contact_share:
+                messages.add_message(self.request, messages.SUCCESS, self.get_success_message(accept_contact_share))
+            else:
+                messages.add_message(self.request, messages.WARNING, self.get_success_message(accept_contact_share))
+            return HttpResponseRedirect(self.get_success_url())
         else:
             return HttpResponseForbidden()
+
+    def get_success_url(self):
+        return reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
+
+    def get_success_message(self, accept_contact_share):
+        if accept_contact_share:
+            return "<strong>Bravo !</strong><br />Vos coordonnées, ainsi que le lien vers votre fiche commerciale ont été transmis à l'acheteur. Assurez-vous d'avoir une fiche commerciale bien renseignée."  # noqa
+        return "<strong>Vos coordonnées n'ont pas été transmises à l'acheteur</strong><br />Si vous souhaitez répondre à ce besoin, c'est à vous de contacter l'acheteur. Assurez-vous d'avoir une fiche commerciale bien renseignée."  # noqa
 
 
 class TenderSiaeInterestedListView(TenderOwnerRequiredMixin, ListView):
