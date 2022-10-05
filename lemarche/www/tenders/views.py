@@ -308,7 +308,8 @@ class TenderSiaeInterestedListView(TenderOwnerRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        qs = qs.filter(tender__slug=self.kwargs.get("slug"), contact_click_date__isnull=False)
+        qs = qs.filter(tender__slug=self.kwargs.get("slug"))
+        qs = qs.contact_click_and_accept_contact_share()
         qs = qs.order_by("-contact_click_date")
         return qs
 
