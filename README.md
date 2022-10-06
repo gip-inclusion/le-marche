@@ -3,6 +3,27 @@
 > Le marché de l'inclusion est un service numérique permettant de trouver un prestataire sociale inclusif
 > proposant des produits ou services professionnels.
 
+## Définitions / nomenclature
+
+Voici un tableau explicatif de la nomenclature utilisée dans le code (par rapport à l'application)
+
+|Dans le métier|Dans le code|
+|--------------|------------|
+|Appel d'offre |Tender      |
+|Devis         |Quote       |
+|Sourcing      |Project     |
+|Liste de favoris|Favorite list|
+|Structure     |Siae        |
+|Utilisateur   |User|
+|Réseau        |Network|
+|Demande de rattachement|User request|
+|Prestation    |Offer|
+|Référence client|Client reference|
+|Label & certification|Label|
+|Secteur d'activité|Sector|
+|Groupe de secteurs d'activité|Sector group|
+|Périmètre|Perimeter|
+
 ## Installation
 
 Étapes d'une installation en local à des fins de développement.
@@ -175,8 +196,11 @@ poetry run python manage.py test -- lemarche.api.siaes.tests.SiaeListApiTest
 ```
 
 ## Taches asynchrones
+
 ### Setup
+
 #### Huey storage mode
+
 Mode direct (sans task queue) :
 ```
 export CONNECTION_MODE_TASKS="direct"
@@ -195,7 +219,9 @@ Mode redis :
 ```
 export CONNECTION_MODE_TASKS="redis"
 ```
+
 #### Lancer en local
+
 1/ Lancer un serveur local
 2/ Dans un autre shell lancer la commande
 ```
@@ -203,6 +229,7 @@ export CONNECTION_MODE_TASKS="redis"
 ```
 
 #### Lancer sur CleverCloud
+
 Ajouter la variable d'environnement suivante sur la config clever cloud :
 
 ```
