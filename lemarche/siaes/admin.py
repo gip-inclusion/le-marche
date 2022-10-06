@@ -83,6 +83,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "label_count_with_link",
         "client_reference_count_with_link",
         "image_count_with_link",
+        "tender_count_with_link",
         "created_at",
     ]
     list_filter = [
@@ -112,6 +113,10 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "coords_display",
         "logo_url",
         "logo_url_display",
+        "tender_count_with_link",
+        "tender_email_send_count_with_link",
+        "tender_detail_display_count_with_link",
+        "tender_contact_click_count_with_link",
         "signup_date",
         "content_filled_basic_date",
         # "import_raw_object",
@@ -216,6 +221,17 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
             },
         ),
         (
+            "Besoins des acheteurs",
+            {
+                "fields": (
+                    "tender_count_with_link",
+                    "tender_email_send_count_with_link",
+                    "tender_detail_display_count_with_link",
+                    "tender_contact_click_count_with_link",
+                )
+            },
+        ),
+        (
             "Stats",
             {
                 "fields": (
@@ -301,6 +317,11 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
             },
         ),
     ]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.with_tender_stats()
+        return qs
 
     def get_readonly_fields(self, request, obj=None):
         """
@@ -417,6 +438,43 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         return "-"
 
     import_raw_object_display.short_description = "Donnée brute importée"
+
+    def tender_count_with_link(self, siae):
+        url = reverse("admin:tenders_tender_changelist") + f"?siaes__in={siae.id}"
+        return format_html(f'<a href="{url}">{getattr(siae, "tender_count", 0)}</a>')
+
+    tender_count_with_link.short_description = "Besoins concernés"
+    tender_count_with_link.admin_order_field = "tender_count"
+
+    def tender_email_send_count_with_link(self, siae):
+        url = (
+            reverse("admin:tenders_tender_changelist")
+            + f"?siaes__in={siae.id}&tendersiae__email_send_date__isnull=False"
+        )
+        return format_html(f'<a href="{url}">{getattr(siae, "tender_email_send_count", 0)}</a>')
+
+    tender_email_send_count_with_link.short_description = "Besoins contactés"
+    tender_email_send_count_with_link.admin_order_field = "tender_email_send_count"
+
+    def tender_detail_display_count_with_link(self, siae):
+        url = (
+            reverse("admin:tenders_tender_changelist")
+            + f"?siaes__in={siae.id}&tendersiae__detail_display_date__isnull=False"
+        )
+        return format_html(f'<a href="{url}">{getattr(siae, "tender_detail_display_count", 0)}</a>')
+
+    tender_detail_display_count_with_link.short_description = "Besoins vues"
+    tender_detail_display_count_with_link.admin_order_field = "tender_detail_display_count"
+
+    def tender_contact_click_count_with_link(self, siae):
+        url = (
+            reverse("admin:tenders_tender_changelist")
+            + f"?siaes__in={siae.id}&tendersiae__contact_click_date__isnull=False"
+        )
+        return format_html(f'<a href="{url}">{getattr(siae, "tender_contact_click_count", 0)}</a>')
+
+    tender_contact_click_count_with_link.short_description = "Besoins intéressés"
+    tender_contact_click_count_with_link.admin_order_field = "tender_contact_click_count"
 
 
 @admin.register(SiaeUserRequest, site=admin_site)
