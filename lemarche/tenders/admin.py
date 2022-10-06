@@ -132,6 +132,13 @@ class TenderAdmin(admin.ModelAdmin):
         """
         return {"source": Tender.SOURCE_STAFF_C4_CREATED}
 
+    def lookup_allowed(self, lookup, *args, **kwargs):
+        if lookup in [
+            "tendersiae__contact_click_date__isnull",
+        ]:
+            return True
+        return super().lookup_allowed(lookup, *args, **kwargs)
+
     def is_validate(self, tender: Tender):
         return tender.validated_at is not None
 
