@@ -62,6 +62,7 @@ def send_tender_email_to_partner(tender: Tender, partner: PartnerShareTender):
         log_item = {
             "action": "email_tender",
             "email_to": recipient_list,
+            "email_subject": email_subject,
             # "email_body": email_body,
             "email_timestamp": timezone.now().isoformat(),
             "metadata": {
@@ -89,7 +90,7 @@ def send_tenders_author_feedback_30_days(tender: Tender):
         }
 
         api_mailjet.send_transactional_email_with_template(
-            template_id=settings.MAILJET_TENDERS_USERS_FEEDBACKS_30D_TEMPLATE_ID,
+            template_id=settings.MAILJET_TENDERS_AUTHOR_FEEDBACK_30D_TEMPLATE_ID,
             subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
@@ -100,6 +101,7 @@ def send_tenders_author_feedback_30_days(tender: Tender):
         log_item = {
             "action": "email_feedback_30d_sent",
             "email_to": recipient_email,
+            "email_subject": email_subject,
             # "email_body": email_body,
             "email_timestamp": timezone.now().isoformat(),
         }
@@ -145,6 +147,9 @@ def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes
     email_subject = f"{EMAIL_SUBJECT_PREFIX}Votre {tender.get_kind_display().lower()} a été publié !"
     recipient_list = whitelist_recipient_list([tender.author.email])
     if recipient_list:
+        recipient_email = recipient_list[0] if recipient_list else ""
+        recipient_name = tender.author.full_name
+
         variables = {
             "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
             "TENDER_TITLE": tender.title,
@@ -153,12 +158,24 @@ def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes
             "TENDER_URL": get_share_url_object(tender),
         }
 
-        api_mailjet.send_transactional_email_many_recipient_with_template(
+        api_mailjet.send_transactional_email_with_template(
             template_id=settings.MAILJET_TENDERS_AUTHOR_CONFIRMATION_PUBLISHED_TEMPLATE_ID,
             subject=email_subject,
-            recipient_email_list=recipient_list,
+            recipient_email=recipient_email,
+            recipient_name=recipient_name,
             variables=variables,
         )
+
+        # log email
+        log_item = {
+            "action": "email_publish_confirmation",
+            "email_to": recipient_email,
+            "email_subject": email_subject,
+            # "email_body": email_body,
+            "email_timestamp": timezone.now().isoformat(),
+        }
+        tender.logs.append(log_item)
+        tender.save()
 
 
 def send_siae_interested_email_to_author(tender: Tender):
@@ -198,6 +215,17 @@ def send_siae_interested_email_to_author(tender: Tender):
                     recipient_name=recipient_name,
                     variables=variables,
                 )
+
+                # log email
+                log_item = {
+                    "action": "email_siae_interested",
+                    "email_to": recipient_email,
+                    "email_subject": email_subject,
+                    # "email_body": email_body,
+                    "email_timestamp": timezone.now().isoformat(),
+                }
+                tender.logs.append(log_item)
+                tender.save()
 
 
 def notify_admin_tender_created(tender: Tender):
