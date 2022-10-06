@@ -323,6 +323,14 @@ class SiaeQuerySet(models.QuerySet):
         # return
         return qs.distinct()
 
+    def with_tender_stats(self):
+        """
+        Enrich each Siae with stats on their linked Tender
+        """
+        return self.annotate(
+            tender_count=Count("tenders", distinct=True),
+        )
+
 
 class Siae(models.Model):
     READONLY_FIELDS_FROM_C1 = [
