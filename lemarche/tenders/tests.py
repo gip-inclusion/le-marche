@@ -145,7 +145,14 @@ class TenderModelQuerysetStatsTest(TestCase):
             detail_display_date=timezone.now(),
             contact_click_date=timezone.now(),
         )
-        TenderFactory(siaes=[self.siae_with_tender_1])  # tender_with_siae_2
+        tender_with_siae_2 = TenderFactory()
+        TenderSiae.objects.create(
+            tender=tender_with_siae_2,
+            siae=self.siae_with_tender_1,
+            email_send_date=timezone.now(),
+            detail_display_date=timezone.now(),
+            contact_click_date=timezone.now(),
+        )
         self.tender_without_siae = TenderFactory()
 
     def test_with_siae_stats_queryset(self):
@@ -170,9 +177,11 @@ class TenderModelQuerysetStatsTest(TestCase):
         siae_with_tender = Siae.objects.with_tender_stats().filter(id=self.siae_with_tender_1.id).first()
         self.assertEqual(siae_with_tender.tenders.count(), 2)
         self.assertEqual(siae_with_tender.tender_count, 2)
+        self.assertEqual(siae_with_tender.tender_contact_click_count, 1)
         siae_without_tender = Siae.objects.with_tender_stats().filter(id=self.siae_without_tender.id).first()
         self.assertEqual(siae_without_tender.tenders.count(), 0)
         self.assertEqual(siae_without_tender.tender_count, 0)
+        self.assertEqual(siae_without_tender.tender_contact_click_count, 0)
 
 
 class TenderMigrationToSelectTest(TestCase):
