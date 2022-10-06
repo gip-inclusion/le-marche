@@ -260,6 +260,9 @@ class SiaeModelQuerysetTest(TestCase):
     # def test_annotate_with_user_favorite_list_ids(self):
     # see favorites > tests.py
 
+    # def test_with_tender_stats(self):
+    # see tenders > tests.py > TenderModelQuerysetStatsTest
+
 
 class SiaeGroupModelTest(TestCase):
     @classmethod

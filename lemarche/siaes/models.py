@@ -7,7 +7,7 @@ from django.contrib.gis.measure import D
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.contrib.postgres.search import TrigramSimilarity  # SearchVector
 from django.db import IntegrityError, models, transaction
-from django.db.models import Count, Q
+from django.db.models import Case, Count, IntegerField, Q, Sum, When
 from django.db.models.functions import Greatest
 from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
@@ -322,6 +322,27 @@ class SiaeQuerySet(models.QuerySet):
             qs = qs.filter(presta_type__overlap=tender.presta_type)
         # return
         return qs.distinct()
+
+    def with_tender_stats(self):
+        """
+        Enrich each Siae with stats on their linked Tender
+        """
+        return self.annotate(
+            tender_count=Count("tenders", distinct=True),
+            tender_email_send_count=Sum(
+                Case(When(tendersiae__email_send_date__isnull=False, then=1), default=0, output_field=IntegerField())
+            ),
+            tender_detail_display_count=Sum(
+                Case(
+                    When(tendersiae__detail_display_date__isnull=False, then=1), default=0, output_field=IntegerField()
+                )
+            ),
+            tender_contact_click_count=Sum(
+                Case(
+                    When(tendersiae__contact_click_date__isnull=False, then=1), default=0, output_field=IntegerField()
+                )
+            ),
+        )
 
 
 class Siae(models.Model):

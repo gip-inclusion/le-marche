@@ -104,13 +104,20 @@ class TenderAdmin(admin.ModelAdmin):
             },
         ),
         (
-            "Stats",
+            "Structures",
             {
                 "fields": (
                     "siae_count_with_link",
                     "siae_email_send_count_with_link",
                     "siae_detail_display_count_with_link",
                     "siae_contact_click_count_with_link",
+                )
+            },
+        ),
+        (
+            "Stats",
+            {
+                "fields": (
                     "siae_interested_list_last_seen_date",
                     "logs_display",
                 ),
@@ -131,6 +138,15 @@ class TenderAdmin(admin.ModelAdmin):
         Default values in add form.
         """
         return {"source": Tender.SOURCE_STAFF_C4_CREATED}
+
+    def lookup_allowed(self, lookup, *args, **kwargs):
+        if lookup in [
+            "tendersiae__email_send_date__isnull",
+            "tendersiae__detail_display_date__isnull",
+            "tendersiae__contact_click_date__isnull",
+        ]:
+            return True
+        return super().lookup_allowed(lookup, *args, **kwargs)
 
     def is_validate(self, tender: Tender):
         return tender.validated_at is not None
