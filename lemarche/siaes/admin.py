@@ -114,6 +114,8 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "logo_url",
         "logo_url_display",
         "tender_count_with_link",
+        "tender_email_send_count_with_link",
+        "tender_detail_display_count_with_link",
         "tender_contact_click_count_with_link",
         "signup_date",
         "content_filled_basic_date",
@@ -223,6 +225,8 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
             {
                 "fields": (
                     "tender_count_with_link",
+                    "tender_email_send_count_with_link",
+                    "tender_detail_display_count_with_link",
                     "tender_contact_click_count_with_link",
                 )
             },
@@ -441,6 +445,26 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
 
     tender_count_with_link.short_description = "Besoins concernés"
     tender_count_with_link.admin_order_field = "tender_count"
+
+    def tender_email_send_count_with_link(self, siae):
+        url = (
+            reverse("admin:tenders_tender_changelist")
+            + f"?siaes__in={siae.id}&tendersiae__email_send_date__isnull=False"
+        )
+        return format_html(f'<a href="{url}">{getattr(siae, "tender_email_send_count", 0)}</a>')
+
+    tender_email_send_count_with_link.short_description = "Besoins contactés"
+    tender_email_send_count_with_link.admin_order_field = "tender_email_send_count"
+
+    def tender_detail_display_count_with_link(self, siae):
+        url = (
+            reverse("admin:tenders_tender_changelist")
+            + f"?siaes__in={siae.id}&tendersiae__detail_display_date__isnull=False"
+        )
+        return format_html(f'<a href="{url}">{getattr(siae, "tender_detail_display_count", 0)}</a>')
+
+    tender_detail_display_count_with_link.short_description = "Besoins vues"
+    tender_detail_display_count_with_link.admin_order_field = "tender_detail_display_count"
 
     def tender_contact_click_count_with_link(self, siae):
         url = (

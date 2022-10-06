@@ -134,6 +134,8 @@ class TenderAdmin(admin.ModelAdmin):
 
     def lookup_allowed(self, lookup, *args, **kwargs):
         if lookup in [
+            "tendersiae__email_send_date__isnull",
+            "tendersiae__detail_display_date__isnull",
             "tendersiae__contact_click_date__isnull",
         ]:
             return True

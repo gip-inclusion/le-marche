@@ -177,10 +177,14 @@ class TenderModelQuerysetStatsTest(TestCase):
         siae_with_tender = Siae.objects.with_tender_stats().filter(id=self.siae_with_tender_1.id).first()
         self.assertEqual(siae_with_tender.tenders.count(), 2)
         self.assertEqual(siae_with_tender.tender_count, 2)
+        self.assertEqual(siae_with_tender.tender_email_send_count, 1)
+        self.assertEqual(siae_with_tender.tender_detail_display_count, 1)
         self.assertEqual(siae_with_tender.tender_contact_click_count, 1)
         siae_without_tender = Siae.objects.with_tender_stats().filter(id=self.siae_without_tender.id).first()
         self.assertEqual(siae_without_tender.tenders.count(), 0)
         self.assertEqual(siae_without_tender.tender_count, 0)
+        self.assertEqual(siae_without_tender.tender_email_send_count, 0)
+        self.assertEqual(siae_without_tender.tender_detail_display_count, 0)
         self.assertEqual(siae_without_tender.tender_contact_click_count, 0)
 
 
