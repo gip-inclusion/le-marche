@@ -104,13 +104,20 @@ class TenderAdmin(admin.ModelAdmin):
             },
         ),
         (
-            "Stats",
+            "Structures",
             {
                 "fields": (
                     "siae_count_with_link",
                     "siae_email_send_count_with_link",
                     "siae_detail_display_count_with_link",
                     "siae_contact_click_count_with_link",
+                )
+            },
+        ),
+        (
+            "Stats",
+            {
+                "fields": (
                     "siae_interested_list_last_seen_date",
                     "logs_display",
                 ),
