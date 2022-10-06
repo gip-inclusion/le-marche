@@ -13,6 +13,7 @@ from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes.factories import SiaeFactory
+from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.factories import PartnerShareTenderFactory, TenderFactory
 from lemarche.tenders.models import Tender, TenderSiae
@@ -117,39 +118,61 @@ class TenderModelQuerysetTest(TestCase):
             Tender.objects.in_perimeters(post_code="29000", department="29", region="Bretagne").count(), 0
         )
 
-    def test_with_siae_stats_queryset(self):
-        siae_1 = SiaeFactory()
-        siae_2 = SiaeFactory()
-        siae_3 = SiaeFactory()
-        siae_4 = SiaeFactory()
-        tender_with_siae = TenderFactory(siaes=[siae_1])
-        TenderSiae.objects.create(tender=tender_with_siae, siae=siae_2, email_send_date=timezone.now())
+
+class TenderModelQuerysetStatsTest(TestCase):
+    @classmethod
+    def setUpTestData(self):
+        self.siae_with_tender_1 = SiaeFactory()
+        siae_with_tender_2 = SiaeFactory()
+        siae_with_tender_3 = SiaeFactory()
+        siae_with_tender_4 = SiaeFactory()
+        siae_with_tender_5 = SiaeFactory()
+        self.siae_without_tender = SiaeFactory()
+        self.tender_with_siae_1 = TenderFactory(siaes=[self.siae_with_tender_1, siae_with_tender_2])
         TenderSiae.objects.create(
-            tender=tender_with_siae, siae=siae_3, email_send_date=timezone.now(), detail_display_date=timezone.now()
+            tender=self.tender_with_siae_1, siae=siae_with_tender_3, email_send_date=timezone.now()
         )
         TenderSiae.objects.create(
-            tender=tender_with_siae,
-            siae=siae_4,
+            tender=self.tender_with_siae_1,
+            siae=siae_with_tender_4,
+            email_send_date=timezone.now(),
+            detail_display_date=timezone.now(),
+        )
+        TenderSiae.objects.create(
+            tender=self.tender_with_siae_1,
+            siae=siae_with_tender_5,
             email_send_date=timezone.now(),
             detail_display_date=timezone.now(),
             contact_click_date=timezone.now(),
         )
-        tender_without_siae = TenderFactory()
-        self.assertEqual(Tender.objects.count(), 2)
-        tender_with_siae = Tender.objects.with_siae_stats().first()
-        self.assertEqual(tender_with_siae.siaes.count(), 4)
-        self.assertEqual(tender_with_siae.siae_count, 4)
+        TenderFactory(siaes=[self.siae_with_tender_1])  # tender_with_siae_2
+        self.tender_without_siae = TenderFactory()
+
+    def test_with_siae_stats_queryset(self):
+        self.assertEqual(Tender.objects.count(), 2 + 1)
+        tender_with_siae = Tender.objects.with_siae_stats().filter(id=self.tender_with_siae_1.id).first()
+        self.assertEqual(tender_with_siae.siaes.count(), 5)
+        self.assertEqual(tender_with_siae.siae_count, 5)
         self.assertEqual(tender_with_siae.siae_email_send_count, 3)
         self.assertEqual(tender_with_siae.siae_detail_display_count, 2)
         self.assertEqual(tender_with_siae.siae_contact_click_count, 1)
         self.assertEqual(tender_with_siae.siae_contact_click_since_last_seen_date_count, 1)
-        tender_without_siae = Tender.objects.with_siae_stats().last()
+        tender_without_siae = Tender.objects.with_siae_stats().filter(id=self.tender_without_siae.id).first()
         self.assertEqual(tender_without_siae.siaes.count(), 0)
         self.assertEqual(tender_without_siae.siae_count, 0)
         self.assertEqual(tender_without_siae.siae_email_send_count, 0)
         self.assertEqual(tender_without_siae.siae_detail_display_count, 0)
         self.assertEqual(tender_without_siae.siae_contact_click_count, 0)
         self.assertEqual(tender_without_siae.siae_contact_click_since_last_seen_date_count, 0)
+
+    def test_siae_with_tender_stats_queryset(self):
+        self.assertEqual(Siae.objects.count(), 5 + 1)
+        siae_with_tender = Siae.objects.with_tender_stats().filter(id=self.siae_with_tender_1.id).first()
+        self.assertEqual(siae_with_tender.tenders.count(), 2)
+        self.assertEqual(siae_with_tender.tender_count, 2)
+        siae_without_tender = Siae.objects.with_tender_stats().filter(id=self.siae_without_tender.id).first()
+        self.assertEqual(siae_without_tender.tenders.count(), 0)
+        self.assertEqual(siae_without_tender.tender_count, 0)
 
 
 class TenderMigrationToSelectTest(TestCase):
