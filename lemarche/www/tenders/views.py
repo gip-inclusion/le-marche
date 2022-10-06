@@ -309,7 +309,7 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
     def get_success_message(self, contact_click_confirm):
         if contact_click_confirm:
             return "<strong>Bravo !</strong><br />Vos coordonnées, ainsi que le lien vers votre fiche commerciale ont été transmis à l'acheteur. Assurez-vous d'avoir une fiche commerciale bien renseignée."  # noqa
-        return "<strong>Répondre au besoin</strong><br />Pour répondre au besoin, vous devez accepter d'être mis en relation avec l'acheteur depuis le marché."  # noqa
+        return "<strong>Répondre à cette opportunité</strong><br />Pour répondre à cette opportunité, vous devez accepter d'être mis en relation avec l'acheteur."  # noqa
 
 
 class TenderSiaeInterestedListView(TenderOwnerRequiredMixin, ListView):
