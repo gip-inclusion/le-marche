@@ -72,7 +72,7 @@
                 {% if tender.author == request.user or user_has_contact_click_date %}
                     {% include "tenders/_detail_contact.html" with tender=tender %}
                 {% else %}
-                    <button type="button" id="show-tender-contact-btn" class="btn btn-primary float-right mb-4" style="display:block">
+                    <button type="button" id="show-tender-contact-modal-btn" class="btn btn-primary float-right mb-4" data-toggle="modal" data-target="#contact_click_confirm_modal" title="Répondre à cette opportunité">
                         Répondre à cette opportunité
                     </button>
                     <div id="show-tender-contact-content" class="py-2" style="display:none">
