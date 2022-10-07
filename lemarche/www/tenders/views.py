@@ -244,7 +244,7 @@ class TenderDetailView(DetailView):
             tender = self.get_object()
             TenderSiae.objects.filter(
                 tender=tender, siae__in=user.siaes.all(), detail_display_date__isnull=True
-            ).update(detail_display_date=timezone.now())
+            ).update(detail_display_date=timezone.now(), updated_at=timezone.now())
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -292,7 +292,7 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
                 tender = self.get_object()
                 TenderSiae.objects.filter(
                     tender=tender, siae__in=self.request.user.siaes.all(), contact_click_date__isnull=True
-                ).update(contact_click_date=timezone.now())
+                ).update(contact_click_date=timezone.now(), updated_at=timezone.now())
                 # notify the tender author
                 send_siae_interested_email_to_author(tender)
                 # redirect
