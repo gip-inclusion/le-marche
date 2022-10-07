@@ -455,6 +455,12 @@
 {% block extra_js %}
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
+    // hotjar event
+    document.querySelector('button#show_data').addEventListener('click', () => {
+        if (typeof hj !== "undefined") { hj('event', 'siae_click_show_data'); }
+    });
+
+    // map
     // siae coords output as floats with commas. We need to transform them into floats.
     const siaeName = "{{ siae.name }}";
     const siaeBrand = "{{ siae.brand|default:'' }}";
