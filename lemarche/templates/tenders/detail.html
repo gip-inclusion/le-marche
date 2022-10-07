@@ -37,28 +37,5 @@
 
 {% block modals %}
 {% include "auth/_login_or_signup_siae_tender_modal.html" %}
-{% endblock %}
-
-{% block extra_js %}
-<script type="text/javascript">
-document.addEventListener("DOMContentLoaded", function() {
-    var tenderContactCollapseButton = document.getElementById('show-tender-contact-btn');
-    var tenderContactCollapseContent = document.getElementById('show-tender-contact-content');
-    if (tenderContactCollapseButton) {
-        tenderContactCollapseButton.addEventListener('click', function() {
-            // hide button, show content
-            tenderContactCollapseButton.style.display = 'none';
-            tenderContactCollapseContent.style.display = '';
-            // send click stat to backend
-            fetch(`${window.location.href}/contact-click-stat`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({}),
-            });
-        });
-    }
-});
-</script>
+{% include "tenders/_contact_click_confirm_modal.html" %}
 {% endblock %}

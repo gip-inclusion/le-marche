@@ -119,6 +119,7 @@ class SiaeSearchForm(forms.Form):
         if networks:
             qs = qs.filter_networks(networks)
 
+        # un auteur d'un dépôt de besoin peut exporter la liste des structures intéressées
         tender = self.cleaned_data.get("tender", None)
         if tender:
             qs = qs.filter(tendersiae__tender=tender, tendersiae__contact_click_date__isnull=False)

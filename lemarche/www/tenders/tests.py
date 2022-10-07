@@ -140,9 +140,9 @@ class TenderListViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         perimeter = PerimeterFactory(post_codes=["43705"], insee_code="06", name="Auvergne-Rhône-Alpes")
-        cls.user_siae_1 = UserFactory(kind=User.KIND_SIAE)
+        cls.siae_user_1 = UserFactory(kind=User.KIND_SIAE)
         cls.siae_1 = SiaeFactory(post_code=perimeter.post_codes[0])
-        cls.user_siae_2 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_1])
+        cls.siae_user_2 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_1])
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
@@ -169,13 +169,13 @@ class TenderListViewTest(TestCase):
     def test_siae_user_should_see_matching_tenders(self):
         # TODO: add more matching tests
         # user without siae
-        self.client.login(email=self.user_siae_1.email, password=DEFAULT_PASSWORD)
+        self.client.login(email=self.siae_user_1.email, password=DEFAULT_PASSWORD)
         url = reverse("tenders:list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["tenders"]), 0)
         # user with siae
-        self.client.login(email=self.user_siae_2.email, password=DEFAULT_PASSWORD)
+        self.client.login(email=self.siae_user_2.email, password=DEFAULT_PASSWORD)
         url = reverse("tenders:list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -198,20 +198,20 @@ class TenderListViewTest(TestCase):
         self.assertEqual(len(response.context["tenders"]), 0)
 
     def test_viewing_tender_list_should_update_stats(self):
-        self.assertIsNone(self.user_siae_1.tender_list_last_seen_date)
-        self.client.login(email=self.user_siae_1.email, password=DEFAULT_PASSWORD)
+        self.assertIsNone(self.siae_user_1.tender_list_last_seen_date)
+        self.client.login(email=self.siae_user_1.email, password=DEFAULT_PASSWORD)
         url = reverse("tenders:list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertIsNotNone(User.objects.get(id=self.user_siae_1.id).tender_list_last_seen_date)
+        self.assertIsNotNone(User.objects.get(id=self.siae_user_1.id).tender_list_last_seen_date)
 
 
 class TenderDetailViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.siae_1 = SiaeFactory(name="ZZ ESI")
-        cls.user_siae_1 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_1])
-        cls.user_siae_2 = UserFactory(kind=User.KIND_SIAE)
+        cls.siae_user_1 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_1])
+        cls.siae_user_2 = UserFactory(kind=User.KIND_SIAE)
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
@@ -247,7 +247,7 @@ class TenderDetailViewTest(TestCase):
 
     def test_update_tendersiae_stats_on_tender_view(self):
         siae_2 = SiaeFactory(name="ABC Insertion")
-        self.user_siae_2.siaes.add(siae_2)
+        self.siae_user_2.siaes.add(siae_2)
         self.tender_1.siaes.add(siae_2)
         self.assertEqual(self.tender_1.tendersiae_set.count(), 2)
         self.assertEqual(self.tender_1.tendersiae_set.first().siae, siae_2)
@@ -255,7 +255,7 @@ class TenderDetailViewTest(TestCase):
         self.assertIsNone(self.tender_1.tendersiae_set.first().detail_display_date)
         self.assertIsNone(self.tender_1.tendersiae_set.last().detail_display_date)
         # first load
-        self.client.login(email=self.user_siae_2.email, password=DEFAULT_PASSWORD)
+        self.client.login(email=self.siae_user_2.email, password=DEFAULT_PASSWORD)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -273,8 +273,8 @@ class TenderDetailContactClickStatViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.siae = SiaeFactory(name="ZZ ESI")
-        cls.user_siae_1 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae])
-        cls.user_siae_2 = UserFactory(kind=User.KIND_SIAE)
+        cls.siae_user_1 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae])
+        cls.siae_user_2 = UserFactory(kind=User.KIND_SIAE)
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
@@ -288,39 +288,39 @@ class TenderDetailContactClickStatViewTest(TestCase):
 
     def test_only_siae_user_can_call_tender_contact_click(self):
         # authorized
-        for user in [self.user_siae_1, self.user_siae_2]:
+        for user in [self.siae_user_1, self.siae_user_2]:
             self.client.login(email=user.email, password=DEFAULT_PASSWORD)
             url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
-            response = self.client.post(url)
-            self.assertEqual(response.status_code, 200)
+            response = self.client.post(url, data={"contact_click_confirm": "false"})
+            self.assertEqual(response.status_code, 302)  # redirect
         # forbidden
         for user in [self.user_buyer_1, self.user_buyer_2, self.user_partner]:
             self.client.login(email=user.email, password=DEFAULT_PASSWORD)
             url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
-            response = self.client.post(url)
+            response = self.client.post(url, data={"contact_click_confirm": "false"})
             self.assertEqual(response.status_code, 403)
 
     def test_update_tendersiae_stats_on_tender_contact_click(self):
         siae_2 = SiaeFactory(name="ABC Insertion")
-        self.user_siae_2.siaes.add(siae_2)
+        self.siae_user_2.siaes.add(siae_2)
         self.tender.siaes.add(siae_2)
         self.assertEqual(self.tender.tendersiae_set.count(), 2)
         self.assertEqual(self.tender.tendersiae_set.first().siae, siae_2)
         self.assertEqual(self.tender.tendersiae_set.last().siae, self.siae)
         self.assertIsNone(self.tender.tendersiae_set.first().contact_click_date)
         self.assertIsNone(self.tender.tendersiae_set.last().contact_click_date)
-        self.client.login(email=self.user_siae_2.email, password=DEFAULT_PASSWORD)
+        self.client.login(email=self.siae_user_2.email, password=DEFAULT_PASSWORD)
         url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
-        response = self.client.post(url)
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post(url, data={"contact_click_confirm": "true"})
+        self.assertEqual(response.status_code, 302)  # redirect
         siae_2_contact_click_date = self.tender.tendersiae_set.first().contact_click_date
         self.assertNotEqual(siae_2_contact_click_date, None)
         self.assertEqual(self.tender.tendersiae_set.last().contact_click_date, None)
         # clicking again on the button doesn't update contact_click_date
         # Note: button will disappear on reload
         url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
-        response = self.client.post(url)
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post(url, data={"contact_click_confirm": "false"})
+        self.assertEqual(response.status_code, 302)  # redirect
         self.assertEqual(self.tender.tendersiae_set.first().contact_click_date, siae_2_contact_click_date)
 
 
@@ -345,8 +345,8 @@ class TenderSiaeInterestedListView(TestCase):
         cls.siae_1 = SiaeFactory(name="ZZ ESI")
         cls.siae_2 = SiaeFactory(name="ABC Insertion")
         cls.siae_3 = SiaeFactory(name="Une autre structure")
-        cls.user_siae_1 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_1, cls.siae_2])
-        cls.user_siae_2 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_3])
+        cls.siae_user_1 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_1, cls.siae_2])
+        cls.siae_user_2 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_3])
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
@@ -377,7 +377,7 @@ class TenderSiaeInterestedListView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["tendersiaes"]), 2)
         # forbidden
-        for user in [self.user_buyer_2, self.user_partner, self.user_siae_1, self.user_siae_2]:
+        for user in [self.user_buyer_2, self.user_partner, self.siae_user_1, self.siae_user_2]:
             self.client.login(email=user.email, password=DEFAULT_PASSWORD)
             url = reverse("tenders:detail-siae-interested", kwargs={"slug": self.tender_1.slug})
             response = self.client.get(url)

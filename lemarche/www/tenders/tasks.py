@@ -35,7 +35,7 @@ def send_tender_emails_to_siaes(tender: Tender):
     for siae in tender.siaes.all():
         send_tender_email_to_siae(tender, siae)
 
-    tender.tendersiae_set.update(email_send_date=timezone.now())
+    tender.tendersiae_set.update(email_send_date=timezone.now(), updated_at=timezone.now())
     # will be moved on global action in backoffice admin
     match_tender_for_partners(tender=tender, send_email_func=send_tender_email_to_partner)
 

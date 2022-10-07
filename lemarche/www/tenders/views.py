@@ -2,12 +2,12 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.http import HttpResponseForbidden, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
-from django.views.generic import DetailView, ListView, View
+from django.views.generic import DetailView, ListView, UpdateView
 from formtools.wizard.views import SessionWizardView
 
 from lemarche.tenders import constants as tender_constants
@@ -244,7 +244,7 @@ class TenderDetailView(DetailView):
             tender = self.get_object()
             TenderSiae.objects.filter(
                 tender=tender, siae__in=user.siaes.all(), detail_display_date__isnull=True
-            ).update(detail_display_date=timezone.now())
+            ).update(detail_display_date=timezone.now(), updated_at=timezone.now())
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -272,26 +272,44 @@ class TenderDetailView(DetailView):
         return context
 
 
-class TenderDetailContactClickStat(LoginRequiredMixin, View):
+class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
     """
     Endpoint to track contact_clicks by interested Siaes
     We might also send a notification to the buyer
     """
 
+    template_name = "tenders/_contact_click_confirm_modal.html"
+    model = Tender
+
     def get_object(self):
         return get_object_or_404(Tender, slug=self.kwargs.get("slug"))
 
     def post(self, request, *args, **kwargs):
+        contact_click_confirm = self.request.POST.get("contact_click_confirm", False) == "true"
         if self.request.user.kind == User.KIND_SIAE:
-            # update contact_click_date
-            tender = self.get_object()
-            TenderSiae.objects.filter(
-                tender=tender, siae__in=self.request.user.siaes.all(), contact_click_date__isnull=True
-            ).update(contact_click_date=timezone.now())
-            send_siae_interested_email_to_author(tender)
-            return JsonResponse({"message": "success"})
+            if contact_click_confirm:
+                # update contact_click_date
+                tender = self.get_object()
+                TenderSiae.objects.filter(
+                    tender=tender, siae__in=self.request.user.siaes.all(), contact_click_date__isnull=True
+                ).update(contact_click_date=timezone.now(), updated_at=timezone.now())
+                # notify the tender author
+                send_siae_interested_email_to_author(tender)
+                # redirect
+                messages.add_message(self.request, messages.SUCCESS, self.get_success_message(contact_click_confirm))
+            else:
+                messages.add_message(self.request, messages.WARNING, self.get_success_message(contact_click_confirm))
+            return HttpResponseRedirect(self.get_success_url())
         else:
             return HttpResponseForbidden()
+
+    def get_success_url(self):
+        return reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
+
+    def get_success_message(self, contact_click_confirm):
+        if contact_click_confirm:
+            return "<strong>Bravo !</strong><br />Vos coordonnées, ainsi que le lien vers votre fiche commerciale ont été transmis à l'acheteur. Assurez-vous d'avoir une fiche commerciale bien renseignée."  # noqa
+        return "<strong>Répondre à cette opportunité</strong><br />Pour répondre à cette opportunité, vous devez accepter d'être mis en relation avec l'acheteur."  # noqa
 
 
 class TenderSiaeInterestedListView(TenderOwnerRequiredMixin, ListView):
