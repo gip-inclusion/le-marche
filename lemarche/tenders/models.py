@@ -176,6 +176,11 @@ class Tender(models.Model):
         verbose_name="Comment souhaitez-vous être contacté ?",
         base_field=models.CharField(max_length=6, choices=RESPONSE_KIND_CHOICES),
     )
+    accept_cocontracting = models.BooleanField(
+        verbose_name="Ouvert à la co-traitance",
+        help_text="Ce besoin peut-être répondu par plusieurs prestataires (co-traitance ou sous-traitance)",
+        default=False,
+    )
 
     contact_first_name = models.CharField(verbose_name="Prénom du contact", max_length=255, blank=True)
     contact_last_name = models.CharField(verbose_name="Nom de famille du contact", max_length=255, blank=True)
