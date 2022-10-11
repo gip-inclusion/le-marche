@@ -114,7 +114,6 @@ class Tender(models.Model):
     TENDER_KIND_QUOTE = "QUOTE"
     TENDER_KIND_BOAMP = "BOAMP"
     TENDER_KIND_PROJECT = "PROJ"
-
     TENDER_KIND_CHOICES = (
         (TENDER_KIND_TENDER, "Appel d'offres"),
         (TENDER_KIND_QUOTE, "Devis"),
@@ -127,7 +126,6 @@ class Tender(models.Model):
     RESPONSE_KIND_EMAIL = "EMAIL"
     RESPONSE_KIND_TEL = "TEL"
     RESPONSE_KIND_EXTERNAL = "EXTERN"
-
     RESPONSE_KIND_CHOICES = (
         (RESPONSE_KIND_EMAIL, "E-mail"),
         (RESPONSE_KIND_TEL, "Téléphone"),
@@ -137,6 +135,11 @@ class Tender(models.Model):
     SOURCE_FORM = "FORM"
     SOURCE_FORM_CSRF = "FORM_CSRF"
     SOURCE_STAFF_C4_CREATED = "STAFF_C4_CREATED"
+    SOURCE_CHOICES = (
+        (SOURCE_FORM, "Formulaire"),
+        (SOURCE_FORM_CSRF, "Formulaire (erreur CSRF)"),
+        (SOURCE_STAFF_C4_CREATED, "Staff C4"),
+    )
 
     title = models.CharField(verbose_name="Titre du besoin", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
@@ -235,7 +238,7 @@ class Tender(models.Model):
         "Date de dernière visite de l'auteur sur la page 'structures intéressées'", blank=True, null=True
     )
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
-    source = models.CharField(verbose_name="Source", max_length=20, blank=True)
+    source = models.CharField(verbose_name="Source", max_length=20, choices=SOURCE_CHOICES, default=SOURCE_FORM)
 
     validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
 
