@@ -92,6 +92,7 @@ class TenderAdmin(admin.ModelAdmin):
                     "amount",
                     "accept_share_amount",
                     "response_kind",
+                    "accept_cocontracting",
                     "deadline_date",
                     "start_working_date",
                 ),
