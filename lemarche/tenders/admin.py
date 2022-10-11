@@ -75,7 +75,7 @@ class TenderAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": ("title", "slug", "kind"),
+                "fields": ("title", "slug", "kind", "source"),
             },
         ),
         (
