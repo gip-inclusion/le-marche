@@ -1,0 +1,42 @@
+<div class="modal fade modal-siae" id="download_click_survey_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="modalTitle">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Quel(s) bénéfices allez-vous tirer de cette liste ?</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <form method="GET" action="{% url 'siae:search_results_download' %}">
+                {% csrf_token %}
+
+                <div class="modal-body home-content-body">
+                    <div class="form-check">
+                        <label class="form-check-label" for="marche_benefit_time">
+                            <input type="checkbox" class="form-check-input" id="marche_benefit_time" name="marche_benefit" value="DISP">
+                            Gagner du temps
+                        </label>
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="modal-footer">
+                    <button class="btn btn-outline-primary" type="button" data-dismiss="modal" aria-label="Fermer">Annuler</button>
+                    <button type="button" class="btn btn-primary btn-ico" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="text-decoration-none ml-0">Télécharger la liste</span>
+                        <i class="ri-download-line ri-lg"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}&format=xls" id="siae-export-xls" class="dropdown-item">
+                            Télécharger la liste (.xls)
+                        </a>
+                        <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}&format=csv" id="siae-export-csv" class="dropdown-item">
+                            Télécharger la liste (.csv)
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
