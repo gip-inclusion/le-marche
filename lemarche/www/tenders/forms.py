@@ -184,4 +184,19 @@ class AddTenderStepContactForm(forms.ModelForm):
 
 
 class AddTenderStepConfirmationForm(forms.Form):
-    pass
+    is_marche_useful = forms.BooleanField(
+        label=Tender._meta.get_field("is_marche_useful").help_text,
+        widget=forms.RadioSelect(choices=[(True, "Oui"), (False, "Non")]),
+    )
+    marche_benefits = forms.MultipleChoiceField(
+        label=Tender._meta.get_field("marche_benefits").help_text,
+        choices=Tender._meta.get_field("marche_benefits").base_field.choices,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    class Meta:
+        model = Tender
+        fields = [
+            "is_marche_useful",
+            "marche_benefits",
+        ]
