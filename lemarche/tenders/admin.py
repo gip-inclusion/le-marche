@@ -75,7 +75,7 @@ class TenderAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": ("title", "slug", "kind", "source"),
+                "fields": ("title", "slug", "kind"),
             },
         ),
         (
@@ -86,13 +86,33 @@ class TenderAdmin(admin.ModelAdmin):
                     "constraints",
                     "sectors",
                     "presta_type",
-                    "is_country_area",
-                    "perimeters",
                     "external_link",
+                    "accept_cocontracting",
+                ),
+            },
+        ),
+        (
+            "Lieux d'exécution",
+            {
+                "fields": (
+                    "perimeters",
+                    "is_country_area",
+                ),
+            },
+        ),
+        (
+            "Montant",
+            {
+                "fields": (
                     "amount",
                     "accept_share_amount",
-                    "response_kind",
-                    "accept_cocontracting",
+                ),
+            },
+        ),
+        (
+            "Dates",
+            {
+                "fields": (
                     "deadline_date",
                     "start_working_date",
                 ),
@@ -101,7 +121,14 @@ class TenderAdmin(admin.ModelAdmin):
         (
             "Contact",
             {
-                "fields": ("author", "contact_first_name", "contact_last_name", "contact_email", "contact_phone"),
+                "fields": (
+                    "author",
+                    "contact_first_name",
+                    "contact_last_name",
+                    "contact_email",
+                    "contact_phone",
+                    "response_kind",
+                ),
             },
         ),
         (
@@ -120,6 +147,7 @@ class TenderAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "siae_interested_list_last_seen_date",
+                    "source",
                     "logs_display",
                 ),
             },
