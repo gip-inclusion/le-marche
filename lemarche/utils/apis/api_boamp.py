@@ -73,14 +73,24 @@ def get_default_client(params={}):
 
 
 def get_offers_list(client=None):
-    print(get_offers_list)
+    # print(get_offers_list)
     if not client:
         client = get_default_client()
 
     saved_data = []
+    saved_tenders = []
     try:
         # refine.criteres=sociaux
-        r = client.get(BASE_URL, params={"refine.dateparution": "2022", "refine.etat": "INITIAL"})
+        r = client.get(
+            BASE_URL,
+            params={
+                "refine.dateparution": "2022/09",
+                "refine.etat": "INITIAL",
+                "refine.nature_categorise_libelle": "Avis de marché",
+                "refine.procedure_categorise": "OUVERT",
+                "refine.criteres": "sociaux",
+            },
+        )
         r.raise_for_status()
         data = r.json()
         # add cursor to get all offers if "nbItemsRetournes": 1000 < "nbItemsExistants": 3116
@@ -88,19 +98,19 @@ def get_offers_list(client=None):
         if records:
             # dump_to_json_file("all_offers", data)
             for offer in records:
-                print(offer)
+                # print(offer)
                 offer_saved = offer.get("fields")
                 offer_saved |= json.loads(offer_saved.get("donnees", "[]"))
                 offer_saved |= json.loads(offer_saved.get("gestion", "[]"))
                 offer_saved["annonces_anterieures"] = json.loads(offer_saved.get("annonces_anterieures", "[]"))
                 # saved_data.append(offer_saved)
                 tender = create_tender_from_record_boamp(offer_saved)
-                saved_data.append(tender)
-            import ipdb
-
-            ipdb.set_trace()
-            results = Tender.objects.bulk_create(saved_data)
-            print(results)
+                if tender:
+                    saved_data.append(offer_saved)
+                    saved_tenders.append(tender)
+            # results = Tender.objects.bulk_create(saved_data, batch_size=20)
+            print("Nb of tender record", len(saved_tenders))
+            print("Nb of tender created", len(saved_tenders))
             dump_to_json_file("offers_saved", saved_data)
             return saved_data
 
@@ -110,36 +120,61 @@ def get_offers_list(client=None):
 
 def create_tender_from_record_boamp(record: dict) -> Tender:
     identity_tender = record.get("IDENTITE")
-    cpv_code = record.get("OBJET").get("CPV").get("PRINCIPAL")
-    sectors = Sector.objects.prefetch_related("cpv").filter(cpv_codes=cpv_code)
-    perimeters = Perimeter.objects.filter(department_code=record.get("IDENTITE"))
-    tender = Tender(
-        title=record.get("OBJET", {}).get("TITRE_MARCHE", ""),
-        kind=Tender.TENDER_KIND_BOAMP,
-        description=record.get("OBJET", {}).get("OBJET_COMPLET"),
-        constraints="???",
-        external_link=identity_tender.get("URL_DOCUMENT") or identity_tender.get("URL_PROFIL_ACHETEUR"),
-        deadline_date=record.get("datefindiffusion"),
-        response_kind=[Tender.RESPONSE_KIND_EXTERNAL],
-        contact_first_name=identity_tender.get("DENOMINATION"),
-        contact_last_name=identity_tender.get("CONTACT"),
-        contact_email=identity_tender.get("MEL"),
-        contact_phone=identity_tender.get("TEL"),
-        # sectors=sectors,
-        # perimeters=perimeters,
-        is_country_area=False,
-        presta_type=siae_constants.PRESTA_CHOICES,  # type de prestation, utiliser decripteur_libelle
-        author=None,  # need to precise it ?
-        accept_share_amount=False,
-    )
-    tender.save()
-    import ipdb
+    object_tender = record.get("OBJET", {})
+    cpv_code = object_tender.get("CPV", {})
+    sectors = get_sectors_from_cpv(cpv_code)
+    perimeters = Perimeter.objects.filter(
+        post_codes__contains=[record.get("IDENTITE").get("CP")]
+    )  # add regions in the future
+    if perimeters:
+        title = extract_max_field(object_tender.get("TITRE_MARCHE", ""))
+        desciption = extract_max_field(object_tender.get("OBJET_COMPLET", ""))
+        constraints = extract_max_field(record.get("CONDITION_PARTICIPATION", ""))
+        external_link = extract_max_field(
+            identity_tender.get("URL_DOCUMENT") or identity_tender.get("URL_PROFIL_ACHETEUR") or ""
+        )
+        tender = Tender(
+            title=title,
+            kind=Tender.TENDER_KIND_BOAMP,
+            description=desciption,
+            constraints=constraints,
+            external_link=external_link,
+            deadline_date=record.get("datefindiffusion"),
+            response_kind=[Tender.RESPONSE_KIND_EXTERNAL],
+            contact_first_name=identity_tender.get("DENOMINATION"),
+            contact_last_name=identity_tender.get("CONTACT", ""),
+            contact_email=identity_tender.get("MEL", ""),
+            contact_phone=identity_tender.get("TEL", "").replace(" ", "").replace("-", ""),
+            # sectors=sectors,
+            # perimeters=perimeters,
+            is_country_area=False,
+            presta_type=siae_constants.PRESTA_CHOICES,  # type de prestation, utiliser decripteur_libelle
+            author=None,  # need to precise it ?
+            accept_share_amount=False,
+        )
 
-    ipdb.set_trace()
-    tender.sectors.set(sectors)
-    tender.perimeters.set(perimeters)
+        tender.save()
+        tender.sectors.set(sectors)
+        tender.perimeters.set(perimeters)
+        print("Created tender : ", tender)
+        return tender
 
-    return tender
+
+def extract_max_field(field: str, max_length=255):
+    item = field if len(field) <= 255 else field[:max_length]
+    return item
+
+
+def get_sectors_from_cpv(cpv_code):
+    if cpv_code and type(cpv_code) == list:
+        cpv_codes = [cpv_code_item.get("PRINCIPAL") for cpv_code_item in cpv_code]
+        sectors = Sector.objects.prefetch_related("cpv_codes").filter(cpv_codes__in=cpv_codes)
+    elif cpv_code:
+        cpv_code = cpv_code.get("PRINCIPAL")
+        sectors = Sector.objects.prefetch_related("cpv_codes").filter(cpv_codes=cpv_code)
+    else:
+        sectors = Sector.objects.none()
+    return sectors
 
 
 def test1():
