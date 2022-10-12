@@ -1,0 +1,45 @@
+{% comment %} {% load static bootstrap4 %} {% endcomment %}
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <span class="badge badge-sm badge-pill badge-warning-light mb-2">Information pratique</span>
+        <h2 class="h2 mb-2">Pas de temps à perdre ?</h1>
+        <p>Confiez-nous votre recherche (ou sourcing) et recevez des réponses de prestataires inclusifs en moins de 24h.</p>
+        <a href="{% url 'tenders:create' %}" id="siae-search-insert-tender-create-btn" class="btn btn-primary btn-sm btn-ico d-block d-md-inline-block mb-2">
+            <i class="ri-mail-send-line ri-lg"></i>
+            <span>Publier un besoin d'achat</span>
+        </a>
+    </div>
+    <div class="col-md-6">
+        {% if current_perimeters %}
+            <h5>Lieu(x) d’intervention</h5>
+            {% for perimeter in current_perimeters %}
+                <span class="badge badge-base badge-outline-primary mr-1">{{perimeter.name}}</span>
+                {% if forloop.counter == 2 %}
+                    <a class="w-100 d-block text-decoration-none has-collapse-caret collapsed" data-toggle="collapse" href="#perimetersSearchHidden" role="button" aria-expanded="false" aria-controls="perimetersSearchHidden">
+                        Afficher les {{current_perimeters|length}} autres lieux d'interventions
+                    </a>
+                    <div id="perimetersSearchHidden" class="collapse">
+                {% endif %}
+                {% if forloop.counter == current_sectors|length %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% comment %} {% if current_perimeters %} {% endcomment %}
+            <h5 class="mt-4">Secteur(s) d’activité</h5>
+            {% for sector in current_sectors %}
+                <span class="badge badge-base badge-outline-primary ml-0 mb-1">{{sector.name}}</span><br>
+                {% if forloop.counter == 2 %}
+                    <a class="w-100 d-block text-decoration-none has-collapse-caret collapsed" data-toggle="collapse" href="#sectorsSearchHidden" role="button" aria-expanded="false" aria-controls="sectorsSearchHidden">
+                        Afficher les {{current_sectors|length}} autres secteurs
+                    </a>
+                    <div id="sectorsSearchHidden" class="collapse">
+                {% endif %}
+                {% if forloop.counter == current_sectors|length %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% comment %} {% endif %} {% endcomment %}
+    </div>
+</div>
