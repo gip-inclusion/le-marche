@@ -21,6 +21,7 @@ class ArticlePage(Page):
     categories = ParentalManyToManyField("cms.ArticleCategory", blank=True)
 
     is_static_page = models.BooleanField(verbose_name="c'est une page statique ?", default=False)
+    with_cta_tender = models.BooleanField(verbose_name="avec un CTA pour les besoins ?", default=False)
 
     template_name = models.CharField(
         verbose_name="Nom de la template",
@@ -44,6 +45,7 @@ class ArticlePage(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel("intro", classname="full"),
+        FieldPanel("with_cta_tender", classname="full"),
         MultiFieldPanel([FieldPanel("categories", widget=forms.CheckboxSelectMultiple)], heading="Categories"),
         ImageChooserPanel(
             "image",
@@ -54,6 +56,13 @@ class ArticlePage(Page):
                 FieldPanel("body", classname="full"),
             ],
             heading="Article normal",
+            classname="collapsible",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel("with_cta_tender", classname="full"),
+            ],
+            heading="Promotion",
             classname="collapsible",
         ),
         MultiFieldPanel(

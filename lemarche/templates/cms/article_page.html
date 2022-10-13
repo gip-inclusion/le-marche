@@ -57,6 +57,16 @@
                 {{ page.body|richtext }}
             </div>
         </div>
+        {% if page.with_cta_tender %}
+            <div class="text-center py-5">
+                <h3>Trouver des prestataires inclusifs n’a jamais été aussi simple.</h3>
+                <p class="mb-4">Vous aussi, publiez votre besoin sur le marché de l’inclusion !</p>
+                <a href="{% url 'tenders:create' %}" id="dashboard-tender-create-btn" class="btn btn-primary btn-ico width-100 width-md-auto">
+                    <i class="ri-mail-send-line"></i>
+                    <span>Publier un besoin d'achat</span>
+                </a>
+            </div>
+        {% endif %}
     </div>
 </section>
 {% endblock %}
