@@ -206,7 +206,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # for review apps
 # if none, will use Site.objects.get_current().domain instead
-DEPLOY_URL = env.str("DEPLOY_URL", None)
+DEPLOY_URL = env.str("DEPLOY_URL", "None")
 
 
 # Database
@@ -748,4 +748,4 @@ WAGTAIL_RICHTEXT_FIELD_FEATURES = [
 
 WAGTAILEMBEDS_RESPONSIVE_HTML = True
 
-WAGTAILADMIN_BASE_URL = DEPLOY_URL
+WAGTAILADMIN_BASE_URL = DEPLOY_URL or "http://localhost/"
