@@ -27,7 +27,7 @@ django-modelcluster==6.0; python_version >= "3.7"
 django-permissionedforms==0.1; python_version >= "3.7"
 django-select2==7.10.1
 django-storages==1.13.1; python_version >= "3.7"
-django-taggit==2.1.0; python_version >= "3.7"
+django-taggit==3.0.0; python_version >= "3.7"
 django-treebeard==4.5.1; python_version >= "3.7"
 django==4.0.8; python_version >= "3.8"
 djangorestframework==3.14.0; python_version >= "3.6"
