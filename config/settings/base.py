@@ -517,6 +517,7 @@ SPECTACULAR_SETTINGS = {
         "name": "Une question ? Contactez-nous via notre formulaire",
         "url": "https://lemarche.inclusion.beta.gouv.fr/contact/",
     },
+    "PREPROCESSING_HOOKS": ["lemarche.api.utils.custom_preprocessing_hook"],
     "ENUM_NAME_OVERRIDES": {
         "kind": "lemarche.siaes.models.Siae.KIND_CHOICES",
         "department": "lemarche.siaes.models.Siae.DEPARTMENT_CHOICES",
