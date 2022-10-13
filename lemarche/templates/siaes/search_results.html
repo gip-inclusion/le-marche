@@ -138,7 +138,7 @@
                         {% if siaes %}
                             <div class="col-12 col-lg-auto">
                                 {% if user.is_authenticated %}
-                                    <button type="button" class="btn btn-ico white-space-nowrap text-decoration-none btn-link text-important px-0" data-toggle="modal" data-target="#download_click_survey_modal">
+                                    <button type="button" class="btn btn-ico white-space-nowrap text-decoration-none btn-link text-important px-0" data-toggle="modal" data-target="#download_click_survey_modal" data-extra="{{ current_search_query }}">
                                         <span class="text-decoration-none ml-0">Télécharger la liste</span>
                                         <i class="ri-download-line ri-lg"></i>
                                     </button>
@@ -241,6 +241,7 @@
 {% block extra_js %}
 {{ current_perimeters|json_script:"current-perimeters" }}
 <script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/add_parameters_on_download_submit_button.js' %}"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
     let searchFilterTab = document.getElementById('search-filter-tab');
