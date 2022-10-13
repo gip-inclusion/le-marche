@@ -167,16 +167,25 @@ def csrf_failure(request, reason=""):  # noqa C901
                         "presta_type",
                         "response_kind",
                         "is_country_area",
+                        "accept_share_amount",
+                        "accept_cocontracting",
+                        "is_marche_useful",
+                        "marche_benefits",
                     ]:
                         if value[0]:
                             tender_dict[key_cleaned] = value[0]
-                    elif key_cleaned == "is_country_area":
+                    elif key_cleaned in [
+                        "is_country_area",
+                        "accept_share_amount",
+                        "accept_cocontracting",
+                        "is_marche_useful",
+                    ]:
                         tender_dict[key_cleaned] = value[0] == "on"
                     elif key_cleaned == "sectors":
                         tender_dict[key_cleaned] = Sector.objects.filter(slug__in=value)
                     elif key_cleaned == "perimeters":
                         tender_dict[key_cleaned] = Perimeter.objects.filter(slug__in=value)
-                    else:
+                    else:  # presta_type, response_kind, marche_benefits
                         tender_dict[key_cleaned] = list() if value[0] == "" else value
 
         # get user
