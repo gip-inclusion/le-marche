@@ -18,12 +18,20 @@
 {% endblock %}
 
 {% block content_form %}
-<h2>Utilité du Marché de l'inclusion</h2>
-<fieldset>
+<div class="row mb-3 mb-lg-5">
+    <div class="col-12 col-lg-8">
     <label class="fake-label">{{ form.is_marche_useful.label }}</label>
     {% bootstrap_field form.is_marche_useful show_label=False %}
     {% bootstrap_field form.marche_benefits %}
-</fieldset>
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+            <p class="mb-0">
+                Ces élements nous aident à mesurer l'utilité du Marché de l'inclusion.
+            </p>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block submit_btn %}
