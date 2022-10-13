@@ -168,15 +168,7 @@
                         {% include "siaes/_card_search_result.html" with siae=siae %}
                         <!-- insert to nudge tender creation -->
                         {% if forloop.counter == 5 and page_obj.number == 1 %}
-                            <div class="mb-4">
-                                <span class="badge badge-sm badge-pill badge-warning-light mb-2">Information pratique</span>
-                                <h2 class="h2 mb-2">Pas de temps à perdre ?</h1>
-                                <h3 class="h4">Confiez-nous votre recherche (ou sourcing) et recevez des réponses de prestataires inclusifs en moins de 24h.</h2>
-                                <a href="{% url 'tenders:create' %}" id="siae-search-insert-tender-create-btn" class="btn btn-primary btn-ico d-block d-md-inline-block mb-2">
-                                    <i class="ri-mail-send-line ri-lg"></i>
-                                    <span>Publier un besoin d'achat</span>
-                                </a>
-                            </div>
+                            {% include "siaes/_card_suggest_tender.html" %}
                         {% endif %}
                     {% endfor %}
 
