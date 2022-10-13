@@ -20,14 +20,14 @@
 {% block content_form %}
 <div class="row mb-3 mb-lg-5">
     <div class="col-12 col-lg-8">
-    <label class="fake-label">{{ form.is_marche_useful.label }}</label>
+    <label class="fake-label fake-label-required">{{ form.is_marche_useful.label }}</label>
     {% bootstrap_field form.is_marche_useful show_label=False %}
     {% bootstrap_field form.marche_benefits %}
     </div>
     <div class="col-12 col-lg-4">
         <div class="alert alert-info mt-3 mt-lg-0" role="alert">
             <p class="mb-0">
-                Ces élements nous aident à mesurer l'utilité du Marché de l'inclusion.
+                Ces éléments nous aident à mesurer l'utilité du Marché de l'inclusion.
             </p>
         </div>
     </div>
@@ -46,11 +46,16 @@
 document.addEventListener('DOMContentLoaded', function () {
     let formPreviousButton = document.getElementById('tender-create-form-previous-step-btn');
     let formSubmitButton = document.getElementById('tender-create-form-submit-btn');
-    formSubmitButton.addEventListener('click', function(e) {
+
+    function submitForm() {
         $(formPreviousButton).prop('disabled', true);
         $(formSubmitButton).prop('disabled', true);
         formSubmitButton.innerHTML += "&nbsp;<i class='ri-loader-4-line ri-spinner ri-lg'></i>";
         $('form').submit();
+    }
+
+    formSubmitButton.addEventListener('click', function(e) {
+        submitForm();
     });
 });
 </script>

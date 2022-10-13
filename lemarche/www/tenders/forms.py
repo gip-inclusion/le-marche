@@ -187,7 +187,8 @@ class AddTenderStepConfirmationForm(forms.Form):
     is_marche_useful = forms.BooleanField(
         label=Tender._meta.get_field("is_marche_useful").help_text,
         widget=forms.RadioSelect(choices=[(True, "Oui"), (False, "Non")]),
-        required=True,
+        required=False,  # if a BooleanField is required, then it won't allow a False value...
+        initial=True,  # ...so we initialize it
     )
     marche_benefits = forms.MultipleChoiceField(
         label=Tender._meta.get_field("marche_benefits").help_text,
