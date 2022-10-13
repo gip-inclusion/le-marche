@@ -18,6 +18,7 @@ from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
+from lemarche.utils import constants
 from lemarche.utils.fields import ChoiceArrayField
 
 
@@ -231,6 +232,20 @@ class Tender(models.Model):
         verbose_name="Structures correspondantes au besoin",
         related_name="tenders",
         blank=True,
+    )
+
+    # survey
+    is_marche_useful = models.BooleanField(
+        verbose_name="Utilité du marché de l'inclusion",
+        help_text="Pour ce besoin, auriez-vous fait appel à des prestataires inclusifs si le Marché de l'inclusion n'existait pas ?",  # noqa
+        default=True,
+    )
+    marche_benefits = ChoiceArrayField(
+        verbose_name="Bénéfices du marché de l'inclusion",
+        help_text="Quels sont le(s) bénéfice(s) de passer par le Marché de l'inclusion pour ce besoin ?",
+        base_field=models.CharField(max_length=20, choices=constants.MARCHE_BENEFIT_CHOICES),
+        blank=True,
+        default=list,
     )
 
     # stats
