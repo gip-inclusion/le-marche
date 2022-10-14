@@ -14,7 +14,6 @@ from django.utils.text import slugify
 from django_better_admin_arrayfield.models.fields import ArrayField
 
 from lemarche.perimeters.models import Perimeter
-from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
@@ -55,24 +54,13 @@ class TenderQuerySet(models.QuerySet):
         else:
             return self
 
-    def filter_with_siae(self, siaes):
+    def filter_with_siaes(self, siaes):
         """
-        Return the list of tenders corresponding to the list of Siae
-        Filters on its sectors & perimeter
+        Return the list of tenders corresponding to the list of Siaes
+        - the tender-siae matching has already been done with filter_with_tender()
+        - we return only validated tenders
         """
-        qs = self.prefetch_related("sectors", "perimeters")
-        # filter by sectors
-        sectors = Sector.objects.prefetch_related("siaes").filter(siaes__in=siaes).distinct()
-        qs = qs.in_sectors(sectors)
-        # filter by perimeters
-        conditions = Q()
-        for siae in siaes:
-            if siae.geo_range != siae.GEO_RANGE_COUNTRY:
-                conditions |= get_perimeter_filter(siae)
-        qs = qs.filter(conditions)
-        # filter by presta_type ?
-        # return
-        return qs.distinct()
+        return Tender.objects.filter(tendersiae__siae__in=siaes).validated().distinct()
 
     def with_siae_stats(self):
         """
@@ -265,7 +253,7 @@ class Tender(models.Model):
     class Meta:
         verbose_name = "Besoin d'acheteur"
         verbose_name_plural = "Besoins des acheteurs"
-        ordering = ["-updated_at", "deadline_date"]
+        ordering = ["-created_at", "deadline_date"]
 
     def __str__(self):
         return self.title
@@ -280,7 +268,10 @@ class Tender(models.Model):
             self.slug += f"-{str(uuid4())[:4]}"
 
     def set_siae_found_list(self):
-        # if not self.validated_at:
+        """
+        Where the Tender-Siae matching magic happens!
+        Called by Tender signals (and if not self.validated_at)
+        """
         siae_found_list = Siae.objects.filter_with_tender(self)
         self.siaes.set(siae_found_list)
 
