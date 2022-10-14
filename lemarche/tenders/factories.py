@@ -1,5 +1,5 @@
-import datetime
 import random
+from datetime import date, timedelta
 
 import factory.fuzzy
 from django.utils import timezone
@@ -24,7 +24,7 @@ class TenderFactory(DjangoModelFactory):
     )
     description = factory.Faker("paragraph", nb_sentences=5, locale="fr_FR")
     constraints = factory.Faker("paragraph", nb_sentences=5, locale="fr_FR")
-    deadline_date = datetime.date.today() + datetime.timedelta(days=10)
+    deadline_date = date.today() + timedelta(days=10)
     author = factory.SubFactory(UserFactory)
     validated_at = timezone.now()
 

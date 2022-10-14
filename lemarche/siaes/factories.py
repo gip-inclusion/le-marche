@@ -34,6 +34,12 @@ class SiaeFactory(DjangoModelFactory):
     contact_email = factory.Sequence("email{0}@example.com".format)
 
     @factory.post_generation
+    def users(self, create, extracted, **kwargs):
+        if extracted:
+            # Add the iterable of groups using bulk addition
+            self.users.add(*extracted)
+
+    @factory.post_generation
     def sectors(self, create, extracted, **kwargs):
         if extracted:
             # Add the iterable of groups using bulk addition
