@@ -1,4 +1,5 @@
 # import datetime
+from datetime import timedelta
 from importlib import import_module
 from random import randint
 
@@ -35,12 +36,12 @@ class TenderModelTest(TestCase):
     # def test_deadline_start_before_today(self):
     #     today = datetime.date.today()
     #     tender = TenderFactory()
-    #     tender.deadline_date = today - datetime.timedelta(days=1)
+    #     tender.deadline_date = today - timedelta(days=1)
     #     self.assertNotRaises(ValidationError, tender.clean)
 
     # def test_deadline_start_after_start_working_date(self):
     #     tender = TenderFactory()
-    #     tender.start_working_date = tender.deadline_date - datetime.timedelta(days=1)
+    #     tender.start_working_date = tender.deadline_date - timedelta(days=1)
     #     self.assertRaises(ValidationError, tender.clean)
 
     def test_not_empty_deadline(self):
@@ -58,6 +59,17 @@ class TenderModelQuerysetTest(TestCase):
         TenderFactory(author=user)
         TenderFactory()
         self.assertEqual(Tender.objects.by_user(user).count(), 1)
+
+    def test_validated_queryset(self):
+        TenderFactory(validated_at=timezone.now())
+        TenderFactory(validated_at=None)
+        self.assertEqual(Tender.objects.validated().count(), 1)
+
+    def test_is_live_queryset(self):
+        TenderFactory(deadline_date=timezone.now() + timedelta(days=1))
+        TenderFactory(deadline_date=timezone.now() - timedelta(days=1))
+        # TenderFactory(deadline_date=None)  # cannot be None
+        self.assertEqual(Tender.objects.is_live().count(), 1)
 
     def test_in_sectors_queryset(self):
         sector_1 = SectorFactory(name="Un secteur")
