@@ -324,6 +324,12 @@ class Tender(models.Model):
             return self.TENDER_ACCEPT_SHARE_AMOUNT_TRUE
         return self.TENDER_ACCEPT_SHARE_AMOUNT_FALSE
 
+    @cached_property
+    def deadline_date_outdated(self):
+        if self.deadline_date and self.deadline_date < timezone.now().date():
+            return True
+        return False
+
     def get_absolute_url(self):
         return reverse("tenders:detail", kwargs={"slug": self.slug})
 
