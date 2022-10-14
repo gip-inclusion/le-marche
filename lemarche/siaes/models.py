@@ -44,9 +44,7 @@ GEO_RANGE_COUNTRY = "COUNTRY"
 
 
 def get_filter_city(perimeter, with_country=False):
-    filters = Q(post_code__in=perimeter.post_codes) | (
-        Q(geo_range=GEO_RANGE_DEPARTMENT) & Q(department=perimeter.department_code)
-    )
+    filters = Q(post_code__in=perimeter.post_codes) | Q(department=perimeter.department_code)
     if perimeter.coords:
         filters |= (
             Q(geo_range=GEO_RANGE_CUSTOM)
