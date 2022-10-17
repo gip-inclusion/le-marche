@@ -886,6 +886,10 @@ class Siae(models.Model):
             return "l'ASP"
 
     @property
+    def kind_is_esat_or_ea(self):
+        return (self.kind == Siae.KIND_ESAT) or (self.kind == Siae.KIND_EA)
+
+    @property
     def completion_percent(self):
         score, total = 0, 0
         for key, value in SIAE_COMPLETION_SCORE_GRID.items():
