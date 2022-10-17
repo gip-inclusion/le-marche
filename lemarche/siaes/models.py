@@ -39,12 +39,18 @@ from lemarche.utils.fields import ChoiceArrayField
 
 
 GEO_RANGE_DEPARTMENT = "DEPARTMENT"
+GEO_RANGE_REGION = "REGION"
 GEO_RANGE_CUSTOM = "CUSTOM"
 GEO_RANGE_COUNTRY = "COUNTRY"
 
 
 def get_filter_city(perimeter, with_country=False):
-    filters = Q(post_code__in=perimeter.post_codes) | Q(department=perimeter.department_code)
+    """
+    used in Siae in_perimeters_area() queryset
+    """
+    filters = Q(post_code__in=perimeter.post_codes) | (
+        ~Q(geo_range=GEO_RANGE_CUSTOM) & Q(department=perimeter.department_code)
+    )
     if perimeter.coords:
         filters |= (
             Q(geo_range=GEO_RANGE_CUSTOM)
@@ -248,9 +254,9 @@ class SiaeQuerySet(models.QuerySet):
         Depending on the type of Perimeter that were chosen, different cases arise:
 
         **CITY**
-        return the Siae with the post code in Perimeter.post_codes+department
-        OR the Siae with geo_range=GEO_RANGE_CUSTOM and a perimeter radius that overlaps with the search_perimeter
-        OR the Siae with geo_range=GEO_RANGE_DEPARTMENT and a department equal to the search_perimeter's
+        return the Siae with the post code in perimeter.post_codes
+        OR the Siae with the same department (except geo_range=GEO_RANGE_CUSTOM)
+        OR the Siae with geo_range=GEO_RANGE_CUSTOM and a perimeter radius that overlaps with the city
 
         **DEPARTMENT**
         return only the Siae in this department
@@ -477,7 +483,7 @@ class Siae(models.Model):
     DEPARTMENT_CHOICES = DEPARTMENTS_PRETTY.items()
     REGION_CHOICES = REGIONS_PRETTY.items()
     GEO_RANGE_COUNTRY = GEO_RANGE_COUNTRY  # 3
-    GEO_RANGE_REGION = "REGION"  # 2
+    GEO_RANGE_REGION = GEO_RANGE_REGION  # 2
     GEO_RANGE_DEPARTMENT = GEO_RANGE_DEPARTMENT  # 1
     GEO_RANGE_CUSTOM = GEO_RANGE_CUSTOM  # 0
     GEO_RANGE_CHOICES = (

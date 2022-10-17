@@ -385,47 +385,47 @@ class SiaePerimeterSearchFilterTest(TestCase):
     def test_search_perimeter_city(self):
         """
         We should return:
-        - all the Siae exactly in this city+department (4 SIAE)
-        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble (2 SIAE: Grenoble & La Tronche. Chamrousse is outside)  # noqa
-        + all the Siae with geo_range=GEO_RANGE_DEPARTMENT + department=38 (1 SIAE)
+        - all the Siae exactly in the city - Grenoble (4 Siae)
+        + all the Siae in the city's department (except GEO_RANGE_CUSTOM) - Isere (0 new Siae)
+        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble (1 new Siae: La Tronche. Chamrousse is outside)  # noqa
         """
         form = SiaeSearchForm({"perimeters": [self.grenoble_perimeter.slug]})
         self.assertTrue(form.is_valid())
         qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 2 + 2 + 1)
+        self.assertEqual(qs.count(), 4 + 0 + 1)
 
     def test_search_perimeter_city_2(self):
         """
         We should return:
-        - all the Siae exactly in this city+department (1 SIAE)
-        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble (1 SIAE: Chamrousse. Grenoble & La Tronche are outside)  # noqa
-        + all the Siae with geo_range=GEO_RANGE_DEPARTMENT + department=38 (1 SIAE)
+        - all the Siae exactly in the city - Chamrousse (1 Siae)
+        + all the Siae in the city's department (except GEO_RANGE_CUSTOM) - Isere (3 new Siae)
+        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble (1 Siae, 0 new: Chamrousse. Grenoble & La Tronche are outside)  # noqa
         """
         form = SiaeSearchForm({"perimeters": [self.chamrousse_perimeter]})
         qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 0 + 1 + 1)
+        self.assertEqual(qs.count(), 1 + 3 + 0)
 
     def test_search_perimeter_multiperimeter_1(self):
         """
         We should return:
-        - all the Siae exactly in this city+department of Grenoble or Chamrousse (2 SIAE)
-        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble or Chamrousse (2 SIAE) # noqa
-        + all the Siae with geo_range=GEO_RANGE_DEPARTMENT + department of Grenoble or chamrousse (2 SIAE)
+        - all the Siae exactly in these cities - Grenoble & Chamrousse (4 + 1 Siae)
+        + all the Siae in the cities departments (except GEO_RANGE_CUSTOM) - Isere (0 new Siae)
+        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble or Chamrousse (2 Siae, 1 new) # noqa
         """
         form = SiaeSearchForm({"perimeters": [self.grenoble_perimeter, self.chamrousse_perimeter]})
         qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 2 + 2 + 2)
+        self.assertEqual(qs.count(), 5 + 0 + 1)
 
     def test_search_perimeter_multiperimeter_2(self):
         """
         We should return:
-        - all the Siae exactly in this city+department of Grenoble or quimper (2 SIAE)
-        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble or Quimper (2 SIAE) # noqa
-        + all the Siae with geo_range=GEO_RANGE_DEPARTMENT + department of Grenoble or Quimper (3 SIAE)
+        - all the Siae exactly in these cities - Grenoble & Quimper (4 + 4)
+        + all the Siae in the cities departments (except GEO_RANGE_CUSTOM) - Isere & 29 (0 new Siae)
+        + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble or Quimper (1 new Siae) # noqa
         """
         form = SiaeSearchForm({"perimeters": [self.grenoble_perimeter, self.quimper_perimeter]})
         qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 2 + 2 + 3)
+        self.assertEqual(qs.count(), 8 + 0 + 1)
 
     def test_search_perimeter_multiperimeter_error(self):
         """
