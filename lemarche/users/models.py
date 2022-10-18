@@ -8,6 +8,7 @@ from django.forms.models import model_to_dict
 from django.utils import timezone
 
 from lemarche.stats.models import StatsUser
+from lemarche.tenders.models import TenderSiae
 
 
 class UserQueryset(models.QuerySet):
@@ -259,6 +260,12 @@ class User(AbstractUser):
         if self.first_name and self.last_name:
             return f"{self.first_name.upper()[:1]}. {self.last_name.upper()}"
         return ""
+
+    def has_tender_siae(self, tender=None):
+        qs = TenderSiae.objects.filter(siae__in=self.siaes.all())
+        if tender:
+            qs = qs.filter(tender=tender)
+        return qs.exists()
 
 
 @receiver(post_save, sender=User)
