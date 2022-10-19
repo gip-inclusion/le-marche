@@ -887,7 +887,7 @@ class Siae(models.Model):
 
     @property
     def kind_is_esat_or_ea(self):
-        return (self.kind == Siae.KIND_ESAT) or (self.kind == Siae.KIND_EA)
+        return self.kind in [Siae.KIND_ESAT, Siae.KIND_EA]
 
     @property
     def completion_percent(self):
