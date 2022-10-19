@@ -9,24 +9,6 @@ from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX, send_mail_async, whiteli
 from lemarche.utils.urls import get_admin_url_object, get_share_url_object
 
 
-def match_tender_for_partners(tender: Tender, send_email_func=None):
-    """Manage the matching from tender to partners
-
-    Args:
-        tender (Tender): _description_
-        send_email_func : function which takes two arguments tender, and dict of partner (see PARTNERS_FILTERS)
-
-    Returns:
-        list<Dict>: list of partners
-    """
-    partners = PartnerShareTender.objects.filter_by_tender(tender)
-    for partner in partners:
-        if send_email_func:
-            send_email_func(tender, partner)
-
-    return partners
-
-
 # @task()
 def send_tender_emails_to_siaes(tender: Tender):
     """
@@ -36,8 +18,15 @@ def send_tender_emails_to_siaes(tender: Tender):
         send_tender_email_to_siae(tender, siae)
 
     tender.tendersiae_set.update(email_send_date=timezone.now(), updated_at=timezone.now())
-    # will be moved on global action in backoffice admin
-    match_tender_for_partners(tender=tender, send_email_func=send_tender_email_to_partner)
+
+
+def send_tender_emails_to_partners(tender: Tender):
+    """
+    All corresponding partners (PartnerShareTender) will be contacted
+    """
+    partners = PartnerShareTender.objects.filter_by_tender(tender)
+    for partner in partners:
+        send_tender_email_to_partner(tender, partner)
 
 
 def send_tender_email_to_partner(tender: Tender, partner: PartnerShareTender):
