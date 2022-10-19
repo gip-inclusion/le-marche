@@ -53,6 +53,7 @@ class TenderAdmin(admin.ModelAdmin):
         "siae_detail_display_count_with_link",
         "siae_contact_click_count_with_link",
         "created_at",
+        "validated_at",
     ]
     list_filter = ["kind", "deadline_date", "start_working_date", ResponseKindFilter]
     # filter on "perimeters"? (loads ALL the perimeters... Use django-admin-autocomplete-filter instead?)
