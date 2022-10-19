@@ -206,7 +206,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # for review apps
 # if none, will use Site.objects.get_current().domain instead
-DEPLOY_URL = env.str("DEPLOY_URL", "None")
+DEPLOY_URL = env.str("DEPLOY_URL", None)
 
 
 # Database
