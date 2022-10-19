@@ -345,9 +345,11 @@ def tender_m2m_changed(sender, instance, action, **kwargs):
 class TenderSiae(models.Model):
     TENDER_SIAE_SOURCE_EMAIL = "EMAIL"
     TENDER_SIAE_SOURCE_DASHBOARD = "DASHBOARD"
+    TENDER_SIAE_SOURCE_LINK = "LINK"
     TENDER_SIAE_SOURCE_CHOICES = (
         (TENDER_SIAE_SOURCE_EMAIL, "E-mail"),
         (TENDER_SIAE_SOURCE_DASHBOARD, "Dashboard"),
+        (TENDER_SIAE_SOURCE_LINK, "Lien"),
     )
 
     tender = models.ForeignKey("tenders.Tender", verbose_name="Besoin d'acheteur", on_delete=models.CASCADE)

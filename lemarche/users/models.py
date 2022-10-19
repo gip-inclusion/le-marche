@@ -260,6 +260,14 @@ class User(AbstractUser):
             return f"{self.first_name.upper()[:1]}. {self.last_name.upper()}"
         return ""
 
+    def has_tender_siae(self, tender=None):
+        from lemarche.tenders.models import TenderSiae
+
+        qs = TenderSiae.objects.filter(siae__in=self.siaes.all())
+        if tender:
+            qs = qs.filter(tender=tender)
+        return qs.exists()
+
 
 @receiver(post_save, sender=User)
 def user_post_save(sender, instance, **kwargs):

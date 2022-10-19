@@ -244,7 +244,7 @@ class TenderDetailViewTest(TestCase):
         siae_2 = SiaeFactory(name="ABC Insertion")
         self.siae_user_2.siaes.add(siae_2)
         self.tender_1.siaes.add(siae_2)
-        self.assertEqual(self.tender_1.tendersiae_set.count(), 2)
+        self.assertEqual(self.tender_1.tendersiae_set.count(), 1 + 1)
         self.assertEqual(self.tender_1.tendersiae_set.first().siae, siae_2)
         self.assertEqual(self.tender_1.tendersiae_set.last().siae, self.siae_1)
         self.assertIsNone(self.tender_1.tendersiae_set.first().detail_display_date)
@@ -255,13 +255,29 @@ class TenderDetailViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         siae_2_detail_display_date = self.tender_1.tendersiae_set.first().detail_display_date
-        self.assertNotEqual(siae_2_detail_display_date, None)
-        self.assertEqual(self.tender_1.tendersiae_set.last().detail_display_date, None)
+        self.assertIsNotNone(siae_2_detail_display_date)
+        self.assertIsNone(self.tender_1.tendersiae_set.last().detail_display_date)
         # reload doesn't update detail_display_date
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.tender_1.tendersiae_set.first().detail_display_date, siae_2_detail_display_date)
+
+    def test_create_tendersiae_stats_on_tender_view_by_new_siae(self):
+        siae_2 = SiaeFactory(name="ABC Insertion")
+        self.siae_user_2.siaes.add(siae_2)
+        # self.tender_1.siaes.add(siae_2)
+        self.assertEqual(self.tender_1.tendersiae_set.count(), 1)
+        self.assertEqual(self.tender_1.tendersiae_set.first().siae, self.siae_1)
+        self.assertIsNone(self.tender_1.tendersiae_set.first().detail_display_date)
+        # first load
+        self.client.login(email=self.siae_user_2.email, password=DEFAULT_PASSWORD)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.tender_1.tendersiae_set.count(), 1 + 1)
+        self.assertEqual(self.tender_1.tendersiae_set.first().siae, siae_2)
+        self.assertIsNotNone(self.tender_1.tendersiae_set.first().detail_display_date)
 
 
 class TenderDetailContactClickStatViewTest(TestCase):
