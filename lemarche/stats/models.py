@@ -10,7 +10,6 @@ class Tracker(models.Model):
     env = models.CharField(max_length=200)
     source = models.CharField(max_length=200)
 
-    session_id = models.UUIDField(verbose_name="browser session UUID")
     page = models.CharField(max_length=200)
     action = models.CharField(verbose_name="Type d'action", max_length=200)
     data = models.JSONField()

@@ -46,8 +46,6 @@ DEFAULT_PAYLOAD = {
     "page": "",
     "action": "load",
     "data": {"source": "bitoubi_api"},  # needs to be stringifyed...
-    "session_id": "00000000-1111-2222-aaaa-444444444444",
-    "send_order": 0,  # why we use it ?
     "source": "tracker",  # why we use it ?
 }
 
@@ -81,10 +79,8 @@ def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
                 "env": settings.BITOUBI_ENV,  # est-ce vraiment utile ?
                 "meta": DEFAULT_PAYLOAD["data"] | meta,
                 "page": page,
-                # "order": 0,
                 "action": action,
                 # "timestamp": date_created,
-                # "session_id": "00000000-1111-2222-aaaa-444444444444",
             },
             "isadmin": meta.get("is_admin", False),
         }
