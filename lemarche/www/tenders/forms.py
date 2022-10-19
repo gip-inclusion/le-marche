@@ -140,8 +140,9 @@ class AddTenderStepContactForm(forms.ModelForm):
         self.fields["contact_last_name"].required = True
         if self.user_is_anonymous:
             self.fields["contact_email"].required = True
-        if user_does_not_have_company_name:
-            self.fields["contact_company_name"].widget = forms.TextInput()
+            self.fields["contact_phone"].required = True
+        if self.user_does_not_have_company_name:
+            self.fields["contact_company_name"].widget = forms.TextInput()  # HiddenInput() by default
             self.fields["contact_company_name"].required = True
 
     def clean(self):
