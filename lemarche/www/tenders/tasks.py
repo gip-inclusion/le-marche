@@ -14,10 +14,21 @@ def send_tender_emails_to_siaes(tender: Tender):
     """
     All corresponding Siae will be contacted
     """
-    for siae in tender.siaes.all():
+    siaes = tender.siaes.all()
+    for siae in siaes:
         send_tender_email_to_siae(tender, siae)
 
     tender.tendersiae_set.update(email_send_date=timezone.now(), updated_at=timezone.now())
+
+    # log email batch
+    log_item = {
+        "action": "email_siaes_matched",
+        # "email_subject"
+        "email_count": siaes.count(),
+        "email_timestamp": timezone.now().isoformat(),
+    }
+    tender.logs.append(log_item)
+    tender.save()
 
 
 def send_tender_emails_to_partners(tender: Tender):
@@ -27,6 +38,16 @@ def send_tender_emails_to_partners(tender: Tender):
     partners = PartnerShareTender.objects.filter_by_tender(tender)
     for partner in partners:
         send_tender_email_to_partner(tender, partner)
+
+    # log email batch
+    log_item = {
+        "action": "email_partners_matched",
+        # "email_subject"
+        "email_count": partners.count(),
+        "email_timestamp": timezone.now().isoformat(),
+    }
+    tender.logs.append(log_item)
+    tender.save()
 
 
 def send_tender_email_to_partner(tender: Tender, partner: PartnerShareTender):
