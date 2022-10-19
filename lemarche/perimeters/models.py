@@ -24,12 +24,15 @@ class Perimeter(models.Model):
     REGION_CHOICES = REGIONS.items()
 
     name = models.CharField(verbose_name="Nom", max_length=255, db_index=True)
-    # Note for CITIES: we add the department_code at the end to avoid duplicates
-    # Note for REGIONS: some have the same name as a DEPARTMENT. So we add '-region' at their end
+
+    # Note for cities: we add the department_code at the end to avoid duplicates
+    # Note for regions: some have the same name as a DEPARTMENT. So we add '-region' at their end
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
 
-    kind = models.CharField(verbose_name="Type de périmètre", max_length=20, choices=KIND_CHOICES)
-    # Note: REGION insee_codes are prefixed with a 'R' to avoid conflicts with DEPARTMENT
+    kind = models.CharField(verbose_name="Type de périmètre", choices=KIND_CHOICES, max_length=20)
+
+    # Note for departments: expects DEPARTMENT_CHOICES
+    # Note for regions: expects REGION_CHOICES, but prefixed with a 'R' to avoid conflicts with DEPARTMENT_CHOICES
     insee_code = models.CharField(verbose_name="Code INSEE", max_length=5, unique=True)
 
     # only for cities
