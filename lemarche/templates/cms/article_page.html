@@ -3,7 +3,7 @@
 {% load wagtailimages_tags %}
 
 {% block meta_description %}
-    <meta name="description" content="{{ page.search_description }}">
+<meta name="description" content="{{ page.search_description }}">
 {% endblock %}
 
 {% block title %}{{ page.title }} | {{ block.super }}{% endblock %}
@@ -46,17 +46,27 @@
 <section class="s-cms has-illustration-bg-02">
     <div class="s-cms__container container container-max-lg">
         {% if page.image %}
-        <div class="s-cms__row row">
-            <div class="s-cms__col col-12 mb-3 mb-lg-5">
-                {% image page.image width-960 class="img-fluid img-fitcover" loading="lazy" %}
+            <div class="s-cms__row row">
+                <div class="s-cms__col col-12 mb-3 mb-lg-5">
+                    {% image page.image width-960 class="img-fluid img-fitcover" loading="lazy" %}
+                </div>
             </div>
-        </div>
         {% endif %}
         <div class="s-cms__row row">
             <div class="s-cms__col col-12">
-                {{ page.body|richtext }}
+                {{ page.body | richtext }}
             </div>
         </div>
+        {% if page.with_cta_tender %}
+            <div class="text-center py-5">
+                <h3>Trouver des prestataires inclusifs n'a jamais été aussi simple.</h3>
+                <p class="mb-4">Vous aussi, publiez votre besoin sur le marché de l'inclusion !</p>
+                <a href="{% url 'tenders:create' %}" id="cms-article-tender-create-btn" class="btn btn-primary btn-ico width-100 width-md-auto">
+                    <i class="ri-mail-send-line"></i>
+                    <span>Publier un besoin d'achat</span>
+                </a>
+            </div>
+        {% endif %}
     </div>
 </section>
 {% endblock %}
