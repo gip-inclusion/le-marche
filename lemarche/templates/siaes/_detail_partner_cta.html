@@ -1,0 +1,9 @@
+{% load wagtailcore_tags %}
+
+<h2 class="h3 my-3">Vous avez besoin d'être accompagné dans vos achats inclusifs par des partenaires reconnus ?</h2>
+
+{% if siae.kind_is_esat_or_ea %}
+    <a href="{% slugurl "faciltez-vous-les-achats-responsables" %}" id="track_siae_detail_partners_esat_ea" class="btn btn-outline-primary">Découvrez-les maintenant</a>
+{% else %}
+    <a href="{% url 'pages:partenaires' %}" id="track_siae_detail_partners" class="btn btn-outline-primary">Découvrez-les maintenant</a>
+{% endif %}
