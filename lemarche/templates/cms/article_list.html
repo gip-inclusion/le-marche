@@ -2,7 +2,7 @@
 {% load wagtailcore_tags wagtailimages_tags wagtailroutablepage_tags %}
 
 {% block meta_description %}
-    <meta name="description" content="{{ page.search_description }}">
+<meta name="description" content="{{ page.search_description }}">
 {% endblock %}
 
 {% block title %}{{ page.seo_title }} | {{ block.super }}{% endblock %}
