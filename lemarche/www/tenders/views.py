@@ -242,6 +242,11 @@ class TenderDetailView(DetailView):
         user = self.request.user
         if user.is_authenticated and user.kind == User.KIND_SIAE:
             tender = self.get_object()
+            # user might not be concerned with this tender: we create TenderSiae stats
+            if not user.has_tender_siae(tender):
+                for siae in user.siaes.all():
+                    TenderSiae.objects.create(tender=tender, siae=siae, source=TenderSiae.TENDER_SIAE_SOURCE_LINK)
+            # update stats
             TenderSiae.objects.filter(
                 tender=tender, siae__in=user.siaes.all(), detail_display_date__isnull=True
             ).update(detail_display_date=timezone.now(), updated_at=timezone.now())
@@ -285,13 +290,14 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
         return get_object_or_404(Tender, slug=self.kwargs.get("slug"))
 
     def post(self, request, *args, **kwargs):
+        user = self.request.user
         contact_click_confirm = self.request.POST.get("contact_click_confirm", False) == "true"
-        if self.request.user.kind == User.KIND_SIAE:
+        if user.kind == User.KIND_SIAE:
             if contact_click_confirm:
                 # update contact_click_date
                 tender = self.get_object()
                 TenderSiae.objects.filter(
-                    tender=tender, siae__in=self.request.user.siaes.all(), contact_click_date__isnull=True
+                    tender=tender, siae__in=user.siaes.all(), contact_click_date__isnull=True
                 ).update(contact_click_date=timezone.now(), updated_at=timezone.now())
                 # notify the tender author
                 send_siae_interested_email_to_author(tender)
