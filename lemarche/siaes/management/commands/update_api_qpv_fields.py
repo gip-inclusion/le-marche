@@ -3,13 +3,13 @@ from datetime import timedelta
 
 import requests
 from django.conf import settings
-from django.core.management.base import BaseCommand
 from django.db.models import Q
 from django.utils import timezone
 
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis import api_slack
 from lemarche.utils.apis.api_qpv import IS_QPV_KEY, QPV_CODE_KEY, QPV_NAME_KEY, get_default_client, is_in_qpv
+from lemarche.utils.commands import BaseCommand
 
 
 class Command(BaseCommand):
@@ -85,13 +85,14 @@ class Command(BaseCommand):
                 siaes_to_update, self.FIELDS_TO_BULK_UPDATE, batch_size=settings.BATCH_SIZE_BULK_UPDATE
             )
 
-        msg_success = (
-            f"\nDone! Processed {len(siaes_to_update)}/{len(siae_list)} siaes\n",
-            f"Etablissements success count: {self.success_count['etablissement']}/{len(siaes_to_update)}\n",
+        msg_success = [
+            "----- Recap: sync API QPV -----",
+            f"Done! Processed {len(siaes_to_update)}/{len(siae_list)} siaes",
+            f"Etablissements success count: {self.success_count['etablissement']}/{len(siaes_to_update)}",
             f"Etablissements QPV success count: {self.success_count['etablissement_qpv']}/{len(siae_list)}",
-        )
-        self.stdout_messages_sucess(msg_success)
-        api_slack.send_message_to_channel(msg_success)
+        ]
+        self.stdout_messages_success(msg_success)
+        api_slack.send_message_to_channel("\n".join(msg_success))
 
     def update_siae(self, client, siae):
         # call api is in qpv
@@ -107,24 +108,3 @@ class Command(BaseCommand):
             siae.qpv_code = ""
             siae.qpv_name = ""
         return siae
-
-    def stdout_success(self, message):
-        return self.stdout.write(self.style.SUCCESS(message))
-
-    def stdout_error(self, message):
-        return self.stdout.write(self.style.ERROR(message))
-
-    def stdout_info(self, message):
-        return self.stdout.write(self.style.HTTP_INFO(message))
-
-    def stdout_messages_info(self, messages):
-        self.stdout_info("-" * 80)
-        for message in messages:
-            self.stdout_info(message)
-        self.stdout_info("-" * 80)
-
-    def stdout_messages_sucess(self, messages):
-        self.stdout_success("-" * 80)
-        for message in messages:
-            self.stdout_success(message)
-        self.stdout_success("-" * 80)

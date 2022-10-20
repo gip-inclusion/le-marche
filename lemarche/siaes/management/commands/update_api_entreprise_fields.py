@@ -64,14 +64,14 @@ class Command(BaseCommand):
                 # small delay to avoid going above the API limitation
                 # "max. 250 requêtes/min/jeton cumulées sur tous les endpoints"
                 time.sleep(0.5)
-            msg_sucess = (
-                "-" * 80
-                + f"\nDone! Processed {len(siae_list)} siae\n"
-                + f"etablissements success count: {success_count['etablissement']}/{len(siae_list)}\n"
-                + f"exercices success count: {success_count['exercice']}/{len(siae_list)}"
-            )
-            self.stdout_info(msg_sucess)
-            api_slack.send_message_to_channel(msg_sucess)
+            msg_success = [
+                "----- Recap: sync API Entreprise -----",
+                f"Done! Processed {len(siae_list)} siae",
+                f"etablissements success count: {success_count['etablissement']}/{len(siae_list)}",
+                f"exercices success count: {success_count['exercice']}/{len(siae_list)}",
+            ]
+            self.stdout_info(msg_success)
+            api_slack.send_message_to_channel("\n".join(msg_success))
         except Exception as e:
             self.stdout_error(str(e))
             api_slack.send_message_to_channel("Erreur lors de la synchronisation API entreprises")
