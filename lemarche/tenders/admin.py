@@ -11,7 +11,11 @@ from lemarche.perimeters.admin import PerimeterRegionFilter
 from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import PartnerShareTender, Tender
 from lemarche.utils.fields import pretty_print_readonly_jsonfield
-from lemarche.www.tenders.tasks import send_confirmation_published_email_to_author, send_tender_emails_to_siaes
+from lemarche.www.tenders.tasks import (
+    send_confirmation_published_email_to_author,
+    send_tender_emails_to_partners,
+    send_tender_emails_to_siaes,
+)
 
 
 class ResponseKindFilter(admin.SimpleListFilter):
@@ -33,9 +37,10 @@ def update_and_send_tender_task(tender: Tender):
     tender.validated_at = datetime.now()
     tender.save()
     # 2) find the matching Siaes? done in Tender post_save signal
-    # 3) send the tender to all matching Siaes
-    send_tender_emails_to_siaes(tender)
     send_confirmation_published_email_to_author(tender, nb_matched_siaes=tender.siaes.count())
+    # 3) send the tender to all matching Siaes & Partners
+    send_tender_emails_to_siaes(tender)
+    send_tender_emails_to_partners(tender)
 
 
 @admin.register(Tender, site=admin_site)
