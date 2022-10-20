@@ -63,6 +63,7 @@ def send_tender_email_to_partner(tender: Tender, partner: PartnerShareTender):
     recipient_list = whitelist_recipient_list(partner.contact_email_list)
     if recipient_list:
         variables = {
+            "TENDER_TITLE": tender.title,
             "TENDER_AUTHOR_COMPANY": tender.author.company_name,
             "TENDER_SECTORS": tender.sectors_list_string,
             "TENDER_PERIMETERS": tender.perimeters_list_string,
@@ -139,6 +140,7 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae):
             "SIAE_CONTACT_FIRST_NAME": siae.contact_first_name,
             "SIAE_SECTORS": siae.sectors_list_string,
             "SIAE_PERIMETER": siae.geo_range_pretty_display,
+            "TENDER_TITLE": tender.title,
             "TENDER_AUTHOR_COMPANY": tender.author.company_name,
             "TENDER_KIND": tender.get_kind_display(),
             "TENDER_SECTORS": tender.sectors_list_string,
