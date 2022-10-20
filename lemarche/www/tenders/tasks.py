@@ -9,15 +9,34 @@ from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX, send_mail_async, whiteli
 from lemarche.utils.urls import get_admin_url_object, get_share_url_object
 
 
+def get_tender_siae_email_subject(tender):
+    return f"{EMAIL_SUBJECT_PREFIX}{tender.author.company_name} a besoin de vous sur le marché de l'inclusion"
+
+
+def get_tender_partner_email_subject(tender):
+    return f"{EMAIL_SUBJECT_PREFIX}{tender.author.company_name} recherche des structures inclusives"
+
+
 # @task()
 def send_tender_emails_to_siaes(tender: Tender):
     """
     All corresponding Siae will be contacted
     """
-    for siae in tender.siaes.all():
+    siaes = tender.siaes.all()
+    for siae in siaes:
         send_tender_email_to_siae(tender, siae)
 
     tender.tendersiae_set.update(email_send_date=timezone.now(), updated_at=timezone.now())
+
+    # log email batch
+    log_item = {
+        "action": "email_siaes_matched",
+        "email_subject": get_tender_siae_email_subject(tender),
+        "email_count": siaes.count(),
+        "email_timestamp": timezone.now().isoformat(),
+    }
+    tender.logs.append(log_item)
+    tender.save()
 
 
 def send_tender_emails_to_partners(tender: Tender):
@@ -28,9 +47,19 @@ def send_tender_emails_to_partners(tender: Tender):
     for partner in partners:
         send_tender_email_to_partner(tender, partner)
 
+    # log email batch
+    log_item = {
+        "action": "email_partners_matched",
+        "email_subject": get_tender_partner_email_subject(tender),
+        "email_count": partners.count(),
+        "email_timestamp": timezone.now().isoformat(),
+    }
+    tender.logs.append(log_item)
+    tender.save()
+
 
 def send_tender_email_to_partner(tender: Tender, partner: PartnerShareTender):
-    email_subject = f"{EMAIL_SUBJECT_PREFIX}{tender.author.company_name} recherche des structures inclusives"
+    email_subject = get_tender_partner_email_subject(tender)
     recipient_list = whitelist_recipient_list(partner.contact_email_list)
     if recipient_list:
         variables = {
@@ -100,7 +129,7 @@ def send_tenders_author_feedback_30_days(tender: Tender):
 
 # @task()
 def send_tender_email_to_siae(tender: Tender, siae: Siae):
-    email_subject = f"{EMAIL_SUBJECT_PREFIX}{tender.author.company_name} a besoin de vous sur le marché de l'inclusion"
+    email_subject = get_tender_siae_email_subject(tender)
     recipient_list = whitelist_recipient_list([siae.contact_email])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
