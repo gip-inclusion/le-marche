@@ -1,4 +1,4 @@
-# Itou - Le marché de l'inclusion
+# Le marché de l'inclusion
 
 > Le marché de l'inclusion est un service numérique permettant de trouver un prestataire sociale inclusif
 > proposant des produits ou services professionnels.
