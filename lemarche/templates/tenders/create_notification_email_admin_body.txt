@@ -3,8 +3,8 @@ Le marché de l'inclusion (C4) : dépôt de besoin, ajout d'un nouveau {{ tender
 ---
 titre : {{ tender_title|safe }}
 type : {{ tender_kind|safe }}
-contact : {{ tender_contact|safe }}
-entreprise : {{ tender_company|safe }}
+contact : {{ tender_author_full_name|safe }}
+entreprise : {{ tender_author_company|safe }}
 ---
 
 Lien dans l'admin : {{ tender_admin_url }}
