@@ -17,10 +17,9 @@ from lemarche.siaes.factories import SiaeFactory
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.factories import PartnerShareTenderFactory, TenderFactory
-from lemarche.tenders.models import Tender, TenderSiae
+from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
-from lemarche.www.tenders.tasks import match_tender_for_partners
 
 
 class TenderModelTest(TestCase):
@@ -286,39 +285,39 @@ class TenderPartnerMatchingTest(TestCase):
     def test_tender_country_matching(self):
         # partners with perimeters=[]
         tender = TenderFactory(is_country_area=True)
-        result = match_tender_for_partners(tender)
+        result = PartnerShareTender.objects.filter_by_tender(tender)
         self.assertEqual(len(result), 4)
 
     def test_tender_perimeters_matching(self):
         # partners with perimeters=[] + aura
         tender = TenderFactory(perimeters=[self.auvergne_rhone_alpes_perimeter])
-        result = match_tender_for_partners(tender)
+        result = PartnerShareTender.objects.filter_by_tender(tender)
         self.assertEqual(len(result), 4 + 1)
         # partners with perimeters=[] + isere + aura
         tender = TenderFactory(perimeters=[self.rhone_perimeter])
-        result = match_tender_for_partners(tender)
+        result = PartnerShareTender.objects.filter_by_tender(tender)
         self.assertEqual(len(result), 4 + 1 + 1)
         # partners with perimeters=[] + isere/rhone + aura
         tender = TenderFactory(perimeters=[self.isere_perimeter, self.rhone_perimeter])
-        result = match_tender_for_partners(tender)
+        result = PartnerShareTender.objects.filter_by_tender(tender)
         self.assertEqual(len(result), 4 + 2 + 1)
         # partners with perimeters=[] + grenoble + isere/rhone + aura
         tender = TenderFactory(perimeters=[self.grenoble_perimeter])
-        result = match_tender_for_partners(tender)
+        result = PartnerShareTender.objects.filter_by_tender(tender)
         self.assertEqual(len(result), 4 + 1 + 2 + 1)
 
     def test_tender_country_and_amount_matching(self):
         # partners with perimeters=[] & (amount_in empty or >=AMOUNT_RANGE_0_1)
         tender = TenderFactory(is_country_area=True, amount=tender_constants.AMOUNT_RANGE_0_1)
-        result = match_tender_for_partners(tender)
+        result = PartnerShareTender.objects.filter_by_tender(tender)
         self.assertEqual(len(result), 4)
         # partners with perimeters=[] & (amount_in empty or >=AMOUNT_RANGE_10_15)
         tender = TenderFactory(is_country_area=True, amount=tender_constants.AMOUNT_RANGE_10_15)
-        result = match_tender_for_partners(tender)
+        result = PartnerShareTender.objects.filter_by_tender(tender)
         self.assertEqual(len(result), 3)
         # partners with perimeters=[] & (amount_in empty or >=AMOUNT_RANGE_1000_MORE)
         tender = TenderFactory(is_country_area=True, amount=tender_constants.AMOUNT_RANGE_1000_MORE)
-        result = match_tender_for_partners(tender)
+        result = PartnerShareTender.objects.filter_by_tender(tender)
         self.assertEqual(len(result), 1)
 
     def test_tender_perimeters_and_amount_matching(self):
@@ -326,9 +325,9 @@ class TenderPartnerMatchingTest(TestCase):
         tender = TenderFactory(
             perimeters=[self.auvergne_rhone_alpes_perimeter], amount=tender_constants.AMOUNT_RANGE_0_1
         )
-        result = match_tender_for_partners(tender)
+        result = PartnerShareTender.objects.filter_by_tender(tender)
         self.assertEqual(len(result), 2 + 3)
         # partners with (perimeters=[] or isere overlap) & (amount_in empty or >=AMOUNT_RANGE_10_15)
         tender_3 = TenderFactory(perimeters=[self.isere_perimeter], amount=tender_constants.AMOUNT_RANGE_10_15)
-        result = match_tender_for_partners(tender_3)
+        result = PartnerShareTender.objects.filter_by_tender(tender_3)
         self.assertEqual(len(result), 3 + 3)
