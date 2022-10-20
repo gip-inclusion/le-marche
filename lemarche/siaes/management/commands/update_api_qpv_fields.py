@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 from lemarche.siaes.models import Siae
+from lemarche.utils.apis import api_slack
 from lemarche.utils.apis.api_qpv import IS_QPV_KEY, QPV_CODE_KEY, QPV_NAME_KEY, get_default_client, is_in_qpv
 
 
@@ -84,13 +85,13 @@ class Command(BaseCommand):
                 siaes_to_update, self.FIELDS_TO_BULK_UPDATE, batch_size=settings.BATCH_SIZE_BULK_UPDATE
             )
 
-        self.stdout_messages_sucess(
-            [
-                f"Done! Processed {len(siaes_to_update)}/{len(siae_list)} siaes",
-                f"/Etablissements success count: {self.success_count['etablissement']}/{len(siaes_to_update)}",
-                f"/Etablissements QPV success count: {self.success_count['etablissement_qpv']}/{len(siae_list)}",
-            ]
+        msg_success = (
+            f"\nDone! Processed {len(siaes_to_update)}/{len(siae_list)} siaes\n",
+            f"Etablissements success count: {self.success_count['etablissement']}/{len(siaes_to_update)}\n",
+            f"Etablissements QPV success count: {self.success_count['etablissement_qpv']}/{len(siae_list)}",
         )
+        self.stdout_messages_sucess(msg_success)
+        api_slack.send_message_to_channel(msg_success)
 
     def update_siae(self, client, siae):
         # call api is in qpv
