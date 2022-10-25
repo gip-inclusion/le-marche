@@ -33,7 +33,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
     form_class = SiaeSearchForm
     # queryset = Siae.objects.all()
     context_object_name = "siaes"
-    paginate_by = 10
+    paginate_by = 20
     paginator_class = Paginator
 
     def get_queryset(self):
@@ -56,6 +56,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         - set the paginator range
         """
         context = super().get_context_data(**kwargs)
+        context["position_promote_tenders"] = [5, 15]
         if len(self.request.GET.keys()):
             siae_search_form = self.filter_form if self.filter_form else SiaeSearchForm(data=self.request.GET)
             context["form"] = siae_search_form
