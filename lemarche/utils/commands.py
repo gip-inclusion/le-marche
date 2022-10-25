@@ -13,12 +13,14 @@ class BaseCommand(BaseCommand):
 
     def stdout_messages_info(self, messages):
         self.stdout_info("-" * 80)
+        messages = messages if (type(messages) == list) else [messages]
         for message in messages:
             self.stdout_info(message)
         self.stdout_info("-" * 80)
 
-    def stdout_messages_sucess(self, messages):
+    def stdout_messages_success(self, messages):
         self.stdout_success("-" * 80)
+        messages = messages if (type(messages) == list) else [messages]
         for message in messages:
             self.stdout_success(message)
         self.stdout_success("-" * 80)
