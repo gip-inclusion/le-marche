@@ -201,8 +201,10 @@ def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes
 def send_siae_interested_email_to_author(tender: Tender):
     """
     The author is notified (by intervals) when new Siaes show interest (contact_click_date set)
+
     Intervals:
     - first Siae
+    - second Siae
     - every 5 Siae
     """
     tender_siae_contact_click_count = TenderSiae.objects.filter(
@@ -210,13 +212,24 @@ def send_siae_interested_email_to_author(tender: Tender):
     ).count()
 
     if (tender_siae_contact_click_count > 0) and (tender_siae_contact_click_count < 50):
-        if (tender_siae_contact_click_count == 1) or (tender_siae_contact_click_count % 5 == 0):
-            if tender_siae_contact_click_count == 1:
-                email_subject = EMAIL_SUBJECT_PREFIX + "Une première structure intéressée !"
-                template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_1_TEMPLATE_ID
-            else:
-                email_subject = EMAIL_SUBJECT_PREFIX + "5 nouvelles structures intéressées !"
-                template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_5_TEMPLATE_ID
+        should_send_email = False
+
+        if tender_siae_contact_click_count == 1:
+            should_send_email = True
+            email_subject = EMAIL_SUBJECT_PREFIX + "Une première structure intéressée !"
+            template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_1_TEMPLATE_ID
+        elif tender_siae_contact_click_count == 2:
+            should_send_email = True
+            email_subject = EMAIL_SUBJECT_PREFIX + "Une deuxième structure intéressée !"
+            template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_2_TEMPLATE_ID
+        elif tender_siae_contact_click_count % 5 == 0:
+            should_send_email = True
+            email_subject = EMAIL_SUBJECT_PREFIX + "5 nouvelles structures intéressées !"
+            template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_5_TEMPLATE_ID
+        else:
+            pass
+
+        if should_send_email:
             recipient_list = whitelist_recipient_list([tender.author.email])  # tender.contact_email ?
             if recipient_list:
                 recipient_email = recipient_list[0] if recipient_list else ""
