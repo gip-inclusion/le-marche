@@ -312,6 +312,9 @@ class SiaeQuerySet(models.QuerySet):
         # filter by presta_type
         if len(tender.presta_type):
             qs = qs.filter(presta_type__overlap=tender.presta_type)
+        # filter by siae_kind
+        if len(tender.siae_kind):
+            qs = qs.filter(kind__in=tender.siae_kind)
         # return
         return qs.distinct()
 

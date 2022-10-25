@@ -43,23 +43,27 @@ class TenderMatchingTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.sectors = [SectorFactory() for i in range(10)]
-        cls.perimeters = [PerimeterFactory(department_code="75", post_codes=["75019", "75018"]), PerimeterFactory()]
+        cls.perimeter_paris = PerimeterFactory(department_code="75", post_codes=["75019", "75018"])
+        cls.perimeter_marseille = PerimeterFactory(coords=Point(43.35101634452076, 5.379616625955892))
+        cls.perimeters = [cls.perimeter_paris, PerimeterFactory()]
         # by default is Paris
         coords_paris = Point(48.86385199985207, 2.337071483848432)
 
         siae_one = SiaeFactory(
             is_active=True,
+            kind=siae_constants.KIND_AI,
+            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
             geo_range=GEO_RANGE_CUSTOM,
             coords=coords_paris,
             geo_range_custom_distance=100,
-            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
         )
         siae_two = SiaeFactory(
             is_active=True,
+            kind=siae_constants.KIND_ESAT,
+            presta_type=[siae_constants.PRESTA_BUILD],
             geo_range=GEO_RANGE_CUSTOM,
             coords=coords_paris,
             geo_range_custom_distance=10,
-            presta_type=[siae_constants.PRESTA_BUILD],
         )
         for i in range(5):
             siae_one.sectors.add(cls.sectors[i])
@@ -79,6 +83,24 @@ class TenderMatchingTest(TestCase):
         )
         siae_found_list = Siae.objects.filter_with_tender(tender)
         self.assertEqual(len(siae_found_list), 1)
+
+    def test_matching_siae_kind(self):
+        tender = TenderFactory(siae_kind=[], sectors=self.sectors, perimeters=self.perimeters)
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+        self.assertEqual(len(siae_found_list), 2)
+        tender = TenderFactory(siae_kind=[siae_constants.KIND_AI], sectors=self.sectors, perimeters=self.perimeters)
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+        self.assertEqual(len(siae_found_list), 1)
+        tender = TenderFactory(
+            siae_kind=[siae_constants.KIND_ESAT, siae_constants.KIND_AI],
+            sectors=self.sectors,
+            perimeters=self.perimeters,
+        )
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+        self.assertEqual(len(siae_found_list), 2)
+        tender = TenderFactory(siae_kind=[siae_constants.KIND_SEP], sectors=self.sectors, perimeters=self.perimeters)
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+        self.assertEqual(len(siae_found_list), 0)
 
     def test_matching_siae_sectors(self):
         tender = TenderFactory(sectors=self.sectors)
@@ -105,9 +127,7 @@ class TenderMatchingTest(TestCase):
         tender = TenderFactory(sectors=[SectorFactory()], perimeters=self.perimeters)
         siae_found_list = Siae.objects.filter_with_tender(tender)
         self.assertEqual(len(siae_found_list), 0)
-        tender_marseille = TenderFactory(
-            sectors=self.sectors, perimeters=[PerimeterFactory(coords=Point(43.35101634452076, 5.379616625955892))]
-        )
+        tender_marseille = TenderFactory(sectors=self.sectors, perimeters=[self.perimeter_marseille])
         siae_found_list_marseille = Siae.objects.filter_with_tender(tender_marseille)
         self.assertEqual(len(siae_found_list_marseille), 0)
         siae = SiaeFactory(is_active=True, department="75", geo_range=GEO_RANGE_COUNTRY)
