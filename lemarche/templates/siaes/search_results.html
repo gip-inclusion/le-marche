@@ -167,7 +167,7 @@
                     {% for siae in siaes %}
                         {% include "siaes/_card_search_result.html" with siae=siae %}
                         <!-- insert to nudge tender creation -->
-                        {% if forloop.counter == 5 and page_obj.number == 1 %}
+                        {% if forloop.counter in position_promote_tenders and page_obj.number == 1 %}
                             {% include "siaes/_card_suggest_tender.html" %}
                         {% endif %}
                     {% endfor %}
