@@ -205,13 +205,16 @@ def send_siae_interested_email_to_author(tender: Tender):
     Intervals:
     - first Siae
     - second Siae
-    - every 5 Siae
+    - 5th Siae
+    - every 5 additional Siae (10th, 15th, ... up until 50)
+
+    If tender_siae_contact_click_count reaches 50, then the author will have received 12 emails
     """
     tender_siae_contact_click_count = TenderSiae.objects.filter(
         tender=tender, contact_click_date__isnull=False
     ).count()
 
-    if (tender_siae_contact_click_count > 0) and (tender_siae_contact_click_count < 50):
+    if (tender_siae_contact_click_count > 0) and (tender_siae_contact_click_count <= 50):
         should_send_email = False
 
         if tender_siae_contact_click_count == 1:
@@ -222,10 +225,14 @@ def send_siae_interested_email_to_author(tender: Tender):
             should_send_email = True
             email_subject = EMAIL_SUBJECT_PREFIX + "Une deuxième structure intéressée !"
             template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_2_TEMPLATE_ID
+        elif tender_siae_contact_click_count == 5:
+            should_send_email = True
+            email_subject = EMAIL_SUBJECT_PREFIX + "Une cinquième structure intéressée !"
+            template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_5_TEMPLATE_ID
         elif tender_siae_contact_click_count % 5 == 0:
             should_send_email = True
             email_subject = EMAIL_SUBJECT_PREFIX + "5 nouvelles structures intéressées !"
-            template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_5_TEMPLATE_ID
+            template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_5_MORE_TEMPLATE_ID
         else:
             pass
 
