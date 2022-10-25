@@ -19,18 +19,6 @@ from django.utils.text import slugify
 
 from lemarche.perimeters.models import Perimeter
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.constants import (
-    COMPLETION_COMPARE_TO_KEY,
-    COMPLETION_KIND_GREATER_THAN,
-    COMPLETION_KIND_KEY,
-    COMPLETION_KIND_NOT_EMPTY_OR_FALSE,
-    COMPLETION_SCORE_KEY,
-    DEPARTMENTS_PRETTY,
-    REGIONS,
-    REGIONS_PRETTY,
-    SIAE_COMPLETION_SCORE_GRID,
-    get_department_code_from_name,
-)
 from lemarche.siaes.tasks import set_siae_coords
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
 from lemarche.users.models import User
@@ -225,12 +213,12 @@ class SiaeQuerySet(models.QuerySet):
             return self.filter(region=kwargs["region_name"])
         if "region_code" in kwargs:
             code_clean = kwargs["region_code"].strip("R")  # "R" ? see Perimeter model & import_region.py
-            region_name = REGIONS.get(code_clean)
+            region_name = siae_constants.REGIONS.get(code_clean)
             return self.filter(region=region_name)
 
     def in_department(self, **kwargs):
         if "depatment_name" in kwargs:
-            department_code = get_department_code_from_name(kwargs["depatment_name"])
+            department_code = siae_constants.get_department_code_from_name(kwargs["depatment_name"])
             return self.filter(department=department_code)
         if "department_code" in kwargs:
             return self.filter(department=kwargs["department_code"])
@@ -410,48 +398,6 @@ class Siae(models.Model):
         "ca",
     ]
 
-    KIND_EI = "EI"
-    KIND_AI = "AI"
-    KIND_ACI = "ACI"
-    KIND_ETTI = "ETTI"
-    KIND_EITI = "EITI"
-    KIND_GEIQ = "GEIQ"
-    KIND_EA = "EA"
-    KIND_EATT = "EATT"
-    KIND_ESAT = "ESAT"
-    KIND_SEP = "SEP"
-
-    KIND_CHOICES = (
-        (KIND_EI, "Entreprise d'insertion"),  # Regroupées au sein de la fédération des entreprises d'insertion.
-        (KIND_AI, "Association intermédiaire"),
-        (KIND_ACI, "Atelier chantier d'insertion"),
-        # (KIND_ACIPHC, "Atelier chantier d'insertion premières heures en chantier"),
-        (KIND_ETTI, "Entreprise de travail temporaire d'insertion"),
-        (KIND_EITI, "Entreprise d'insertion par le travail indépendant"),
-        (KIND_GEIQ, "Groupement d'employeurs pour l'insertion et la qualification"),
-        (KIND_EA, "Entreprise adaptée"),
-        (KIND_EATT, "Entreprise adaptée de travail temporaire"),
-        (KIND_ESAT, "Etablissement et service d'aide par le travail"),
-        (KIND_SEP, "Produits et services réalisés en prison"),
-    )
-    # KIND_CHOICES_WITH_EXTRA = ((key, f"{value} ({key})") for (key, value) in KIND_CHOICES)
-    KIND_CHOICES_WITH_EXTRA_INSERTION = (
-        (KIND_EI, "Entreprise d'insertion (EI)"),  # Regroupées au sein de la fédération des entreprises d'insertion.
-        (KIND_AI, "Association intermédiaire (AI)"),
-        (KIND_ACI, "Atelier chantier d'insertion (ACI)"),
-        # (KIND_ACIPHC, "Atelier chantier d'insertion premières heures en chantier (ACIPHC)"),
-        (KIND_ETTI, "Entreprise de travail temporaire d'insertion (ETTI)"),
-        (KIND_EITI, "Entreprise d'insertion par le travail indépendant (EITI)"),
-        (KIND_GEIQ, "Groupement d'employeurs pour l'insertion et la qualification (GEIQ)"),
-        (KIND_SEP, "Produits et services réalisés en prison"),  # (SEP) ne s'applique pas à toutes les structures
-    )
-    KIND_CHOICES_WITH_EXTRA_HANDICAP = (
-        (KIND_EA, "Entreprise adaptée (EA)"),
-        (KIND_EATT, "Entreprise adaptée de travail temporaire (EATT)"),
-        (KIND_ESAT, "Etablissement et service d'aide par le travail (ESAT)"),
-    )
-    KIND_CHOICES_WITH_EXTRA = KIND_CHOICES_WITH_EXTRA_INSERTION + KIND_CHOICES_WITH_EXTRA_HANDICAP
-
     SOURCE_ASP = "ASP"
     SOURCE_GEIQ = "GEIQ"
     SOURCE_EA_EATT = "EA_EATT"
@@ -480,8 +426,8 @@ class Siae(models.Model):
         (NATURE_ANTENNA, "Rattaché à un autre conventionnement"),
     )
 
-    DEPARTMENT_CHOICES = DEPARTMENTS_PRETTY.items()
-    REGION_CHOICES = REGIONS_PRETTY.items()
+    DEPARTMENT_CHOICES = siae_constants.DEPARTMENTS_PRETTY.items()
+    REGION_CHOICES = siae_constants.REGIONS_PRETTY.items()
     GEO_RANGE_COUNTRY = GEO_RANGE_COUNTRY  # 3
     GEO_RANGE_REGION = GEO_RANGE_REGION  # 2
     GEO_RANGE_DEPARTMENT = GEO_RANGE_DEPARTMENT  # 1
@@ -497,7 +443,10 @@ class Siae(models.Model):
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
     brand = models.CharField(verbose_name="Enseigne", max_length=255, blank=True)
     kind = models.CharField(
-        verbose_name="Type de structure", max_length=6, choices=KIND_CHOICES_WITH_EXTRA, default=KIND_EI
+        verbose_name="Type de structure",
+        max_length=6,
+        choices=siae_constants.KIND_CHOICES_WITH_EXTRA,
+        default=siae_constants.KIND_EI,
     )
     description = models.TextField(verbose_name="Description", blank=True)
     siret = models.CharField(verbose_name="Siret", validators=[validate_siret], max_length=14, db_index=True)
@@ -781,9 +730,9 @@ class Siae(models.Model):
 
     @property
     def presta_type_display(self):
-        if self.kind == Siae.KIND_ETTI:
+        if self.kind == siae_constants.KIND_ETTI:
             return "Intérim"
-        if self.kind == Siae.KIND_AI:
+        if self.kind == siae_constants.KIND_AI:
             return "Mise à disposition du personnel"
         if self.presta_type:
             presta_type_values = [
@@ -882,28 +831,28 @@ class Siae(models.Model):
 
     @property
     def source_display(self):
-        if self.kind == Siae.KIND_ESAT:
+        if self.kind == siae_constants.KIND_ESAT:
             return "GESAT/Handeco"
-        elif self.kind == Siae.KIND_SEP:
+        elif self.kind == siae_constants.KIND_SEP:
             return "l'ATIGIP"
         else:
             return "l'ASP"
 
     @property
     def kind_is_esat_or_ea(self):
-        return self.kind in [Siae.KIND_ESAT, Siae.KIND_EA]
+        return self.kind in [siae_constants.KIND_ESAT, siae_constants.KIND_EA]
 
     @property
     def completion_percent(self):
         score, total = 0, 0
-        for key, value in SIAE_COMPLETION_SCORE_GRID.items():
-            completion_item_kind = value[COMPLETION_KIND_KEY]
-            score_item = value[COMPLETION_SCORE_KEY]
-            if completion_item_kind == COMPLETION_KIND_NOT_EMPTY_OR_FALSE:
+        for key, value in siae_constants.SIAE_COMPLETION_SCORE_GRID.items():
+            completion_item_kind = value[siae_constants.COMPLETION_KIND_KEY]
+            score_item = value[siae_constants.COMPLETION_SCORE_KEY]
+            if completion_item_kind == siae_constants.COMPLETION_KIND_NOT_EMPTY_OR_FALSE:
                 if getattr(self, key):
                     score += score_item
-            elif completion_item_kind == COMPLETION_KIND_GREATER_THAN:
-                if getattr(self, key) and getattr(self, key) > value[COMPLETION_COMPARE_TO_KEY]:
+            elif completion_item_kind == siae_constants.COMPLETION_KIND_GREATER_THAN:
+                if getattr(self, key) and getattr(self, key) > value[siae_constants.COMPLETION_COMPARE_TO_KEY]:
                     score += score_item
             total += score_item
         score_percent = round(score / total, 2) * 100

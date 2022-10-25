@@ -7,7 +7,7 @@ from lemarche.siaes.models import Siae
 
 
 class SiaeFilter(django_filters.FilterSet):
-    kind = django_filters.MultipleChoiceFilter(label="Type(s) de structure", choices=Siae.KIND_CHOICES)
+    kind = django_filters.MultipleChoiceFilter(label="Type(s) de structure", choices=siae_constants.KIND_CHOICES)
     presta_type = django_filters.MultipleChoiceFilter(
         label="Type(s) de prestation", choices=siae_constants.PRESTA_CHOICES, lookup_expr="icontains"
     )

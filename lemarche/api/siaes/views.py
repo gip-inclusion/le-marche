@@ -136,7 +136,7 @@ class SiaeKindViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Siae.objects.none()
 
     def get_queryset(self):
-        siae_kinds = [{"id": id, "name": name} for (id, name) in Siae.KIND_CHOICES]
+        siae_kinds = [{"id": id, "name": name} for (id, name) in siae_constants.KIND_CHOICES]
         return siae_kinds
 
     @extend_schema(summary="Lister tous les types de structures", tags=[Siae._meta.verbose_name_plural])

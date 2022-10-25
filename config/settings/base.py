@@ -519,7 +519,7 @@ SPECTACULAR_SETTINGS = {
     },
     "PREPROCESSING_HOOKS": ["lemarche.api.utils.custom_preprocessing_hook"],
     "ENUM_NAME_OVERRIDES": {
-        "kind": "lemarche.siaes.models.Siae.KIND_CHOICES",
+        "kind": "lemarche.siaes.constants.KIND_CHOICES",
         "department": "lemarche.siaes.models.Siae.DEPARTMENT_CHOICES",
     },
     "SWAGGER_UI_SETTINGS": {"defaultModelsExpandDepth": -1},  # hide model schemas

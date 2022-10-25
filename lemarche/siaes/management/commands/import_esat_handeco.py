@@ -7,6 +7,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from lemarche.sectors.models import Sector
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.constants import department_from_postcode
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis.api_entreprise import etablissement_get_or_error  # exercice_get_or_error
@@ -91,7 +92,7 @@ class Command(BaseCommand):
         reset_app_sql_sequences("siaes")
         esat_list = read_xml()
 
-        old_esat_count = Siae.objects.filter(kind=Siae.KIND_ESAT).count()
+        old_esat_count = Siae.objects.filter(kind=siae_constants.KIND_ESAT).count()
 
         print("Importing Handeco (after GESAT)...")
         progress = 0
@@ -107,7 +108,7 @@ class Command(BaseCommand):
                 self.import_esat(esat)
         # self.import_esat(esat_list[0])
 
-        new_esat_count = Siae.objects.filter(kind=Siae.KIND_ESAT).count()
+        new_esat_count = Siae.objects.filter(kind=siae_constants.KIND_ESAT).count()
 
         print(f"Imported {new_esat_count - old_esat_count} additional ESAT siaes !")
 
@@ -117,7 +118,7 @@ class Command(BaseCommand):
         esat["import_raw_object"] = esat.copy()
 
         # defaults
-        esat["kind"] = Siae.KIND_ESAT
+        esat["kind"] = siae_constants.KIND_ESAT
         esat["source"] = Siae.SOURCE_ESAT
         esat["geo_range"] = Siae.GEO_RANGE_DEPARTMENT
 
