@@ -177,16 +177,16 @@ class Command(BaseCommand):
         self.stdout_info("Done ! Some stats...")
         created_count = siae_total_after - siae_total_before
         updated_count = len(c1_list) - created_count
-        msg_sucess = [
-            "-" * 80,
-            f"Siae total: before {siae_total_before} / after {siae_total_after} / +{created_count}\n",
-            f"Siae updated: {updated_count}\n",
-            f"Siae active: before {siae_active_before} / after {siae_active_after}\n",
-            f"Siae inactive: before {siae_total_before - siae_active_before} / after {siae_total_after - siae_active_after}\n",  # noqa
-            f"Siae delisted: before {siae_delisted_before} / after {siae_delisted_after}\n",
+        msg_success = [
+            "----- Recap: sync C1/C4 -----",
+            f"Siae total: before {siae_total_before} / after {siae_total_after} / +{created_count}",
+            f"Siae updated: {updated_count}",
+            f"Siae active: before {siae_active_before} / after {siae_active_after}",
+            f"Siae inactive: before {siae_total_before - siae_active_before} / after {siae_total_after - siae_active_after}",  # noqa
+            f"Siae delisted: before {siae_delisted_before} / after {siae_delisted_after}",
         ]
-        self.stdout_messages_sucess(msg_sucess)
-        api_slack.send_message_to_channel("\n".join(msg_sucess))
+        self.stdout_messages_success(msg_success)
+        api_slack.send_message_to_channel("\n".join(msg_success))
 
     def c1_export(self):
         try:
