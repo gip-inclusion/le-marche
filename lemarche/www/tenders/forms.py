@@ -13,11 +13,13 @@ class AddTenderStepGeneralForm(forms.ModelForm):
         queryset=Sector.objects.form_filter_queryset(),
         choices_groupby="group",
         to_field_name="slug",
+        required=True,
     )
     presta_type = forms.MultipleChoiceField(
         label="Type(s) de prestation(s)",
         choices=Tender._meta.get_field("presta_type").base_field.choices,
         widget=forms.CheckboxSelectMultiple,
+        required=True,
     )
 
     class Meta:
