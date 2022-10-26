@@ -6,7 +6,6 @@ class Tracker(models.Model):
 
     version = models.PositiveIntegerField(verbose_name="Version")
     date_created = models.DateTimeField(verbose_name="Timestamp (UNIX Epoch)")
-    send_order = models.PositiveIntegerField(default=0)
     env = models.CharField(max_length=200)
     source = models.CharField(max_length=200)
 
