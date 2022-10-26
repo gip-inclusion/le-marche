@@ -82,13 +82,12 @@ class SignupFormTest(StaticLiveServerTestCase):
 
         Args:
             user_profile (dict): Dict wich contains the users information for form.
-                                The dict will be manipulated (pop on "id_kind") so,
-                                copy it (user_profile.copy()) before use the function.
                                 ex : { "id_kind": 0, "id_of_field": "value"}
             with_submit (bool, optional): Submit the form if it's True. Defaults to True.
         """
         self.driver.get(f"{self.live_server_url}{signup_url}")
 
+        user_profile = user_profile.copy()
         user_kind = user_profile.pop("id_kind")
         self.driver.find_element(By.CSS_SELECTOR, f"input#id_kind_{user_kind}").click()
         for key in user_profile:
@@ -138,16 +137,14 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
     def test_buyer_submits_signup_form_success(self):
-        user_profile = BUYER.copy()
 
-        self._complete_form(user_profile=user_profile, with_submit=True)
+        self._complete_form(user_profile=BUYER, with_submit=True)
 
         self._assert_signup_success(redirect_url=reverse("pages:home"))
 
     def test_buyer_submits_signup_form_success_extra_data(self):
-        user_profile = BUYER.copy()
 
-        self._complete_form(user_profile=user_profile, with_submit=False)
+        self._complete_form(user_profile=BUYER, with_submit=False)
         nb_of_handicap = "3"
         nb_of_inclusive = "4"
         self.driver.find_element(By.CSS_SELECTOR, f"input#id_nb_of_handicap_provider_2022_{nb_of_handicap}").click()
@@ -156,7 +153,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.driver.find_element(By.CSS_SELECTOR, "form button").click()
 
         # should get created User
-        user = User.objects.get(email=user_profile.get("email"))
+        user = User.objects.get(email=BUYER.get("email"))
 
         # assert extra_data are inserted
         self.assertEqual(user.extra_data.get("nb_of_handicap_provider_2022"), nb_of_handicap)
@@ -172,9 +169,8 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
     def test_partner_submits_signup_form_success(self):
-        user_profile = PARTNER.copy()
 
-        self._complete_form(user_profile=user_profile, with_submit=False)
+        self._complete_form(user_profile=PARTNER, with_submit=False)
         self.driver.find_element(By.XPATH, "//select[@id='id_partner_kind']/option[text()='Réseaux IAE']").click()
         self.driver.find_element(By.CSS_SELECTOR, "form button").click()
 
@@ -190,10 +186,9 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
     def test_user_submits_signup_form_with_next_param_success_and_redirect(self):
-        user_profile = PARTNER.copy()
         next_url = f"{reverse('siae:search_results')}?kind=ESAT"
         self._complete_form(
-            user_profile=user_profile,
+            user_profile=PARTNER,
             signup_url=f"{reverse('auth:signup')}?next={next_url}",
             with_submit=False,
         )
