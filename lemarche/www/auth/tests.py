@@ -30,6 +30,8 @@ BUYER = {
     "email": "buyer@example.com",
     "password1": "Erls92#32",
     "password2": "Erls92#32",
+    # "nb_of_handicap_provider_2022": "3",
+    # "nb_of_inclusive_provider_2022": "4",
     # "id_accept_rgpd"  # required
     # "id_accept_survey"  # not required
 }
@@ -141,6 +143,24 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._complete_form(user_profile=user_profile, with_submit=True)
 
         self._assert_signup_success(redirect_url=reverse("pages:home"))
+
+    def test_buyer_submits_signup_form_success_extra_data(self):
+        user_profile = BUYER.copy()
+
+        self._complete_form(user_profile=user_profile, with_submit=False)
+        nb_of_handicap = "3"
+        nb_of_inclusive = "4"
+        self.driver.find_element(By.CSS_SELECTOR, f"input#id_nb_of_handicap_provider_2022_{nb_of_handicap}").click()
+        self.driver.find_element(By.CSS_SELECTOR, f"input#id_nb_of_inclusive_provider_2022_{nb_of_inclusive}").click()
+
+        self.driver.find_element(By.CSS_SELECTOR, "form button").click()
+
+        # should get created User
+        user = User.objects.get(email=user_profile.get("email"))
+
+        # assert extra_data are inserted
+        self.assertEqual(user.extra_data.get("nb_of_handicap_provider_2022"), nb_of_handicap)
+        self.assertEqual(user.extra_data.get("nb_of_inclusive_provider_2022"), nb_of_inclusive)
 
     def test_buyer_submits_signup_form_error(self):
         user_profile = BUYER.copy()
