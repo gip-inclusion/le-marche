@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from lemarche.sectors.factories import SectorFactory
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeFactory, SiaeGroupFactory, SiaeLabelFactory, SiaeOfferFactory
 from lemarche.siaes.models import Siae, SiaeGroup, SiaeUser
 from lemarche.users.factories import UserFactory
@@ -92,11 +93,11 @@ class SiaeModelTest(TestCase):
         self.assertFalse(siae_full_2.is_missing_content)
 
     def test_kind_is_esat_or_ea_property(self):
-        siae_esat = SiaeFactory(kind=Siae.KIND_ESAT)
+        siae_esat = SiaeFactory(kind=siae_constants.KIND_ESAT)
         self.assertTrue(siae_esat.kind_is_esat_or_ea)
-        siae_ea = SiaeFactory(kind=Siae.KIND_EA)
+        siae_ea = SiaeFactory(kind=siae_constants.KIND_EA)
         self.assertTrue(siae_ea.kind_is_esat_or_ea)
-        siae_ei = SiaeFactory(kind=Siae.KIND_EI)
+        siae_ei = SiaeFactory(kind=siae_constants.KIND_EI)
         self.assertFalse(siae_ei.kind_is_esat_or_ea)
 
 

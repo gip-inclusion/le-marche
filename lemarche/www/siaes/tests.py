@@ -29,8 +29,8 @@ class SiaeSearchFilterTest(TestCase):
 class SiaeKindSearchFilterTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        SiaeFactory(kind=Siae.KIND_EI)
-        SiaeFactory(kind=Siae.KIND_AI)
+        SiaeFactory(kind=siae_constants.KIND_EI)
+        SiaeFactory(kind=siae_constants.KIND_AI)
 
     def test_search_kind_empty(self):
         url = reverse("siae:search_results")
@@ -45,13 +45,13 @@ class SiaeKindSearchFilterTest(TestCase):
         self.assertEqual(len(siaes), 2)
 
     def test_search_kind_should_filter(self):
-        url = reverse("siae:search_results") + f"?kind={Siae.KIND_EI}"
+        url = reverse("siae:search_results") + f"?kind={siae_constants.KIND_EI}"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 1)
 
     def test_search_kind_multiple_should_filter(self):
-        url = reverse("siae:search_results") + f"?kind={Siae.KIND_EI}&kind={Siae.KIND_AI}"
+        url = reverse("siae:search_results") + f"?kind={siae_constants.KIND_EI}&kind={siae_constants.KIND_AI}"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 1 + 1)

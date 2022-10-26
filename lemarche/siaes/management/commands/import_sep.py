@@ -65,7 +65,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         print("-" * 80)
-        Siae.objects.filter(kind=Siae.KIND_SEP).delete()
+        Siae.objects.filter(kind=siae_constants.KIND_SEP).delete()
         reset_app_sql_sequences("siaes")
 
         print("Importing SEP...")
@@ -87,7 +87,7 @@ class Command(BaseCommand):
             self.import_sep(siae, source="sep_externe")
 
         print("Done !")
-        print(f"Imported {Siae.objects.filter(kind=Siae.KIND_SEP).count()} SIAE")
+        print(f"Imported {Siae.objects.filter(kind=siae_constants.KIND_SEP).count()} SIAE")
 
     def import_sep(self, siae, source="sep"):  # noqa C901
         # store raw dict
@@ -95,8 +95,8 @@ class Command(BaseCommand):
         siae["import_raw_object"] = siae.copy()
 
         # defaults
-        siae["kind"] = Siae.KIND_SEP
-        siae["source"] = Siae.KIND_SEP
+        siae["kind"] = siae_constants.KIND_SEP
+        siae["source"] = siae_constants.KIND_SEP
         siae["geo_range"] = Siae.GEO_RANGE_DEPARTMENT
 
         # basic fields
