@@ -89,14 +89,13 @@ def etablissement_get_or_error(siret, reason="Inscription au marché de l'inclus
         "employees_date_reference": data["etablissement"]["tranche_effectif_salarie_etablissement"]["date_reference"],
         "date_constitution": date.fromtimestamp(data["etablissement"]["date_creation_etablissement"]),
     }
-
     return etablissement, None
 
 
 def siae_update_etablissement(siae):
     etablissement, error = etablissement_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)
     if error:
-        raise Exception(error)
+        return 0, error
 
     update_data = dict()
 
@@ -117,7 +116,7 @@ def siae_update_etablissement(siae):
     update_data["api_entreprise_etablissement_last_sync_date"] = timezone.now()
     Siae.objects.filter(id=siae.id).update(**update_data)
 
-    return 1 if etablissement else 0
+    return 1, etablissement
 
 
 def exercice_get_or_error(siret, reason="Inscription au marché de l'inclusion"):
@@ -180,7 +179,7 @@ def exercice_get_or_error(siret, reason="Inscription au marché de l'inclusion")
 def siae_update_exercice(siae):
     exercice, error = exercice_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)  # noqa
     if error:
-        raise Exception(error)
+        return 0, error
 
     update_data = dict()
 
@@ -196,4 +195,4 @@ def siae_update_exercice(siae):
     update_data["api_entreprise_exercice_last_sync_date"] = timezone.now()
     Siae.objects.filter(id=siae.id).update(**update_data)
 
-    return 1 if exercice else 0
+    return 1, exercice
