@@ -118,6 +118,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         HasSiaeFilter,
         HasTenderFilter,
         "partner_kind",
+        "can_display_tender_contact_details",
         HasFavoriteListFilter,
         HasApiKeyFilter,
         "is_staff",
