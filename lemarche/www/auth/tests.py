@@ -78,7 +78,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         cls.user_count = User.objects.count()
 
     def _complete_form(self, user_profile: dict, signup_url=reverse("auth:signup"), with_submit=True):
-        """this function go to the signup page and complete the user profile
+        """the function allows you to go to the "signup" page and complete the user profile.
 
         Args:
             user_profile (dict): Dict wich contains the users information for form.
