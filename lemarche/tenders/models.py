@@ -204,6 +204,14 @@ class Tender(models.Model):
     presta_type = ChoiceArrayField(
         verbose_name="Type de prestation",
         base_field=models.CharField(max_length=20, choices=siae_constants.PRESTA_CHOICES),
+        blank=True,
+        default=list,
+    )
+    siae_kind = ChoiceArrayField(
+        verbose_name="Type de structure",
+        base_field=models.CharField(max_length=20, choices=siae_constants.KIND_CHOICES),
+        blank=True,
+        default=list,
     )
 
     author = models.ForeignKey(

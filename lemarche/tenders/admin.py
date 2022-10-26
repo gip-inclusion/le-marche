@@ -90,11 +90,19 @@ class TenderAdmin(admin.ModelAdmin):
                 "fields": (
                     "description",
                     "constraints",
-                    "sectors",
-                    "presta_type",
                     "external_link",
                     "accept_cocontracting",
                 ),
+            },
+        ),
+        (
+            "Filtres",
+            {
+                "fields": (
+                    "siae_kind",
+                    "sectors",
+                    "presta_type",
+                )
             },
         ),
         (
