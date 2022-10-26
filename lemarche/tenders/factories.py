@@ -6,15 +6,8 @@ import factory.fuzzy
 from django.utils import timezone
 from factory.django import DjangoModelFactory
 
-from lemarche.perimeters.factories import PerimeterFactory
-from lemarche.sectors.factories import SectorFactory
-
-# from lemarche.siaes import constants as siae_constants
 from lemarche.tenders.models import PartnerShareTender, Tender
 from lemarche.users.factories import UserFactory
-
-
-# from lemarche.utils import constants as global_constants
 
 
 class TenderFactory(DjangoModelFactory):
@@ -48,34 +41,25 @@ class TenderFactory(DjangoModelFactory):
     contact_email = factory.Sequence("email_contact_tender{0}@example.com".format)
     contact_phone = factory.fuzzy.FuzzyText(length=10, chars=string.digits)
     # amount = tender_constants.AMOUNT_RANGE_1000_MORE
-    # marche_benefits = factory.fuzzy.FuzzyChoice([key for (key, _) in global_constants.MARCHE_BENEFIT_CHOICES])
+    # marche_benefits = factory.fuzzy.FuzzyChoice([key for (key, _) in constants.MARCHE_BENEFIT_CHOICES])
 
     @factory.post_generation
     def perimeters(self, create, extracted, **kwargs):
-        if self.id:
-            if not create or not extracted:
-                self.perimeters.add(*[PerimeterFactory() for i in range(random.randint(1, 9))])
-                return
-
+        if extracted:
             # Add the iterable of groups using bulk addition
             self.perimeters.add(*extracted)
 
     @factory.post_generation
     def sectors(self, create, extracted, **kwargs):
-        if self.id:
-            if not create or not extracted:
-                self.sectors.add(*[SectorFactory() for i in range(random.randint(1, 9))])
-                return
-
+        if extracted:
             # Add the iterable of groups using bulk addition
             self.sectors.add(*extracted)
 
     @factory.post_generation
     def siaes(self, create, extracted, **kwargs):
-        if self.id:
-            if extracted:
-                # Add the iterable of groups using bulk addition
-                self.siaes.add(*extracted)
+        if extracted:
+            # Add the iterable of groups using bulk addition
+            self.siaes.add(*extracted)
 
 
 class PartnerShareTenderFactory(DjangoModelFactory):
