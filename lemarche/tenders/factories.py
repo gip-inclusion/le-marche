@@ -1,4 +1,5 @@
 import random
+import string
 from datetime import date, timedelta
 
 import factory.fuzzy
@@ -19,14 +20,28 @@ class TenderFactory(DjangoModelFactory):
     presta_type = []
     response_kind = factory.List(
         [
-            factory.fuzzy.FuzzyChoice([key for (key, value) in Tender.RESPONSE_KIND_CHOICES]),
+            factory.fuzzy.FuzzyChoice([key for (key, _) in Tender.RESPONSE_KIND_CHOICES]),
         ]
     )
+    # presta_type = factory.List(
+    #     [
+    #         factory.fuzzy.FuzzyChoice([key for (key, _) in siae_constants.PRESTA_CHOICES]),
+    #     ]
+    # )
     description = factory.Faker("paragraph", nb_sentences=5, locale="fr_FR")
     constraints = factory.Faker("paragraph", nb_sentences=5, locale="fr_FR")
     deadline_date = date.today() + timedelta(days=10)
+    start_working_date = date.today() + timedelta(days=random.randint(12, 90))
     author = factory.SubFactory(UserFactory)
     validated_at = timezone.now()
+    external_link = factory.Sequence("https://{0}example.com".format)
+    # Contact fields
+    contact_first_name = factory.Sequence("first_name{0}".format)
+    contact_last_name = factory.Sequence("last_name{0}".format)
+    contact_email = factory.Sequence("email_contact_tender{0}@example.com".format)
+    contact_phone = factory.fuzzy.FuzzyText(length=10, chars=string.digits)
+    # amount = tender_constants.AMOUNT_RANGE_1000_MORE
+    # marche_benefits = factory.fuzzy.FuzzyChoice([key for (key, _) in constants.MARCHE_BENEFIT_CHOICES])
 
     @factory.post_generation
     def perimeters(self, create, extracted, **kwargs):
