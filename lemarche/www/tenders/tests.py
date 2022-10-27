@@ -10,19 +10,77 @@ from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.siaes.models import GEO_RANGE_COUNTRY, GEO_RANGE_CUSTOM, GEO_RANGE_DEPARTMENT, Siae
+from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.factories import TenderFactory
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
+from lemarche.utils import constants
 
 
 class TenderCreateViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user_siae = UserFactory(kind=User.KIND_SIAE)
-        cls.user_buyer = UserFactory(kind=User.KIND_BUYER)
+        cls.user_buyer = UserFactory(kind=User.KIND_BUYER, company_name="Test")
+        cls.sectors = [SectorFactory().slug for _ in range(3)]
+        cls.perimeters = [PerimeterFactory().slug for _ in range(3)]
 
-    def test_any_user_can_create_tender(self):
+    @classmethod
+    def _generate_fake_data_form(cls, _step_1={}, _step_2={}, _step_3={}, _step_4={}, tender_not_saved: Tender = None):
+        if not tender_not_saved:
+            tender_not_saved = TenderFactory.build(author=cls.user_buyer)
+
+        step_1 = {
+            "tender_create_multi_step_view-current_step": "general",
+            "general-kind": tender_not_saved.kind,
+            "general-title": tender_not_saved.title,
+            "general-sectors": cls.sectors,
+            "general-presta_type": siae_constants.PRESTA_BUILD,
+            "general-perimeters": cls.perimeters,
+            "general-is_country_area": tender_not_saved.is_country_area,
+        } | _step_1
+        step_2 = {
+            "tender_create_multi_step_view-current_step": "description",
+            "description-description": tender_not_saved.description,
+            "description-start_working_date": tender_not_saved.start_working_date,
+            "description-external_link": tender_not_saved.external_link,
+            "description-constraints": tender_not_saved.constraints,
+            "description-amount": tender_constants.AMOUNT_RANGE_1000_MORE,
+        } | _step_2
+        step_3 = {
+            "tender_create_multi_step_view-current_step": "contact",
+            "contact-contact_first_name": tender_not_saved.contact_first_name,
+            "contact-contact_last_name": tender_not_saved.contact_last_name,
+            "contact-contact_email": tender_not_saved.contact_email,
+            # "contact-contact_phone": tender_not_saved.contact_phone,
+            # "contact-contact_company_name": "TEST",
+            "contact-response_kind": [Tender.RESPONSE_KIND_EMAIL],
+            "contact-deadline_date": tender_not_saved.deadline_date,
+        } | _step_3
+        step_4 = {
+            "tender_create_multi_step_view-current_step": "confirmation",
+            "confirmation-is_marche_useful": True,
+            "confirmation-marche_benefits": [constants.MARCHE_BENEFIT_TIME, constants.MARCHE_BENEFIT_MORE],
+        } | _step_4
+
+        return [step_1, step_2, step_3, step_4]
+
+    def _check_every_step(self, tenders_step_data, final_redirect_page: str = reverse("pages:home")):
+        for step, data_step in enumerate(tenders_step_data, 1):
+            response = self.client.post(reverse("tenders:create"), data=data_step)
+            if step == len(tenders_step_data):
+                # make sure that after the create tender we are redirected to ??
+                self.assertEqual(response.status_code, 302)
+                self.assertRedirects(response, final_redirect_page)
+                return response, None
+            else:
+                self.assertEqual(response.status_code, 200)
+                current_errors = response.context_data["form"].errors
+                self.assertEquals(current_errors, {})
+                return None, current_errors
+
+    def test_anyone_can_access_create_tender(self):
         # anonymous
         url = reverse("tenders:create")
         response = self.client.get(url)
@@ -37,6 +95,17 @@ class TenderCreateViewTest(TestCase):
         url = reverse("tenders:create")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+    def test_tender_wizard_form_all_good_authenticated(self):
+        tenders_step_data = self._generate_fake_data_form()
+        self.client.login(email=self.user_buyer.email, password=DEFAULT_PASSWORD)
+        self._check_every_step(tenders_step_data, final_redirect_page=reverse("tenders:list"))
+
+    def test_tender_wizard_form_all_good_anonymous(self):
+        tenders_step_data = self._generate_fake_data_form(
+            _step_4={"contact-contact_phone": "0123456789", "contact-contact_company_name": "TEST"}
+        )
+        self._check_every_step(tenders_step_data, final_redirect_page=reverse("pages:home"))
 
 
 class TenderMatchingTest(TestCase):
