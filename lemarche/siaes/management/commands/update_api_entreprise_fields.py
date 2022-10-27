@@ -51,78 +51,82 @@ class Command(BaseCommand):
 
         # self.stdout_info(f"Found {siae_queryset.count()} Siae")
 
-        # API Entreprise : etablissements
         if options["scope"] in ("all", "etablissement"):
-            progress = 0
-            results = {"success": 0, "error": 0}
-            siae_queryset_etablissement = siae_queryset.filter(api_entreprise_etablissement_last_sync_date=None)
-            self.stdout_info("-" * 80)
-            self.stdout_info(f"Populating 'etablissement' for {siae_queryset_etablissement.count()} Siae...")
+            self.update_api_entreprise_etablissement_fields(siae_queryset)
 
-            for siae in siae_queryset_etablissement:
-                try:
-                    progress += 1
-                    if (progress % 50) == 0:
-                        self.stdout_info(f"{progress}...")
-                    # self.stdout_info("-" * 80)
-                    # self.stdout_info(f"{siae.id} / {siae.name} / {siae.siret}")
-                    response, message = siae_update_etablissement(siae)
-                    if response:
-                        results["success"] += 1
-                    else:
-                        self.stdout_error(str(message))
-                        results["error"] += 1
-                    # small delay to avoid going above the API limitation
-                    # "max. 250 requêtes/min/jeton cumulées sur tous les endpoints"
-                    time.sleep(0.5)
-                except Exception as e:
-                    self.stdout_error(str(e))
-                    api_slack.send_message_to_channel(
-                        "Erreur lors de la synchronisation API entreprises : etablissements"
-                    )
-
-            msg_success = [
-                "----- Recap: sync API Entreprise : etablissements -----",
-                f"Done! Processed {siae_queryset_etablissement.count()} siae",
-                f"success count: {results['success']}/{siae_queryset_etablissement.count()}",
-                f"error count: {results['error']}/{siae_queryset_etablissement.count()} (voir les logs)",
-            ]
-            self.stdout_messages_success(msg_success)
-            api_slack.send_message_to_channel("\n".join(msg_success))
-
-        # API Entreprise : exercices
         if options["scope"] in ("all", "exercice"):
-            progress = 0
-            results = {"success": 0, "error": 0}
-            siae_queryset_exercice = siae_queryset.filter(api_entreprise_exercice_last_sync_date=None)
-            self.stdout_info("-" * 80)
-            self.stdout_info(f"Populating 'exercice' for {siae_queryset_exercice.count()} Siae...")
+            self.update_api_entreprise_exercice_fields(siae_queryset)
 
-            for siae in siae_queryset_exercice:
-                try:
-                    progress += 1
-                    if (progress % 50) == 0:
-                        self.stdout_info(f"{progress}...")
-                    # self.stdout_info("-" * 80)
-                    # self.stdout_info(f"{siae.id} / {siae.name} / {siae.siret}")
-                    response, message = siae_update_exercice(siae)
-                    if response:
-                        results["success"] += 1
-                    else:
-                        self.stdout_error(str(message))
-                        results["error"] += 1
-                    # small delay to avoid going above the API limitation
-                    # "max. 250 requêtes/min/jeton cumulées sur tous les endpoints"
-                    time.sleep(0.5)
-                except Exception as e:
-                    self.stdout_error(str(e))
-                    api_slack.send_message_to_channel("Erreur lors de la synchronisation API entreprises : exercices")
+    # API Entreprise : etablissements
+    def update_api_entreprise_etablissement_fields(self, siae_queryset):
+        progress = 0
+        results = {"success": 0, "error": 0}
+        siae_queryset_etablissement = siae_queryset.filter(api_entreprise_etablissement_last_sync_date=None)
+        self.stdout_info("-" * 80)
+        self.stdout_info(f"Populating 'etablissement' for {siae_queryset_etablissement.count()} Siae...")
 
-            msg_success = [
-                "----- Recap: sync API Entreprise : exercices -----",
-                f"Done! Processed {siae_queryset_exercice.count()} siae",
-                f"success count: {results['success']}/{siae_queryset_exercice.count()}",
-                f"error count: {results['error']}/{siae_queryset_exercice.count()} (voir les logs)",
-            ]
-            self.stdout_messages_success(msg_success)
-            api_slack.send_message_to_channel("\n".join(msg_success))
+        for siae in siae_queryset_etablissement:
+            try:
+                progress += 1
+                if (progress % 50) == 0:
+                    self.stdout_info(f"{progress}...")
+                # self.stdout_info("-" * 80)
+                # self.stdout_info(f"{siae.id} / {siae.name} / {siae.siret}")
+                response, message = siae_update_etablissement(siae)
+                if response:
+                    results["success"] += 1
+                else:
+                    self.stdout_error(str(message))
+                    results["error"] += 1
+                # small delay to avoid going above the API limitation
+                # "max. 250 requêtes/min/jeton cumulées sur tous les endpoints"
+                time.sleep(0.5)
+            except Exception as e:
+                self.stdout_error(str(e))
+                api_slack.send_message_to_channel("Erreur lors de la synchronisation API entreprises : etablissements")
+
+        msg_success = [
+            "----- Recap: sync API Entreprise : etablissements -----",
+            f"Done! Processed {siae_queryset_etablissement.count()} siae",
+            f"success count: {results['success']}/{siae_queryset_etablissement.count()}",
+            f"error count: {results['error']}/{siae_queryset_etablissement.count()} (voir les logs)",
+        ]
+        self.stdout_messages_success(msg_success)
+        api_slack.send_message_to_channel("\n".join(msg_success))
+
+    # API Entreprise : exercices
+    def update_api_entreprise_exercice_fields(self, siae_queryset):
+        progress = 0
+        results = {"success": 0, "error": 0}
+        siae_queryset_exercice = siae_queryset.filter(api_entreprise_exercice_last_sync_date=None)
+        self.stdout_info("-" * 80)
+        self.stdout_info(f"Populating 'exercice' for {siae_queryset_exercice.count()} Siae...")
+
+        for siae in siae_queryset_exercice:
+            try:
+                progress += 1
+                if (progress % 50) == 0:
+                    self.stdout_info(f"{progress}...")
+                # self.stdout_info("-" * 80)
+                # self.stdout_info(f"{siae.id} / {siae.name} / {siae.siret}")
+                response, message = siae_update_exercice(siae)
+                if response:
+                    results["success"] += 1
+                else:
+                    self.stdout_error(str(message))
+                    results["error"] += 1
+                # small delay to avoid going above the API limitation
+                # "max. 250 requêtes/min/jeton cumulées sur tous les endpoints"
+                time.sleep(0.5)
+            except Exception as e:
+                self.stdout_error(str(e))
+                api_slack.send_message_to_channel("Erreur lors de la synchronisation API entreprises : exercices")
+
+        msg_success = [
+            "----- Recap: sync API Entreprise : exercices -----",
+            f"Done! Processed {siae_queryset_exercice.count()} siae",
+            f"success count: {results['success']}/{siae_queryset_exercice.count()}",
+            f"error count: {results['error']}/{siae_queryset_exercice.count()} (voir les logs)",
+        ]
+        self.stdout_messages_success(msg_success)
+        api_slack.send_message_to_channel("\n".join(msg_success))
