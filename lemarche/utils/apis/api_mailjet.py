@@ -32,6 +32,9 @@ def get_default_client(params={}):
     return client
 
 
+ENV_NOT_ALLOWED = ("dev", "test")
+
+
 @task()
 def add_to_contact_list_async(email_address, properties, contact_list_id, client=None):
     """
@@ -55,14 +58,17 @@ def add_to_contact_list_async(email_address, properties, contact_list_id, client
     if not client:
         client = get_default_client()
 
-    try:
-        response = client.post(contact_list_endpoint(contact_list_id), json=data)
-        response.raise_for_status()
-        logger.info("Mailjet: add user to contact list")
-        return response.json()
-    except requests.exceptions.HTTPError as e:
-        logger.error("Error while fetching `%s`: %s", e.request.url, e)
-        raise e
+    if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
+        try:
+            response = client.post(contact_list_endpoint(contact_list_id), json=data)
+            response.raise_for_status()
+            logger.info("Mailjet: add user to contact list")
+            return response.json()
+        except requests.exceptions.HTTPError as e:
+            logger.error("Error while fetching `%s`: %s", e.request.url, e)
+            raise e
+    else:
+        logger.info("Mailjet: not add contact in contact list (DEV or TEST environment detected)")
 
 
 @task()
@@ -85,7 +91,7 @@ def send_transactional_email_with_template(
     if not client:
         client = get_default_client()
 
-    if settings.BITOUBI_ENV != "dev":
+    if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
         try:
             response = client.post(SEND_URL, json=data)
             response.raise_for_status()
@@ -95,7 +101,7 @@ def send_transactional_email_with_template(
             logger.error("Error while fetching `%s`: %s", e.request.url, e)
             raise e
     else:
-        logger.info("Mailjet: email not sent (DEV environment detected)")
+        logger.info("Mailjet: email not sent (DEV or TEST environment detected)")
 
 
 @task()
@@ -118,7 +124,7 @@ def send_transactional_email_many_recipient_with_template(
     if not client:
         client = get_default_client()
 
-    if settings.BITOUBI_ENV != "dev":
+    if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
         try:
             response = client.post(SEND_URL, json=data)
             response.raise_for_status()

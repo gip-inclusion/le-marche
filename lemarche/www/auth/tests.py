@@ -9,7 +9,7 @@ from lemarche.users.models import User
 
 
 SIAE = {
-    # "id_kind": 0  # required
+    "id_kind": 0,  # required
     "first_name": "Prenom",
     "last_name": "Nom",
     "phone": "012345678",  # not required
@@ -21,7 +21,7 @@ SIAE = {
 }
 
 BUYER = {
-    # "id_kind": 1  # required
+    "id_kind": 1,  # required
     "first_name": "Prenom",
     "last_name": "Nom",
     "phone": "012345678",
@@ -30,12 +30,14 @@ BUYER = {
     "email": "buyer@example.com",
     "password1": "Erls92#32",
     "password2": "Erls92#32",
+    # "nb_of_handicap_provider_2022": "3",
+    # "nb_of_inclusive_provider_2022": "4",
     # "id_accept_rgpd"  # required
     # "id_accept_survey"  # not required
 }
 
 PARTNER = {
-    # "id_kind": 2  # required
+    "id_kind": 2,  # required
     "first_name": "Prenom",
     "last_name": "Nom",
     "phone": "012345678",  # not required
@@ -49,7 +51,7 @@ PARTNER = {
 }
 
 PARTNER_2 = {
-    # "id_kind": 2  # required
+    "id_kind": 2,  # required
     "first_name": "Prenom",
     "last_name": "Nom",
     "phone": "012345678",  # not required
@@ -75,144 +77,126 @@ class SignupFormTest(StaticLiveServerTestCase):
         # other init
         cls.user_count = User.objects.count()
 
-    def test_siae_submits_signup_form_success(self):
-        driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:signup')}")
+    def _complete_form(self, user_profile: dict, signup_url=reverse("auth:signup"), with_submit=True):
+        """the function allows you to go to the "signup" page and complete the user profile.
 
-        driver.find_element(By.CSS_SELECTOR, "input#id_kind_0").click()
-        for key in SIAE:
-            driver.find_element(By.CSS_SELECTOR, f"input#id_{key}").send_keys(SIAE[key])
-        driver.find_element(By.CSS_SELECTOR, "input#id_accept_rgpd").click()
+        Args:
+            user_profile (dict): Dict wich contains the users information for form.
+                                ex : { "id_kind": 0, "id_of_field": "value"}
+            with_submit (bool, optional): Submit the form if it's True. Defaults to True.
+        """
+        self.driver.get(f"{self.live_server_url}{signup_url}")
 
-        driver.find_element(By.CSS_SELECTOR, "form button").click()
+        user_profile = user_profile.copy()
+        user_kind = user_profile.pop("id_kind")
+        self.driver.find_element(By.CSS_SELECTOR, f"input#id_kind_{user_kind}").click()
+        for key in user_profile:
+            self.driver.find_element(By.CSS_SELECTOR, f"input#id_{key}").send_keys(user_profile[key])
+        self.driver.find_element(By.CSS_SELECTOR, "input#id_accept_rgpd").click()
 
+        if with_submit:
+            self.driver.find_element(By.CSS_SELECTOR, "form button").click()
+
+    def _assert_signup_success(self, redirect_url: str) -> list:
+        """Assert the success signup and returns the sucess messages
+
+        Args:
+            redirect_url (str): redirect url after signup
+
+        Returns:
+            list: list of success messages
+        """
         # should create User
         self.assertEqual(User.objects.count(), self.user_count + 1)
         # user should be automatically logged in
-        header = driver.find_element(By.CSS_SELECTOR, "header#header")
+        header = self.driver.find_element(By.CSS_SELECTOR, "header#header")
         self.assertTrue("Mon espace" in header.text)
         self.assertTrue("Connexion" not in header.text)
-        # should redirect to user dashboard
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('dashboard:home')}")
+        # should redirect to redirect_url
+        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{redirect_url}")
         # message should be displayed
-        messages = driver.find_element(By.CSS_SELECTOR, "div.messages")
+        messages = self.driver.find_element(By.CSS_SELECTOR, "div.messages")
+        self.assertTrue("Inscription validée" in messages.text)
+        return messages
+
+    def test_siae_submits_signup_form_success(self):
+
+        self._complete_form(user_profile=SIAE.copy(), with_submit=True)
+
+        messages = self._assert_signup_success(redirect_url=reverse("dashboard:home"))
+
         self.assertTrue("Vous pouvez maintenant ajouter votre structure" in messages.text)
 
     def test_siae_submits_signup_form_error(self):
-        driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:signup')}")
+        user_profile = SIAE.copy()
+        del user_profile["last_name"]
 
-        driver.find_element(By.CSS_SELECTOR, "input#id_kind_0").click()
-        for key in SIAE:
-            if key not in ["last_name"]:
-                driver.find_element(By.CSS_SELECTOR, f"input#id_{key}").send_keys(SIAE[key])
-        driver.find_element(By.CSS_SELECTOR, "input#id_accept_rgpd").click()
-
-        driver.find_element(By.CSS_SELECTOR, "form button").click()
+        self._complete_form(user_profile=user_profile, with_submit=True)
 
         # should not submit form (last_name field is required)
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
     def test_buyer_submits_signup_form_success(self):
-        driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:signup')}")
 
-        driver.find_element(By.CSS_SELECTOR, "input#id_kind_1").click()
-        for key in BUYER:
-            driver.find_element(By.CSS_SELECTOR, f"input#id_{key}").send_keys(BUYER[key])
-        driver.find_element(By.CSS_SELECTOR, "input#id_accept_rgpd").click()
+        self._complete_form(user_profile=BUYER, with_submit=True)
 
-        driver.find_element(By.CSS_SELECTOR, "form button").click()
+        self._assert_signup_success(redirect_url=reverse("pages:home"))
 
-        # should create User
-        self.assertEqual(User.objects.count(), self.user_count + 1)
-        # user should be automatically logged in
-        header = driver.find_element(By.CSS_SELECTOR, "header#header")
-        self.assertTrue("Mon espace" in header.text)
-        self.assertTrue("Connexion" not in header.text)
-        # should redirect to home
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('pages:home')}")
-        # message should be displayed
-        messages = driver.find_element(By.CSS_SELECTOR, "div.messages")
-        self.assertTrue("Inscription validée" in messages.text)
+    def test_buyer_submits_signup_form_success_extra_data(self):
+
+        self._complete_form(user_profile=BUYER, with_submit=False)
+        nb_of_handicap = "3"
+        nb_of_inclusive = "4"
+        self.driver.find_element(By.CSS_SELECTOR, f"input#id_nb_of_handicap_provider_2022_{nb_of_handicap}").click()
+        self.driver.find_element(By.CSS_SELECTOR, f"input#id_nb_of_inclusive_provider_2022_{nb_of_inclusive}").click()
+
+        self.driver.find_element(By.CSS_SELECTOR, "form button").click()
+
+        # should get created User
+        user = User.objects.get(email=BUYER.get("email"))
+
+        # assert extra_data are inserted
+        self.assertEqual(user.extra_data.get("nb_of_handicap_provider_2022"), nb_of_handicap)
+        self.assertEqual(user.extra_data.get("nb_of_inclusive_provider_2022"), nb_of_inclusive)
 
     def test_buyer_submits_signup_form_error(self):
-        driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:signup')}")
+        user_profile = BUYER.copy()
+        del user_profile["position"]
 
-        driver.find_element(By.CSS_SELECTOR, "input#id_kind_1").click()
-        for key in BUYER:
-            if key not in ["position"]:
-                driver.find_element(By.CSS_SELECTOR, f"input#id_{key}").send_keys(BUYER[key])
-        driver.find_element(By.CSS_SELECTOR, "input#id_accept_rgpd").click()
-
-        driver.find_element(By.CSS_SELECTOR, "form button").click()
+        self._complete_form(user_profile=user_profile, with_submit=True)
 
         # should not submit form (position field is required)
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
     def test_partner_submits_signup_form_success(self):
-        driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:signup')}")
 
-        driver.find_element(By.CSS_SELECTOR, "input#id_kind_2").click()
-        for key in PARTNER:
-            driver.find_element(By.CSS_SELECTOR, f"input#id_{key}").send_keys(PARTNER[key])
-        driver.find_element(By.XPATH, "//select[@id='id_partner_kind']/option[text()='Réseaux IAE']").click()
-        driver.find_element(By.CSS_SELECTOR, "input#id_accept_rgpd").click()
+        self._complete_form(user_profile=PARTNER, with_submit=False)
+        self.driver.find_element(By.XPATH, "//select[@id='id_partner_kind']/option[text()='Réseaux IAE']").click()
+        self.driver.find_element(By.CSS_SELECTOR, "form button").click()
 
-        driver.find_element(By.CSS_SELECTOR, "form button").click()
-
-        # should create User
-        self.assertEqual(User.objects.count(), self.user_count + 1)
-        # user should be automatically logged in
-        header = driver.find_element(By.CSS_SELECTOR, "header#header")
-        self.assertTrue("Mon espace" in header.text)
-        self.assertTrue("Connexion" not in header.text)
-        # should redirect to home
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('pages:home')}")
-        # message should be displayed
-        messages = driver.find_element(By.CSS_SELECTOR, "div.messages")
-        self.assertTrue("Inscription validée" in messages.text)
+        self._assert_signup_success(redirect_url=reverse("pages:home"))
 
     def test_partner_submits_signup_form_error(self):
-        driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:signup')}")
+        user_profile = PARTNER.copy()
+        del user_profile["company_name"]
 
-        driver.find_element(By.CSS_SELECTOR, "input#id_kind_2").click()
-        for key in PARTNER:
-            if key not in ["company_name"]:
-                driver.find_element(By.CSS_SELECTOR, f"input#id_{key}").send_keys(PARTNER[key])
-        driver.find_element(By.CSS_SELECTOR, "input#id_accept_rgpd").click()
-
-        driver.find_element(By.CSS_SELECTOR, "form button").click()
+        self._complete_form(user_profile=user_profile, with_submit=True)
 
         # should not submit form (company_name field is required)
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
     def test_user_submits_signup_form_with_next_param_success_and_redirect(self):
-        driver = self.driver
-        driver.get(f"{self.live_server_url}{reverse('auth:signup')}?next=/prestataires/?kind=ESAT")
+        next_url = f"{reverse('siae:search_results')}?kind=ESAT"
+        self._complete_form(
+            user_profile=PARTNER,
+            signup_url=f"{reverse('auth:signup')}?next={next_url}",
+            with_submit=False,
+        )
+        self.driver.find_element(By.XPATH, "//select[@id='id_partner_kind']/option[text()='Réseaux IAE']").click()
 
-        driver.find_element(By.CSS_SELECTOR, "input#id_kind_2").click()
-        for key in PARTNER:
-            driver.find_element(By.CSS_SELECTOR, f"input#id_{key}").send_keys(PARTNER[key])
-        driver.find_element(By.XPATH, "//select[@id='id_partner_kind']/option[text()='Réseaux IAE']").click()
-        driver.find_element(By.CSS_SELECTOR, "input#id_accept_rgpd").click()
+        self.driver.find_element(By.CSS_SELECTOR, "form button").click()
 
-        driver.find_element(By.CSS_SELECTOR, "form button").click()
-
-        # should create User
-        self.assertEqual(User.objects.count(), self.user_count + 1)
-        # user should be automatically logged in
-        header = driver.find_element(By.CSS_SELECTOR, "header#header")
-        self.assertTrue("Mon espace" in header.text)
-        self.assertTrue("Connexion" not in header.text)
-        # should redirect to next url
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('siae:search_results')}?kind=ESAT")
-        # message should be displayed
-        messages = driver.find_element(By.CSS_SELECTOR, "div.messages")
-        self.assertTrue("Inscription validée" in messages.text)
+        self._assert_signup_success(redirect_url=next_url)
 
     @classmethod
     def tearDownClass(cls):
