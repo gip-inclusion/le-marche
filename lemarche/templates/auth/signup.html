@@ -65,6 +65,14 @@
                             {% bootstrap_field form.password1 %}
                             {% bootstrap_field form.password2 %}
                         </fieldset>
+                        <fieldset id="statsSignupBuyer" class="d-none">
+                            <hr>
+                            <div class="form-group">
+                                {% bootstrap_field form.nb_of_inclusive_provider_2022 class="inline-block" %}
+                                {% bootstrap_field form.nb_of_handicap_provider_2022 class="inline-block" %}
+                                <i class="fs-xs">Ces informations resteront confidentielles, elles ne seront traitées qu’à des fins statistiques.</i>
+                            </div>
+                        </fieldset>
                         <div class="form-group">
                             {% bootstrap_field form.accept_rgpd %}
                             {% bootstrap_field form.accept_survey form_group_class="form-group accept-survey-form-group d-none" %}
@@ -110,6 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let partnerKindInput = document.getElementById('id_partner_kind');
     let acceptSurveyInput = document.getElementById('id_accept_survey');
     let acceptShareContactInput = document.getElementById('id_accept_share_contact_to_external_partners');
+    let statsSignupBuyerContent = document.getElementById('statsSignupBuyer');
 
     let kindRadios = document.querySelectorAll('input[type=radio][name="kind"]');
     kindRadios.forEach(radio => radio.addEventListener('change', () => {
@@ -128,9 +137,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (radio.value === 'BUYER') {
             toggleInputElement(true, element=positionInput, required=true);
             toggleInputElement(true, element=phoneInput, required=true);
+            statsSignupBuyerContent.classList.remove('d-none');
         } else {
             toggleInputElement(false, element=positionInput, required=false);
             toggleInputElement(true, element=phoneInput, required=false);
+            statsSignupBuyerContent.classList.add('d-none');
         }
 
         if (radio.value === 'PARTNER') {

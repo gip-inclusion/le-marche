@@ -211,6 +211,7 @@ class User(AbstractUser):
     tender_list_last_seen_date = models.DateTimeField(
         "Date de dernière visite sur la page 'besoins'", blank=True, null=True
     )
+    extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)
 
     # is_active, is_staff, is_superuser
 
