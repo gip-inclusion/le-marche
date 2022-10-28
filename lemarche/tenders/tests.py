@@ -31,6 +31,18 @@ class TenderModelTest(TestCase):
         tender = TenderFactory(title=str_test)
         self.assertEqual(str(tender), str_test)
 
+    def test_set_slug(self):
+        tender = TenderFactory(title="Un besoin")
+        self.assertEqual(tender.slug, "un-besoin")
+        # with author
+        user_1 = UserFactory(kind=User.KIND_BUYER)
+        tender = TenderFactory(title="Un autre besoin", author=user_1)
+        self.assertEqual(tender.slug, "un-autre-besoin")
+        # with author.company_name
+        user_2 = UserFactory(kind=User.KIND_BUYER, company_name="L'entreprise A")
+        tender = TenderFactory(title="Un 3e besoin", author=user_2)
+        self.assertEqual(tender.slug, "un-3e-besoin-lentreprise-a")
+
     # todo : update with testing form
     # def test_deadline_start_before_today(self):
     #     today = datetime.date.today()

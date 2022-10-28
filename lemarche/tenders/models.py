@@ -271,7 +271,7 @@ class Tender(models.Model):
         The slug field should be unique.
         """
         if not self.slug:
-            self.slug = f"{slugify(self.title)[:40]}-{str(self.author.company_name or '')}"
+            self.slug = slugify(f"{self.title}-{str(self.author.company_name or '')}")[:40]
         if with_uuid:
             self.slug += f"-{str(uuid4())[:4]}"
 
