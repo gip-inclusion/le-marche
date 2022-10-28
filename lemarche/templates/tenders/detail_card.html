@@ -69,8 +69,12 @@
         {% if not source_form %}
             <hr class="my-5">
             {% if user.is_authenticated %}
-                {% if tender.author == request.user or user_has_contact_click_date %}
+                {% if tender.author == request.user or user_has_contact_click_date or user_can_display_tender_contact_details %}
                     {% include "tenders/_detail_contact.html" with tender=tender %}
+                {% elif user.kind == user.KIND_PARTNER %}
+                    <p>
+                        Contactez Sofiane ou Abdessamad via le chat de discussion qui se trouve en bas à droite du site pour être mis en relation avec l'acheteur.
+                    </p>
                 {% else %}
                     <button type="button" id="show-tender-contact-modal-btn" class="btn btn-primary float-right mb-4" data-toggle="modal" data-target="#contact_click_confirm_modal" title="Répondre à cette opportunité">
                         Répondre à cette opportunité

@@ -118,6 +118,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         HasSiaeFilter,
         HasTenderFilter,
         "partner_kind",
+        "can_display_tender_contact_details",
         HasFavoriteListFilter,
         HasApiKeyFilter,
         "is_staff",
@@ -171,9 +172,12 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         ),
         SiaeUserInline,
         (
-            "Besoins déposés",
+            "Dépôt de besoin",
             {
-                "fields": ("tender_count_with_link",),
+                "fields": (
+                    "tender_count_with_link",
+                    "can_display_tender_contact_details",
+                ),
             },
         ),
         (
@@ -275,7 +279,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             return format_html(f'<a href="{url}">{user.tender_count}</a>')
         return "-"
 
-    tender_count_with_link.short_description = "Nombre de besoins"
+    tender_count_with_link.short_description = "Nombre de besoins déposés"
     tender_count_with_link.admin_order_field = "tender_count"
 
     def favorite_list_count_with_link(self, user):

@@ -164,6 +164,12 @@ class User(AbstractUser):
         verbose_name="Type de partenaire", max_length=20, choices=PARTNER_KIND_CHOICES, blank=True
     )
 
+    can_display_tender_contact_details = models.BooleanField(
+        verbose_name="Ce partenaire a accès aux coordonnées de l'acheteur ?",
+        help_text="Permet à certains utilisateurs partenaires de voir directement les coordonnées. Les autres auront un message leur demandant de contacter les admins",  # noqa
+        default=False,
+    )
+
     source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default=SOURCE_SIGNUP_FORM)
 
     api_key = models.CharField(verbose_name="Clé API", max_length=128, unique=True, blank=True, null=True)
