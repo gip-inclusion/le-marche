@@ -263,17 +263,20 @@ class TenderDetailView(DetailView):
             if user_kind == User.KIND_SIAE and tender.kind == Tender.TENDER_KIND_PROJECT
             else tender.get_kind_display()
         )
-        if user.is_authenticated and user.kind == User.KIND_SIAE:
-            context["user_has_detail_display_date"] = TenderSiae.objects.filter(
-                tender=tender, siae__in=user.siaes.all(), detail_display_date__isnull=False
-            ).exists()
-            context["user_has_contact_click_date"] = TenderSiae.objects.filter(
-                tender=tender, siae__in=user.siaes.all(), contact_click_date__isnull=False
-            ).exists()
-        if tender.author == user:
-            context["siae_contact_click_count"] = TenderSiae.objects.filter(
-                tender=tender, contact_click_date__isnull=False
-            ).count()
+        if user.is_authenticated:
+            if tender.author == user:
+                context["siae_contact_click_count"] = TenderSiae.objects.filter(
+                    tender=tender, contact_click_date__isnull=False
+                ).count()
+            elif user.kind == User.KIND_SIAE:
+                context["user_has_contact_click_date"] = TenderSiae.objects.filter(
+                    tender=tender, siae__in=user.siaes.all(), contact_click_date__isnull=False
+                ).exists()
+            elif user.kind == User.KIND_PARTNER:
+                context["user_can_display_tender_contact_details"] = user.can_display_tender_contact_details
+            else:
+                pass
+
         return context
 
 

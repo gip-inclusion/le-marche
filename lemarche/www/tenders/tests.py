@@ -309,6 +309,7 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Répondre à cette opportunité")
         # users
         for user in User.objects.all():
             self.client.login(email=user.email, password=DEFAULT_PASSWORD)
@@ -322,12 +323,14 @@ class TenderDetailViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "1 structures intéressées")
+        self.assertNotContains(response, "Répondre à cette opportunité")
         # but hidden for non-author
         self.client.login(email=self.user_buyer_2.email, password=DEFAULT_PASSWORD)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "1 structures intéressées")
+        self.assertContains(response, "Répondre à cette opportunité")
 
     def test_update_tendersiae_stats_on_tender_view(self):
         siae_2 = SiaeFactory(name="ABC Insertion")
@@ -367,6 +370,25 @@ class TenderDetailViewTest(TestCase):
         self.assertEqual(self.tender_1.tendersiae_set.count(), 1 + 1)
         self.assertEqual(self.tender_1.tendersiae_set.first().siae, siae_2)
         self.assertIsNotNone(self.tender_1.tendersiae_set.first().detail_display_date)
+
+    def test_some_partners_can_display_contact_details(self):
+        # this partner cannot
+        self.client.login(email=self.user_partner.email, password=DEFAULT_PASSWORD)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Répondre à cette opportunité")
+        self.assertContains(response, "via le chat de discussion")
+        self.assertNotContains(response, "utilisez les coordonnées suivantes")
+        # this one can!
+        user_partner_2 = UserFactory(kind=User.KIND_PARTNER, can_display_tender_contact_details=True)
+        self.client.login(email=user_partner_2.email, password=DEFAULT_PASSWORD)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Répondre à cette opportunité")
+        self.assertNotContains(response, "via le chat de discussion")
+        self.assertContains(response, "utilisez les coordonnées suivantes")
 
 
 class TenderDetailContactClickStatViewTest(TestCase):

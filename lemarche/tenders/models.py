@@ -425,10 +425,10 @@ class PartnerShareTenderQuerySet(models.QuerySet):
 
 class PartnerShareTender(models.Model):
     name = models.CharField(max_length=120, verbose_name="Nom du partenaire")
+
     perimeters = models.ManyToManyField(
         "perimeters.Perimeter", verbose_name="Lieux de filtrage", related_name="partner_share_tenders", blank=True
     )
-
     amount_in = models.CharField(
         verbose_name="Montant du marché limite",
         max_length=9,
@@ -436,7 +436,7 @@ class PartnerShareTender(models.Model):
         blank=True,
         null=True,
     )
-    # contact email list
+
     contact_email_list = ArrayField(
         verbose_name="Liste de contact", base_field=models.EmailField(max_length=255), blank=True, default=list
     )
