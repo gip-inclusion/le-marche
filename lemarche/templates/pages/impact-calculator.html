@@ -1,7 +1,7 @@
 {% extends BASE_TEMPLATE %}
 {% load bootstrap4 static humanize%}
 
-{% block title %}Suivi de l'impact{{ block.super }}{% endblock %}
+{% block title %}Calibrer votre achat socialement responsable{{ block.super }}{% endblock %}
 {% block meta_description %}
 <meta name="description" content="Identifier rapidement le nombre total de prestataires inclusifs pouvant répondre à votre besoin et mesurer leur capacité globale de production.">
 {% endblock %}
@@ -14,7 +14,7 @@
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Calculateur d'impact</li>
+                        <li class="breadcrumb-item active" aria-current="page">Calibrer votre achat socialement responsable</li>
                     </ol>
                 </nav>
             </div>
@@ -29,7 +29,7 @@
         <div class="s-page-menu-01__row row align-items-center">
             <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-lg-10">
                 <h1 class="h1-hero">
-                    <strong>Calculateur d'impact</strong>
+                    <strong>Calibrer votre achat socialement responsable</strong>
                 </h1>
                 <p>Identifier rapidement le nombre total de prestataires inclusifs pouvant répondre à votre besoin et mesurer leur capacité globale de production.<p>
             </div>
@@ -37,51 +37,58 @@
     </div>
 </section>
 
-<section class="pt-4 pb-6">
+<section class="pb-6">
     <div class="container">
         <div class="row">
             <div class="col-12">
-
                 {% block htmx %}
-                <div id="calculatorImpact" class="row">
-                    <div class="col-md-6 col-xs-12">
-                        <form hx-post="./" hx-target="#calculatorImpact" hx-swap="outerHTML">
-                            {% csrf_token %}
-                            {% bootstrap_form_errors form type="all" %}
-                            {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
-                            <div class="form-group">
-                                <label for="id_perimeters">{{ form.perimeters.label }}</label>
-                                <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
-                                <div id="perimeters-selected" class="mt-2"></div>
-                                {{ current_perimeters|json_script:"current-perimeters" }}
-                            </div>
-                            {% bootstrap_field form.presta_type %}
+                    <div id="calculatorImpact" class="row">
+                        <div class="col-md-6 col-xs-12">
+                            <form hx-post="./" hx-target="#calculatorImpact" hx-swap="outerHTML">
+                                {% csrf_token %}
+                                {% bootstrap_form_errors form type="all" %}
+                                {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
+                                <div class="form-group form-group-required {% if form.perimeters.errors %}is-invalid{% endif %}">
+                                    <label for="id_perimeters">{{ form.perimeters.label }}</label>
+                                    <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
+                                    <small class="form-text text-muted">{{ form.perimeters.help_text }}</small>
+                                    <div class="invalid-feedback">Ce champ est obligatoire.</div>
+                                    <div id="perimeters-selected" class="mt-2"></div>
+                                    {{ current_perimeters|json_script:"current-perimeters" }}
+                                </div>
+                                {% bootstrap_field form.presta_type %}
 
-                            <button type="submit" class="btn btn-primary">
-                                Calculer
-                            </button>
-                            {% if results %}
-                                <button hx-get="./" class="btn" hx-target="#calculatorImpact" hx-swap="outerHTML">
-                                    Recommencer
+                                <button type="submit" class="btn btn-primary">
+                                    LANCER LA RECHERCHE
                                 </button>
-                            {% endif %}
-                        </form>
-                    </div>
-                    <div class="col-md-6 col-xs-12">
+                                {% if results %}
+                                    <button hx-get="./" class="btn" hx-target="#calculatorImpact" hx-swap="outerHTML">
+                                        Annuler
+                                    </button>
+                                {% endif %}
+                            </form>
+                        </div>
                         {% if results %}
-                        <h3>Résultats</h3>
-                        <p>
-                        Il y a <b>{{results.id__count}}</b> prestataires inclusifs positionnés sur les secteurs d’activités <i>{{results.sectors | join:", "}}</i>
-                        pouvant intervenir sur {{results.perimeters |join:", " }}.
-                        Ces <b>{{results.id__count}}</b> prestataires inclusifs représentent plus de <b>{{results.ca__sum|intcomma}}</b> € de chiffres d'affaires cumulé
-                        et plus de <b>{{results.employees_insertion_count__sum|intcomma}}</b> salariés en insertion.
-                        </p>
+                            <div class="col-md-6 col-xs-12">
+                                <h3>Résultats</h3>
+                                <p>
+                                Il y a <b>{{results.id__count}}</b> prestataires inclusifs positionnés sur les secteurs d’activités <i>{{results.sectors | join:", "}}</i>
+                                pouvant intervenir sur {{results.perimeters |join:", " }}.<br>
+                                Ces <b>{{results.id__count}}</b> prestataires inclusifs représentent plus de <b>{{results.ca_declared__sum|intcomma}}</b> € de chiffres d'affaires cumulé
+                                et plus de <b>{{results.employees_insertion__sum|intcomma}}</b> salariés en insertion.
+                                </p>
+                                <div class="fs-xs">
+                                    Ces données sont issues de plusieurs sources :
+                                    <ul>
+                                        <li>les informations déclarées par les prestataires inclusifs eux-mêmes</li>
+                                        <li><a href="https://pilotage.inclusion.beta.gouv.fr/" target="_blank" rel="noopener noreferrer">la plateforme Le Pilotage de l’inclusion</a></li>
+                                        <li><a href="https://api.gouv.fr/" target="_blank" rel="noopener noreferrer">api.gouv.fr</a></li>
+                                    </ul>
+                                </div>
+                            </div>
                         {% endif %}
                     </div>
-                </div>
-
                 {% endblock htmx %}
-
             </div>
         </div>
     </div>
@@ -89,6 +96,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
-
+    <script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
 {% endblock extra_js %}

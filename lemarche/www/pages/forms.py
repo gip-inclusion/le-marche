@@ -1,5 +1,5 @@
 from django import forms
-from django.db.models import Count, Sum
+from django.db.models import Case, Count, F, IntegerField, Sum, When
 
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
@@ -46,20 +46,20 @@ class ImpactCalculatorForm(forms.Form):
         queryset=Sector.objects.form_filter_queryset(),
         choices_groupby="group",
         to_field_name="slug",
-        required=False,
+        required=True,
     )
     # The hidden `perimeters` field is populated by the JS autocomplete library, see `perimeters_autocomplete_field.js`
     perimeters = forms.ModelMultipleChoiceField(
         label=Perimeter._meta.verbose_name_plural,
         queryset=Perimeter.objects.all(),
         to_field_name="slug",
-        required=False,
+        required=True,
         # widget=forms.HiddenInput()
     )
     presta_type = forms.MultipleChoiceField(
         label=Siae._meta.get_field("presta_type").verbose_name,
         choices=siae_constants.PRESTA_CHOICES,
-        required=False,
+        required=True,
     )
 
     def filter_queryset(self):  # noqa C901
@@ -93,4 +93,21 @@ class ImpactCalculatorForm(forms.Form):
 
     def get_results(self):
         queryset = self.filter_queryset()
-        return queryset.aggregate(Count("id"), Sum("employees_insertion_count"), Sum("ca"))
+        # print("queryyyy----------", queryset[0].id, queryset[1].id)
+        queryset = queryset.annotate(
+            ca_declared=Case(
+                When(ca__isnull=False, then=F("ca")),
+                When(ca__isnull=True, api_entreprise_ca__isnull=False, then=F("api_entreprise_ca")),
+                default=0,
+            ),
+            employees_insertion=Case(
+                When(c2_etp_count__isnull=False, then=F("c2_etp_count")),
+                When(employees_insertion_count__isnull=False, then=F("employees_insertion_count")),
+                default=0,
+                output_field=IntegerField(),
+            ),
+        )
+        # import ipdb
+
+        # ipdb.set_trace()
+        return queryset.aggregate(Count("id"), Sum("employees_insertion"), Sum("ca_declared"))
