@@ -15,7 +15,7 @@ from lemarche.siaes.models import Siae, SiaeGroup
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.utils.tracker import track
-from lemarche.www.pages.forms import ContactForm
+from lemarche.www.pages.forms import ContactForm, ImpactCalculatorForm
 from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
 from lemarche.www.tenders.tasks import notify_admin_tender_created
 from lemarche.www.tenders.views import (
@@ -130,6 +130,35 @@ class TrackView(View):
             meta=data.get("meta", None),
         )
         return JsonResponse({"message": "success"})
+
+
+class ImpactCalculatorView(FormView):
+    template_name = "pages/impact-calculator.html"
+    form_class = ImpactCalculatorForm
+    success_url = reverse_lazy("pages:impact_calculator")
+
+    def get(self, request, *args, **kwargs):
+        # if request.htmx:
+        #     import ipdb
+
+        #     ipdb.set_trace()
+        return super().get(request, *args, **kwargs)
+
+    def form_valid(self, form: ImpactCalculatorForm):
+        context = self.get_context_data()
+        form_data = form.cleaned_data
+        context["results"] = form.get_results()
+        current_perimeters = form_data.get("perimeters")
+        if current_perimeters:
+            context["current_perimeters"] = list(current_perimeters.values("id", "slug", "name"))
+            context["results"]["perimeters"] = current_perimeters.order_by("name").values_list("name", flat=True)
+        current_sectors = form_data.get("sectors")
+        if current_sectors:
+            context["results"] |= {"sectors": current_sectors.order_by("name").values_list("name", flat=True)}
+        return render(self.request, self.template_name, context)
+
+    def calculate_impact(self, form: ImpactCalculatorForm):
+        return form.filter_queryset().count()
 
 
 def csrf_failure(request, reason=""):  # noqa C901
