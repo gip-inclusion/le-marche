@@ -148,17 +148,25 @@ class ImpactCalculatorView(FormView):
         context = self.get_context_data()
         form_data = form.cleaned_data
         context["results"] = form.get_results()
+        # perimeters
         current_perimeters = form_data.get("perimeters")
-        if current_perimeters:
-            context["current_perimeters"] = list(current_perimeters.values("id", "slug", "name"))
-            context["results"]["perimeters"] = current_perimeters.order_by("name").values_list("name", flat=True)
+        context["current_perimeters"] = list(current_perimeters.values("id", "slug", "name"))
+        current_perimeters_list = list(current_perimeters.order_by("name").values_list("name", flat=True))
+        context["results"]["perimeters"] = self.limit_list(current_perimeters_list)
+        # sectors
         current_sectors = form_data.get("sectors")
-        if current_sectors:
-            context["results"] |= {"sectors": current_sectors.order_by("name").values_list("name", flat=True)}
+        current_sectors_list = list(current_sectors.order_by("name").values_list("name", flat=True))
+        context["results"] |= {"sectors": self.limit_list(current_sectors_list)}
         return render(self.request, self.template_name, context)
 
-    def calculate_impact(self, form: ImpactCalculatorForm):
-        return form.filter_queryset().count()
+    def limit_list(self, listing: list, limit: int = 3, with_end_elmt=True, end_position="...", sorted=True):
+        if sorted:
+            listing.sort()
+        if len(listing) > limit:
+            listing = listing[:limit]
+            if with_end_elmt:
+                listing.append(end_position)
+        return listing
 
 
 def csrf_failure(request, reason=""):  # noqa C901
