@@ -93,7 +93,6 @@ class ImpactCalculatorForm(forms.Form):
 
     def get_results(self):
         queryset = self.filter_queryset()
-        # print("queryyyy----------", queryset[0].id, queryset[1].id)
         queryset = queryset.annotate(
             ca_declared=Case(
                 When(ca__isnull=False, then=F("ca")),
@@ -107,7 +106,4 @@ class ImpactCalculatorForm(forms.Form):
                 output_field=IntegerField(),
             ),
         )
-        # import ipdb
-
-        # ipdb.set_trace()
         return queryset.aggregate(Count("id"), Sum("employees_insertion"), Sum("ca_declared"))
