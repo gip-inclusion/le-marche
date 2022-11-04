@@ -20,7 +20,6 @@ from lemarche.favorites.models import FavoriteList
 from lemarche.siaes.models import Siae
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
-from lemarche.utils.tracker import extract_meta_from_request, track
 from lemarche.www.auth.tasks import add_to_contact_list
 from lemarche.www.siaes.forms import SiaeFavoriteForm, SiaeSearchForm
 
@@ -87,12 +86,6 @@ class SiaeSearchResultsView(FormMixin, ListView):
 
     def get(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()
-        # Track search event
-        track(
-            "backend",
-            "directory_search",
-            meta=extract_meta_from_request(self.request, results_count=self.object_list.count()),
-        )
         user = request.user
         if not user.is_anonymous and user.kind == user.KIND_BUYER:
             add_to_contact_list(user, "buyer_search")
@@ -123,12 +116,6 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
             value for (key, value) in self.request.GET.items() if ((key not in ["page", "format"]) and value)
         ]
 
-        # Track download event
-        track(
-            "backend",
-            "directory_csv",
-            meta=extract_meta_from_request(self.request, results_count=siae_list.count()),
-        )
         user = self.request.user
         if user.kind == user.KIND_BUYER:
             add_to_contact_list(user, "buyer_download")
@@ -136,7 +123,9 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         if not len(request_params):
             # no search filters -> the user wants to download the whole list -> serve the generated file stored on S3
             file_path = f"{API_CONNECTION_DICT['endpoint_url']}/{settings.S3_STORAGE_BUCKET_NAME}/{settings.SIAE_EXPORT_FOLDER_NAME}/{filename_with_extension}"  # noqa
-            return HttpResponseRedirect(file_path)
+            response = HttpResponseRedirect(file_path)
+            response.context_data = {"results_count": siae_list.count()}
+            return response
 
         else:
             if format == "csv":
@@ -152,7 +141,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
 
                 wb = export_siae_to_excel(siae_list, with_contact_info)
                 wb.save(response)
-
+            response.context_data = {"results_count": siae_list.count()}
             return response
 
 

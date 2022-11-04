@@ -16,7 +16,6 @@ from lemarche.siaes.models import Siae, SiaeUser, SiaeUserRequest
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.utils.s3 import S3Upload
-from lemarche.utils.tracker import extract_meta_from_request, track
 from lemarche.www.dashboard.forms import (
     ProfileEditForm,
     ProfileFavoriteEditForm,
@@ -239,15 +238,6 @@ class SiaeSearchBySiretView(SiaeUserRequiredMixin, FormMixin, ListView):
         if len(self.request.GET.keys()):
             context["form"] = SiaeSearchBySiretForm(data=self.request.GET)
         return context
-
-    def get(self, request, *args, **kwargs):
-        # Track adopt search event
-        track(
-            "backend",
-            "adopt_search",
-            meta=extract_meta_from_request(self.request),
-        )
-        return super().get(request, *args, **kwargs)
 
 
 class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, SuccessMessageMixin, UpdateView):
