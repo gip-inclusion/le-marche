@@ -109,10 +109,6 @@ class TrackerMiddleware:
                 # when form is in context_data the form have errors
                 action = "impact-calculator"
                 meta = self.extract_meta_from_request_post(request, context_data, extract_data=True)
-            elif page == reverse("auth:signup") and not context_data.get("form"):  # Signup action
-                # when form is in context_data the form have errors
-                action = "inscription"
-                meta = self.extract_meta_from_request_post(request, context_data, extract_data=False)
 
         elif request.method == "GET":
             if page == (reverse("siae:search_results")):  # Search action
