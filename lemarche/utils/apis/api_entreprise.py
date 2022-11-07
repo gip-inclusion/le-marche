@@ -52,9 +52,9 @@ def etablissement_get_or_error(siret, reason="Inscription au marché de l'inclus
         status_code = e.response.status_code
 
         if status_code == 422:
-            error = f"SIRET « {siret} » non reconnu."
+            error = f"SIRET « {siret} » non reconnu."
         elif status_code == 404:
-            error = f"SIRET « {siret} » 404 ?"
+            error = f"SIRET « {siret} » 404 ?"
         else:
             # logger.error("Error while fetching `%s`: %s", url, e)
             error = "Problème de connexion à la base Sirene. Essayez ultérieurement."
@@ -89,14 +89,14 @@ def etablissement_get_or_error(siret, reason="Inscription au marché de l'inclus
         "employees_date_reference": data["etablissement"]["tranche_effectif_salarie_etablissement"]["date_reference"],
         "date_constitution": date.fromtimestamp(data["etablissement"]["date_creation_etablissement"]),
     }
-
     return etablissement, None
 
 
 def siae_update_etablissement(siae):
     etablissement, error = etablissement_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)
     if error:
-        raise Exception(error)
+        return 0, error
+
     update_data = dict()
 
     if etablissement:
@@ -112,14 +112,11 @@ def siae_update_etablissement(siae):
             update_data["api_entreprise_employees_year_reference"] = etablissement["employees_date_reference"]
         if etablissement["date_constitution"]:
             update_data["api_entreprise_date_constitution"] = etablissement["date_constitution"]
-    # else:
-    #     self.stdout.write(error)
-    # TODO: if 404, siret_is_valid = False ?
 
     update_data["api_entreprise_etablissement_last_sync_date"] = timezone.now()
     Siae.objects.filter(id=siae.id).update(**update_data)
 
-    return 1 if etablissement else 0
+    return 1, etablissement
 
 
 def exercice_get_or_error(siret, reason="Inscription au marché de l'inclusion"):
@@ -180,7 +177,9 @@ def exercice_get_or_error(siret, reason="Inscription au marché de l'inclusion")
 
 
 def siae_update_exercice(siae):
-    exercice, _ = exercice_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)  # noqa
+    exercice, error = exercice_get_or_error(siae.siret, reason=API_ENTREPRISE_REASON)  # noqa
+    if error:
+        return 0, error
 
     update_data = dict()
 
@@ -192,10 +191,8 @@ def siae_update_exercice(siae):
             update_data["api_entreprise_ca_date_fin_exercice"] = datetime.strptime(
                 exercice["date_fin_exercice"][:-6], TIMESTAMP_FORMAT
             ).date()
-    # else:
-    #     self.stdout.write(error)
 
     update_data["api_entreprise_exercice_last_sync_date"] = timezone.now()
     Siae.objects.filter(id=siae.id).update(**update_data)
 
-    return 1 if exercice else 0
+    return 1, exercice
