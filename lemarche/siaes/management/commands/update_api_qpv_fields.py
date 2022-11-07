@@ -88,8 +88,8 @@ class Command(BaseCommand):
         msg_success = [
             "----- Recap: sync API QPV -----",
             f"Done! Processed {len(siaes_to_update)}/{len(siae_list)} siaes",
-            f"Etablissements success count: {self.success_count['etablissement']}/{len(siaes_to_update)}",
-            f"Etablissements QPV success count: {self.success_count['etablissement_qpv']}/{len(siae_list)}",
+            f"success count: {self.success_count['etablissement']}/{len(siaes_to_update)}",
+            f"True count: {self.success_count['etablissement_qpv']}/{len(siaes_to_update)}",
         ]
         self.stdout_messages_success(msg_success)
         api_slack.send_message_to_channel("\n".join(msg_success))
