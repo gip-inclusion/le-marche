@@ -7,6 +7,7 @@ from django.http import Http404, HttpResponsePermanentRedirect, HttpResponseRedi
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, FormView, ListView, TemplateView, View
+from django.views.generic.edit import FormMixin
 
 from lemarche.pages.models import Page
 from lemarche.perimeters.models import Perimeter
@@ -132,24 +133,42 @@ class TrackView(View):
         return JsonResponse({"message": "success"})
 
 
-class ImpactCalculatorView(FormView):
+class ImpactCalculatorView(FormMixin, ListView):
     template_name = "pages/impact-calculator.html"
     form_class = ImpactCalculatorForm
 
-    def form_valid(self, form: ImpactCalculatorForm):
-        context = self.get_context_data()
-        form_data = form.cleaned_data
-        context["results"] = form.impact_aggregation()
-        # perimeters
-        current_perimeters = form_data.get("perimeters")
-        context["current_perimeters"] = list(current_perimeters.values("id", "slug", "name"))
-        current_perimeters_list = list(current_perimeters.order_by("name").values_list("name", flat=True))
-        context["current_perimeters_pretty"] = self.limit_list(current_perimeters_list)
-        # sectors
-        current_sectors = form_data.get("sectors")
-        current_sectors_list = list(current_sectors.order_by("name").values_list("name", flat=True))
-        context["current_sectors_pretty"] = self.limit_list(current_sectors_list)
-        return render(self.request, self.template_name, context)
+    # def get(self, request, *args, **kwargs):
+    #     return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        """
+        Filter results.
+        - filter and order using the SiaeSearchForm
+        - if the user is authenticated, annotate with favorite info
+        """
+        self.filter_form = ImpactCalculatorForm(data=self.request.GET)
+        results = self.filter_form.filter_queryset()
+        return self.filter_form.impact_aggregation(results)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if len(self.request.GET.keys()):
+            siae_search_form = self.filter_form if self.filter_form else ImpactCalculatorForm(data=self.request.GET)
+            if siae_search_form.is_valid():
+                context["results"] = self.get_queryset()
+                # perimeters
+                current_perimeters = siae_search_form.cleaned_data.get("perimeters")
+                if current_perimeters:
+                    context["current_perimeters"] = list(current_perimeters.values("id", "slug", "name"))
+                    current_perimeters_list = list(current_perimeters.order_by("name").values_list("name", flat=True))
+                    context["current_perimeters_pretty"] = self.limit_list(current_perimeters_list)
+                # sectors
+                current_sectors = siae_search_form.cleaned_data.get("sectors")
+                if current_sectors:
+                    context["current_sectors"] = list(current_sectors.values("id", "slug", "name"))
+                    current_sectors_list = list(current_sectors.order_by("name").values_list("name", flat=True))
+                    context["current_sectors_pretty"] = self.limit_list(current_sectors_list)
+        return context
 
     def limit_list(self, listing: list, limit: int = 3, with_end_elmt=True, end_position="...", sorted=True):
         if sorted:

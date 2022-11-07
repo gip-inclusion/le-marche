@@ -44,8 +44,7 @@
                 {% block htmx %}
                     <div id="calculatorImpact" class="row">
                         <div class="col-md-6 col-xs-12">
-                            <form hx-post="" hx-target="#calculatorImpact" hx-swap="outerHTML">
-                                {% csrf_token %}
+                            <form hx-get="" hx-push-url="true" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-target="#calculatorImpact" hx-swap="outerHTML">
                                 {% bootstrap_form_errors form type="all" %}
                                 {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
                                 <div class="form-group form-group-required {% if form.perimeters.errors %}is-invalid{% endif %}">
