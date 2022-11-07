@@ -1,5 +1,5 @@
 {% extends BASE_TEMPLATE %}
-{% load bootstrap4 static humanize%}
+{% load bootstrap4 static humanize %}
 
 {% block title %}Calibrer votre achat socialement responsable{{ block.super }}{% endblock %}
 {% block meta_description %}
@@ -44,7 +44,7 @@
                 {% block htmx %}
                     <div id="calculatorImpact" class="row">
                         <div class="col-md-6 col-xs-12">
-                            <form hx-post="./" hx-target="#calculatorImpact" hx-swap="outerHTML">
+                            <form hx-post="" hx-target="#calculatorImpact" hx-swap="outerHTML">
                                 {% csrf_token %}
                                 {% bootstrap_form_errors form type="all" %}
                                 {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
@@ -59,10 +59,10 @@
                                 {% bootstrap_field form.presta_type %}
 
                                 <button type="submit" class="btn btn-primary">
-                                    LANCER LA RECHERCHE
+                                    Lancer la recherche
                                 </button>
                                 {% if results %}
-                                    <button hx-get="./" class="btn" hx-target="#calculatorImpact" hx-swap="outerHTML">
+                                    <button hx-get="{{request.path}}" class="btn" hx-target="#calculatorImpact" hx-swap="outerHTML">
                                         Annuler
                                     </button>
                                 {% endif %}
