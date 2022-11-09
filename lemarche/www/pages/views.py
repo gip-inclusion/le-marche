@@ -135,28 +135,20 @@ class TrackView(View):
 class ImpactCalculatorView(FormView):
     template_name = "pages/impact-calculator.html"
     form_class = ImpactCalculatorForm
-    success_url = reverse_lazy("pages:impact_calculator")
-
-    def get(self, request, *args, **kwargs):
-        # if request.htmx:
-        #     import ipdb
-
-        #     ipdb.set_trace()
-        return super().get(request, *args, **kwargs)
 
     def form_valid(self, form: ImpactCalculatorForm):
         context = self.get_context_data()
         form_data = form.cleaned_data
-        context["results"] = form.get_results()
+        context["results"] = form.impact_aggregation()
         # perimeters
         current_perimeters = form_data.get("perimeters")
         context["current_perimeters"] = list(current_perimeters.values("id", "slug", "name"))
         current_perimeters_list = list(current_perimeters.order_by("name").values_list("name", flat=True))
-        context["results"]["perimeters"] = self.limit_list(current_perimeters_list)
+        context["current_perimeters_pretty"] = self.limit_list(current_perimeters_list)
         # sectors
         current_sectors = form_data.get("sectors")
         current_sectors_list = list(current_sectors.order_by("name").values_list("name", flat=True))
-        context["results"] |= {"sectors": self.limit_list(current_sectors_list)}
+        context["current_sectors_pretty"] = self.limit_list(current_sectors_list)
         return render(self.request, self.template_name, context)
 
     def limit_list(self, listing: list, limit: int = 3, with_end_elmt=True, end_position="...", sorted=True):

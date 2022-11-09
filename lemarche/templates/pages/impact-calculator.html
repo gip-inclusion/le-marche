@@ -72,8 +72,8 @@
                             <div class="col-md-6 col-xs-12">
                                 <h3>Résultats</h3>
                                 <p>
-                                Il y a <b>{{results.id__count}}</b> prestataires inclusifs positionnés sur les secteurs d’activités <i>{{results.sectors | join:", "}}</i>
-                                pouvant intervenir sur {{results.perimeters |join:", " }}.<br>
+                                Il y a <b>{{results.id__count}}</b> prestataires inclusifs positionnés sur les secteurs d’activités <i>{{current_sectors_pretty | join:", "}}</i>
+                                pouvant intervenir sur {{current_perimeters_pretty |join:", " }}.<br>
                                 Ces <b>{{results.id__count}}</b> prestataires inclusifs représentent plus de <b>{{results.ca_declared__sum|intcomma}}</b> € de chiffres d'affaires cumulé
                                 et plus de <b>{{results.employees_insertion__sum|intcomma}}</b> salariés en insertion.
                                 </p>
