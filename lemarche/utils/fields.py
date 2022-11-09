@@ -75,3 +75,18 @@ def pretty_print_readonly_jsonfield(jsonfield_data):
         result = mark_safe(f"<pre>{escape(result)}</pre>")
 
     return result
+
+
+class BooleanNotEmptyField(forms.BooleanField):
+    def to_python(self, value):
+        if isinstance(value, str) and value.lower() in ("false", "0"):
+            value = False
+        elif isinstance(value, str) and value.lower() in ("true", "1"):
+            value = True
+        else:
+            value = None
+        return value
+
+    def validate(self, value):
+        if value not in (0, 1) and self.required:
+            raise forms.ValidationError(self.error_messages["required"], code="required")
