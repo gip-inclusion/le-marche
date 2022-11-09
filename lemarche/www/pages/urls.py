@@ -153,7 +153,7 @@ urlpatterns = [
     # Tracking endpoint for the frontend
     path("track/", TrackView.as_view(), name="track_frontend"),
     # Impact calculator endpoint
-    path("calcul-impact/", ImpactCalculatorView.as_view(), name="impact_calculator"),
+    path("calibrer-achat-socialement-responsable/", ImpactCalculatorView.as_view(), name="impact_calculator"),
     # Flatpages (created in the admin)
     # path("", include("django.contrib.flatpages.urls")),
     path("<path:url>", PageView.as_view(), name="flatpage"),
