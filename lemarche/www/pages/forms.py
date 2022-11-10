@@ -1,6 +1,9 @@
 from django import forms
+from django.db.models import Case, Count, F, IntegerField, Sum, When
 
+from lemarche.siaes.models import Siae
 from lemarche.utils.constants import EMPTY_CHOICE
+from lemarche.www.siaes.forms import SiaeSearchForm
 
 
 class ContactForm(forms.Form):
@@ -32,3 +35,34 @@ class ContactForm(forms.Form):
     subject = forms.CharField(label="Sujet", max_length=150, required=True)
 
     message = forms.CharField(label="Message", widget=forms.Textarea(), required=True)
+
+
+class ImpactCalculatorForm(SiaeSearchForm):
+    class Meta:
+        model = Siae
+        fields = ["sectors", "perimeters", "presta_type"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # required fields
+        self.fields["sectors"].required = True
+        self.fields["perimeters"].required = True
+        self.fields["presta_type"].required = True
+
+    def impact_aggregation(self, qs=None):
+        if not qs:
+            qs = self.filter_queryset()
+        qs = qs.annotate(
+            ca_declared=Case(
+                When(ca__isnull=False, then=F("ca")),
+                When(ca__isnull=True, api_entreprise_ca__isnull=False, then=F("api_entreprise_ca")),
+                default=0,
+            ),
+            employees_insertion=Case(
+                When(c2_etp_count__isnull=False, then=F("c2_etp_count")),
+                When(employees_insertion_count__isnull=False, then=F("employees_insertion_count")),
+                default=0,
+                output_field=IntegerField(),
+            ),
+        )
+        return qs.aggregate(Count("id"), Sum("employees_insertion"), Sum("ca_declared"))

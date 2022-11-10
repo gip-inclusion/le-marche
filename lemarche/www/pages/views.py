@@ -15,7 +15,7 @@ from lemarche.siaes.models import Siae, SiaeGroup
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.utils.tracker import track
-from lemarche.www.pages.forms import ContactForm
+from lemarche.www.pages.forms import ContactForm, ImpactCalculatorForm
 from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
 from lemarche.www.tenders.tasks import notify_admin_tender_created
 from lemarche.www.tenders.views import (
@@ -130,6 +130,35 @@ class TrackView(View):
             meta=data.get("meta", None),
         )
         return JsonResponse({"message": "success"})
+
+
+class ImpactCalculatorView(FormView):
+    template_name = "pages/impact-calculator.html"
+    form_class = ImpactCalculatorForm
+
+    def form_valid(self, form: ImpactCalculatorForm):
+        context = self.get_context_data()
+        form_data = form.cleaned_data
+        context["results"] = form.impact_aggregation()
+        # perimeters
+        current_perimeters = form_data.get("perimeters")
+        context["current_perimeters"] = list(current_perimeters.values("id", "slug", "name"))
+        current_perimeters_list = list(current_perimeters.order_by("name").values_list("name", flat=True))
+        context["current_perimeters_pretty"] = self.limit_list(current_perimeters_list)
+        # sectors
+        current_sectors = form_data.get("sectors")
+        current_sectors_list = list(current_sectors.order_by("name").values_list("name", flat=True))
+        context["current_sectors_pretty"] = self.limit_list(current_sectors_list)
+        return render(self.request, self.template_name, context)
+
+    def limit_list(self, listing: list, limit: int = 3, with_end_elmt=True, end_position="...", sorted=True):
+        if sorted:
+            listing.sort()
+        if len(listing) > limit:
+            listing = listing[:limit]
+            if with_end_elmt:
+                listing.append(end_position)
+        return listing
 
 
 def csrf_failure(request, reason=""):  # noqa C901
