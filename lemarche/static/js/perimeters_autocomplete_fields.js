@@ -1,9 +1,5 @@
 // need to setup "current-perimeters" div which contains the currents perimeters selected to manage the refresh page
 
-const perimeterAutocompleteContainer = document.querySelector('#dir_form_perimeters');
-const perimetersContainer = document.querySelector('#perimeters-selected');
-const inputName = perimeterAutocompleteContainer.dataset.inputName;
-
 function removeInputOnClick() {
   let idRefInput = $(this).data('refinput');
   // remove the input
@@ -12,6 +8,10 @@ function removeInputOnClick() {
 }
 
 function createHiddenInputPerimeter(resultId, resultName) {
+  const perimeterAutocompleteContainer = document.querySelector('#dir_form_perimeters');
+  const perimetersContainer = document.querySelector('#perimeters-selected');
+  const inputName = perimeterAutocompleteContainer.dataset.inputName;
+
   let removeIcon = $('<i>', { class: "ri-close-line font-weight-bold mr-0", "aria-hidden": true });
   let resultIdString = `hiddenPerimeter-${resultId}`;
   $('<input>', {
@@ -31,9 +31,13 @@ function createHiddenInputPerimeter(resultId, resultName) {
   removeIcon.appendTo(button);
   button.appendTo(perimetersContainer);
 }
+function cleanPerimeters() {
+  const perimetersContainer = document.querySelector('#perimeters-selected');
+  $(perimetersContainer).empty();
+}
 
-document.addEventListener("DOMContentLoaded", function() {
-   /**
+function initPerimetersAutoCompleteFields() {
+     /**
    * Accessible autocomplete for the perimeter search form field
    */
 
@@ -41,6 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // let perimeterInput = document.getElementById('id_perimeters');  // hidden
 
+  const perimeterAutocompleteContainer = document.querySelector('#dir_form_perimeters');
   const perimeterKindMapping = {
     'REGION': 'région',
     'DEPARTMENT': 'département',
@@ -112,7 +117,6 @@ document.addEventListener("DOMContentLoaded", function() {
       // }
     }
   }
-
   if (document.body.contains(perimeterAutocompleteContainer)) {
     accessibleAutocomplete({
       element: perimeterAutocompleteContainer,
@@ -153,8 +157,12 @@ document.addEventListener("DOMContentLoaded", function() {
           createHiddenInputPerimeter(perimeter['slug'], perimeter['name']);  // parseInt(perimeter['id'])
       });
   }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  initPerimetersAutoCompleteFields();
 });
 
-function cleanPerimeters() {
-  $(perimetersContainer).empty();
-}
+document.body.addEventListener('htmx:afterSwap', function() {
+  initPerimetersAutoCompleteFields();
+});

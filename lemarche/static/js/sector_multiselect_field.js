@@ -1,7 +1,7 @@
-document.addEventListener('DOMContentLoaded', function() {
+function initSectorMultiSelectField() {
     /**
      * Multiselect dropdown for the sector search form field
-     */
+    */
     const FORM_INPUT_ID = "id_sectors";
     const FORM_MULTISELECT_ID = `${FORM_INPUT_ID}_multiselect`;
     let FORM_SELECTOR = `.use-multiselect #${FORM_INPUT_ID}`;
@@ -80,5 +80,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
     }
+}
 
+document.addEventListener('DOMContentLoaded', function() {
+    initSectorMultiSelectField();
+});
+
+document.addEventListener('htmx:afterSwap', function() {
+    initSectorMultiSelectField();
 });
