@@ -38,27 +38,6 @@ class ContactForm(forms.Form):
 
 
 class ImpactCalculatorForm(SiaeSearchForm):
-    # sectors = GroupedModelMultipleChoiceField(
-    #     label=Sector._meta.verbose_name_plural,
-    #     queryset=Sector.objects.form_filter_queryset(),
-    #     choices_groupby="group",
-    #     to_field_name="slug",
-    #     required=True,
-    # )
-    # # The hidden `perimeters` field is populated by the JS autocomplete library, see `perimeters_autocomplete_field.js`  # noqa
-    # perimeters = forms.ModelMultipleChoiceField(
-    #     label=Perimeter._meta.verbose_name_plural,
-    #     queryset=Perimeter.objects.all(),
-    #     to_field_name="slug",
-    #     required=True,
-    #     # widget=forms.HiddenInput()
-    # )
-    # presta_type = forms.MultipleChoiceField(
-    #     label=Siae._meta.get_field("presta_type").verbose_name,
-    #     choices=siae_constants.PRESTA_CHOICES,
-    #     required=True,
-    # )
-
     class Meta:
         model = Siae
         fields = ["sectors", "perimeters", "presta_type"]
