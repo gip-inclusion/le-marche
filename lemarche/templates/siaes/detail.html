@@ -488,13 +488,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // create custom marker (because of static url issues)
     var customLeafletIcon = L.icon({
-        'iconUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-icon.png' %}",
-        'shadowUrl': "{% static 'vendor/leaflet-1.7.1/images/marker-shadow.png' %}",
-        iconSize: [25,41],
-        iconAnchor: [12,41],
-        popupAnchor:[1,-34],
-        tooltipAnchor:[16,-28],
-        shadowSize:[41,41],
+        'iconUrl': "{% static 'img/icon_map.png' %}",
+        'shadowUrl': "{% static 'img/icon_map_shadow.png' %}",
+        iconSize: [34,25],
+        shadowSize:[34,25],
     });
 
     // add marker (with popup on click)
