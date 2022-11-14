@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from uuid import uuid4
 
 from django.conf import settings
@@ -21,6 +22,7 @@ from lemarche.perimeters.models import Perimeter
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.tasks import set_siae_coords
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
+from lemarche.stats.models import Tracker
 from lemarche.users.models import User
 from lemarche.utils.data import round_by_base
 from lemarche.utils.fields import ChoiceArrayField
@@ -864,6 +866,27 @@ class Siae(models.Model):
     @cached_property
     def sectors_list_string(self):
         return ", ".join(self.sectors.values_list("name", flat=True))
+
+    @cached_property
+    def stat_view_count_last_3O_days(self):
+        return Tracker.objects.filter(
+            page=f"/prestataires/{self.slug}/",
+            date_created__gte=datetime.now() - timedelta(days=90),
+            action="load",
+            env="prod",
+            isadmin=False,
+        ).count()
+
+    @cached_property
+    def stat_buyer_view_count_last_3O_days(self):
+        return Tracker.objects.filter(
+            page=f"/prestataires/{self.slug}/",
+            data__meta__user_type="BUYER",
+            date_created__gte=datetime.now() - timedelta(days=90),
+            action="load",
+            env="prod",
+            isadmin=False,
+        ).count()
 
     def siae_user_requests_pending_count(self):
         # TODO: optimize + filter on assignee
