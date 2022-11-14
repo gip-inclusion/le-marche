@@ -344,7 +344,7 @@ MAILJET_TENDERS_AUTHOR_CONFIRMATION_PUBLISHED_TEMPLATE_ID = env.int(
 # -- tenders users feedbacks
 MAILJET_TENDERS_AUTHOR_FEEDBACK_30D_TEMPLATE_ID = env.int("MAILJET_TENDERS_AUTHOR_FEEDBACK_30D_TEMPLATE_ID", 4017446)
 
-
+HUBSPOT_API_KEY = env.str("HUBSPOT_API_KEY", "set-it")
 # Security
 # ------------------------------------------------------------------------------
 

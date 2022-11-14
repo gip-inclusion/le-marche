@@ -703,6 +703,23 @@ genshi = ["genshi"]
 lxml = ["lxml"]
 
 [[package]]
+name = "hubspot-api-client"
+version = "6.1.0"
+description = "HubSpot API client"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+certifi = "*"
+python-dateutil = "*"
+six = ">=1.10"
+urllib3 = ">=1.15"
+
+[package.extras]
+dev = ["pytest", "black"]
+
+[[package]]
 name = "huey"
 version = "2.4.4"
 description = "huey, a little task queue"
@@ -2008,6 +2025,7 @@ html5lib = [
     {file = "html5lib-1.1-py2.py3-none-any.whl", hash = "sha256:0d78f8fde1c230e99fe37986a60526d7049ed4bf8a9fadbad5f00e22e58e041d"},
     {file = "html5lib-1.1.tar.gz", hash = "sha256:b2e5b40261e20f354d198eae92afc10d750afb487ed5e50f9c4eaf07c184146f"},
 ]
+hubspot-api-client = []
 huey = [
     {file = "huey-2.4.4.tar.gz", hash = "sha256:6a27a7862a7a982c0508ad4e548d95765e3b0d97093a51106f07540837a09c86"},
 ]
