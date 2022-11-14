@@ -31,7 +31,10 @@
                 <h1 class="h1-hero">
                     <strong>Calibrer votre achat socialement responsable</strong>
                 </h1>
-                <p>Identifier rapidement le nombre total de prestataires inclusifs pouvant répondre à votre besoin et mesurer leur capacité globale de production.<p>
+                <p>
+                    Identifier rapidement le nombre total de prestataires inclusifs pouvant répondre à votre besoin,
+                    et mesurer leur capacité globale de production.
+                <p>
             </div>
         </div>
     </div>
@@ -44,7 +47,7 @@
                 {% block htmx %}
                     <div id="calculatorImpact" class="row">
                         <div class="col-md-6 col-xs-12">
-                            <form hx-get="" hx-push-url="true" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-target="#calculatorImpact" hx-swap="outerHTML">
+                            <form hx-get="{{ request.path }}" hx-push-url="true" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-target="#calculatorImpact" hx-swap="outerHTML">
                                 {% bootstrap_form_errors form type="all" %}
                                 {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
                                 <div class="form-group form-group-required {% if form.perimeters.errors %}is-invalid{% endif %}">
@@ -61,7 +64,7 @@
                                     Lancer la recherche
                                 </button>
                                 {% if results %}
-                                    <button hx-get="{{request.path}}" class="btn" hx-target="#calculatorImpact" hx-swap="outerHTML">
+                                    <button hx-get="{{ request.path }}" class="btn" hx-target="#calculatorImpact" hx-swap="outerHTML">
                                         Annuler
                                     </button>
                                 {% endif %}
@@ -71,16 +74,21 @@
                             <div class="col-md-6 col-xs-12">
                                 <h3>Résultats</h3>
                                 <p>
-                                Il y a <b>{{results.id__count}}</b> prestataires inclusifs positionnés sur les secteurs d’activités <i>{{current_sectors_pretty | join:", "}}</i>
-                                pouvant intervenir sur {{current_perimeters_pretty |join:", " }}.<br>
-                                Ces <b>{{results.id__count}}</b> prestataires inclusifs représentent plus de <b>{{results.ca_declared__sum|intcomma}}</b> € de chiffres d'affaires cumulé
-                                et plus de <b>{{results.employees_insertion__sum|intcomma}}</b> salariés en insertion.
+                                    Il y a <b>{{ results.id__count }}</b> prestataires inclusifs positionnés sur les secteurs d'activités <i>{{current_sectors_pretty|join:", "}}</i>
+                                    pouvant intervenir sur <i>{{ current_perimeters_pretty|join:", " }}</i>.
                                 </p>
+                                {% if results.id__count > 0 %}
+                                    <p>
+                                        Ces <b>{{ results.id__count }}</b> prestataires inclusifs représentent plus de <b>{{ results.ca_declared__sum|intcomma }}</b> € de chiffres d'affaires cumulé
+                                        et plus de <b>{{ results.employees_insertion__sum|intcomma }}</b> salariés en insertion.
+                                    </p>
+                                {% endif %}
+                                <br />
                                 <div class="fs-xs">
                                     Ces données sont issues de plusieurs sources :
                                     <ul>
                                         <li>les informations déclarées par les prestataires inclusifs eux-mêmes</li>
-                                        <li><a href="https://pilotage.inclusion.beta.gouv.fr/" target="_blank" rel="noopener noreferrer">la plateforme Le Pilotage de l’inclusion</a></li>
+                                        <li><a href="https://pilotage.inclusion.beta.gouv.fr/" target="_blank" rel="noopener noreferrer">la plateforme Le Pilotage de l'inclusion</a></li>
                                         <li><a href="https://api.gouv.fr/" target="_blank" rel="noopener noreferrer">api.gouv.fr</a></li>
                                     </ul>
                                 </div>
@@ -95,5 +103,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
 {% endblock extra_js %}

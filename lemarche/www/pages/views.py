@@ -137,9 +137,6 @@ class ImpactCalculatorView(FormMixin, ListView):
     template_name = "pages/impact-calculator.html"
     form_class = ImpactCalculatorForm
 
-    # def get(self, request, *args, **kwargs):
-    #     return super().get(request, *args, **kwargs)
-
     def get_queryset(self):
         """
         Filter results.
@@ -147,13 +144,16 @@ class ImpactCalculatorView(FormMixin, ListView):
         - if the user is authenticated, annotate with favorite info
         """
         self.filter_form = ImpactCalculatorForm(data=self.request.GET)
-        results = self.filter_form.filter_queryset()
-        return self.filter_form.impact_aggregation(results)
+        if len(self.request.GET.keys()):
+            results = self.filter_form.filter_queryset()
+            return self.filter_form.impact_aggregation(results)
+        else:  # avoid empty filtering and long aggregation
+            return Siae.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if len(self.request.GET.keys()):
-            siae_search_form = self.filter_form if self.filter_form else ImpactCalculatorForm(initial=self.request.GET)
+            siae_search_form = self.filter_form if self.filter_form else ImpactCalculatorForm(data=self.request.GET)
             if siae_search_form.is_valid():
                 context["results"] = self.get_queryset()
                 context["form"] = self.filter_form
