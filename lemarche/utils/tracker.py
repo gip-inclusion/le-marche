@@ -10,10 +10,12 @@
 # to the tracking database directly, which would be magnitudes faster.
 
 import logging
-from datetime import datetime
 
 from crawlerdetect import CrawlerDetect
 from django.conf import settings
+from django.http import HttpRequest, HttpResponse
+from django.urls import reverse
+from django.utils import timezone
 
 from lemarche.stats.models import Tracker
 from lemarche.users.models import User
@@ -28,7 +30,7 @@ logger.setLevel(logging.DEBUG)
 crawler_detect = CrawlerDetect()
 
 
-VERSION = 2
+VERSION = 3
 
 TRACKER_IGNORE_LIST = [
     "/static",
@@ -36,51 +38,32 @@ TRACKER_IGNORE_LIST = [
     "/admin",
     "/select2",
     "/api/perimeters/autocomplete",
+    "/media",
     "/track",  # avoid duplicate tracking
 ]
 
 DEFAULT_PAYLOAD = {
     "version": VERSION,
-    "date_created": datetime.now().astimezone().isoformat(),
     "env": settings.BITOUBI_ENV,
-    "page": "",
-    "action": "load",
     "data": {"source": "bitoubi_api"},  # needs to be stringifyed...
     "source": "tracker",  # why we use it ?
 }
-
-
-def extract_meta_from_request(request, siae=None, results_count=None):
-    user: User = request.user
-    return {
-        **request.GET,
-        "is_admin": user.is_authenticated and user.kind == User.KIND_ADMIN,
-        "user_type": user.kind if user.is_authenticated else "",
-        "user_id": user.id if user.is_authenticated else None,
-        "siae_id": siae.id if siae else None,
-        "results_count": results_count,
-        "token": request.GET.get("token", ""),
-        "cmp": request.GET.get("cmp", ""),
-    }
 
 
 # @task()
 def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
 
     # Don't log in dev
-    if settings.BITOUBI_ENV not in ("dev", "test"):
-        date_created = datetime.now().isoformat()
+    if settings.BITOUBI_ENV not in ("test"):
+        date_created = timezone.now()
         set_payload = {
             "date_created": date_created,
             "page": page,
             "action": action,
             "data": {
-                "_v": 1,
-                "env": settings.BITOUBI_ENV,  # est-ce vraiment utile ?
-                "meta": DEFAULT_PAYLOAD["data"] | meta,
-                "page": page,
-                "action": action,
-                # "timestamp": date_created,
+                # need to be removed later, because we need complete migration
+                "meta": DEFAULT_PAYLOAD["data"]
+                | meta,
             },
             "isadmin": meta.get("is_admin", False),
         }
@@ -99,34 +82,109 @@ class TrackerMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
-    def __call__(self, request):
+    def __call__(self, request: HttpRequest):
         response = self.get_response(request)
         page = request.path
-        request_ua = request.META.get("HTTP_USER_AGENT", "")
+        if self.tracking_this_page(page, request):
+            self.track_page(page, request, response)
+        return response
 
+    def tracking_this_page(self, page, request: HttpRequest) -> bool:
+        request_ua = request.META.get("HTTP_USER_AGENT", "")
         # Final checks before calling the track() function
         # - make sure no "ignored" keyword is in the path
         # - make sure the request doesn't come from a crawler
         if all([s not in page for s in TRACKER_IGNORE_LIST]):
             is_crawler = crawler_detect.isCrawler(request_ua)
-            if not is_crawler:
-                # build meta & co
-                results_count = (
-                    getattr(response, "context_data", {}).get("paginator").count
-                    if getattr(response, "context_data", None)
-                    and getattr(response, "context_data", {}).get("paginator")
-                    else None
-                )
-                siae = (
-                    getattr(response, "context_data", {}).get("siae", None)
-                    if getattr(response, "context_data", None)
-                    else None
-                )
-                meta = extract_meta_from_request(request, siae=siae, results_count=results_count)
-                track(
-                    page=page,
-                    action="load",
-                    meta=meta,
-                )
+            return not is_crawler
+        return False
 
-        return response
+    def track_page(self, page, request: HttpRequest, response: HttpResponse):
+        action = "load"
+        context_data = self.get_context_data(response)
+        meta = None
+
+        if request.method == "POST":
+            if page == reverse("pages:impact_calculator") and not context_data.get("form"):  # impact calculator
+                # when form is in context_data the form have errors
+                action = "impact-calculator"
+                meta = self.extract_meta_from_request_post(request, context_data, extract_data=True)
+
+        elif request.method == "GET":
+            if page == (reverse("siae:search_results")):  # Search action
+                action = "directory_search"
+                extra_data = {
+                    "results_count": context_data.get("paginator").count if context_data.get("paginator") else None
+                }
+                meta = self.extract_meta_from_request_get(request, context_data=context_data, extra_data=extra_data)
+
+            elif page == reverse("siae:search_results_download"):  # download csv action
+                action = "directory_csv"
+                extra_data = {
+                    "results_count": context_data.get("paginator").count if context_data.get("paginator") else None
+                }
+                meta = self.extract_meta_from_request_get(request, context_data=context_data, extra_data=extra_data)
+
+            elif page == reverse("dashboard:siae_search_by_siret"):  # adopted search action
+                action = "adopt_search"
+                meta = self.extract_meta_from_request_get(request, context_data=context_data)
+
+            else:
+                meta = self.extract_meta_from_request_get(request, context_data=context_data)
+
+        if meta:
+            track(
+                page=page,
+                action=action,
+                meta=meta,
+            )
+
+    def extract_user_info(self, request: HttpRequest, context_data: dict):
+        user: User = request.user
+        siae = context_data.get("siae")
+        return {
+            "is_admin": user.is_authenticated and user.kind == User.KIND_ADMIN,
+            "user_type": user.kind if user.is_authenticated else "",
+            "user_id": user.id if user.is_authenticated else None,
+            "siae_id": siae.id if siae else None,
+        }
+
+    def get_context_data(self, response: HttpResponse):
+        context_data = getattr(response, "context_data", {})
+        context_data = context_data if context_data else {}
+        return context_data
+
+    def extract_meta_from_request_get(self, request: HttpRequest, context_data: dict, extra_data: dict = {}):
+        user_info: dict = self.extract_user_info(request, context_data)
+        return (
+            user_info
+            | {
+                **request.GET,
+                # "results_count": results_count,
+                "token": request.GET.get("token", ""),
+                "cmp": request.GET.get("cmp", ""),
+            }
+            | extra_data
+        )
+
+    def extract_meta_from_request_post(
+        self, request: HttpRequest, context_data: dict, extract_data=False, remove_items: tuple = ()
+    ) -> dict:
+        """Extract data from POST request
+
+        Args:
+            request (HttpRequest): Current request
+            context_data (context_data): Current context_data
+            extract_data (bool, optional): If True, extract the data from request. Defaults to False.
+            remove_items (tuple, optional): Tuple of keys to remove from the data POST. Defaults to ().
+
+        Returns:
+            dict: extracted data from the request
+        """
+        user_info: dict = self.extract_user_info(request, context_data)
+        if extract_data:
+            data_post = dict(request.POST)
+            for key in remove_items + ("csrfmiddlewaretoken",):
+                data_post.pop(key)
+            return user_info | data_post
+        return user_info
