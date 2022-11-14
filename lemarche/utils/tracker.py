@@ -38,6 +38,7 @@ TRACKER_IGNORE_LIST = [
     "/admin",
     "/select2",
     "/api/perimeters/autocomplete",
+    "/media",
     "/track",  # avoid duplicate tracking
 ]
 
@@ -60,10 +61,9 @@ def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
             "page": page,
             "action": action,
             "data": {
-                "_v": VERSION,
-                "meta": DEFAULT_PAYLOAD["data"] | meta,
-                "action": action,
-                # "timestamp": date_created,
+                # need to be removed later, because we need complete migration
+                "meta": DEFAULT_PAYLOAD["data"]
+                | meta,
             },
             "isadmin": meta.get("is_admin", False),
         }
@@ -116,21 +116,21 @@ class TrackerMiddleware:
                 extra_data = {
                     "results_count": context_data.get("paginator").count if context_data.get("paginator") else None
                 }
-                meta = self.extract_meta_from_request_get(request, response, extra_data)
+                meta = self.extract_meta_from_request_get(request, context_data=context_data, extra_data=extra_data)
 
             elif page == reverse("siae:search_results_download"):  # download csv action
                 action = "directory_csv"
                 extra_data = {
                     "results_count": context_data.get("paginator").count if context_data.get("paginator") else None
                 }
-                meta = self.extract_meta_from_request_get(request, response, extra_data)
+                meta = self.extract_meta_from_request_get(request, context_data=context_data, extra_data=extra_data)
 
             elif page == reverse("dashboard:siae_search_by_siret"):  # adopted search action
                 action = "adopt_search"
-                meta = self.extract_meta_from_request_get(request, response)
+                meta = self.extract_meta_from_request_get(request, context_data=context_data)
 
             else:
-                meta = self.extract_meta_from_request_get(request, response)
+                meta = self.extract_meta_from_request_get(request, context_data=context_data)
 
         if meta:
             track(
