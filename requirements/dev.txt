@@ -65,7 +65,7 @@ ipython==8.5.0; python_version >= "3.8"
 isort==5.10.1; python_full_version >= "3.6.1" and python_version < "4.0"
 jedi==0.18.1; python_version >= "3.8"
 jmespath==1.0.1; python_version >= "3.7"
-jsonschema==4.16.0; python_version >= "3.7"
+jsonschema==4.17.0; python_version >= "3.7"
 l18n==2021.3; python_version >= "3.7"
 libsass==0.21.0
 matplotlib-inline==0.1.6; python_version >= "3.8"

@@ -45,7 +45,7 @@ huey==2.4.3
 idna==3.4; python_version >= "3.7" and python_version < "4"
 inflection==0.5.1; python_version >= "3.6"
 jmespath==1.0.1; python_version >= "3.7"
-jsonschema==4.16.0; python_version >= "3.7"
+jsonschema==4.17.0; python_version >= "3.7"
 l18n==2021.3; python_version >= "3.7"
 libsass==0.21.0
 openpyxl==3.0.10; python_version >= "3.7"
