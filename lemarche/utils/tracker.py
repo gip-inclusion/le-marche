@@ -150,7 +150,9 @@ class TrackerMiddleware:
         }
 
     def get_context_data(self, response: HttpResponse):
-        return getattr(response, "context_data", {})
+        context_data = getattr(response, "context_data", {})
+        context_data = context_data if context_data else {}
+        return context_data
 
     def extract_meta_from_request_get(self, request: HttpRequest, context_data: dict, extra_data: dict = {}):
         user_info: dict = self.extract_user_info(request, context_data)
