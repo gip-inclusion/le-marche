@@ -4,7 +4,7 @@ from django import forms
 
 from lemarche.sectors.models import Sector
 from lemarche.tenders.models import Tender
-from lemarche.utils.fields import GroupedModelMultipleChoiceField
+from lemarche.utils.fields import BooleanNotEmptyField, GroupedModelMultipleChoiceField
 
 
 class AddTenderStepGeneralForm(forms.ModelForm):
@@ -187,11 +187,10 @@ class AddTenderStepContactForm(forms.ModelForm):
 
 
 class AddTenderStepConfirmationForm(forms.Form):
-    is_marche_useful = forms.BooleanField(
+    is_marche_useful = BooleanNotEmptyField(
         label=Tender._meta.get_field("is_marche_useful").help_text,
         widget=forms.RadioSelect(choices=[(True, "Oui"), (False, "Non")]),
-        required=False,  # if a BooleanField is required, then it won't allow a False value...
-        initial=True,  # ...so we initialize it
+        required=True,
     )
     marche_benefits = forms.MultipleChoiceField(
         label=Tender._meta.get_field("marche_benefits").help_text,
