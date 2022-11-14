@@ -19,7 +19,10 @@ def get_default_client():
     return client
 
 
-ENV_NOT_ALLOWED = "test"
+ENV_NOT_ALLOWED = (
+    "test",
+    "staging",
+)
 
 
 # @task()
@@ -45,7 +48,6 @@ def add_to_contacts_async(
     """
     if not client:
         client = get_default_client()
-
     if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
         try:
             properties = {
@@ -61,7 +63,9 @@ def add_to_contacts_async(
             print(api_response)
             return api_response
         except ApiException as e:
-            logger.error("Exception when calling basic_api->create: %s\n" % e)
-            raise e
+            if e.status == 409:  # conflict error
+                logger.info(f"User {email} already exist in hubpsot crm")
+            else:
+                logger.error("Exception when calling hubspot_api->create: %s\n" % e)
     else:
-        logger.info("Hubspot: not add contact to the crm (DEV or TEST environment detected)")
+        logger.info("Hubspot: not add contact to the crm (STAGING or TEST environment detected)")
