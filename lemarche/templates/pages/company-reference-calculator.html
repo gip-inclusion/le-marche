@@ -1,0 +1,88 @@
+{% extends BASE_TEMPLATE %}
+{% load bootstrap4 static humanize %}
+
+{% block title %}Entreprise références clients{{ block.super }}{% endblock %}
+{% block meta_description %}
+<meta name="description" content="Identifier rapidement le nombre total de prestataires inclusifs pouvant répondre à votre besoin et mesurer leur capacité globale de production.">
+{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Entreprise références clients</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="s-page-menu-01 s-page-impact-calculator s-page-menu-01--marche has-illustration-bg-01">
+    <div class="s-page-menu-01__container container">
+        <div class="s-page-menu-01__row row align-items-center">
+            <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-lg-10">
+                <h1 class="h1-hero">
+                    <strong>Entreprise références clients</strong>
+                </h1>
+                <p>
+                    ...description...
+                <p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="pb-6">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                {% block htmx %}
+                    <div id="companyReferenceCalculator" class="row">
+                        <div class="col-md-6 col-xs-12">
+                            <form hx-get="{{ request.path }}" hx-push-url="true" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-target="#companyReferenceCalculator" hx-swap="outerHTML">
+                                {% bootstrap_form_errors form type="all" %}
+                                {% bootstrap_field form.company_client_reference %}
+
+                                <button type="submit" class="btn btn-primary">
+                                    Lancer la recherche
+                                </button>
+                                {% if form_has_filtered %}
+                                    <button hx-get="{{ request.path }}" class="btn" hx-target="#companyReferenceCalculator" hx-swap="outerHTML">
+                                        Annuler
+                                    </button>
+                                {% endif %}
+                            </form>
+                        </div>
+                        {% if form_has_filtered %}
+                            <div class="col-md-6 col-xs-12">
+                                <h3>Résultats</h3>
+                                {% if results.count > 0 %}
+                                    <p>
+                                        Bravo ! Votre entreprise est mentionnée <strong>{{ results.count }} fois</strong> en références client par les prestataires inclusifs.
+                                    </p>
+                                {% else %}
+                                    <p>
+                                        Oups ! Votre entreprise n'est à ce jour pas mentionné dans les références client des prestataires inclusifs.
+                                        Mais ce n'est pas trop tard, faites dès maintenant appel à des prestataires inclusifs !
+                                    </p>
+                                {% endif %}
+                                <br />
+                                <div class="fs-xs">
+                                    Ces données sont issues des informations déclarées par les prestataires inclusifs eux-mêmes
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endblock htmx %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

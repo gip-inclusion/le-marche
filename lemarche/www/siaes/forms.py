@@ -70,6 +70,11 @@ class SiaeSearchForm(forms.Form):
     favorite_list = forms.ModelChoiceField(
         queryset=FavoriteList.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
     )
+    company_client_reference = forms.CharField(
+        label="Recherche texte dans les références clients des structures",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Votre entreprise…"}),
+    )
 
     def filter_queryset(self):  # noqa C901
         """
@@ -127,6 +132,12 @@ class SiaeSearchForm(forms.Form):
         favorite_list = self.cleaned_data.get("favorite_list", None)
         if favorite_list:
             qs = qs.filter(favorite_lists__in=[favorite_list])
+
+        company_client_reference = self.cleaned_data.get("company_client_reference", None)
+        if company_client_reference:
+            qs = qs.prefetch_related("client_references").filter(
+                client_references__name__icontains=company_client_reference
+            )
 
         # avoid duplicates
         qs = qs.distinct()

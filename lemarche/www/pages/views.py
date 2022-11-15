@@ -16,7 +16,7 @@ from lemarche.siaes.models import Siae, SiaeGroup
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.utils.tracker import track
-from lemarche.www.pages.forms import ContactForm, ImpactCalculatorForm
+from lemarche.www.pages.forms import CompanyReferenceCalculatorForm, ContactForm, ImpactCalculatorForm
 from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
 from lemarche.www.tenders.tasks import notify_admin_tender_created
 from lemarche.www.tenders.views import (
@@ -179,6 +179,37 @@ class ImpactCalculatorView(FormMixin, ListView):
             if with_end_elmt:
                 listing.append(end_position)
         return listing
+
+
+class CompanyReferenceCalculatorView(FormMixin, ListView):
+    template_name = "pages/company-reference-calculator.html"
+    form_class = CompanyReferenceCalculatorForm
+
+    def get_queryset(self):
+        """
+        Filter results.
+        - filter and order using the SiaeSearchForm
+        - if the user is authenticated, annotate with favorite info
+        """
+        self.filter_form = CompanyReferenceCalculatorForm(data=self.request.GET)
+        if len(self.request.GET.keys()):
+            results = self.filter_form.filter_queryset()
+            return results
+        else:  # avoid empty filtering
+            return Siae.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form_has_filtered"] = False
+        if len(self.request.GET.keys()):
+            siae_search_form = (
+                self.filter_form if self.filter_form else CompanyReferenceCalculatorForm(data=self.request.GET)
+            )
+            if siae_search_form.is_valid():
+                context["form_has_filtered"] = True
+                context["results"] = self.get_queryset()
+                context["form"] = self.filter_form
+        return context
 
 
 def csrf_failure(request, reason=""):  # noqa C901
