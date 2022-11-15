@@ -384,14 +384,14 @@ python-versions = ">=3.4"
 
 [[package]]
 name = "django-filter"
-version = "22.1"
+version = "21.1"
 description = "Django-filter is a reusable Django application for allowing users to filter querysets dynamically."
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.6"
 
 [package.dependencies]
-Django = ">=3.2"
+Django = ">=2.2"
 
 [[package]]
 name = "django-formtools"
@@ -1645,7 +1645,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10.4"
-content-hash = "27dd5199e589a530b1afea4831dde28cf6a29c529acba4e6c600081bcf854688"
+content-hash = "6cec36c8565e201727ab5ab6f6f4503a7ad1ce4f116714a454b01ddd1a5c8107"
 
 [metadata.files]
 anyascii = [
@@ -1913,8 +1913,8 @@ django-fieldsets-with-inlines = [
     {file = "django_fieldsets_with_inlines-0.6.tar.gz", hash = "sha256:dec73d0d91f238906c93a7b99c545167a8ab0cc98f8af202d01df0cfc32a71cb"},
 ]
 django-filter = [
-    {file = "django-filter-22.1.tar.gz", hash = "sha256:ed473b76e84f7e83b2511bb2050c3efb36d135207d0128dfe3ae4b36e3594ba5"},
-    {file = "django_filter-22.1-py3-none-any.whl", hash = "sha256:ed429e34760127e3520a67f415bec4c905d4649fbe45d0d6da37e6ff5e0287eb"},
+    {file = "django-filter-21.1.tar.gz", hash = "sha256:632a251fa8f1aadb4b8cceff932bb52fe2f826dd7dfe7f3eac40e5c463d6836e"},
+    {file = "django_filter-21.1-py3-none-any.whl", hash = "sha256:f4a6737a30104c98d2e2a5fb93043f36dd7978e0c7ddc92f5998e85433ea5063"},
 ]
 django-formtools = [
     {file = "django-formtools-2.4.tar.gz", hash = "sha256:deb932be55b1d9419e37dc4d65dfbfeb8d307b71c8c11fd52f159aba5fc0deed"},
