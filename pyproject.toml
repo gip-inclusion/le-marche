@@ -89,7 +89,7 @@ DJANGO_SETTINGS_MODULE = "lemarche.settings.test"
 
 [tool.poe.tasks]
 export = { shell = "poetry export --without-hashes --output requirements/staging.txt" }
-export_dev = { shell = "poetry export --without-hashes --dev --output requirements/dev.txt" }
+export_dev = { shell = "poetry export --without-hashes --with dev --output requirements/dev.txt" }
 flake8 = { shell = "pflake8 lemarche" }
 isort = { shell = "isort ./lemarche/*.py" }
 black = { shell = "black lemarche" }
