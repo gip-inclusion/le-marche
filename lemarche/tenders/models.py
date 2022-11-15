@@ -170,7 +170,7 @@ class Tender(models.Model):
     )
     accept_cocontracting = models.BooleanField(
         verbose_name="Ouvert à la co-traitance",
-        help_text="Ce besoin peut-être répondu par plusieurs prestataires (co-traitance ou sous-traitance)",
+        help_text="Ce besoin peut être répondu par plusieurs prestataires (co-traitance ou sous-traitance)",
         default=False,
     )
 
@@ -238,7 +238,7 @@ class Tender(models.Model):
     )
     marche_benefits = ChoiceArrayField(
         verbose_name="Bénéfices du marché de l'inclusion",
-        help_text="Quels sont le(s) bénéfice(s) de passer par le Marché de l'inclusion pour ce besoin ?",
+        help_text="Pour ce besoin, quels sont les bénéfices de passer par le Marché de l'inclusion ?",
         base_field=models.CharField(max_length=20, choices=constants.MARCHE_BENEFIT_CHOICES),
         blank=True,
         default=list,
