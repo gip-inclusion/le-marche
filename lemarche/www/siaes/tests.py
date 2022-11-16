@@ -7,7 +7,7 @@ from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.factories import SiaeFactory, SiaeOfferFactory
+from lemarche.siaes.factories import SiaeClientReferenceFactory, SiaeFactory, SiaeOfferFactory
 from lemarche.siaes.models import Siae
 from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.www.siaes.forms import SiaeSearchForm
@@ -448,7 +448,13 @@ class SiaeFullTextSearchTest(TestCase):
         cls.siae_3 = SiaeFactory(name="ABC Insertion", siret="33333333344444")
         cls.siae_4 = SiaeFactory(name="Empty", brand="ETHICOFIL", siret="55555555555555")
 
-    def test_search_empty_query(self):
+    def test_search_query_empty(self):
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 4)
+
+    def test_search_query_empty_string(self):
         url = reverse("siae:search_results") + "?q="
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
@@ -538,6 +544,47 @@ class SiaeFullTextSearchTest(TestCase):
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 1)
+
+
+class SiaeClientReferenceTextSearchTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae_1 = SiaeFactory(name="Ma boite")
+        cls.siae_2 = SiaeFactory(name="Une autre activité")
+        cls.siae_3 = SiaeFactory(name="ABC Insertion")
+        cls.siae_4 = SiaeFactory(name="Empty", brand="ETHICOFIL")
+        cls.client_reference_1_1 = SiaeClientReferenceFactory(name="Big Corp", siae=cls.siae_1)
+        cls.client_reference_1_2 = SiaeClientReferenceFactory(name="SNCF", siae=cls.siae_1)
+        cls.client_reference_2_1 = SiaeClientReferenceFactory(name="SNCF IDF", siae=cls.siae_2)
+
+    def test_search_client_reference_empty(self):
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 4)
+
+    def test_search_client_reference_empty_string(self):
+        url = reverse("siae:search_results") + "?company_client_reference="
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 4)
+
+    def test_search_by_company_name_partial(self):
+        url = reverse("siae:search_results") + "?company_client_reference=Corp"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+
+    def test_search_by_company_name_should_be_case_insensitive(self):
+        url = reverse("siae:search_results") + "?company_client_reference=sncf"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+        # with case
+        url = reverse("siae:search_results") + "?company_client_reference=SNCF"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
 
 
 class SiaeSearchOrderTest(TestCase):
