@@ -154,9 +154,9 @@ class ImpactCalculatorView(FormMixin, ListView):
         context = super().get_context_data(**kwargs)
         if len(self.request.GET.keys()):
             siae_search_form = self.filter_form if self.filter_form else ImpactCalculatorForm(data=self.request.GET)
+            context["form"] = self.filter_form
             if siae_search_form.is_valid():
                 context["results"] = self.get_queryset()
-                context["form"] = self.filter_form
                 # perimeters
                 current_perimeters = siae_search_form.cleaned_data.get("perimeters")
                 if current_perimeters:
