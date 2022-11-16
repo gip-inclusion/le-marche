@@ -1,0 +1,26 @@
+{% load static %}
+
+<div class="card h-100 w-100">
+    <div class="card-body">
+        <div class="row mb-sm-4">
+            <div class="col-12 col-md">
+                <p class="h4 lh-sm">Mes besoins</p>
+            </div>
+        </div>
+        <div class="d-flex align-items-center">
+            <span class="d-none d-lg-inline-flex mr-3">
+                <img src="{% static 'images/dashboard-illu-03.svg' %}" height="200" alt="" />
+            </span>
+            <div>
+                <p class="h4 lh-sm mb-lg-4">Vous n'avez pas encore publié de besoin</p>
+                <p>
+                    Publiez vos demandes de devis, appels d'offres, relayez vos marchés ou lancez un sourcing et retrouvez-les dans cette section.
+                </p>
+                <a href="{% url 'tenders:create' %}" id="dashboard-tender-create-btn" class="btn btn-primary btn-ico width-100 width-md-auto">
+                    <i class="ri-add-fill ri-lg"></i>
+                    <span>Publier un besoin</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

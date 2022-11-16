@@ -71,13 +71,13 @@ class DashboardHomeView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        r_user = self.request.user
+        user = self.request.user
 
         # filter ressources by user kind
         category_slug = None
-        if r_user.kind == User.KIND_SIAE:
+        if user.kind == User.KIND_SIAE:
             category_slug = SLUG_RESSOURCES_CAT_SIAES
-        elif r_user.kind == User.KIND_BUYER:
+        elif user.kind == User.KIND_BUYER:
             category_slug = SLUG_RESSOURCES_CAT_BUYERS
         article_list = ArticlePage.objects.live().public().order_by("-last_published_at")
 
@@ -94,12 +94,12 @@ class DashboardHomeView(LoginRequiredMixin, DetailView):
         context["last_3_ressources"] = article_list[:3]
 
         # for specific users
-        if r_user.kind == User.KIND_SIAE:
-            siaes = r_user.siaes.all()
+        if user.kind == User.KIND_SIAE:
+            siaes = user.siaes.all()
             if siaes:
                 context["last_3_tenders"] = Tender.objects.filter_with_siaes(siaes)[:3]
         else:
-            context["last_3_tenders"] = Tender.objects.filter(author=r_user)[:3]
+            context["last_3_tenders"] = Tender.objects.filter(author=user)[:3]
             context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
             context["siae_count"] = Siae.objects.is_live().count()
             context["tender_count"] = Tender.objects.validated().count() + 30  # historic number (before form)
