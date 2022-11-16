@@ -204,10 +204,10 @@ class CompanyReferenceCalculatorView(FormMixin, ListView):
             siae_search_form = (
                 self.filter_form if self.filter_form else CompanyReferenceCalculatorForm(data=self.request.GET)
             )
+            context["form"] = self.filter_form
             if siae_search_form.is_valid():
                 context["form_has_filtered"] = True
                 context["results"] = self.get_queryset()
-                context["form"] = self.filter_form
                 context["current_search_query"] = self.request.GET.urlencode()
         return context
 
