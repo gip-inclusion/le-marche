@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import Value
-from django.db.models.functions import NullIf
+from django.db.models.functions import Left, NullIf
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 
@@ -39,8 +39,8 @@ class SectorQuerySet(models.QuerySet):
         """
         return (
             self.select_related("group")
-            .exclude(group=None)  # sector must have a group !
-            .annotate(sector_is_autre=NullIf("name", Value("Autre")))
+            .exclude(group=None)  # sector must have a group!
+            .annotate(sector_is_autre=NullIf(Left("name", 5), Value("Autre")))  # bring "Autre" to the bottom
             .order_by("group__id", "sector_is_autre")
         )
 
