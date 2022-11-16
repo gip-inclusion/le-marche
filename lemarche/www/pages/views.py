@@ -140,8 +140,8 @@ class ImpactCalculatorView(FormMixin, ListView):
     def get_queryset(self):
         """
         Filter results.
-        - filter and order using the SiaeSearchForm
-        - if the user is authenticated, annotate with favorite info
+        - filter using the SiaeSearchForm
+        - aggregate on impact values
         """
         self.filter_form = ImpactCalculatorForm(data=self.request.GET)
         if len(self.request.GET.keys()):
@@ -188,8 +188,7 @@ class CompanyReferenceCalculatorView(FormMixin, ListView):
     def get_queryset(self):
         """
         Filter results.
-        - filter and order using the SiaeSearchForm
-        - if the user is authenticated, annotate with favorite info
+        - filter using the SiaeSearchForm
         """
         self.filter_form = CompanyReferenceCalculatorForm(data=self.request.GET)
         if len(self.request.GET.keys()):
@@ -209,7 +208,16 @@ class CompanyReferenceCalculatorView(FormMixin, ListView):
                 context["form_has_filtered"] = True
                 context["results"] = self.get_queryset()
                 context["form"] = self.filter_form
+                context["current_search_query"] = self.request.GET.urlencode()
         return context
+
+    # not needed for now
+    # def get_initial(self):
+    #     """If the user is logged in, fill the form with the user's company."""
+    #     initial = super().get_initial()
+    #     if self.request.user.is_authenticated:
+    #         initial["company_client_reference"] = self.request.user.company_name
+    #     return initial
 
 
 def csrf_failure(request, reason=""):  # noqa C901

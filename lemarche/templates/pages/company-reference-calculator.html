@@ -67,6 +67,9 @@
                                     <p>
                                         Bravo ! Votre entreprise est mentionnée <strong>{{ results.count }} fois</strong> en références client par les prestataires inclusifs.
                                     </p>
+                                    <p>
+                                        <a href="{% url 'siae:search_results' %}?{{ current_search_query }}" target="_blank">Voir la liste</a>
+                                    </p>
                                 {% else %}
                                     <p>
                                         Oups ! Votre entreprise n'est à ce jour pas mentionné dans les références client des prestataires inclusifs.
