@@ -66,3 +66,14 @@ class ImpactCalculatorForm(SiaeSearchForm):
             ),
         )
         return qs.aggregate(Count("id"), Sum("employees_insertion"), Sum("ca_declared"))
+
+
+class CompanyReferenceCalculatorForm(SiaeSearchForm):
+    class Meta:
+        model = Siae
+        fields = ["company_client_reference"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # required fields
+        self.fields["company_client_reference"].required = True
