@@ -243,6 +243,7 @@ class Tender(models.Model):
         blank=True,
         default=list,
     )
+    extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)
 
     # stats
     siae_interested_list_last_seen_date = models.DateTimeField(
