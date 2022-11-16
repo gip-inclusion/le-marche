@@ -101,16 +101,10 @@ class TrackerMiddleware:
 
     def track_page(self, page, request: HttpRequest, response: HttpResponse):
         action = "load"
-        context_data = self.get_context_data(response)
         meta = None
 
-        if request.method == "POST":
-            if page == reverse("pages:impact_calculator") and not context_data.get("form"):  # impact calculator
-                # when form is in context_data the form have errors
-                action = "impact-calculator"
-                meta = self.extract_meta_from_request_post(request, context_data, extract_data=True)
-
-        elif request.method == "GET":
+        if request.method == "GET":
+            context_data = self.get_context_data(response)
             if page == (reverse("siae:search_results")):  # Search action
                 action = "directory_search"
                 extra_data = {
@@ -156,16 +150,7 @@ class TrackerMiddleware:
 
     def extract_meta_from_request_get(self, request: HttpRequest, context_data: dict, extra_data: dict = {}):
         user_info: dict = self.extract_user_info(request, context_data)
-        return (
-            user_info
-            | {
-                **request.GET,
-                # "results_count": results_count,
-                "token": request.GET.get("token", ""),
-                "cmp": request.GET.get("cmp", ""),
-            }
-            | extra_data
-        )
+        return user_info | request.GET | extra_data
 
     def extract_meta_from_request_post(
         self, request: HttpRequest, context_data: dict, extract_data=False, remove_items: tuple = ()
