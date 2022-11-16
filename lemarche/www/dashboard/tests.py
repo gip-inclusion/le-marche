@@ -4,7 +4,7 @@ from django.urls import reverse
 from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.siaes.models import SiaeUser
-from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
+from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 
 
@@ -23,13 +23,13 @@ class DashboardHomeViewTest(TestCase):
         self.assertEqual(response.url, "/accounts/login/?next=/profil/")
 
     def test_user_can_access_profile(self):
-        self.client.login(email=self.user.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.user)
         url = reverse("dashboard:home")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_user_buyer_should_display_custom_dashboard(self):
-        self.client.login(email=self.user_buyer.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.user_buyer)
         url = reverse("dashboard:home")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -42,7 +42,7 @@ class DashboardHomeViewTest(TestCase):
         self.assertNotContains(response, "Ajouter une structure")
 
     def test_user_siae_should_display_custom_dashboard(self):
-        self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.user_siae)
         url = reverse("dashboard:home")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -54,7 +54,7 @@ class DashboardHomeViewTest(TestCase):
         # self.assertNotContains(response, "API")
 
     def test_user_with_api_key_should_see_api_token(self):
-        self.client.login(email=self.user_buyer_with_api_token.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.user_buyer_with_api_token)
         url = reverse("dashboard:home")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -62,7 +62,7 @@ class DashboardHomeViewTest(TestCase):
 
     def test_viewing_dashboard_should_update_stats(self):
         self.assertIsNone(self.user.dashboard_last_seen_date)
-        self.client.login(email=self.user.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.user)
         url = reverse("dashboard:home")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -90,21 +90,21 @@ class DashboardSiaeSearchAdoptViewTest(TestCase):
     def test_only_siae_user_or_admin_can_adopt_siae(self):
         ALLOWED_USERS = [self.user_siae, self.user_admin]
         for user in ALLOWED_USERS:
-            self.client.login(email=user.email, password=DEFAULT_PASSWORD)
+            self.client.force_login(user)
             url = reverse("dashboard:siae_search_by_siret")
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
 
         NOT_ALLOWED_USERS = [self.user_buyer, self.user_partner]
         for user in NOT_ALLOWED_USERS:
-            self.client.login(email=user.email, password=DEFAULT_PASSWORD)
+            self.client.force_login(user)
             url = reverse("dashboard:siae_search_by_siret")
             response = self.client.get(url)
             self.assertEqual(response.status_code, 302)
             self.assertEqual(response.url, "/profil/")
 
     def test_only_siaes_without_users_can_be_adopted(self):
-        self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.user_siae)
 
         url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_without_user.slug])
         response = self.client.get(url)
@@ -116,7 +116,7 @@ class DashboardSiaeSearchAdoptViewTest(TestCase):
         self.assertEqual(response.url, "/profil/")
 
     def test_only_new_siae_user_can_adopt_confirm(self):
-        self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.user_siae)
         self.assertEqual(self.siae_with_user.users.count(), 1)
         self.assertEqual(self.user_siae.siaes.count(), 1)  # setUpTestData
 
@@ -126,7 +126,7 @@ class DashboardSiaeSearchAdoptViewTest(TestCase):
         self.assertEqual(response.url, "/profil/")
 
     def test_siae_without_user_adopt_confirm(self):
-        self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.user_siae)
         self.assertEqual(self.siae_without_user.users.count(), 0)
         self.assertEqual(self.user_siae.siaes.count(), 1)  # setUpTestData
 
@@ -143,7 +143,7 @@ class DashboardSiaeSearchAdoptViewTest(TestCase):
         self.assertEqual(self.user_siae.siaes.count(), 1 + 1)
 
     def test_siae_with_existing_user_adopt_confirm(self):
-        self.client.login(email=self.user_siae_2.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.user_siae_2)
         self.assertEqual(self.siae_with_user.users.count(), 1)
         self.assertEqual(self.user_siae_2.siaes.count(), 0)  # setUpTestData
 
@@ -176,13 +176,13 @@ class DashboardSiaeEditViewTest(TestCase):
         self.assertTrue(response.url.startswith("/accounts/login/"))
 
     def test_only_siae_user_can_edit_siae(self):
-        self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.user_siae)
         url = reverse("dashboard:siae_edit", args=[self.siae_with_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, f"/profil/prestataires/{self.siae_with_user.slug}/modifier/recherche/")
 
-        self.client.login(email=self.other_user_siae.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.other_user_siae)
         url = reverse("dashboard:siae_edit", args=[self.siae_with_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
@@ -196,13 +196,13 @@ class DashboardSiaeEditViewTest(TestCase):
             "dashboard:siae_edit_links",
             "dashboard:siae_edit_contact",
         ]
-        self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.user_siae)
         for siae_edit_url in SIAE_EDIT_URLS:
             url = reverse(siae_edit_url, args=[self.siae_with_user.slug])
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
 
-        self.client.login(email=self.other_user_siae.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.other_user_siae)
         for siae_edit_url in SIAE_EDIT_URLS:
             url = reverse(siae_edit_url, args=[self.siae_with_user.slug])
             response = self.client.get(url)
@@ -225,13 +225,13 @@ class DashboardSiaeUserViewTest(TestCase):
         SIAE_USER_URLS = [
             "dashboard:siae_users",
         ]
-        self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.user_siae)
         for siae_edit_url in SIAE_USER_URLS:
             url = reverse(siae_edit_url, args=[self.siae_with_users.slug])
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
 
-        self.client.login(email=self.other_user_siae.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.other_user_siae)
         for siae_edit_url in SIAE_USER_URLS:
             url = reverse(siae_edit_url, args=[self.siae_with_users.slug])
             response = self.client.get(url)
@@ -241,14 +241,14 @@ class DashboardSiaeUserViewTest(TestCase):
     def test_only_siae_user_can_delete_collaborator(self):
         self.assertEqual(self.siae_with_users.users.count(), 2)
 
-        self.client.login(email=self.other_user_siae.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.other_user_siae)
         siaeuser = SiaeUser.objects.get(siae=self.siae_with_users, user=self.user_siae)
         url = reverse("dashboard:siae_user_delete", args=[self.siae_with_users.slug, siaeuser.id])
         response = self.client.delete(url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/profil/")
 
-        self.client.login(email=self.user_siae.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.user_siae)
         siaeuser = SiaeUser.objects.get(siae=self.siae_with_users, user=self.user_siae_2)
         url = reverse("dashboard:siae_user_delete", args=[self.siae_with_users.slug, siaeuser.id])
         response = self.client.delete(url)
@@ -278,12 +278,12 @@ class DashboardFavoriteListViewTest(TestCase):
         self.assertTrue(response.url.startswith("/accounts/login/"))
 
     def test_only_favorite_list_user_can_access(self):
-        self.client.login(email=self.user_favorite_list.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.user_favorite_list)
         url = reverse("dashboard:profile_favorite_list_detail", args=[self.favorite_list_1.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        self.client.login(email=self.other_user_favorite_list.email, password=DEFAULT_PASSWORD)
+        self.client.force_login(self.other_user_favorite_list)
         url = reverse("dashboard:profile_favorite_list_detail", args=[self.favorite_list_1.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
