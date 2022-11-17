@@ -3,9 +3,7 @@ import logging
 from django.conf import settings
 from hubspot import Client
 from hubspot.crm.contacts import ApiException, SimplePublicObjectInput
-
-
-# from huey.contrib.djhuey import task
+from huey.contrib.djhuey import task
 
 
 logger = logging.getLogger(__name__)
@@ -20,12 +18,13 @@ def get_default_client():
 
 
 ENV_NOT_ALLOWED = (
+    "dev",
     "test",
     "staging",
 )
 
 
-# @task()
+@task()
 def add_to_contacts_async(
     email: str, company: str, firstname: str, lastname: str, phone: str, website: str, client: Client = None
 ):
@@ -46,9 +45,9 @@ def add_to_contacts_async(
     Returns:
         _type_: _description_
     """
-    if not client:
-        client = get_default_client()
-    if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
+    if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED or settings.HUBSPOT_IS_ACTIVATED:
+        if not client:
+            client = get_default_client()
         try:
             properties = {
                 "company": company,
@@ -60,7 +59,7 @@ def add_to_contacts_async(
             }
             simple_public_object_input = SimplePublicObjectInput(properties=properties)
             api_response = client.crm.contacts.basic_api.create(simple_public_object_input=simple_public_object_input)
-            print(api_response)
+            logger.info(f"User {email} added in hubpsot crm")
             return api_response
         except ApiException as e:
             if e.status == 409:  # conflict error
