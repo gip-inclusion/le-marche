@@ -17,6 +17,7 @@ from lemarche.perimeters.models import Perimeter
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
+from lemarche.users.models import User
 from lemarche.utils import constants
 from lemarche.utils.fields import ChoiceArrayField
 
@@ -214,7 +215,7 @@ class Tender(models.Model):
         default=list,
     )
 
-    author = models.ForeignKey(
+    author: User = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
         verbose_name="Auteur",
         related_name="tenders",
@@ -332,6 +333,15 @@ class Tender(models.Model):
         if self.accept_share_amount:
             return self.TENDER_ACCEPT_SHARE_AMOUNT_TRUE
         return self.TENDER_ACCEPT_SHARE_AMOUNT_FALSE
+
+    def set_hubspot_id(self, hubspot_deal_id, with_save=True):
+        self.extra_data.update({"hubspot_deal_id": hubspot_deal_id})
+        if with_save:
+            self.save()
+
+    @property
+    def hubspot_deal_id(self):
+        return self.extra_data.get("hubspot_deal_id")
 
     def get_absolute_url(self):
         return reverse("tenders:detail", kwargs={"slug": self.slug})

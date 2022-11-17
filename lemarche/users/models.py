@@ -257,6 +257,15 @@ class User(AbstractUser):
         self.set_last_updated_fields()
         super().save(*args, **kwargs)
 
+    def set_hubspot_id(self, hubspot_contact_id, with_save=True):
+        self.extra_data.update({"hubspot_contact_id": hubspot_contact_id})
+        if with_save:
+            self.save()
+
+    @property
+    def hubspot_contact_id(self):
+        return self.extra_data.get("hubspot_contact_id")
+
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
