@@ -6,7 +6,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
 from lemarche.users.models import User
-from lemarche.utils.apis import api_mailjet
+from lemarche.utils.apis import api_hubspot, api_mailjet
 from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX, send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url
 
@@ -85,6 +85,8 @@ def add_to_contact_list(user: User, type: str):
     """
     if type == "signup":
         contact_list_id = get_mailjet_cl_on_signup(user)
+        if user.kind == user.KIND_BUYER:
+            add_user_to_crm(user)
     elif type == "buyer_search":
         contact_list_id = settings.MAILJET_NL_CL_BUYER_SEARCH_SIAE_LIST_ID
     elif type == "buyer_download":
@@ -101,3 +103,15 @@ def add_to_contact_list(user: User, type: str):
         }
 
         api_mailjet.add_to_contact_list_async(user.email, properties, contact_list_id)
+
+
+def add_user_to_crm(user: User):
+    results = api_hubspot.add_to_contacts_async(
+        email=user.email,
+        company=user.company_name,
+        firstname=user.first_name,
+        lastname=user.last_name,
+        phone=user.phone,
+        website=user.c4_website,
+    )
+    return results
