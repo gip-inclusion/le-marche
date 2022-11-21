@@ -72,6 +72,7 @@ class TenderAdmin(admin.ModelAdmin):
         "siae_email_send_count_with_link",
         "siae_detail_display_count_with_link",
         "siae_contact_click_count_with_link",
+        "extra_data_prettier",
         "logs_display",
         "created_at",
         "updated_at",
@@ -166,12 +167,13 @@ class TenderAdmin(admin.ModelAdmin):
             },
         ),
         (
-            "Stats",
+            "Stats et autres",
             {
                 "fields": (
                     "siae_interested_list_last_seen_date",
                     "source",
                     "logs_display",
+                    "extra_data_prettier",
                 ),
             },
         ),
@@ -263,6 +265,13 @@ class TenderAdmin(admin.ModelAdmin):
             self.message_user(request, "Ce dépôt de besoin a été validé et envoyé aux structures")
             return HttpResponseRedirect(".")
         return super().response_change(request, obj)
+
+    def extra_data_prettier(self, instance: Tender = None):
+        if instance:
+            return pretty_print_readonly_jsonfield(instance.extra_data)
+        return "-"
+
+    extra_data_prettier.short_description = Tender._meta.get_field("extra_data").verbose_name
 
 
 @admin.register(PartnerShareTender, site=admin_site)
