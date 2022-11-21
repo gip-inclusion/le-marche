@@ -100,22 +100,22 @@ def add_user_to_crm(user: User):
 
 # @task
 def create_deal_from_tender(tender: Tender):
-    user_id_hubspot = tender.author.hubspot_contact_id
-    if not user_id_hubspot:
+    tender_author_hubspot_contact_id = tender.author.hubspot_contact_id
+    if not tender_author_hubspot_contact_id:
         user_added_in_crm = add_user_to_crm(tender.author)
         if user_added_in_crm and user_added_in_crm.id:
-            user_id_hubspot = user_added_in_crm.id
+            tender_author_hubspot_contact_id = user_added_in_crm.id
 
-    result = create_deal(user_id_hubspot=user_id_hubspot, dealname=tender.title)
+    result = create_deal(tender_author_hubspot_contact_id=tender_author_hubspot_contact_id, dealname=tender.title)
     if result and result.id:
         tender.set_hubspot_id(hubspot_deal_id=result.id, with_save=True)
 
 
-def create_deal(user_id_hubspot: str, dealname: str, client: Client = None):
+def create_deal(tender_author_hubspot_contact_id: str, dealname: str, client: Client = None):
     """Huey task adding contact to Hubspot CRM
 
     Args:
-        user_id_hubspot (str)
+        tender_author_hubspot_contact_id (str)
         dealname (str)
         client (Client, optional): HubspotClient. Defaults to None.
 
@@ -145,7 +145,7 @@ def create_deal(user_id_hubspot: str, dealname: str, client: Client = None):
                 api_deal_association_response: SimplePublicObject = client.crm.deals.associations_api.create(
                     deal_id=api_deal_response.id,
                     to_object_type="contacts",
-                    to_object_id=user_id_hubspot,
+                    to_object_id=tender_author_hubspot_contact_id,
                     association_type="deal_to_contact",
                 )
                 logger.info(api_deal_association_response)
