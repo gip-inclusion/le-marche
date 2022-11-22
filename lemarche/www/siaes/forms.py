@@ -210,3 +210,15 @@ class SiaeFavoriteForm(forms.ModelForm):
     class Meta:
         model = Siae
         fields = ["favorite_lists"]
+
+
+class SiaeDownloadForm(SiaeSearchForm):
+    marche_benefits = forms.MultipleChoiceField(
+        label=Tender._meta.get_field("marche_benefits").help_text,
+        choices=Tender._meta.get_field("marche_benefits").base_field.choices,
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+    kind = forms.ChoiceField(
+        label="Format", widget=forms.RadioSelect, choices=(("XLS", "xls"), ("CLS", "csv")), required=False
+    )

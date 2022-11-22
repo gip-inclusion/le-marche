@@ -1,20 +1,36 @@
+{% load static bootstrap4 %}
+
 <div class="modal fade modal-siae" id="download_click_survey_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="modalTitle">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">Quel(s) bénéfices allez-vous tirer de cette liste ?</h3>
+                <h3 class="modal-title" id="modalTitle">Une dernière question...</h3>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
                     <i class="ri-close-line"></i>
                 </button>
             </div>
-            <form method="GET" action="{% url 'siae:search_results_download' %}?{{ current_search_query }}">
+            <form method="GET" action="{% url 'siae:search_results_download' %}">
                 <div class="modal-body home-content-body">
-                    <div class="form-check">
-                        <label class="form-check-label" for="marche_benefit_time">
-                            <input type="checkbox" class="form-check-input" id="marche_benefit_time" name="marche_benefit" value="DISP">
-                            Gagner du temps
-                        </label>
-                    </div>
+                    {% for perimeter in form.perimeters.value %}
+                        <input type="hidden" name="perimeters" value="{{ perimeter }}" />
+                    {% endfor %}
+                    {% for sector in form.sectors.value %}
+                        <input type="hidden" name="sectors" value="{{ sector }}" />
+                    {% endfor %}
+                    {% for kind in form.kind.value %}
+                        <input type="hidden" name="kind" value="{{ kind }}" />
+                    {% endfor %}
+                    {% for presta_type in form.presta_type.value %}
+                        <input type="hidden" name="presta_type" value="{{ presta_type }}" />
+                    {% endfor %}
+                    {% for territory in form.territory.value %}
+                        <input type="hidden" name="territory" value="{{ territory }}" />
+                    {% endfor %}
+                    {% for network in form.networks.value %}
+                        <input type="hidden" name="networks" value="{{ network }}" />
+                    {% endfor %}
+
+                    {% bootstrap_field form_download.marche_benefits %}
 
                     <input type="hidden" name="format" value="xls" />
                 </div>
