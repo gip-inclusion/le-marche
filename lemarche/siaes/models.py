@@ -868,7 +868,7 @@ class Siae(models.Model):
         return ", ".join(self.sectors.values_list("name", flat=True))
 
     @cached_property
-    def stat_view_count_last_3O_days(self):
+    def stat_view_count_last_3_months(self):
         return Tracker.objects.filter(
             page=f"/prestataires/{self.slug}/",
             date_created__gte=datetime.now() - timedelta(days=90),
@@ -878,10 +878,21 @@ class Siae(models.Model):
         ).count()
 
     @cached_property
-    def stat_buyer_view_count_last_3O_days(self):
+    def stat_buyer_view_count_last_3_months(self):
         return Tracker.objects.filter(
             page=f"/prestataires/{self.slug}/",
             data__meta__user_type="BUYER",
+            date_created__gte=datetime.now() - timedelta(days=90),
+            action="load",
+            env="prod",
+            isadmin=False,
+        ).count()
+
+    @cached_property
+    def stat_partner_view_count_last_3_months(self):
+        return Tracker.objects.filter(
+            page=f"/prestataires/{self.slug}/",
+            data__meta__user_type="PARTNER",
             date_created__gte=datetime.now() - timedelta(days=90),
             action="load",
             env="prod",
