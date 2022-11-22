@@ -56,10 +56,10 @@ class SiaeSearchResultsView(FormMixin, ListView):
         """
         context = super().get_context_data(**kwargs)
         context["position_promote_tenders"] = [5, 15]
+        siae_search_form = self.filter_form if self.filter_form else SiaeSearchForm(data=self.request.GET)
+        context["form"] = siae_search_form
+        context["form_download"] = SiaeDownloadForm(data=self.request.GET)
         if len(self.request.GET.keys()):
-            siae_search_form = self.filter_form if self.filter_form else SiaeSearchForm(data=self.request.GET)
-            context["form"] = siae_search_form
-            context["form_download"] = SiaeDownloadForm(data=self.request.GET)
             if siae_search_form.is_valid():
                 current_perimeters = siae_search_form.cleaned_data.get("perimeters")
                 if current_perimeters:
