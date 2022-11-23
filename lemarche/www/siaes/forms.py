@@ -71,7 +71,7 @@ class SiaeSearchForm(forms.Form):
         queryset=FavoriteList.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
     )
     company_client_reference = forms.CharField(
-        label="Recherche texte dans les références clients des structures",
+        label="Indiquez le nom de votre entreprise",
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "Votre entreprise…"}),
     )
