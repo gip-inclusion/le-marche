@@ -21,7 +21,7 @@ from lemarche.siaes.models import Siae
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.www.auth.tasks import add_to_contact_list
-from lemarche.www.siaes.forms import SiaeFavoriteForm, SiaeSearchForm
+from lemarche.www.siaes.forms import SiaeDownloadForm, SiaeFavoriteForm, SiaeSearchForm
 
 
 CURRENT_SEARCH_QUERY_COOKIE_NAME = "current_search"
@@ -56,9 +56,10 @@ class SiaeSearchResultsView(FormMixin, ListView):
         """
         context = super().get_context_data(**kwargs)
         context["position_promote_tenders"] = [5, 15]
+        siae_search_form = self.filter_form if self.filter_form else SiaeSearchForm(data=self.request.GET)
+        context["form"] = siae_search_form
+        context["form_download"] = SiaeDownloadForm(data=self.request.GET)
         if len(self.request.GET.keys()):
-            siae_search_form = self.filter_form if self.filter_form else SiaeSearchForm(data=self.request.GET)
-            context["form"] = siae_search_form
             if siae_search_form.is_valid():
                 current_perimeters = siae_search_form.cleaned_data.get("perimeters")
                 if current_perimeters:
@@ -98,8 +99,10 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
     http_method_names = ["get"]
 
     def get_queryset(self):
-        """Filter results."""
-        filter_form = SiaeSearchForm(data=self.request.GET)
+        """
+        Filter results.
+        """
+        filter_form = SiaeDownloadForm(data=self.request.GET)
         results = filter_form.filter_queryset()
         return results
 
@@ -113,15 +116,17 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
 
         # we check if there are any search filters
         request_params = [
-            value for (key, value) in self.request.GET.items() if ((key not in ["page", "format"]) and value)
+            value
+            for (key, value) in self.request.GET.items()
+            if ((key not in ["marche_benefits", "page", "format"]) and value)
         ]
 
         user = self.request.user
         if user.kind == user.KIND_BUYER:
             add_to_contact_list(user, "buyer_download")
 
+        # no search filters -> the user wants to download the whole list -> serve the generated file stored on S3
         if not len(request_params):
-            # no search filters -> the user wants to download the whole list -> serve the generated file stored on S3
             file_path = f"{API_CONNECTION_DICT['endpoint_url']}/{settings.S3_STORAGE_BUCKET_NAME}/{settings.SIAE_EXPORT_FOLDER_NAME}/{filename_with_extension}"  # noqa
             response = HttpResponseRedirect(file_path)
             response.context_data = {"results_count": siae_list.count()}
