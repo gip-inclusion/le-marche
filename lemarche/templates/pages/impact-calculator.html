@@ -74,13 +74,16 @@
                             <div class="col-md-6 col-xs-12">
                                 <h3>Résultats</h3>
                                 <p>
-                                    Il y a <b>{{ results.id__count }}</b> prestataires inclusifs positionnés sur les secteurs d'activités <i>{{current_sectors_pretty|join:", "}}</i>
+                                    Il y a <b>{{ results.count }}</b> prestataires inclusifs positionnés sur les secteurs d'activités <i>{{current_sectors_pretty|join:", "}}</i>
                                     pouvant intervenir sur <i>{{ current_perimeters_pretty|join:", " }}</i>.
                                 </p>
-                                {% if results.id__count > 0 %}
+                                {% if results.count > 0 %}
                                     <p>
-                                        Ces <b>{{ results.id__count }}</b> prestataires inclusifs représentent plus de <b>{{ results.ca_declared__sum|intcomma }}</b> € de chiffres d'affaires cumulé
-                                        et plus de <b>{{ results.employees_insertion__sum|intcomma }}</b> salariés en insertion.
+                                        Ces <b>{{ results.count }}</b> prestataires inclusifs représentent plus de <b>{{ results_aggregated.ca_declared__sum|intcomma }}</b> € de chiffres d'affaires cumulé
+                                        et plus de <b>{{ results_aggregated.employees_insertion__sum|intcomma }}</b> salariés en insertion.
+                                    </p>
+                                    <p>
+                                        <a href="{% url 'siae:search_results' %}?{{ current_search_query }}" target="_blank">Voir la liste</a>
                                     </p>
                                 {% endif %}
                                 <br />
