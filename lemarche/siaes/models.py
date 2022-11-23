@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta
 from uuid import uuid4
 
 from django.conf import settings
@@ -869,35 +868,15 @@ class Siae(models.Model):
 
     @cached_property
     def stat_view_count_last_3_months(self):
-        return Tracker.objects.filter(
-            page=f"/prestataires/{self.slug}/",
-            date_created__gte=datetime.now() - timedelta(days=90),
-            action="load",
-            env="prod",
-            isadmin=False,
-        ).count()
+        return Tracker.objects.siae_views_last_3_months(self.slug).count()
 
     @cached_property
     def stat_buyer_view_count_last_3_months(self):
-        return Tracker.objects.filter(
-            page=f"/prestataires/{self.slug}/",
-            data__meta__user_type="BUYER",
-            date_created__gte=datetime.now() - timedelta(days=90),
-            action="load",
-            env="prod",
-            isadmin=False,
-        ).count()
+        return Tracker.objects.siae_buyer_views_last_3_months(self.slug).count()
 
     @cached_property
     def stat_partner_view_count_last_3_months(self):
-        return Tracker.objects.filter(
-            page=f"/prestataires/{self.slug}/",
-            data__meta__user_type="PARTNER",
-            date_created__gte=datetime.now() - timedelta(days=90),
-            action="load",
-            env="prod",
-            isadmin=False,
-        ).count()
+        return Tracker.objects.siae_partner_views_last_3_months(self.slug).count()
 
     def siae_user_requests_pending_count(self):
         # TODO: optimize + filter on assignee
