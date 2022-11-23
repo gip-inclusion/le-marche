@@ -83,7 +83,9 @@
                                         et plus de <b>{{ results_aggregated.employees_insertion__sum|intcomma }}</b> salariés en insertion.
                                     </p>
                                     <p>
-                                        <a href="{% url 'siae:search_results' %}?{{ current_search_query }}" target="_blank">Voir la liste</a>
+                                        <a href="{% url 'siae:search_results' %}?{{ current_search_query }}" class="btn btn-sm btn-outline-primary btn-ico" target="_blank">
+                                            Découvrir ces prestataires&nbsp;<i class="ri-arrow-right-s-line"></i>
+                                        </a>
                                     </p>
                                 {% endif %}
                                 <br />
