@@ -138,18 +138,10 @@
                         {% if siaes %}
                             <div class="col-12 col-lg-auto">
                                 {% if user.is_authenticated %}
-                                    <button type="button" class="btn btn-ico white-space-nowrap text-decoration-none btn-link text-important px-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <button type="button" class="btn btn-ico white-space-nowrap text-decoration-none btn-link text-important px-0" data-toggle="modal" data-target="#download_click_survey_modal">
                                         <span class="text-decoration-none ml-0">Télécharger la liste</span>
                                         <i class="ri-download-line ri-lg"></i>
                                     </button>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}&format=xls" id="siae-export-xls" class="dropdown-item">
-                                            Télécharger la liste (.xls)
-                                        </a>
-                                        <a href="{% url 'siae:search_results_download' %}?{{ current_search_query }}&format=csv" id="siae-export-csv" class="dropdown-item">
-                                            Télécharger la liste (.csv)
-                                        </a>
-                                    </div>
                                 {% else %}
                                     <a href="#" id="siae-export-anon" class="btn btn-ico white-space-nowrap text-decoration-none btn-link text-important px-0" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}">
                                         <span class="text-decoration-none ml-0">Télécharger la liste</span>
@@ -243,6 +235,7 @@
     {% include "auth/_login_or_signup_modal.html" %}
     {% include "siaes/_favorite_item_add_modal.html" %}
     {% include "siaes/_favorite_item_remove_modal.html" %}
+    {% include "siaes/_download_click_survey_modal.html" %}
 {% endblock %}
 
 {% block extra_js %}
