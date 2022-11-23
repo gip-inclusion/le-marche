@@ -13,19 +13,37 @@
             <h2 class="mb-0">{{ siae.name_display }}</h2>
         </div>
         {% include "includes/_completion_progress_bar.html" with completion_percent=siae.completion_percent %}
-        <a href="{% url 'dashboard:siae_edit' siae.slug %}" id="dashboard-siae-edit-btn" class="btn btn-primary btn-ico width-100 width-md-auto mt-3 mb-2 mb-md-0">
-            <i class="ri-pencil-fill ri-lg"></i>
-            <span>Compléter la fiche</span>
-        </a>
     </div>
     <div class="col-12 col-md-auto ml-auto d-flex flex-column">
         <a href="{% url 'siae:detail' siae.slug %}" target="_blank" id="dashboard-siae-view-btn" class="btn btn-outline-primary btn-sm btn-ico mb-2">
             <i class="ri-eye-line ri-lg"></i>
             <span>Voir la fiche</span>
         </a>
-        <a href="{% url 'dashboard:siae_users' siae.slug %}" id="dashboard-siae-edit-btn" class="btn btn-outline-primary btn-sm btn-ico">
+        <a href="{% url 'dashboard:siae_users' siae.slug %}" id="dashboard-siae-edit-btn" class="btn btn-outline-primary btn-sm btn-ico mb-2">
             <i class="ri-group-line ri-lg"></i>
             <span>Collaborateurs ({{ siae.user_count }})</span>
         </a>
+        <a href="{% url 'dashboard:siae_edit' siae.slug %}" id="dashboard-siae-edit-btn" class="btn btn-important btn-sm btn-ico">
+            <i class="ri-pencil-fill ri-lg"></i>
+            <span>Compléter la fiche</span>
+        </a>
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="col-lg-6">
+        <p class="h4 lh-sm mb-lg-4">Données liées à ma structure <span class="fs-sm font-weight-normal">(3 derniers mois)</span></p>
+        <div class="d-flex">
+            <div class="flex-fill text-center">
+                <span class="h2 text-info d-block mb-1">{{ siae.stat_buyer_view_count_last_3_months }}</span>
+                <span class="fs-sm lh-sm d-block">Acheteurs connectés<br />ont vue la fiche</span>
+            </div>
+            <div class="flex-fill text-center">
+                <span class="h2 text-info d-block mb-1">{{ siae.stat_buyer_view_count_last_3_months }}</span>
+                <span class="fs-sm lh-sm d-block">Partenaires connectés<br />ont vue la fiche</span>
+            </div>
+        </div>
     </div>
 </div>
