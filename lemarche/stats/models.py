@@ -1,4 +1,27 @@
+from datetime import datetime, timedelta
+
 from django.db import models
+
+
+class TrackerQuerySet(models.QuerySet):
+    def env_prod(self):
+        return self.filter(env="prod", isadmin=False)
+
+    def by_user_type(self, user_type):
+        return self.filter(data__meta__user_type=user_type)
+
+    def siae_views_last_3_months(self, siae_slug):
+        return self.env_prod().filter(
+            action="load",
+            page=f"/prestataires/{siae_slug}/",
+            date_created__gte=datetime.now() - timedelta(days=90),
+        )
+
+    def siae_buyer_views_last_3_months(self, siae_slug):
+        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_type("BUYER")
+
+    def siae_partner_views_last_3_months(self, siae_slug):
+        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_type("PARTNER")
 
 
 class Tracker(models.Model):
@@ -13,6 +36,8 @@ class Tracker(models.Model):
     action = models.CharField(verbose_name="Type d'action", max_length=200)
     data = models.JSONField()
     isadmin = models.BooleanField(default=False)
+
+    objects = models.Manager.from_queryset(TrackerQuerySet)()
 
     class Meta:
         db_table = "trackers"

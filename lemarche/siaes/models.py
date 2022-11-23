@@ -21,6 +21,7 @@ from lemarche.perimeters.models import Perimeter
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.tasks import set_siae_coords
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
+from lemarche.stats.models import Tracker
 from lemarche.users.models import User
 from lemarche.utils.data import round_by_base
 from lemarche.utils.fields import ChoiceArrayField
@@ -864,6 +865,18 @@ class Siae(models.Model):
     @cached_property
     def sectors_list_string(self):
         return ", ".join(self.sectors.values_list("name", flat=True))
+
+    @cached_property
+    def stat_view_count_last_3_months(self):
+        return Tracker.objects.siae_views_last_3_months(self.slug).count()
+
+    @cached_property
+    def stat_buyer_view_count_last_3_months(self):
+        return Tracker.objects.siae_buyer_views_last_3_months(self.slug).count()
+
+    @cached_property
+    def stat_partner_view_count_last_3_months(self):
+        return Tracker.objects.siae_partner_views_last_3_months(self.slug).count()
 
     def siae_user_requests_pending_count(self):
         # TODO: optimize + filter on assignee
