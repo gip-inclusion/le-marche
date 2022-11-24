@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponseForbidden, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
@@ -107,11 +107,16 @@ class TenderCreateMultiStepView(SessionWizardView):
         context = super().get_context_data(form=form, **kwargs)
         # needed to display the perimeters selected in the previous page
         if self.steps.current == self.STEP_GENERAL:
+            tender_perimeters = None
+            if self.instance.id:
+                tender_perimeters = self.instance.perimeters.all()
             if self.get_cleaned_data_for_step(self.STEP_GENERAL):
-                tender_perimeters = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("perimeters")
                 tender_is_country_area = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("is_country_area")
                 if not tender_is_country_area:
-                    context["current_perimeters"] = list(tender_perimeters.values("id", "slug", "name"))
+                    tender_perimeters = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("perimeters")
+            context["current_perimeters"] = (
+                list(tender_perimeters.values("id", "slug", "name")) if tender_perimeters else []
+            )
         # needed to display the Tender preview template
         if self.steps.current == self.STEP_CONFIRMATION:
             tender_dict = self.get_all_cleaned_data()
@@ -129,13 +134,24 @@ class TenderCreateMultiStepView(SessionWizardView):
             context.update({"tender": tender_dict})
         return context
 
+    # def get_form_initial(self, step):
+    #     if "slug" in self.kwargs:
+    #         slug = self.kwargs["slug"]
+    #         project = Tender.objects.get(slug=slug)
+    #         from django.forms.models import model_to_dict
+
+    #         project_dict = model_to_dict(project)
+    #         return project_dict
+    #     else:
+    #         return self.initial_dict.get(step, {})
+
     def get_form_instance(self, step):
         if self.instance is None:
-            self.instance = Tender()
-        if step == self.STEP_CONTACT:
-            if self.request.user.is_authenticated:
+            if "slug" in self.kwargs:
+                self.instance = get_object_or_404(Tender, slug=self.kwargs.get("slug"))
+            elif self.request.user.is_authenticated:
                 user = self.request.user
-                return Tender(
+                self.instance = Tender(
                     **{
                         "contact_first_name": user.first_name,
                         "contact_last_name": user.last_name,
@@ -143,6 +159,8 @@ class TenderCreateMultiStepView(SessionWizardView):
                         "contact_phone": user.phone,
                     }
                 )
+            else:
+                self.instance = Tender()
         return self.instance
 
     def get_form_kwargs(self, step):
@@ -170,16 +188,26 @@ class TenderCreateMultiStepView(SessionWizardView):
         else:
             user = self.request.user
         # when it's done we save the tender
-        tender = create_tender_from_dict(cleaned_data | {"author": user, "source": Tender.SOURCE_FORM})
+        tender_dict = cleaned_data | {"author": user, "source": Tender.SOURCE_FORM}
+        if self.request.POST.get("is_draft"):
+            tender_dict |= {"status": tender_constants.STATUS_DRAFT}
+        if self.instance.id:
+            # update
+            self.instance.status = tender_constants.STATUS_PUBLISHED
+            self.instance.save()
+            self.instance.perimeters.set(tender_dict.get("perimeters"))
+            self.instance.sectors.set(tender_dict.get("sectors"))
+        else:
+            self.instance = create_tender_from_dict(tender_dict)
         # we notify the admin team
         if settings.BITOUBI_ENV == "prod":
-            notify_admin_tender_created(tender)
+            notify_admin_tender_created(self.instance)
         # validation & siae contacted? in tenders/admin.py
         # success message & response
         messages.add_message(
             self.request,
             messages.SUCCESS,
-            self.get_success_message(cleaned_data, tender),
+            self.get_success_message(cleaned_data, self.instance),
         )
         return HttpResponseRedirect(self.get_success_url())
 
@@ -244,16 +272,19 @@ class TenderDetailView(DetailView):
         update 'detail_display_date' (if the User has any Siae linked to this Tender)
         """
         user = self.request.user
-        if user.is_authenticated and user.kind == User.KIND_SIAE:
-            tender = self.get_object()
-            # user might not be concerned with this tender: we create TenderSiae stats
-            if not user.has_tender_siae(tender):
-                for siae in user.siaes.all():
-                    TenderSiae.objects.create(tender=tender, siae=siae, source=TenderSiae.TENDER_SIAE_SOURCE_LINK)
-            # update stats
-            TenderSiae.objects.filter(
-                tender=tender, siae__in=user.siaes.all(), detail_display_date__isnull=True
-            ).update(detail_display_date=timezone.now(), updated_at=timezone.now())
+        if user.is_authenticated:
+            tender: Tender = self.get_object()
+            if user == tender.author and tender.status == tender_constants.STATUS_DRAFT:
+                return redirect("tenders:create", slug=tender.slug)
+            elif user.kind == User.KIND_SIAE:
+                # user might not be concerned with this tender: we create TenderSiae stats
+                if not user.has_tender_siae(tender):
+                    for siae in user.siaes.all():
+                        TenderSiae.objects.create(tender=tender, siae=siae, source=TenderSiae.TENDER_SIAE_SOURCE_LINK)
+                # update stats
+                TenderSiae.objects.filter(
+                    tender=tender, siae__in=user.siaes.all(), detail_display_date__isnull=True
+                ).update(detail_display_date=timezone.now(), updated_at=timezone.now())
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

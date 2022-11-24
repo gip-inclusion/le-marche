@@ -81,6 +81,10 @@ class AddTenderStepDescriptionForm(forms.ModelForm):
     def __init__(self, kind, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.kind = kind
+
+        if self.instance.start_working_date:
+            self.initial["start_working_date"] = self.instance.start_working_date.isoformat()  # Here
+
         # required fields
         self.fields["description"].required = True
         if self.kind == Tender.TENDER_KIND_TENDER:
@@ -139,6 +143,10 @@ class AddTenderStepContactForm(forms.ModelForm):
         self.external_link = external_link
         self.user_is_anonymous = user_is_anonymous
         self.user_does_not_have_company_name = user_does_not_have_company_name
+
+        if self.instance.deadline_date:
+            self.initial["deadline_date"] = self.instance.deadline_date.isoformat()  # Here
+
         # required fields
         self.fields["contact_first_name"].required = True
         self.fields["contact_last_name"].required = True

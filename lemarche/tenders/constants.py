@@ -76,3 +76,13 @@ SURVEY_ENCOURAGED_BY_US_CHOICES = (
     (SURVEY_NOT_ENCOURAGED_ONLY_BY_US, "Un outil parmi d’autres"),
     (SURVEY_YES, "Oui"),
 )
+
+STATUS_DRAFT = "1"
+STATUS_PUBLISHED = "2"
+STATUS_VALIDATE = "3"
+
+STATUS_LIST = (
+    (STATUS_DRAFT, "Brouillon"),
+    (STATUS_PUBLISHED, "Publié"),
+    (STATUS_VALIDATE, "Validé"),
+)
