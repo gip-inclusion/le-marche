@@ -107,18 +107,18 @@ class TenderAdmin(admin.ModelAdmin):
             },
         ),
         (
+            "Lieux d'exécution 'France entière'",
+            {
+                "fields": ("is_country_area",),
+            },
+        ),
+        (
             "Lieux d'exécution 'spécifique'",
             {
                 "fields": (
                     "perimeters",
                     "include_country_area",
                 ),
-            },
-        ),
-        (
-            "Lieux d'exécution 'France entière'",
-            {
-                "fields": ("is_country_area",),
             },
         ),
         (
