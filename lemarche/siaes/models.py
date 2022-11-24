@@ -270,6 +270,9 @@ class SiaeQuerySet(models.QuerySet):
     def with_country_geo_range(self):
         return self.filter(Q(geo_range=GEO_RANGE_COUNTRY))
 
+    def exclude_country_geo_range(self):
+        return self.exclude(Q(geo_range=GEO_RANGE_COUNTRY))
+
     def annotate_with_user_favorite_list_count(self, user):
         """
         Enrich each Siae with the number of occurences in the user's favorite lists
@@ -291,11 +294,14 @@ class SiaeQuerySet(models.QuerySet):
 
     def filter_with_tender(self, tender):
         """
-        Filter Siaes with tenders
-        - First we filter the Siae that are live + can be contacted
-        - Then we filter on the sectors
-        - Then, if tender is made for country area, we filter with siae_geo_range=country, else we filter on the perimeters  # noqa
-        - Finally on presta_type
+        Filter Siaes with tenders:
+        - first we filter the Siae that are live + can be contacted
+        - then we filter on the sectors
+        - then we filter on the perimeters:
+            - if tender is made for country area, we filter with siae_geo_range=country
+            - else we filter on the perimeters
+        - then we filter on presta_type
+        - finally we filter on kind
 
         Args:
             tender (Tender): Tender used to make the matching
@@ -310,6 +316,8 @@ class SiaeQuerySet(models.QuerySet):
         else:
             if tender.perimeters.count():
                 qs = qs.in_perimeters_area(tender.perimeters.all(), with_country=True)
+            if not tender.include_country_area():
+                qs = qs.exclude_country_geo_range()
         # filter by presta_type
         if len(tender.presta_type):
             qs = qs.filter(presta_type__overlap=tender.presta_type)
