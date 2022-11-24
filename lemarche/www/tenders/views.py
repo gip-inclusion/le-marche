@@ -233,6 +233,7 @@ class TenderListView(LoginRequiredMixin, ListView):
     context_object_name = "tenders"
     paginate_by = 10
     paginator_class = Paginator
+    status = None
 
     def get_queryset(self):
         """
@@ -248,13 +249,16 @@ class TenderListView(LoginRequiredMixin, ListView):
                 queryset = Tender.objects.filter_with_siaes(siaes)
         else:
             queryset = Tender.objects.by_user(user).with_siae_stats()
+            if self.status:
+                queryset = queryset.filter(status=self.status)
         return queryset
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, status=None, *args, **kwargs):
         """
         Update 'tender_list_last_seen_date'
         """
         user = self.request.user
+        self.status = status
         if user.is_authenticated:
             User.objects.filter(id=user.id).update(tender_list_last_seen_date=timezone.now())
         return super().get(request, *args, **kwargs)
@@ -266,6 +270,7 @@ class TenderListView(LoginRequiredMixin, ListView):
         context["title_kind_sourcing_siae"] = TITLE_KIND_SOURCING_SIAE
         context["STATUS_DRAFT"] = tender_constants.STATUS_DRAFT
         context["STATUS_PUBLISHED"] = tender_constants.STATUS_PUBLISHED
+        context["STATUS_VALIDATE"] = tender_constants.STATUS_VALIDATE
         return context
 
 

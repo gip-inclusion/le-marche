@@ -1,4 +1,4 @@
-{% extends "layouts/base.html" %}
+{% extends BASE_TEMPLATE %}
 {% load bootstrap4 static %}
 
 {% block title %}{{ page_title }}{{ block.super }}{% endblock %}
@@ -35,20 +35,73 @@
                         <i class="ri-add-fill ri-lg mr-2"></i>Publier un besoin d'achat
                     </a>
                 </div>
-            {% endif %}
-            <div class="col-12 my-5 py-3">
-                <!-- "buyer": display tenders which the user is the author -->
-                {% if user.kind != user.KIND_SIAE %}
-                    {% for tender in tenders %}
-                        {% include "tenders/_list_item_buyer.html" with tender=tender %}
-                    {% endfor %}
-                    {% include "includes/_pagination.html" %}
-                    {% if not tenders %}
-                        <p class="text-muted">
-                            Publiez un besoin pour trouver des prestataires inclusifs près de chez vous.
-                        </p>
-                    {% endif %}
+                {% endif %}
+                <div class="col-12 my-5 py-3">
+                    <!-- "buyer": display tenders which the user is the author -->
+                    {% if user.kind != user.KIND_SIAE %}
+                    {% block htmx %}
+                    <div id="tendersList">
+                        <ul role="navigation" class="nav nav-tabs nav-tabs--marche">
+                            {% url 'tenders:list' as TENDERS_LIST_URL %}
+                            {% url 'tenders:list' status=STATUS_DRAFT as TENDERS_DRAFT_LIST_URL %}
+                            {% url 'tenders:list' status=STATUS_PUBLISHED as TENDERS_PUBLISHED_LIST_URL %}
+                            {% url 'tenders:list' status=STATUS_VALIDATE as TENDERS_VALIDATE_LIST_URL %}
+
+                            <li class="nav-item">
+                                <a role="button" hx-push-url="true" hx-get="{{TENDERS_LIST_URL}}"
+                                    class="nav-link{% if request.get_full_path == TENDERS_LIST_URL %} active{% endif %}"
+                                    hx-target="#tendersList" hx-swap="outerHTML">
+                                    Sans filtre
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a role="button" hx-push-url="true" hx-get="{{TENDERS_DRAFT_LIST_URL}}"
+                                    class="nav-link{% if request.get_full_path == TENDERS_DRAFT_LIST_URL %} active{% endif %}"
+                                    hx-target="#tendersList" hx-swap="outerHTML">
+                                    Brouillons
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a role="button" hx-push-url="true" hx-get="{{TENDERS_PUBLISHED_LIST_URL}}"
+                                    class="nav-link{% if request.get_full_path == TENDERS_PUBLISHED_LIST_URL %} active{% endif %}"
+                                    hx-target="#tendersList" hx-swap="outerHTML">
+                                    Publié
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a role="button" hx-push-url="true" hx-get="{{TENDERS_VALIDATE_LIST_URL}}"
+                                    class="nav-link{% if request.get_full_path == TENDERS_VALIDATE_LIST_URL %} active{% endif %}"
+                                    hx-target="#tendersList" hx-swap="outerHTML">
+                                    Envoyé
+                                </a>
+                            </li>
+
+                        </ul>
+                        {% for tender in tenders %}
+                            {% include "tenders/_list_item_buyer.html" with tender=tender %}
+                        {% endfor %}
+                        {% include "includes/_pagination.html" %}
+                        {% if not tenders %}
+                            <p class="text-muted my-5">
+                                {% if request.get_full_path == TENDERS_LIST_URL %}
+                                    Publiez un besoin pour trouver des prestataires inclusifs près de chez vous.
+                                {% endif %}
+                                {% if request.get_full_path == TENDERS_DRAFT_LIST_URL %}
+                                    Vous n'avez aucun brouillon de besoin pour le moment.
+                                {% endif %}
+                                {% if request.get_full_path == TENDERS_PUBLISHED_LIST_URL %}
+                                    Vous n'avez aucun besoin de publié pour le moment.
+                                {% endif %}
+                                {% if request.get_full_path == TENDERS_VALIDATE_LIST_URL %}
+                                    Vous n'avez aucun besoin d'envoyé pour le moment.<br>
+                                    Contacter notre équipe en cas de problème avec un de vos dépôts de besoins publié et pas encore envoyé.
+                                {% endif %}
+                            </p>
+                        {% endif %}
+                    </div>
                 <!-- "siae": display opportunities -->
+                {% endblock %}
+
                 {% else %}
                     {% for tender in tenders %}
                         {% include "tenders/_list_item_siae.html" with tender=tender %}
