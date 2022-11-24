@@ -114,7 +114,11 @@ class TrackerMiddleware:
 
             elif page == reverse("siae:search_results_download"):  # download csv action
                 action = "directory_csv"
-                extra_data = {"results_count": response.headers.get("Context-Data-Results-Count", None)}
+                extra_data = {
+                    "results_count": int(response.headers.get("Context-Data-Results-Count"))
+                    if response.headers.get("Context-Data-Results-Count", None)
+                    else None
+                }
                 meta = self.extract_meta_from_request_get(request, context_data=context_data, extra_data=extra_data)
 
             elif page == reverse("dashboard:siae_search_by_siret"):  # adopted search action
