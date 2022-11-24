@@ -45,6 +45,7 @@ class AddTenderStepGeneralForm(forms.ModelForm):
         # label, placeholder & help_text
         self.fields["title"].widget.attrs["placeholder"] = "Ex : Devis rénovation façade"
         self.fields["sectors"].help_text = Tender._meta.get_field("sectors").help_text  # else doesn't appear
+        self.fields["is_country_area"].help_text = None
 
     def clean(self):
         super().clean()
