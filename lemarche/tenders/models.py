@@ -201,7 +201,16 @@ class Tender(models.Model):
         blank=True,
         help_text="Ajoutez un ou plusieurs lieux d'exécutions",
     )
-    is_country_area = models.BooleanField(verbose_name="France entière", default=False)
+    include_country_area = models.BooleanField(
+        verbose_name="Inclure les structures qui ont comme périmètre d'intervention 'France entière' ?",
+        help_text="Laisser vide pour exclure les structures qui ont comme périmètre d'intervention 'France entière'",
+        default=False,
+    )
+    is_country_area = models.BooleanField(
+        verbose_name="France entière",
+        help_text="Retournera uniquement les structures qui ont comme périmètre d'intervention 'France entière'",
+        default=False,
+    )
     presta_type = ChoiceArrayField(
         verbose_name="Type de prestation",
         base_field=models.CharField(max_length=20, choices=siae_constants.PRESTA_CHOICES),
