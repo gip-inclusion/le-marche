@@ -316,7 +316,7 @@ class SiaeQuerySet(models.QuerySet):
         else:
             if tender.perimeters.count():
                 qs = qs.in_perimeters_area(tender.perimeters.all(), with_country=True)
-            if not tender.include_country_area():
+            if not tender.include_country_area:
                 qs = qs.exclude_country_geo_range()
         # filter by presta_type
         if len(tender.presta_type):
