@@ -32,7 +32,8 @@
 
                     {% bootstrap_field form_download.marche_benefits %}
 
-                    <input type="hidden" name="format" value="xls" />
+                    <input type="hidden" id="id_download_source" name="download_source" value="siae_search_results" />
+                    <input type="hidden" id="id_format" name="format" value="xls" />
                 </div>
 
                 <br />
@@ -48,3 +49,18 @@
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    const MODAL_ID = '#download_click_survey_modal';
+    $(MODAL_ID).on('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        var button = $(event.relatedTarget);
+
+        // Extract info from data-* attributes
+        var downloadSource = button.data('download-source') || '';
+
+        document.getElementById('id_download_source').setAttribute('value', downloadSource);
+    });
+});
+</script>
