@@ -240,6 +240,11 @@ class Tender(models.Model):
         blank=True,
     )
 
+    siae_transactioned = models.BooleanField(
+        verbose_name="Abouti à une transaction avec une structure",
+        default=False,
+    )
+
     # survey
     is_marche_useful = models.BooleanField(
         verbose_name="Utilité du marché de l'inclusion",
@@ -252,10 +257,6 @@ class Tender(models.Model):
         base_field=models.CharField(max_length=20, choices=constants.MARCHE_BENEFIT_CHOICES),
         blank=True,
         default=list,
-    )
-    siae_transactioned = models.BooleanField(
-        verbose_name="Abouti à une transaction avec une structure",
-        default=False,
     )
 
     # stats
