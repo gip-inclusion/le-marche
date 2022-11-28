@@ -253,7 +253,10 @@ class Tender(models.Model):
         blank=True,
         default=list,
     )
-    extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)
+    siae_transactioned = models.BooleanField(
+        verbose_name="Abouti à une transaction avec une structure",
+        default=False,
+    )
 
     # stats
     siae_interested_list_last_seen_date = models.DateTimeField(
@@ -261,6 +264,7 @@ class Tender(models.Model):
     )
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
     source = models.CharField(verbose_name="Source", max_length=20, choices=SOURCE_CHOICES, default=SOURCE_FORM)
+    extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)
 
     validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
 
