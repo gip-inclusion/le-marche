@@ -31,8 +31,8 @@
             <!-- "buyer": can create new tenders -->
             {% if user.kind != user.KIND_SIAE %}
                 <div class="col-12 col-md-auto">
-                    <a href="{% url 'tenders:create' %}" id="tender-list-create" class="btn btn-primary btn-ico">
-                        <i class="ri-add-fill ri-lg"></i>&nbsp;Publier un besoin d'achat
+                    <a href="{% url 'tenders:create' %}" id="tender-list-create" class="btn btn-primary">
+                        <i class="ri-add-fill ri-lg mr-2"></i>Publier un besoin d'achat
                     </a>
                 </div>
             {% endif %}
