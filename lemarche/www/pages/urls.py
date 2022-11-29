@@ -155,7 +155,7 @@ urlpatterns = [
     path("track/", TrackView.as_view(), name="track_frontend"),
     # Calculator endpoints
     path("calibrer-achat-socialement-responsable/", ImpactCalculatorView.as_view(), name="impact_calculator"),
-    path("entreprises-references/", CompanyReferenceCalculatorView.as_view(), name="company_reference_calculator"),
+    path("acheteurs-reference-client/", CompanyReferenceCalculatorView.as_view(), name="company_reference_calculator"),
     # Flatpages (created in the admin)
     # path("", include("django.contrib.flatpages.urls")),
     path("<path:url>", PageView.as_view(), name="flatpage"),
