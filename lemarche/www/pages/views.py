@@ -144,11 +144,8 @@ class ImpactCalculatorView(FormMixin, ListView):
         - aggregate on impact values
         """
         self.filter_form = ImpactCalculatorForm(data=self.request.GET)
-        if len(self.request.GET.keys()):
-            results = self.filter_form.filter_queryset()
-            return self.filter_form.impact_aggregation(results)
-        else:  # avoid empty filtering and long aggregation
-            return Siae.objects.none()
+        results = self.filter_form.filter_queryset()
+        return results
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -156,7 +153,10 @@ class ImpactCalculatorView(FormMixin, ListView):
             siae_search_form = self.filter_form if self.filter_form else ImpactCalculatorForm(data=self.request.GET)
             context["form"] = self.filter_form
             if siae_search_form.is_valid():
+                # results
                 context["results"] = self.get_queryset()
+                context["results_aggregated"] = self.filter_form.impact_aggregation(context["results"])
+                context["current_search_query"] = self.request.GET.urlencode()
                 # perimeters
                 current_perimeters = siae_search_form.cleaned_data.get("perimeters")
                 if current_perimeters:
