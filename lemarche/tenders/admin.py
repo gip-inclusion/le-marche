@@ -160,6 +160,7 @@ class TenderAdmin(admin.ModelAdmin):
                     "siae_email_send_count_with_link",
                     "siae_detail_display_count_with_link",
                     "siae_contact_click_count_with_link",
+                    "siae_transactioned",
                 )
             },
         ),
