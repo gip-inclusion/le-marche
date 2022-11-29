@@ -129,8 +129,6 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         if not len(request_params):
             file_path = f"{API_CONNECTION_DICT['endpoint_url']}/{settings.S3_STORAGE_BUCKET_NAME}/{settings.SIAE_EXPORT_FOLDER_NAME}/{filename_with_extension}"  # noqa
             response = HttpResponseRedirect(file_path)
-            response.context_data = {"results_count": siae_list.count()}
-            return response
 
         else:
             if format == "csv":
@@ -146,8 +144,10 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
 
                 wb = export_siae_to_excel(siae_list, with_contact_info)
                 wb.save(response)
-            response.context_data = {"results_count": siae_list.count()}
-            return response
+
+        # HttpResponse doesn't have a context. so we pass the data via the response header
+        response["Context-Data-Results-Count"] = siae_list.count()
+        return response
 
 
 class SiaeDetailView(DetailView):
