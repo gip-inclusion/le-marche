@@ -6,7 +6,7 @@
         <h2 class="h2 mb-2">Pas de temps à perdre ?</h1>
         <p>Confiez-nous votre recherche (ou sourcing) et recevez des réponses de prestataires inclusifs en moins de 24h.</p>
         <a href="{% url 'tenders:create' %}" id="siae-search-insert-tender-create-btn" class="btn btn-primary btn-sm btn-ico d-block d-md-inline-block mb-2">
-            <i class="ri-mail-send-line ri-lg"></i>&nbps;Publier un besoin d'achat
+            <i class="ri-mail-send-line ri-lg"></i>&nbsp;Publier un besoin d'achat
         </a>
     </div>
     <div class="col-md-6">
@@ -14,7 +14,7 @@
             {% with perimeters_length=current_perimeters|length %}
                 <h5>Lieu{{ perimeters_length|pluralize:"x" }} d'intervention</h5>
                 {% for perimeter in current_perimeters %}
-                    <span class="badge badge-base badge-outline-primary mr-1">{{perimeter.name}}</span>
+                    <span class="badge badge-base badge-outline-primary mr-1">{{ perimeter.name }}</span>
                     {% if forloop.counter == 2 and perimeters_length > 2 %}
                         <a class="w-100 d-block text-decoration-none has-collapse-caret collapsed" data-toggle="collapse" href="#perimetersSearchHidden" role="button" aria-expanded="false" aria-controls="perimetersSearchHidden">
                             Afficher les {{ perimeters_length|add:"-2" }} autres lieux d'interventions
@@ -29,9 +29,9 @@
         {% endif %}
         {% if current_sectors %}
             {% with sectors_length=current_sectors|length %}
-                <h5 class="mt-4">Secteur{{ sectors_length|pluralize }} d’activité</h5>
+                <h5 class="mt-4">Secteur{{ sectors_length|pluralize }} d'activité</h5>
                 {% for sector in current_sectors %}
-                    <span class="badge badge-base badge-outline-primary ml-0 mb-1">{{sector.name|truncatechars:42}}</span><br>
+                    <span class="badge badge-base badge-outline-primary ml-0 mb-1">{{ sector.name|truncatechars:42 }}</span><br>
                     {% if forloop.counter == 2 and sectors_length > 2 %}
                         <a class="w-100 d-block text-decoration-none has-collapse-caret collapsed" data-toggle="collapse" href="#sectorsSearchHidden" role="button" aria-expanded="false" aria-controls="sectorsSearchHidden">
                             Afficher les {{ sectors_length|add:"-2" }} autres secteurs
