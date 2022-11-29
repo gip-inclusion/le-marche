@@ -219,6 +219,7 @@ class SiaeDownloadForm(SiaeSearchForm):
         widget=forms.CheckboxSelectMultiple,
         required=False,
     )
-    kind = forms.ChoiceField(
+    download_source = forms.CharField(required=False, widget=forms.HiddenInput())
+    format = forms.ChoiceField(
         label="Format", widget=forms.RadioSelect, choices=(("XLS", "xls"), ("CLS", "csv")), required=False
     )
