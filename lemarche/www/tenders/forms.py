@@ -191,7 +191,7 @@ class AddTenderStepContactForm(forms.ModelForm):
 class AddTenderStepConfirmationForm(forms.Form):
     is_marche_useful = forms.ChoiceField(
         label=Tender._meta.get_field("is_marche_useful").help_text,
-        choices=constants.MARCHE_IS_USEFULL_CHOICES,
+        choices=constants.IS_MARCHE_USEFUL_CHOICES,
         widget=forms.RadioSelect,
         required=True,
     )

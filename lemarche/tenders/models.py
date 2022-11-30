@@ -250,8 +250,8 @@ class Tender(models.Model):
         verbose_name="Utilité du marché de l'inclusion",
         help_text="Si le Marché de l'inclusion n'existait pas, auriez-vous fait appel à des prestataires inclusifs pour ce besoin ?",  # noqa
         max_length=2,
-        choices=tender_constants.MARCHE_IS_USEFULL_CHOICES,
-        default=tender_constants.MARCHE_IS_USEFULL_0,
+        choices=tender_constants.IS_MARCHE_USEFUL_CHOICES,
+        default=tender_constants.IS_MARCHE_USEFUL_0,
     )
 
     marche_benefits = ChoiceArrayField(
