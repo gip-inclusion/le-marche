@@ -24,28 +24,27 @@
             <h2 class="py-2">{{ tender.title }}</h2>
         </a>
 
-        {% if tender.sectors_list_string or tender.perimeters_list_string or tender.amount %}
-            <hr>
-            <div class="row">
-                {% if tender.sectors_list_string %}
-                    <div class="col-md-4">
-                        <i class="ri-award-line"></i>
-                        {{ tender.sectors_list_string }}
-                    </div>
-                {% endif %}
-                {% if tender.perimeters_list_string %}
-                    <div class="col-md-4 text-center">
-                        <i class="ri-map-pin-2-line"></i>
-                        {{ tender.perimeters_list_string }}
-                    </div>
-                {% endif %}
-                {% if tender.amount %}
-                    <div class="col-md-4 text-center">
-                        <i class="ri-money-euro-circle-line"></i>
-                        {{ tender.get_amount_display|default:"-" }}
-                    </div>
+        <hr />
+
+        <div class="row">
+            <div class="col-md-4" title="Secteurs d'activité">
+                {% if tender.sectors.count %}
+                    <i class="ri-award-line"></i>
+                    {% siae_sectors_display tender display_max=3 %}
                 {% endif %}
             </div>
-        {% endif %}
+            <div class="col-md-4 text-center" title="Lieu d'intervention">
+                {% if tender.perimeters_list_string %}
+                    <i class="ri-map-pin-2-line"></i>
+                    {{ tender.perimeters_list_string }}
+                {% endif %}
+            </div>
+            <div class="col-md-4 text-center">
+                {% if tender.amount %}
+                    <i class="ri-money-euro-circle-line"></i>
+                    {{ tender.get_amount_display|default:"-" }}
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
