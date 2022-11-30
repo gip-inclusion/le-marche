@@ -1,0 +1,36 @@
+{% extends "tenders/create_base.html" %}
+{% load static bootstrap4 %}
+
+{% block step_title %}Evaluation de l’impact{% endblock %}
+{% block step_title_again %}Evaluation de l’impact{% endblock %}
+{% block step_subtitle %}Aidez-nous à évaluer l'impact de la plateforme du Marché de l’inclusion en répondant à ces quelques questions.{% endblock %}
+
+{% block content_form %}
+<div class="row mb-3 mb-lg-5">
+    <div class="col-12 col-lg-9" id="serveyTender">
+    {% bootstrap_field form.is_marche_useful  form_group_class="form-group mb-4" %}
+    {% bootstrap_field form.worked_with_inclusif_siae_this_kind_tender  form_group_class="form-group mb-4" %}
+    {% bootstrap_field form.is_encouraged_by_le_marche  form_group_class="form-group mb-4" %}
+    {% bootstrap_field form.is_marche_useful  form_group_class="form-group mb-4" %}
+    {% bootstrap_field form.le_marche_doesnt_exist_how_to_find_siae  form_group_class="form-group" %}
+    </div>
+    <div class="col-12 col-lg-3">
+        <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+            <p class="mb-0">
+                *Le terme "Prestataire inclusif" fait référence aux structures agréées Insertion ou Handicap.
+                <br>
+                <br>
+                ⚠️ Ici, le terme “Prestataire inclusif” ne fait pas référence à l'ensemble des prestataires relevant de l'E.S.S (Économie Sociale & Solidaire)            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    {% comment %} add conditionnal display {% endcomment %}
+});
+</script>
+{% endblock %}

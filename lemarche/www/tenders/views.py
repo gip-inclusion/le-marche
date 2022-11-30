@@ -21,6 +21,7 @@ from lemarche.www.tenders.forms import (
     AddTenderStepContactForm,
     AddTenderStepDescriptionForm,
     AddTenderStepGeneralForm,
+    AddTenderStepSurveyForm,
 )
 from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
     notify_admin_tender_created,
@@ -80,12 +81,14 @@ class TenderCreateMultiStepView(SessionWizardView):
     STEP_GENERAL = "general"
     STEP_DESCRIPTION = "description"
     STEP_CONTACT = "contact"
+    STEP_SURVEY = "survey"
     STEP_CONFIRMATION = "confirmation"
 
     TEMPLATES = {
         STEP_GENERAL: "tenders/create_step_general.html",
         STEP_DESCRIPTION: "tenders/create_step_description.html",
         STEP_CONTACT: "tenders/create_step_contact.html",
+        STEP_SURVEY: "tenders/create_step_survey.html",
         STEP_CONFIRMATION: "tenders/create_step_confirmation.html",
     }
 
@@ -93,6 +96,7 @@ class TenderCreateMultiStepView(SessionWizardView):
         (STEP_GENERAL, AddTenderStepGeneralForm),
         (STEP_DESCRIPTION, AddTenderStepDescriptionForm),
         (STEP_CONTACT, AddTenderStepContactForm),
+        (STEP_SURVEY, AddTenderStepSurveyForm),
         (STEP_CONFIRMATION, AddTenderStepConfirmationForm),
     ]
 

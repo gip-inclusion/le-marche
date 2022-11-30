@@ -188,7 +188,7 @@ class AddTenderStepContactForm(forms.ModelForm):
             )
 
 
-class AddTenderStepConfirmationForm(forms.Form):
+class AddTenderStepSurveyForm(forms.Form):
     is_marche_useful = forms.ChoiceField(
         label=Tender._meta.get_field("is_marche_useful").help_text,
         choices=constants.IS_MARCHE_USEFUL_CHOICES,
@@ -196,16 +196,42 @@ class AddTenderStepConfirmationForm(forms.Form):
         required=True,
     )
 
-    marche_benefits = forms.MultipleChoiceField(
-        label=Tender._meta.get_field("marche_benefits").help_text,
-        choices=Tender._meta.get_field("marche_benefits").base_field.choices,
-        widget=forms.CheckboxSelectMultiple,
+    worked_with_inclusif_siae_this_kind_tender = forms.ChoiceField(
+        label="Avez-vous déjà travaillé avec des prestataires inclusifs* sur ce type de prestation ?",
+        choices=constants.IS_MARCHE_USEFUL_CHOICES,
+        widget=forms.RadioSelect,
         required=True,
+    )
+    # hidden if worked_with_inclusif_siae_this_kind_tender is no or don't know
+    is_encouraged_by_le_marche = forms.ChoiceField(
+        label="""Est-ce la plateforme du Marché de l'inclusion qui vous a encouragé à consulter des prestataires inclusifs*
+        pour ce besoin ?""",
+        choices=constants.IS_MARCHE_USEFUL_CHOICES,
+        widget=forms.RadioSelect,
+        required=True,
+    )
+
+    is_marche_useful = forms.ChoiceField(
+        label="Comptez-vous consulter d'autres prestataires en dehors de l'Insertion et du Handicap ?",
+        choices=constants.IS_MARCHE_USEFUL_CHOICES,
+        widget=forms.RadioSelect,
+        required=True,
+    )
+
+    le_marche_doesnt_exist_how_to_find_siae = forms.CharField(
+        label="""Si le Marché de l'inclusion n'existait pas,
+            comment auriez-vous fait pour trouver un prestataire inclusif ?""",
+        required=True,
+        widget=forms.Textarea(attrs={"rows": 2, "cols": 15}),
     )
 
     class Meta:
         model = Tender
         fields = [
             "is_marche_useful",
-            "marche_benefits",
+            "extra_data",
         ]
+
+
+class AddTenderStepConfirmationForm(forms.Form):
+    pass
