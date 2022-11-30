@@ -350,9 +350,12 @@ class Tender(models.Model):
     def contact_full_name(self):
         return f"{self.contact_first_name} {self.contact_last_name}"
 
-    @cached_property
-    def sectors_list_string(self):
-        return ", ".join(self.sectors.values_list("name", flat=True))
+    def sectors_list_string(self, display_max=5):
+        sectors_name_list = self.sectors.values_list("name", flat=True)
+        if display_max and len(sectors_name_list) > display_max:
+            sectors_name_list = sectors_name_list[:display_max]
+            sectors_name_list.append("…")
+        return ", ".join(sectors_name_list)
 
     @cached_property
     def perimeters_list_string(self):

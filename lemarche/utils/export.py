@@ -67,7 +67,7 @@ def generate_siae_row(siae: Siae, siae_field_list):
             col_value = "Oui" if getattr(siae, field_name, None) else "Non"
         # ManyToManyFields
         elif field_name == "sectors":
-            col_value = siae.sectors_list_string
+            col_value = siae.sectors_list_string(display_max=None)
         # Custom fields
         elif field_name == "Inscrite":
             col_value = "Oui" if siae.user_count else "Non"
