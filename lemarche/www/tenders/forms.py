@@ -3,8 +3,9 @@ from datetime import date
 from django import forms
 
 from lemarche.sectors.models import Sector
+from lemarche.tenders import constants
 from lemarche.tenders.models import Tender
-from lemarche.utils.fields import BooleanNotEmptyField, GroupedModelMultipleChoiceField
+from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
 class AddTenderStepGeneralForm(forms.ModelForm):
@@ -188,11 +189,13 @@ class AddTenderStepContactForm(forms.ModelForm):
 
 
 class AddTenderStepConfirmationForm(forms.Form):
-    is_marche_useful = BooleanNotEmptyField(
+    is_marche_useful = forms.ChoiceField(
         label=Tender._meta.get_field("is_marche_useful").help_text,
-        widget=forms.RadioSelect(choices=[(True, "Oui"), (False, "Non")]),
+        choices=constants.MARCHE_IS_USEFULL_CHOICES,
+        widget=forms.RadioSelect,
         required=True,
     )
+
     marche_benefits = forms.MultipleChoiceField(
         label=Tender._meta.get_field("marche_benefits").help_text,
         choices=Tender._meta.get_field("marche_benefits").base_field.choices,

@@ -20,8 +20,7 @@
 {% block content_form %}
 <div class="row mb-3 mb-lg-5">
     <div class="col-12 col-lg-8">
-    <label class="fake-label fake-label-required">{{ form.is_marche_useful.label }}</label>
-    {% bootstrap_field form.is_marche_useful show_label=False %}
+    {% bootstrap_field form.is_marche_useful %}
     {% bootstrap_field form.marche_benefits %}
     </div>
     <div class="col-12 col-lg-4">
