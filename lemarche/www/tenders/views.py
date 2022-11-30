@@ -171,8 +171,8 @@ class TenderCreateMultiStepView(SessionWizardView):
             # update
             self.instance.status = tender_status
             self.instance.save()
-            self.instance.perimeters.set(tender_dict.get("perimeters"))
-            self.instance.sectors.set(tender_dict.get("sectors"))
+            self.instance.perimeters.set(tender_dict.get("perimeters"), clear=True)
+            self.instance.sectors.set(tender_dict.get("sectors"), clear=True)
         else:
             tender_dict |= {"status": tender_status}
             self.instance = create_tender_from_dict(tender_dict)
