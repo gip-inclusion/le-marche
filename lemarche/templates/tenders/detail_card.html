@@ -75,6 +75,19 @@
                     <p>
                         Contactez Sofiane ou Abdessamad via le chat de discussion qui se trouve en bas à droite du site pour être mis en relation avec l'acheteur.
                     </p>
+                {% elif user.kind == user.KIND_SIAE and not user.has_siae %}
+                    <div class="alert alert-info" role="alert">
+                        <p>
+                            <i class="ri-lightbulb-line ri-lg"></i>
+                            <strong>Coordonnées</strong>
+                        </p>
+                        <p class="mb-0">
+                            Pour accéder aux coordonnées du client, veuillez d'abord vous <a id="add-siae-btn" href="{% url 'dashboard:siae_search_by_siret' %}">rattacher à votre structure</a>.
+                        </p>
+                        <p>
+                            Besoin d'aide ? contacter le support via le chat en ligne qui se trouve en bas à droite
+                        </p>
+                    </div>
                 {% else %}
                     <button type="button" id="show-tender-contact-modal-btn" class="btn btn-primary float-right mb-4" data-toggle="modal" data-target="#contact_click_confirm_modal" title="Répondre à cette opportunité">
                         Répondre à cette opportunité
