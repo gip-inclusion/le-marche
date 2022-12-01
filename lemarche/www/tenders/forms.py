@@ -197,14 +197,14 @@ class AddTenderStepSurveyForm(forms.ModelForm):
     )
 
     worked_with_inclusif_siae_this_kind_tender = forms.ChoiceField(
-        label="Avez-vous déjà travaillé avec des prestataires inclusifs* sur ce type de prestation ?",
+        label="Q°2. Avez-vous déjà travaillé avec des prestataires inclusifs sur ce type de prestation ?",
         choices=constants.SURVEY_YES_NO_DONT_KNOW_CHOICES,
         widget=forms.RadioSelect,
         required=True,
     )
     # hidden if worked_with_inclusif_siae_this_kind_tender is no or don't know
     is_encouraged_by_le_marche = forms.ChoiceField(
-        label="""Est-ce la plateforme du Marché de l'inclusion qui vous a encouragé à consulter des prestataires inclusifs*
+        label="""Q°3. Est-ce la plateforme du Marché de l'inclusion qui vous a encouragé à consulter des prestataires inclusifs
         pour ce besoin ?""",
         choices=constants.SURVEY_ENCOURAGED_BY_US_CHOICES,
         widget=forms.RadioSelect,
@@ -212,16 +212,16 @@ class AddTenderStepSurveyForm(forms.ModelForm):
     )
 
     providers_out_of_insertion = forms.ChoiceField(
-        label="Comptez-vous consulter d'autres prestataires en dehors de l'Insertion et du Handicap ?",
+        label="Q°4. Comptez-vous consulter d'autres prestataires en dehors de l'Insertion et du Handicap ?",
         choices=constants.SURVEY_SCALE_QUESTION_CHOICES,
         widget=forms.RadioSelect,
         required=True,
     )
 
     le_marche_doesnt_exist_how_to_find_siae = forms.CharField(
-        label="""Si le Marché de l'inclusion n'existait pas,
+        label="""Q°5. Si le Marché de l'inclusion n'existait pas,
             comment auriez-vous fait pour trouver un prestataire inclusif ?""",
-        required=True,
+        required=False,
         widget=forms.Textarea(attrs={"rows": 2, "cols": 15}),
     )
 

@@ -52,8 +52,8 @@ SURVEY_SCALE_QUESTION_3 = "3"
 
 SURVEY_SCALE_QUESTION_CHOICES = (
     (SURVEY_SCALE_QUESTION_0, "Non"),
-    (SURVEY_SCALE_QUESTION_1, "Peu probable"),
-    (SURVEY_SCALE_QUESTION_2, "Très probable"),
+    (SURVEY_SCALE_QUESTION_1, "Peu probablement"),
+    (SURVEY_SCALE_QUESTION_2, "Très probablement"),
     (SURVEY_SCALE_QUESTION_3, "Oui"),
 )
 

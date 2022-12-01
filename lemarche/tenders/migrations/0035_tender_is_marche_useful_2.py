@@ -28,9 +28,9 @@ class Migration(migrations.Migration):
             model_name="tender",
             name="scale_marche_useless",
             field=models.CharField(
-                choices=[("0", "Non"), ("1", "Peu probable"), ("2", "Très probable"), ("3", "Oui")],
+                choices=[("0", "Non"), ("1", "Peu probablement"), ("2", "Très probablement"), ("3", "Oui")],
                 default="0",
-                help_text="Si le Marché de l'inclusion n'existait pas, auriez-vous fait appel à des prestataires inclusifs pour ce besoin ?",  # noqa
+                help_text="Q°1. Si le Marché de l'inclusion n'existait pas, auriez-vous fait appel à des prestataires inclusifs pour ce besoin ?",  # noqa
                 max_length=2,
                 verbose_name="Utilité du marché de l'inclusion",
             ),
