@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
             field=models.CharField(
                 choices=[("0", "Non"), ("1", "Peu probablement"), ("2", "Très probablement"), ("3", "Oui")],
                 default="0",
-                help_text="Q°1. Si le Marché de l'inclusion n'existait pas, auriez-vous fait appel à des prestataires inclusifs pour ce besoin ?",  # noqa
+                help_text="Q°1. Si le Marché de l'inclusion n'existait pas, auriez-vous consulté des prestataires inclusifs* pour ce besoin ?",  # noqa
                 max_length=2,
                 verbose_name="Utilité du marché de l'inclusion",
             ),
