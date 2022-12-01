@@ -1,5 +1,21 @@
 EMPTY_CHOICE = (("", ""),)
 
+# KIND_PERSO = "PERSO"  # PERSON_TYPE_NATURAL / 1
+# KIND_COMPANY = "COMPANY"  # PERSON_TYPE_LEGAL / 2 (not used)
+USER_KIND_SIAE = "SIAE"  # PERSON_TYPE_INCLUSIVE / 4
+USER_KIND_BUYER = "BUYER"  # PERSON_TYPE_CLASSIC / 3
+USER_KIND_PARTNER = "PARTNER"  # PERSON_TYPE_PARTNER / 6
+USER_KIND_ADMIN = "ADMIN"  # PERSON_TYPE_ADMIN/ 5
+
+USER_KIND_CHOICES = (
+    # (KIND_PERSO, "Utilisateur"),  # Une personne
+    # (KIND_COMPANY, "Entreprise"),  # Une entreprise
+    (USER_KIND_SIAE, "Structure"),  # Structure inclusive qui souhaite proposer ses offres
+    (USER_KIND_BUYER, "Acheteur"),  # Un acheteur qui souhaite réaliser un achat inclusif
+    (USER_KIND_PARTNER, "Partenaire"),  # Partenaire
+)
+USER_KIND_CHOICES_WITH_ADMIN = USER_KIND_CHOICES + ((USER_KIND_ADMIN, "Administrateur"),)  # Administrateur.trice
+
 MARCHE_BENEFIT_TIME = "TIME"
 MARCHE_BENEFIT_DISCOVER = "DISCOVER"
 MARCHE_BENEFIT_MORE = "MORE"
