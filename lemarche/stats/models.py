@@ -20,10 +20,10 @@ class TrackerQuerySet(models.QuerySet):
         )
 
     def siae_buyer_views_last_3_months(self, siae_slug):
-        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_type("BUYER")
+        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_type(constants.USER_KIND_BUYER)
 
     def siae_partner_views_last_3_months(self, siae_slug):
-        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_type("PARTNER")
+        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_type(constants.USER_KIND_PARTNER)
 
 
 class Tracker(models.Model):
