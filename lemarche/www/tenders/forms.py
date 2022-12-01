@@ -239,6 +239,20 @@ class AddTenderStepSurveyForm(forms.ModelForm):
             "scale_marche_useless",
         ]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.id:
+            self.initial["worked_with_inclusif_siae_this_kind_tender"] = self.instance.extra_data.get(
+                "worked_with_inclusif_siae_this_kind_tender"
+            )
+            self.initial["is_encouraged_by_le_marche"] = self.instance.extra_data.get("is_encouraged_by_le_marche")
+            self.initial["providers_out_of_insertion"] = self.instance.extra_data.get("providers_out_of_insertion")
+            self.initial["le_marche_doesnt_exist_how_to_find_siae"] = self.instance.extra_data.get(
+                "le_marche_doesnt_exist_how_to_find_siae"
+            )
+        else:
+            self.initial["is_marche_useful"] = None
+
     def clean(self) -> dict[str, any]:
         if not self.errors:
             super_cleaned_data = super().clean()
