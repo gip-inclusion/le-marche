@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponseForbidden, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
@@ -276,9 +276,7 @@ class TenderDetailView(DetailView):
         user = self.request.user
         if user.is_authenticated:
             tender: Tender = self.get_object()
-            if user == tender.author and tender.status == tender_constants.STATUS_DRAFT:
-                return redirect("tenders:create", slug=tender.slug)
-            elif user.kind == User.KIND_SIAE:
+            if user.kind == User.KIND_SIAE:
                 # user might not be concerned with this tender: we create TenderSiae stats
                 if not user.has_tender_siae(tender):
                     for siae in user.siaes.all():
@@ -291,7 +289,7 @@ class TenderDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        tender = self.get_object()
+        tender: Tender = self.get_object()
         user = self.request.user
         user_kind = user.kind if user.is_authenticated else "anonymous"
         context["parent_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
@@ -305,6 +303,7 @@ class TenderDetailView(DetailView):
                 context["siae_contact_click_count"] = TenderSiae.objects.filter(
                     tender=tender, contact_click_date__isnull=False
                 ).count()
+                context["is_draft"] = tender.status == tender_constants.STATUS_DRAFT
             elif user.kind == User.KIND_SIAE:
                 context["user_has_contact_click_date"] = TenderSiae.objects.filter(
                     tender=tender, siae__in=user.siaes.all(), contact_click_date__isnull=False

@@ -28,7 +28,8 @@
 <section class="container">
     <div class="row">
         <div class="col-12 col-lg-8">
-            {% include "tenders/detail_card.html" with tender=tender %}
+            <br />
+            {% include "tenders/detail_card.html" with tender=tender is_draft=is_draft %}
         </div>
     </div>
 </section>
