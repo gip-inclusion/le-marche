@@ -3,6 +3,16 @@
 from django.db import migrations, models
 
 
+def set_tender_status(apps, schema_editor):
+    Tender = apps.get_model("tenders", "tender")
+
+    Tender.objects.filter(validated_at__isnull=False).update(status="3")
+
+
+def set_tender_status_reverse(apps, schema_editor):
+    pass
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -20,4 +30,5 @@ class Migration(migrations.Migration):
                 verbose_name="Statut du dépôt de besoin",
             ),
         ),
+        migrations.RunPython(set_tender_status, reverse_code=set_tender_status_reverse),
     ]
