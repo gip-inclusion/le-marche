@@ -8,6 +8,7 @@ from django.forms.models import model_to_dict
 from django.utils import timezone
 
 from lemarche.stats.models import StatsUser
+from lemarche.utils import constants
 
 
 class UserQueryset(models.QuerySet):
@@ -105,22 +106,11 @@ class User(AbstractUser):
         "api_key",
     ]
 
-    # KIND_PERSO = "PERSO"  # PERSON_TYPE_NATURAL / 1
-    # KIND_COMPANY = "COMPANY"  # PERSON_TYPE_LEGAL / 2 (not used)
-    KIND_SIAE = "SIAE"  # PERSON_TYPE_INCLUSIVE / 4
-    KIND_BUYER = "BUYER"  # PERSON_TYPE_CLASSIC / 3
-    KIND_PARTNER = "PARTNER"  # PERSON_TYPE_PARTNER / 6
-    KIND_ADMIN = "ADMIN"  # PERSON_TYPE_ADMIN/ 5
-
-    KIND_CHOICES = (
-        # (KIND_PERSO, "Utilisateur"),  # Une personne
-        # (KIND_COMPANY, "Entreprise"),  # Une entreprise
-        (KIND_SIAE, "Structure"),  # Structure inclusive qui souhaite proposer ses offres
-        (KIND_BUYER, "Acheteur"),  # Un acheteur qui souhaite réaliser un achat inclusif
-        (KIND_PARTNER, "Partenaire"),  # Partenaire
-    )
-
-    KIND_CHOICES_WITH_ADMIN = KIND_CHOICES + ((KIND_ADMIN, "Administrateur"),)  # Administrateur.trice
+    # used in templates
+    KIND_SIAE = constants.USER_KIND_SIAE
+    KIND_BUYER = constants.USER_KIND_BUYER
+    KIND_PARTNER = constants.USER_KIND_PARTNER
+    KIND_ADMIN = constants.USER_KIND_ADMIN
 
     PARTNER_KIND_FACILITATOR = "FACILITATEUR"
     PARTNER_KIND_NETWORD_IAE = "RESEAU_IAE"
@@ -156,7 +146,9 @@ class User(AbstractUser):
     email = models.EmailField(verbose_name="Adresse e-mail", unique=True)
     first_name = models.CharField(verbose_name="Prénom", max_length=150)
     last_name = models.CharField(verbose_name="Nom", max_length=150)
-    kind = models.CharField(verbose_name="Type", max_length=20, choices=KIND_CHOICES_WITH_ADMIN, blank=True)
+    kind = models.CharField(
+        verbose_name="Type", max_length=20, choices=constants.USER_KIND_CHOICES_WITH_ADMIN, blank=True
+    )
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True)
     company_name = models.CharField(verbose_name="Nom de l'entreprise", max_length=255, blank=True)
     position = models.CharField(verbose_name="Poste", max_length=255, blank=True)

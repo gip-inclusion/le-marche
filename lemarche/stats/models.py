@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 
 from django.db import models
 
+from lemarche.utils import constants
+
 
 class TrackerQuerySet(models.QuerySet):
     def env_prod(self):
@@ -35,7 +37,10 @@ class Tracker(models.Model):
     page = models.CharField(max_length=200)
     action = models.CharField(verbose_name="Type d'action", max_length=200)
     data = models.JSONField()
-    isadmin = models.BooleanField(default=False)
+
+    user_id = models.IntegerField(blank=True, null=True)
+    user_kind = models.CharField(max_length=20, choices=constants.USER_KIND_CHOICES_WITH_ADMIN, blank=True)
+    isadmin = models.BooleanField(default=False)  # user.kind == User.KIND_ADMIN
 
     objects = models.Manager.from_queryset(TrackerQuerySet)()
 
