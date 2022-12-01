@@ -65,6 +65,8 @@ def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
                 "meta": DEFAULT_PAYLOAD["data"]
                 | meta,
             },
+            "user_id": int(meta.get("user_id")) if meta.get("user_id", None) else None,
+            "user_kind": meta.get("user_type", ""),
             "isadmin": meta.get("is_admin", False),
         }
 
