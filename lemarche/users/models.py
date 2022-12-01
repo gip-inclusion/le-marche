@@ -276,6 +276,9 @@ class User(AbstractUser):
             return f"{self.first_name.upper()[:1]}. {self.last_name.upper()}"
         return ""
 
+    def has_siae(self):
+        return self.siaes.exists()
+
     def has_tender_siae(self, tender=None):
         from lemarche.tenders.models import TenderSiae
 
