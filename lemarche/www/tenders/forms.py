@@ -216,7 +216,7 @@ class AddTenderStepSurveyForm(forms.ModelForm):
         pour ce besoin ?""",
         choices=constants.SURVEY_ENCOURAGED_BY_US_CHOICES,
         widget=forms.RadioSelect,
-        required=True,
+        required=False,
     )
 
     providers_out_of_insertion = forms.ChoiceField(
@@ -251,7 +251,7 @@ class AddTenderStepSurveyForm(forms.ModelForm):
                 "le_marche_doesnt_exist_how_to_find_siae"
             )
         else:
-            self.initial["is_marche_useful"] = None
+            self.initial["scale_marche_useless"] = None
 
     def clean(self) -> dict[str, any]:
         if not self.errors:
@@ -261,6 +261,8 @@ class AddTenderStepSurveyForm(forms.ModelForm):
                     "scale_marche_useless": super_cleaned_data.pop("scale_marche_useless"),
                     "extra_data": super_cleaned_data,
                 }
+                self.instance.extra_data.update(super_cleaned_data)
+                self.instance.extra_data
                 return cleaned_data
 
 

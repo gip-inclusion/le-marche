@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponseForbidden, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
@@ -78,6 +78,10 @@ class TenderCreateMultiStepView(SessionWizardView):
         dès que votre besoin sera validé par notre équipe.
     """
 
+    success_message_draft = """
+        Votre demande <strong>{tender_title}</strong> a été enregistrée en brouillon.<br>
+        Vous pourrez revenir plus tard pour la publier. Vous la retrouverez dans votre tableau de bord.
+    """
     STEP_GENERAL = "general"
     STEP_DESCRIPTION = "description"
     STEP_CONTACT = "contact"
@@ -134,22 +138,12 @@ class TenderCreateMultiStepView(SessionWizardView):
             context.update({"tender": tender_dict})
         return context
 
-    # def get_form_initial(self, step):
-    #     if "slug" in self.kwargs:
-    #         slug = self.kwargs["slug"]
-    #         project = Tender.objects.get(slug=slug)
-    #         from django.forms.models import model_to_dict
-
-    #         project_dict = model_to_dict(project)
-    #         return project_dict
-    #     else:
-    #         return self.initial_dict.get(step, {})
-
     def get_form_instance(self, step):
+        if "slug" in self.kwargs:
+            self.instance = get_object_or_404(Tender, slug=self.kwargs.get("slug"))
+
         if self.instance is None:
-            if "slug" in self.kwargs:
-                self.instance = get_object_or_404(Tender, slug=self.kwargs.get("slug"))
-            elif self.request.user.is_authenticated:
+            if self.request.user.is_authenticated:
                 user = self.request.user
                 self.instance = Tender(
                     **{
@@ -162,6 +156,14 @@ class TenderCreateMultiStepView(SessionWizardView):
             else:
                 self.instance = Tender()
         return self.instance
+
+    def get(self, request, *args, **kwargs):
+        if "slug" in self.kwargs:
+            self.instance = get_object_or_404(Tender, slug=self.kwargs.get("slug"))
+            if self.instance.status != tender_constants.STATUS_DRAFT:
+                return redirect("tenders:detail", slug=self.instance.slug)
+
+        return super().get(request, *args, **kwargs)
 
     def get_form_kwargs(self, step):
         kwargs = super().get_form_kwargs(step)
@@ -189,15 +191,16 @@ class TenderCreateMultiStepView(SessionWizardView):
             user = self.request.user
         # when it's done we save the tender
         tender_dict = cleaned_data | {"author": user, "source": Tender.SOURCE_FORM}
-        if self.request.POST.get("is_draft"):
-            tender_dict |= {"status": tender_constants.STATUS_DRAFT}
+        is_draft = self.request.POST.get("is_draft")
+        tender_status = tender_constants.STATUS_DRAFT if is_draft else tender_constants.STATUS_PUBLISHED
         if self.instance.id:
             # update
-            self.instance.status = tender_constants.STATUS_PUBLISHED
+            self.instance.status = tender_status
             self.instance.save()
             self.instance.perimeters.set(tender_dict.get("perimeters"))
             self.instance.sectors.set(tender_dict.get("sectors"))
         else:
+            tender_dict |= {"status": tender_status}
             self.instance = create_tender_from_dict(tender_dict)
         # we notify the admin team
         if settings.BITOUBI_ENV == "prod":
@@ -206,8 +209,8 @@ class TenderCreateMultiStepView(SessionWizardView):
         # success message & response
         messages.add_message(
             self.request,
-            messages.SUCCESS,
-            self.get_success_message(cleaned_data, self.instance),
+            messages.INFO,
+            self.get_success_message(cleaned_data, self.instance, is_draft=is_draft),
         )
         return HttpResponseRedirect(self.get_success_url())
 
@@ -216,9 +219,11 @@ class TenderCreateMultiStepView(SessionWizardView):
             return reverse_lazy("tenders:list")  # super().get_success_url() doesn't work if called from CSRF error
         return reverse_lazy("pages:home")
 
-    def get_success_message(self, cleaned_data, tender):
+    def get_success_message(self, cleaned_data, tender, is_draft):
         return mark_safe(
             self.success_message.format(tender_title=tender.title, tender_siae_count=tender.siaes.count())
+            if not is_draft
+            else self.success_message_draft.format(tender_title=tender.title)
         )
 
 
