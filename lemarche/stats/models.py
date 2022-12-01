@@ -42,6 +42,8 @@ class Tracker(models.Model):
     user_kind = models.CharField(max_length=20, choices=constants.USER_KIND_CHOICES_WITH_ADMIN, blank=True)
     isadmin = models.BooleanField(default=False)  # user.kind == User.KIND_ADMIN
 
+    siae_id = models.IntegerField(blank=True, null=True)
+
     objects = models.Manager.from_queryset(TrackerQuerySet)()
 
     class Meta:
