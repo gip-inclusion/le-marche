@@ -191,14 +191,14 @@ class AddTenderStepContactForm(forms.ModelForm):
 class AddTenderStepSurveyForm(forms.Form):
     is_marche_useful = forms.ChoiceField(
         label=Tender._meta.get_field("is_marche_useful").help_text,
-        choices=constants.IS_MARCHE_USEFUL_CHOICES,
+        choices=constants.SURVEY_SCALE_QUESTION_CHOICES,
         widget=forms.RadioSelect,
         required=True,
     )
 
     worked_with_inclusif_siae_this_kind_tender = forms.ChoiceField(
         label="Avez-vous déjà travaillé avec des prestataires inclusifs* sur ce type de prestation ?",
-        choices=constants.IS_MARCHE_USEFUL_CHOICES,
+        choices=constants.SURVEY_YES_NO_DONT_KNOW_CHOICES,
         widget=forms.RadioSelect,
         required=True,
     )
@@ -206,14 +206,14 @@ class AddTenderStepSurveyForm(forms.Form):
     is_encouraged_by_le_marche = forms.ChoiceField(
         label="""Est-ce la plateforme du Marché de l'inclusion qui vous a encouragé à consulter des prestataires inclusifs*
         pour ce besoin ?""",
-        choices=constants.IS_MARCHE_USEFUL_CHOICES,
+        choices=constants.SURVEY_ENCOURAGED_BY_US_CHOICES,
         widget=forms.RadioSelect,
         required=True,
     )
 
-    is_marche_useful = forms.ChoiceField(
+    providers_out_of_insertion = forms.ChoiceField(
         label="Comptez-vous consulter d'autres prestataires en dehors de l'Insertion et du Handicap ?",
-        choices=constants.IS_MARCHE_USEFUL_CHOICES,
+        choices=constants.SURVEY_SCALE_QUESTION_CHOICES,
         widget=forms.RadioSelect,
         required=True,
     )
@@ -231,6 +231,16 @@ class AddTenderStepSurveyForm(forms.Form):
             "is_marche_useful",
             "extra_data",
         ]
+
+    def clean(self) -> dict[str, any]:
+        if not self.errors:
+            super_cleaned_data = super().clean()
+            if super_cleaned_data:
+                cleaned_data = {
+                    "is_marche_useful": super_cleaned_data.pop("is_marche_useful"),
+                    "extra_data": super_cleaned_data,
+                }
+                return cleaned_data
 
 
 class AddTenderStepConfirmationForm(forms.Form):
