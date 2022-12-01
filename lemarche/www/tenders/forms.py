@@ -188,7 +188,7 @@ class AddTenderStepContactForm(forms.ModelForm):
             )
 
 
-class AddTenderStepSurveyForm(forms.Form):
+class AddTenderStepSurveyForm(forms.ModelForm):
     is_marche_useful = forms.ChoiceField(
         label=Tender._meta.get_field("is_marche_useful").help_text,
         choices=constants.SURVEY_SCALE_QUESTION_CHOICES,
