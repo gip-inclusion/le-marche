@@ -246,7 +246,7 @@ class Tender(models.Model):
     )
 
     # survey
-    is_marche_useful = models.CharField(
+    scale_marche_useless = models.CharField(
         verbose_name="Utilité du marché de l'inclusion",
         help_text="Si le Marché de l'inclusion n'existait pas, auriez-vous fait appel à des prestataires inclusifs pour ce besoin ?",  # noqa
         max_length=2,

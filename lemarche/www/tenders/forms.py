@@ -190,7 +190,7 @@ class AddTenderStepContactForm(forms.ModelForm):
 
 class AddTenderStepSurveyForm(forms.ModelForm):
     is_marche_useful = forms.ChoiceField(
-        label=Tender._meta.get_field("is_marche_useful").help_text,
+        label=Tender._meta.get_field("scale_marche_useless").help_text,
         choices=constants.SURVEY_SCALE_QUESTION_CHOICES,
         widget=forms.RadioSelect,
         required=True,
@@ -229,7 +229,6 @@ class AddTenderStepSurveyForm(forms.ModelForm):
         model = Tender
         fields = [
             "is_marche_useful",
-            "extra_data",
         ]
 
     def clean(self) -> dict[str, any]:

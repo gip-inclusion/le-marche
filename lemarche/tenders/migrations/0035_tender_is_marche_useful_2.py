@@ -6,15 +6,15 @@ from django.db import migrations, models
 def set_marche_is_useful(apps, schema_editor):
     Tender = apps.get_model("tenders", "tender")
 
-    Tender.objects.filter(is_marche_useful=True).update(is_marche_useful_2="0")
-    Tender.objects.filter(is_marche_useful=False).update(is_marche_useful_2="3")
+    Tender.objects.filter(is_marche_useful=True).update(scale_marche_useless="0")
+    Tender.objects.filter(is_marche_useful=False).update(scale_marche_useless="3")
 
 
 def set_marche_is_useful_reverse(apps, schema_editor):
     Tender = apps.get_model("tenders", "tender")
 
-    Tender.objects.filter(is_marche_useful_2__in=["0", "1"]).update(is_marche_useful=True)
-    Tender.objects.filter(is_marche_useful_2__in=["2", "3"]).update(is_marche_useful=False)
+    Tender.objects.filter(scale_marche_useless__in=["0", "1"]).update(is_marche_useful=True)
+    Tender.objects.filter(scale_marche_useless__in=["2", "3"]).update(is_marche_useful=False)
 
 
 class Migration(migrations.Migration):
@@ -26,9 +26,9 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name="tender",
-            name="is_marche_useful_2",
+            name="scale_marche_useless",
             field=models.CharField(
-                choices=[("0", "Non"), ("1", "Peu probable"), ("3", "Très probable"), ("4", "Oui")],
+                choices=[("0", "Non"), ("1", "Peu probable"), ("2", "Très probable"), ("3", "Oui")],
                 default="0",
                 help_text="Si le Marché de l'inclusion n'existait pas, auriez-vous fait appel à des prestataires inclusifs pour ce besoin ?",  # noqa
                 max_length=2,
@@ -39,10 +39,5 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name="tender",
             name="is_marche_useful",
-        ),
-        migrations.RenameField(
-            model_name="tender",
-            old_name="is_marche_useful_2",
-            new_name="is_marche_useful",
         ),
     ]
