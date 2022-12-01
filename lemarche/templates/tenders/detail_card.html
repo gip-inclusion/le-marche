@@ -72,9 +72,28 @@
                 {% if tender.author == request.user or user_has_contact_click_date or user_can_display_tender_contact_details %}
                     {% include "tenders/_detail_contact.html" with tender=tender %}
                 {% elif user.kind == user.KIND_PARTNER %}
-                    <p>
-                        Contactez Sofiane ou Abdessamad via le chat de discussion qui se trouve en bas à droite du site pour être mis en relation avec l'acheteur.
-                    </p>
+                    <div class="alert alert-info" role="alert">
+                        <p class="mb-1">
+                            <i class="ri-lightbulb-line ri-lg"></i>
+                            <strong>Comment contacter le client ?</strong>
+                        </p>
+                        <p class="mb-0">
+                            Pour être mis en relation avec l'acheteur, contactez Sofiane ou Abdessamad via le chat de discussion qui se trouve en bas à droite.
+                        </p>
+                    </div>
+                {% elif user.kind == user.KIND_SIAE and not user.has_siae %}
+                    <div class="alert alert-info" role="alert">
+                        <p class="mb-1">
+                            <i class="ri-lightbulb-line ri-lg"></i>
+                            <strong>Comment contacter le client ?</strong>
+                        </p>
+                        <p class="mb-0">
+                            Pour accéder aux coordonnées du client, veuillez d'abord vous <a id="add-siae-btn" href="{% url 'dashboard:siae_search_by_siret' %}">rattacher à votre structure</a>.
+                        </p>
+                        <p>
+                            Besoin d'aide ? contacter le support via le chat en ligne qui se trouve en bas à droite.
+                        </p>
+                    </div>
                 {% else %}
                     <button type="button" id="show-tender-contact-modal-btn" class="btn btn-primary float-right mb-4" data-toggle="modal" data-target="#contact_click_confirm_modal" title="Répondre à cette opportunité">
                         Répondre à cette opportunité
