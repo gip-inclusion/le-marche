@@ -61,7 +61,7 @@ class TenderCreateViewTest(TestCase):
         } | _step_3
         step_4 = {
             "tender_create_multi_step_view-current_step": "survey",
-            "survey-is_marche_useful": tender_constants.SURVEY_SCALE_QUESTION_0,
+            "survey-scale_marche_useless": tender_constants.SURVEY_SCALE_QUESTION_0,
             "survey-worked_with_inclusif_siae_this_kind_tender": tender_constants.SURVEY_DONT_KNOW,
             "survey-is_encouraged_by_le_marche": tender_constants.SURVEY_NOT_ENCOURAGED_ONLY_BY_US,
             "survey-providers_out_of_insertion": tender_constants.SURVEY_SCALE_QUESTION_2,
@@ -115,7 +115,7 @@ class TenderCreateViewTest(TestCase):
         self.client.force_login(self.user_buyer)
         tenders_step_data = self._generate_fake_data_form()
         # remove required field in survey
-        tenders_step_data[3].pop("survey-is_marche_useful")
+        tenders_step_data[3].pop("survey-scale_marche_useless")
         with self.assertRaises(AssertionError):
             self._check_every_step(tenders_step_data, final_redirect_page=reverse("tenders:list"))
 

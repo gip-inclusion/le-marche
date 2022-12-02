@@ -257,7 +257,7 @@ def csrf_failure(request, reason=""):  # noqa C901
                         "is_country_area",
                         "accept_share_amount",
                         "accept_cocontracting",
-                        "is_marche_useful",
+                        "scale_marche_useless",
                         "marche_benefits",
                     ]:
                         if value[0]:
@@ -266,7 +266,7 @@ def csrf_failure(request, reason=""):  # noqa C901
                         "is_country_area",
                         "accept_share_amount",
                         "accept_cocontracting",
-                        "is_marche_useful",
+                        "scale_marche_useless",
                     ]:
                         tender_dict[key_cleaned] = value[0] == "on"
                     elif key_cleaned == "sectors":
