@@ -143,18 +143,7 @@ class TenderCreateMultiStepView(SessionWizardView):
             self.instance = get_object_or_404(Tender, slug=self.kwargs.get("slug"))
 
         if self.instance is None:
-            if self.request.user.is_authenticated:
-                user = self.request.user
-                self.instance = Tender(
-                    **{
-                        "contact_first_name": user.first_name,
-                        "contact_last_name": user.last_name,
-                        "contact_email": user.email,
-                        "contact_phone": user.phone,
-                    }
-                )
-            else:
-                self.instance = Tender()
+            self.instance = Tender()
         return self.instance
 
     def get(self, request, *args, **kwargs):
@@ -170,28 +159,13 @@ class TenderCreateMultiStepView(SessionWizardView):
         if step == self.STEP_DESCRIPTION:
             kwargs["kind"] = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("kind")
         if step == self.STEP_CONTACT:
-            kwargs["max_deadline_date"] = self.get_cleaned_data_for_step(self.STEP_DESCRIPTION).get(
-                "start_working_date"
-            )
-            kwargs["external_link"] = self.get_cleaned_data_for_step(self.STEP_DESCRIPTION).get("external_link")
-            if not self.request.user.is_authenticated:
-                kwargs["user_is_anonymous"] = True
-            if not self.request.user.is_authenticated or (
-                self.request.user.is_authenticated and not self.request.user.company_name
-            ):
-                kwargs["user_does_not_have_company_name"] = True
+            cleaned_data_description = self.get_cleaned_data_for_step(self.STEP_DESCRIPTION)
+            kwargs["max_deadline_date"] = cleaned_data_description.get("start_working_date")
+            kwargs["external_link"] = cleaned_data_description.get("external_link")
+            kwargs["user"] = self.request.user
         return kwargs
 
-    def done(self, form_list, form_dict, **kwargs):
-        cleaned_data = self.get_all_cleaned_data()
-        # anonymous user? create user (or get an existing user by email)
-        if not self.request.user.is_authenticated:
-            user = create_user_from_anonymous_content(cleaned_data)
-        else:
-            user = self.request.user
-        # when it's done we save the tender
-        tender_dict = cleaned_data | {"author": user, "source": Tender.SOURCE_FORM}
-        is_draft = self.request.POST.get("is_draft")
+    def save_instance_tender(self, tender_dict: dict, is_draft: bool):
         tender_status = tender_constants.STATUS_DRAFT if is_draft else tender_constants.STATUS_PUBLISHED
         if self.instance.id:
             # update
@@ -202,6 +176,32 @@ class TenderCreateMultiStepView(SessionWizardView):
         else:
             tender_dict |= {"status": tender_status}
             self.instance = create_tender_from_dict(tender_dict)
+
+    def set_or_create_user(self, tender_dict: dict):
+        user: User = None
+        if not self.request.user.is_authenticated:
+            user = create_user_from_anonymous_content(tender_dict)
+        else:
+            user = self.request.user
+            need_to_be_saved = False
+            if not user.phone:
+                user.phone = tender_dict.get("contact_phone")
+                need_to_be_saved = True
+            if not user.company_name:
+                user.company_name = tender_dict.get("contact_company_name")
+                need_to_be_saved = True
+            if need_to_be_saved:
+                user.save()
+        return user
+
+    def done(self, form_list, form_dict, **kwargs):
+        cleaned_data = self.get_all_cleaned_data()
+        # anonymous user? create user (or get an existing user by email)
+        user = self.set_or_create_user(tender_dict=cleaned_data)
+        # when it's done we save the tender
+        tender_dict = cleaned_data | {"author": user, "source": Tender.SOURCE_FORM}
+        is_draft: bool = self.request.POST.get("is_draft", False)
+        self.save_instance_tender(tender_dict=tender_dict, is_draft=is_draft)
         # we notify the admin team
         if settings.BITOUBI_ENV == "prod":
             notify_admin_tender_created(self.instance)
@@ -209,10 +209,10 @@ class TenderCreateMultiStepView(SessionWizardView):
         # success message & response
         messages.add_message(
             self.request,
-            messages.INFO,
+            messages.INFO if is_draft else messages.SUCCESS,
             self.get_success_message(cleaned_data, self.instance, is_draft=is_draft),
         )
-        return HttpResponseRedirect(self.get_success_url())
+        return redirect(self.get_success_url())
 
     def get_success_url(self):
         if self.request.user.is_authenticated and not self.request.user.kind == User.KIND_SIAE:
