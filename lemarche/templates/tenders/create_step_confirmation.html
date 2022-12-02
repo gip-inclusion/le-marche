@@ -9,7 +9,7 @@
 <section class="s-section">
     <div class="s-section__container container">
         <div class="s-section__row row">
-            <div class="s-section__col col-12 col-lg-8">
+            <div class="s-section__col col-12">
                 {% include "tenders/detail_card.html" with tender=tender source_form="true" %}
             </div>
         </div>
@@ -18,20 +18,6 @@
 {% endblock %}
 
 {% block content_form %}
-<div class="row mb-3 mb-lg-5">
-    <div class="col-12 col-lg-8">
-    <label class="fake-label fake-label-required">{{ form.is_marche_useful.label }}</label>
-    {% bootstrap_field form.is_marche_useful show_label=False %}
-    {% bootstrap_field form.marche_benefits %}
-    </div>
-    <div class="col-12 col-lg-4">
-        <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-            <p class="mb-0">
-                Ces éléments nous aident à mesurer l'utilité du Marché de l'inclusion.
-            </p>
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block submit_btn %}

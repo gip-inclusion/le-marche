@@ -3,8 +3,9 @@ from datetime import date
 from django import forms
 
 from lemarche.sectors.models import Sector
+from lemarche.tenders import constants
 from lemarche.tenders.models import Tender
-from lemarche.utils.fields import BooleanNotEmptyField, GroupedModelMultipleChoiceField
+from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
 class AddTenderStepGeneralForm(forms.ModelForm):
@@ -187,22 +188,59 @@ class AddTenderStepContactForm(forms.ModelForm):
             )
 
 
-class AddTenderStepConfirmationForm(forms.Form):
-    is_marche_useful = BooleanNotEmptyField(
-        label=Tender._meta.get_field("is_marche_useful").help_text,
-        widget=forms.RadioSelect(choices=[(True, "Oui"), (False, "Non")]),
+class AddTenderStepSurveyForm(forms.ModelForm):
+    scale_marche_useless = forms.ChoiceField(
+        label=Tender._meta.get_field("scale_marche_useless").help_text,
+        choices=constants.SURVEY_SCALE_QUESTION_CHOICES,
+        widget=forms.RadioSelect,
         required=True,
     )
-    marche_benefits = forms.MultipleChoiceField(
-        label=Tender._meta.get_field("marche_benefits").help_text,
-        choices=Tender._meta.get_field("marche_benefits").base_field.choices,
-        widget=forms.CheckboxSelectMultiple,
+
+    worked_with_inclusif_siae_this_kind_tender = forms.ChoiceField(
+        label="Q°2. Avez-vous déjà travaillé avec des prestataires inclusifs sur ce type de prestation ?",
+        choices=constants.SURVEY_YES_NO_DONT_KNOW_CHOICES,
+        widget=forms.RadioSelect,
         required=True,
+    )
+    # hidden if worked_with_inclusif_siae_this_kind_tender is no or don't know
+    is_encouraged_by_le_marche = forms.ChoiceField(
+        label="""Q°3. Est-ce la plateforme du Marché de l'inclusion qui vous a encouragé à consulter des prestataires inclusifs
+        pour ce besoin ?""",
+        choices=constants.SURVEY_ENCOURAGED_BY_US_CHOICES,
+        widget=forms.RadioSelect,
+        required=True,
+    )
+
+    providers_out_of_insertion = forms.ChoiceField(
+        label="Q°4. Comptez-vous consulter d'autres prestataires en dehors de l'Insertion et du Handicap ?",
+        choices=constants.SURVEY_SCALE_QUESTION_CHOICES,
+        widget=forms.RadioSelect,
+        required=True,
+    )
+
+    le_marche_doesnt_exist_how_to_find_siae = forms.CharField(
+        label="""Q°5. Si le Marché de l'inclusion n'existait pas,
+            comment auriez-vous fait pour trouver un prestataire inclusif ?""",
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 2, "cols": 15}),
     )
 
     class Meta:
         model = Tender
         fields = [
-            "is_marche_useful",
-            "marche_benefits",
+            "scale_marche_useless",
         ]
+
+    def clean(self) -> dict[str, any]:
+        if not self.errors:
+            super_cleaned_data = super().clean()
+            if super_cleaned_data:
+                cleaned_data = {
+                    "scale_marche_useless": super_cleaned_data.pop("scale_marche_useless"),
+                    "extra_data": super_cleaned_data,
+                }
+                return cleaned_data
+
+
+class AddTenderStepConfirmationForm(forms.Form):
+    pass

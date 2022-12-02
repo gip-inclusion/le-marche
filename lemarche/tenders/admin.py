@@ -168,7 +168,7 @@ class TenderAdmin(admin.ModelAdmin):
             "Utilité du marché de l'inclusion",
             {
                 "fields": (
-                    "is_marche_useful",
+                    "scale_marche_useless",
                     "marche_benefits",
                 )
             },
