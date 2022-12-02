@@ -15,7 +15,6 @@ from lemarche.tenders.factories import TenderFactory
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
-from lemarche.utils import constants
 
 
 class TenderCreateViewTest(TestCase):
@@ -27,7 +26,9 @@ class TenderCreateViewTest(TestCase):
         cls.perimeters = [PerimeterFactory().slug for _ in range(3)]
 
     @classmethod
-    def _generate_fake_data_form(cls, _step_1={}, _step_2={}, _step_3={}, _step_4={}, tender_not_saved: Tender = None):
+    def _generate_fake_data_form(
+        cls, _step_1={}, _step_2={}, _step_3={}, _step_4={}, _step_5={}, tender_not_saved: Tender = None
+    ):
         if not tender_not_saved:
             tender_not_saved = TenderFactory.build(author=cls.user_buyer)
 
@@ -53,18 +54,25 @@ class TenderCreateViewTest(TestCase):
             "contact-contact_first_name": tender_not_saved.contact_first_name,
             "contact-contact_last_name": tender_not_saved.contact_last_name,
             "contact-contact_email": tender_not_saved.contact_email,
-            # "contact-contact_phone": tender_not_saved.contact_phone,
-            # "contact-contact_company_name": "TEST",
+            "contact-contact_phone": "0123456789",
+            "contact-contact_company_name": "TEST",
             "contact-response_kind": [Tender.RESPONSE_KIND_EMAIL],
             "contact-deadline_date": tender_not_saved.deadline_date,
         } | _step_3
         step_4 = {
-            "tender_create_multi_step_view-current_step": "confirmation",
-            "confirmation-is_marche_useful": True,
-            "confirmation-marche_benefits": [constants.MARCHE_BENEFIT_TIME, constants.MARCHE_BENEFIT_MORE],
+            "tender_create_multi_step_view-current_step": "survey",
+            "survey-scale_marche_useless": tender_constants.SURVEY_SCALE_QUESTION_0,
+            "survey-worked_with_inclusif_siae_this_kind_tender": tender_constants.SURVEY_DONT_KNOW,
+            "survey-is_encouraged_by_le_marche": tender_constants.SURVEY_NOT_ENCOURAGED_ONLY_BY_US,
+            "survey-providers_out_of_insertion": tender_constants.SURVEY_SCALE_QUESTION_2,
+            "survey-le_marche_doesnt_exist_how_to_find_siae": "TEST",
         } | _step_4
 
-        return [step_1, step_2, step_3, step_4]
+        step_5 = {
+            "tender_create_multi_step_view-current_step": "confirmation",
+        } | _step_5
+
+        return [step_1, step_2, step_3, step_4, step_5]
 
     def _check_every_step(self, tenders_step_data, final_redirect_page: str = reverse("pages:home")):
         for step, data_step in enumerate(tenders_step_data, 1):
@@ -78,7 +86,6 @@ class TenderCreateViewTest(TestCase):
                 self.assertEqual(response.status_code, 200)
                 current_errors = response.context_data["form"].errors
                 self.assertEquals(current_errors, {})
-                return None, current_errors
 
     def test_anyone_can_access_create_tender(self):
         # anonymous
@@ -100,12 +107,24 @@ class TenderCreateViewTest(TestCase):
         tenders_step_data = self._generate_fake_data_form()
         self.client.force_login(self.user_buyer)
         self._check_every_step(tenders_step_data, final_redirect_page=reverse("tenders:list"))
+        tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
+        self.assertIsNotNone(tender)
+        self.assertIsInstance(tender, Tender)
+
+    def test_tender_wizard_form_not_created(self):
+        self.client.force_login(self.user_buyer)
+        tenders_step_data = self._generate_fake_data_form()
+        # remove required field in survey
+        tenders_step_data[3].pop("survey-scale_marche_useless")
+        with self.assertRaises(AssertionError):
+            self._check_every_step(tenders_step_data, final_redirect_page=reverse("tenders:list"))
 
     def test_tender_wizard_form_all_good_anonymous(self):
-        tenders_step_data = self._generate_fake_data_form(
-            _step_4={"contact-contact_phone": "0123456789", "contact-contact_company_name": "TEST"}
-        )
+        tenders_step_data = self._generate_fake_data_form()
         self._check_every_step(tenders_step_data, final_redirect_page=reverse("pages:home"))
+        tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
+        self.assertIsNotNone(tender)
+        self.assertIsInstance(tender, Tender)
 
 
 class TenderMatchingTest(TestCase):

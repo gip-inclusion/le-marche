@@ -43,3 +43,36 @@ AMOUNT_RANGE_CHOICES = (
 )
 
 AMOUNT_RANGE_LIST = [amount[0] for amount in AMOUNT_RANGE_CHOICES]
+
+
+SURVEY_SCALE_QUESTION_0 = "0"
+SURVEY_SCALE_QUESTION_1 = "1"
+SURVEY_SCALE_QUESTION_2 = "2"
+SURVEY_SCALE_QUESTION_3 = "3"
+
+SURVEY_SCALE_QUESTION_CHOICES = (
+    (SURVEY_SCALE_QUESTION_0, "Non"),
+    (SURVEY_SCALE_QUESTION_1, "Peu probablement"),
+    (SURVEY_SCALE_QUESTION_2, "Très probablement"),
+    (SURVEY_SCALE_QUESTION_3, "Oui"),
+)
+
+# survey choices for yes, no or don't know
+SURVEY_NO = "0"
+SURVEY_YES = "1"
+SURVEY_DONT_KNOW = "?"
+
+SURVEY_YES_NO_DONT_KNOW_CHOICES = (
+    (SURVEY_NO, "Non"),
+    (SURVEY_YES, "Oui"),
+    (SURVEY_DONT_KNOW, "Je ne sais pas"),
+)
+
+
+SURVEY_NOT_ENCOURAGED_ONLY_BY_US = "+"
+
+SURVEY_ENCOURAGED_BY_US_CHOICES = (
+    (SURVEY_NO, "Non"),
+    (SURVEY_NOT_ENCOURAGED_ONLY_BY_US, "Un outil parmi d’autres"),
+    (SURVEY_YES, "Oui"),
+)

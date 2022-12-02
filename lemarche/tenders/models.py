@@ -246,11 +246,14 @@ class Tender(models.Model):
     )
 
     # survey
-    is_marche_useful = models.BooleanField(
+    scale_marche_useless = models.CharField(
         verbose_name="Utilité du marché de l'inclusion",
-        help_text="Pour ce besoin, auriez-vous fait appel à des prestataires inclusifs si le Marché de l'inclusion n'existait pas ?",  # noqa
-        default=True,
+        help_text="Q°1. Si le Marché de l'inclusion n'existait pas, auriez-vous consulté des prestataires inclusifs* pour ce besoin ?",  # noqa
+        max_length=2,
+        choices=tender_constants.SURVEY_SCALE_QUESTION_CHOICES,
+        default=tender_constants.SURVEY_SCALE_QUESTION_0,
     )
+
     marche_benefits = ChoiceArrayField(
         verbose_name="Bénéfices du marché de l'inclusion",
         help_text="Pour ce besoin, quels sont les bénéfices de passer par le Marché de l'inclusion ?",
