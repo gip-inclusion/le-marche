@@ -68,6 +68,7 @@ def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
             "user_id": int(meta.get("user_id")) if meta.get("user_id", None) else None,
             "user_kind": meta.get("user_type") if meta.get("user_type", "") else "",
             "isadmin": meta.get("is_admin", False),
+            "siae_id": int(meta.get("siae_id")) if meta.get("siae_id", None) else None,
         }
 
         payload = DEFAULT_PAYLOAD | set_payload
@@ -141,9 +142,9 @@ class TrackerMiddleware:
         user: User = request.user
         siae = context_data.get("siae")
         return {
-            "is_admin": user.is_authenticated and user.kind == User.KIND_ADMIN,
-            "user_type": user.kind if user.is_authenticated else "",
             "user_id": user.id if user.is_authenticated else None,
+            "user_type": user.kind if user.is_authenticated else "",
+            "is_admin": user.is_authenticated and user.kind == User.KIND_ADMIN,
             "siae_id": siae.id if siae else None,
         }
 

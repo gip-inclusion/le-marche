@@ -20,10 +20,10 @@ class TrackerQuerySet(models.QuerySet):
         )
 
     def siae_buyer_views_last_3_months(self, siae_slug):
-        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_type("BUYER")
+        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_type(constants.USER_KIND_BUYER)
 
     def siae_partner_views_last_3_months(self, siae_slug):
-        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_type("PARTNER")
+        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_type(constants.USER_KIND_PARTNER)
 
 
 class Tracker(models.Model):
@@ -41,6 +41,8 @@ class Tracker(models.Model):
     user_id = models.IntegerField(blank=True, null=True)
     user_kind = models.CharField(max_length=20, choices=constants.USER_KIND_CHOICES_WITH_ADMIN, blank=True)
     isadmin = models.BooleanField(default=False)  # user.kind == User.KIND_ADMIN
+
+    siae_id = models.IntegerField(blank=True, null=True)
 
     objects = models.Manager.from_queryset(TrackerQuerySet)()
 
