@@ -265,7 +265,7 @@ class TenderListView(LoginRequiredMixin, ListView):
             queryset = Tender.objects.by_user(user).with_siae_stats()
             if self.status:
                 queryset = queryset.filter(status=self.status)
-        return queryset
+        return queryset.order_by_deadline_date()
 
     def get(self, request, status=None, *args, **kwargs):
         """
