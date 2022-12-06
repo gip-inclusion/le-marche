@@ -69,13 +69,28 @@
                                 {% include "includes/_newsletter_button.html" %}
                             </li>
                         {% endif %}
-                        {% if not user.is_authenticated or user.kind != user.KIND_SIAE %}
-                            <li>
-                                <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser" rel="noopener">
-                                    Valoriser vos achats
-                                </a>
-                            </li>
-                        {% endif %}
+                        <li>
+                            <div class="dropdown">
+                                <button class="btn btn-link dropdown-toggle" type="button" id="solutionsDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Solutions
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="solutionsDropdownMenuButton">
+                                    <a href="{% url 'tenders:create' %}" id="header-dropdown-tender-create-btn" class="dropdown-item">
+                                        Sourcing
+                                    </a>
+                                    <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser" class="dropdown-item">
+                                        Valoriser vos achats
+                                    </a>
+                                    <a href="{% url 'pages:impact_calculator' %}" id="header-calibrer" class="dropdown-item">
+                                        Calibrer vos achats
+                                    </a>
+                                    <a href="{{ FACILITATOR_LIST }}" target="_blank" id="header-facilitator-list" class="dropdown-item">
+                                        Trouver un facilitateur des clauses sociales
+                                        <i class="ri-arrow-right-up-line"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
                         {% if user.is_authenticated %}
                             <li>
                                 <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites" rel="noopener">
@@ -85,10 +100,10 @@
                             </li>
                             <li>
                                 <div class="dropdown">
-                                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Mon espace
                                     </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <div class="dropdown-menu" aria-labelledby="userDropdownMenuButton">
                                         <a href="{% url 'dashboard:home' %}" class="dropdown-item">
                                             <i class="ri-dashboard-line"></i>
                                             Tableau de bord
