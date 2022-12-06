@@ -270,7 +270,7 @@ class TenderListView(LoginRequiredMixin, ListView):
         context["title_kind_sourcing_siae"] = TITLE_KIND_SOURCING_SIAE
         context["STATUS_DRAFT"] = tender_constants.STATUS_DRAFT
         context["STATUS_PUBLISHED"] = tender_constants.STATUS_PUBLISHED
-        context["STATUS_VALIDATE"] = tender_constants.STATUS_VALIDATE
+        context["STATUS_VALIDATED"] = tender_constants.STATUS_VALIDATED
         return context
 
 

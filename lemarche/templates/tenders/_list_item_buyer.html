@@ -6,7 +6,7 @@
             <div class="col-md-8" style="border-right:1px solid">
                 <p class="mb-1">
                     Date de clôture : {{ tender.deadline_date|default:"" }}
-                    {% if tender.status == STATUS_VALIDATE %}
+                    {% if tender.status == STATUS_VALIDATED %}
                         <span class="float-right badge badge-base badge-pill badge-outline-warning">
                             <i class="ri-mail-send-line"></i>Envoyé
                         </span>
