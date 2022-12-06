@@ -262,8 +262,6 @@ class AddTenderStepSurveyForm(forms.ModelForm):
                     "scale_marche_useless": super_cleaned_data.pop("scale_marche_useless"),
                     "extra_data": super_cleaned_data,
                 }
-                self.instance.extra_data.update(super_cleaned_data)
-                self.instance.extra_data
                 return cleaned_data
 
 

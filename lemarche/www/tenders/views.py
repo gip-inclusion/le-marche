@@ -165,14 +165,28 @@ class TenderCreateMultiStepView(SessionWizardView):
             kwargs["user"] = self.request.user
         return kwargs
 
-    def save_instance_tender(self, tender_dict: dict, is_draft: bool):
+    def save_instance_tender(self, tender_dict: dict, form_dict: dict, is_draft: bool):
         tender_status = tender_constants.STATUS_DRAFT if is_draft else tender_constants.STATUS_PUBLISHED
         if self.instance.id:
             # update
             self.instance.status = tender_status
+            perimeters, sectors = None, None
+            for step, model_form in form_dict.items():
+                if model_form.has_changed():
+                    if step != self.STEP_SURVEY:
+                        for attribute in model_form.changed_data:
+                            if attribute not in ("perimeters", "sectors"):
+                                setattr(self.instance, attribute, tender_dict.get(attribute))
+                            elif attribute == "perimeters":
+                                perimeters = tender_dict.get("perimeters")
+                                self.instance.perimeters.set(perimeters)
+                            elif attribute == "sectors":
+                                sectors = tender_dict.get("sectors", None)
+                                self.instance.sectors.set(sectors)
+                    elif step == self.STEP_SURVEY:
+                        setattr(self.instance, "scale_marche_useless", tender_dict.get("scale_marche_useless"))
+                        self.instance.extra_data.update(tender_dict.get("extra_data"))
             self.instance.save()
-            self.instance.perimeters.set(tender_dict.get("perimeters"), clear=True)
-            self.instance.sectors.set(tender_dict.get("sectors"), clear=True)
         else:
             tender_dict |= {"status": tender_status}
             self.instance = create_tender_from_dict(tender_dict)
@@ -194,14 +208,14 @@ class TenderCreateMultiStepView(SessionWizardView):
                 user.save()
         return user
 
-    def done(self, form_list, form_dict, **kwargs):
+    def done(self, _, form_dict, **kwargs):
         cleaned_data = self.get_all_cleaned_data()
         # anonymous user? create user (or get an existing user by email)
         user = self.set_or_create_user(tender_dict=cleaned_data)
         # when it's done we save the tender
         tender_dict = cleaned_data | {"author": user, "source": Tender.SOURCE_FORM}
         is_draft: bool = self.request.POST.get("is_draft", False)
-        self.save_instance_tender(tender_dict=tender_dict, is_draft=is_draft)
+        self.save_instance_tender(tender_dict=tender_dict, form_dict=form_dict, is_draft=is_draft)
         # we notify the admin team
         if settings.BITOUBI_ENV == "prod":
             notify_admin_tender_created(self.instance)
@@ -251,7 +265,7 @@ class TenderListView(LoginRequiredMixin, ListView):
             queryset = Tender.objects.by_user(user).with_siae_stats()
             if self.status:
                 queryset = queryset.filter(status=self.status)
-        return queryset
+        return queryset.order_by_deadline_date()
 
     def get(self, request, status=None, *args, **kwargs):
         """
