@@ -36,7 +36,7 @@ class ResponseKindFilter(admin.SimpleListFilter):
 def update_and_send_tender_task(tender: Tender):
     # 1) validate the tender
     tender.validated_at = datetime.now()
-    tender.status = constants.STATUS_VALIDATE
+    tender.status = constants.STATUS_VALIDATED
     tender.save()
     # 2) find the matching Siaes? done in Tender post_save signal
     send_confirmation_published_email_to_author(tender, nb_matched_siaes=tender.siaes.count())

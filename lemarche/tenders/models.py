@@ -272,8 +272,8 @@ class Tender(models.Model):
 
     status = models.CharField(
         verbose_name="Statut du dépôt de besoin",
-        max_length=1,
-        choices=tender_constants.STATUS_LIST,
+        max_length=10,
+        choices=tender_constants.STATUS_CHOICES,
         default=tender_constants.STATUS_DRAFT,
     )
 

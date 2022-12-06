@@ -6,7 +6,9 @@ from django.db import migrations, models
 def set_tender_status(apps, schema_editor):
     Tender = apps.get_model("tenders", "tender")
 
-    Tender.objects.filter(validated_at__isnull=False).update(status="3")
+    Tender.objects.filter(models.Q(validated_at__isnull=False) or models.Q(tendersiae__isnull=False)).update(
+        status="VALIDATED"
+    )
 
 
 def set_tender_status_reverse(apps, schema_editor):
@@ -24,9 +26,9 @@ class Migration(migrations.Migration):
             model_name="tender",
             name="status",
             field=models.CharField(
-                choices=[("1", "Brouillon"), ("2", "Publié"), ("3", "Validé")],
-                default="1",
-                max_length=1,
+                choices=[("DRAFT", "Brouillon"), ("PUBLISHED", "Publié"), ("VALIDATED", "Validé")],
+                default="DRAFT",
+                max_length=10,
                 verbose_name="Statut du dépôt de besoin",
             ),
         ),
