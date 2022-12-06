@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.db import IntegrityError, models, transaction
-from django.db.models import Case, Count, F, IntegerField, Q, Sum, When
+from django.db.models import BooleanField, Case, Count, ExpressionWrapper, F, IntegerField, Q, Sum, When
 from django.db.models.functions import Greatest
 from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
@@ -62,6 +62,16 @@ class TenderQuerySet(models.QuerySet):
         - we return only validated tenders
         """
         return Tender.objects.filter(tendersiae__siae__in=siaes).validated().distinct()
+
+    def with_deadline_date_is_outdated(self, limit_date=datetime.today()):
+        return self.annotate(
+            deadline_date_is_outdated=ExpressionWrapper(Q(deadline_date__gte=limit_date), output_field=BooleanField())
+        )
+
+    def order_by_deadline_date(self, limit_date=datetime.today()):
+        return self.with_deadline_date_is_outdated(limit_date=limit_date).order_by(
+            "-deadline_date_is_outdated", "deadline_date", "-updated_at"
+        )
 
     def with_siae_stats(self):
         """
@@ -372,8 +382,8 @@ class Tender(models.Model):
 
 
 @receiver(post_save, sender=Tender)
-def tender_post_save(sender, instance, **kwargs):
-    if not instance.validated_at:
+def tender_post_save(sender, instance=Tender, **kwargs):
+    if not instance.validated_at and instance.status == tender_constants.STATUS_PUBLISHED:
         instance.set_siae_found_list()
 
 
@@ -381,7 +391,7 @@ def tender_post_save(sender, instance, **kwargs):
 @receiver(m2m_changed, sender=Tender.perimeters.through)
 def tender_m2m_changed(sender, instance, action, **kwargs):
     if action in ("post_add", "post_remove", "post_clear"):
-        if not instance.validated_at:
+        if not instance.validated_at and instance == tender_constants.STATUS_PUBLISHED:
             instance.set_siae_found_list()
 
 
