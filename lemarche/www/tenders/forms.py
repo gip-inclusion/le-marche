@@ -5,6 +5,7 @@ from django import forms
 from lemarche.sectors.models import Sector
 from lemarche.tenders import constants
 from lemarche.tenders.models import Tender
+from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
@@ -81,6 +82,10 @@ class AddTenderStepDescriptionForm(forms.ModelForm):
     def __init__(self, kind, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.kind = kind
+
+        if self.instance.start_working_date:
+            self.initial["start_working_date"] = self.instance.start_working_date.isoformat()  # Here
+
         # required fields
         self.fields["description"].required = True
         if self.kind == Tender.TENDER_KIND_TENDER:
@@ -101,6 +106,7 @@ class AddTenderStepContactForm(forms.ModelForm):
     external_link = None
     user_is_anonymous = None
     user_does_not_have_company_name = None
+    user: User = None
 
     response_kind = forms.MultipleChoiceField(
         label="Comment répondre",
@@ -117,7 +123,6 @@ class AddTenderStepContactForm(forms.ModelForm):
             "contact_last_name",
             "contact_email",
             "contact_phone",
-            "contact_company_name",
             "response_kind",
             "deadline_date",
         ]
@@ -125,29 +130,33 @@ class AddTenderStepContactForm(forms.ModelForm):
             "deadline_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
         }
 
-    def __init__(
-        self,
-        max_deadline_date,
-        external_link,
-        user_is_anonymous=False,
-        user_does_not_have_company_name=False,
-        *args,
-        **kwargs,
-    ):
+    def __init__(self, max_deadline_date, external_link, user: User, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.max_deadline_date = max_deadline_date
         self.external_link = external_link
-        self.user_is_anonymous = user_is_anonymous
-        self.user_does_not_have_company_name = user_does_not_have_company_name
+        user_is_anonymous = not user.is_authenticated
+
+        if self.instance.deadline_date:
+            self.initial["deadline_date"] = self.instance.deadline_date.isoformat()  # Here
+
         # required fields
         self.fields["contact_first_name"].required = True
         self.fields["contact_last_name"].required = True
-        if self.user_is_anonymous:
+        if user_is_anonymous:
             self.fields["contact_email"].required = True
             self.fields["contact_phone"].required = True
-        if self.user_does_not_have_company_name:
+        else:
+            self.initial["contact_first_name"] = user.first_name
+            self.initial["contact_last_name"] = user.last_name
+            self.initial["contact_email"] = user.email
+            self.initial["contact_phone"] = user.phone
+
+        user_does_not_have_company_name = user_is_anonymous or not user.company_name
+        if user_does_not_have_company_name:
             self.fields["contact_company_name"].widget = forms.TextInput()  # HiddenInput() by default
             self.fields["contact_company_name"].required = True
+        else:
+            self.initial["contact_company_name"] = user.company_name
 
     def clean(self):
         super().clean()
@@ -208,7 +217,7 @@ class AddTenderStepSurveyForm(forms.ModelForm):
         pour ce besoin ?""",
         choices=constants.SURVEY_ENCOURAGED_BY_US_CHOICES,
         widget=forms.RadioSelect,
-        required=True,
+        required=False,
     )
 
     providers_out_of_insertion = forms.ChoiceField(
@@ -231,6 +240,20 @@ class AddTenderStepSurveyForm(forms.ModelForm):
             "scale_marche_useless",
         ]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.id:
+            self.initial["worked_with_inclusif_siae_this_kind_tender"] = self.instance.extra_data.get(
+                "worked_with_inclusif_siae_this_kind_tender"
+            )
+            self.initial["is_encouraged_by_le_marche"] = self.instance.extra_data.get("is_encouraged_by_le_marche")
+            self.initial["providers_out_of_insertion"] = self.instance.extra_data.get("providers_out_of_insertion")
+            self.initial["le_marche_doesnt_exist_how_to_find_siae"] = self.instance.extra_data.get(
+                "le_marche_doesnt_exist_how_to_find_siae"
+            )
+        else:
+            self.initial["scale_marche_useless"] = None
+
     def clean(self) -> dict[str, any]:
         if not self.errors:
             super_cleaned_data = super().clean()
@@ -239,6 +262,8 @@ class AddTenderStepSurveyForm(forms.ModelForm):
                     "scale_marche_useless": super_cleaned_data.pop("scale_marche_useless"),
                     "extra_data": super_cleaned_data,
                 }
+                self.instance.extra_data.update(super_cleaned_data)
+                self.instance.extra_data
                 return cleaned_data
 
 

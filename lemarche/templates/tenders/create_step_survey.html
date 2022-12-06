@@ -13,8 +13,8 @@ Aidez-nous à évaluer l'impact de la plateforme du Marché de l’inclusion en 
     <div class="col-12 col-lg-9" id="serveyTender">
     {% bootstrap_field form.scale_marche_useless  form_group_class="form-group mb-4" %}
     {% bootstrap_field form.worked_with_inclusif_siae_this_kind_tender  form_group_class="form-group mb-4" %}
-    <div id="div_is_encouraged_by_le_marche">
-        {% bootstrap_field form.is_encouraged_by_le_marche  form_group_class="form-group mb-4" %}
+    <div id="div_is_encouraged_by_le_marche" class="d-none">
+        {% bootstrap_field form.is_encouraged_by_le_marche  form_group_class="form-group form-group-required mb-4" %}
     </div>
         {% bootstrap_field form.providers_out_of_insertion  form_group_class="form-group mb-4" %}
     {% bootstrap_field form.le_marche_doesnt_exist_how_to_find_siae  form_group_class="form-group" %}
@@ -43,11 +43,15 @@ document.addEventListener('DOMContentLoaded', function () {
         let displayQuestion3 = ["0", "?"].includes(radio.value)
         if (displayQuestion3) {
             divIsEncouragedByLeMarche.classList.remove('d-none');
+            question3Response = divIsEncouragedByLeMarche.querySelector('input')
+            question3Response.required = true;
         } else {
             divIsEncouragedByLeMarche.classList.add('d-none');
-            question3Response = divIsEncouragedByLeMarche.querySelector('input:checked')
-            if(question3Response){
-                question3Response.checked = false;
+            question3Response = divIsEncouragedByLeMarche.querySelector('input')
+            question3Response.required = false;
+            question3ResponseChecked = divIsEncouragedByLeMarche.querySelector('input:checked')
+            if(question3ResponseChecked){
+                question3ResponseChecked.checked = false;
             }
         }
     }));

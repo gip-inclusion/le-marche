@@ -6,15 +6,25 @@
             <div class="col-md-8" style="border-right:1px solid">
                 <p class="mb-1">
                     Date de clôture : {{ tender.deadline_date|default:"" }}
-                    {% if not tender.validated_at %}
-                        <span class="float-right badge badge-base badge-pill badge-pilotage">En cours de validation</span>
+                    {% if tender.validated_at %}
+                        <span class="float-right badge badge-base badge-pill badge-outline-warning">
+                            <i class="ri-mail-send-line"></i>Envoyé
+                        </span>
+                    {% elif tender.status == STATUS_DRAFT %}
+                        <span class="float-right badge badge-base badge-pill badge-outline-warning">
+                            <i class="ri-draft-fill"></i>Brouillon
+                        </span>
+                    {% elif tender.status == STATUS_PUBLISHED %}
+                        <span class="float-right badge badge-base badge-pill badge-outline-info">
+                            <i class="ri-loader-fill"></i>En cours de validation
+                        </span>
                     {% endif %}
                 </p>
 
                 <a href="{% url 'tenders:detail' tender.slug %}" class="text-decoration-none">
                     <h2 class="py-2">{{ tender.title }}</h2>
                 </a>
-        
+
                 <div class="row">
                     <div class="col-md-4">
                         <i class="ri-time-line"></i>

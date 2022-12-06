@@ -8,6 +8,7 @@ from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 
 from lemarche.common.admin import admin_site
 from lemarche.perimeters.admin import PerimeterRegionFilter
+from lemarche.tenders import constants
 from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import PartnerShareTender, Tender
 from lemarche.utils.fields import pretty_print_readonly_jsonfield
@@ -35,6 +36,7 @@ class ResponseKindFilter(admin.SimpleListFilter):
 def update_and_send_tender_task(tender: Tender):
     # 1) validate the tender
     tender.validated_at = datetime.now()
+    tender.status = constants.STATUS_VALIDATED
     tender.save()
     # 2) find the matching Siaes? done in Tender post_save signal
     send_confirmation_published_email_to_author(tender, nb_matched_siaes=tender.siaes.count())
@@ -47,6 +49,7 @@ def update_and_send_tender_task(tender: Tender):
 class TenderAdmin(admin.ModelAdmin):
     list_display = [
         "id",
+        "status",
         "is_validate",
         "title",
         "user_with_link",
@@ -60,7 +63,7 @@ class TenderAdmin(admin.ModelAdmin):
         "created_at",
         "validated_at",
     ]
-    list_filter = ["kind", "deadline_date", "start_working_date", ResponseKindFilter]
+    list_filter = ["kind", "status", "deadline_date", "start_working_date", ResponseKindFilter]
     # filter on "perimeters"? (loads ALL the perimeters... Use django-admin-autocomplete-filter instead?)
     search_fields = ["id", "title", "author__id", "author__email"]
     search_help_text = "Cherche sur les champs : ID, Titre, Auteur (ID, E-mail)"
@@ -73,6 +76,7 @@ class TenderAdmin(admin.ModelAdmin):
         "siae_detail_display_count_with_link",
         "siae_contact_click_count_with_link",
         "extra_data_prettier",
+        "status",
         "logs_display",
         "created_at",
         "updated_at",
@@ -177,6 +181,7 @@ class TenderAdmin(admin.ModelAdmin):
             "Stats et autres",
             {
                 "fields": (
+                    "status",
                     "siae_interested_list_last_seen_date",
                     "source",
                     "logs_display",

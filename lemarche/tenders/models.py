@@ -270,6 +270,13 @@ class Tender(models.Model):
     source = models.CharField(verbose_name="Source", max_length=20, choices=SOURCE_CHOICES, default=SOURCE_FORM)
     extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)
 
+    status = models.CharField(
+        verbose_name="Statut du dépôt de besoin",
+        max_length=10,
+        choices=tender_constants.STATUS_CHOICES,
+        default=tender_constants.STATUS_DRAFT,
+    )
+
     validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
