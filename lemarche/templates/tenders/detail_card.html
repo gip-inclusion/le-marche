@@ -1,4 +1,16 @@
 {% load bootstrap4 static array_choices_display humanize %}
+{% if is_draft %}
+<div class="alert alert-warning fade show" role="status">
+    <div class="row">
+      <div class="col-auto pr-0">
+        <i class="ri-information-line ri-xl text-warning"></i>
+      </div>
+      <div class="col">
+        <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} n'est pas encore publié.</p>
+      </div>
+    </div>
+</div>
+{% endif %}
 <div class="card c-card c-card--marche siae-card rounded-lg shadow-lg">
     <p class="text-right text-white bg-tertiary fs-sm rounded-top rounded-lg py-3 px-5 mb-0">
         Date limite de réponse : {{ tender.deadline_date|default:"" }}
@@ -118,4 +130,13 @@
             {% endif %}
         {% endif %}
     </div>
+
 </div>
+{% if is_draft %}
+    <section class="pb-4 float-right">
+        <a href="{% url 'tenders:create' tender.slug %}" class="btn btn-primary btn-ico">
+            <i class="ri-pencil-fill ri-lg font-weight-normal" aria-hidden="true"></i>
+            <span>Modifier</span>
+        </a>
+    </section>
+{% endif %}
