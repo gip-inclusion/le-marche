@@ -11,7 +11,7 @@
     {% bootstrap_field form.kind form_group_class="form-group form-group-required" %}
     {% bootstrap_field form.title form_group_class="form-group form-group-required" %}
     {% bootstrap_field form.sectors form_group_class="form-group form-group-required use-multiselect" %}
-    {% bootstrap_field form.presta_type %}
+    {% bootstrap_field form.presta_type form_group_class="form-group form-group-required use-multiselect" %}
     <div class="form-group form-group-required {% if form.perimeters.errors %}is-invalid{% endif %}">
         <label for="id_perimeters">{{ form.perimeters.label }}</label>
         <div id="dir_form_perimeters" data-input-name="general-perimeters"></div>
