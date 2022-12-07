@@ -6,6 +6,7 @@
 {% block step_subtitle %}Vous y êtes presque ! Veuillez remplir les informations que nous partagerons aux prestataires inclusifs pour qu'elles puissent vous contacter.{% endblock %}
 
 {% block content_form %}
+{% csrf_token %}
 <div id="serveyTender" class="row">
     <div class="col-12 col-lg-8">
         <div class="form-row">

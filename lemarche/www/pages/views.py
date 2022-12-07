@@ -232,7 +232,7 @@ def csrf_failure(request, reason=""):  # noqa C901
     print("csrf_failure", "request.POST", request.POST)
     print("csrf_failure", "request.session", dict(request.session))
 
-    if request.path == "/besoins/ajouter":
+    if "/besoins/ajouter/" in request.path:
         # in some cases, there is no POST data...
         # if (
         #     request.POST.get("tender_create_multi_step_view-current_step")
