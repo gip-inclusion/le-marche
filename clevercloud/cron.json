@@ -3,7 +3,6 @@
     "15 0 * * * $ROOT/clevercloud/stats_export_user_download_list_to_file.sh",
     "30 0 * * * $ROOT/clevercloud/stats_export_user_search_list_to_file.sh",
     "0 9 * * * $ROOT/clevercloud/siaes_send_user_request_reminders.sh",
-    "30 9 * * * $ROOT/clevercloud/tenders_send_author_feedback.sh",
     "0 7 * * 1 $ROOT/clevercloud/siaes_sync_c1_c4.sh",
     "15 7 * * 1 $ROOT/clevercloud/siaes_sync_c2_c4.sh",
     "30 7 * * 1 $ROOT/clevercloud/siaes_update_api_entreprise_fields.sh",
