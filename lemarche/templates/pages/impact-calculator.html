@@ -58,7 +58,7 @@
                                     <div id="perimeters-selected" class="mt-2"></div>
                                     {{ current_perimeters|json_script:"current-perimeters" }}
                                 </div>
-                                {% bootstrap_field form.presta_type %}
+                                {% bootstrap_field form.presta_type form_group_class="form-group use-multiselect" %}
 
                                 <button type="submit" class="btn btn-primary">
                                     Lancer la recherche
