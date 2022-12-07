@@ -65,12 +65,12 @@ class TenderQuerySet(models.QuerySet):
 
     def with_deadline_date_is_outdated(self, limit_date=datetime.today()):
         return self.annotate(
-            deadline_date_is_outdated=ExpressionWrapper(Q(deadline_date__gte=limit_date), output_field=BooleanField())
+            deadline_date_is_outdated=ExpressionWrapper(Q(deadline_date__lt=limit_date), output_field=BooleanField())
         )
 
     def order_by_deadline_date(self, limit_date=datetime.today()):
         return self.with_deadline_date_is_outdated(limit_date=limit_date).order_by(
-            "-deadline_date_is_outdated", "deadline_date", "-updated_at"
+            "deadline_date_is_outdated", "deadline_date", "-updated_at"
         )
 
     def with_siae_stats(self):
