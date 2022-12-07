@@ -5,7 +5,7 @@ function initMultiselect(){
 
      const FORM_INPUT_ID = "id_presta_type";
      const FORM_MULTISELECT_ID = `${FORM_INPUT_ID}_multiselect`;
-     const FORM_ELEMENT = document.querySelector(`#${FORM_INPUT_ID}`);
+     const FORM_ELEMENT = document.querySelector(`.use-multiselect #${FORM_INPUT_ID}`);
      const FORM_PLACEHOLDER = 'Mise à disposition, Prestation';
      const buttonTextAndTitle = function(options, select) {
          if (options.length === 0) {
