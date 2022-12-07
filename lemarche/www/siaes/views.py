@@ -118,7 +118,7 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         request_params = [
             value
             for (key, value) in self.request.GET.items()
-            if ((key not in ["marche_benefits", "page", "format"]) and value)
+            if ((key not in ["marche_benefits", "download_source", "page", "format"]) and value)
         ]
 
         user = self.request.user
