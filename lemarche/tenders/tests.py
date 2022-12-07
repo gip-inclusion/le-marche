@@ -1,5 +1,5 @@
 # import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from importlib import import_module
 from random import randint
 
@@ -20,6 +20,11 @@ from lemarche.tenders.factories import PartnerShareTenderFactory, TenderFactory
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
+
+
+date_tomorrow = datetime.now() + timedelta(days=1)
+date_next_week = datetime.now() + timedelta(days=7)
+date_last_week = datetime.now() - timedelta(days=7)
 
 
 class TenderModelTest(TestCase):
@@ -143,6 +148,25 @@ class TenderModelQuerysetTest(TestCase):
         )
 
 
+class TenderModelQuerysetOrderTest(TestCase):
+    @classmethod
+    def setUpTestData(self):
+        self.tender_1 = TenderFactory(deadline_date=timezone.make_aware(date_next_week))
+        self.tender_2 = TenderFactory(deadline_date=timezone.make_aware(date_tomorrow))
+        self.tender_3 = TenderFactory(deadline_date=timezone.make_aware(date_last_week))
+
+    def test_default_order(self):
+        tender_queryset = Tender.objects.all()
+        self.assertEqual(tender_queryset.count(), 3)
+        self.assertEqual(tender_queryset.first().id, self.tender_3.id)
+
+    def test_order_by_deadline_date_queryset(self):
+        tender_queryset = Tender.objects.order_by_deadline_date()
+        self.assertEqual(tender_queryset.count(), 3)
+        self.assertEqual(tender_queryset.first().id, self.tender_2.id)
+        self.assertEqual(tender_queryset.last().id, self.tender_3.id)
+
+
 class TenderModelQuerysetStatsTest(TestCase):
     @classmethod
     def setUpTestData(self):
@@ -153,7 +177,9 @@ class TenderModelQuerysetStatsTest(TestCase):
         siae_with_tender_4 = SiaeFactory()
         siae_with_tender_5 = SiaeFactory()
         self.siae_without_tender = SiaeFactory()
-        self.tender_with_siae_1 = TenderFactory(siaes=[self.siae_with_tender_1, siae_with_tender_2])
+        self.tender_with_siae_1 = TenderFactory(
+            siaes=[self.siae_with_tender_1, siae_with_tender_2], deadline_date=timezone.make_aware(date_tomorrow)
+        )
         TenderSiae.objects.create(
             tender=self.tender_with_siae_1, siae=siae_with_tender_3, email_send_date=timezone.now()
         )
@@ -178,7 +204,7 @@ class TenderModelQuerysetStatsTest(TestCase):
             detail_display_date=timezone.now(),
             contact_click_date=timezone.now(),
         )
-        self.tender_without_siae = TenderFactory()
+        self.tender_without_siae = TenderFactory(deadline_date=timezone.make_aware(date_tomorrow))
 
     def test_filter_with_siaes_queryset(self):
         self.tender_with_siae_2.validated_at = None
@@ -224,6 +250,15 @@ class TenderModelQuerysetStatsTest(TestCase):
         self.assertEqual(siae_without_tender.tender_email_send_count, 0)
         self.assertEqual(siae_without_tender.tender_detail_display_count, 0)
         self.assertEqual(siae_without_tender.tender_contact_click_count, 0)
+
+    def test_with_deadline_date_is_outdated_queryset(self):
+        TenderFactory(deadline_date=timezone.make_aware(date_last_week))
+        tender_queryset = Tender.objects.with_deadline_date_is_outdated()
+        tender_3 = tender_queryset.first()  # order by -created_at
+        self.assertTrue(tender_3.deadline_date_is_outdated)
+        tender_with_siae_1 = tender_queryset.last()
+        self.assertEqual(tender_with_siae_1.id, self.tender_with_siae_1.id)
+        self.assertFalse(tender_with_siae_1.deadline_date_is_outdated)
 
 
 class TenderMigrationToSelectTest(TestCase):

@@ -64,10 +64,10 @@ class Command(BaseCommand):
 
             # count after
             siae_etp_count_after = Siae.objects.filter(c2_etp_count__isnull=False).count()
-            yesterday = datetime.now() - timedelta(days=1)
+            date_yesterday = datetime.now() - timedelta(days=1)
             siae_etp_updated = (
                 Siae.objects.filter(c2_etp_count__isnull=False)
-                .filter(c2_etp_count_last_sync_date__gte=timezone.make_aware(yesterday))
+                .filter(c2_etp_count_last_sync_date__gte=timezone.make_aware(date_yesterday))
                 .count()
             )
 
