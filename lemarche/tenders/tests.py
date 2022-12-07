@@ -1,5 +1,5 @@
 # import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from importlib import import_module
 from random import randint
 
@@ -146,6 +146,7 @@ class TenderModelQuerysetTest(TestCase):
 class TenderModelQuerysetStatsTest(TestCase):
     @classmethod
     def setUpTestData(self):
+        date_tomorrow = datetime.now() + timedelta(days=1)
         self.user_siae = UserFactory(kind=User.KIND_SIAE)
         self.siae_with_tender_1 = SiaeFactory(users=[self.user_siae])
         siae_with_tender_2 = SiaeFactory(users=[self.user_siae])
@@ -153,7 +154,9 @@ class TenderModelQuerysetStatsTest(TestCase):
         siae_with_tender_4 = SiaeFactory()
         siae_with_tender_5 = SiaeFactory()
         self.siae_without_tender = SiaeFactory()
-        self.tender_with_siae_1 = TenderFactory(siaes=[self.siae_with_tender_1, siae_with_tender_2])
+        self.tender_with_siae_1 = TenderFactory(
+            siaes=[self.siae_with_tender_1, siae_with_tender_2], deadline_date=timezone.make_aware(date_tomorrow)
+        )
         TenderSiae.objects.create(
             tender=self.tender_with_siae_1, siae=siae_with_tender_3, email_send_date=timezone.now()
         )
@@ -178,7 +181,7 @@ class TenderModelQuerysetStatsTest(TestCase):
             detail_display_date=timezone.now(),
             contact_click_date=timezone.now(),
         )
-        self.tender_without_siae = TenderFactory()
+        self.tender_without_siae = TenderFactory(deadline_date=timezone.make_aware(date_tomorrow))
 
     def test_filter_with_siaes_queryset(self):
         self.tender_with_siae_2.validated_at = None
@@ -224,6 +227,16 @@ class TenderModelQuerysetStatsTest(TestCase):
         self.assertEqual(siae_without_tender.tender_email_send_count, 0)
         self.assertEqual(siae_without_tender.tender_detail_display_count, 0)
         self.assertEqual(siae_without_tender.tender_contact_click_count, 0)
+
+    def test_with_deadline_date_is_outdated_queryset(self):
+        date_last_week = datetime.now() - timedelta(days=7)
+        TenderFactory(deadline_date=timezone.make_aware(date_last_week))
+        tender_queryset = Tender.objects.with_deadline_date_is_outdated()
+        tender_3 = tender_queryset.first()  # order by -created_at
+        self.assertTrue(tender_3.deadline_date_is_outdated)
+        tender_with_siae_1 = tender_queryset.last()
+        self.assertEqual(tender_with_siae_1.id, self.tender_with_siae_1.id)
+        self.assertFalse(tender_with_siae_1.deadline_date_is_outdated)
 
 
 class TenderMigrationToSelectTest(TestCase):

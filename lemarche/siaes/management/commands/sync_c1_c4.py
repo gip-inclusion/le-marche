@@ -351,8 +351,8 @@ class Command(BaseCommand):
         - all the ones who have is_active as False
         """
         if not dry_run:
-            yesterday = datetime.now() - timedelta(days=1)
+            date_yesterday = datetime.now() - timedelta(days=1)
             Siae.objects.exclude(c1_sync_skip=True).filter(
-                c1_last_sync_date__lt=timezone.make_aware(yesterday)
+                c1_last_sync_date__lt=timezone.make_aware(date_yesterday)
             ).update(is_delisted=True)
             Siae.objects.filter(is_active=False).update(is_delisted=True)
