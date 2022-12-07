@@ -1,37 +1,55 @@
 {% extends "tenders/create_base.html" %}
 {% load static bootstrap4 %}
 
-{% block step_title %}Evaluation de l’impact{% endblock %}
-{% block step_title_again %}Evaluation de l’impact{% endblock %}
+{% block step_title %}Evaluation de l'impact{% endblock %}
+{% block step_title_again %}Evaluation de l'impact{% endblock %}
 {% block step_subtitle %}
-Aidez-nous à évaluer l'impact de la plateforme du Marché de l’inclusion en répondant à ces quelques questions.<br />
+Aidez-nous à évaluer l'impact de la plateforme du Marché de l'inclusion en répondant à ces quelques questions.<br />
 <i class="fs-sm"> ⚠️ Ces informations sont anonymisées et exploitées à des fins statistiques. Elles resteront strictement confidentielles.</i>
 {% endblock %}
 
 {% block content_form %}
 {% csrf_token %}
-<div class="row mb-3 mb-lg-5">
-    <div class="col-12 col-lg-9" id="serveyTender">
-    {% bootstrap_field form.scale_marche_useless  form_group_class="form-group mb-4" %}
-    {% bootstrap_field form.worked_with_inclusif_siae_this_kind_tender  form_group_class="form-group mb-4" %}
-    <div id="div_is_encouraged_by_le_marche" class="{% if form.worked_with_inclusif_siae_this_kind_tender.value == '1' %}d-none{% endif %}">
-        {% bootstrap_field form.is_encouraged_by_le_marche  form_group_class="form-group form-group-required mb-4" %}
+<div class="row">
+    <div id="serveyTender" class="col-12 col-lg-8">
+        <div class="row mb-3 mb-lg-5">
+            <div class="col-12">
+                {% bootstrap_field form.scale_marche_useless %}
+            </div>
+        </div>
+        <div class="row mb-3 mb-lg-5">
+            <div class="col-12">
+                {% bootstrap_field form.worked_with_inclusif_siae_this_kind_tender %}
+            </div>
+        </div>
+        <div id="div_is_encouraged_by_le_marche" class="row mb-3 mb-lg-5 {% if form.worked_with_inclusif_siae_this_kind_tender.value == '1' %}d-none{% endif %}">
+            <div class="col-12">
+                {% bootstrap_field form.is_encouraged_by_le_marche form_group_class="form-group form-group-required" %}
+            </div>
+        </div>
+        <div class="row mb-3 mb-lg-5">
+            <div class="col-12">
+                {% bootstrap_field form.providers_out_of_insertion %}
+            </div>
+        </div>
+        <div class="row mb-3 mb-lg-5">
+            <div class="col-12">
+                {% bootstrap_field form.le_marche_doesnt_exist_how_to_find_siae %}
+            </div>
+        </div>
     </div>
-        {% bootstrap_field form.providers_out_of_insertion  form_group_class="form-group mb-4" %}
-    {% bootstrap_field form.le_marche_doesnt_exist_how_to_find_siae  form_group_class="form-group" %}
-    </div>
-    <div class="col-12 col-lg-3">
+    <div class="col-12 col-lg-4">
         <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-            <p class="mb-0 fs-sm">
+            <p class="mb-1 fs-sm">
                 *Le terme "Prestataire inclusif" fait référence aux structures agréées Insertion ou Handicap.
-                <br>
-                <br>
-                ⚠️ Ici, le terme “Prestataire inclusif” ne fait pas référence à l'ensemble des prestataires relevant de l'E.S.S (Économie Sociale & Solidaire)            </p>
+            </p>
+            <p class="mb-0 fs-sm">
+                ⚠️ Ici, le terme “Prestataire inclusif” ne fait pas référence à l'ensemble des prestataires relevant de l'E.S.S (Économie Sociale & Solidaire)
+            </p>
         </div>
     </div>
 </div>
 {% endblock %}
-
 
 {% block extra_js %}
 <script>
@@ -56,8 +74,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }));
-
-
 });
 </script>
 {% endblock %}

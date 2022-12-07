@@ -7,20 +7,38 @@
 
 {% block content_form %}
 {% csrf_token %}
-<fieldset>
-    {% bootstrap_field form.kind form_group_class="form-group form-group-required" %}
-    {% bootstrap_field form.title form_group_class="form-group form-group-required" %}
-    {% bootstrap_field form.sectors form_group_class="form-group form-group-required use-multiselect" %}
-    {% bootstrap_field form.presta_type form_group_class="form-group form-group-required use-multiselect" %}
-    <div class="form-group form-group-required {% if form.perimeters.errors %}is-invalid{% endif %}">
-        <label for="id_perimeters">{{ form.perimeters.label }}</label>
-        <div id="dir_form_perimeters" data-input-name="general-perimeters"></div>
-        <small class="form-text text-muted">{{ form.perimeters.help_text }}</small>
-        <div class="invalid-feedback">Ce champ est obligatoire.</div>
-        <div id="perimeters-selected" class="mt-1"></div>
+<div class="row mb-3 mb-lg-5">
+    <div class="col-12 col-lg-8">
+        {% bootstrap_field form.kind %}
     </div>
-    {% bootstrap_field form.is_country_area %}
-</fieldset>
+</div>
+<div class="row mb-3 mb-lg-5">
+    <div class="col-12 col-lg-8">
+        {% bootstrap_field form.title %}
+    </div>
+</div>
+<div class="row mb-3 mb-lg-5">
+    <div class="col-12 col-lg-8">
+        {% bootstrap_field form.sectors form_group_class="form-group form-group-required use-multiselect" %}
+    </div>
+</div>
+<div class="row mb-3 mb-lg-5">
+    <div class="col-12 col-lg-8">
+        {% bootstrap_field form.presta_type %}
+    </div>
+</div>
+<div class="row mb-3 mb-lg-5">
+    <div class="col-12 col-lg-8">
+        <div class="form-group form-group-required {% if form.perimeters.errors %}is-invalid{% endif %}">
+            <label for="id_perimeters">{{ form.perimeters.label }}</label>
+            <div id="dir_form_perimeters" data-input-name="general-perimeters"></div>
+            <small class="form-text text-muted">{{ form.perimeters.help_text }}</small>
+            <div class="invalid-feedback">Ce champ est obligatoire.</div>
+            <div id="perimeters-selected" class="mt-1"></div>
+        </div>
+        {% bootstrap_field form.is_country_area %}
+    </div>
+</div>
 {% endblock content_form %}
 
 {% block extra_js %}
