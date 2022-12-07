@@ -70,7 +70,7 @@ class TenderQuerySet(models.QuerySet):
 
     def order_by_deadline_date(self, limit_date=datetime.today()):
         return self.with_deadline_date_is_outdated(limit_date=limit_date).order_by(
-            "-deadline_date_is_outdated", "deadline_date", "-updated_at"
+            "deadline_date_is_outdated", "deadline_date", "-updated_at"
         )
 
     def with_siae_stats(self):

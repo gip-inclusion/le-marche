@@ -22,6 +22,11 @@ from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 
 
+date_tomorrow = datetime.now() + timedelta(days=1)
+date_next_week = datetime.now() + timedelta(days=7)
+date_last_week = datetime.now() - timedelta(days=7)
+
+
 class TenderModelTest(TestCase):
     def setUp(self):
         pass
@@ -143,10 +148,28 @@ class TenderModelQuerysetTest(TestCase):
         )
 
 
+class TenderModelQuerysetOrderTest(TestCase):
+    @classmethod
+    def setUpTestData(self):
+        self.tender_1 = TenderFactory(deadline_date=timezone.make_aware(date_next_week))
+        self.tender_2 = TenderFactory(deadline_date=timezone.make_aware(date_tomorrow))
+        self.tender_3 = TenderFactory(deadline_date=timezone.make_aware(date_last_week))
+
+    def test_default_order(self):
+        tender_queryset = Tender.objects.all()
+        self.assertEqual(tender_queryset.count(), 3)
+        self.assertEqual(tender_queryset.first().id, self.tender_3.id)
+
+    def test_order_by_deadline_date_queryset(self):
+        tender_queryset = Tender.objects.order_by_deadline_date()
+        self.assertEqual(tender_queryset.count(), 3)
+        self.assertEqual(tender_queryset.first().id, self.tender_2.id)
+        self.assertEqual(tender_queryset.last().id, self.tender_3.id)
+
+
 class TenderModelQuerysetStatsTest(TestCase):
     @classmethod
     def setUpTestData(self):
-        date_tomorrow = datetime.now() + timedelta(days=1)
         self.user_siae = UserFactory(kind=User.KIND_SIAE)
         self.siae_with_tender_1 = SiaeFactory(users=[self.user_siae])
         siae_with_tender_2 = SiaeFactory(users=[self.user_siae])
@@ -229,7 +252,6 @@ class TenderModelQuerysetStatsTest(TestCase):
         self.assertEqual(siae_without_tender.tender_contact_click_count, 0)
 
     def test_with_deadline_date_is_outdated_queryset(self):
-        date_last_week = datetime.now() - timedelta(days=7)
         TenderFactory(deadline_date=timezone.make_aware(date_last_week))
         tender_queryset = Tender.objects.with_deadline_date_is_outdated()
         tender_3 = tender_queryset.first()  # order by -created_at
