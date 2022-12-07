@@ -6,6 +6,7 @@
 {% block step_subtitle %}Ici, en quelques clics vous pourrez solliciter l'ensemble des prestataires inclusifs pertinents pour votre besoin. Veuillez d'abord remplir les informations générales.{% endblock %}
 
 {% block content_form %}
+{% csrf_token %}
 <fieldset>
     {% bootstrap_field form.kind form_group_class="form-group form-group-required" %}
     {% bootstrap_field form.title form_group_class="form-group form-group-required" %}

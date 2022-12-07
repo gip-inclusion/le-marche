@@ -9,6 +9,7 @@ Aidez-nous à évaluer l'impact de la plateforme du Marché de l’inclusion en 
 {% endblock %}
 
 {% block content_form %}
+{% csrf_token %}
 <div class="row mb-3 mb-lg-5">
     <div class="col-12 col-lg-9" id="serveyTender">
     {% bootstrap_field form.scale_marche_useless  form_group_class="form-group mb-4" %}
