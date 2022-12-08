@@ -214,7 +214,7 @@ class SiaeFavoriteForm(forms.ModelForm):
 
 class SiaeDownloadForm(SiaeSearchForm):
     marche_benefits = forms.MultipleChoiceField(
-        label=Tender._meta.get_field("marche_benefits").help_text,
+        label="Pourquoi téléchargez-vous cette liste ?",
         choices=Tender._meta.get_field("marche_benefits").base_field.choices,
         widget=forms.CheckboxSelectMultiple,
         required=False,
