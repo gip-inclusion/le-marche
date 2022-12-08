@@ -1,8 +1,11 @@
-{% if tender.author == request.user %}
-    <h2>Coordonnées</h2>
-{% else %}
-    <h2>Pour plus d'information et/ou afin de répondre, utilisez les coordonnées suivantes :</h2>
-{% endif %}
+
+<h2>
+    {% if tender.author == request.user %}
+        Coordonnées
+    {% else %}
+        Pour plus d'information et/ou afin de répondre, utilisez les coordonnées suivantes :
+    {% endif %}
+</h2>
 
 <div class="row">
     {% if tender.contact_full_name %}
