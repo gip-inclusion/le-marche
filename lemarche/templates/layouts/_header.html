@@ -69,26 +69,41 @@
                                 {% include "includes/_newsletter_button.html" %}
                             </li>
                         {% endif %}
-                        {% if not user.is_authenticated or user.kind != user.KIND_SIAE %}
-                            <li>
-                                <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser" rel="noopener">
-                                    Valoriser vos achats
-                                </a>
-                            </li>
-                        {% endif %}
+                        <li>
+                            <div class="dropdown">
+                                <button class="btn btn-link dropdown-toggle" type="button" id="solutionsDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Solutions
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="solutionsDropdownMenuButton">
+                                    <a href="{% url 'tenders:create' %}" id="header-dropdown-tender-create-btn" class="dropdown-item">
+                                        Sourcing
+                                    </a>
+                                    <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser" class="dropdown-item">
+                                        Valoriser vos achats
+                                    </a>
+                                    <a href="{% url 'pages:impact_calculator' %}" id="header-calibrer" class="dropdown-item">
+                                        Calibrer vos achats
+                                    </a>
+                                    <a href="{{ FACILITATOR_LIST }}" target="_blank" id="header-facilitator-list" class="dropdown-item">
+                                        Trouver un facilitateur des clauses sociales
+                                        <i class="ri-arrow-right-up-line"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
                         {% if user.is_authenticated %}
                             <li>
-                                <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites" rel="noopener">
+                                <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites">
                                     <i class="ri-star-line ri-lg"></i>
                                     Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
                                 </a>
                             </li>
                             <li>
                                 <div class="dropdown">
-                                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Mon espace
                                     </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <div class="dropdown-menu" aria-labelledby="userDropdownMenuButton">
                                         <a href="{% url 'dashboard:home' %}" class="dropdown-item">
                                             <i class="ri-dashboard-line"></i>
                                             Tableau de bord
@@ -107,13 +122,13 @@
                             </li>
                         {% else %}
                             <li>
-                                <a href="{% url 'auth:login' %}" id="h_login" rel="noopener">
+                                <a href="{% url 'auth:login' %}" id="h_login">
                                     <span>Connexion</span>
                                     <i class="ri-account-circle-line ri-lg ml-1"></i>
                                 </a>
                             </li>
                             <li>
-                                <a href="{% url 'auth:signup' %}" id="h_signup" class="btn btn-primary btn-ico" rel="noopener">
+                                <a href="{% url 'auth:signup' %}" id="h_signup" class="btn btn-primary btn-ico">
                                     <span>Inscription</span>
                                     <i class="ri-arrow-right-line ri-lg"></i>
                                 </a>
@@ -155,57 +170,70 @@
             <div id="burgerNav">
                 <nav role="navigation">
                     <ul>
+                        {% if not user.is_authenticated %}
+                            <li>
+                                {% include "includes/_newsletter_button.html" with custom_class="btn-sm p-0" %}
+                            </li>
+                        {% endif %}
+                        <hr />
+                        <li>
+                            <a href="{% url 'tenders:create' %}" id="header-dropdown-tender-create-btn">
+                                Sourcing
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser">
+                                Valoriser vos achats
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'pages:impact_calculator' %}" id="header-calibrer">
+                                Calibrer vos achats
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ FACILITATOR_LIST }}" target="_blank" id="header-facilitator-list" rel="noopener">
+                                Trouver un facilitateur des clauses sociales
+                                <i class="ri-arrow-right-up-line"></i>
+                            </a>
+                        </li>
+                        <hr />
                         {% if user.is_authenticated %}
                             <li>
-                                <a href="{% url 'dashboard:home' %}" id="h_dashboard" rel="noopener">
+                                <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites">
+                                    <i class="ri-star-line ri-lg"></i>
+                                    Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
+                                </a>
+                            </li>
+                            <hr />
+                            <li>
+                                <a href="{% url 'dashboard:home' %}" id="h_dashboard">
                                     <i class="ri-dashboard-line"></i>
                                     Tableau de bord
                                 </a>
                             </li>
                             <li>
-                                <a href="{% url 'dashboard:profile_edit' %}" rel="noopener">
+                                <a href="{% url 'dashboard:profile_edit' %}">
                                     <i class="ri-user-line"></i>
                                     Mon profil
                                 </a>
                             </li>
                             <hr />
                             <li>
-                                <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites" rel="noopener">
-                                    <i class="ri-star-line ri-lg"></i>
-                                    Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
-                                </a>
-                            </li>
-                            {% if user.kind != user.KIND_SIAE %}
-                                <li>
-                                    <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser" rel="noopener">
-                                        Valoriser vos achats
-                                    </a>
-                                </li>
-                            {% endif %}
-                            <hr />
-                            <li>
-                                <a href="{% url 'auth:logout' %}" id="h_logout" rel="noopener">
+                                <a href="{% url 'auth:logout' %}" id="h_logout">
                                     <i class="ri-logout-box-line"></i>
                                     Déconnexion
                                 </a>
                             </li>
                         {% else %}
                             <li>
-                                {% include "includes/_newsletter_button.html" with custom_class="btn-sm p-0" %}
-                            </li>
-                            <li>
-                                <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser" rel="noopener">
-                                    Valoriser vos achats
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'auth:login' %}" id="h_login" rel="noopener">
+                                <a href="{% url 'auth:login' %}" id="h_login">
                                     <span>Connexion</span>
                                     <i class="ri-account-circle-line ri-lg ml-1"></i>
                                 </a>
                             </li>
                             <li>
-                                <a href="{% url 'auth:signup' %}" id="h_signup" class="btn btn-primary btn-ico" rel="noopener">
+                                <a href="{% url 'auth:signup' %}" id="h_signup" class="btn btn-primary btn-ico">
                                     <span>Inscription</span>
                                     <i class="ri-arrow-right-line ri-lg"></i>
                                 </a>
