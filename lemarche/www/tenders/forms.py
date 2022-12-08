@@ -91,7 +91,7 @@ class AddTenderStepDescriptionForm(forms.ModelForm):
         if self.kind == Tender.TENDER_KIND_TENDER:
             self.fields["amount"].required = True
         # label, placeholder & help_text
-        self.fields["amount"].label = "Montant estimé du marché"  # add "estimé"
+        self.fields["amount"].label = "Montant € estimé de votre besoin"
         self.fields["accept_share_amount"].label = self.fields["accept_share_amount"].help_text
         self.fields["accept_cocontracting"].label = self.fields["accept_cocontracting"].help_text
         self.fields["external_link"].widget.attrs["placeholder"] = "https://www.example.fr"
@@ -109,7 +109,7 @@ class AddTenderStepContactForm(forms.ModelForm):
     user: User = None
 
     response_kind = forms.MultipleChoiceField(
-        label="Comment répondre",
+        label="Comment les prestataires doivent vous répondre",
         choices=Tender._meta.get_field("response_kind").base_field.choices,
         widget=forms.CheckboxSelectMultiple,
     )
