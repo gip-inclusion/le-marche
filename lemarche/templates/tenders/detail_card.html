@@ -46,41 +46,9 @@
             {% endif %}
         </div>
 
-        <hr class="my-5">
-
-        <div class="py-2">
-            <h2>
-                Description
-                {% if tender.start_working_date %}
-                    <span class="float-right fs-sm text-muted">Début d'intervention : {{ tender.start_working_date }}</span>
-                {% endif %}
-            </h2>
-            <p>{{ tender.description|linebreaks }}</p>
-        </div>
-
-        {% if source_form or not source_form and tender.constraints %}
-            <hr class="my-5">
-
-            <div class="py-2">
-                <h2>Contraintes techniques spécifiques</h2>
-                <p>{{ tender.constraints|default:"-"|linebreaks }}</p>
-            </div>
-        {% endif %}
-
-        {% if source_form or tender.author == request.user or tender.accept_share_amount %}
-            <hr class="my-5">
-
-            <div class="py-2">
-                <h2>Montant du marché</h2>
-                <p>{{ tender.get_amount_display|default:"-" }}</p>
-                {% if source_form or tender.author == request.user %}
-                    <p>{{ tender.accept_share_amount_display }}</p>
-                {% endif %}
-            </div>
-        {% endif %}
-
         {% if not source_form %}
             <hr class="my-5">
+
             {% if user.is_authenticated %}
                 {% if tender.author == request.user or user_has_contact_click_date or user_can_display_tender_contact_details %}
                     {% include "tenders/_detail_contact.html" with tender=tender %}
@@ -108,10 +76,14 @@
                         </p>
                     </div>
                 {% else %}
-                    <button type="button" id="show-tender-contact-modal-btn" class="btn btn-primary float-right mb-4" data-toggle="modal" data-target="#contact_click_confirm_modal" title="Répondre à cette opportunité">
-                        Répondre à cette opportunité
-                    </button>
-                    <div id="show-tender-contact-content" class="py-2" style="display:none">
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="button" id="show-tender-contact-modal-btn" class="btn btn-primary float-right mb-4" data-toggle="modal" data-target="#contact_click_confirm_modal" title="Répondre à cette opportunité">
+                                Répondre à cette opportunité
+                            </button>
+                        </div>
+                    </div>
+                    <div id="show-tender-contact-content" style="display:none">
                         {% include "tenders/_detail_contact.html" with tender=tender %}
                     </div>
                 {% endif %}
@@ -126,9 +98,40 @@
                     </div>
                 {% endif %}
             {% else %}
-                <a href="#" id="show-tender-contact-modal-btn" class="btn btn-primary float-right mb-4" data-toggle="modal" data-target="#login_or_signup_siae_tender_modal" data-next-params="{% url 'tenders:detail' tender.slug %}">
-                    <span>Répondre à cette opportunité</span>
-                </a>
+                <div class="row">
+                    <div class="col-12">
+                        <a href="#" id="show-tender-contact-modal-btn" class="btn btn-primary float-right mb-4" data-toggle="modal" data-target="#login_or_signup_siae_tender_modal" data-next-params="{% url 'tenders:detail' tender.slug %}">
+                            <span>Répondre à cette opportunité</span>
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <hr class="my-5">
+
+        <h2>
+            Description
+            {% if tender.start_working_date %}
+                <span class="float-right fs-sm text-muted">Début d'intervention : {{ tender.start_working_date }}</span>
+            {% endif %}
+        </h2>
+        <p>{{ tender.description|linebreaks }}</p>
+
+        {% if source_form or not source_form and tender.constraints %}
+            <hr class="my-5">
+
+            <h2>Contraintes techniques spécifiques</h2>
+            <p>{{ tender.constraints|default:"-"|linebreaks }}</p>
+        {% endif %}
+
+        {% if source_form or tender.author == request.user or tender.accept_share_amount %}
+            <hr class="my-5">
+
+            <h2>Montant du marché</h2>
+            <p>{{ tender.get_amount_display|default:"-" }}</p>
+            {% if source_form or tender.author == request.user %}
+                <p>{{ tender.accept_share_amount_display }}</p>
             {% endif %}
         {% endif %}
     </div>
