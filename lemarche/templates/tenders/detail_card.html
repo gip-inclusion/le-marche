@@ -78,6 +78,12 @@
                             Besoin d'aide ? contacter le support via le chat en ligne qui se trouve en bas à droite.
                         </p>
                     </div>
+                {% elif tender.deadline_date_outdated %}
+                    <div class="row">
+                        <div class="col-12">
+                            <span class="badge badge-sm badge-base badge-pill badge-pilotage float-right">Clôturé</span>
+                        </div>
+                    </div>
                 {% else %}
                     <div class="row">
                         <div class="col-12">
