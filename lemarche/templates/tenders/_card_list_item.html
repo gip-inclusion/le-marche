@@ -1,0 +1,9 @@
+<div>
+    <time class="fs-sm d-block" aria-label="Date de clôture">
+        <span>{{ tender.deadline_date|default:"" }}</span>
+        {% if tender.deadline_date_is_outdated %}
+            <span class="badge badge-xs badge-base badge-pill badge-pilotage">Clôturé</span>
+        {% endif %}
+    </time>
+    <a href="{% url 'tenders:detail' tender.slug %}" class="d-block font-weight-bold stretched-link">{{ tender.title }}</a>
+</div>

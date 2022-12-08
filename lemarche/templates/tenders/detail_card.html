@@ -12,8 +12,11 @@
 </div>
 {% endif %}
 <div class="card c-card c-card--marche siae-card rounded-lg shadow-lg">
-    <p class="text-right text-white bg-tertiary fs-sm rounded-top rounded-lg py-3 px-5 mb-0">
+    <p class="text-right text-white bg-tertiary fs-sm rounded-top rounded-lg p-3 mb-0">
         Date limite de réponse : {{ tender.deadline_date|default:"" }}
+        {% if not source_form and tender.deadline_date_outdated %}
+            <span class="badge badge-xs badge-base badge-pill badge-pilotage">Clôturé</span>
+        {% endif %}
     </p>
 
     <div class="card-body pb-5 px-5">

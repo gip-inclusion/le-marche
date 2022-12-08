@@ -368,6 +368,12 @@ class Tender(models.Model):
             return self.TENDER_ACCEPT_SHARE_AMOUNT_TRUE
         return self.TENDER_ACCEPT_SHARE_AMOUNT_FALSE
 
+    @cached_property
+    def deadline_date_outdated(self):
+        if self.deadline_date and self.deadline_date < timezone.now().date():
+            return True
+        return False
+
     def set_hubspot_id(self, hubspot_deal_id, with_save=True):
         self.extra_data.update({"hubspot_deal_id": hubspot_deal_id})
         if with_save:

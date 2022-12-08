@@ -361,6 +361,17 @@ class TenderDetailViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Contraintes techniques spécifiques")
 
+    def test_tender_deadline_date_display(self):
+        # tender is not outdated by default
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertNotContains(response, "Clôturé")
+        # new tender with outdated deadline_date
+        tender_2 = TenderFactory(deadline_date=timezone.now() - timedelta(days=1))
+        url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "Clôturé")
+
     def test_tender_author_has_additional_stats(self):
         self.client.force_login(self.user_buyer_1)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
