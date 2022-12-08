@@ -240,7 +240,7 @@ def csrf_failure(request, reason=""):  # noqa C901
         # ):
 
         # create tender_dict
-        tender_dict = dict()
+        tender_dict = dict(extra_data={})
         formtools_session_step_data = request.session.get("wizard_tender_create_multi_step_view", {}).get(
             "step_data", {}
         )
@@ -248,8 +248,21 @@ def csrf_failure(request, reason=""):  # noqa C901
             for key in formtools_session_step_data.get(step).keys():
                 if not key.startswith(("csrfmiddlewaretoken", "tender_create_multi_step_view")):
                     value = formtools_session_step_data.get(step).get(key)
-                    key_cleaned = key.replace("general-", "").replace("description-", "").replace("contact-", "")
-                    if key_cleaned not in [
+                    key_cleaned = (
+                        key.replace("general-", "")
+                        .replace("description-", "")
+                        .replace("contact-", "")
+                        .replace("survey-", "")
+                    )
+                    if key_cleaned in [
+                        "le_marche_doesnt_exist_how_to_find_siae",
+                        "providers_out_of_insertion",
+                        "worked_with_inclusif_siae_this_kind_tender",
+                        "is_encouraged_by_le_marche",
+                    ]:
+                        tender_dict["extra_data"] |= {key_cleaned: value[0]}
+
+                    elif key_cleaned not in [
                         "sectors",
                         "perimeters",
                         "presta_type",
@@ -257,8 +270,6 @@ def csrf_failure(request, reason=""):  # noqa C901
                         "is_country_area",
                         "accept_share_amount",
                         "accept_cocontracting",
-                        "scale_marche_useless",
-                        "marche_benefits",
                     ]:
                         if value[0]:
                             tender_dict[key_cleaned] = value[0]
@@ -266,9 +277,9 @@ def csrf_failure(request, reason=""):  # noqa C901
                         "is_country_area",
                         "accept_share_amount",
                         "accept_cocontracting",
-                        "scale_marche_useless",
                     ]:
                         tender_dict[key_cleaned] = value[0] == "on"
+
                     elif key_cleaned == "sectors":
                         tender_dict[key_cleaned] = Sector.objects.filter(slug__in=value)
                     elif key_cleaned == "perimeters":
@@ -281,7 +292,6 @@ def csrf_failure(request, reason=""):  # noqa C901
             user = create_user_from_anonymous_content(tender_dict)
         else:
             user = request.user
-
         # create tender
         tender = create_tender_from_dict(tender_dict | {"author": user, "source": Tender.SOURCE_FORM_CSRF})
 
@@ -291,7 +301,9 @@ def csrf_failure(request, reason=""):  # noqa C901
         messages.add_message(
             request,
             messages.SUCCESS,
-            TenderCreateMultiStepView.get_success_message(TenderCreateMultiStepView, tender_dict, tender),
+            TenderCreateMultiStepView.get_success_message(
+                TenderCreateMultiStepView, tender_dict, tender, is_draft=False
+            ),
         )
         return HttpResponseRedirect(TenderCreateMultiStepView.success_url)
 

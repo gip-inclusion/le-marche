@@ -14,6 +14,12 @@ ALLOWED_HOSTS = [
     "bitoubi-django.cleverapps.io",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.inclusion.beta.gouv.fr",
+    "https://bitoubi-django.cleverapps.io",
+]
+
+
 SECURE_SSL_REDIRECT = env.str("SECURE_SSL_REDIRECT", True)
 
 MEDIA_URL = f"https://{S3_STORAGE_ENDPOINT_DOMAIN}/"  # noqa
