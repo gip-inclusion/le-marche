@@ -17,6 +17,7 @@ from lemarche.siaes.models import (
     SiaeUserRequest,
 )
 from lemarche.users.models import User
+from lemarche.utils.admin.actions import export_as_xls
 from lemarche.utils.fields import pretty_print_readonly_jsonfield
 
 
@@ -72,6 +73,7 @@ class SiaeUserInline(admin.TabularInline):
 
 @admin.register(Siae, site=admin_site)
 class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
+    actions = [export_as_xls]
     list_display = [
         "id",
         "name",
