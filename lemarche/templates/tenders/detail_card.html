@@ -15,7 +15,7 @@
     <p class="text-right text-white bg-tertiary fs-sm rounded-top rounded-lg p-3 mb-0">
         Date limite de réponse : {{ tender.deadline_date|default:"" }}
         {% if not source_form and tender.deadline_date_outdated %}
-            <span class="badge badge-xs badge-base badge-pill badge-pilotage">Délai de réponse dépassé</span>
+            <span class="badge badge-xs badge-base badge-pill badge-pilotage">Clôturé</span>
         {% endif %}
     </p>
 
