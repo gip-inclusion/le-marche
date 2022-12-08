@@ -53,7 +53,9 @@
             <hr class="my-5">
 
             {% if user.is_authenticated %}
-                {% if tender.author == request.user or user_has_contact_click_date or user_can_display_tender_contact_details %}
+                {% if tender.author == request.user or user_partner_can_display_tender_contact_details %}
+                    {% include "tenders/_detail_contact.html" with tender=tender %}
+                {% elif user_siae_has_contact_click_date and not tender.deadline_date_outdated %}
                     {% include "tenders/_detail_contact.html" with tender=tender %}
                 {% elif user.kind == user.KIND_PARTNER %}
                     <div class="alert alert-info" role="alert">

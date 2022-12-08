@@ -329,11 +329,11 @@ class TenderDetailView(DetailView):
                 ).count()
                 context["is_draft"] = tender.status == tender_constants.STATUS_DRAFT
             elif user.kind == User.KIND_SIAE:
-                context["user_has_contact_click_date"] = TenderSiae.objects.filter(
+                context["user_siae_has_contact_click_date"] = TenderSiae.objects.filter(
                     tender=tender, siae__in=user.siaes.all(), contact_click_date__isnull=False
                 ).exists()
             elif user.kind == User.KIND_PARTNER:
-                context["user_can_display_tender_contact_details"] = user.can_display_tender_contact_details
+                context["user_partner_can_display_tender_contact_details"] = user.can_display_tender_contact_details
             else:
                 pass
 
