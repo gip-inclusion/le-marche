@@ -548,8 +548,7 @@ CRISP_ID = env.str("CRISP_ID", "")
 # ------------------------------------------------------------------------------
 
 METABASE_SITE_URL = "https://stats.inclusion.beta.gouv.fr"
-METABASE_PUBLIC_DASHBOARD_ID = 137
-METABASE_PUBLIC_DASHBOARD_UUID = "fdf2580a-aeea-441c-98fe-ef2c27e79d6b"
+METABASE_PUBLIC_DASHBOARD_UUID = "44326ea9-e67c-45fc-9603-831a7dad1c8c"
 METABASE_PUBLIC_DASHBOARD_URL = f"{METABASE_SITE_URL}/embed/dashboard/{METABASE_PUBLIC_DASHBOARD_UUID}#titled=false"
 
 
