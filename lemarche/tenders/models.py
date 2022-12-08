@@ -163,7 +163,7 @@ class Tender(models.Model):
     )
     start_working_date = models.DateField(verbose_name="Date idéale de début des prestations", blank=True, null=True)
     amount = models.CharField(
-        verbose_name="Montant du marché",
+        verbose_name="Montant du besoin",
         help_text="Sélectionnez le montant reservé aux structures d'insertion et/ou de handicap",
         max_length=9,
         choices=tender_constants.AMOUNT_RANGE_CHOICES,
@@ -171,8 +171,8 @@ class Tender(models.Model):
         null=True,
     )
     accept_share_amount = models.BooleanField(
-        verbose_name="Partage du montant du marché",
-        help_text="Je souhaite partager ce montant aux partenaires recevant mon besoin",
+        verbose_name="Partage du montant du besoin",
+        help_text="Je souhaite partager ce montant aux prestataires inclusifs recevant mon besoin",
         default=False,
     )
     response_kind = ChoiceArrayField(
