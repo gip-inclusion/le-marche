@@ -48,7 +48,6 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = env.bool("DEBUG", False)
 
 ALLOWED_HOSTS = []
-
 # Bitoubi env
 BITOUBI_ENV = env.str("ENV", "dev")
 
