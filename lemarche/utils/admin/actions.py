@@ -5,7 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from xlwt import Workbook, Worksheet, XFStyle
 
-from lemarche.utils.admin.export_excel import ExportExcelAction
+from lemarche.utils.admin.export_excel import ExportAction
 
 
 def convert_data_date(value):
@@ -30,7 +30,7 @@ def export_as_xls(self, request, queryset):
     font_style.font.bold = True
     pattern_link = r"<a[^>]*>(.*?)</a>"
 
-    headers = ExportExcelAction.generate_header(self, self.model, field_names)
+    headers = ExportAction.generate_header(self, self.model, field_names)
     row_number = 0
     # write header
     for (index, header_item) in enumerate(headers):
@@ -54,8 +54,8 @@ def export_as_xls(self, request, queryset):
                 value = find_content_link.groups()[0]
             ws.write(row_number, index, str(value), font_style)
 
-    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    response["Content-Disposition"] = f"attachment; filename={file_name}.xlsx"
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = f"attachment; filename={file_name}.xls"
     wb.save(response)
     return response
 

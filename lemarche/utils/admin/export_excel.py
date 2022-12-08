@@ -1,4 +1,4 @@
-class ExportExcelAction:
+class ExportAction:
     @classmethod
     def generate_header(cls, admin, model, list_display):
         def default_format(value):
