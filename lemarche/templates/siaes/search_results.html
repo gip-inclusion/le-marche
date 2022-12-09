@@ -3,8 +3,10 @@
 
 {% block title %}Trouvez votre prestataire parmi 8600 structures inclusives{{ block.super }}{% endblock %}
 {% block meta_description %}
-<meta name="description" content="Recherchez en fonction de votre segment d'achats, périmètre géographique et types de prestation afin de trouver le prestataire idéal.">
+    <meta name="description" content="Recherchez en fonction de votre segment d'achats, périmètre géographique et types de prestation afin de trouver le prestataire idéal.">
 {% endblock %}
+
+{% block body_class %}bg-light{% endblock %}"
 
 {% block breadcrumbs %}
 <section>
@@ -120,70 +122,63 @@
 <section class="s-siae-02">
     <div class="container">
         <div id="dir_list">
-            <div id="searchContent" class="row">
-                <div class="col-12 col-lg-8 d-flex mb-3 mb-md-5">
-                    <div class="row align-items-center">
-                        <div class="col-12 col-lg">
-                            <h1 class="h2 mb-1">
-                                {% with paginator.count as siae_count %}
-                                    {% if siae_count > 0 %}
-                                        {{ siae_count }} structure{% if siae_count > 1 %}s{% endif %} correspond{% if siae_count > 1 %}ent{% endif %} à vos critères
-                                    {% else %}
-                                        Oups, nous n'avons pas trouvé de prestataires !
-                                    {% endif %}
-                                {% endwith %}
-                            </h1>
+            <div id="searchContent" class="row dir_list-row">
+                <div class="col-12 col-lg-8">
+                    <div class="c-box mb-3">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-grow-1">
+                                <h1 class="h4 mb-0">
+                                    {% with paginator.count as siae_count %}
+                                        {% if siae_count > 0 %}
+                                        {{ siae_count }} prestataire{% siae_count|pluralize %} correspond{% siae_count|pluralize:"ent" %} à vos critères
+                                        {% else %}
+                                            Oups, aucun prestataire trouvé !
+                                        {% endif %}
+                                    {% endwith %}
+                                </h1>
+                            </div>
+                            {% if siaes %}
+                                <div class="col-12 col-lg-auto">
+                                    {% include "siaes/_share_search_results.html" %}
+                                </div>
+                            {% endif %}
                         </div>
                         {% if siaes %}
-                            <div class="col-12 col-lg-auto">
-                                {% include "siaes/_share_search_results.html" %}
-                            </div>
+                            {% for siae in siaes %}
+                                {% include "siaes/_card_search_result.html" with siae=siae %}
+                                <!-- insert to nudge tender creation -->
+                                {% if forloop.counter in position_promote_tenders and page_obj.number == 1 %}
+                                    {% include "siaes/_card_suggest_tender.html" %}
+                                {% endif %}
+                            {% endfor %}
+                            {% include "includes/_pagination.html" %}
+                        {% else %}
+                            <!-- no results -->
+                            <p>
+                                Il y a encore de l'espoir ❤️
+                            </p>
+                            <p>
+                                Publiez votre besoin, et on s'occupe de vous trouver des prestataires inclusifs.
+                            </p>
+                            <p>
+                                Obtenez des réponses en moins de 24 heures (en moyenne).
+                            </p>
+                            <a href="{% url 'tenders:create' %}" id="siae-search-empty-demande" class="btn btn-primary d-block d-md-inline-block mb-2">
+                                <i class="ri-mail-send-line ri-lg mr-2"></i>Publier un besoin d'achat
+                            </a>
                         {% endif %}
                     </div>
-                </div>
-            </div>
-            <div class="row dir_list-row">
-                <div class="col-12 col-lg-8">
-                {% if siaes %}
-                    {% for siae in siaes %}
-                        {% include "siaes/_card_search_result.html" with siae=siae %}
-                        <!-- insert to nudge tender creation -->
-                        {% if forloop.counter in position_promote_tenders and page_obj.number == 1 %}
-                            {% include "siaes/_card_suggest_tender.html" %}
-                        {% endif %}
-                    {% endfor %}
-
-                    {% include "includes/_pagination.html" %}
-                {% else %}
-                    <!-- no results -->
-                    <div>
-                        <p>
-                            Il y a encore de l'espoir ❤️
-                        </p>
-                        <p>
-                            Publiez votre besoin, et on s'occupe de vous trouver des prestataires inclusifs.
-                        </p>
-                        <p>
-                            Obtenez des réponses en moins de 24 heures (en moyenne).
-                        </p>
-                        <a href="{% url 'tenders:create' %}" id="siae-search-empty-demande" class="btn btn-primary d-block d-md-inline-block mb-2">
-                            <i class="ri-mail-send-line ri-lg mr-2"></i>Publier un besoin d'achat
-                        </a>
-                    </div>
-                {% endif %}
                 </div>
                 <div class="col-12 col-lg-4 siae-info mt-6 mt-sm-0">
-                    <div class="siae-info-sticky">
-
+                    <div class="siae-info-sticky c-box bg-light mb-3">
                         <div class="map-holder mb-4">
                             <div id="map-siae-list" class="map-canvas"></div>
                         </div>
-                        <hr />
 
                         {% cms_advert layout="card" %}
 
                         <div class="si-ideas">
-                            <h3 class="h2 my-3">Idées reçues</h3>
+                            <h3 class="h4 my-3">Idées reçues</h3>
                             <p>
                                 <span>
                                     <i class="ri-check-fill ri-xl font-weight-bold"></i>
