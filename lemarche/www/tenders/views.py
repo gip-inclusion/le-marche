@@ -74,13 +74,13 @@ class TenderCreateMultiStepView(SessionWizardView):
     success_url = reverse_lazy("tenders:list")
     success_message = """
         Votre besoin <strong>{tender_title}</strong> a été publié sur le marché !<br />
-        Les <strong>{tender_siae_count} structures</strong> qui correspondent à vos critères seront notifiées
+        Les prestataires inclusifs qui correspondent à vos critères seront notifiées
         dès que votre besoin sera validé par notre équipe.
     """
 
     success_message_draft = """
-        Votre demande <strong>{tender_title}</strong> a été enregistrée en brouillon.<br>
-        Vous pourrez revenir plus tard pour la publier. Vous la retrouverez dans votre tableau de bord.
+        Votre besoin <strong>{tender_title}</strong> a été enregistré en brouillon.<br />
+        Vous pourrez revenir plus tard pour le publier. Vous le retrouverez dans votre tableau de bord.
     """
     STEP_GENERAL = "general"
     STEP_DESCRIPTION = "description"
@@ -235,7 +235,7 @@ class TenderCreateMultiStepView(SessionWizardView):
 
     def get_success_message(self, cleaned_data, tender, is_draft):
         return mark_safe(
-            self.success_message.format(tender_title=tender.title, tender_siae_count=tender.siaes.count())
+            self.success_message.format(tender_title=tender.title)
             if not is_draft
             else self.success_message_draft.format(tender_title=tender.title)
         )
