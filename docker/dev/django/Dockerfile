@@ -1,7 +1,7 @@
 # ----------------------------------------------------
 # Base-image
 # ----------------------------------------------------
-FROM python:3.9-slim-buster as common-base
+FROM python:3.10-slim-buster as common-base
 # Django directions: https://blog.ploetzli.ch/2020/efficient-multi-stage-build-django-docker/
 # Pip on docker : https://pythonspeed.com/articles/multi-stage-docker-python/
 # https://blog.mikesir87.io/2018/07/leveraging-multi-stage-builds-single-dockerfile-dev-prod/
@@ -17,7 +17,7 @@ ENV PYTHONFAULTHANDLER=1 \
     PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100 \
-    POETRY_VERSION=1.1.1 \
+    POETRY_VERSION=1.1.4 \
     NODE_VERSION=15
 
 ENV HOST=0.0.0.0 \
@@ -35,7 +35,7 @@ FROM common-base AS dependencies
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-RUN pip install "poetry==$POETRY_VERSION"
+RUN pip install poetry==$POETRY_VERSION
 RUN pip install -I uwsgi
 
 #     apt-get install build-essential -y
