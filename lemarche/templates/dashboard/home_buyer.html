@@ -3,6 +3,7 @@
 {% load theme_inclusion %}
 
 {% block title %}Tableau de bord{{ block.super }}{% endblock %}
+{% block body_class %}bg-light{% endblock %}
 
 {% block breadcrumbs %}
 <section>
@@ -35,9 +36,9 @@
 <section class="s-section">
     <div class="s-section__container container">
         <div class="s-section__row row">
-            <div class="s-section__col col-12 col-lg-7 pb-5">
+            <div class="s-section__col col-12 col-lg-7 mb-3 mb-lg-5">
                 {% if user.tenders.count %}
-                    <div class="card h-100 w-100">
+                    <div class="card h-100 w-100 rounded-lg">
                         <div class="card-body">
                             <div class="row mb-sm-4">
                                 <div class="col-12 col-md">
@@ -68,8 +69,8 @@
                     {% include "dashboard/_add_tender_card.html" %}
                 {% endif %}
             </div>
-            <div class="s-section__col col-12 col-lg-5 pb-5">
-                <div class="card h-45 w-100 mb-5">
+            <div class="s-section__col col-12 col-lg-5">
+                <div class="card h-45 w-100 rounded-lg mb-3 mb-lg-5">
                     <div class="card-body">
                         <p class="h4 lh-sm mb-lg-4">M'informer sur le marché</p>
                         <div class="d-flex">
@@ -88,7 +89,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card h-45 w-100">
+                <div class="card h-45 w-100 mb-3 mb-lg-5">
                     <div class="card-body">
                         <p class="h4 lh-sm mb-lg-4">Annuaire des facilitateurs</p>
                         <p>
@@ -105,12 +106,12 @@
             </div>
         </div>
         <div class="s-section__row row">
-            <div class="s-section__col col-12 col-lg-5 pb-5">
-                <div class="card h-45 w-100 mb-5">
+            <div class="s-section__col col-12 col-lg-5">
+                <div class="card h-45 w-100 rounded-lg mb-3 mb-lg-5">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <span class="d-none d-lg-inline-flex mr-3">
-                                <img src="{% static 'images/dashboard-illu-01.svg' %}" height="100" alt=""></li>
+                                <img src="{% static 'images/dashboard-illu-01.svg' %}" height="100" alt="" loading="lazy"></li>
                             </span>
                             <div>
                                 <p class="h4 lh-sm mb-lg-4">Valoriser mes achats</p>
@@ -129,7 +130,7 @@
                 </div>
                 {% include "dashboard/_api_key_card.html" with api_key=user.api_key user_kind="BUYER" %}
             </div>
-            <div class="s-section__col col-12 col-lg-7 pb-5">
+            <div class="s-section__col col-12 col-lg-7 mb-3 mb-lg-5">
                 {% include "dashboard/_ressource_card.html" with user_kind="BUYER" %}
             </div>
         </div>
