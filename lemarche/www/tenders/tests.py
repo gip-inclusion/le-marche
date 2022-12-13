@@ -23,7 +23,7 @@ class TenderCreateViewTest(TestCase):
         cls.user_siae = UserFactory(kind=User.KIND_SIAE)
         cls.user_buyer = UserFactory(kind=User.KIND_BUYER, company_name="Test")
         cls.sectors = [SectorFactory().slug for _ in range(3)]
-        cls.perimeters = [PerimeterFactory().slug for _ in range(3)]
+        cls.intervention_location = PerimeterFactory().id
 
     @classmethod
     def _generate_fake_data_form(
@@ -38,7 +38,7 @@ class TenderCreateViewTest(TestCase):
             "general-title": tender_not_saved.title,
             "general-sectors": cls.sectors,
             "general-presta_type": siae_constants.PRESTA_BUILD,
-            "general-perimeters": cls.perimeters,
+            "general-intervention_location": cls.intervention_location,
             "general-is_country_area": tender_not_saved.is_country_area,
         } | _step_1
         step_2 = {
