@@ -12,12 +12,13 @@
     {% bootstrap_field form.title form_group_class="form-group form-group-required" %}
     {% bootstrap_field form.sectors form_group_class="form-group form-group-required use-multiselect" %}
     {% bootstrap_field form.presta_type form_group_class="form-group form-group-required use-multiselect" %}
-    <div class="form-group form-group-required {% if form.perimeters.errors %}is-invalid{% endif %}">
-        <label for="id_perimeters">{{ form.perimeters.label }}</label>
-        <div id="dir_form_perimeters" data-input-name="general-perimeters"></div>
-        <small class="form-text text-muted">{{ form.perimeters.help_text }}</small>
+    <div class="form-group form-group-required {% if form.intervention_location.errors %}is-invalid{% endif %}">
+        <label for="id_intervention_location">{{ form.intervention_location.label }}</label>
+        <input id="id_intervention_location" name="general-intervention_location" value="{{form.intervention_location.value}}" type="text" class="d-none">
+        <div id="dir_form_intervention_location_name" data-input-value="{{form.instance.intervention_location.name}}"></div>
+        <small class="form-text text-muted">{{ form.intervention_location.help_text }}</small>
         <div class="invalid-feedback">Ce champ est obligatoire.</div>
-        <div id="perimeters-selected" class="mt-1"></div>
+        <div id="intervention_location-selected" class="mt-1"></div>
     </div>
     {% bootstrap_field form.is_country_area %}
 </fieldset>
@@ -25,7 +26,7 @@
 
 {% block extra_js %}
 {{ current_perimeters|json_script:"current-perimeters" }}
-<script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', function () {
     let is_in_country_area = document.getElementById('id_general-is_country_area');

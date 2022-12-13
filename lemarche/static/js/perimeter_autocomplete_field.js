@@ -3,17 +3,11 @@ document.addEventListener("DOMContentLoaded", function() {
    * Accessible autocomplete for the perimeter search form field
    */
 
-  const perimeterAutocompleteContainer = document.querySelector('#filter-search-form #dir_form_perimeter_name');
-  // let perimeterNameInput = document.getElementById('perimeter_name');  // autocomplete // not yet inititated (see bottom)
-  let perimeterInput = document.getElementById('id_perimeter');  // hidden
+  const perimeterAutocompleteContainer = document.querySelector('#dir_form_intervention_location_name');
+  let perimeterInput = document.getElementById('id_intervention_location');  // hidden
 
   // check if there is an initial value for the autocomplete
-  const urlParams = new URLSearchParams(window.location.search);
-  const perimeterParam = urlParams.get('perimeter');
-  const perimeterNameParam = urlParams.get('perimeter_name');
-  const perimeterParamInitial = perimeterParam ? perimeterParam : '';
-  const perimeterNameParamInitial = perimeterNameParam ? perimeterNameParam : '';
-
+  const perimeterNameParamInitial = perimeterAutocompleteContainer.dataset.inputValue ;
   const perimeterKindMapping = {
     'REGION': 'région',
     'DEPARTMENT': 'département',
@@ -77,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // we want to avoid clicks outside that return 'undefined'
     if (result) {
       if (typeof result === 'object') {
-        perimeterInput.value = result.slug;
+        perimeterInput.value = result.id;
       }
       // // Edge case: if there is an initial value and it is selected again (!)  // commented out because the hidden input value is already set, no need to re-set it
       // if (typeof result === 'string') {
@@ -93,17 +87,17 @@ document.addEventListener("DOMContentLoaded", function() {
   if (document.body.contains(perimeterAutocompleteContainer)) {
     accessibleAutocomplete({
       element: perimeterAutocompleteContainer,
-      id: 'perimeter_name',
-      name: 'perimeter_name',  // url GET param name
+      id: 'general-intervention_location-name',
+      name: 'general-intervention_location-name',  // url GET param name
       placeholder: 'Région, ville…',  // 'Autour de (Arras, Bobigny, Strasbourg…)', 'Région, département, ville'
       minLength: 2,
       defaultValue: perimeterNameParamInitial,
-      source: async (query, populateResults) => {  // TODO; use debounce ?
+      source:  debounce(async (query, populateResults) => {
         const res = await fetchSource(query);
         populateResults(res);
         // we also reset the inputValueHiddenField because the perimeter hasn't been chosen yet (will happen with onConfirm)
         resetInputValueHiddenField();
-      },
+      }, 300),
       displayMenu: 'overlay',
       templates: {
         inputValue: inputValue,  // returns the string value to be inserted into the input
@@ -127,11 +121,11 @@ document.addEventListener("DOMContentLoaded", function() {
      * We track changes on the perimeterNameInput value.
      * When the value is empty, we need to reset the perimeterName value as well.
      */
-    let perimeterNameInput = document.getElementById('perimeter_name');  // autocomplete
+    let perimeterNameInput = document.getElementById('general-intervention_location');  // autocomplete
     if (perimeterNameInput) {
       perimeterNameInput.addEventListener('change', function() {
         if (!perimeterNameInput.value) {
-          inputValueHiddenField({'slug': ''});
+          inputValueHiddenField({'id': ''});
         }
       });
     }
