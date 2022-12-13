@@ -27,7 +27,7 @@
     <div class="s-title-01__container container">
         <div class="s-title-01__row row">
             <div class="s-title-01__col col-12">
-                <h1 class="s-title-01__title h1"><strong>Tableau de bord</strong></h1>
+                <h1 class="s-title-01__title h1"><strong class="pr-1" id="welcome00">Tableau de bord</strong></h1>
             </div>
         </div>
     </div>
@@ -38,7 +38,7 @@
         <div class="s-section__row row">
             <div class="s-section__col col-12 col-lg-7 mb-3 mb-lg-5">
                 {% if user.tenders.count %}
-                    <div class="card h-100 w-100 rounded-lg">
+                    <div class="card h-100 w-100 rounded-lg" id="welcome01">
                         <div class="card-body">
                             <div class="row mb-sm-4">
                                 <div class="col-12 col-md">
@@ -136,4 +136,45 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+
+{% block extra_js %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-tourist@0.3.2/bootstrap-tourist.js"></script>
+    <script>
+        var welcometour = new Tour({
+        framework: 'bootstrap4',
+        template: `
+        <div class="popover" role="tooltip">
+          <div class="arrow"></div>
+          <h3 class="popover-header"></h3>
+          <div class="popover-body"></div>
+          <div class="popover-navigation">
+            <button class="btn btn-sm btn-link pl-0" data-role="end">Ignorer</button>
+            <div class="float-right">
+              <button class="btn btn-sm btn-outline-primary" data-role="prev">Précedent</button>
+              <button class="btn btn-sm btn-primary" data-role="next">Suivant</button>
+              <button class="btn btn-sm btn-outline-primary" data-role="pause-resume" data-pause-text="Pause" data-resume-text="Play">Play/Pause</button>
+            </div>
+          </div>
+        </div>
+        `,
+        showProgressBar: true,
+        showProgressText: false,
+        steps: [
+        {
+          element: "#welcome00",
+          title: "Bienvenue sur votre tableau de bord !",
+          content: "Suivez ces quelques étapes pour apprendre à utiliser votre tableau de bord."
+        },
+        {
+          element: "#welcome01",
+          title: "Publier un besoin d’achat",
+          content: "Publiez ici vos besoins d’achat et retrouvez-les rapidement depuis cet espace."
+        }
+      ]});
+      $(document).ready(function() {
+        welcometour.start();
+      });
+    </script>
 {% endblock %}
