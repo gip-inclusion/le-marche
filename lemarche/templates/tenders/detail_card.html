@@ -139,7 +139,13 @@
         {% if source_form or tender.author == request.user or tender.accept_share_amount %}
             <hr class="my-5">
 
-            <h2>Montant du marché</h2>
+            <h2>
+                {% if tender.author == request.user %}
+                    Montant du marché
+                {% else %}
+                    Budget du client
+                {% endif %}
+            </h2>
             <p>{{ tender.get_amount_display|default:"-" }}</p>
             {% if source_form or tender.author == request.user %}
                 <p>{{ tender.accept_share_amount_display }}</p>

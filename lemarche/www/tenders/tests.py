@@ -332,7 +332,9 @@ class TenderDetailViewTest(TestCase):
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
-        cls.tender_1 = TenderFactory(author=cls.user_buyer_1)
+        cls.tender_1 = TenderFactory(
+            author=cls.user_buyer_1, amount=tender_constants.AMOUNT_RANGE_100_150, accept_share_amount=True
+        )
         cls.tendersiae_1_1 = TenderSiae.objects.create(
             tender=cls.tender_1, siae=cls.siae_1, contact_click_date=timezone.now()
         )
@@ -362,6 +364,33 @@ class TenderDetailViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Contraintes techniques spécifiques")
+
+    def test_tender_amount_display(self):
+        # tender with amount + accept_share_amount: section should be visible
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Budget du client")
+        # author has different wording
+        self.client.force_login(self.user_buyer_1)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "Montant du marché")
+        self.assertContains(response, Tender.TENDER_ACCEPT_SHARE_AMOUNT_TRUE)
+        # tender with amount + !accept_share_amount: section should be hidden
+        tender_2 = TenderFactory(
+            author=self.user_buyer_2, amount=tender_constants.AMOUNT_RANGE_100_150, accept_share_amount=False
+        )
+        url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Budget du client")
+        # author has section
+        self.client.force_login(self.user_buyer_2)
+        url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "Montant du marché")
+        self.assertContains(response, Tender.TENDER_ACCEPT_SHARE_AMOUNT_FALSE)
 
     def test_tender_deadline_date_display(self):
         # tender is not outdated by default
