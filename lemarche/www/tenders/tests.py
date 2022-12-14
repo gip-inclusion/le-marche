@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
 from django.contrib.gis.geos import Point
 from django.test import TestCase
@@ -261,14 +261,14 @@ class TenderListViewTest(TestCase):
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
-        cls.tender = TenderFactory(author=cls.user_buyer_1, validated_at=date.today(), perimeters=[perimeter])
+        cls.tender = TenderFactory(author=cls.user_buyer_1, validated_at=timezone.now(), perimeters=[perimeter])
         cls.tender_2 = TenderFactory(
-            author=cls.user_buyer_1, deadline_date=date.today() - timedelta(days=5), perimeters=[perimeter]
+            author=cls.user_buyer_1, deadline_date=timezone.now() - timedelta(days=5), perimeters=[perimeter]
         )
         cls.tender_3 = TenderFactory(
             author=cls.user_buyer_1,
-            validated_at=date.today(),
-            deadline_date=date.today() - timedelta(days=5),
+            validated_at=timezone.now(),
+            deadline_date=timezone.now() - timedelta(days=5),
             perimeters=[perimeter],
         )
         cls.tendersiae_3_1 = TenderSiae.objects.create(
