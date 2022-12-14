@@ -15,7 +15,7 @@
     <div class="form-group form-group-required {% if form.intervention_location.errors %}is-invalid{% endif %}">
         <label for="id_intervention_location">{{ form.intervention_location.label }}</label>
         <input id="id_intervention_location" name="general-intervention_location" value="{{form.intervention_location.value}}" type="text" class="d-none">
-        <div id="dir_form_intervention_location_name" data-input-value="{{form.instance.intervention_location.name}}"></div>
+        <div id="dir_form_intervention_location_name" data-input-value="{{form.instance.intervention_location.name_display}}"></div>
         <small class="form-text text-muted">{{ form.intervention_location.help_text }}</small>
         <div class="invalid-feedback">Ce champ est obligatoire.</div>
         <div id="intervention_location-selected" class="mt-1"></div>
@@ -30,27 +30,26 @@
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', function () {
     let is_in_country_area = document.getElementById('id_general-is_country_area');
-    let perimeters = document.getElementById('dir_form_perimeters');
-    let perimetersInput = document.getElementById('perimeters');
 
-    function disablePerimeters() {
-        $(perimetersInput).prop("disabled", true);
-        // Provide from perimeters autocomplete field
-        cleanPerimeters();
-    }
+    const perimeter_container_name = "dir_form_intervention_location_name"
+    const perimeter_input_id = "id_intervention_location"
+
+    const perimeterAutoComplete = new PerimeterAutoComplete(perimeter_container_name, perimeter_input_id)
 
     // init of the page
+    perimeterAutoComplete.init()
     if (is_in_country_area.checked) {
-        disablePerimeters();
+        perimeterAutoComplete.disablePerimeter(disable_it=true);
     }
+{% if form.intervention_location.errors and not form.intervention_location.value %}
+    else {
+        perimeterAutoComplete.cleanPerimeter();
+    }
+{% endif %}
 
     // on change
     is_in_country_area.addEventListener('change', () => {
-        if (is_in_country_area.checked) {
-            disablePerimeters();
-        } else {
-            $(perimetersInput).prop("disabled", false);
-        }
+        perimeterAutoComplete.disablePerimeter(disable_it=is_in_country_area.checked)
     });
 });
 </script>
