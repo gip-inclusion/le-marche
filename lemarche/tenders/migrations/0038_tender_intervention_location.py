@@ -21,7 +21,18 @@ class Migration(migrations.Migration):
                 on_delete=django.db.models.deletion.DO_NOTHING,
                 related_name="tenders_location",
                 to="perimeters.perimeter",
-                verbose_name="Lieux d'exécution",
+                verbose_name="Lieu d'intervention",
+            ),
+        ),
+        migrations.AlterField(
+            model_name="tender",
+            name="perimeters",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Ajoutez un ou plusieurs lieux d'exécutions",
+                related_name="tenders",
+                to="perimeters.perimeter",
+                verbose_name="Périmètres ciblés",
             ),
         ),
     ]
