@@ -38,7 +38,7 @@
                 {% if tender.is_country_area %}
                     France entière
                 {% else %}
-                    {{ tender.intervention_location.name }}
+                    {{ tender.intervention_location.name_display }}
                 {% endif %}
             </div>
             {% if tender.presta_type %}
