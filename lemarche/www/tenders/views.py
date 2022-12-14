@@ -53,7 +53,7 @@ def create_user_from_anonymous_content(tender_dict: dict) -> User:
 
 def create_tender_from_dict(tender_dict: dict) -> Tender:
     tender_dict.pop("contact_company_name", None)
-    intervention_location = tender_dict.pop("intervention_location")
+    intervention_location = tender_dict.get("intervention_location")
     sectors = tender_dict.pop("sectors", [])
     tender = Tender(**tender_dict)
     tender.save()
@@ -109,18 +109,6 @@ class TenderCreateMultiStepView(SessionWizardView):
 
     def get_context_data(self, form, **kwargs):
         context = super().get_context_data(form=form, **kwargs)
-        # needed to display the perimeters selected in the previous page
-        if self.steps.current == self.STEP_GENERAL:
-            tender_perimeters = None
-            if self.instance.id:
-                tender_perimeters = self.instance.perimeters.all()
-            if self.get_cleaned_data_for_step(self.STEP_GENERAL):
-                tender_is_country_area = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("is_country_area")
-                if not tender_is_country_area:
-                    tender_perimeters = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("perimeters")
-            context["current_perimeters"] = (
-                list(tender_perimeters.values("id", "slug", "name")) if tender_perimeters else []
-            )
         # needed to display the Tender preview template
         if self.steps.current == self.STEP_CONFIRMATION:
             tender_dict = self.get_all_cleaned_data()
