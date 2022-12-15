@@ -284,11 +284,19 @@ class TenderDetailView(DetailView):
 
     def get(self, request, *args, **kwargs):
         """
-        update 'detail_display_date' (if the User has any Siae linked to this Tender)
+        - update 'email_link_click_date' (if ?tendersiae_id in the URL)
+        - update 'detail_display_date' (if the User has any Siae linked to this Tender)
         """
+        tender: Tender = self.get_object()
         user = self.request.user
+        tendersiae_id = request.GET.get("tendersiae_id", None)
+        # update 'email_link_click_date'
+        if tendersiae_id:
+            TenderSiae.objects.filter(tender=tender, id=tendersiae_id, email_link_click_date=None).update(
+                email_link_click_date=timezone.now(), updated_at=timezone.now()
+            )
+        # update 'detail_display_date'
         if user.is_authenticated:
-            tender: Tender = self.get_object()
             if user.kind == User.KIND_SIAE:
                 # user might not be concerned with this tender: we create TenderSiae stats
                 if not user.has_tender_siae(tender):
@@ -325,7 +333,6 @@ class TenderDetailView(DetailView):
                 context["user_partner_can_display_tender_contact_details"] = user.can_display_tender_contact_details
             else:
                 pass
-
         return context
 
 
