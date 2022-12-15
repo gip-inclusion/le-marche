@@ -58,7 +58,7 @@
             {% if user.is_authenticated %}
                 {% if tender.author == request.user or user_partner_can_display_tender_contact_details %}
                     {% include "tenders/_detail_contact.html" with tender=tender %}
-                {% elif user_siae_has_contact_click_date and not tender.deadline_date_outdated %}
+                {% elif user_siae_has_detail_contact_click_date and not tender.deadline_date_outdated %}
                     {% include "tenders/_detail_contact.html" with tender=tender %}
                 {% elif user.kind == user.KIND_PARTNER %}
                     <div class="alert alert-info" role="alert">
@@ -95,7 +95,7 @@
                 {% else %}
                     <div class="row">
                         <div class="col-12">
-                            <button type="button" id="show-tender-contact-modal-btn" class="btn btn-primary float-right mb-4" data-toggle="modal" data-target="#contact_click_confirm_modal" title="Répondre à cette opportunité">
+                            <button type="button" id="show-tender-contact-modal-btn" class="btn btn-primary float-right mb-4" data-toggle="modal" data-target="#detail_contact_click_confirm_modal" title="Répondre à cette opportunité">
                                 Répondre à cette opportunité
                             </button>
                         </div>
@@ -104,12 +104,12 @@
                         {% include "tenders/_detail_contact.html" with tender=tender %}
                     </div>
                 {% endif %}
-                {% if tender.author == request.user and siae_contact_click_count %}
+                {% if tender.author == request.user and siae_detail_contact_click_count %}
                     <hr class="my-5" />
                     <div class="row">
                         <div class="col-12">
                             <a href="{% url 'tenders:detail-siae-interested' tender.slug %}" id="show-tender-siae-list-from-detail-btn" class="btn btn-primary">
-                                {{ siae_contact_click_count }} structures intéressées
+                                {{ siae_detail_contact_click_count }} structures intéressées
                             </a>
                         </div>
                     </div>

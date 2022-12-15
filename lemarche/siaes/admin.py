@@ -118,7 +118,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "tender_count_with_link",
         "tender_email_send_count_with_link",
         "tender_detail_display_count_with_link",
-        "tender_contact_click_count_with_link",
+        "tender_detail_contact_click_count_with_link",
         "signup_date",
         "content_filled_basic_date",
         # "import_raw_object",
@@ -229,7 +229,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "tender_count_with_link",
                     "tender_email_send_count_with_link",
                     "tender_detail_display_count_with_link",
-                    "tender_contact_click_count_with_link",
+                    "tender_detail_contact_click_count_with_link",
                 )
             },
         ),
@@ -362,7 +362,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         if lookup in [
             "tendersiae__email_send_date__isnull",
             "tendersiae__detail_display_date__isnull",
-            "tendersiae__contact_click_date__isnull",
+            "tendersiae__detail_contact_click_date__isnull",
         ]:
             return True
         return super().lookup_allowed(lookup, *args, **kwargs)
@@ -468,15 +468,15 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     tender_detail_display_count_with_link.short_description = "Besoins vues"
     tender_detail_display_count_with_link.admin_order_field = "tender_detail_display_count"
 
-    def tender_contact_click_count_with_link(self, siae):
+    def tender_detail_contact_click_count_with_link(self, siae):
         url = (
             reverse("admin:tenders_tender_changelist")
-            + f"?siaes__in={siae.id}&tendersiae__contact_click_date__isnull=False"
+            + f"?siaes__in={siae.id}&tendersiae__detail_contact_click_date__isnull=False"
         )
-        return format_html(f'<a href="{url}">{getattr(siae, "tender_contact_click_count", 0)}</a>')
+        return format_html(f'<a href="{url}">{getattr(siae, "tender_detail_contact_click_count", 0)}</a>')
 
-    tender_contact_click_count_with_link.short_description = "Besoins intéressés"
-    tender_contact_click_count_with_link.admin_order_field = "tender_contact_click_count"
+    tender_detail_contact_click_count_with_link.short_description = "Besoins intéressés"
+    tender_detail_contact_click_count_with_link.admin_order_field = "tender_detail_contact_click_count"
 
 
 @admin.register(SiaeUserRequest, site=admin_site)
