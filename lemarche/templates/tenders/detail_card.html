@@ -37,8 +37,11 @@
                 <i class="ri-map-pin-2-line"></i>
                 {% if tender.is_country_area %}
                     France entière
+                {% elif tender.location %}
+                    {{ tender.location.name_display }}
                 {% else %}
-                    {{ tender.perimeters_list_string }}
+                    {% comment %} maintain legacy perimeters display {% endcomment %}
+                    {{tender.perimeters_list_string}}
                 {% endif %}
             </div>
             {% if tender.presta_type %}

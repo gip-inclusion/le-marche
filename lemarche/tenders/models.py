@@ -204,9 +204,17 @@ class Tender(models.Model):
         blank=False,
         help_text="Sélectionnez un ou plusieurs secteurs d'activité",
     )
+    location: Perimeter = models.ForeignKey(
+        to="perimeters.Perimeter",
+        verbose_name="Lieu d'intervention",
+        related_name="tenders_location",
+        on_delete=models.DO_NOTHING,
+        blank=True,
+        null=True,
+    )
     perimeters = models.ManyToManyField(
         "perimeters.Perimeter",
-        verbose_name="Lieux d'exécution",
+        verbose_name="Périmètres ciblés",
         related_name="tenders",
         blank=True,
         help_text="Ajoutez un ou plusieurs lieux d'exécutions",

@@ -1,140 +1,134 @@
-document.addEventListener("DOMContentLoaded", function() {
-  /**
-   * Accessible autocomplete for the perimeter search form field
-   */
+// https://www.joshwcomeau.com/snippets/javascript/debounce/
+const debounce = (callback, wait) => {
+  let timeoutId = null;
+  return (...args) => {
+    window.clearTimeout(timeoutId);
+    timeoutId = window.setTimeout(() => {
+      callback.apply(null, args);
+    }, wait);
+  };
+}
 
-  const perimeterAutocompleteContainer = document.querySelector('#filter-search-form #dir_form_perimeter_name');
-  // let perimeterNameInput = document.getElementById('perimeter_name');  // autocomplete // not yet inititated (see bottom)
-  let perimeterInput = document.getElementById('id_perimeter');  // hidden
+async function fetchSource(query) {
+  const res = await fetch(`/api/perimeters/autocomplete/?q=${query}&results=10`);
+  const data = await res.json();
+  return data;  // data.results
+}
 
-  // check if there is an initial value for the autocomplete
-  const urlParams = new URLSearchParams(window.location.search);
-  const perimeterParam = urlParams.get('perimeter');
-  const perimeterNameParam = urlParams.get('perimeter_name');
-  const perimeterParamInitial = perimeterParam ? perimeterParam : '';
-  const perimeterNameParamInitial = perimeterNameParam ? perimeterNameParam : '';
+perimeterKindMapping = {
+  'REGION': 'région',
+  'DEPARTMENT': 'département',
+  'CITY': 'commune',
+}
 
-  const perimeterKindMapping = {
-    'REGION': 'région',
-    'DEPARTMENT': 'département',
-    'CITY': 'commune',
-  }
+class PerimeterAutoComplete {
 
-  // https://www.joshwcomeau.com/snippets/javascript/debounce/
-  const debounce = (callback, wait) => {
-    let timeoutId = null;
-    return (...args) => {
-      window.clearTimeout(timeoutId);
-      timeoutId = window.setTimeout(() => {
-        callback.apply(null, args);
-      }, wait);
-    };
-  }
-
-  // https://github.com/alphagov/accessible-autocomplete/issues/210#issuecomment-549463974
-  // function fetchSource(query, populateResults) {
-  //   return fetch(`http://127.0.0.1:8000/api/perimeters/autocomplete/?q=${query}&results=10`)
-  //     .then(r => r.json())
-  //     .then(data => populateResults(data))
-  // }
-  async function fetchSource(query) {
-    const res = await fetch(`/api/perimeters/autocomplete/?q=${query}&results=10`);
-    const data = await res.json();
-    return data;  // data.results
-  }
-
-  function suggestion(result) {
-    // display suggestions as `name (kind)`
-    let resultName, resultKind = '';
-
-    // build resultName & resultKind from the result object
-    if (typeof result === 'object') {
-      resultName = result.name;
-      resultKind = (result.kind === 'CITY') ? result.department_code : perimeterKindMapping[result.kind];
+    constructor(perimeter_container_name, perimeter_input_id) {
+      this.perimeter_container_name= perimeter_container_name
+      this.perimeter_input_id= perimeter_input_id
+      this.perimeter_name_input_id= `${this.perimeter_input_id}_name`
+      this.perimeterAutocompleteContainer = document.getElementById(perimeter_container_name);
+      this.perimeterInput = document.getElementById(perimeter_input_id);  // hidden
+      this.initial_value_name = this.perimeterAutocompleteContainer.dataset.inputValue;
+      this.isInit = false;
     }
 
-    // Edge case: if there is an initial value
-    // reconstruct resultName & resultKind from the result string
-    if (typeof result === 'string') {
-      resultName = result.substring(0, result.lastIndexOf(' '));
-      resultKind = result.includes('(') ? result.substring(result.lastIndexOf(' ') + 2, result.length - 1) : '';
-    }
+    init(){
+      if(!this.isInit){
+        this.isInit = true
+        accessibleAutocomplete({
+          element: this.perimeterAutocompleteContainer,
+          id: this.perimeter_name_input_id,
+          name: this.perimeter_name_input_id,  // url GET param name
+          placeholder: 'Région, ville…',  // 'Autour de (Arras, Bobigny, Strasbourg…)', 'Région, département, ville'
+          minLength: 2,
+          defaultValue: this.initial_value_name,
+          source:  this.getSource,
+          displayMenu: 'overlay',
+          templates: {
+            inputValue: this.inputValue,  // returns the string value to be inserted into the input
+            suggestion: this.inputValue,  // used when rendering suggestions, and should return a string, which can contain HTML
+          },
+          autoselect: true,
+          onConfirm: (confirmed) => {
+            this.inputValueHiddenField(confirmed);
+          },
+          showNoOptionsFound: false,
+          // Internationalization
+          tNoResults: this.tNoResults,
+          tStatusQueryTooShort: this.tStatusQueryTooShort,
+          tStatusNoResults: this.tStatusNoResults,
+          tStatusSelectedOption: this.tStatusSelectedOption,
+        });
+        // after creation of input autocomplete, we set the div as attribute
+        this.perimeterInputName = document.getElementById(this.perimeter_name_input_id);
 
-    let nameWithKind = '<strong>' + resultName + '</strong>';
-    if (resultKind) {
-      nameWithKind += ' <small>(' + resultKind + ')</small>';
-    }
-    return result && nameWithKind;
-  }
-
-  function inputValue(result) {
-    // strip html from suggestion
-    const resultValue = result ? suggestion(result).replace(/(<([^>]+)>)/gi, '') : '';
-    return result && resultValue;
-  }
-
-  function inputValueHiddenField(result) {
-    // we want to avoid clicks outside that return 'undefined'
-    if (result) {
-      if (typeof result === 'object') {
-        perimeterInput.value = result.slug;
       }
-      // // Edge case: if there is an initial value and it is selected again (!)  // commented out because the hidden input value is already set, no need to re-set it
-      // if (typeof result === 'string') {
-      //   perimeterInput.value = perimeterParamInitial;
-      // }
     }
-  }
+    tNoResults = () => 'Aucun résultat'
+    tStatusQueryTooShort = (minQueryLength) => `Tapez au moins ${minQueryLength} caractères pour avoir des résultats`
+    tStatusNoResults = () => 'Aucun résultat pour cette recherche'
+    tStatusSelectedOption = (selectedOption, length, index) => `${selectedOption} ${index + 1} de ${length} est sélectionnée`
 
-  function resetInputValueHiddenField() {
-    perimeterInput.value = '';
-  }
+    async getSource(query, populateResults) {
+      const res = await fetchSource(query);
+      populateResults(res);
+    }
 
-  if (document.body.contains(perimeterAutocompleteContainer)) {
-    accessibleAutocomplete({
-      element: perimeterAutocompleteContainer,
-      id: 'perimeter_name',
-      name: 'perimeter_name',  // url GET param name
-      placeholder: 'Région, ville…',  // 'Autour de (Arras, Bobigny, Strasbourg…)', 'Région, département, ville'
-      minLength: 2,
-      defaultValue: perimeterNameParamInitial,
-      source: async (query, populateResults) => {  // TODO; use debounce ?
-        const res = await fetchSource(query);
-        populateResults(res);
-        // we also reset the inputValueHiddenField because the perimeter hasn't been chosen yet (will happen with onConfirm)
-        resetInputValueHiddenField();
-      },
-      displayMenu: 'overlay',
-      templates: {
-        inputValue: inputValue,  // returns the string value to be inserted into the input
-        suggestion: suggestion,  // used when rendering suggestions, and should return a string, which can contain HTML
-      },
-      autoselect: true,
-      onConfirm: (confirmed) => {
-        inputValueHiddenField(confirmed);
-      },
-      showNoOptionsFound: false,
-      // Internationalization
-      tNoResults: () => 'Aucun résultat',
-      tStatusQueryTooShort: (minQueryLength) => `Tapez au moins ${minQueryLength} caractères pour avoir des résultats`,
-      tStatusNoResults: () => 'Aucun résultat pour cette recherche',
-      tStatusSelectedOption: (selectedOption, length, index) => `${selectedOption} ${index + 1} de ${length} est sélectionnée`,
-      // tStatusResults:
-      // tAssistiveHint:
-    });
+    inputValue(result) {
+      // strip html from suggestion
+      if(!result) {
+        return result;
+      }
+      let resultName, resultKind = '';
 
-    /**
-     * We track changes on the perimeterNameInput value.
-     * When the value is empty, we need to reset the perimeterName value as well.
-     */
-    let perimeterNameInput = document.getElementById('perimeter_name');  // autocomplete
-    if (perimeterNameInput) {
-      perimeterNameInput.addEventListener('change', function() {
-        if (!perimeterNameInput.value) {
-          inputValueHiddenField({'slug': ''});
+      // build resultName & resultKind from the result object
+      if (typeof result === 'object') {
+        resultName = result.name;
+        resultKind = (result.kind === 'CITY') ? result.department_code : perimeterKindMapping[result.kind];
+      }
+
+      // Edge case: if there is an initial value
+      // reconstruct resultName & resultKind from the result string
+      if (typeof result === 'string') {
+        resultName = result.substring(0, result.lastIndexOf(' '));
+        resultKind = result.includes('(') ? result.substring(result.lastIndexOf(' ') + 2, result.length - 1) : '';
+      }
+
+      let nameWithKind = '<strong>' + resultName + '</strong>';
+      if (resultKind) {
+        nameWithKind += ' <small>(' + resultKind + ')</small>';
+      }
+      return nameWithKind.replace(/(<([^>]+)>)/gi, '');
+    }
+
+    inputValueHiddenField(result) {
+      // we want to avoid clicks outside that return 'undefined'
+      if (result) {
+        if (typeof result === 'object') {
+          this.perimeterInput.value = result.slug;
         }
-      });
+      }
     }
-  }
 
-});
+    resetInputValueHiddenField() {
+      this.perimeterInput.value = '';
+    }
+
+
+    cleanPerimeter() {
+      this.perimeterInputName.value ='';
+      this.perimeterInput.value ='';
+    }
+
+    disablePerimeter(disable_it=true) {
+      if(disable_it){
+        this.cleanPerimeter();
+        this.perimeterInput.setAttribute('disabled', true);
+        this.perimeterInputName.setAttribute('disabled', true);
+      } else {
+        this.perimeterInput.removeAttribute('disabled');
+        this.perimeterInputName.removeAttribute('disabled');
+      }
+    }
+}

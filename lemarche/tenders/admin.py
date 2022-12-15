@@ -120,6 +120,7 @@ class TenderAdmin(admin.ModelAdmin):
             "Lieux d'exécution 'spécifique'",
             {
                 "fields": (
+                    "location",
                     "perimeters",
                     "include_country_area",
                 ),
