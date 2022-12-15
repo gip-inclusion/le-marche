@@ -106,7 +106,7 @@ class PerimeterAutoComplete {
       // we want to avoid clicks outside that return 'undefined'
       if (result) {
         if (typeof result === 'object') {
-          this.perimeterInput.value = result.id;
+          this.perimeterInput.value = result.slug;
         }
       }
     }

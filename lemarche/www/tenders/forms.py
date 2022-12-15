@@ -40,9 +40,10 @@ class AddTenderStepGeneralForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # self.fields["location"].to_field_name = "slug"
+        self.fields["location"].to_field_name = "slug"
         # required fields
         self.fields["sectors"].required = True
+        self.fields["location"].required = True
         # self.fields["perimeters"].required = True  # JS
         # label, placeholder & help_text
         self.fields["title"].widget.attrs["placeholder"] = "Ex : Devis rénovation façade"
