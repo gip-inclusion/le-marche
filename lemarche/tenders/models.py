@@ -405,7 +405,7 @@ def tender_post_save(sender, instance=Tender, **kwargs):
 @receiver(m2m_changed, sender=Tender.perimeters.through)
 def tender_m2m_changed(sender, instance, action, **kwargs):
     if action in ("post_add", "post_remove", "post_clear"):
-        if not instance.validated_at and instance == tender_constants.STATUS_PUBLISHED:
+        if not instance.validated_at and instance.status == tender_constants.STATUS_PUBLISHED:
             instance.set_siae_found_list()
 
 
