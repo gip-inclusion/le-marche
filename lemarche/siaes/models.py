@@ -871,11 +871,14 @@ class Siae(models.Model):
         return round_by_base(score_percent, base=5)
 
     def sectors_list_string(self, display_max=5):
-        sectors_name_list = self.sectors.values_list("name", flat=True)
+        sectors_name_list = self.sectors.form_filter_queryset().values_list("name", flat=True)
         if display_max and len(sectors_name_list) > display_max:
             sectors_name_list = sectors_name_list[:display_max]
             sectors_name_list.append("…")
         return ", ".join(sectors_name_list)
+
+    def sectors_full_list_string(self):
+        return self.sectors_list_string(display_max=None)
 
     @cached_property
     def stat_view_count_last_3_months(self):
