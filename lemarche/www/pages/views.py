@@ -262,7 +262,7 @@ def csrf_failure(request, reason=""):  # noqa C901
                     ]:
                         tender_dict["extra_data"] |= {key_cleaned: value[0]}
                     elif key_cleaned == "location":
-                        tender_dict[key_cleaned] = Perimeter.objects.get(slug=value[0])
+                        tender_dict[key_cleaned] = Perimeter.objects.get(slug=value[0]).id
 
                     elif key_cleaned in [
                         "is_country_area",
