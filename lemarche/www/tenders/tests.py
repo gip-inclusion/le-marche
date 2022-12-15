@@ -537,7 +537,7 @@ class TenderDetailViewTest(TestCase):
         self.client.force_login(self.user_partner)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
-        self.assertContains(response, "via le chat de discussion")
+        self.assertContains(response, "pour être mis en relation avec le client.")
         self.assertNotContains(response, "Contactez le client dès maintenant")
         self.assertNotContains(response, "Répondre à cette opportunité")
         # this one can!
@@ -545,7 +545,7 @@ class TenderDetailViewTest(TestCase):
         self.client.force_login(user_partner_2)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
-        self.assertNotContains(response, "via le chat de discussion")
+        self.assertNotContains(response, "pour être mis en relation avec le client.")
         self.assertContains(response, "Contactez le client dès maintenant")
         self.assertNotContains(response, "Répondre à cette opportunité")
 
