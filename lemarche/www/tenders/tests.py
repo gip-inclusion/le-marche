@@ -288,7 +288,7 @@ class TenderListViewTest(TestCase):
             perimeters=[perimeter],
         )
         cls.tendersiae_3_1 = TenderSiae.objects.create(
-            tender=cls.tender_3, siae=cls.siae_1, contact_click_date=timezone.now()
+            tender=cls.tender_3, siae=cls.siae_1, detail_contact_click_date=timezone.now()
         )
 
     def test_anonymous_user_cannot_list_tenders(self):
@@ -352,7 +352,7 @@ class TenderDetailViewTest(TestCase):
             author=cls.user_buyer_1, amount=tender_constants.AMOUNT_RANGE_100_150, accept_share_amount=True
         )
         cls.tendersiae_1_1 = TenderSiae.objects.create(
-            tender=cls.tender_1, siae=cls.siae_1, contact_click_date=timezone.now()
+            tender=cls.tender_1, siae=cls.siae_1, detail_contact_click_date=timezone.now()
         )
 
     def test_anyone_can_view_tenders(self):
@@ -497,7 +497,7 @@ class TenderDetailViewTest(TestCase):
 
     def test_tender_outdated_contact_display(self):
         tender_2 = TenderFactory(author=self.user_buyer_1, deadline_date=timezone.now() - timedelta(days=1))
-        TenderSiae.objects.create(tender=tender_2, siae=self.siae_1, contact_click_date=timezone.now())
+        TenderSiae.objects.create(tender=tender_2, siae=self.siae_1, detail_contact_click_date=timezone.now())
         # anonymous
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
         response = self.client.get(url)
@@ -572,13 +572,13 @@ class TenderDetailContactClickStatViewTest(TestCase):
         for user in [self.siae_user_1, self.siae_user_2]:
             self.client.force_login(user)
             url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
-            response = self.client.post(url, data={"contact_click_confirm": "false"})
+            response = self.client.post(url, data={"detail_contact_click_confirm": "false"})
             self.assertEqual(response.status_code, 302)  # redirect
         # forbidden
         for user in [self.user_buyer_1, self.user_buyer_2, self.user_partner]:
             self.client.force_login(user)
             url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
-            response = self.client.post(url, data={"contact_click_confirm": "false"})
+            response = self.client.post(url, data={"detail_contact_click_confirm": "false"})
             self.assertEqual(response.status_code, 403)
 
     def test_update_tendersiae_stats_on_tender_contact_click(self):
@@ -588,21 +588,23 @@ class TenderDetailContactClickStatViewTest(TestCase):
         self.assertEqual(self.tender.tendersiae_set.count(), 2)
         self.assertEqual(self.tender.tendersiae_set.first().siae, siae_2)
         self.assertEqual(self.tender.tendersiae_set.last().siae, self.siae)
-        self.assertIsNone(self.tender.tendersiae_set.first().contact_click_date)
-        self.assertIsNone(self.tender.tendersiae_set.last().contact_click_date)
+        self.assertIsNone(self.tender.tendersiae_set.first().detail_contact_click_date)
+        self.assertIsNone(self.tender.tendersiae_set.last().detail_contact_click_date)
         self.client.force_login(self.siae_user_2)
         url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
-        response = self.client.post(url, data={"contact_click_confirm": "true"})
+        response = self.client.post(url, data={"detail_contact_click_confirm": "true"})
         self.assertEqual(response.status_code, 302)  # redirect
-        siae_2_contact_click_date = self.tender.tendersiae_set.first().contact_click_date
-        self.assertNotEqual(siae_2_contact_click_date, None)
-        self.assertEqual(self.tender.tendersiae_set.last().contact_click_date, None)
-        # clicking again on the button doesn't update contact_click_date
+        siae_2_detail_contact_click_date = self.tender.tendersiae_set.first().detail_contact_click_date
+        self.assertNotEqual(siae_2_detail_contact_click_date, None)
+        self.assertEqual(self.tender.tendersiae_set.last().detail_contact_click_date, None)
+        # clicking again on the button doesn't update detail_contact_click_date
         # Note: button will disappear on reload
         url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
-        response = self.client.post(url, data={"contact_click_confirm": "false"})
+        response = self.client.post(url, data={"detail_contact_click_confirm": "false"})
         self.assertEqual(response.status_code, 302)  # redirect
-        self.assertEqual(self.tender.tendersiae_set.first().contact_click_date, siae_2_contact_click_date)
+        self.assertEqual(
+            self.tender.tendersiae_set.first().detail_contact_click_date, siae_2_detail_contact_click_date
+        )
 
 
 # TODO: this test doesn't work anymore. find a way to test logging post-email in non-prod environments?
@@ -634,14 +636,14 @@ class TenderSiaeInterestedListView(TestCase):
         cls.tender_1 = TenderFactory(author=cls.user_buyer_1)
         cls.tender_2 = TenderFactory(author=cls.user_buyer_2)
         cls.tendersiae_1_1 = TenderSiae.objects.create(
-            tender=cls.tender_1, siae=cls.siae_1, contact_click_date=timezone.now()
+            tender=cls.tender_1, siae=cls.siae_1, detail_contact_click_date=timezone.now()
         )
         cls.tendersiae_1_2 = TenderSiae.objects.create(tender=cls.tender_1, siae=cls.siae_2)
         cls.tendersiae_1_3 = TenderSiae.objects.create(
-            tender=cls.tender_1, siae=cls.siae_3, contact_click_date=timezone.now() - timedelta(hours=1)
+            tender=cls.tender_1, siae=cls.siae_3, detail_contact_click_date=timezone.now() - timedelta(hours=1)
         )
         cls.tendersiae_2_1 = TenderSiae.objects.create(
-            tender=cls.tender_2, siae=cls.siae_2, contact_click_date=timezone.now()
+            tender=cls.tender_2, siae=cls.siae_2, detail_contact_click_date=timezone.now()
         )
 
     def test_anonymous_user_cannot_view_tender_siae_interested_list(self):
@@ -674,10 +676,10 @@ class TenderSiaeInterestedListView(TestCase):
         self.assertEqual(len(response.context["tendersiaes"]), 2)
         self.assertIsNotNone(Tender.objects.get(id=self.tender_1.id).siae_interested_list_last_seen_date)
 
-    def test_order_tender_siae_by_last_contact_click_date(self):
+    def test_order_tender_siae_by_last_detail_contact_click_date(self):
         # TenderSiae are ordered by -created_at by default
         self.assertEqual(self.tender_1.tendersiae_set.first().id, self.tendersiae_1_3.id)
-        # but TenderSiaeInterestedListView are ordered by -contact_click_date
+        # but TenderSiaeInterestedListView are ordered by -detail_contact_click_date
         self.client.force_login(self.user_buyer_1)
         url = reverse("tenders:detail-siae-interested", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)

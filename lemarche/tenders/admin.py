@@ -59,7 +59,7 @@ class TenderAdmin(admin.ModelAdmin):
         "siae_count_with_link",
         "siae_email_send_count_with_link",
         "siae_detail_display_count_with_link",
-        "siae_contact_click_count_with_link",
+        "siae_detail_contact_click_count_with_link",
         "created_at",
         "validated_at",
     ]
@@ -74,7 +74,7 @@ class TenderAdmin(admin.ModelAdmin):
         "siae_count_with_link",
         "siae_email_send_count_with_link",
         "siae_detail_display_count_with_link",
-        "siae_contact_click_count_with_link",
+        "siae_detail_contact_click_count_with_link",
         "extra_data_prettier",
         "status",
         "logs_display",
@@ -164,7 +164,7 @@ class TenderAdmin(admin.ModelAdmin):
                     "siae_count_with_link",
                     "siae_email_send_count_with_link",
                     "siae_detail_display_count_with_link",
-                    "siae_contact_click_count_with_link",
+                    "siae_detail_contact_click_count_with_link",
                     "siae_transactioned",
                 )
             },
@@ -210,7 +210,7 @@ class TenderAdmin(admin.ModelAdmin):
         if lookup in [
             "tendersiae__email_send_date__isnull",
             "tendersiae__detail_display_date__isnull",
-            "tendersiae__contact_click_date__isnull",
+            "tendersiae__detail_contact_click_date__isnull",
         ]:
             return True
         return super().lookup_allowed(lookup, *args, **kwargs)
@@ -255,15 +255,15 @@ class TenderAdmin(admin.ModelAdmin):
     siae_detail_display_count_with_link.short_description = "S. vues"
     siae_detail_display_count_with_link.admin_order_field = "siae_detail_display_count"
 
-    def siae_contact_click_count_with_link(self, tender):
+    def siae_detail_contact_click_count_with_link(self, tender):
         url = (
             reverse("admin:siaes_siae_changelist")
-            + f"?tenders__in={tender.id}&tendersiae__contact_click_date__isnull=False"
+            + f"?tenders__in={tender.id}&tendersiae__detail_contact_click_date__isnull=False"
         )
-        return format_html(f'<a href="{url}">{getattr(tender, "siae_contact_click_count", 0)}</a>')
+        return format_html(f'<a href="{url}">{getattr(tender, "siae_detail_contact_click_count", 0)}</a>')
 
-    siae_contact_click_count_with_link.short_description = "S. intéressées"
-    siae_contact_click_count_with_link.admin_order_field = "siae_contact_click_count"
+    siae_detail_contact_click_count_with_link.short_description = "S. intéressées"
+    siae_detail_contact_click_count_with_link.admin_order_field = "siae_detail_contact_click_count"
 
     def logs_display(self, tender=None):
         if tender:

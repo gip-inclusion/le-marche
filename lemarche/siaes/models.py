@@ -341,9 +341,11 @@ class SiaeQuerySet(models.QuerySet):
                     When(tendersiae__detail_display_date__isnull=False, then=1), default=0, output_field=IntegerField()
                 )
             ),
-            tender_contact_click_count=Sum(
+            tender_detail_contact_click_count=Sum(
                 Case(
-                    When(tendersiae__contact_click_date__isnull=False, then=1), default=0, output_field=IntegerField()
+                    When(tendersiae__detail_contact_click_date__isnull=False, then=1),
+                    default=0,
+                    output_field=IntegerField(),
                 )
             ),
         )

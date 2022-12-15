@@ -194,7 +194,7 @@ class TenderModelQuerysetStatsTest(TestCase):
             siae=siae_with_tender_5,
             email_send_date=timezone.now(),
             detail_display_date=timezone.now(),
-            contact_click_date=timezone.now(),
+            detail_contact_click_date=timezone.now(),
         )
         self.tender_with_siae_2 = TenderFactory()
         TenderSiae.objects.create(
@@ -202,7 +202,7 @@ class TenderModelQuerysetStatsTest(TestCase):
             siae=self.siae_with_tender_1,
             email_send_date=timezone.now(),
             detail_display_date=timezone.now(),
-            contact_click_date=timezone.now(),
+            detail_contact_click_date=timezone.now(),
         )
         self.tender_without_siae = TenderFactory(deadline_date=timezone.make_aware(date_tomorrow))
 
@@ -219,22 +219,22 @@ class TenderModelQuerysetStatsTest(TestCase):
         self.assertEqual(tender_with_siae_1.siae_count, 5)
         self.assertEqual(tender_with_siae_1.siae_email_send_count, 3)
         self.assertEqual(tender_with_siae_1.siae_detail_display_count, 2)
-        self.assertEqual(tender_with_siae_1.siae_contact_click_count, 1)
-        self.assertEqual(tender_with_siae_1.siae_contact_click_since_last_seen_date_count, 1)
+        self.assertEqual(tender_with_siae_1.siae_detail_contact_click_count, 1)
+        self.assertEqual(tender_with_siae_1.siae_detail_contact_click_since_last_seen_date_count, 1)
         tender_with_siae_2 = Tender.objects.with_siae_stats().filter(id=self.tender_with_siae_2.id).first()
         self.assertEqual(tender_with_siae_2.siaes.count(), 1)
         self.assertEqual(tender_with_siae_2.siae_count, 1)
         self.assertEqual(tender_with_siae_2.siae_email_send_count, 1)
         self.assertEqual(tender_with_siae_2.siae_detail_display_count, 1)
-        self.assertEqual(tender_with_siae_2.siae_contact_click_count, 1)
-        self.assertEqual(tender_with_siae_2.siae_contact_click_since_last_seen_date_count, 1)
+        self.assertEqual(tender_with_siae_2.siae_detail_contact_click_count, 1)
+        self.assertEqual(tender_with_siae_2.siae_detail_contact_click_since_last_seen_date_count, 1)
         tender_without_siae = Tender.objects.with_siae_stats().filter(id=self.tender_without_siae.id).first()
         self.assertEqual(tender_without_siae.siaes.count(), 0)
         self.assertEqual(tender_without_siae.siae_count, 0)
         self.assertEqual(tender_without_siae.siae_email_send_count, 0)
         self.assertEqual(tender_without_siae.siae_detail_display_count, 0)
-        self.assertEqual(tender_without_siae.siae_contact_click_count, 0)
-        self.assertEqual(tender_without_siae.siae_contact_click_since_last_seen_date_count, 0)
+        self.assertEqual(tender_without_siae.siae_detail_contact_click_count, 0)
+        self.assertEqual(tender_without_siae.siae_detail_contact_click_since_last_seen_date_count, 0)
 
     def test_siae_with_tender_stats_queryset(self):
         self.assertEqual(Siae.objects.count(), 5 + 1)
@@ -243,13 +243,13 @@ class TenderModelQuerysetStatsTest(TestCase):
         self.assertEqual(siae_with_tender_1.tender_count, 2)
         self.assertEqual(siae_with_tender_1.tender_email_send_count, 1)
         self.assertEqual(siae_with_tender_1.tender_detail_display_count, 1)
-        self.assertEqual(siae_with_tender_1.tender_contact_click_count, 1)
+        self.assertEqual(siae_with_tender_1.tender_detail_contact_click_count, 1)
         siae_without_tender = Siae.objects.with_tender_stats().filter(id=self.siae_without_tender.id).first()
         self.assertEqual(siae_without_tender.tenders.count(), 0)
         self.assertEqual(siae_without_tender.tender_count, 0)
         self.assertEqual(siae_without_tender.tender_email_send_count, 0)
         self.assertEqual(siae_without_tender.tender_detail_display_count, 0)
-        self.assertEqual(siae_without_tender.tender_contact_click_count, 0)
+        self.assertEqual(siae_without_tender.tender_detail_contact_click_count, 0)
 
     def test_with_deadline_date_is_outdated_queryset(self):
         TenderFactory(deadline_date=timezone.make_aware(date_last_week))
