@@ -69,8 +69,8 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a role="button" hx-push-url="true" hx-get="{{TENDERS_VALIDATE_LIST_URLD}}"
-                                    class="nav-link{% if request.get_full_path == TENDERS_VALIDATE_LIST_URLD %} active{% endif %}"
+                                <a role="button" hx-push-url="true" hx-get="{{TENDERS_VALIDATED_LIST_URL}}"
+                                    class="nav-link{% if request.get_full_path == TENDERS_VALIDATED_LIST_URL %} active{% endif %}"
                                     hx-target="#tendersList" hx-swap="outerHTML">
                                     Envoyé
                                 </a>
@@ -92,7 +92,7 @@
                                 {% if request.get_full_path == TENDERS_PUBLISHED_LIST_URL %}
                                     Vous n'avez aucun besoin de publié pour le moment.
                                 {% endif %}
-                                {% if request.get_full_path == TENDERS_VALIDATE_LIST_URLD %}
+                                {% if request.get_full_path == TENDERS_VALIDATED_LIST_URL %}
                                     Vous n'avez aucun besoin d'envoyé pour le moment.<br>
                                     Contacter notre équipe en cas de problème avec un de vos dépôts de besoins publié et pas encore envoyé.
                                 {% endif %}
