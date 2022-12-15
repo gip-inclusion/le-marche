@@ -29,11 +29,11 @@
             </div>
         </div>
         <div class="row text-bold">
-            <div class="col">
+            <div class="col" title="Secteurs d'activité : {{ tender.sectors_full_list_string }}">
                 <i class="ri-award-line"></i>
                 {{ tender.sectors_list_string }}
             </div>
-            <div class="col">
+            <div class="col" title="Lieu d'éxécution">
                 <i class="ri-map-pin-2-line"></i>
                 {% if tender.is_country_area %}
                     France entière
@@ -45,7 +45,7 @@
                 {% endif %}
             </div>
             {% if tender.presta_type %}
-                <div class="col">
+                <div class="col" title="Type de prestation">
                     <i class="ri-briefcase-4-line"></i>
                     {% array_choices_display tender 'presta_type' %}
                 </div>
