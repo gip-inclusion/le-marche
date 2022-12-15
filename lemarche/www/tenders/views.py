@@ -53,6 +53,7 @@ def create_user_from_anonymous_content(tender_dict: dict) -> User:
 
 def create_tender_from_dict(tender_dict: dict) -> Tender:
     tender_dict.pop("contact_company_name", None)
+    tender_dict.pop("id_location_name", None)
     location = tender_dict.get("location")
     sectors = tender_dict.pop("sectors", [])
     tender = Tender(**tender_dict)
