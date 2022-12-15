@@ -30,6 +30,20 @@
         <div class="col-12 col-lg-8">
             {% include "tenders/detail_card.html" with tender=tender is_draft=is_draft %}
         </div>
+        {% if user_siae_has_contact_click_date and not tender.deadline_date_outdated %}
+            <div class="col-12 col-lg-4">
+                <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                    <p class="mb-1">
+                        <i class="ri-information-line ri-lg"></i>
+                        <strong>Conseil</strong>
+                    </p>
+                    <p class="mb-0 fs-sm">
+                        N'attendez pas et contactez dès maintenant le client.
+                        En fonction, envoyez lui un devis, une plaquette commerciale ou répondez à son marché.
+                    </p>
+                </div>
+            </div>
+        {% endif %}
     </div>
 </section>
 {% endblock %}
