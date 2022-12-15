@@ -18,6 +18,7 @@ def expose_settings(request):
         "MATOMO_TAG_MANAGER_CONTAINER_ID": settings.MATOMO_TAG_MANAGER_CONTAINER_ID,
         "CRISP_ID": settings.CRISP_ID,
         "API_GOUV_URL": settings.API_GOUV_URL,
+        "CONTACT_EMAIL": settings.CONTACT_EMAIL,
         # forms & docs
         "FACILITATOR_SLIDE": settings.FACILITATOR_SLIDE,
         "FACILITATOR_LIST": settings.FACILITATOR_LIST,
