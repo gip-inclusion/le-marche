@@ -176,6 +176,7 @@ class TenderModelQuerysetStatsTest(TestCase):
         siae_with_tender_3 = SiaeFactory(users=[self.user_siae])
         siae_with_tender_4 = SiaeFactory()
         siae_with_tender_5 = SiaeFactory()
+        siae_with_tender_6 = SiaeFactory()
         self.siae_without_tender = SiaeFactory()
         self.tender_with_siae_1 = TenderFactory(
             siaes=[self.siae_with_tender_1, siae_with_tender_2], deadline_date=timezone.make_aware(date_tomorrow)
@@ -187,12 +188,20 @@ class TenderModelQuerysetStatsTest(TestCase):
             tender=self.tender_with_siae_1,
             siae=siae_with_tender_4,
             email_send_date=timezone.now(),
-            detail_display_date=timezone.now(),
+            email_link_click_date=timezone.now(),
         )
         TenderSiae.objects.create(
             tender=self.tender_with_siae_1,
             siae=siae_with_tender_5,
             email_send_date=timezone.now(),
+            email_link_click_date=timezone.now(),
+            detail_display_date=timezone.now(),
+        )
+        TenderSiae.objects.create(
+            tender=self.tender_with_siae_1,
+            siae=siae_with_tender_6,
+            email_send_date=timezone.now(),
+            email_link_click_date=timezone.now(),
             detail_display_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
         )
@@ -201,6 +210,7 @@ class TenderModelQuerysetStatsTest(TestCase):
             tender=self.tender_with_siae_2,
             siae=self.siae_with_tender_1,
             email_send_date=timezone.now(),
+            email_link_click_date=timezone.now(),
             detail_display_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
         )

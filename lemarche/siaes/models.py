@@ -336,6 +336,13 @@ class SiaeQuerySet(models.QuerySet):
             tender_email_send_count=Sum(
                 Case(When(tendersiae__email_send_date__isnull=False, then=1), default=0, output_field=IntegerField())
             ),
+            tender_email_link_click_count=Sum(
+                Case(
+                    When(tendersiae__email_link_click_date__isnull=False, then=1),
+                    default=0,
+                    output_field=IntegerField(),
+                )
+            ),
             tender_detail_display_count=Sum(
                 Case(
                     When(tendersiae__detail_display_date__isnull=False, then=1), default=0, output_field=IntegerField()

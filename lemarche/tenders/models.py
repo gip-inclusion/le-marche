@@ -82,6 +82,13 @@ class TenderQuerySet(models.QuerySet):
             siae_email_send_count=Sum(
                 Case(When(tendersiae__email_send_date__isnull=False, then=1), default=0, output_field=IntegerField())
             ),
+            siae_email_link_click_count=Sum(
+                Case(
+                    When(tendersiae__email_link_click_date__isnull=False, then=1),
+                    default=0,
+                    output_field=IntegerField(),
+                )
+            ),
             siae_detail_display_count=Sum(
                 Case(
                     When(tendersiae__detail_display_date__isnull=False, then=1), default=0, output_field=IntegerField()
@@ -434,6 +441,7 @@ class TenderSiae(models.Model):
 
     # stats
     email_send_date = models.DateTimeField("Date d'envoi de l'e-mail", blank=True, null=True)
+    email_link_click_date = models.DateTimeField("Date de clic sur le lien dans l'e-mail", blank=True, null=True)
     detail_display_date = models.DateTimeField("Date de visualisation du besoin", blank=True, null=True)
     detail_contact_click_date = models.DateTimeField(
         "Date de clic sur les coordonnées du besoin", blank=True, null=True
