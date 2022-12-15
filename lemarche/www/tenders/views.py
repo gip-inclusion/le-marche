@@ -53,12 +53,12 @@ def create_user_from_anonymous_content(tender_dict: dict) -> User:
 
 def create_tender_from_dict(tender_dict: dict) -> Tender:
     tender_dict.pop("contact_company_name", None)
-    perimeters = tender_dict.pop("perimeters", [])
+    location = tender_dict.get("location")
     sectors = tender_dict.pop("sectors", [])
     tender = Tender(**tender_dict)
     tender.save()
-    if perimeters:
-        tender.perimeters.set(perimeters)
+    if location:
+        tender.perimeters.set([location])
     if sectors:
         tender.sectors.set(sectors)
     return tender
@@ -109,23 +109,10 @@ class TenderCreateMultiStepView(SessionWizardView):
 
     def get_context_data(self, form, **kwargs):
         context = super().get_context_data(form=form, **kwargs)
-        # needed to display the perimeters selected in the previous page
-        if self.steps.current == self.STEP_GENERAL:
-            tender_perimeters = None
-            if self.instance.id:
-                tender_perimeters = self.instance.perimeters.all()
-            if self.get_cleaned_data_for_step(self.STEP_GENERAL):
-                tender_is_country_area = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("is_country_area")
-                if not tender_is_country_area:
-                    tender_perimeters = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("perimeters")
-            context["current_perimeters"] = (
-                list(tender_perimeters.values("id", "slug", "name")) if tender_perimeters else []
-            )
         # needed to display the Tender preview template
         if self.steps.current == self.STEP_CONFIRMATION:
             tender_dict = self.get_all_cleaned_data()
             tender_dict["sectors_list_string"] = ", ".join(tender_dict["sectors"].values_list("name", flat=True))
-            tender_dict["perimeters_list_string"] = ", ".join(tender_dict["perimeters"].values_list("name", flat=True))
             tender_dict["get_kind_display"] = get_choice(Tender.TENDER_KIND_CHOICES, tender_dict["kind"])
             tender_dict["get_amount_display"] = get_choice(
                 tender_constants.AMOUNT_RANGE_CHOICES, tender_dict["amount"]
@@ -170,19 +157,20 @@ class TenderCreateMultiStepView(SessionWizardView):
         if self.instance.id:
             # update
             self.instance.status = tender_status
-            perimeters, sectors = None, None
+            sectors = None
             for step, model_form in form_dict.items():
                 if model_form.has_changed():
                     if step != self.STEP_SURVEY:
                         for attribute in model_form.changed_data:
-                            if attribute not in ("perimeters", "sectors"):
-                                setattr(self.instance, attribute, tender_dict.get(attribute))
-                            elif attribute == "perimeters":
-                                perimeters = tender_dict.get("perimeters")
-                                self.instance.perimeters.set(perimeters)
-                            elif attribute == "sectors":
+                            if attribute == "sectors":
                                 sectors = tender_dict.get("sectors", None)
                                 self.instance.sectors.set(sectors)
+                            elif attribute == "location":
+                                location = tender_dict.get("location")
+                                self.instance.location = location
+                                self.instance.perimeters.set([location])
+                            else:
+                                setattr(self.instance, attribute, tender_dict.get(attribute))
                     elif step == self.STEP_SURVEY:
                         setattr(self.instance, "scale_marche_useless", tender_dict.get("scale_marche_useless"))
                         self.instance.extra_data.update(tender_dict.get("extra_data"))
