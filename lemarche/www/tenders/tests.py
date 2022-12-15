@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
 from django.contrib.gis.geos import Point
 from django.test import TestCase
@@ -277,14 +277,14 @@ class TenderListViewTest(TestCase):
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
-        cls.tender = TenderFactory(author=cls.user_buyer_1, validated_at=date.today(), perimeters=[perimeter])
+        cls.tender = TenderFactory(author=cls.user_buyer_1, validated_at=timezone.now(), perimeters=[perimeter])
         cls.tender_2 = TenderFactory(
-            author=cls.user_buyer_1, deadline_date=date.today() - timedelta(days=5), perimeters=[perimeter]
+            author=cls.user_buyer_1, deadline_date=timezone.now() - timedelta(days=5), perimeters=[perimeter]
         )
         cls.tender_3 = TenderFactory(
             author=cls.user_buyer_1,
-            validated_at=date.today(),
-            deadline_date=date.today() - timedelta(days=5),
+            validated_at=timezone.now(),
+            deadline_date=timezone.now() - timedelta(days=5),
             perimeters=[perimeter],
         )
         cls.tendersiae_3_1 = TenderSiae.objects.create(
@@ -348,7 +348,9 @@ class TenderDetailViewTest(TestCase):
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
-        cls.tender_1 = TenderFactory(author=cls.user_buyer_1)
+        cls.tender_1 = TenderFactory(
+            author=cls.user_buyer_1, amount=tender_constants.AMOUNT_RANGE_100_150, accept_share_amount=True
+        )
         cls.tendersiae_1_1 = TenderSiae.objects.create(
             tender=cls.tender_1, siae=cls.siae_1, contact_click_date=timezone.now()
         )
@@ -378,6 +380,33 @@ class TenderDetailViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Contraintes techniques spécifiques")
+
+    def test_tender_amount_display(self):
+        # tender with amount + accept_share_amount: section should be visible
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Budget du client")
+        # author has different wording
+        self.client.force_login(self.user_buyer_1)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "Montant du marché")
+        self.assertContains(response, Tender.TENDER_ACCEPT_SHARE_AMOUNT_TRUE)
+        # tender with amount + !accept_share_amount: section should be hidden
+        tender_2 = TenderFactory(
+            author=self.user_buyer_2, amount=tender_constants.AMOUNT_RANGE_100_150, accept_share_amount=False
+        )
+        url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Budget du client")
+        # author has section
+        self.client.force_login(self.user_buyer_2)
+        url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "Montant du marché")
+        self.assertContains(response, Tender.TENDER_ACCEPT_SHARE_AMOUNT_FALSE)
 
     def test_tender_deadline_date_display(self):
         # tender is not outdated by default
@@ -446,7 +475,7 @@ class TenderDetailViewTest(TestCase):
         self.client.force_login(self.siae_user_1)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
-        self.assertContains(response, "utilisez les coordonnées suivantes")
+        self.assertContains(response, "Contactez le client dès maintenant")
         self.assertNotContains(response, "Répondre à cette opportunité")
         # siae user not concerned
         self.client.force_login(self.siae_user_2)
@@ -479,7 +508,7 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
         response = self.client.get(url)
         self.assertContains(response, "Clôturé")
-        self.assertNotContains(response, "utilisez les coordonnées suivantes")
+        self.assertNotContains(response, "Contactez le client dès maintenant")
         self.assertNotContains(response, "Répondre à cette opportunité")
         # siae user not concerned
         self.client.force_login(self.siae_user_2)
@@ -500,7 +529,7 @@ class TenderDetailViewTest(TestCase):
         response = self.client.get(url)
         self.assertContains(response, "Clôturé")
         self.assertContains(response, "Coordonnées")
-        self.assertNotContains(response, "utilisez les coordonnées suivantes")
+        self.assertNotContains(response, "Contactez le client dès maintenant")
         self.assertNotContains(response, "Répondre à cette opportunité")
 
     def test_some_partners_can_display_contact_details(self):
@@ -509,7 +538,7 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertContains(response, "via le chat de discussion")
-        self.assertNotContains(response, "utilisez les coordonnées suivantes")
+        self.assertNotContains(response, "Contactez le client dès maintenant")
         self.assertNotContains(response, "Répondre à cette opportunité")
         # this one can!
         user_partner_2 = UserFactory(kind=User.KIND_PARTNER, can_display_tender_contact_details=True)
@@ -517,7 +546,7 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertNotContains(response, "via le chat de discussion")
-        self.assertContains(response, "utilisez les coordonnées suivantes")
+        self.assertContains(response, "Contactez le client dès maintenant")
         self.assertNotContains(response, "Répondre à cette opportunité")
 
 
