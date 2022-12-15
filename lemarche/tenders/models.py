@@ -204,7 +204,7 @@ class Tender(models.Model):
         blank=False,
         help_text="Sélectionnez un ou plusieurs secteurs d'activité",
     )
-    intervention_location: Perimeter = models.ForeignKey(
+    location: Perimeter = models.ForeignKey(
         to="perimeters.Perimeter",
         verbose_name="Lieu d'intervention",
         related_name="tenders_location",

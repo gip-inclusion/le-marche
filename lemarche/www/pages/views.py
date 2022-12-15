@@ -282,7 +282,7 @@ def csrf_failure(request, reason=""):  # noqa C901
 
                     elif key_cleaned == "sectors":
                         tender_dict[key_cleaned] = Sector.objects.filter(slug__in=value)
-                    elif key_cleaned == "intervention_location":
+                    elif key_cleaned == "location":
                         tender_dict[key_cleaned] = Perimeter.objects.get(pk=value[0])
                     else:  # presta_type, response_kind, marche_benefits
                         tender_dict[key_cleaned] = list() if value[0] == "" else value

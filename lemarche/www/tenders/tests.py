@@ -23,7 +23,7 @@ class TenderCreateViewTest(TestCase):
         cls.user_siae = UserFactory(kind=User.KIND_SIAE)
         cls.user_buyer = UserFactory(kind=User.KIND_BUYER, company_name="Test")
         cls.sectors = [SectorFactory().slug for _ in range(3)]
-        cls.intervention_location_id = PerimeterFactory().id
+        cls.location_id = PerimeterFactory().id
 
     @classmethod
     def _generate_fake_data_form(
@@ -38,7 +38,7 @@ class TenderCreateViewTest(TestCase):
             "general-title": tender_not_saved.title,
             "general-sectors": cls.sectors,
             "general-presta_type": siae_constants.PRESTA_BUILD,
-            "general-intervention_location": cls.intervention_location_id,
+            "general-location": cls.location_id,
             "general-is_country_area": tender_not_saved.is_country_area,
         } | _step_1
         step_2 = {
@@ -133,10 +133,10 @@ class TenderCreateViewTest(TestCase):
         tender: Tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
-        self.assertEqual(tender.intervention_location.id, self.intervention_location_id)
+        self.assertEqual(tender.location.id, self.location_id)
         tender_list_perimeter_id = [perimeter.id for perimeter in tender.perimeters.all()]
         self.assertEqual(len(tender_list_perimeter_id), 1)
-        self.assertEqual(tender_list_perimeter_id, [self.intervention_location_id])
+        self.assertEqual(tender_list_perimeter_id, [self.location_id])
         tenders_sectors = tender.sectors.all()
         tender_list_sector_slug = [sector.slug for sector in tenders_sectors]
         self.assertEqual(len(tender_list_sector_slug), tenders_sectors.count())

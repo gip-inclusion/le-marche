@@ -53,12 +53,12 @@ def create_user_from_anonymous_content(tender_dict: dict) -> User:
 
 def create_tender_from_dict(tender_dict: dict) -> Tender:
     tender_dict.pop("contact_company_name", None)
-    intervention_location = tender_dict.get("intervention_location")
+    location = tender_dict.get("location")
     sectors = tender_dict.pop("sectors", [])
     tender = Tender(**tender_dict)
     tender.save()
-    if intervention_location:
-        tender.perimeters.set([intervention_location])
+    if location:
+        tender.perimeters.set([location])
     if sectors:
         tender.sectors.set(sectors)
     return tender
@@ -113,7 +113,7 @@ class TenderCreateMultiStepView(SessionWizardView):
         if self.steps.current == self.STEP_CONFIRMATION:
             tender_dict = self.get_all_cleaned_data()
             tender_dict["sectors_list_string"] = ", ".join(tender_dict["sectors"].values_list("name", flat=True))
-            tender_dict["perimeters_list_string"] = tender_dict["intervention_location"].name
+            tender_dict["perimeters_list_string"] = tender_dict["location"].name
             tender_dict["get_kind_display"] = get_choice(Tender.TENDER_KIND_CHOICES, tender_dict["kind"])
             tender_dict["get_amount_display"] = get_choice(
                 tender_constants.AMOUNT_RANGE_CHOICES, tender_dict["amount"]
@@ -166,10 +166,10 @@ class TenderCreateMultiStepView(SessionWizardView):
                             if attribute == "sectors":
                                 sectors = tender_dict.get("sectors", None)
                                 self.instance.sectors.set(sectors)
-                            elif attribute == "intervention_location":
-                                intervention_location = tender_dict.get("intervention_location")
-                                self.instance.intervention_location = intervention_location
-                                self.instance.perimeters.set([intervention_location])
+                            elif attribute == "location":
+                                location = tender_dict.get("location")
+                                self.instance.location = location
+                                self.instance.perimeters.set([location])
                             else:
                                 setattr(self.instance, attribute, tender_dict.get(attribute))
                     elif step == self.STEP_SURVEY:

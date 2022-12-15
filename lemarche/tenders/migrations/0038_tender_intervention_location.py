@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name="tender",
-            name="intervention_location",
+            name="location",
             field=models.ForeignKey(
                 blank=True,
                 null=True,
