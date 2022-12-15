@@ -313,13 +313,13 @@ class TenderDetailView(DetailView):
         )
         if user.is_authenticated:
             if tender.author == user:
-                context["siae_contact_click_count"] = TenderSiae.objects.filter(
-                    tender=tender, contact_click_date__isnull=False
+                context["siae_detail_contact_click_count"] = TenderSiae.objects.filter(
+                    tender=tender, detail_contact_click_date__isnull=False
                 ).count()
                 context["is_draft"] = tender.status == tender_constants.STATUS_DRAFT
             elif user.kind == User.KIND_SIAE:
-                context["user_siae_has_contact_click_date"] = TenderSiae.objects.filter(
-                    tender=tender, siae__in=user.siaes.all(), contact_click_date__isnull=False
+                context["user_siae_has_detail_contact_click_date"] = TenderSiae.objects.filter(
+                    tender=tender, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False
                 ).exists()
             elif user.kind == User.KIND_PARTNER:
                 context["user_partner_can_display_tender_contact_details"] = user.can_display_tender_contact_details
@@ -335,7 +335,7 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
     We might also send a notification to the buyer
     """
 
-    template_name = "tenders/_contact_click_confirm_modal.html"
+    template_name = "tenders/_detail_contact_click_confirm_modal.html"
     model = Tender
 
     def get_object(self):
@@ -343,20 +343,24 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
-        contact_click_confirm = self.request.POST.get("contact_click_confirm", False) == "true"
+        detail_contact_click_confirm = self.request.POST.get("detail_contact_click_confirm", False) == "true"
         if user.kind == User.KIND_SIAE:
-            if contact_click_confirm:
-                # update contact_click_date
+            if detail_contact_click_confirm:
+                # update detail_contact_click_date
                 tender = self.get_object()
                 TenderSiae.objects.filter(
-                    tender=tender, siae__in=user.siaes.all(), contact_click_date__isnull=True
-                ).update(contact_click_date=timezone.now(), updated_at=timezone.now())
+                    tender=tender, siae__in=user.siaes.all(), detail_contact_click_date__isnull=True
+                ).update(detail_contact_click_date=timezone.now(), updated_at=timezone.now())
                 # notify the tender author
                 send_siae_interested_email_to_author(tender)
                 # redirect
-                messages.add_message(self.request, messages.SUCCESS, self.get_success_message(contact_click_confirm))
+                messages.add_message(
+                    self.request, messages.SUCCESS, self.get_success_message(detail_contact_click_confirm)
+                )
             else:
-                messages.add_message(self.request, messages.WARNING, self.get_success_message(contact_click_confirm))
+                messages.add_message(
+                    self.request, messages.WARNING, self.get_success_message(detail_contact_click_confirm)
+                )
             return HttpResponseRedirect(self.get_success_url())
         else:
             return HttpResponseForbidden()
@@ -364,8 +368,8 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
 
-    def get_success_message(self, contact_click_confirm):
-        if contact_click_confirm:
+    def get_success_message(self, detail_contact_click_confirm):
+        if detail_contact_click_confirm:
             return "<strong>Bravo !</strong><br />Vos coordonnées, ainsi que le lien vers votre fiche commerciale ont été transmis à l'acheteur. Assurez-vous d'avoir une fiche commerciale bien renseignée."  # noqa
         return "<strong>Répondre à cette opportunité</strong><br />Pour répondre à cette opportunité, vous devez accepter d'être mis en relation avec l'acheteur."  # noqa
 
@@ -377,8 +381,8 @@ class TenderSiaeInterestedListView(TenderOwnerRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        qs = qs.filter(tender__slug=self.kwargs.get("slug"), contact_click_date__isnull=False)
-        qs = qs.order_by("-contact_click_date")
+        qs = qs.filter(tender__slug=self.kwargs.get("slug"), detail_contact_click_date__isnull=False)
+        qs = qs.order_by("-detail_contact_click_date")
         return qs
 
     def get(self, request, *args, **kwargs):

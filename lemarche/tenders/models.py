@@ -87,15 +87,17 @@ class TenderQuerySet(models.QuerySet):
                     When(tendersiae__detail_display_date__isnull=False, then=1), default=0, output_field=IntegerField()
                 )
             ),
-            siae_contact_click_count=Sum(
+            siae_detail_contact_click_count=Sum(
                 Case(
-                    When(tendersiae__contact_click_date__isnull=False, then=1), default=0, output_field=IntegerField()
+                    When(tendersiae__detail_contact_click_date__isnull=False, then=1),
+                    default=0,
+                    output_field=IntegerField(),
                 )
             ),
-            siae_contact_click_since_last_seen_date_count=Sum(
+            siae_detail_contact_click_since_last_seen_date_count=Sum(
                 Case(
                     When(
-                        tendersiae__contact_click_date__gte=Greatest(
+                        tendersiae__detail_contact_click_date__gte=Greatest(
                             F("siae_interested_list_last_seen_date"), F("created_at")
                         ),
                         then=1,
@@ -433,7 +435,9 @@ class TenderSiae(models.Model):
     # stats
     email_send_date = models.DateTimeField("Date d'envoi de l'e-mail", blank=True, null=True)
     detail_display_date = models.DateTimeField("Date de visualisation du besoin", blank=True, null=True)
-    contact_click_date = models.DateTimeField("Date de clic sur les coordonnées du besoin", blank=True, null=True)
+    detail_contact_click_date = models.DateTimeField(
+        "Date de clic sur les coordonnées du besoin", blank=True, null=True
+    )
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
