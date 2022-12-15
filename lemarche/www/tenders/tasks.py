@@ -132,6 +132,8 @@ def send_tender_email_to_siae(email_subject: str, tender: Tender, siae: Siae):
         recipient_email = recipient_list[0] if recipient_list else ""
         recipient_name = siae.contact_full_name
 
+        tendersiae = TenderSiae.objects.get(tender=tender, siae=siae)
+
         variables = {
             "SIAE_CONTACT_FIRST_NAME": siae.contact_first_name,
             "SIAE_SECTORS": siae.sectors_list_string(),
@@ -141,7 +143,7 @@ def send_tender_email_to_siae(email_subject: str, tender: Tender, siae: Siae):
             "TENDER_KIND": tender.get_kind_display(),
             "TENDER_SECTORS": tender.sectors_list_string(),
             "TENDER_PERIMETERS": tender.location.name_display,
-            "TENDER_URL": get_share_url_object(tender),
+            "TENDER_URL": f"{get_share_url_object(tender)}?tendersiae_id={tendersiae.id}",
         }
 
         api_mailjet.send_transactional_email_with_template(
