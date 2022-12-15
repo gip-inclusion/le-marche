@@ -105,31 +105,33 @@ class TrackerMiddleware:
     def track_page(self, page, request: HttpRequest, response: HttpResponse):
         action = "load"
         meta = None
+        extra_data = {}
 
         if request.method == "GET":
             context_data = self.get_context_data(response)
             if page == (reverse("siae:search_results")):  # Search action
                 action = "directory_search"
-                extra_data = {
-                    "results_count": context_data.get("paginator").count if context_data.get("paginator") else None
-                }
-                meta = self.extract_meta_from_request_get(request, context_data=context_data, extra_data=extra_data)
+                extra_data["results_count"] = (
+                    context_data.get("paginator").count if context_data.get("paginator") else None
+                )
 
             elif page == reverse("siae:search_results_download"):  # download csv action
                 action = "directory_csv"
-                extra_data = {
-                    "results_count": int(response.headers.get("Context-Data-Results-Count"))
+                extra_data["results_count"] = (
+                    int(response.headers.get("Context-Data-Results-Count"))
                     if response.headers.get("Context-Data-Results-Count", None)
                     else None
-                }
-                meta = self.extract_meta_from_request_get(request, context_data=context_data, extra_data=extra_data)
+                )
 
             elif page == reverse("dashboard:siae_search_by_siret"):  # adopted search action
                 action = "adopt_search"
-                meta = self.extract_meta_from_request_get(request, context_data=context_data)
 
-            else:
-                meta = self.extract_meta_from_request_get(request, context_data=context_data)
+            elif page in (reverse("pages:impact_calculator"),):
+                extra_data["results_count"] = (
+                    context_data.get("results").count() if context_data.get("results") else None
+                )
+
+            meta = self.extract_meta_from_request_get(request, context_data=context_data, extra_data=extra_data)
 
         if meta:
             track(
