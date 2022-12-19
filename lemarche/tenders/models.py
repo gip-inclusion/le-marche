@@ -374,6 +374,16 @@ class Tender(models.Model):
         return ", ".join(self.perimeters.values_list("name", flat=True))
 
     @cached_property
+    def location_display(self):
+        if self.is_country_area:
+            return "France entière"
+        elif self.location:
+            return self.location.name_display
+        else:
+            # maintain legacy perimeters display
+            return self.perimeters_list_string
+
+    @cached_property
     def can_display_contact_email(self):
         return self.RESPONSE_KIND_EMAIL in self.response_kind and self.contact_email
 

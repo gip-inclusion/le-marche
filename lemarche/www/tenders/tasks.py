@@ -63,7 +63,7 @@ def send_tender_email_to_partner(email_subject: str, tender: Tender, partner: Pa
             "TENDER_TITLE": tender.title,
             "TENDER_AUTHOR_COMPANY": tender.author.company_name,
             "TENDER_SECTORS": tender.sectors_list_string(),
-            "TENDER_PERIMETERS": tender.location.name_display,
+            "TENDER_PERIMETERS": tender.location_display,
             "TENDER_URL": get_share_url_object(tender),
         }
 
@@ -140,7 +140,7 @@ def send_tender_email_to_siae(email_subject: str, tender: Tender, siae: Siae):
             "TENDER_AUTHOR_COMPANY": tender.author.company_name,
             "TENDER_KIND": tender.get_kind_display(),
             "TENDER_SECTORS": tender.sectors_list_string(),
-            "TENDER_PERIMETERS": tender.location.name_display,
+            "TENDER_PERIMETERS": tender.location_display,
             "TENDER_URL": f"{get_share_url_object(tender)}?siae_id={siae.id}",
         }
 
