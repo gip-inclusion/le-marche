@@ -28,14 +28,47 @@ date_last_week = datetime.now() - timedelta(days=7)
 
 
 class TenderModelTest(TestCase):
-    def setUp(self):
-        pass
-
     def test_str(self):
         str_test = "Mon test"
         tender = TenderFactory(title=str_test)
         self.assertEqual(str(tender), str_test)
 
+
+class TenderModelPropertyTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.grenoble_perimeter = PerimeterFactory(
+            name="Grenoble",
+            kind=Perimeter.KIND_CITY,
+            insee_code="38185",
+            department_code="38",
+            region_code="84",
+            post_codes=["38000", "38100", "38700"],
+            # coords=Point(5.7301, 45.1825),
+        )
+        cls.chamrousse_perimeter = PerimeterFactory(
+            name="Chamrousse",
+            kind=Perimeter.KIND_CITY,
+            insee_code="38567",
+            department_code="38",
+            region_code="84",
+            post_codes=["38410"],
+            # coords=Point(5.8862, 45.1106),
+        )
+
+    def test_location_display(self):
+        tender_country_area = TenderFactory(title="Besoin 1", is_country_area=True)
+        self.assertEqual(tender_country_area.location_display, "France entière")
+        tender_location = TenderFactory(title="Besoin 2", location=self.grenoble_perimeter)
+        self.assertTrue("Grenoble" in tender_location.location_display)
+        tender_perimeters = TenderFactory(
+            title="Besoin 3", perimeters=[self.grenoble_perimeter, self.chamrousse_perimeter]
+        )
+        self.assertTrue("Grenoble" in tender_perimeters.location_display)
+        self.assertTrue("Chamrousse" in tender_perimeters.location_display)
+
+
+class TenderModelSaveTest(TestCase):
     def test_set_slug(self):
         tender = TenderFactory(title="Un besoin")
         self.assertEqual(tender.slug, "un-besoin")
@@ -67,8 +100,26 @@ class TenderModelTest(TestCase):
 
 
 class TenderModelQuerysetTest(TestCase):
-    def setUp(self):
-        pass
+    @classmethod
+    def setUpTestData(cls):
+        cls.grenoble_perimeter = PerimeterFactory(
+            name="Grenoble",
+            kind=Perimeter.KIND_CITY,
+            insee_code="38185",
+            department_code="38",
+            region_code="84",
+            post_codes=["38000", "38100", "38700"],
+            # coords=Point(5.7301, 45.1825),
+        )
+        cls.chamrousse_perimeter = PerimeterFactory(
+            name="Chamrousse",
+            kind=Perimeter.KIND_CITY,
+            insee_code="38567",
+            department_code="38",
+            region_code="84",
+            post_codes=["38410"],
+            # coords=Point(5.8862, 45.1106),
+        )
 
     def test_by_user_queryset(self):
         user = UserFactory()
@@ -107,29 +158,11 @@ class TenderModelQuerysetTest(TestCase):
         isere_perimeter = PerimeterFactory(
             name="Isère", kind=Perimeter.KIND_DEPARTMENT, insee_code="38", region_code="84"
         )
-        grenoble_perimeter = PerimeterFactory(
-            name="Grenoble",
-            kind=Perimeter.KIND_CITY,
-            insee_code="38185",
-            department_code="38",
-            region_code="84",
-            post_codes=["38000", "38100", "38700"],
-            # coords=Point(5.7301, 45.1825),
-        )
-        chamrousse_perimeter = PerimeterFactory(
-            name="Chamrousse",
-            kind=Perimeter.KIND_CITY,
-            insee_code="38567",
-            department_code="38",
-            region_code="84",
-            post_codes=["38410"],
-            # coords=Point(5.8862, 45.1106),
-        )
         TenderFactory(perimeters=[auvergne_rhone_alpes_perimeter])
         TenderFactory(perimeters=[isere_perimeter])
-        TenderFactory(perimeters=[grenoble_perimeter])
-        TenderFactory(perimeters=[chamrousse_perimeter])
-        TenderFactory(perimeters=[grenoble_perimeter, chamrousse_perimeter])
+        TenderFactory(perimeters=[self.grenoble_perimeter])
+        TenderFactory(perimeters=[self.chamrousse_perimeter])
+        TenderFactory(perimeters=[self.grenoble_perimeter, self.chamrousse_perimeter])
         # self.assertEqual(Tender.objects.in_perimeters().count(), 5)
         self.assertEqual(
             Tender.objects.in_perimeters(post_code="38000", department="38", region="Auvergne-Rhône-Alpes").count(), 4

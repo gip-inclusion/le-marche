@@ -8,7 +8,13 @@ class PerimeterModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.perimeter_city = PerimeterFactory(
-            name="Grenoble", kind=Perimeter.KIND_CITY, insee_code="38185", department_code="38", region_code="84"
+            name="Grenoble",
+            kind=Perimeter.KIND_CITY,
+            insee_code="38185",
+            department_code="38",
+            region_code="84",
+            post_codes=["38000", "38100", "38700"],
+            # coords=Point(5.7301, 45.1825),
         )
         cls.perimeter_department = PerimeterFactory(
             name="Isère", kind=Perimeter.KIND_DEPARTMENT, insee_code="38", region_code="84"

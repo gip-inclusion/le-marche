@@ -16,6 +16,7 @@ class PerimeterListFilterApiTest(TestCase):
             department_code="38",
             region_code="84",
             post_codes=["38000", "38100", "38700"],
+            # coords=Point(5.7301, 45.1825),
         )
         cls.perimeter_department = PerimeterFactory(
             name="Isère", kind=Perimeter.KIND_DEPARTMENT, insee_code="38", region_code="84"
@@ -56,6 +57,7 @@ class PerimetersAutocompleteFilterApiTest(TestCase):
             department_code="38",
             region_code="84",
             post_codes=["38000", "38100", "38700"],
+            # coords=Point(5.7301, 45.1825),
         )
         cls.perimeter_department = PerimeterFactory(
             name="Isère", kind=Perimeter.KIND_DEPARTMENT, insee_code="38", region_code="84"
