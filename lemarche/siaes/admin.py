@@ -361,6 +361,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     def lookup_allowed(self, lookup, *args, **kwargs):
         if lookup in [
             "tendersiae__email_send_date__isnull",
+            "tendersiae__email_link_click_date__isnull",
             "tendersiae__detail_display_date__isnull",
             "tendersiae__detail_contact_click_date__isnull",
         ]:
@@ -457,6 +458,16 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
 
     tender_email_send_count_with_link.short_description = "Besoins contactés"
     tender_email_send_count_with_link.admin_order_field = "tender_email_send_count"
+
+    def tender_email_link_click_count_with_link(self, siae):
+        url = (
+            reverse("admin:tenders_tender_changelist")
+            + f"?siaes__in={siae.id}&tendersiae__email_link_click_date__isnull=False"
+        )
+        return format_html(f'<a href="{url}">{getattr(siae, "tender_email_link_click_count", 0)}</a>')
+
+    tender_email_link_click_count_with_link.short_description = "Besoins cliqués"
+    tender_email_link_click_count_with_link.admin_order_field = "tender_email_link_click_count"
 
     def tender_detail_display_count_with_link(self, siae):
         url = (

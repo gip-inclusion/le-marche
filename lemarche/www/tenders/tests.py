@@ -435,17 +435,28 @@ class TenderDetailViewTest(TestCase):
         self.assertEqual(self.tender_1.tendersiae_set.count(), 1 + 1)
         self.assertEqual(self.tender_1.tendersiae_set.first().siae, self.siae_2)
         self.assertEqual(self.tender_1.tendersiae_set.last().siae, self.siae_1)
+        self.assertIsNone(self.tender_1.tendersiae_set.first().email_link_click_date)
         self.assertIsNone(self.tender_1.tendersiae_set.first().detail_display_date)
+        self.assertIsNone(self.tender_1.tendersiae_set.last().email_link_click_date)
         self.assertIsNone(self.tender_1.tendersiae_set.last().detail_display_date)
-        # first load
-        self.client.force_login(self.siae_user_2)
-        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        # first load anonymous
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug}) + f"?siae_id={self.siae_2.id}"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        siae_2_email_link_click_date = self.tender_1.tendersiae_set.first().email_link_click_date
+        self.assertIsNotNone(siae_2_email_link_click_date)
+        self.assertIsNone(self.tender_1.tendersiae_set.first().detail_display_date)
+        self.assertIsNone(self.tender_1.tendersiae_set.last().detail_display_date)
+        # reload logged in (doesn't update email_link_click_date)
+        self.client.force_login(self.siae_user_2)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug}) + f"?siae_id={self.siae_2.id}"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.tender_1.tendersiae_set.first().email_link_click_date, siae_2_email_link_click_date)
         siae_2_detail_display_date = self.tender_1.tendersiae_set.first().detail_display_date
         self.assertIsNotNone(siae_2_detail_display_date)
         self.assertIsNone(self.tender_1.tendersiae_set.last().detail_display_date)
-        # reload doesn't update detail_display_date
+        # reload (doesn't update detail_display_date)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)

@@ -52,10 +52,15 @@ DEFAULT_PAYLOAD = {
 
 # @task()
 def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
-
     # Don't log in dev
     if settings.BITOUBI_ENV not in ("test"):
         date_created = timezone.now()
+        user_id = int(meta.get("user_id")) if meta.get("user_id", None) else None
+        user_kind = meta.get("user_type") if meta.get("user_type", "") else ""
+        siae_id = meta.get("siae_id", None)
+        if siae_id:
+            siae_id = int(siae_id[0]) if (type(siae_id) == list) else int(siae_id)
+
         set_payload = {
             "date_created": date_created,
             "page": page,
@@ -65,12 +70,11 @@ def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
                 "meta": DEFAULT_PAYLOAD["data"]
                 | meta,
             },
-            "user_id": int(meta.get("user_id")) if meta.get("user_id", None) else None,
-            "user_kind": meta.get("user_type") if meta.get("user_type", "") else "",
+            "user_id": user_id,
+            "user_kind": user_kind,
             "isadmin": meta.get("is_admin", False),
-            "siae_id": int(meta.get("siae_id")) if meta.get("siae_id", None) else None,
+            "siae_id": siae_id,
         }
-
         payload = DEFAULT_PAYLOAD | set_payload
 
         try:
