@@ -57,7 +57,8 @@ class TenderAdmin(admin.ModelAdmin):
         "deadline_date",
         "start_working_date",
         "siae_count_with_link",
-        "siae_email_send_count_with_link",
+        # "siae_email_send_count_with_link",
+        "siae_email_link_click_count_with_link",
         "siae_detail_display_count_with_link",
         "siae_detail_contact_click_count_with_link",
         "created_at",
@@ -73,6 +74,7 @@ class TenderAdmin(admin.ModelAdmin):
     readonly_fields = [field.name for field in Tender._meta.fields if field.name.endswith("_last_seen_date")] + [
         "siae_count_with_link",
         "siae_email_send_count_with_link",
+        "siae_email_link_click_count_with_link",
         "siae_detail_display_count_with_link",
         "siae_detail_contact_click_count_with_link",
         "extra_data_prettier",
@@ -163,6 +165,7 @@ class TenderAdmin(admin.ModelAdmin):
                 "fields": (
                     "siae_count_with_link",
                     "siae_email_send_count_with_link",
+                    "siae_email_link_click_count_with_link",
                     "siae_detail_display_count_with_link",
                     "siae_detail_contact_click_count_with_link",
                     "siae_transactioned",
@@ -253,8 +256,8 @@ class TenderAdmin(admin.ModelAdmin):
         )
         return format_html(f'<a href="{url}">{getattr(tender, "siae_email_link_click_count", 0)}</a>')
 
-    siae_email_send_count_with_link.short_description = "S. cliquées"
-    siae_email_send_count_with_link.admin_order_field = "siae_email_link_click_count"
+    siae_email_link_click_count_with_link.short_description = "S. cliquées"
+    siae_email_link_click_count_with_link.admin_order_field = "siae_email_link_click_count"
 
     def siae_detail_display_count_with_link(self, tender):
         url = (
