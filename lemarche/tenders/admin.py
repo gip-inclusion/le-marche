@@ -209,6 +209,7 @@ class TenderAdmin(admin.ModelAdmin):
     def lookup_allowed(self, lookup, *args, **kwargs):
         if lookup in [
             "tendersiae__email_send_date__isnull",
+            "tendersiae__email_link_click_date__isnull",
             "tendersiae__detail_display_date__isnull",
             "tendersiae__detail_contact_click_date__isnull",
         ]:
@@ -244,6 +245,16 @@ class TenderAdmin(admin.ModelAdmin):
 
     siae_email_send_count_with_link.short_description = "S. contactées"
     siae_email_send_count_with_link.admin_order_field = "siae_email_send_count"
+
+    def siae_email_link_click_count_with_link(self, tender):
+        url = (
+            reverse("admin:siaes_siae_changelist")
+            + f"?tenders__in={tender.id}&tendersiae__email_link_click_date__isnull=False"
+        )
+        return format_html(f'<a href="{url}">{getattr(tender, "siae_email_link_click_count", 0)}</a>')
+
+    siae_email_send_count_with_link.short_description = "S. cliquées"
+    siae_email_send_count_with_link.admin_order_field = "siae_email_link_click_count"
 
     def siae_detail_display_count_with_link(self, tender):
         url = (

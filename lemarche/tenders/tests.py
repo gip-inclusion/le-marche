@@ -176,6 +176,7 @@ class TenderModelQuerysetStatsTest(TestCase):
         siae_with_tender_3 = SiaeFactory(users=[self.user_siae])
         siae_with_tender_4 = SiaeFactory()
         siae_with_tender_5 = SiaeFactory()
+        siae_with_tender_6 = SiaeFactory()
         self.siae_without_tender = SiaeFactory()
         self.tender_with_siae_1 = TenderFactory(
             siaes=[self.siae_with_tender_1, siae_with_tender_2], deadline_date=timezone.make_aware(date_tomorrow)
@@ -187,12 +188,20 @@ class TenderModelQuerysetStatsTest(TestCase):
             tender=self.tender_with_siae_1,
             siae=siae_with_tender_4,
             email_send_date=timezone.now(),
-            detail_display_date=timezone.now(),
+            email_link_click_date=timezone.now(),
         )
         TenderSiae.objects.create(
             tender=self.tender_with_siae_1,
             siae=siae_with_tender_5,
             email_send_date=timezone.now(),
+            email_link_click_date=timezone.now(),
+            detail_display_date=timezone.now(),
+        )
+        TenderSiae.objects.create(
+            tender=self.tender_with_siae_1,
+            siae=siae_with_tender_6,
+            email_send_date=timezone.now(),
+            email_link_click_date=timezone.now(),
             detail_display_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
         )
@@ -201,6 +210,7 @@ class TenderModelQuerysetStatsTest(TestCase):
             tender=self.tender_with_siae_2,
             siae=self.siae_with_tender_1,
             email_send_date=timezone.now(),
+            email_link_click_date=timezone.now(),
             detail_display_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
         )
@@ -215,9 +225,10 @@ class TenderModelQuerysetStatsTest(TestCase):
     def test_with_siae_stats_queryset(self):
         self.assertEqual(Tender.objects.count(), 2 + 1)
         tender_with_siae_1 = Tender.objects.with_siae_stats().filter(id=self.tender_with_siae_1.id).first()
-        self.assertEqual(tender_with_siae_1.siaes.count(), 5)
-        self.assertEqual(tender_with_siae_1.siae_count, 5)
-        self.assertEqual(tender_with_siae_1.siae_email_send_count, 3)
+        self.assertEqual(tender_with_siae_1.siaes.count(), 6)
+        self.assertEqual(tender_with_siae_1.siae_count, 6)
+        self.assertEqual(tender_with_siae_1.siae_email_send_count, 4)
+        self.assertEqual(tender_with_siae_1.siae_email_link_click_count, 3)
         self.assertEqual(tender_with_siae_1.siae_detail_display_count, 2)
         self.assertEqual(tender_with_siae_1.siae_detail_contact_click_count, 1)
         self.assertEqual(tender_with_siae_1.siae_detail_contact_click_since_last_seen_date_count, 1)
@@ -237,7 +248,7 @@ class TenderModelQuerysetStatsTest(TestCase):
         self.assertEqual(tender_without_siae.siae_detail_contact_click_since_last_seen_date_count, 0)
 
     def test_siae_with_tender_stats_queryset(self):
-        self.assertEqual(Siae.objects.count(), 5 + 1)
+        self.assertEqual(Siae.objects.count(), 6 + 1)
         siae_with_tender_1 = Siae.objects.with_tender_stats().filter(id=self.siae_with_tender_1.id).first()
         # self.assertEqual(siae_with_tender_1.tenders.count(), 2)
         self.assertEqual(siae_with_tender_1.tender_count, 2)
