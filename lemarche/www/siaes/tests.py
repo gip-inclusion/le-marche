@@ -593,6 +593,15 @@ class SiaeSearchOrderTest(TestCase):
         SiaeFactory(name="Ma boite")
         SiaeFactory(name="Une autre structure")
         SiaeFactory(name="ABC Insertion")
+        cls.grenoble_perimeter = PerimeterFactory(
+            name="Grenoble",
+            kind=Perimeter.KIND_CITY,
+            insee_code="38185",
+            department_code="38",
+            region_code="84",
+            # post_codes=["38000", "38100", "38700"],
+            coords=Point(5.7301, 45.1825),
+        )
 
     def test_should_order_by_last_updated(self):
         url = reverse("siae:search_results", kwargs={})
@@ -633,14 +642,6 @@ class SiaeSearchOrderTest(TestCase):
         self.assertEqual(siaes[0].name, "ZZ ESI 3")
 
     def test_should_bring_the_siae_closer_to_the_city_to_the_top(self):
-        grenoble_perimeter = PerimeterFactory(
-            name="Grenoble",
-            kind=Perimeter.KIND_CITY,
-            insee_code="38185",
-            department_code="38",
-            region_code="84",
-            coords=Point(5.7301, 45.1825),
-        )
         SiaeFactory(
             name="ZZ GEO Pontcharra",
             department="38",
@@ -661,7 +662,7 @@ class SiaeSearchOrderTest(TestCase):
             geo_range_custom_distance=10,
             coords=Point(5.7301, 45.1825),
         )
-        url = reverse("siae:search_results") + f"?perimeters={grenoble_perimeter.slug}"
+        url = reverse("siae:search_results") + f"?perimeters={self.grenoble_perimeter.slug}"
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 3)
