@@ -110,7 +110,7 @@ class Command(BaseCommand):
                 }
             )
             # user
-            user_id = tracker_meta_data["user_id"]
+            user_id = tracker_meta_data.get("user_id")
             user_dict = next((user for user in user_list if user["id"] == user_id), {})
             download_item.update(
                 {
@@ -127,7 +127,7 @@ class Command(BaseCommand):
             # other
             download_item.update(
                 {
-                    "cmp": tracker_meta_data["cmp"],
+                    "cmp": tracker_meta_data.get("cmp", ""),
                     "timestamp": item.date_created,
                     "stats_id": item.id_internal,
                 }
