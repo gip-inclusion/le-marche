@@ -78,7 +78,6 @@ class TenderAdmin(admin.ModelAdmin):
         "siae_detail_display_count_with_link",
         "siae_detail_contact_click_count_with_link",
         "extra_data_prettier",
-        "status",
         "logs_display",
         "created_at",
         "updated_at",
@@ -218,6 +217,18 @@ class TenderAdmin(admin.ModelAdmin):
         ]:
             return True
         return super().lookup_allowed(lookup, *args, **kwargs)
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(self.readonly_fields)
+        if obj.author_id and obj.author_id != request.user.id:
+            # add status in read only when the tender is not owned by the current user
+            readonly_fields.append("status")
+        return readonly_fields
+
+    def save_model(self, request, obj: Tender, form, change):
+        if not obj.id and not obj.author_id:
+            obj.author = request.user
+        super().save_model(request, obj, form, change)
 
     def is_validate(self, tender: Tender):
         return tender.validated_at is not None
