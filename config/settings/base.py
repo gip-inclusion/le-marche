@@ -349,9 +349,7 @@ HUBSPOT_IS_ACTIVATED = env.bool("HUBSPOT_IS_ACTIVATED", False)
 # Security
 # ------------------------------------------------------------------------------
 
-CSRF_COOKIE_HTTPONLY = True
-
-CSRF_COOKIE_SECURE = True
+CSRF_USE_SESSIONS = True
 
 SECURE_BROWSER_XSS_FILTER = True
 
