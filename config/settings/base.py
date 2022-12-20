@@ -349,9 +349,13 @@ HUBSPOT_IS_ACTIVATED = env.bool("HUBSPOT_IS_ACTIVATED", False)
 # Security
 # ------------------------------------------------------------------------------
 
-CSRF_COOKIE_HTTPONLY = True
+# SESSION_SERIALIZER = "lemarche.utils.session.JSONSerializer"
+CSRF_USE_SESSIONS = True
 
-CSRF_COOKIE_SECURE = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 
 SECURE_BROWSER_XSS_FILTER = True
 
@@ -364,7 +368,7 @@ SECURE_HSTS_SECONDS = 30
 
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", False)
 
-SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+# SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
 SESSION_COOKIE_HTTPONLY = True
 
