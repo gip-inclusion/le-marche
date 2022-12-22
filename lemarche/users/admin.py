@@ -168,6 +168,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
                     "company_name",
                     "position",
                     "buyer_kind",
+                    "buyer_kind_detail",
                     "partner_kind",
                 )
             },
