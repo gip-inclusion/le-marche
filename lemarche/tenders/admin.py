@@ -45,6 +45,20 @@ def update_and_send_tender_task(tender: Tender):
     send_tender_emails_to_partners(tender)
 
 
+def restart_send_tender_task(tender: Tender):
+    # 1) log the tender send restart
+    log_item = {
+        "action": "restart_send",
+        "date": str(datetime.now()),
+    }
+
+    tender.logs.append(log_item)
+    tender.save()
+    # 2) send the tender to all matching Siaes & Partners
+    send_tender_emails_to_siaes(tender)
+    send_tender_emails_to_partners(tender)
+
+
 @admin.register(Tender, site=admin_site)
 class TenderAdmin(admin.ModelAdmin):
     list_display = [
@@ -302,6 +316,11 @@ class TenderAdmin(admin.ModelAdmin):
             update_and_send_tender_task(tender=obj)
             self.message_user(request, "Ce dépôt de besoin a été validé et envoyé aux structures")
             return HttpResponseRedirect(".")
+        elif "_restart_tender" in request.POST:
+            restart_send_tender_task(tender=obj)
+            self.message_user(request, "Ce dépôt de besoin a été renvoyé aux structures")
+            return HttpResponseRedirect(".")
+
         return super().response_change(request, obj)
 
     def extra_data_prettier(self, instance: Tender = None):

@@ -5,8 +5,10 @@
     <div class="submit-row">
         {% if original.validated_at %}
             <i>Validé et envoyé le {{original.validated_at}}</i>
+            <input type="submit" value="Renvoyer aux structures" name="_restart_tender">
         {% else %}
             <input type="submit" value="Valider (sauvegarder) et envoyer aux structures" name="_validate_tender">
         {% endif %}
+
     </div>
 {% endblock %}
