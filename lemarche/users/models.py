@@ -112,6 +112,13 @@ class User(AbstractUser):
     KIND_PARTNER = constants.USER_KIND_PARTNER
     KIND_ADMIN = constants.USER_KIND_ADMIN
 
+    BUYER_KIND_PUBLIC = "PUBLIC"
+    BUYER_KIND_PRIVATE = "PRIVE"
+    BUYER_KIND_CHOICES = (
+        (BUYER_KIND_PUBLIC, "Public"),
+        (BUYER_KIND_PRIVATE, "Privé"),
+    )
+
     PARTNER_KIND_FACILITATOR = "FACILITATEUR"
     PARTNER_KIND_NETWORD_IAE = "RESEAU_IAE"
     PARTNER_KIND_NETWORK_HANDICAP = "RESEAU_HANDICAP"
@@ -120,7 +127,6 @@ class User(AbstractUser):
     PARTNER_KIND_PUBLIC = "PUBLIC"
     PARTNER_KIND_PRIVATE = "PRIVE"
     PARTNER_KIND_OTHER = "AUTRE"
-
     PARTNER_KIND_CHOICES = (
         (PARTNER_KIND_FACILITATOR, "Facilitateur des clauses sociales"),
         (PARTNER_KIND_NETWORD_IAE, "Réseaux IAE"),
@@ -152,6 +158,9 @@ class User(AbstractUser):
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True)
     company_name = models.CharField(verbose_name="Nom de l'entreprise", max_length=255, blank=True)
     position = models.CharField(verbose_name="Poste", max_length=255, blank=True)
+    buyer_kind = models.CharField(
+        verbose_name="Type d'acheteur", max_length=20, choices=BUYER_KIND_CHOICES, blank=True
+    )
     partner_kind = models.CharField(
         verbose_name="Type de partenaire", max_length=20, choices=PARTNER_KIND_CHOICES, blank=True
     )
