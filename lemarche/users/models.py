@@ -118,6 +118,24 @@ class User(AbstractUser):
         (BUYER_KIND_PUBLIC, "Public"),
         (BUYER_KIND_PRIVATE, "Privé"),
     )
+    BUYER_KIND_DETAIL_PUBLIC_MINISTRY = "PUBLIC_MINISTRY"
+    BUYER_KIND_DETAIL_PUBLIC_ESTABLISHMENT = "PUBLIC_ESTABLISHMENT"
+    BUYER_KIND_DETAIL_PUBLIC_COLLECTIVITY = "PUBLIC_COLLECTIVITY"
+    BUYER_KIND_DETAIL_PUBLIC_ASSOCIATION = "PUBLIC_ASSOCIATION"
+    BUYER_KIND_DETAIL_PRIVATE_BIG_CORP = "PRIVATE_BIG_CORP"
+    BUYER_KIND_DETAIL_PRIVATE_ETI = "PRIVATE_ETI"
+    BUYER_KIND_DETAIL_PRIVATE_PME = "PRIVATE_PME"
+    BUYER_KIND_DETAIL_PRIVATE_TPE = "PRIVATE_TPE"
+    BUYER_KIND_DETAIL_CHOICES = (
+        (BUYER_KIND_DETAIL_PUBLIC_MINISTRY, "Public : Ministère"),
+        (BUYER_KIND_DETAIL_PUBLIC_ESTABLISHMENT, "Public : Établissement public"),
+        (BUYER_KIND_DETAIL_PUBLIC_COLLECTIVITY, "Public : Collectivité"),
+        (BUYER_KIND_DETAIL_PUBLIC_ASSOCIATION, "Public : Association"),
+        (BUYER_KIND_DETAIL_PRIVATE_BIG_CORP, "Privé : Grand groupe"),
+        (BUYER_KIND_DETAIL_PRIVATE_ETI, "Privé : ETI"),
+        (BUYER_KIND_DETAIL_PRIVATE_PME, "Privé : PME"),
+        (BUYER_KIND_DETAIL_PRIVATE_TPE, "Privé : TPE"),
+    )
 
     PARTNER_KIND_FACILITATOR = "FACILITATEUR"
     PARTNER_KIND_NETWORD_IAE = "RESEAU_IAE"
@@ -160,6 +178,9 @@ class User(AbstractUser):
     position = models.CharField(verbose_name="Poste", max_length=255, blank=True)
     buyer_kind = models.CharField(
         verbose_name="Type d'acheteur", max_length=20, choices=BUYER_KIND_CHOICES, blank=True
+    )
+    buyer_kind_detail = models.CharField(
+        verbose_name="Type d'acheteur (détail)", max_length=20, choices=BUYER_KIND_DETAIL_CHOICES, blank=True
     )
     partner_kind = models.CharField(
         verbose_name="Type de partenaire", max_length=20, choices=PARTNER_KIND_CHOICES, blank=True
