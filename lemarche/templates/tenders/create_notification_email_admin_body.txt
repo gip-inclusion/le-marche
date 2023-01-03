@@ -1,10 +1,12 @@
-Le marché de l'inclusion (C4) : dépôt de besoin, ajout d'un nouveau {{ tender_kind|safe }}
+Dépôt de besoin : ajout d'un nouveau {{ tender_kind|safe }}
 
----
 titre : {{ tender_title|safe }}
 type : {{ tender_kind|safe }}
+lieu d'intervention : {{ tender_location|safe }}
+date de clôture des réponses : {{ tender_deadline_date|safe }}
 contact : {{ tender_author_full_name|safe }}
 entreprise : {{ tender_author_company|safe }}
----
+si le Marché n'existait pas, auriez-vous consulté des prestataires inclusifs ? : {{ tender_scale_marche_useless|safe }}
+status : {{ tender_status|safe }}
 
 Lien dans l'admin : {{ tender_admin_url }}

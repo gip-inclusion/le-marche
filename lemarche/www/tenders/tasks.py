@@ -273,8 +273,12 @@ def notify_admin_tender_created(tender: Tender):
             "tender_id": tender.id,
             "tender_title": tender.title,
             "tender_kind": tender.get_kind_display(),
+            "tender_location": tender.location_display,
+            "tender_deadline_date": tender.deadline_date,
             "tender_author_full_name": tender.contact_full_name,
             "tender_author_company": tender.author.company_name,
+            "tender_scale_marche_useless": tender.get_scale_marche_useless_display(),
+            "tender_status": tender.get_status_display(),
             "tender_admin_url": tender_admin_url,
         },
     )
