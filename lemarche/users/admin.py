@@ -117,6 +117,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         "kind",
         HasSiaeFilter,
         HasTenderFilter,
+        "buyer_kind",
         "partner_kind",
         "can_display_tender_contact_details",
         HasFavoriteListFilter,
@@ -166,6 +167,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
                     "phone",
                     "company_name",
                     "position",
+                    "buyer_kind",
                     "partner_kind",
                 )
             },
