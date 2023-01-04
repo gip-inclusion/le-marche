@@ -349,7 +349,11 @@ class TenderDetailViewTest(TestCase):
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
         cls.tender_1 = TenderFactory(
-            author=cls.user_buyer_1, amount=tender_constants.AMOUNT_RANGE_100_150, accept_share_amount=True
+            kind=Tender.TENDER_KIND_TENDER,
+            author=cls.user_buyer_1,
+            amount=tender_constants.AMOUNT_RANGE_100_150,
+            accept_share_amount=True,
+            response_kind=[Tender.RESPONSE_KIND_EMAIL],
         )
         cls.tendersiae_1_1 = TenderSiae.objects.create(
             tender=cls.tender_1, siae=cls.siae_1, detail_contact_click_date=timezone.now()
@@ -559,6 +563,51 @@ class TenderDetailViewTest(TestCase):
         self.assertNotContains(response, "pour être mis en relation avec le client.")
         self.assertContains(response, "Contactez le client dès maintenant")
         self.assertNotContains(response, "Répondre à cette opportunité")
+
+    def test_tender_contact_details_display(self):
+        self.client.force_login(self.user_buyer_1)  # author
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "Coordonnées")
+        self.assertContains(response, self.tender_1.contact_email)  # RESPONSE_KIND_EMAIL
+        self.assertNotContains(response, self.tender_1.contact_phone)
+        self.assertNotContains(response, "Voir l'appel d'offres")
+        # tender with same kind & different response_kind
+        tender_2 = TenderFactory(
+            kind=Tender.TENDER_KIND_TENDER,
+            author=self.user_buyer_1,
+            response_kind=[Tender.RESPONSE_KIND_EMAIL, Tender.RESPONSE_KIND_EXTERNAL],
+            external_link="https://example.com",
+        )
+        self.client.force_login(self.user_buyer_1)  # author
+        url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "Coordonnées")
+        self.assertContains(response, tender_2.contact_email)  # RESPONSE_KIND_EMAIL
+        self.assertNotContains(response, tender_2.contact_phone)
+        self.assertContains(response, "Voir l'appel d'offres")  # RESPONSE_KIND_EXTERNAL
+        # tender with different kind & response_kind
+        tender_3 = TenderFactory(
+            kind=Tender.TENDER_KIND_PROJECT,
+            author=self.user_buyer_2,
+            response_kind=[Tender.RESPONSE_KIND_TEL, Tender.RESPONSE_KIND_EXTERNAL],
+            external_link="https://example.com",
+        )
+        TenderSiae.objects.create(tender=tender_3, siae=self.siae_1, detail_contact_click_date=timezone.now())
+        self.client.force_login(self.user_buyer_2)  # author
+        url = reverse("tenders:detail", kwargs={"slug": tender_3.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "Coordonnées")
+        self.assertNotContains(response, tender_3.contact_email)
+        self.assertContains(response, tender_3.contact_phone)  # RESPONSE_KIND_TEL
+        self.assertContains(response, "Lien partagé")  # RESPONSE_KIND_EXTERNAL
+        self.client.force_login(self.siae_user_1)  # siae user interested
+        url = reverse("tenders:detail", kwargs={"slug": tender_3.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "Contactez le client dès maintenant")
+        self.assertNotContains(response, tender_3.contact_email)
+        self.assertContains(response, tender_3.contact_phone)
+        self.assertContains(response, "Lien partagé")
 
 
 class TenderDetailContactClickStatViewTest(TestCase):
