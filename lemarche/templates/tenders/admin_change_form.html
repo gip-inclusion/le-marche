@@ -4,10 +4,10 @@
     {{ block.super }}
     <div class="submit-row">
         {% if original.validated_at %}
-            <i>Validé et envoyé le {{original.validated_at}}</i>
-            <input type="submit" value="Renvoyer aux structures" name="_restart_tender">
+            <i>Validé et envoyé le {{original.validated_at}}</i><br>
+            <button type="submit" name="_restart_tender" value="1" class="button">Renvoyer aux structures</button>
         {% else %}
-            <input type="submit" value="Valider (sauvegarder) et envoyer aux structures" name="_validate_tender">
+            <button type="submit" name="_validate_tender" value="1" class="button">Valider (sauvegarder) et envoyer aux structures</button>
         {% endif %}
 
     </div>

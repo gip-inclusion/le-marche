@@ -312,11 +312,11 @@ class TenderAdmin(admin.ModelAdmin):
     logs_display.short_description = Tender._meta.get_field("logs").verbose_name
 
     def response_change(self, request, obj: Tender):
-        if "_validate_tender" in request.POST:
+        if request.POST.get("_validate_tender"):
             update_and_send_tender_task(tender=obj)
             self.message_user(request, "Ce dépôt de besoin a été validé et envoyé aux structures")
             return HttpResponseRedirect(".")
-        elif "_restart_tender" in request.POST:
+        elif request.POST.get("_restart_tender"):
             restart_send_tender_task(tender=obj)
             self.message_user(request, "Ce dépôt de besoin a été renvoyé aux structures")
             return HttpResponseRedirect(".")
