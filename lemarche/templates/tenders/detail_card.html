@@ -139,7 +139,7 @@
             <hr class="my-5">
 
             <h2>
-                {% if tender.author == request.user %}
+                {% if source_form or tender.author == request.user %}
                     Montant du marché
                 {% else %}
                     Budget du client
