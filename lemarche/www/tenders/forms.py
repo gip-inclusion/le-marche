@@ -10,6 +10,12 @@ from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
 class AddTenderStepGeneralForm(forms.ModelForm):
+    TENDER_KIND_CHOICES = (
+        (Tender.TENDER_KIND_TENDER, "Appel d'offres"),
+        (Tender.TENDER_KIND_QUOTE, "Devis"),
+        (Tender.TENDER_KIND_PROJECT, "Sourcing inversé"),  # modif par rapport à Tender.TENDER_KIND_CHOICES
+    )
+
     sectors = GroupedModelMultipleChoiceField(
         label=Sector._meta.verbose_name_plural,
         queryset=Sector.objects.form_filter_queryset(),
@@ -40,10 +46,9 @@ class AddTenderStepGeneralForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["kind"].choices = self.TENDER_KIND_CHOICES
         self.fields["location"].to_field_name = "slug"
         # required fields
-        self.fields["sectors"].required = True
-        # self.fields["location"].required = True
         # self.fields["perimeters"].required = True  # JS
         # label, placeholder & help_text
         self.fields["title"].widget.attrs["placeholder"] = "Ex : Devis rénovation façade"
