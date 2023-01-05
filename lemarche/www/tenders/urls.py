@@ -14,7 +14,7 @@ app_name = "tenders"
 
 urlpatterns = [
     path("ajouter/", TenderCreateMultiStepView.as_view(), name="create"),
-    path("ajouter/<str:slug>", TenderCreateMultiStepView.as_view(), name="create"),
+    path("modifier/<str:slug>", TenderCreateMultiStepView.as_view(), name="update"),
     path("<str:slug>", TenderDetailView.as_view(), name="detail"),
     path("status/<status>", TenderListView.as_view(), name="list"),
     path("", TenderListView.as_view(), name="list"),
