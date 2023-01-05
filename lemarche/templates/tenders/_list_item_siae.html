@@ -30,13 +30,13 @@
             <div class="col-md-4" title="Secteurs d'activité">
                 {% if tender.sectors.count %}
                     <i class="ri-award-line"></i>
-                    {{ tender.sectors_list_string }}
+                    {{ tender.sectors_list_string|safe }}
                 {% endif %}
             </div>
             <div class="col-md-4 text-center" title="Lieu d'intervention">
                 {% if tender.perimeters_list_string %}
                     <i class="ri-map-pin-2-line"></i>
-                    {{ tender.perimeters_list_string }}
+                    {{ tender.perimeters_list_string|safe }}
                 {% endif %}
             </div>
             <div class="col-md-4 text-center">

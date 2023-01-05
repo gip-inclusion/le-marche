@@ -384,6 +384,12 @@ class Tender(models.Model):
             return self.perimeters_list_string
 
     @cached_property
+    def external_link_title(self):
+        if self.kind == self.TENDER_KIND_TENDER:
+            return "Voir l'appel d'offres"
+        return "Lien partagé"
+
+    @cached_property
     def can_display_contact_email(self):
         return (self.RESPONSE_KIND_EMAIL in self.response_kind) and self.contact_email
 

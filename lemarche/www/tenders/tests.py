@@ -572,6 +572,7 @@ class TenderDetailViewTest(TestCase):
         self.assertContains(response, self.tender_1.contact_email)  # RESPONSE_KIND_EMAIL
         self.assertNotContains(response, self.tender_1.contact_phone)
         self.assertNotContains(response, "Voir l'appel d'offres")
+        self.assertNotContains(response, "Lien partagé")
         # tender with same kind & different response_kind
         tender_2 = TenderFactory(
             kind=Tender.TENDER_KIND_TENDER,
