@@ -293,7 +293,7 @@ class TenderDetailView(DetailView):
         # update 'email_link_click_date'
         if siae_id:
             TenderSiae.objects.filter(tender=tender, siae_id=siae_id, email_link_click_date=None).update(
-                email_link_click_date=timezone.now(), updated_at=timezone.now()
+                email_link_click_date=timezone.now(), detail_display_date=timezone.now()
             )
         # update 'detail_display_date'
         if user.is_authenticated:
