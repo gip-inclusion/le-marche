@@ -13,6 +13,7 @@ from lemarche.pages.models import Page
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae, SiaeGroup
+from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.utils.tracker import track
@@ -232,15 +233,29 @@ def csrf_failure(request, reason=""):  # noqa C901
     print("csrf_failure", "request.POST", request.POST)
     print("csrf_failure", "request.session", dict(request.session))
 
-    if "/besoins/ajouter/" in request.path:
+    path_add_tender = "/besoins/ajouter/"
+    path_update_tender = "/besoins/modifier/"
+    # if path_add_tender in request.path:
+    is_adding = path_add_tender in request.path
+    is_update = path_update_tender in request.path
+    if (
+        is_adding
+        or is_update
+        and (
+            request.POST.get("tender_create_multi_step_view-current_step")
+            == TenderCreateMultiStepView.STEP_CONFIRMATION
+        )
+    ):
         # in some cases, there is no POST data...
-        # if (
-        #     request.POST.get("tender_create_multi_step_view-current_step")
-        #     == TenderCreateMultiStepView.STEP_CONFIRMATION
-        # ):
-
-        # create tender_dict
-        tender_dict = dict(extra_data={})
+        # create initial tender_dict
+        tender_status = (
+            tender_constants.STATUS_DRAFT if request.POST.get("is_draft") else tender_constants.STATUS_PUBLISHED
+        )
+        tender_dict = dict(
+            extra_data={},
+            status=tender_status,
+            source=Tender.SOURCE_FORM_CSRF,
+        )
         formtools_session_step_data = request.session.get("wizard_tender_create_multi_step_view", {}).get(
             "step_data", {}
         )
@@ -248,12 +263,7 @@ def csrf_failure(request, reason=""):  # noqa C901
             for key in formtools_session_step_data.get(step).keys():
                 if not key.startswith(("csrfmiddlewaretoken", "tender_create_multi_step_view")):
                     value = formtools_session_step_data.get(step).get(key)
-                    key_cleaned = (
-                        key.replace("general-", "")
-                        .replace("description-", "")
-                        .replace("contact-", "")
-                        .replace("survey-", "")
-                    )
+                    key_cleaned = key.replace(f"{step}-", "")
                     if key_cleaned in [
                         "le_marche_doesnt_exist_how_to_find_siae",
                         "providers_out_of_insertion",
@@ -282,17 +292,33 @@ def csrf_failure(request, reason=""):  # noqa C901
                     ]:
                         if value[0]:
                             tender_dict[key_cleaned] = value[0]
+                    elif key_cleaned == "is_draft":
+                        tender_dict["status"] = tender_constants.STATUS_DRAFT
                     else:  # presta_type, response_kind, marche_benefits
                         tender_dict[key_cleaned] = list() if value[0] == "" else value
-
         # get user
         if not request.user.is_authenticated:
             user = create_user_from_anonymous_content(tender_dict)
         else:
             user = request.user
+        tender_dict["user"] = user
         # create tender
-        tender = create_tender_from_dict(tender_dict | {"author": user, "source": Tender.SOURCE_FORM_CSRF})
-
+        if is_adding:
+            tender = create_tender_from_dict(tender_dict)
+        elif is_update:
+            slug = request.path.split("/")[-1]
+            tender = Tender.objects.get(slug=slug)
+            for attribute in tender_dict.keys():
+                if attribute == "sectors":
+                    sectors = tender_dict.get("sectors", None)
+                    tender.sectors.set(sectors)
+                elif attribute == "location":
+                    location = tender_dict.get("location")
+                    tender.location = location
+                    tender.perimeters.set([location])
+                else:
+                    setattr(tender, attribute, tender_dict.get(attribute))
+            tender.save()
         if settings.BITOUBI_ENV == "prod":
             notify_admin_tender_created(tender)
 
