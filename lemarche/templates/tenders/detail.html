@@ -32,10 +32,11 @@
         </div>
         {% if not tender.deadline_date_outdated %}
             <div class="col-12 col-lg-4">
-                {% if number_of_display  %}
-                    <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                {% if number_of_display and tender.author != request.user %}
+                    <div class="alert alert-warning mt-3 mt-lg-0" role="alert">
                         <p class="mb-0 fs-sm">
-                            Déjà {{number_of_display}} prestataires inclusifs ont vu cette opportunité.
+                            Déjà {{number_of_display}} prestataire{{ number_of_display|pluralize }} inclusif{{ number_of_display|pluralize }}
+                            {{ number_of_display|pluralize:"a,ont" }} vu le besoin de ce client.
                         </p>
                     </div>
                 {% endif %}
