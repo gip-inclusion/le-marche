@@ -9,17 +9,17 @@
                     {% if tender.deadline_date_is_outdated %}
                         <span class="badge badge-sm badge-base badge-pill badge-pilotage">Clôturé</span>
                     {% endif %}
-                    {% if tender.status == STATUS_VALIDATED %}
-                        <span class="float-right badge badge-base badge-pill badge-outline-warning">
-                            <i class="ri-mail-send-line"></i>Envoyé
-                        </span>
-                    {% elif tender.status == STATUS_DRAFT %}
-                        <span class="float-right badge badge-base badge-pill badge-outline-warning">
+                    {% if tender.status == tender.STATUS_DRAFT %}
+                        <span class="badge badge-sm badge-base badge-pill badge-outline-warning float-right">
                             <i class="ri-draft-fill"></i>Brouillon
                         </span>
-                    {% elif tender.status == STATUS_PUBLISHED %}
-                        <span class="float-right badge badge-base badge-pill badge-outline-info">
+                    {% elif tender.status == tender.STATUS_PUBLISHED %}
+                        <span class="badge badge-sm badge-base badge-pill badge-outline-info float-right">
                             <i class="ri-loader-fill"></i>En cours de validation
+                        </span>
+                    {% elif tender.status == tender.STATUS_VALIDATED %}
+                        <span class="badge badge-sm badge-base badge-pill badge-outline-success float-right">
+                            <i class="ri-mail-send-line"></i>Envoyé
                         </span>
                     {% endif %}
                 </p>

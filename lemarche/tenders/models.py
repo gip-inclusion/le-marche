@@ -129,6 +129,10 @@ class Tender(models.Model):
         (TENDER_KIND_PROJECT, "Sourcing"),
     )
 
+    STATUS_DRAFT = tender_constants.STATUS_DRAFT
+    STATUS_PUBLISHED = tender_constants.STATUS_PUBLISHED
+    STATUS_VALIDATED = tender_constants.STATUS_VALIDATED
+
     TENDER_ACCEPT_SHARE_AMOUNT_TRUE = "✅ Montant partagé"
     TENDER_ACCEPT_SHARE_AMOUNT_FALSE = "❌ Montant non partagé"
 
@@ -427,7 +431,7 @@ class Tender(models.Model):
         return self.tendersiae_set.filter(detail_display_date__isnull=False).count()
 
     @property
-    def siae_detail_contact_click_date_count(self):
+    def siae_detail_contact_click_count(self):
         return self.tendersiae_set.filter(detail_contact_click_date__isnull=False).count()
 
     def get_absolute_url(self):

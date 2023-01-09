@@ -271,9 +271,6 @@ class TenderListView(LoginRequiredMixin, ListView):
         user_kind = self.request.user.kind if self.request.user.is_authenticated else "anonymous"
         context["page_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
         context["title_kind_sourcing_siae"] = TITLE_KIND_SOURCING_SIAE
-        context["STATUS_DRAFT"] = tender_constants.STATUS_DRAFT
-        context["STATUS_PUBLISHED"] = tender_constants.STATUS_PUBLISHED
-        context["STATUS_VALIDATED"] = tender_constants.STATUS_VALIDATED
         return context
 
 
@@ -326,6 +323,7 @@ class TenderDetailView(DetailView):
             if tender.author == user:
                 context["siae_detail_contact_click_count"] = tender.siae_detail_contact_click_count
                 context["is_draft"] = tender.status == tender_constants.STATUS_DRAFT
+                context["is_pending_validation"] = tender.status == tender_constants.STATUS_PUBLISHED
             elif user.kind == User.KIND_SIAE:
                 context["user_siae_has_detail_contact_click_date"] = TenderSiae.objects.filter(
                     tender=tender, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False

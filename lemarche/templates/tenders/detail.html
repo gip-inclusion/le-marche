@@ -40,6 +40,18 @@
                     </div>
                 </div>
             {% endif %}
+            {% if is_pending_validation %}
+                <div class="alert alert-info fade show" role="status">
+                    <div class="row">
+                        <div class="col-auto pr-0">
+                            <i class="ri-information-line ri-xl text-info"></i>
+                        </div>
+                        <div class="col">
+                            <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} est en cours de validation.</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
             {% include "tenders/detail_card.html" with tender=tender %}
             {% if is_draft %}
                 <section class="pb-4 float-right">
