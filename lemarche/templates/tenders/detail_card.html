@@ -29,13 +29,13 @@
             </div>
         </div>
         <div class="row text-bold">
-            <div class="col" title="Secteurs d'activité : {{ tender.sectors_full_list_string }}">
+            <div class="col" title="Secteurs d'activité : {{ tender.sectors_full_list_string|safe }}">
                 <i class="ri-award-line"></i>
                 {{ tender.sectors_list_string }}
             </div>
             <div class="col" title="Lieu d'éxécution">
                 <i class="ri-map-pin-2-line"></i>
-                {{ tender.location_display }}
+                {{ tender.location_display|safe }}
             </div>
             {% if tender.presta_type %}
                 <div class="col" title="Type de prestation">
@@ -139,7 +139,7 @@
             <hr class="my-5">
 
             <h2>
-                {% if tender.author == request.user %}
+                {% if source_form or tender.author == request.user %}
                     Montant du marché
                 {% else %}
                     Budget du client
