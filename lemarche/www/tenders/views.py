@@ -319,6 +319,9 @@ class TenderDetailView(DetailView):
             if user_kind == User.KIND_SIAE and tender.kind == Tender.TENDER_KIND_PROJECT
             else tender.get_kind_display()
         )
+        siae_detail_display_date_count = tender.siae_detail_display_date_count
+        if siae_detail_display_date_count > 0:
+            context["siae_detail_display_date_count"] = siae_detail_display_date_count
         if user.is_authenticated:
             if tender.author == user:
                 context["siae_detail_contact_click_count"] = TenderSiae.objects.filter(

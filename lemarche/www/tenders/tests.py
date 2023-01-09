@@ -356,7 +356,12 @@ class TenderDetailViewTest(TestCase):
             response_kind=[Tender.RESPONSE_KIND_EMAIL],
         )
         cls.tendersiae_1_1 = TenderSiae.objects.create(
-            tender=cls.tender_1, siae=cls.siae_1, detail_contact_click_date=timezone.now()
+            tender=cls.tender_1,
+            siae=cls.siae_1,
+            source="EMAIL",
+            email_link_click_date=timezone.now(),
+            detail_display_date=timezone.now(),
+            detail_contact_click_date=timezone.now(),
         )
 
     def test_anyone_can_view_tenders(self):
@@ -441,8 +446,8 @@ class TenderDetailViewTest(TestCase):
         self.assertEqual(self.tender_1.tendersiae_set.last().siae, self.siae_1)
         self.assertIsNone(self.tender_1.tendersiae_set.first().email_link_click_date)
         self.assertIsNone(self.tender_1.tendersiae_set.first().detail_display_date)
-        self.assertIsNone(self.tender_1.tendersiae_set.last().email_link_click_date)
-        self.assertIsNone(self.tender_1.tendersiae_set.last().detail_display_date)
+        self.assertIsNotNone(self.tender_1.tendersiae_set.last().email_link_click_date)  # siae_1
+        self.assertIsNotNone(self.tender_1.tendersiae_set.last().detail_display_date)
         # first load anonymous
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug}) + f"?siae_id={self.siae_2.id}"
         response = self.client.get(url)
@@ -450,7 +455,9 @@ class TenderDetailViewTest(TestCase):
         siae_2_email_link_click_date = self.tender_1.tendersiae_set.first().email_link_click_date
         self.assertIsNotNone(siae_2_email_link_click_date)
         self.assertIsNone(self.tender_1.tendersiae_set.first().detail_display_date)
-        self.assertIsNone(self.tender_1.tendersiae_set.last().detail_display_date)
+        self.assertIsNotNone(self.tender_1.tendersiae_set.last().detail_display_date)
+        self.assertContains(response, "Déjà 1 prestataire inclusif")
+        self.assertNotContains(response, "contactez dès maintenant le client")
         # reload logged in (doesn't update email_link_click_date)
         self.client.force_login(self.siae_user_2)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug}) + f"?siae_id={self.siae_2.id}"
@@ -459,18 +466,26 @@ class TenderDetailViewTest(TestCase):
         self.assertEqual(self.tender_1.tendersiae_set.first().email_link_click_date, siae_2_email_link_click_date)
         siae_2_detail_display_date = self.tender_1.tendersiae_set.first().detail_display_date
         self.assertIsNotNone(siae_2_detail_display_date)
-        self.assertIsNone(self.tender_1.tendersiae_set.last().detail_display_date)
+        self.assertIsNotNone(self.tender_1.tendersiae_set.last().detail_display_date)
+        self.assertContains(response, "Déjà 2 prestataires inclusifs")
+        self.assertNotContains(response, "contactez dès maintenant le client")
         # reload (doesn't update detail_display_date)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.tender_1.tendersiae_set.first().detail_display_date, siae_2_detail_display_date)
+        self.assertContains(response, "Déjà 2 prestataires inclusifs")
+        self.assertNotContains(response, "contactez dès maintenant le client")
 
     def test_create_tendersiae_stats_on_tender_view_by_new_siae(self):
         # self.tender_1.siaes.add(self.siae_2)
         self.assertEqual(self.tender_1.tendersiae_set.count(), 1)
         self.assertEqual(self.tender_1.tendersiae_set.first().siae, self.siae_1)
-        self.assertIsNone(self.tender_1.tendersiae_set.first().detail_display_date)
+        self.assertIsNotNone(self.tender_1.tendersiae_set.first().detail_display_date)  # siae_1
+        # first load anonymous
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "Déjà 1 prestataire inclusif")
         # first load
         self.client.force_login(self.siae_user_2)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
@@ -479,6 +494,7 @@ class TenderDetailViewTest(TestCase):
         self.assertEqual(self.tender_1.tendersiae_set.count(), 1 + 1)
         self.assertEqual(self.tender_1.tendersiae_set.first().siae, self.siae_2)
         self.assertIsNotNone(self.tender_1.tendersiae_set.first().detail_display_date)
+        self.assertContains(response, "Déjà 2 prestataires inclusifs")
 
     def test_tender_contact_display(self):
         # anonymous
@@ -651,13 +667,22 @@ class TenderDetailContactClickStatViewTest(TestCase):
         self.assertEqual(self.tender.tendersiae_set.last().siae, self.siae)
         self.assertIsNone(self.tender.tendersiae_set.first().detail_contact_click_date)
         self.assertIsNone(self.tender.tendersiae_set.last().detail_contact_click_date)
+        # first load
         self.client.force_login(self.siae_user_2)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender.slug})
+        response = self.client.get(url)
+        self.assertNotContains(response, "contactez dès maintenant le client")
+        # click on button
         url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
         response = self.client.post(url, data={"detail_contact_click_confirm": "true"})
         self.assertEqual(response.status_code, 302)  # redirect
         siae_2_detail_contact_click_date = self.tender.tendersiae_set.first().detail_contact_click_date
         self.assertNotEqual(siae_2_detail_contact_click_date, None)
         self.assertEqual(self.tender.tendersiae_set.last().detail_contact_click_date, None)
+        # reload page
+        url = reverse("tenders:detail", kwargs={"slug": self.tender.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "contactez dès maintenant le client")
         # clicking again on the button doesn't update detail_contact_click_date
         # Note: button will disappear on reload
         url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
