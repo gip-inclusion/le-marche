@@ -11,7 +11,7 @@
     {% if tender.contact_full_name %}
         <div class="col-md-6">
             <i class="ri-account-circle-line"></i>
-            {{ tender.contact_full_name }}
+            {{ tender.contact_full_name|safe }}
         </div>
     {% endif %}
     {% if tender.author.company_name %}
@@ -37,7 +37,8 @@
     <div class="row">
         <div class="col-12">
             <a href="{{ tender.external_link }}" target="_blank" class="btn btn-outline-primary float-right">
-                Voir l'appel d'offres <i class="ri-external-link-line" aria-hidden="true"></i>
+                {{ tender.external_link_title|safe }}
+                <i class="ri-external-link-line" aria-hidden="true"></i>
             </a>
         </div>
     </div>

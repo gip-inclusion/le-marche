@@ -90,13 +90,16 @@ class AddTenderStepDescriptionForm(forms.ModelForm):
         self.kind = kind
 
         if self.instance.start_working_date:
-            self.initial["start_working_date"] = self.instance.start_working_date.isoformat()  # Here
+            self.initial["start_working_date"] = self.instance.start_working_date.isoformat()
 
         # required fields
         self.fields["description"].required = True
         if self.kind == Tender.TENDER_KIND_TENDER:
             self.fields["amount"].required = True
         # label, placeholder & help_text
+        if self.kind != Tender.TENDER_KIND_TENDER:
+            self.fields["external_link"].label = "Lien à partager"
+            self.fields["external_link"].help_text = None
         self.fields["amount"].label = "Montant € estimé de votre besoin"
         self.fields["accept_share_amount"].label = self.fields["accept_share_amount"].help_text
         self.fields["accept_cocontracting"].label = self.fields["accept_cocontracting"].help_text
@@ -143,7 +146,7 @@ class AddTenderStepContactForm(forms.ModelForm):
         user_is_anonymous = not user.is_authenticated
 
         if self.instance.deadline_date:
-            self.initial["deadline_date"] = self.instance.deadline_date.isoformat()  # Here
+            self.initial["deadline_date"] = self.instance.deadline_date.isoformat()
 
         # required fields
         self.fields["contact_first_name"].required = True
