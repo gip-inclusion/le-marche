@@ -2,7 +2,16 @@
     <time class="fs-sm d-block" aria-label="Date de clôture">
         <span>{{ tender.deadline_date|default:"" }}</span>
         {% if tender.deadline_date_is_outdated %}
-            <span class="badge badge-xs badge-base badge-pill badge-pilotage">Clôturé</span>
+            <span class="badge badge-xs badge-base badge-pill badge-pilotage float-right">Clôturé</span>
+        {% endif %}
+        {% if tender.status == tender.STATUS_DRAFT %}
+            <span class="badge badge-xs badge-base badge-pill badge-outline-warning float-right">
+                <i class="ri-draft-fill"></i>Brouillon
+            </span>
+        {% elif tender.status == tender.STATUS_PUBLISHED %}
+            <span class="badge badge-xs badge-base badge-pill badge-outline-info float-right">
+                <i class="ri-loader-fill"></i>En cours de validation
+            </span>
         {% endif %}
     </time>
     <a href="{% url 'tenders:detail' tender.slug %}" class="d-block font-weight-bold stretched-link">{{ tender.title }}</a>

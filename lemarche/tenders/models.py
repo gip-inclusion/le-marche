@@ -129,6 +129,10 @@ class Tender(models.Model):
         (TENDER_KIND_PROJECT, "Sourcing"),
     )
 
+    STATUS_DRAFT = tender_constants.STATUS_DRAFT
+    STATUS_PUBLISHED = tender_constants.STATUS_PUBLISHED
+    STATUS_VALIDATED = tender_constants.STATUS_VALIDATED
+
     TENDER_ACCEPT_SHARE_AMOUNT_TRUE = "✅ Montant partagé"
     TENDER_ACCEPT_SHARE_AMOUNT_FALSE = "❌ Montant non partagé"
 
