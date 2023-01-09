@@ -75,10 +75,11 @@ class TenderAdmin(admin.ModelAdmin):
         "siae_email_link_click_count_with_link",
         "siae_detail_display_count_with_link",
         "siae_detail_contact_click_count_with_link",
+        "siae_transactioned",
         "created_at",
         "validated_at",
     ]
-    list_filter = ["kind", "status", "deadline_date", "start_working_date", ResponseKindFilter]
+    list_filter = ["kind", "status", "deadline_date", "start_working_date", ResponseKindFilter, "siae_transactioned"]
     # filter on "perimeters"? (loads ALL the perimeters... Use django-admin-autocomplete-filter instead?)
     search_fields = ["id", "title", "author__id", "author__email"]
     search_help_text = "Cherche sur les champs : ID, Titre, Auteur (ID, E-mail)"
