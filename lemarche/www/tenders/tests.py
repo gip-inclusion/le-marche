@@ -449,6 +449,11 @@ class TenderDetailViewTest(TestCase):
         self.assertIsNotNone(self.tender_1.tendersiae_set.last().email_link_click_date)  # siae_1
         self.assertIsNotNone(self.tender_1.tendersiae_set.last().detail_display_date)
         # first load anonymous
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Déjà 1 prestataire inclusif")
+        # reload anonymous with ?siae_id=
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug}) + f"?siae_id={self.siae_2.id}"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -456,7 +461,7 @@ class TenderDetailViewTest(TestCase):
         self.assertIsNotNone(siae_2_email_link_click_date)
         self.assertIsNone(self.tender_1.tendersiae_set.first().detail_display_date)
         self.assertIsNotNone(self.tender_1.tendersiae_set.last().detail_display_date)
-        self.assertContains(response, "Déjà 1 prestataire inclusif")
+        self.assertContains(response, "Déjà 2 prestataires inclusifs")
         self.assertNotContains(response, "contactez dès maintenant le client")
         # reload logged in (doesn't update email_link_click_date)
         self.client.force_login(self.siae_user_2)
