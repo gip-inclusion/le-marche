@@ -38,7 +38,9 @@
             <hr class="my-5">
 
             {% if user.is_authenticated %}
-                {% if tender.author == request.user or user_partner_can_display_tender_contact_details %}
+                {% if tender.author == request.user %}
+                    {% include "tenders/_detail_contact.html" with tender=tender %}
+                {% elif user_partner_can_display_tender_contact_details %}
                     {% include "tenders/_detail_contact.html" with tender=tender %}
                 {% elif user_siae_has_detail_contact_click_date and not tender.deadline_date_outdated %}
                     {% include "tenders/_detail_contact.html" with tender=tender %}
@@ -86,7 +88,7 @@
                         {% include "tenders/_detail_contact.html" with tender=tender %}
                     </div>
                 {% endif %}
-                {% if tender.author == request.user and siae_detail_contact_click_count %}
+                {% if tender.author == request.user %}
                     <hr class="my-5" />
                     <div class="row">
                         <div class="col-12">
