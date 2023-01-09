@@ -417,12 +417,12 @@ class Tender(models.Model):
         return self.extra_data.get("hubspot_deal_id")
 
     @property
-    def stats_nb_display(self):
-        return self.tendersiae_set.filter(Q(detail_display_date__isnull=False)).count()
+    def siae_detail_display_date_count(self):
+        return self.tendersiae_set.filter(detail_display_date__isnull=False).count()
 
     @property
-    def stats_nb_contacts(self):
-        return self.tendersiae_set.filter(Q(detail_contact_click_date__isnull=False)).count()
+    def siae_detail_contact_click_date_count(self):
+        return self.tendersiae_set.filter(detail_contact_click_date__isnull=False).count()
 
     def get_absolute_url(self):
         return reverse("tenders:detail", kwargs={"slug": self.slug})

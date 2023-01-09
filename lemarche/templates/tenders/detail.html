@@ -30,18 +30,18 @@
         <div class="col-12 col-lg-8">
             {% include "tenders/detail_card.html" with tender=tender is_draft=is_draft %}
         </div>
-        {% if not tender.deadline_date_outdated %}
+        {% if tender.author != request.user and not tender.deadline_date_outdated %}
             <div class="col-12 col-lg-4">
-                {% if number_of_display and tender.author != request.user %}
+                {% if siae_detail_display_date_count %}
                     <div class="alert alert-warning mt-3 mt-lg-0" role="alert">
                         <p class="mb-0 fs-sm">
-                            Déjà {{number_of_display}} prestataire{{ number_of_display|pluralize }} inclusif{{ number_of_display|pluralize }}
-                            {{ number_of_display|pluralize:"a,ont" }} vu le besoin de ce client.
+                            Déjà {{ siae_detail_display_date_count }} prestataire{{ siae_detail_display_date_count|pluralize }} inclusif{{ siae_detail_display_date_count|pluralize }}
+                            {{ siae_detail_display_date_count|pluralize:"a,ont" }} vu le besoin de ce client.
                         </p>
                     </div>
                 {% endif %}
 
-                {% if user_siae_has_detail_contact_click_date  %}
+                {% if user_siae_has_detail_contact_click_date %}
                     <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                         <p class="mb-1">
                             <i class="ri-information-line ri-lg"></i>

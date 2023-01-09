@@ -293,7 +293,7 @@ class TenderDetailView(DetailView):
         # update 'email_link_click_date'
         if siae_id:
             TenderSiae.objects.filter(tender=tender, siae_id=siae_id, email_link_click_date=None).update(
-                email_link_click_date=timezone.now(), detail_display_date=timezone.now()
+                email_link_click_date=timezone.now(), updated_at=timezone.now()
             )
         # update 'detail_display_date'
         if user.is_authenticated:
@@ -319,9 +319,9 @@ class TenderDetailView(DetailView):
             if user_kind == User.KIND_SIAE and tender.kind == Tender.TENDER_KIND_PROJECT
             else tender.get_kind_display()
         )
-        number_of_display = tender.stats_nb_display
-        if number_of_display > 0:
-            context["number_of_display"] = number_of_display
+        siae_detail_display_date_count = tender.siae_detail_display_date_count
+        if siae_detail_display_date_count > 0:
+            context["siae_detail_display_date_count"] = siae_detail_display_date_count
         if user.is_authenticated:
             if tender.author == user:
                 context["siae_detail_contact_click_count"] = TenderSiae.objects.filter(
