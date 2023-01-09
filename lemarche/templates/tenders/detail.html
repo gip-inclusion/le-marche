@@ -30,18 +30,29 @@
         <div class="col-12 col-lg-8">
             {% include "tenders/detail_card.html" with tender=tender is_draft=is_draft %}
         </div>
-        {% if user_siae_has_detail_contact_click_date and not tender.deadline_date_outdated %}
+        {% if tender.author != request.user and not tender.deadline_date_outdated %}
             <div class="col-12 col-lg-4">
-                <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-                    <p class="mb-1">
-                        <i class="ri-information-line ri-lg"></i>
-                        <strong>Conseil</strong>
-                    </p>
-                    <p class="mb-0 fs-sm">
-                        N'attendez pas et contactez dès maintenant le client.
-                        En fonction, envoyez lui un devis, une plaquette commerciale ou répondez à son marché.
-                    </p>
-                </div>
+                {% if siae_detail_display_date_count %}
+                    <div class="alert alert-warning mt-3 mt-lg-0" role="alert">
+                        <p class="mb-0 fs-sm">
+                            Déjà {{ siae_detail_display_date_count }} prestataire{{ siae_detail_display_date_count|pluralize }} inclusif{{ siae_detail_display_date_count|pluralize }}
+                            {{ siae_detail_display_date_count|pluralize:"a,ont" }} vu le besoin de ce client.
+                        </p>
+                    </div>
+                {% endif %}
+
+                {% if user_siae_has_detail_contact_click_date %}
+                    <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                        <p class="mb-1">
+                            <i class="ri-information-line ri-lg"></i>
+                            <strong>Conseil</strong>
+                        </p>
+                        <p class="mb-0 fs-sm">
+                            N'attendez pas et contactez dès maintenant le client.
+                            En fonction, envoyez lui un devis, une plaquette commerciale ou répondez à son marché.
+                        </p>
+                    </div>
+                {% endif %}
             </div>
         {% endif %}
     </div>
