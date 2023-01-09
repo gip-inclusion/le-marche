@@ -1,16 +1,5 @@
 {% load bootstrap4 static array_choices_display humanize %}
-{% if is_draft %}
-<div class="alert alert-warning fade show" role="status">
-    <div class="row">
-      <div class="col-auto pr-0">
-        <i class="ri-information-line ri-xl text-warning"></i>
-      </div>
-      <div class="col">
-        <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} n'est pas encore publié.</p>
-      </div>
-    </div>
-</div>
-{% endif %}
+
 <div class="card c-card c-card--marche siae-card rounded-lg shadow-lg">
     <p class="text-right text-white bg-tertiary fs-sm rounded-top rounded-lg p-3 mb-0">
         Date limite de réponse : {{ tender.deadline_date|default:"" }}
@@ -49,7 +38,9 @@
             <hr class="my-5">
 
             {% if user.is_authenticated %}
-                {% if tender.author == request.user or user_partner_can_display_tender_contact_details %}
+                {% if tender.author == request.user %}
+                    {% include "tenders/_detail_contact.html" with tender=tender %}
+                {% elif user_partner_can_display_tender_contact_details %}
                     {% include "tenders/_detail_contact.html" with tender=tender %}
                 {% elif user_siae_has_detail_contact_click_date and not tender.deadline_date_outdated %}
                     {% include "tenders/_detail_contact.html" with tender=tender %}
@@ -97,12 +88,12 @@
                         {% include "tenders/_detail_contact.html" with tender=tender %}
                     </div>
                 {% endif %}
-                {% if tender.author == request.user and siae_detail_contact_click_count %}
+                {% if tender.author == request.user %}
                     <hr class="my-5" />
                     <div class="row">
                         <div class="col-12">
                             <a href="{% url 'tenders:detail-siae-interested' tender.slug %}" id="show-tender-siae-list-from-detail-btn" class="btn btn-primary">
-                                {{ siae_detail_contact_click_count }} structures intéressées
+                                {{ siae_detail_contact_click_date_count }} structures intéressées
                             </a>
                         </div>
                     </div>
@@ -151,13 +142,4 @@
             {% endif %}
         {% endif %}
     </div>
-
 </div>
-{% if is_draft %}
-    <section class="pb-4 float-right">
-        <a href="{% url 'tenders:update' tender.slug %}" class="btn btn-primary btn-ico">
-            <i class="ri-pencil-fill ri-lg font-weight-normal" aria-hidden="true"></i>
-            <span>Modifier</span>
-        </a>
-    </section>
-{% endif %}
