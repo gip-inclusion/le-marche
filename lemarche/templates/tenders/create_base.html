@@ -35,28 +35,23 @@
         </div>
     </div>
 </section>
-<section class="s-section">
-    <div class="s-section__container container">
-        <div class="s-section__row row">
-            <div class="s-section__col col-12">
-                <div class="c-form">
-                    <div class="progress progress--marche">
-                        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"
-                            style="width:{% widthratio wizard.steps.step1 wizard.steps.count 100 %}%"
-                            aria-valuenow="{% widthratio wizard.steps.step1 wizard.steps.count 100 %}"></div>
-                    </div>
-                    <p class="py-2 mb-0"><strong>Étape {{ wizard.steps.step1 }}/{{ wizard.steps.count }}</strong> : {% block step_title_again %}{% endblock %}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+
 
 {% block recap_section %}{% endblock %}
 
-{% block form_section %}
 <section class="s-section">
     <div class="s-section__container container">
+        <div class="s-section__row row mb-3 mb-lg-5">
+            <div class="s-section__col col-12 col-lg-7">
+                <div class="c-stepper">
+                    <div class="progress progress--marche">
+                        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width:{% widthratio wizard.steps.step1 wizard.steps.count 100 %}%" aria-valuenow="{% widthratio wizard.steps.step1 wizard.steps.count 100 %}"></div>
+                    </div>
+                    <p><strong>Étape {{ wizard.steps.step1 }}/{{ wizard.steps.count }}</strong> : {% block step_title_again %}{% endblock %}</p>
+                </div>
+            </div>
+        </div>
+        {% block form_section %}
         <div class="s-section__row row">
             <div class="s-section__col col-12">
                 <div class="c-form">
@@ -96,9 +91,9 @@
                 </div>
             </div>
         </div>
+        {% endblock form_section %}
     </div>
 </section>
-{% endblock form_section %}
 
 {% block extra_html %}{% endblock %}
 
