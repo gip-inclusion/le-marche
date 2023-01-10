@@ -4,6 +4,8 @@ import requests
 from django.conf import settings
 from huey.contrib.djhuey import task
 
+from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX
+
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +84,7 @@ def send_transactional_email_with_template(
                 "To": [{"Email": recipient_email, "Name": recipient_name}],
                 "TemplateID": template_id,
                 "TemplateLanguage": True,
-                "Subject": subject,
+                "Subject": EMAIL_SUBJECT_PREFIX + subject,
                 "Variables": variables,
                 # "Variables": {}
             }
@@ -115,7 +117,7 @@ def send_transactional_email_many_recipient_with_template(
                 "To": [{"Email": recipient_email} for recipient_email in recipient_email_list],
                 "TemplateID": template_id,
                 "TemplateLanguage": True,
-                "Subject": subject,
+                "Subject": EMAIL_SUBJECT_PREFIX + subject,
                 "Variables": variables,
                 # "Variables": {}
             }
