@@ -365,7 +365,7 @@ class TenderDetailViewTest(TestCase):
             detail_contact_click_date=timezone.now(),
         )
 
-    def test_anyone_can_view_tenders(self):
+    def test_anyone_can_view_validated_tenders(self):
         # anonymous
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)

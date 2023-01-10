@@ -138,7 +138,7 @@ class TenderAuthorOrAdminRequiredMixin(LoginRequiredUserPassesTestMixin):
         return HttpResponseRedirect(reverse_lazy("tenders:list"))
 
 
-class TenderAuthorOrAdminRequiredIfNotValidatedMixin(LoginRequiredUserPassesTestMixin):
+class TenderAuthorOrAdminRequiredIfNotValidatedMixin(UserPassesTestMixin):
     """
     If the Tender's status is not "validated", restrict access to the Tender's author (or Admin)
     """
@@ -147,7 +147,7 @@ class TenderAuthorOrAdminRequiredIfNotValidatedMixin(LoginRequiredUserPassesTest
         # user = self.request.user
         tender_slug = self.kwargs.get("slug")
         tender = Tender.objects.get(slug=tender_slug)
-        if not tender.status == tender_constants.STATUS_VALIDATED:
+        if tender.status != tender_constants.STATUS_VALIDATED:
             return TenderAuthorOrAdminRequiredMixin.test_func(self)
         return True
 
