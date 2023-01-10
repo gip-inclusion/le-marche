@@ -348,6 +348,7 @@ class TenderDetailViewTest(TestCase):
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
+        cls.user_admin = UserFactory(kind=User.KIND_ADMIN)
         cls.tender_1 = TenderFactory(
             kind=Tender.TENDER_KIND_TENDER,
             author=cls.user_buyer_1,
@@ -364,7 +365,7 @@ class TenderDetailViewTest(TestCase):
             detail_contact_click_date=timezone.now(),
         )
 
-    def test_anyone_can_view_tenders(self):
+    def test_anyone_can_view_validated_tenders(self):
         # anonymous
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
@@ -376,6 +377,29 @@ class TenderDetailViewTest(TestCase):
             url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
+
+    def test_only_author_or_admin_can_view_non_validated_tender(self):
+        tender_draft = TenderFactory(author=self.user_buyer_1, status=tender_constants.STATUS_DRAFT)
+        tender_published = TenderFactory(author=self.user_buyer_1, status=tender_constants.STATUS_PUBLISHED)
+        for tender in [tender_draft, tender_published]:
+            # anonymous
+            url = reverse("tenders:detail", kwargs={"slug": tender.slug})
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 302)  # redirect
+            # self.assertContains(response.url, "/accounts/login/?next=/besoins/")
+            # author & admin
+            for user in [self.user_buyer_1, self.user_admin]:
+                self.client.force_login(user)
+                url = reverse("tenders:detail", kwargs={"slug": tender.slug})
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200)
+            # other users
+            for user in [self.siae_user_1, self.user_buyer_2, self.user_partner]:
+                self.client.force_login(user)
+                url = reverse("tenders:detail", kwargs={"slug": tender.slug})
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 302)  # redirect
+                self.assertEqual(response.url, "/")
 
     def test_tender_constraints_display(self):
         # tender with constraints: section should be visible
