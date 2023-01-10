@@ -4,6 +4,8 @@ from django.contrib.auth.views import redirect_to_login
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 
+from lemarche.tenders import constants as tender_constants
+from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 
 
@@ -120,15 +122,35 @@ class FavoriteListOwnerRequiredMixin(LoginRequiredUserPassesTestMixin):
         return HttpResponseRedirect(reverse_lazy("dashboard:home"))
 
 
-class TenderOwnerRequiredMixin(LoginRequiredUserPassesTestMixin):
+class TenderAuthorOrAdminRequiredMixin(LoginRequiredUserPassesTestMixin):
     """
-    Restrict access to the Tender's user
+    Restrict access to the Tender's author
     """
 
     def test_func(self):
         user = self.request.user
         tender_slug = self.kwargs.get("slug")
-        return user.is_authenticated and (tender_slug in user.tenders.values_list("slug", flat=True))
+        return user.is_authenticated and (
+            (tender_slug in user.tenders.values_list("slug", flat=True)) or (user.kind == user.KIND_ADMIN)
+        )
 
     def handle_no_permission(self):
         return HttpResponseRedirect(reverse_lazy("tenders:list"))
+
+
+class TenderAuthorOrAdminRequiredIfNotValidatedMixin(LoginRequiredUserPassesTestMixin):
+    """
+    If the Tender's status is not "validated", restrict access to the Tender's author (or Admin)
+    """
+
+    def test_func(self):
+        # user = self.request.user
+        tender_slug = self.kwargs.get("slug")
+        tender = Tender.objects.get(slug=tender_slug)
+        if not tender.status == tender_constants.STATUS_VALIDATED:
+            return TenderAuthorOrAdminRequiredMixin.test_func(self)
+        return True
+
+    def handle_no_permission(self):
+        messages.add_message(self.request, messages.WARNING, "Vous n'avez pas accès à cette page.")
+        return HttpResponseRedirect(reverse_lazy("pages:home"))

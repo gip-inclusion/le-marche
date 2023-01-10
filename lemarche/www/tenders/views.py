@@ -15,7 +15,7 @@ from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils.data import get_choice
 from lemarche.www.auth.tasks import send_new_user_password_reset_link
-from lemarche.www.dashboard.mixins import TenderOwnerRequiredMixin
+from lemarche.www.dashboard.mixins import TenderAuthorOrAdminRequiredMixin
 from lemarche.www.tenders.forms import (
     AddTenderStepConfirmationForm,
     AddTenderStepContactForm,
@@ -380,7 +380,7 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
         return "<strong>Répondre à cette opportunité</strong><br />Pour répondre à cette opportunité, vous devez accepter d'être mis en relation avec l'acheteur."  # noqa
 
 
-class TenderSiaeInterestedListView(TenderOwnerRequiredMixin, ListView):
+class TenderSiaeInterestedListView(TenderAuthorOrAdminRequiredMixin, ListView):
     queryset = TenderSiae.objects.select_related("tender", "siae").all()
     template_name = "tenders/siae_interested_list.html"
     context_object_name = "tendersiaes"
