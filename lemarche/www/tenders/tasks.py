@@ -5,7 +5,7 @@ from django.utils import timezone
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
 from lemarche.utils.apis import api_mailjet, api_slack
-from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX, send_mail_async, whitelist_recipient_list
+from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_admin_url_object, get_share_url_object
 
 
@@ -14,9 +14,7 @@ def send_tender_emails_to_siaes(tender: Tender):
     """
     All corresponding Siae will be contacted
     """
-    email_subject = (
-        f"{EMAIL_SUBJECT_PREFIX}{tender.get_kind_display()} : {tender.title} ({tender.author.company_name})"
-    )
+    email_subject = f"{tender.get_kind_display()} : {tender.title} ({tender.author.company_name})"
     siaes = tender.siaes.all()
     for siae in siaes:
         send_tender_email_to_siae(email_subject, tender, siae)
@@ -39,9 +37,7 @@ def send_tender_emails_to_partners(tender: Tender):
     All corresponding partners (PartnerShareTender) will be contacted
     """
     partners = PartnerShareTender.objects.filter_by_tender(tender)
-    email_subject = (
-        f"{EMAIL_SUBJECT_PREFIX}{tender.get_kind_display()} : {tender.title} ({tender.author.company_name})"
-    )
+    email_subject = f"{tender.get_kind_display()} : {tender.title} ({tender.author.company_name})"
     for partner in partners:
         send_tender_email_to_partner(email_subject, tender, partner)
 
@@ -92,7 +88,7 @@ def send_tender_email_to_partner(email_subject: str, tender: Tender, partner: Pa
 
 
 def send_tenders_author_feedback_30_days(tender: Tender):
-    email_subject = EMAIL_SUBJECT_PREFIX + "Concernant votre dépôt de besoin sur le marché de l'inclusion"
+    email_subject = "Concernant votre dépôt de besoin sur le marché de l'inclusion"
     recipient_list = whitelist_recipient_list([tender.author.email])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
@@ -160,7 +156,7 @@ def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes
         tender (Tender): Tender published
         nb_matched (int): number of siaes match
     """
-    email_subject = f"{EMAIL_SUBJECT_PREFIX}Votre {tender.get_kind_display().lower()} a été publié !"
+    email_subject = f"Votre {tender.get_kind_display().lower()} a été publié !"
     recipient_list = whitelist_recipient_list([tender.author.email])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
@@ -215,19 +211,19 @@ def send_siae_interested_email_to_author(tender: Tender):
 
         if tender_siae_detail_contact_click_count == 1:
             should_send_email = True
-            email_subject = EMAIL_SUBJECT_PREFIX + "Une première structure intéressée !"
+            email_subject = "Une première structure intéressée !"
             template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_1_TEMPLATE_ID
         elif tender_siae_detail_contact_click_count == 2:
             should_send_email = True
-            email_subject = EMAIL_SUBJECT_PREFIX + "Une deuxième structure intéressée !"
+            email_subject = "Une deuxième structure intéressée !"
             template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_2_TEMPLATE_ID
         elif tender_siae_detail_contact_click_count == 5:
             should_send_email = True
-            email_subject = EMAIL_SUBJECT_PREFIX + "Une cinquième structure intéressée !"
+            email_subject = "Une cinquième structure intéressée !"
             template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_5_TEMPLATE_ID
         elif tender_siae_detail_contact_click_count % 5 == 0:
             should_send_email = True
-            email_subject = EMAIL_SUBJECT_PREFIX + "5 nouvelles structures intéressées !"
+            email_subject = "5 nouvelles structures intéressées !"
             template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_5_MORE_TEMPLATE_ID
         else:
             pass

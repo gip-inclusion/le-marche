@@ -7,7 +7,7 @@ from django.utils.http import urlsafe_base64_encode
 
 from lemarche.users.models import User
 from lemarche.utils.apis import api_hubspot, api_mailjet
-from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX, send_mail_async, whitelist_recipient_list
+from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url
 
 
@@ -42,7 +42,7 @@ def send_signup_notification_email(user):
 
 
 def send_new_user_password_reset_link(user: User):
-    email_subject = EMAIL_SUBJECT_PREFIX + "Finalisez votre inscription sur le marché de l'inclusion"
+    email_subject = "Finalisez votre inscription sur le marché de l'inclusion"
     recipient_list = whitelist_recipient_list([user.email])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
