@@ -15,7 +15,10 @@ from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils.data import get_choice
 from lemarche.www.auth.tasks import send_new_user_password_reset_link
-from lemarche.www.dashboard.mixins import TenderAuthorOrAdminRequiredMixin
+from lemarche.www.dashboard.mixins import (
+    TenderAuthorOrAdminRequiredIfNotValidatedMixin,
+    TenderAuthorOrAdminRequiredMixin,
+)
 from lemarche.www.tenders.forms import (
     AddTenderStepConfirmationForm,
     AddTenderStepContactForm,
@@ -274,7 +277,7 @@ class TenderListView(LoginRequiredMixin, ListView):
         return context
 
 
-class TenderDetailView(DetailView):
+class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailView):
     model = Tender
     template_name = "tenders/detail.html"
     context_object_name = "tender"
