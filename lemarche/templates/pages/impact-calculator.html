@@ -96,10 +96,12 @@
                             Ces <b>{{ results.count }}</b> prestataires inclusifs représentent plus de <b>{{ results_aggregated.ca_declared__sum|intcomma }}</b> € de chiffres d'affaires cumulé
                             et plus de <b>{{ results_aggregated.employees_insertion__sum|intcomma }}</b> salariés en insertion.
                         </p>
-                        <a href="{% url 'siae:search_results' %}?{{ current_search_query }}" class="btn btn-block btn-outline-primary btn-ico" target="_blank">
-                            <span>Découvrir ces prestataires</span>
-                            <i class="ri-arrow-right-s-line ri-lg"></i>
-                        </a>
+                        <div class="d-block d-lg-inline-block">
+                            <a href="{% url 'siae:search_results' %}?{{ current_search_query }}" class="btn btn-block btn-outline-primary btn-ico" target="_blank">
+                                <span>Découvrir ces prestataires</span>
+                                <i class="ri-arrow-right-s-line ri-lg"></i>
+                            </a>
+                        </div>
                     {% endif %}
                     <div class="fs-xs mt-3 mt-lg-5">
                         <p class="mb-0">Ces données sont issues de plusieurs sources :</p>
