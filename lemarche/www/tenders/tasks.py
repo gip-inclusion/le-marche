@@ -13,8 +13,10 @@ from lemarche.utils.urls import get_admin_url_object, get_share_url_object
 def send_tender_emails_to_siaes(tender: Tender):
     """
     All corresponding Siae will be contacted
+
+    previous email_subject: f"{tender.get_kind_display()} : {tender.title} ({tender.author.company_name})"
     """
-    email_subject = f"{tender.get_kind_display()} : {tender.title} ({tender.author.company_name})"
+    email_subject = "Une opportunité commerciale pour vous sur le Marché de l'inclusion"
     siaes = tender.siaes.all()
     for siae in siaes:
         send_tender_email_to_siae(email_subject, tender, siae)
