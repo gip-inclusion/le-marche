@@ -6,15 +6,11 @@
 {% block step_subtitle %}C'est tout bon ! Vérifiez quand même que toutes les informations soient exactes.{% endblock %}
 
 {% block recap_section %}
-<section class="s-section">
-    <div class="s-section__container container">
-        <div class="s-section__row row">
-            <div class="s-section__col col-12">
-                {% include "tenders/detail_card.html" with tender=tender source_form="true" %}
-            </div>
-        </div>
+<div class="s-section__row row">
+    <div class="s-section__col col-12">
+        {% include "tenders/detail_card.html" with tender=tender source_form="true" %}
     </div>
-</section>
+</div>
 {% endblock %}
 
 {% block content_form %}
@@ -22,10 +18,18 @@
 {% endblock %}
 
 {% block submit_btn %}
-<button type="submit" id="tender-create-form-submit-btn" class="btn btn-primary float-right">
-    <i class="ri-mail-send-line ri-lg mr-2"></i>Publier et diffuser
-</button>
-<input type="submit" id="tender-create-draft-form-btn" class="btn float-right" name="is_draft" value="Enregistrer le brouillon" />
+<div class="form-group col-6 col-lg-auto order-1 order-lg-2">
+    <button type="submit" class="btn btn-block btn-ico btn-outline-primary" id="tender-create-draft-form-btn" name="is_draft" >
+      <i class="ri-save-line ri-lg"></i>
+      <span>Enregistrer le brouillon</span>
+    </button>
+</div>
+<div class="form-group col-6 col-lg-auto order-2 order-lg-3">
+    <button type="submit" class="btn btn-primary btn-ico btn-block" id="tender-create-form-submit-btn">
+        <i class="ri-mail-send-line ri-lg"></i>
+       <span>Publier et diffuser</span>
+    </button>
+</div>
 {% endblock submit_btn %}
 
 {% block extra_js %}

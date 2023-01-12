@@ -8,35 +8,37 @@
 {% block content_form %}
 {% csrf_token %}
 <div class="row">
-    <div class="col-12 col-lg-8">
+    <div class="col-12 col-lg-7">
         {% bootstrap_field form.kind %}
     </div>
-    <div class="col-12 col-lg-4">
-        <div class="alert alert-info" role="alert">
-            <p class="mb-0 fs-sm">
-                <i class="ri-information-line ri-lg"></i>
-                En <strong>sourcing inversé</strong>, ce n'est pas vous qui recherchez et contactez chaque prestataire un par un - c'est l'inverse, c'est eux qui viennent à vous.
-            </p>
+    <div class="col-12 col-lg-5">
+        <div class="c-form-conseil">
+            <div>
+              <p>
+                <i class="ri-lightbulb-line ri-lg mr-1"></i><strong>En sourcing inversé</strong>,<br>
+                ce n'est pas vous qui recherchez et contactez chaque prestataire un par un - c'est l'inverse, c'est eux qui viennent à vous.
+              </p>
+            </div>
         </div>
     </div>
 </div>
 <div class="row">
-    <div class="col-12 col-lg-8">
+    <div class="col-12 col-lg-7">
         {% bootstrap_field form.title %}
     </div>
 </div>
 <div class="row">
-    <div class="col-12 col-lg-8">
+    <div class="col-12 col-lg-7">
         {% bootstrap_field form.sectors form_group_class="form-group form-group-required use-multiselect" %}
     </div>
 </div>
 <div class="row">
-    <div class="col-12 col-lg-8">
+    <div class="col-12 col-lg-7">
         {% bootstrap_field form.presta_type %}
     </div>
 </div>
 <div class="row">
-    <div class="col-12 col-lg-8">
+    <div class="col-12 col-lg-7">
         <div class="form-group form-group-required {% if form.location.errors %}is-invalid{% endif %}">
             <label for="id_location">{{ form.location.label }}</label>
             <input id="id_location" name="general-location" value="{{form.location.value}}" type="text" class="d-none">

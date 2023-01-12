@@ -37,7 +37,7 @@
 </section>
 
 
-{% block recap_section %}{% endblock %}
+
 
 <section class="s-section">
     <div class="s-section__container container">
@@ -51,6 +51,7 @@
                 </div>
             </div>
         </div>
+
         {% block form_section %}
         <div class="s-section__row row">
             <div class="s-section__col col-12">
@@ -73,17 +74,34 @@
                         {% endblock content_form %}
 
                         {% block action_form %}
-                        <div class="form-row">
-                            <div class="form-group col-12">
-                                {% if wizard.steps.current != wizard.steps.last %}
-                                    <hr class="mt-3" />
-                                {% endif %}
-                                {% if wizard.steps.prev %}
-                                    <button type="submit" id="tender-create-form-previous-step-btn" class="btn btn-outline-primary mr-1" name="wizard_goto_step" value="{{ wizard.steps.prev }}" formnovalidate>Étape Précédente</button>
-                                {% endif %}
-                                {% block submit_btn %}
-                                    <input type="submit" id="tender-create-form-next-step-btn" class="btn btn-primary float-right" value="Étape Suivante" />
-                                {% endblock submit_btn %}
+
+                        {% block recap_section %}{% endblock %}
+
+                        <div class="row">
+                            <div class="col-12 {% if wizard.steps.current != wizard.steps.last %}col-lg-7{% endif %}">
+                                <hr />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 {% if wizard.steps.current != wizard.steps.last %}col-lg-7{% endif %}">
+                                <div class="form-row align-items-center {% if wizard.steps.prev %}justify-content-between{% else %}justify-content-end{% endif %}">
+                                    {% if wizard.steps.prev %}
+                                        <div class="form-group col-12 col-lg order-3 order-lg-1">
+                                            <button type="submit" class="btn btn-link btn-ico pl-0" id="tender-create-form-previous-step-btn" name="wizard_goto_step" value="{{ wizard.steps.prev }}" aria-label="Retour à l'étape précédente" formnovalidate>
+                                              <i class="ri-arrow-go-back-line ri-lg"></i>
+                                              <span>Étape Précédente</span>
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                    {% block submit_btn %}
+                                        <div class="form-group col-6 col-lg-auto order-2 order-lg-3">
+                                            <button type="submit" class="btn btn-primary btn-block" id="tender-create-form-next-step-btn" aria-label="Passer à l'étape suivante">
+                                              Étape Suivante
+                                            </button>
+                                        </div>
+                                    {% endblock submit_btn %}
+                                </div>
                             </div>
                         </div>
                         {% endblock action_form %}
