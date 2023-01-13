@@ -13,25 +13,25 @@ Aidez-nous à évaluer l'impact de la plateforme du Marché de l’inclusion en 
 <div id="serveyTender">
     <div class="row">
         <div class="col-12 col-lg-7">
-        {% bootstrap_field form.scale_marche_useless wrapper_class="form-check-inline" form_group_class="form-group mb-lg-5" %}
+            {% bootstrap_field form.scale_marche_useless wrapper_class="form-check-inline" form_group_class="form-group mb-lg-5" %}
         </div>
         <div class="col-12 col-lg-5">
             <div class="c-form-conseil">
                 <div>
-                    <p>Le terme <i>*</i> <strong>Prestataire inclusif</strong> fait référence aux structures agréées Insertion ou Handicap.</p>
-                    <p>Ici, le terme “Prestataire inclusif” ne fait pas référence à l'ensemble des prestataires relevant de l'E.S.S (Économie Sociale & Solidaire)</p>
+                    <p>Le terme <i>*</i><strong>Prestataire inclusif</strong> fait référence aux structures agréées Insertion ou Handicap.</p>
+                    <p>Ici, le terme <strong>Prestataire inclusif</strong> ne fait pas référence à l'ensemble des prestataires relevant de l'E.S.S (Économie Sociale & Solidaire)</p>
                 </div>
             </div>
         </div>
     </div>
     <div class="row">
         <div class="col-12 col-lg-7">
-        {% bootstrap_field form.worked_with_inclusif_siae_this_kind_tender form_group_class="form-group mb-lg-5" %}
-        <div id="div_is_encouraged_by_le_marche" class="{% if form.worked_with_inclusif_siae_this_kind_tender.value == '1' %}d-none{% endif %}">
-            {% bootstrap_field form.is_encouraged_by_le_marche form_group_class="form-group form-group-required mb-lg-5" %}
-        </div>
-            {% bootstrap_field form.providers_out_of_insertion form_group_class="form-group mb-lg-5" %}
-        {% bootstrap_field form.le_marche_doesnt_exist_how_to_find_siae form_group_class="form-group" %}
+            {% bootstrap_field form.worked_with_inclusif_siae_this_kind_tender form_group_class="form-group mb-lg-5" %}
+            <div id="div_is_encouraged_by_le_marche" class="{% if form.worked_with_inclusif_siae_this_kind_tender.value == '1' %}d-none{% endif %}">
+                {% bootstrap_field form.is_encouraged_by_le_marche form_group_class="form-group form-group-required mb-lg-5" %}
+            </div>
+                {% bootstrap_field form.providers_out_of_insertion form_group_class="form-group mb-lg-5" %}
+                {% bootstrap_field form.le_marche_doesnt_exist_how_to_find_siae form_group_class="form-group" %}
         </div>
     </div>
 </div>

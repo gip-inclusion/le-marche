@@ -222,8 +222,7 @@ class AddTenderStepSurveyForm(forms.ModelForm):
     )
     # hidden if worked_with_inclusif_siae_this_kind_tender is no or don't know
     is_encouraged_by_le_marche = forms.ChoiceField(
-        label="""Q°3. Est-ce la plateforme du Marché de l'inclusion qui vous a encouragé à consulter des prestataires inclusifs
-        pour ce besoin ?""",
+        label="Q°3. Est-ce la plateforme du Marché de l'inclusion qui vous a encouragé à consulter des prestataires inclusifs pour ce besoin ?",  # noqa
         choices=constants.SURVEY_ENCOURAGED_BY_US_CHOICES,
         widget=forms.RadioSelect,
         required=False,
@@ -237,10 +236,9 @@ class AddTenderStepSurveyForm(forms.ModelForm):
     )
 
     le_marche_doesnt_exist_how_to_find_siae = forms.CharField(
-        label="""Q°5. Si le Marché de l'inclusion n'existait pas,
-            comment auriez-vous fait pour trouver un prestataire inclusif ?""",
+        label="Q°5. Si le Marché de l'inclusion n'existait pas, comment auriez-vous fait pour trouver un prestataire inclusif ?",  # noqa
         required=False,
-        widget=forms.Textarea(attrs={"rows": 2, "cols": 15, "data-expandable":"true"}),
+        widget=forms.Textarea(attrs={"rows": 2, "cols": 15, "data-expandable": "true"}),
     )
 
     class Meta:

@@ -14,10 +14,11 @@
     <div class="col-12 col-lg-5">
         <div class="c-form-conseil">
             <div>
-              <p>
-                <i class="ri-lightbulb-line ri-lg mr-1"></i><strong>En sourcing inversé</strong>,<br>
-                ce n'est pas vous qui recherchez et contactez chaque prestataire un par un - c'est l'inverse, c'est eux qui viennent à vous.
-              </p>
+                <p>
+                    <i class="ri-lightbulb-line ri-lg mr-1"></i><strong>En sourcing inversé</strong>,
+                    <br />
+                    ce n'est pas vous qui recherchez et contactez chaque prestataire un par un - c'est l'inverse, c'est eux qui viennent à vous.
+                </p>
             </div>
         </div>
     </div>
@@ -41,8 +42,8 @@
     <div class="col-12 col-lg-7">
         <div class="form-group form-group-required {% if form.location.errors %}is-invalid{% endif %}">
             <label for="id_location">{{ form.location.label }}</label>
-            <input id="id_location" name="general-location" value="{{form.location.value}}" type="text" class="d-none">
-            <div id="dir_form_location_name" data-input-value="{{form.instance.location.name_display}}"></div>
+            <input id="id_location" name="general-location" value="{{ form.location.value }}" type="text" class="d-none">
+            <div id="dir_form_location_name" data-input-value="{{ form.instance.location.name_display }}"></div>
             <small class="form-text text-muted">{{ form.location.help_text }}</small>
             <div class="invalid-feedback">Ce champ est obligatoire.</div>
         </div>
