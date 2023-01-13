@@ -24,65 +24,73 @@
 {% endblock %}
 
 {% block content %}
-<section class="pt-4 pb-6">
-    <div class="container">
-        <div class="row">
-            <div class="col-12 col-lg-8">
-                <h1 class="h1 mb-3 mb-lg-5"><strong>Nous contacter</strong></h1>
+<section class="s-title-01">
+	<div class="s-title-01__container container">
+		<div class="s-title-01__row row">
+			<div class="s-title-01__col col-12">
+				<h1 class="s-title-01__title h1"><strong>Nous contacter</strong></h1>
+				<h2 class="h2">
+					Vous êtes sur le point de contacter l'équipe Support du <strong>Marché de l'inclusion</strong>.
+                </h2>
+                <p>
+					Notre équipe peut vous aider sur les thématiques liées au développement commercial des ESI (Entreprise Sociale Inclusive), les achats responsables…
+                </p>
+				<p class="mb-0">
+                    <i class="ri-information-line ri-xl"></i> En revanche, si votre demande concerne les sujets de recrutement (Pass IAE, Fiche salarié, prescription ...),
+					nous vous invitons à contacter l'équipe des <strong>Emplois de l'inclusion</strong> sur le site <a href="https://communaute.inclusion.beta.gouv.fr/aide/emplois/">https://communaute.inclusion.beta.gouv.fr/aide/emplois/</a>
+				</p>
+			</div>
+		</div>
+	</div>
+</section>
 
-                <div class="alert alert-info" role="status">
-                    <p>
-                        <i class="ri-information-line ri-xl"></i>
-                        Vous êtes sur le point de contacter l'équipe Support du <strong>Marché de l'inclusion</strong>.<br />
-                        Notre équipe peut vous aider sur les thématiques liées au développement commercial des ESI (Entreprise Sociale Inclusive), les achats responsables…
-                    </p>
-                    <p class="mb-0">
-                        ⚠️ En revanche, si votre demande concerne les sujets de recrutement (Pass IAE, Fiche salarié, prescription ...),
-                        nous vous invitons à contacter l'équipe des <strong>Emplois de l'inclusion</strong> sur le site <a href="https://communaute.inclusion.beta.gouv.fr/aide/emplois/">https://communaute.inclusion.beta.gouv.fr/aide/emplois/</a>
-                    </p>
+<section class="s-section">
+	<div class="s-section__container container">
+		<div class="s-section__row row">
+			<div class="s-section__col col-12 col-lg-7">
+				<div class="c-form">
+                    <form method="POST" action="">
+                        {% csrf_token %}
+                        {% bootstrap_form_errors form type="all" %}
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                {% bootstrap_field form.first_name form_group_class="form-group" %}
+                            </div>
+                            <div class="col-sm-6">
+                                {% bootstrap_field form.last_name form_group_class="form-group" %}
+                            </div>
+                        </div>
+                        {% bootstrap_field form.email form_group_class="form-group" %}
+                        {% bootstrap_field form.kind  form_group_class="form-group"%}
+                        <div class="row">
+                            <div class="col-sm-6">
+                                {% bootstrap_field form.siret form_group_class="form-group" %}
+                            </div>
+                            <div class="col-sm-6">
+                                {% bootstrap_field form.phone form_group_class="form-group" %}
+                            </div>
+                        </div>
+                        {% bootstrap_field form.subject form_group_class="form-group" %}
+                        {% bootstrap_field form.message form_group_class="form-group" %}
+
+                        <hr>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-row align-items-center justify-content-end">
+                                    <div class="form-group col-12 col-lg-auto">
+                                        <button type="submit" class="btn btn-ico btn-block btn-primary">
+                                            <i class="ri-send-plane-line ri-lg"></i>
+                                            <span>Envoyer</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-
-                <br />
-
-                <form method="POST" action="">
-                    {% csrf_token %}
-
-                    <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
-                        {% bootstrap_form_errors form type="all" %} 
-                        <div class="row">
-                            <div class="col-sm-6">
-                                {% bootstrap_field form.first_name %}
-                            </div>
-                            <div class="col-sm-6">
-                                {% bootstrap_field form.last_name %}
-                            </div>
-                        </div>
-                        {% bootstrap_field form.email %}
-                        {% bootstrap_field form.kind %}
-                        <div class="row">
-                            <div class="col-sm-6">
-                                {% bootstrap_field form.siret %}
-                            </div>
-                            <div class="col-sm-6">
-                                {% bootstrap_field form.phone %}
-                            </div>
-                        </div>
-                        <br />
-                        {% bootstrap_field form.subject %}
-                        {% bootstrap_field form.message %}
-                    </div>
-
-                    <div class="row mt-3 mt-lg-5 justify-content-end">
-                        <div class="col-12 col-lg-auto px-5 px-lg-6">
-                            <button type="submit" class="btn btn-primary btn-block btn-ico">
-                                <span>Envoyer</span>
-                                <i class="ri-mail-send-line ri-lg"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+			</div>
+		</div>
+	</div>
 </section>
 {% endblock %}
