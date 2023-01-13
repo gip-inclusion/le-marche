@@ -34,7 +34,7 @@ class ContactForm(forms.Form):
     # subject = ChoiceField + choices=SUBJECT_CHOICES ?
     subject = forms.CharField(label="Sujet", max_length=150, required=True)
 
-    message = forms.CharField(label="Message", widget=forms.Textarea(), required=True)
+    message = forms.CharField(label="Message", widget=forms.Textarea(attrs={"data-expandable": "true"}), required=True)
 
 
 class ImpactCalculatorForm(SiaeSearchForm):
