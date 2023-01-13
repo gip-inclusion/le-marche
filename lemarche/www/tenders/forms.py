@@ -240,7 +240,7 @@ class AddTenderStepSurveyForm(forms.ModelForm):
         label="""Q°5. Si le Marché de l'inclusion n'existait pas,
             comment auriez-vous fait pour trouver un prestataire inclusif ?""",
         required=False,
-        widget=forms.Textarea(attrs={"rows": 2, "cols": 15}),
+        widget=forms.Textarea(attrs={"rows": 2, "cols": 15, "data-expandable":"true"}),
     )
 
     class Meta:
