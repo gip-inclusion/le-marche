@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import RedirectView
 
 from lemarche.www.tenders.views import (
     TenderCreateMultiStepView,
@@ -13,6 +14,8 @@ from lemarche.www.tenders.views import (
 app_name = "tenders"
 
 urlpatterns = [
+    # why redirect? avoid conflict with tenders:detail
+    path("ajouter", RedirectView.as_view(pattern_name="tenders:create", permanent=True), name="create_without_slash"),
     path("ajouter/", TenderCreateMultiStepView.as_view(), name="create"),
     path("modifier/<str:slug>", TenderCreateMultiStepView.as_view(), name="update"),
     path("<str:slug>", TenderDetailView.as_view(), name="detail"),
