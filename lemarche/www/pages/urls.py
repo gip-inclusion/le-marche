@@ -46,6 +46,11 @@ urlpatterns = [
         TemplateView.as_view(template_name="pages/valoriser-achats.html"),
         name="valoriser_achats",
     ),
+    path(
+        "accessibilite/",
+        TemplateView.as_view(template_name="pages/accessibilite.html"),
+        name="accessibilite",
+    ),
     path("groupements/", SiaeGroupListView.as_view(), name="groupements"),
     path("stats/", StatsView.as_view(), name="stats"),
     # Sentry endpoint for frontend errors
