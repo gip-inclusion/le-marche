@@ -300,6 +300,7 @@ DEFAULT_FROM_EMAIL = "noreply@inclusion.beta.gouv.fr"
 DEFAULT_FROM_NAME = "Marché de l'inclusion"
 CONTACT_EMAIL = env("CONTACT_EMAIL", default="contact@example.com")
 NOTIFY_EMAIL = env("NOTIFY_EMAIL", default="notif@example.com")
+GIP_CONTACT_EMAIL = "contact@inclusion.beta.gouv.fr"
 
 # Transactional email templates
 # -- new user password reset
