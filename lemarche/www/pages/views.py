@@ -301,7 +301,7 @@ def csrf_failure(request, reason=""):  # noqa C901
             user = create_user_from_anonymous_content(tender_dict)
         else:
             user = request.user
-        tender_dict["user"] = user
+        tender_dict["author"] = user
         # create tender
         if is_adding:
             tender = create_tender_from_dict(tender_dict)
