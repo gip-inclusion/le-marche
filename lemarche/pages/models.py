@@ -9,6 +9,12 @@ class Page(FlatPage):
     https://docs.djangoproject.com/en/3.2/ref/contrib/flatpages/
     """
 
+    is_full_page = models.BooleanField(
+        verbose_name="Page entière ?",
+        help_text="Décocher si vous souhaitez intégrer ce contenu dans une page existante.",
+        default=True,
+    )
+
     meta_title = models.CharField(
         verbose_name="Titre (balise meta)",
         max_length=100,
@@ -25,7 +31,7 @@ class Page(FlatPage):
         max_length=255,
         blank=True,
         default="",
-        help_text=("La description qui sera affichée dans les SERPs. " "À garder < 150 caractères."),
+        help_text=("La description qui sera affichée dans les SERPs. À garder < 150 caractères."),
     )
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)

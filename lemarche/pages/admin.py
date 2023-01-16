@@ -21,6 +21,7 @@ class PageAdmin(FlatPageAdmin):
                 "fields": ("url", "title", "content"),
             },
         ),
+        ("Affichage", {"fields": ("is_full_page",)}),
         ("SEO", {"fields": ("meta_title", "meta_description")}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
