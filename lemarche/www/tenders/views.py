@@ -13,6 +13,7 @@ from formtools.wizard.views import SessionWizardView
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
+from lemarche.utils.apis import api_hubspot
 from lemarche.utils.data import get_choice
 from lemarche.www.auth.tasks import send_new_user_password_reset_link
 from lemarche.www.dashboard.mixins import (
@@ -211,6 +212,8 @@ class TenderCreateMultiStepView(SessionWizardView):
         # we notify the admin team
         if settings.BITOUBI_ENV == "prod":
             notify_admin_tender_created(self.instance)
+            if not is_draft:
+                api_hubspot.create_deal_from_tender(tender=self.instance)
         # validation & siae contacted? in tenders/admin.py
         # success message & response
         messages.add_message(
