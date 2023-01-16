@@ -322,7 +322,7 @@ def csrf_failure(request, reason=""):  # noqa C901
             tender.save()
         if settings.BITOUBI_ENV == "prod":
             notify_admin_tender_created(tender)
-            if not tender.status == tender_constants.STATUS_PUBLISHED:
+            if tender.status != tender_constants.STATUS_DRAFT:
                 api_hubspot.create_deal_from_tender(tender=tender)
 
         messages.add_message(
