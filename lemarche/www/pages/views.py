@@ -16,6 +16,7 @@ from lemarche.siaes.models import Siae, SiaeGroup
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
+from lemarche.utils.apis import api_hubspot
 from lemarche.utils.tracker import track
 from lemarche.www.pages.forms import CompanyReferenceCalculatorForm, ContactForm, ImpactCalculatorForm
 from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
@@ -321,6 +322,8 @@ def csrf_failure(request, reason=""):  # noqa C901
             tender.save()
         if settings.BITOUBI_ENV == "prod":
             notify_admin_tender_created(tender)
+            if not tender.status == tender_constants.STATUS_PUBLISHED:
+                api_hubspot.create_deal_from_tender(tender=tender)
 
         messages.add_message(
             request,
