@@ -10,6 +10,19 @@
 {% block body_class %}p-homepage{{ block.super }}{% endblock %}
 
 {% block content %}
+{% if sub_header_custom_message %}
+    <section class="s-sub-header">
+        <div class="container">
+            <div class="alert alert-info alert-dismissible-once mt-3" role="status" id="alertSubHeaderDismissibleOnce">
+                {{ sub_header_custom_message|safe }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+{% endif %}
+
 <section class="s-page-menu-01 s-page-menu-01--marche p-0">
     <div class="s-page-menu-01__container container">
         <div class="s-page-menu-01__row row py-5 pb-md-4 pt-md-3">

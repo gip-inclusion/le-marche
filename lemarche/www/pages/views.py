@@ -40,9 +40,15 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         """
+        - add sub_header
+        - add stats
         - add SIAE that should appear in the section "à la une"
         """
         context = super().get_context_data(**kwargs)
+        try:
+            context["sub_header_custom_message"] = Page.objects.get(url="/bandeau/", is_full_page=False).content
+        except Page.DoesNotExist:
+            pass
         context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
         context["siae_count"] = Siae.objects.is_live().count()
         context["tender_count"] = Tender.objects.validated().count() + 30  # historic number (before form)
@@ -116,7 +122,7 @@ class PageView(DetailView):
             url = "/" + url
 
         try:
-            page = Page.objects.get(url=url)
+            page = Page.objects.get(url=url, is_full_page=True)
         except Page.DoesNotExist:
             raise Http404("Page inconnue")
 
