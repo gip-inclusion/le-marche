@@ -710,7 +710,6 @@ FACILITATOR_SLIDE = "https://docs.google.com/presentation/d/e/2PACX-1vRd5lfQWHNE
 FACILITATOR_LIST = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRtavj-NHym5wjgDu9KRTIDPVZtujFlaSL9Z_BYQ7nWrmkcbGRuL12-VxiNctaOTsgdjQURuPLr57R/pubhtml"  # noqa
 TYPEFORM_BESOIN_ACHAT = "https://itou.typeform.com/to/KWViHaph"
 TYPEFORM_BESOIN_ACHAT_RECHERCHE = "https://itou.typeform.com/to/nxG0HlYx"
-TYPEFORM_BESOIN_ACHAT_GROUPE = "https://itou.typeform.com/to/nySSrtiP"
 TYPEFORM_GROUPEMENT_AJOUT = "https://itou.typeform.com/to/AENCiOWD"
 FORM_PARTENAIRES = (
     "https://docs.google.com/forms/d/e/1FAIpQLScx1k-UJ-962_rSgPJGabc327gGjFUho6ypgcZHCubuwTl7Lg/viewform"
