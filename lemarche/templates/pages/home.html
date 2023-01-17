@@ -11,11 +11,11 @@
 
 {% block content %}
 {% if sub_header_custom_message %}
-    <section class="s-section mb-0">
+    <section class="s-sub-header">
         <div class="s-section__container container">
           <div class="s-section__row row">
             <div class="s-section__col col-12">
-                <div class="alert alert-communaute alert-dismissible-once d-none" role="status" id="alertSubHeaderDismissibleOnce">
+                <div class="alert alert-communaute alert-dismissible-once mt-3 mb-0 d-none" role="status" id="alertSubHeaderDismissibleOnce">
                     <p class="mb-0">{{ sub_header_custom_message|safe }}</p>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
                         <i class="ri-close-line"></i>
@@ -29,7 +29,7 @@
 
 <section class="s-page-menu-01 s-page-menu-01--marche p-0">
     <div class="s-page-menu-01__container container">
-        <div class="s-page-menu-01__row row py-5 pb-md-4 pt-md-3">
+        <div class="s-page-menu-01__row row">
             <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-md-8">
                 <h1 class="h1-hero lh-sm">Votre recherche <br class="d-none d-lg-inline">de prestataires inclusifs <br class="d-none d-lg-inline">est chronophage ?</h1>
                 <h2 class="h2 mb-3 mb-lg-5">Confiez votre sourcing au marché de l'inclusion !</h2>
