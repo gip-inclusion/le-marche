@@ -11,14 +11,18 @@
 
 {% block content %}
 {% if sub_header_custom_message %}
-    <section class="s-sub-header">
-        <div class="container">
-            <div class="alert alert-communaute alert-dismissible-once mt-3" role="status" id="alertSubHeaderDismissibleOnce">
-                {{ sub_header_custom_message|safe }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
-                    <i class="ri-close-line"></i>
-                </button>
+    <section class="s-section mb-0">
+        <div class="s-section__container container">
+          <div class="s-section__row row">
+            <div class="s-section__col col-12">
+                <div class="alert alert-communaute alert-dismissible-once d-none" role="status" id="alertSubHeaderDismissibleOnce">
+                    <p class="mb-0">{{ sub_header_custom_message|safe }}</p>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
             </div>
+          </div>
         </div>
     </section>
 {% endif %}
