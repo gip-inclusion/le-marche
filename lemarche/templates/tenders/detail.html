@@ -26,69 +26,88 @@
 
 {% block content %}
 <section class="container">
-    <div class="row">
-        <div class="col-12 col-lg-8">
-            {% if tender.author == request.user %}
-                {% if is_draft %}
-                    <div class="alert alert-warning fade show" role="status">
-                        <div class="row">
-                            <div class="col-auto pr-0">
-                                <i class="ri-information-line ri-xl text-warning"></i>
-                            </div>
-                            <div class="col">
-                                <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} n'est pas encore publié.</p>
+    {% if tender.author == request.user or user_siae_has_detail_contact_click_date %}
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                {% if tender.author == request.user %}
+                    {% if is_draft %}
+                        <div class="alert alert-warning fade show" role="status">
+                            <div class="row">
+                                <div class="col-auto pr-0">
+                                    <i class="ri-information-line ri-xl text-warning"></i>
+                                </div>
+                                <div class="col">
+                                    <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} est encore en brouillon. Modifiez-le pour le publier.</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    {% endif %}
+                    {% if is_pending_validation %}
+                        <div class="alert alert-info fade show" role="status">
+                            <div class="row">
+                                <div class="col-auto pr-0">
+                                    <i class="ri-information-line ri-xl text-info"></i>
+                                </div>
+                                <div class="col">
+                                    <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} est en cours de validation.</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if is_validated %}
+                        <div class="alert alert-success fade show" role="status">
+                            <div class="row">
+                                <div class="col-auto pr-0">
+                                    <i class="ri-checkbox-circle ri-xl text-info"></i>
+                                </div>
+                                <div class="col">
+                                    <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} est validé et publié !</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
                 {% endif %}
-                {% if is_pending_validation %}
+                {% if user_siae_has_detail_contact_click_date and not tender.deadline_date_outdated %}
                     <div class="alert alert-info fade show" role="status">
-                        <div class="row">
-                            <div class="col-auto pr-0">
-                                <i class="ri-information-line ri-xl text-info"></i>
-                            </div>
-                            <div class="col">
-                                <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} est en cours de validation.</p>
-                            </div>
-                        </div>
+                        {% include "tenders/_detail_contact.html" with tender=tender %}
                     </div>
                 {% endif %}
-            {% endif %}
-            {% if user_siae_has_detail_contact_click_date and not tender.deadline_date_outdated %}
-                <div class="alert alert-info fade show" role="status">
-                    {% include "tenders/_detail_contact.html" with tender=tender %}
-                </div>
-            {% endif %}
-        </div>
-        {% if user_siae_has_detail_contact_click_date and not tender.deadline_date_outdated %}
-            <div class="col-12 col-lg-4">
-                <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-                    <p class="mb-1">
-                        <i class="ri-information-line ri-lg"></i>
-                        <strong>Conseil</strong>
-                    </p>
-                    <p class="mb-0 fs-sm">
-                        N'attendez pas et contactez dès maintenant le client.
-                        En fonction, envoyez lui un devis, une plaquette commerciale ou répondez à son marché.
-                    </p>
-                </div>
             </div>
-        {% endif %}
-    </div>
+            <div class="col-12 col-lg-4 pb-3 pb-lg-0">
+                {% if tender.author == request.user %}
+                    {% if is_draft %}
+                        <a href="{% url 'tenders:update' tender.slug %}" class="btn btn-primary btn-ico">
+                            <i class="ri-pencil-fill ri-lg font-weight-normal" aria-hidden="true"></i>
+                            <span>Modifier</span>
+                        </a>
+                    {% endif %}
+                    {% if is_validated %}
+                        <a href="{% url 'tenders:detail-siae-interested' tender.slug %}" id="show-tender-siae-list-from-detail-btn" class="btn btn-primary">
+                            {{ siae_detail_contact_click_date_count }} structures intéressées
+                        </a>
+                    {% endif %}
+                {% endif %}
+                {% if user_siae_has_detail_contact_click_date and not tender.deadline_date_outdated %}
+                    <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                        <p class="mb-1">
+                            <i class="ri-information-line ri-lg"></i>
+                            <strong>Conseil</strong>
+                        </p>
+                        <p class="mb-0 fs-sm">
+                            N'attendez pas et contactez dès maintenant le client.
+                            En fonction, envoyez lui un devis, une plaquette commerciale ou répondez à son marché.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
     <div class="row">
-        <div class="col-12 col-lg-8">
+        <div class="col-12 col-lg-8 order-2">
             {% include "tenders/detail_card.html" with tender=tender %}
-            {% if tender.author == request.user and is_draft %}
-                <section class="pb-4 float-right">
-                    <a href="{% url 'tenders:update' tender.slug %}" class="btn btn-primary btn-ico">
-                        <i class="ri-pencil-fill ri-lg font-weight-normal" aria-hidden="true"></i>
-                        <span>Modifier</span>
-                    </a>
-                </section>
-            {% endif %}
         </div>
         {% if tender.author != request.user and not tender.deadline_date_outdated %}
-            <div class="col-12 col-lg-4">
+            <div class="col-12 col-lg-4 order-1 order-lg-2">
                 {% if siae_detail_display_date_count_all %}
                     <div class="alert alert-warning mt-3 mt-lg-0" role="alert">
                         <p class="mb-0 fs-sm">
@@ -96,6 +115,45 @@
                             {{ siae_detail_display_date_count_all|pluralize:"a,ont" }} vu le besoin de ce client.
                         </p>
                     </div>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    {% if user.kind == user.KIND_PARTNER %}
+                        <div class="alert alert-info" role="alert">
+                            <p class="mb-1">
+                                <i class="ri-lightbulb-line ri-lg"></i>
+                                <strong>Comment contacter le client ?</strong>
+                            </p>
+                            <p class="mb-0">
+                                Contactez Sofiane via
+                                <a href="mailto:{{ CONTACT_EMAIL }}?subject=Demande d'information pour {{ tender.title }}">{{ CONTACT_EMAIL }}</a>
+                                pour être mis en relation avec le client.
+                            </p>
+                        </div>
+                    {% elif user.kind == user.KIND_SIAE and not user.has_siae %}
+                        <div class="alert alert-info" role="alert">
+                            <p class="mb-1">
+                                <i class="ri-lightbulb-line ri-lg"></i>
+                                <strong>Comment contacter le client ?</strong>
+                            </p>
+                            <p class="mb-0">
+                                Pour accéder aux coordonnées du client, veuillez d'abord vous <a id="add-siae-btn" href="{% url 'dashboard:siae_search_by_siret' %}">rattacher à votre structure</a>.
+                            </p>
+                            <p>
+                                Besoin d'aide ? contacter le support via le chat en ligne qui se trouve en bas à droite.
+                            </p>
+                        </div>
+                    {% elif not user_siae_has_detail_contact_click_date %}
+                        <button type="button" id="show-tender-contact-modal-btn" class="btn btn-primary float-right mb-4" data-toggle="modal" data-target="#detail_contact_click_confirm_modal" title="Répondre à cette opportunité">
+                            Répondre à cette opportunité
+                        </button>
+                        <div id="show-tender-contact-content" style="display:none">
+                            {% include "tenders/_detail_contact.html" with tender=tender %}
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <a href="#" id="show-tender-contact-modal-btn" class="btn btn-primary float-right mb-4" data-toggle="modal" data-target="#login_or_signup_siae_tender_modal" data-next-params="{% url 'tenders:detail' tender.slug %}">
+                        <span>Répondre à cette opportunité</span>
+                    </a>
                 {% endif %}
             </div>
         {% endif %}
