@@ -1,0 +1,114 @@
+{% extends BASE_TEMPLATE %}
+{% load bootstrap4 static humanize %}
+
+{% block title %}Calculez l’impact social d’un achat inclusif{{ block.super }}{% endblock %}
+{% block meta_description %}
+<meta name="description" content="Identifier rapidement le nombre total de prestataires inclusifs pouvant répondre à votre besoin et mesurer leur capacité globale de production.">
+{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Calculez l’impact social d’un achat inclusif</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="s-page-menu-01 s-page-impact-calculator s-page-menu-01--marche has-illustration-bg-01">
+    <div class="s-page-menu-01__container container">
+        <div class="s-page-menu-01__row row align-items-center">
+            <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-lg-10">
+                <h1 class="h1-hero">
+                    <strong>Calculez l’impact social d’un achat inclusif</strong>
+                </h1>
+                <h2 class="mb-0">
+                    Renseignez le montant de votre achat et découvrez à combien d’emploi inclusif vous contribuez.
+                </h2>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="s-section">
+    <div class="s-section__container container">
+        {% block htmx %}
+        <div class="s-section__row row" id="calculatorImpact">
+            <div class="col-12 col-lg-7">
+                <div class="c-form mb-5 mb-lg-0">
+                    <form hx-get="{{ request.path }}" hx-push-url="true" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-target="#calculatorImpact" hx-swap="outerHTML">
+                        {% bootstrap_form_errors form type="all" %}
+                        <fieldset>
+                            {% bootstrap_field form.amount form_group_class="form-group" %}
+                        </fieldset>
+                        <hr class="mb-3">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-row align-items-center justify-content-end">
+                                    {% if results %}
+                                    <div class="form-group col-12 col-lg-auto">
+                                        <button hx-get="{{ request.path }}" hx-target="#calculatorImpact" hx-swap="outerHTML" class="btn btn-block btn-ico btn-outline-primary">
+                                            <i class="ri-close-fill ri-lg"></i>
+                                            <span>Annuler</span>
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-group col-12 col-lg-auto">
+                                        <button type="submit" class="btn btn-ico btn-block btn-primary">
+                                            <i class="ri-search-line ri-lg"></i>
+                                            <span>Lancer la recherche</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% if results %}
+                <div class="col-12 col-lg-5">
+                    <h3>Résultats</h3>
+                    <p>
+                        Il y a <b>{{ results.count }}</b> prestataires inclusifs positionnés sur les secteurs d'activités <i>{{current_sectors_pretty|join:", "}}</i>
+                        pouvant intervenir sur <i>{{ current_perimeters_pretty|join:", " }}</i>.
+                    </p>
+                    {% if results.count > 0 %}
+                        <p>
+                            Ces <b>{{ results.count }}</b> prestataires inclusifs représentent plus de <b>{{ results_aggregated.ca_declared__sum|intcomma }}</b> € de chiffres d'affaires cumulé
+                            et plus de <b>{{ results_aggregated.employees_insertion__sum|intcomma }}</b> salariés en insertion.
+                        </p>
+                        <div class="d-block d-lg-inline-block">
+                            <a href="{% url 'siae:search_results' %}?{{ current_search_query }}" class="btn btn-block btn-outline-primary btn-ico" target="_blank">
+                                <span>Découvrir ces prestataires</span>
+                                <i class="ri-arrow-right-s-line ri-lg"></i>
+                            </a>
+                        </div>
+                    {% endif %}
+                    <div class="fs-xs mt-3 mt-lg-5">
+                        <p class="mb-0">Ces données sont issues de plusieurs sources :</p>
+                        <ul>
+                            <li>les informations déclarées par les prestataires inclusifs eux-mêmes</li>
+                            <li><a href="https://pilotage.inclusion.beta.gouv.fr/" target="_blank" rel="noopener noreferrer">la plateforme Le Pilotage de l'inclusion</a></li>
+                            <li><a href="https://api.gouv.fr/" target="_blank" rel="noopener noreferrer">api.gouv.fr</a></li>
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        {% endblock htmx %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
+{% endblock extra_js %}
