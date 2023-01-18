@@ -49,11 +49,20 @@
                         {% bootstrap_form_errors form type="all" %}
                         <fieldset>
                             {% bootstrap_field form.amount form_group_class="form-group" %}
+                            {% if form.errors %}
+                                <div class="alert alert-danger" role="alert">{{ form.errors }}</div>
+                            {% endif %}
                         </fieldset>
                         <hr class="mb-3">
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-12 float">
                                 <div class="form-row align-items-center justify-content-end">
+                                    <div class="form-group col-12 col-lg-auto">
+                                        <button type="submit" class="btn btn-ico btn-block btn-primary">
+                                            <i class="ri-search-line ri-lg"></i>
+                                            <span>Lancer la recherche</span>
+                                        </button>
+                                    </div>
                                     {% if results %}
                                     <div class="form-group col-12 col-lg-auto">
                                         <button hx-get="{{ request.path }}" hx-target="#calculatorImpact" hx-swap="outerHTML" class="btn btn-block btn-ico btn-outline-primary">
@@ -62,12 +71,6 @@
                                         </button>
                                     </div>
                                     {% endif %}
-                                    <div class="form-group col-12 col-lg-auto">
-                                        <button type="submit" class="btn btn-ico btn-block btn-primary">
-                                            <i class="ri-search-line ri-lg"></i>
-                                            <span>Lancer la recherche</span>
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -77,29 +80,33 @@
             {% if results %}
                 <div class="col-12 col-lg-5">
                     <h3>Résultats</h3>
-                    <p>
-                        Il y a <b>{{ results.count }}</b> prestataires inclusifs positionnés sur les secteurs d'activités <i>{{current_sectors_pretty|join:", "}}</i>
-                        pouvant intervenir sur <i>{{ current_perimeters_pretty|join:", " }}</i>.
-                    </p>
-                    {% if results.count > 0 %}
+                    {% if results.nb_of_hours_per_mounth %}
                         <p>
-                            Ces <b>{{ results.count }}</b> prestataires inclusifs représentent plus de <b>{{ results_aggregated.ca_declared__sum|intcomma }}</b> € de chiffres d'affaires cumulé
-                            et plus de <b>{{ results_aggregated.employees_insertion__sum|intcomma }}</b> salariés en insertion.
+                            Malheureusement, votre achat ne permet pas de financer un emploi à temps plein,
+                            par contre il pourrait contribuer à approximativement <b>{{results.nb_of_hours_per_mounth}} heures de travail sur un mois</b>.
                         </p>
-                        <div class="d-block d-lg-inline-block">
-                            <a href="{% url 'siae:search_results' %}?{{ current_search_query }}" class="btn btn-block btn-outline-primary btn-ico" target="_blank">
-                                <span>Découvrir ces prestataires</span>
-                                <i class="ri-arrow-right-s-line ri-lg"></i>
-                            </a>
-                        </div>
+                        <p class="fs-sm">
+                            Ces emplois locaux et non-délocalisables bénéficieront à des personnes vulnérables, éloignés du monde professionnel ou en situation de handicap.
+                        </p>
+                    {% else %}
+                        <p>
+                            Bravo ! Votre achat inclusif pourrait contribuer à financer approximativement <b>{{results.nb_of_jobs_per_mounth}}
+                            emploi{{results.nb_of_jobs_per_mounth|pluralize}} durant 1 mois</b>
+                            ou <b>{{results.nb_of_jobs_per_year|floatformat:1}} emploi{% if results.nb_of_jobs_per_year > 1 %}s{% endif %} pendant 1 an</b>.
+                        </p>
+                        <p class="fs-sm">
+                            Ces emplois locaux et non-délocalisables bénéficieront à des personnes vulnérables, éloignés du monde professionnel ou en situation de handicap.
+                        </p>
                     {% endif %}
+
+                    <div class="d-block d-lg-inline-block">
+                        <a id="acheter-inclusif-impact-social-buyers" href="{% url 'tenders:create' %}" class="btn btn-block btn-outline-primary btn-ico">
+                            <span>Achetez inclusif</span>
+                            <i class="ri-arrow-right-s-line ri-lg"></i>
+                        </a>
+                    </div>
                     <div class="fs-xs mt-3 mt-lg-5">
-                        <p class="mb-0">Ces données sont issues de plusieurs sources :</p>
-                        <ul>
-                            <li>les informations déclarées par les prestataires inclusifs eux-mêmes</li>
-                            <li><a href="https://pilotage.inclusion.beta.gouv.fr/" target="_blank" rel="noopener noreferrer">la plateforme Le Pilotage de l'inclusion</a></li>
-                            <li><a href="https://api.gouv.fr/" target="_blank" rel="noopener noreferrer">api.gouv.fr</a></li>
-                        </ul>
+                        <p class="mb-0">Il s’agit d’une estimation basée sur le mode de calcul d’un échantillon non représentatif de l’ensemble des prestataires inclusifs.</p>
                     </div>
                 </div>
             {% endif %}

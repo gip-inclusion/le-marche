@@ -188,6 +188,18 @@ class ImpactCalculatorView(FormMixin, ListView):
         return listing
 
 
+def calculate_social_impact_buyers(amount: int):
+    AMOUNT_MIN = 3699
+    if amount < AMOUNT_MIN:
+        return {
+            "nb_of_hours_per_mounth": round(amount / 26),
+        }
+    return {
+        "nb_of_jobs_per_mounth": round(amount / 3700),
+        "nb_of_jobs_per_year": amount / 3700 / 12,
+    }
+
+
 class SocialImpactBuyersCalculatorView(FormMixin, TemplateView):
     template_name = "pages/social-impact-for-buyers.html"
     form_class = SocialImpactBuyersCalculatorForm
@@ -195,10 +207,13 @@ class SocialImpactBuyersCalculatorView(FormMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # if len(self.request.GET.keys()):
-        #     import ipdb
+        if len(self.request.GET.keys()):
+            self.form = SocialImpactBuyersCalculatorForm(data=self.request.GET)
+            context["form"] = self.form
+            if self.form.is_valid():
+                amount = self.form.cleaned_data.get("amount")
+                context["results"] = calculate_social_impact_buyers(amount)
 
-        #     ipdb.set_trace()
         return context
 
     def get(self, request, *args, **kwargs):
