@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="PagePartial",
+            name="PageFragment",
             fields=[
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("title", models.CharField(max_length=255, unique=True, verbose_name="Titre")),
@@ -23,6 +23,10 @@ class Migration(migrations.Migration):
                 ),
                 ("updated_at", models.DateTimeField(auto_now=True, verbose_name="Date de modification")),
             ],
-            options={"ordering": ["title"]},
+            options={
+                "ordering": ["title"],
+                "verbose_name": "Fragment de page",
+                "verbose_name_plural": "Fragments de page",
+            },
         ),
     ]

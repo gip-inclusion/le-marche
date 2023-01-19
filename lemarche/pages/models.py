@@ -34,7 +34,7 @@ class Page(FlatPage):
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
 
-class PagePartial(models.Model):
+class PageFragment(models.Model):
     title = models.CharField(verbose_name="Titre", max_length=255, unique=True)
     content = models.TextField(verbose_name="Contenu", blank=True)
 
@@ -42,6 +42,8 @@ class PagePartial(models.Model):
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
     class Meta:
+        verbose_name = "Fragment de page"
+        verbose_name_plural = "Fragments de page"
         ordering = ["title"]
 
     def __str__(self):

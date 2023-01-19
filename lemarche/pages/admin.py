@@ -4,7 +4,7 @@ from django.contrib.flatpages.admin import FlatPageAdmin
 from django.db import models
 
 from lemarche.common.admin import admin_site
-from lemarche.pages.models import Page, PagePartial
+from lemarche.pages.models import Page, PageFragment
 
 
 @admin.register(Page, site=admin_site)
@@ -26,8 +26,8 @@ class PageAdmin(FlatPageAdmin):
     )
 
 
-@admin.register(PagePartial, site=admin_site)
-class PagePartialAdmin(admin.ModelAdmin):
+@admin.register(PageFragment, site=admin_site)
+class PageFragmentAdmin(admin.ModelAdmin):
     list_display = ["title", "created_at", "updated_at"]
 
     readonly_fields = ["created_at", "updated_at"]
@@ -42,3 +42,9 @@ class PagePartialAdmin(admin.ModelAdmin):
         ),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
+
+    def get_readonly_fields(self, request, obj=None):
+        # title cannot be changed (to avoid query errors)
+        if obj:
+            return self.readonly_fields + ["title"]
+        return self.readonly_fields

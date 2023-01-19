@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, FormView, ListView, TemplateView, View
 from django.views.generic.edit import FormMixin
 
-from lemarche.pages.models import Page, PagePartial
+from lemarche.pages.models import Page, PageFragment
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae, SiaeGroup
@@ -46,8 +46,8 @@ class HomeView(TemplateView):
         """
         context = super().get_context_data(**kwargs)
         try:
-            context["sub_header_custom_message"] = PagePartial.objects.get(title="Bandeau").content
-        except PagePartial.DoesNotExist:
+            context["sub_header_custom_message"] = PageFragment.objects.get(title="Bandeau").content
+        except PageFragment.DoesNotExist:
             pass
         context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
         context["siae_count"] = Siae.objects.is_live().count()
