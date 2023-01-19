@@ -162,9 +162,9 @@ urlpatterns = [
     # Calculator endpoints
     path("calibrer-achat-socialement-responsable/", ImpactCalculatorView.as_view(), name="impact_calculator"),
     path(
-        "calculez-limpact-social-dun-achat-inclusif/",
+        "calculer-impact-social-achat-inclusif/",
         SocialImpactBuyersCalculatorView.as_view(),
-        name="social_impact-buyers_calculator",
+        name="buyer_social_impact_calculator",
     ),
     path("acheteurs-reference-client/", CompanyReferenceCalculatorView.as_view(), name="company_reference_calculator"),
     # Flatpages (created in the admin)

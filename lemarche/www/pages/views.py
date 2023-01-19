@@ -189,8 +189,8 @@ class ImpactCalculatorView(FormMixin, ListView):
 
 
 def calculate_social_impact_buyers(amount: int):
-    AMOUNT_MIN = 3699
-    if amount < AMOUNT_MIN:
+    AMOUNT_THRESHOLD = 3699
+    if amount <= AMOUNT_THRESHOLD:
         return {
             "nb_of_hours_per_mounth": round(amount / 26),
         }
