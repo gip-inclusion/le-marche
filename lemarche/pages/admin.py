@@ -28,7 +28,7 @@ class PageAdmin(FlatPageAdmin):
 
 @admin.register(PageFragment, site=admin_site)
 class PageFragmentAdmin(admin.ModelAdmin):
-    list_display = ["title", "created_at", "updated_at"]
+    list_display = ["title", "is_live", "created_at", "updated_at"]
 
     readonly_fields = ["created_at", "updated_at"]
     formfield_overrides = {models.TextField: {"widget": CKEditorWidget}}
@@ -40,6 +40,7 @@ class PageFragmentAdmin(admin.ModelAdmin):
                 "fields": ("title", "content"),
             },
         ),
+        ("Affichage", {"fields": ("is_live",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
 

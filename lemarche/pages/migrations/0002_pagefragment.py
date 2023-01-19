@@ -18,6 +18,14 @@ class Migration(migrations.Migration):
                 ("title", models.CharField(max_length=255, unique=True, verbose_name="Titre")),
                 ("content", models.TextField(blank=True, verbose_name="Contenu")),
                 (
+                    "is_live",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Laisser vide pour cacher le contenu dans l'application",
+                        verbose_name="Visible",
+                    ),
+                ),
+                (
                     "created_at",
                     models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date de création"),
                 ),

@@ -46,7 +46,7 @@ class HomeView(TemplateView):
         """
         context = super().get_context_data(**kwargs)
         try:
-            context["sub_header_custom_message"] = PageFragment.objects.get(title="Bandeau").content
+            context["sub_header_custom_message"] = PageFragment.objects.get(title="Bandeau", is_live=True).content
         except PageFragment.DoesNotExist:
             pass
         context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
@@ -122,7 +122,7 @@ class PageView(DetailView):
             url = "/" + url
 
         try:
-            page = Page.objects.get(url=url, is_full_page=True)
+            page = Page.objects.get(url=url)
         except Page.DoesNotExist:
             raise Http404("Page inconnue")
 

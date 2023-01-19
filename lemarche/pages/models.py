@@ -8,7 +8,7 @@ class Page(FlatPage):
     A static page that can be created/customized in admin.
     https://docs.djangoproject.com/en/3.2/ref/contrib/flatpages/
 
-    fields: title, draft_title, slug, depth, live, go_live_at...
+    fields: title, url, content...
     """
 
     meta_title = models.CharField(
@@ -37,6 +37,10 @@ class Page(FlatPage):
 class PageFragment(models.Model):
     title = models.CharField(verbose_name="Titre", max_length=255, unique=True)
     content = models.TextField(verbose_name="Contenu", blank=True)
+
+    is_live = models.BooleanField(
+        verbose_name="Visible", default=True, help_text="Laisser vide pour cacher le contenu dans l'application"
+    )
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
