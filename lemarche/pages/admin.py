@@ -4,7 +4,7 @@ from django.contrib.flatpages.admin import FlatPageAdmin
 from django.db import models
 
 from lemarche.common.admin import admin_site
-from lemarche.pages.models import Page
+from lemarche.pages.models import Page, PagePartial
 
 
 @admin.register(Page, site=admin_site)
@@ -21,7 +21,24 @@ class PageAdmin(FlatPageAdmin):
                 "fields": ("url", "title", "content"),
             },
         ),
-        ("Affichage", {"fields": ("is_full_page",)}),
         ("SEO", {"fields": ("meta_title", "meta_description")}),
+        ("Dates", {"fields": ("created_at", "updated_at")}),
+    )
+
+
+@admin.register(PagePartial, site=admin_site)
+class PagePartialAdmin(admin.ModelAdmin):
+    list_display = ["title", "created_at", "updated_at"]
+
+    readonly_fields = ["created_at", "updated_at"]
+    formfield_overrides = {models.TextField: {"widget": CKEditorWidget}}
+
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": ("title", "content"),
+            },
+        ),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )

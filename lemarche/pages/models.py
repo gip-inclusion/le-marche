@@ -7,13 +7,9 @@ class Page(FlatPage):
     """
     A static page that can be created/customized in admin.
     https://docs.djangoproject.com/en/3.2/ref/contrib/flatpages/
-    """
 
-    is_full_page = models.BooleanField(
-        verbose_name="Page entière ?",
-        help_text="Décocher si vous souhaitez intégrer ce contenu dans une page existante.",
-        default=True,
-    )
+    fields: title, draft_title, slug, depth, live, go_live_at...
+    """
 
     meta_title = models.CharField(
         verbose_name="Titre (balise meta)",
@@ -31,8 +27,22 @@ class Page(FlatPage):
         max_length=255,
         blank=True,
         default="",
-        help_text=("La description qui sera affichée dans les SERPs. À garder < 150 caractères."),
+        help_text="La description qui sera affichée dans les SERPs. À garder < 150 caractères.",
     )
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+
+class PagePartial(models.Model):
+    title = models.CharField(verbose_name="Titre", max_length=255, unique=True)
+    content = models.TextField(verbose_name="Contenu", blank=True)
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    class Meta:
+        ordering = ["title"]
+
+    def __str__(self):
+        return self.title
