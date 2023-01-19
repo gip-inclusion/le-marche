@@ -106,12 +106,18 @@ def create_deal_from_tender(tender: Tender):
         if user_added_in_crm and user_added_in_crm.id:
             tender_author_hubspot_contact_id = user_added_in_crm.id
 
-    result = create_deal(tender_author_hubspot_contact_id=tender_author_hubspot_contact_id, dealname=tender.title)
+    result = create_deal(
+        tender_author_hubspot_contact_id=tender_author_hubspot_contact_id,
+        dealname=tender.title,
+        is_encouraged_by_le_marche=tender.extra_data.get("is_encouraged_by_le_marche"),
+    )
     if result and result.id:
         tender.set_hubspot_id(hubspot_deal_id=result.id, with_save=True)
 
 
-def create_deal(tender_author_hubspot_contact_id: str, dealname: str, client: Client = None):
+def create_deal(
+    tender_author_hubspot_contact_id: str, dealname: str, is_encouraged_by_le_marche=None, client: Client = None
+):
     """Huey task adding contact to Hubspot CRM
 
     Args:
@@ -135,6 +141,7 @@ def create_deal(tender_author_hubspot_contact_id: str, dealname: str, client: Cl
                 "dealname": dealname,
                 # will be "Dépôt de besoin" in Hubspot
                 "dealstage": "presentationscheduled",
+                "incremental": is_encouraged_by_le_marche,
                 # "pipeline": pipeline,
             }
             deal_encapsulated = SimplePublicObjectInput(properties=properties)
