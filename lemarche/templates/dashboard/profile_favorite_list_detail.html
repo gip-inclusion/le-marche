@@ -51,10 +51,6 @@
                 {% endfor %}
             </div>
             <div class="col-12 col-lg-4">
-                <a href="{{ TYPEFORM_BESOIN_ACHAT_GROUPE }}#data=user_id:{{ user.id }},favorite_list_id:{{ favorite_list.id }}" id="favorite-list-demande" class="btn btn-primary btn-ico btn-block {% if favorite_list.siaes.count == 0 %}disabled{% endif %} mb-3" target="_blank">
-                    <span>Envoyer une demande groupée</span>
-                    <i class="ri-mail-send-line ri-lg"></i>
-                </a>
                 <div class="btn-group w-100 mb-3">
                     <a href="{% url 'siae:search_results_download' %}?favorite_list={{ favorite_list.slug }}&format=xls" id="favorite-list-export-xls" class="btn btn-outline-primary btn-ico btn-block {% if favorite_list.siaes.count == 0 %}disabled{% endif %}" target="_blank">
                         <span>Télécharger la liste (.xls)</span>
