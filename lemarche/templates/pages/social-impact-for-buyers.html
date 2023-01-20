@@ -1,7 +1,7 @@
 {% extends BASE_TEMPLATE %}
 {% load bootstrap4 static humanize %}
 
-{% block title %}Calculez l’impact social d’un achat inclusif{{ block.super }}{% endblock %}
+{% block title %}Calculer l’impact social d’un achat inclusif{{ block.super }}{% endblock %}
 {% block meta_description %}
 <meta name="description" content="Identifier rapidement le nombre total de prestataires inclusifs pouvant répondre à votre besoin et mesurer leur capacité globale de production.">
 {% endblock %}
@@ -14,7 +14,7 @@
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Calculez l’impact social d’un achat inclusif</li>
+                        <li class="breadcrumb-item active" aria-current="page">Calculer l’impact social d’un achat inclusif</li>
                     </ol>
                 </nav>
             </div>
@@ -29,7 +29,7 @@
         <div class="s-page-menu-01__row row align-items-center">
             <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-lg-10">
                 <h1 class="h1-hero">
-                    <strong>Calculez l’impact social d’un achat inclusif</strong>
+                    <strong>Calculer l’impact social d’un achat inclusif</strong>
                 </h1>
                 <h2 class="mb-0">
                     Renseignez le montant de votre achat et découvrez à combien d’emploi inclusif vous contribuez.
@@ -60,7 +60,7 @@
                                     <div class="form-group col-12 col-lg-auto">
                                         <button type="submit" class="btn btn-ico btn-block btn-primary">
                                             <i class="ri-search-line ri-lg"></i>
-                                            <span>Lancer la recherche</span>
+                                            <span>Calculer mon impact social</span>
                                         </button>
                                     </div>
                                     {% if results %}
@@ -85,19 +85,15 @@
                             Malheureusement, votre achat ne permet pas de financer un emploi à temps plein,
                             par contre il pourrait contribuer à approximativement <b>{{results.nb_of_hours_per_mounth}} heures de travail sur un mois</b>.
                         </p>
-                        <p class="fs-sm">
-                            Ces emplois locaux et non-délocalisables bénéficieront à des personnes vulnérables, éloignés du monde professionnel ou en situation de handicap.
-                        </p>
                     {% else %}
                         <p>
                             Bravo ! Votre achat inclusif pourrait contribuer à financer approximativement <b>{{results.nb_of_jobs_per_mounth}}
-                            emploi{{results.nb_of_jobs_per_mounth|pluralize}} durant 1 mois</b>
-                            ou <b>{{results.nb_of_jobs_per_year|floatformat:1}} emploi{% if results.nb_of_jobs_per_year > 1 %}s{% endif %} pendant 1 an</b>.
-                        </p>
-                        <p class="fs-sm">
-                            Ces emplois locaux et non-délocalisables bénéficieront à des personnes vulnérables, éloignés du monde professionnel ou en situation de handicap.
+                            emploi{{results.nb_of_jobs_per_mounth|pluralize}} durant 1 mois</b>.
                         </p>
                     {% endif %}
+                    <p class="fs-sm">
+                        Ces emplois locaux et non-délocalisables bénéficieront à des personnes vulnérables, éloignées du monde professionnel ou en situation de handicap.
+                    </p>
 
                     <div class="d-block d-lg-inline-block">
                         <a id="acheter-inclusif-impact-social-buyers" href="{% url 'tenders:create' %}" class="btn btn-block btn-outline-primary btn-ico">
