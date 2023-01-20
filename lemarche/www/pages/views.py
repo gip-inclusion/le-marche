@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, FormView, ListView, TemplateView, View
 from django.views.generic.edit import FormMixin
 
-from lemarche.pages.models import Page
+from lemarche.pages.models import Page, PageFragment
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae, SiaeGroup
@@ -41,9 +41,15 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         """
+        - add sub_header
+        - add stats
         - add SIAE that should appear in the section "à la une"
         """
         context = super().get_context_data(**kwargs)
+        try:
+            context["sub_header_custom_message"] = PageFragment.objects.get(title="Bandeau", is_live=True).content
+        except PageFragment.DoesNotExist:
+            pass
         context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
         context["siae_count"] = Siae.objects.is_live().count()
         context["tender_count"] = Tender.objects.validated().count() + 30  # historic number (before form)
