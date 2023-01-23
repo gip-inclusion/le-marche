@@ -298,6 +298,7 @@ class User(AbstractUser):
             return f"{self.first_name.upper()[:1]}. {self.last_name.upper()}"
         return ""
 
+    @property
     def has_siae(self):
         return self.siaes.exists()
 
