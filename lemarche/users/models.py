@@ -28,8 +28,10 @@ class UserQueryset(models.QuerySet):
         """Only return users who have FavoriteList(s)."""
         return self.filter(favorite_lists__isnull=False).distinct()
 
-    def with_api_key(self):
-        """Only return users with an API Key."""
+    def has_partner_network(self):
+        return self.filter(partner_network__isnull=False)
+
+    def has_api_key(self):
         return self.filter(api_key__isnull=False)
 
 
@@ -81,9 +83,11 @@ class UserManager(BaseUserManager):
         """Only return users who have FavoriteList(s)."""
         return self.get_queryset().has_favorite_list()
 
-    def with_api_key(self):
-        """Only return users with an API Key."""
-        return self.get_queryset().with_api_key()
+    def has_partner_network(self):
+        return self.get_queryset().has_partner_network()
+
+    def has_api_key(self):
+        return self.get_queryset().has_api_key()
 
 
 class User(AbstractUser):

@@ -65,8 +65,26 @@ class HasFavoriteListFilter(admin.SimpleListFilter):
         return queryset
 
 
+class HasPartnerNetworkFilter(admin.SimpleListFilter):
+    """Custom admin filter to target users who have a partner_network."""
+
+    title = "Partenaire avec réseau ?"
+    parameter_name = "has_partner_network"
+
+    def lookups(self, request, model_admin):
+        return (("Yes", "Oui"), ("No", "Non"))
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "Yes":
+            return queryset.has_partner_network()
+        elif value == "No":
+            return queryset.filter(partner_network__isnull=True)
+        return queryset
+
+
 class HasApiKeyFilter(admin.SimpleListFilter):
-    """Custom admin filter to target users with API Keys."""
+    """Custom admin filter to target users who have a api_key."""
 
     title = "Clé API ?"
     parameter_name = "has_api_key"
@@ -77,7 +95,7 @@ class HasApiKeyFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         value = self.value()
         if value == "Yes":
-            return queryset.with_api_key()
+            return queryset.has_api_key()
         elif value == "No":
             return queryset.filter(api_key__isnull=True)
         return queryset
@@ -119,6 +137,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         HasTenderFilter,
         "buyer_kind",
         "partner_kind",
+        HasPartnerNetworkFilter,
         "can_display_tender_contact_details",
         HasFavoriteListFilter,
         HasApiKeyFilter,
@@ -129,7 +148,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     search_help_text = "Cherche sur les champs : ID, E-mail, Prénom, Nom"
     ordering = ["-created_at"]
 
-    # autocomplete_fields = ["siaes"]
+    autocomplete_fields = ["partner_network"]
     readonly_fields = (
         [field.name for field in User._meta.fields if field.name.startswith("c4_")]
         + [f"{field}_last_updated" for field in User.TRACK_UPDATE_FIELDS]
@@ -170,6 +189,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
                     "buyer_kind",
                     "buyer_kind_detail",
                     "partner_kind",
+                    "partner_network",
                 )
             },
         ),
