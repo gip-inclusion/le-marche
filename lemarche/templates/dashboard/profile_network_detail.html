@@ -1,0 +1,44 @@
+{% extends "layouts/base.html" %}
+{% load bootstrap4 %}
+
+{% block title %}Mon réseau{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Mon réseau</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="pt-4 pb-6">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="h1 mb-3 mb-lg-5">
+                    <strong>Mon réseau : {{ user.partner_network }}</strong>
+                </h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                <!-- New list -->
+                <h2>Mes adhérents <small><i>({{ network.siaes.count }})</i></small></h2>              
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

@@ -122,6 +122,20 @@ class FavoriteListOwnerRequiredMixin(LoginRequiredUserPassesTestMixin):
         return HttpResponseRedirect(reverse_lazy("dashboard:home"))
 
 
+class NetworkMemberRequiredMixin(LoginRequiredUserPassesTestMixin):
+    """
+    Restrict access to Network's users
+    """
+
+    def test_func(self):
+        user = self.request.user
+        network_slug = self.kwargs.get("slug")
+        return user.is_authenticated and user.partner_network and user.partner_network.slug == network_slug
+
+    def handle_no_permission(self):
+        return HttpResponseRedirect(reverse_lazy("dashboard:home"))
+
+
 class TenderAuthorOrAdminRequiredMixin(LoginRequiredUserPassesTestMixin):
     """
     Restrict access to the Tender's author

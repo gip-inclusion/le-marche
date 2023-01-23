@@ -12,6 +12,7 @@ from django.views.generic.edit import CreateView, FormMixin
 from lemarche.cms.models import ArticlePage
 from lemarche.cms.snippets import ArticleCategory
 from lemarche.favorites.models import FavoriteItem, FavoriteList
+from lemarche.networks.models import Network
 from lemarche.siaes.models import Siae, SiaeUser, SiaeUserRequest
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
@@ -34,6 +35,7 @@ from lemarche.www.dashboard.forms import (
 )
 from lemarche.www.dashboard.mixins import (
     FavoriteListOwnerRequiredMixin,
+    NetworkMemberRequiredMixin,
     SiaeMemberRequiredMixin,
     SiaeUserAndNotMemberRequiredMixin,
     SiaeUserRequiredMixin,
@@ -216,6 +218,12 @@ class ProfileFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, Del
         return mark_safe(
             f"<strong>{self.object.siae.name_display}</strong> a été supprimée de votre liste d'achat avec succès."
         )
+
+
+class ProfileNetworkDetailView(NetworkMemberRequiredMixin, DetailView):
+    template_name = "dashboard/profile_network_detail.html"
+    context_object_name = "network"
+    queryset = Network.objects.prefetch_related("siaes").all()
 
 
 class SiaeSearchBySiretView(SiaeUserRequiredMixin, FormMixin, ListView):
