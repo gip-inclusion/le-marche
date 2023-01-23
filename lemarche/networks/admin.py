@@ -13,13 +13,35 @@ class NetworkAdmin(admin.ModelAdmin):
     search_fields = ["id", "name", "brand"]
     search_help_text = "Cherche sur les champs : ID, Nom, Enseigne"
 
-    prepopulated_fields = {"slug": ("name",)}
-    readonly_fields = ["created_at", "updated_at"]
+    readonly_fields = ["nb_siaes", "created_at", "updated_at"]
+
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": ("name", "slug", "brand", "website"),
+            },
+        ),
+        ("Structures", {"fields": ("nb_siaes",)}),
+        ("Dates", {"fields": ("created_at", "updated_at")}),
+    )
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.annotate(siae_count=Count("siaes", distinct=True))
         return qs
+
+    def get_readonly_fields(self, request, obj=None):
+        # slug cannot be changed (to avoid query errors)
+        if obj:
+            return self.readonly_fields + ["slug"]
+        return self.readonly_fields
+
+    def get_prepopulated_fields(self, request, obj=None):
+        # set slug on create
+        if not obj:
+            return {"slug": ("name",)}
+        return {}
 
     def nb_siaes(self, network):
         url = reverse("admin:siaes_siae_changelist") + f"?networks__id__exact={network.id}"
