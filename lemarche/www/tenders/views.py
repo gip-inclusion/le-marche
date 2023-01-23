@@ -330,6 +330,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
                 context["siae_detail_contact_click_date_count"] = tender.siae_detail_contact_click_date_count
                 context["is_draft"] = tender.status == tender_constants.STATUS_DRAFT
                 context["is_pending_validation"] = tender.status == tender_constants.STATUS_PUBLISHED
+                context["is_validated"] = tender.status == tender_constants.STATUS_VALIDATED
             elif user.kind == User.KIND_SIAE:
                 context["user_siae_has_detail_contact_click_date"] = TenderSiae.objects.filter(
                     tender=tender, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False
