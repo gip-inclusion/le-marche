@@ -134,6 +134,8 @@ class TrackerMiddleware:
                 extra_data["results_count"] = (
                     context_data.get("results").count() if context_data.get("results") else None
                 )
+            elif page in (reverse("pages:buyer_social_impact_calculator"),):
+                extra_data["results"] = context_data.get("results")
 
             meta = self.extract_meta_from_request_get(request, context_data=context_data, extra_data=extra_data)
 
