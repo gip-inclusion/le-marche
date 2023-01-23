@@ -223,7 +223,13 @@ class ProfileFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, Del
 class ProfileNetworkDetailView(NetworkMemberRequiredMixin, DetailView):
     template_name = "dashboard/profile_network_detail.html"
     context_object_name = "network"
-    queryset = Network.objects.prefetch_related("siaes").all()
+    queryset = Network.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        network = self.get_object()
+        context["network_siaes"] = network.siaes.with_tender_stats()
+        return context
 
 
 class SiaeSearchBySiretView(SiaeUserRequiredMixin, FormMixin, ListView):
