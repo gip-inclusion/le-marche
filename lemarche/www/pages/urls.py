@@ -8,6 +8,7 @@ from lemarche.www.pages.views import (
     ImpactCalculatorView,
     PageView,
     SiaeGroupListView,
+    SocialImpactBuyersCalculatorView,
     StatsView,
     TrackView,
     trigger_error,
@@ -160,6 +161,11 @@ urlpatterns = [
     path("track/", TrackView.as_view(), name="track_frontend"),
     # Calculator endpoints
     path("calibrer-achat-socialement-responsable/", ImpactCalculatorView.as_view(), name="impact_calculator"),
+    path(
+        "calculer-impact-social-achat-inclusif/",
+        SocialImpactBuyersCalculatorView.as_view(),
+        name="buyer_social_impact_calculator",
+    ),
     path("acheteurs-reference-client/", CompanyReferenceCalculatorView.as_view(), name="company_reference_calculator"),
     # Flatpages (created in the admin)
     # path("", include("django.contrib.flatpages.urls")),

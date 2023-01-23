@@ -68,6 +68,10 @@ class ImpactCalculatorForm(SiaeSearchForm):
         return qs.aggregate(Count("id"), Sum("employees_insertion"), Sum("ca_declared"))
 
 
+class SocialImpactBuyersCalculatorForm(forms.Form):
+    amount = forms.IntegerField(min_value=100, max_value=10e8, label="Montant de votre achat (en €)")
+
+
 class CompanyReferenceCalculatorForm(SiaeSearchForm):
     class Meta:
         model = Siae

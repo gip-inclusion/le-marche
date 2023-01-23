@@ -18,7 +18,12 @@ from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.utils.apis import api_hubspot
 from lemarche.utils.tracker import track
-from lemarche.www.pages.forms import CompanyReferenceCalculatorForm, ContactForm, ImpactCalculatorForm
+from lemarche.www.pages.forms import (
+    CompanyReferenceCalculatorForm,
+    ContactForm,
+    ImpactCalculatorForm,
+    SocialImpactBuyersCalculatorForm,
+)
 from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
 from lemarche.www.tenders.tasks import notify_admin_tender_created
 from lemarche.www.tenders.views import (
@@ -187,6 +192,39 @@ class ImpactCalculatorView(FormMixin, ListView):
             if with_end_elmt:
                 listing.append(end_position)
         return listing
+
+
+def calculate_social_impact_buyers(amount: int):
+    AMOUNT_THRESHOLD = 3699
+    if amount <= AMOUNT_THRESHOLD:
+        return {
+            "nb_of_hours_per_mounth": round(amount / 26),
+        }
+    return {
+        "nb_of_jobs_per_mounth": round(amount / 3700),
+        "nb_of_jobs_per_year": amount / 3700 / 12,
+    }
+
+
+class SocialImpactBuyersCalculatorView(FormMixin, TemplateView):
+    template_name = "pages/social-impact-for-buyers.html"
+    form_class = SocialImpactBuyersCalculatorForm
+    http_method_names = ["get"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if len(self.request.GET.keys()):
+            self.form = SocialImpactBuyersCalculatorForm(data=self.request.GET)
+            context["form"] = self.form
+            if self.form.is_valid():
+                amount = self.form.cleaned_data.get("amount")
+                context["results"] = calculate_social_impact_buyers(amount)
+
+        return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
 
 
 class CompanyReferenceCalculatorView(FormMixin, ListView):
