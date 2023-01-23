@@ -92,8 +92,8 @@ class TenderAdmin(admin.ModelAdmin):
         "siae_email_link_click_count_with_link",
         "siae_detail_display_count_with_link",
         "siae_detail_contact_click_count_with_link",
-        "extra_data_prettier",
         "logs_display",
+        "extra_data_prettier",
         "created_at",
         "updated_at",
     ]
