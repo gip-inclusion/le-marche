@@ -185,6 +185,14 @@ class User(AbstractUser):
     partner_kind = models.CharField(
         verbose_name="Type de partenaire", max_length=20, choices=PARTNER_KIND_CHOICES, blank=True
     )
+    partner_network = models.ForeignKey(
+        "networks.Network",
+        verbose_name="Réseau du partenaire",
+        related_name="user_partners",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
 
     can_display_tender_contact_details = models.BooleanField(
         verbose_name="Ce partenaire a accès aux coordonnées de l'acheteur ?",
