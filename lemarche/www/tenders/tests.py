@@ -562,7 +562,7 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
         response = self.client.get(url)
         self.assertContains(response, "Clôturé")
-        self.assertContains(response, "Répondre à cette opportunité")
+        self.assertNotContains(response, "Répondre à cette opportunité")
         # siae user interested
         self.client.force_login(self.siae_user_1)
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
@@ -581,7 +581,7 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
         response = self.client.get(url)
         self.assertContains(response, "Clôturé")
-        self.assertContains(response, "veuillez d'abord vous")
+        self.assertNotContains(response, "veuillez d'abord vous")
         self.assertNotContains(response, "Répondre à cette opportunité")
         # author
         self.client.force_login(self.user_buyer_1)
