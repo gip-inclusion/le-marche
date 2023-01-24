@@ -2,13 +2,14 @@
 
 {% block after_related_objects %}
     {{ block.super }}
-    <div class="submit-row">
-        {% if original.validated_at %}
-            <i>Validé et envoyé le {{original.validated_at}}</i><br>
-            <button type="submit" name="_restart_tender" value="1" class="button">Renvoyer aux structures</button>
-        {% else %}
-            <button type="submit" name="_validate_tender" value="1" class="button">Valider (sauvegarder) et envoyer aux structures</button>
-        {% endif %}
-
-    </div>
+    {% if original %}
+        <div class="submit-row">
+            {% if original.validated_at %}
+                <i>Validé et envoyé le {{ original.validated_at }}</i><br>
+                <button type="submit" name="_restart_tender" value="1" class="button">Renvoyer aux structures</button>
+            {% else %}
+                <button type="submit" name="_validate_tender" value="1" class="button">Valider (sauvegarder) et envoyer aux structures</button>
+            {% endif %}
+        </div>
+    {% endif %}
 {% endblock %}
