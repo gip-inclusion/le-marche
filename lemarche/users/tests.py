@@ -39,10 +39,10 @@ class UserModelTest(TestCase):
         self.assertEqual(User.objects.count(), 2)
         self.assertEqual(User.objects.has_favorite_list().count(), 1)
 
-    def test_with_api_key_queryset(self):
+    def test_has_api_key_queryset(self):
         UserFactory(api_key="coucou")
         self.assertEqual(User.objects.count(), 2)
-        self.assertEqual(User.objects.with_api_key().count(), 1)
+        self.assertEqual(User.objects.has_api_key().count(), 1)
 
 
 class UserModelSaveTest(TestCase):

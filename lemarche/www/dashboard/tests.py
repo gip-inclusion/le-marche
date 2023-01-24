@@ -53,7 +53,7 @@ class DashboardHomeViewTest(TestCase):
         self.assertNotContains(response, "Mes besoins")
         # self.assertNotContains(response, "API")
 
-    def test_user_with_api_key_should_see_api_token(self):
+    def test_user_has_api_key_should_see_api_token(self):
         self.client.force_login(self.user_buyer_with_api_token)
         url = reverse("dashboard:home")
         response = self.client.get(url)
