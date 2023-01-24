@@ -100,8 +100,8 @@ class TenderAdmin(admin.ModelAdmin):
         "siae_email_link_click_count_with_link",
         "siae_detail_display_count_with_link",
         "siae_detail_contact_click_count_with_link",
-        "extra_data_prettier",
         "logs_display",
+        "extra_data_prettier",
         "created_at",
         "updated_at",
     ]
@@ -243,9 +243,13 @@ class TenderAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(self.readonly_fields)
-        if obj.author_id and obj.author_id != request.user.id:
+        if obj:
             # add status in read only when the tender is not owned by the current user
-            readonly_fields.append("status")
+            if obj.author_id and obj.author_id != request.user.id:
+                readonly_fields.append("status")
+            # slug cannot be changed once the tender is validated
+            if obj.status == constants.STATUS_VALIDATED:
+                readonly_fields.append("slug")
         return readonly_fields
 
     def save_model(self, request, obj: Tender, form, change):

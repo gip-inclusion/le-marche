@@ -302,7 +302,7 @@ class Tender(models.Model):
     extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)
 
     status = models.CharField(
-        verbose_name="Statut du dépôt de besoin",
+        verbose_name="Statut",
         max_length=10,
         choices=tender_constants.STATUS_CHOICES,
         default=tender_constants.STATUS_DRAFT,
