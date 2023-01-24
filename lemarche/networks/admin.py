@@ -13,7 +13,7 @@ class NetworkAdmin(admin.ModelAdmin):
     search_fields = ["id", "name", "brand"]
     search_help_text = "Cherche sur les champs : ID, Nom, Enseigne"
 
-    readonly_fields = ["nb_siaes", "created_at", "updated_at"]
+    readonly_fields = ["nb_siaes", "nb_user_partners", "created_at", "updated_at"]
 
     fieldsets = (
         (
@@ -23,12 +23,14 @@ class NetworkAdmin(admin.ModelAdmin):
             },
         ),
         ("Structures", {"fields": ("nb_siaes",)}),
+        ("Utilisateurs (partenaires)", {"fields": ("nb_user_partners",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.annotate(siae_count=Count("siaes", distinct=True))
+        qs = qs.annotate(user_partner_count=Count("user_partners", distinct=True))
         return qs
 
     def get_readonly_fields(self, request, obj=None):
@@ -49,3 +51,10 @@ class NetworkAdmin(admin.ModelAdmin):
 
     nb_siaes.short_description = "Nombre de structures rattachées"
     nb_siaes.admin_order_field = "siae_count"
+
+    def nb_user_partners(self, network):
+        url = reverse("admin:users_user_changelist") + f"?partner_network__id__exact={network.id}"
+        return format_html(f'<a href="{url}">{network.user_partner_count}</a>')
+
+    nb_user_partners.short_description = "Nombre d'utilisateurs (partenaires) rattachés"
+    nb_user_partners.admin_order_field = "user_partner_count"
