@@ -9,10 +9,34 @@
             "presta_type": ["DISP", "PREST"],
             "description": "Une courte description",
             "external_link": "https://example.com/",
-            "amount": "<100K",
+            "amount": "50-100K",
             "deadline_date": "2023-12-31",
             "response_kind": [
                 "EMAIL"
+            ],
+            "author": 2,
+            "contact_first_name": "Acheteur",
+            "contact_last_name": "Dupont",
+            "contact_email": "acheteur@test.com",
+            "contact_phone": "01 02 03 04 05",
+            "created_at": "2021-07-01T12:44:39Z",
+            "updated_at": "2021-10-26T22:26:47.569Z"
+        }
+    },
+    {
+        "model": "tenders.tender",
+        "pk": 2,
+        "fields": {
+            "title": "Traiteur, cocktail, récéption et buffet à Grenoble",
+            "slug": "traiteur-cocktail-reception-buffet-grenoble",
+            "kind": "PROJ",
+            "presta_type": ["DISP", "PREST"],
+            "description": "Une description",
+            "external_link": "https://example.com/",
+            "amount": "5-10K",
+            "deadline_date": "2023-12-31",
+            "response_kind": [
+                "EMAIL", "TEL"
             ],
             "author": 2,
             "contact_first_name": "Acheteur",
