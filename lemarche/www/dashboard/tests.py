@@ -1,10 +1,15 @@
+from datetime import timedelta
+
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.networks.factories import NetworkFactory
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.siaes.models import SiaeUser
+from lemarche.tenders.factories import TenderFactory
+from lemarche.tenders.models import TenderSiae
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 
@@ -298,8 +303,18 @@ class DashboardNetworkViewTest(TestCase):
         cls.network_2 = NetworkFactory(name="Liste 2")
         cls.user_network_1 = UserFactory(kind=User.KIND_PARTNER, partner_network=cls.network_1)
         cls.user_network_2 = UserFactory(kind=User.KIND_PARTNER, partner_network=cls.network_2)
-        cls.user_without_network_1 = UserFactory(kind=User.KIND_BUYER)
-        cls.user_without_network_2 = UserFactory(kind=User.KIND_PARTNER)
+        cls.user_buyer = UserFactory(kind=User.KIND_BUYER)
+        cls.user_without_network = UserFactory(kind=User.KIND_PARTNER)
+        cls.siae_1 = SiaeFactory(networks=[cls.network_1])
+        cls.siae_2 = SiaeFactory()
+        cls.tender_1 = TenderFactory(
+            author=cls.user_buyer,
+            validated_at=timezone.now(),
+            deadline_date=timezone.now() - timedelta(days=5),
+        )
+        cls.tendersiae_1_1 = TenderSiae.objects.create(
+            tender=cls.tender_1, siae=cls.siae_1, detail_contact_click_date=timezone.now()
+        )
 
     def test_anonymous_user_cannot_view_network_detail(self):
         url = reverse("dashboard:profile_network_detail", args=[self.network_1.slug])
@@ -307,15 +322,47 @@ class DashboardNetworkViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.startswith("/accounts/login/"))
 
-    def test_only_network_member_can_access(self):
+    def test_only_network_member_can_access_network_detail(self):
         self.client.force_login(self.user_network_1)
         url = reverse("dashboard:profile_network_detail", args=[self.network_1.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        for user in [self.user_network_2, self.user_without_network_1, self.user_without_network_2]:
+        for user in [self.user_network_2, self.user_buyer, self.user_without_network]:
             self.client.force_login(user)
             url = reverse("dashboard:profile_network_detail", args=[self.network_1.slug])
             response = self.client.get(url)
             self.assertEqual(response.status_code, 302)
             self.assertEqual(response.url, "/profil/")
+
+    def test_siae_list_in_network_detail(self):
+        self.client.force_login(self.user_network_1)
+        url = reverse("dashboard:profile_network_detail", args=[self.network_1.slug])
+        response = self.client.get(url)
+        self.assertContains(response, self.siae_1.name_display)
+        self.assertNotContains(response, self.siae_2.name_display)
+
+    def test_only_network_member_can_access_network_siae_tender_list(self):
+        self.client.force_login(self.user_network_1)
+        url = reverse("dashboard:profile_network_siae_tender_list", args=[self.network_1.slug, self.siae_1.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        for user in [self.user_network_2, self.user_buyer, self.user_without_network]:
+            self.client.force_login(user)
+            url = reverse("dashboard:profile_network_siae_tender_list", args=[self.network_1.slug, self.siae_1.slug])
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 302)
+            self.assertEqual(response.url, "/profil/")
+
+    def test_only_network_siaes_can_display_network_siae_tender_list(self):
+        self.client.force_login(self.user_network_1)
+        url = reverse("dashboard:profile_network_siae_tender_list", args=[self.network_1.slug, self.siae_1.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # siae_2 not linked to network
+        self.client.force_login(self.user_network_1)
+        url = reverse("dashboard:profile_network_siae_tender_list", args=[self.network_1.slug, self.siae_2.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, f"/profil/reseaux/{self.network_1.slug}/")
