@@ -9,15 +9,15 @@ from lemarche.users.models import User
 
 class FixturesTest(TestCase):
     fixtures = [
+        "lemarche/fixtures/django/0a_networks.json",
+        "lemarche/fixtures/django/0b_sectorgroups.json",
+        "lemarche/fixtures/django/0c_sectors.json",
         "lemarche/fixtures/django/01_siaegroups.json",
         "lemarche/fixtures/django/01_siaes.json",
         "lemarche/fixtures/django/02_users.json",
         "lemarche/fixtures/django/03_siae_users.json",
-        "lemarche/fixtures/django/04_sectorgroups.json",
-        "lemarche/fixtures/django/05_sectors.json",
         "lemarche/fixtures/django/06_siae_sectors.json",
         "lemarche/fixtures/django/06_siaegroup_sectors.json",
-        "lemarche/fixtures/django/07_networks.json",
         "lemarche/fixtures/django/08_siae_networks.json",
         "lemarche/fixtures/django/09_siaeclientreferences.json",
         "lemarche/fixtures/django/09_siaelabels.json",
