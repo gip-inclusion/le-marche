@@ -28,23 +28,10 @@
             <div class="col-12">
                 <h1 class="h1 mb-3 mb-lg-5">
                     <strong>Mon réseau : {{ user.partner_network }}</strong>
+                    <span class="badge badge-pill badge-marche-light fs-xs" style="vertical-align:middle;" title="{{ network.siaes.count }} adhérent{{ network.siaes.count|pluralize }}">{{ network.siaes.count }}</span>
                 </h1>
             </div>
         </div>
-
-        <div class="row">
-            <div class="col-12">
-                <h2>Mes adhérents <small><i>({{ network.siaes.count }})</i></small></h2>
-                <div class="d-block d-lg-inline-block">
-                    <a href="{% url 'siae:search_results' %}?network={{ network.slug }}" class="btn btn-block btn-outline-primary btn-ico" target="_blank">
-                        <span>Voir la liste détaillée</span>
-                        <i class="ri-arrow-right-s-line ri-lg"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <br />
 
         <div class="row">
             <div class="col-12">
