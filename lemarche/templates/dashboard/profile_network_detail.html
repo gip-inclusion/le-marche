@@ -1,0 +1,64 @@
+{% extends "layouts/base.html" %}
+{% load bootstrap4 %}
+
+{% block title %}Mon réseau{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Mon réseau</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="pt-4 pb-6">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="h1 mb-3 mb-lg-5">
+                    <strong>Mon réseau : {{ user.partner_network }}</strong>
+                    <span class="badge badge-pill badge-marche-light fs-xs" style="vertical-align:middle;" title="{{ network.siaes.count }} adhérent{{ network.siaes.count|pluralize }}">{{ network.siaes.count }}</span>
+                </h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <h2>Statistiques : toutes les demandes de devis, appel d'offres et sourcing</h2>
+                <table class="table table-striped table-bordred">
+                    <thead>
+                        <tr>
+                            <th>Nom de la structure</th>
+                            <th>Demandes&nbsp;reçues</th>
+                            <th>vues</th>
+                            <th>intéressées</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for siae in network_siaes %}
+                            <tr>
+                                <td><a href="{% url 'siae:detail' siae.slug %}" target="_blank">{{ siae.name_display }}</a></td>
+                                <td>{{ siae.tender_email_send_count }}</td>
+                                <td>{{ siae.tender_detail_display_count }}</td>
+                                <td>{{ siae.tender_detail_contact_click_count }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

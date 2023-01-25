@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from lemarche.favorites.factories import FavoriteListFactory
+from lemarche.networks.factories import NetworkFactory
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.siaes.models import SiaeUser
 from lemarche.users.factories import UserFactory
@@ -288,3 +289,33 @@ class DashboardFavoriteListViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/profil/")
+
+
+class DashboardNetworkViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.network_1 = NetworkFactory(name="Liste 1")
+        cls.network_2 = NetworkFactory(name="Liste 2")
+        cls.user_network_1 = UserFactory(kind=User.KIND_PARTNER, partner_network=cls.network_1)
+        cls.user_network_2 = UserFactory(kind=User.KIND_PARTNER, partner_network=cls.network_2)
+        cls.user_without_network_1 = UserFactory(kind=User.KIND_BUYER)
+        cls.user_without_network_2 = UserFactory(kind=User.KIND_PARTNER)
+
+    def test_anonymous_user_cannot_view_network_detail(self):
+        url = reverse("dashboard:profile_network_detail", args=[self.network_1.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith("/accounts/login/"))
+
+    def test_only_network_member_can_access(self):
+        self.client.force_login(self.user_network_1)
+        url = reverse("dashboard:profile_network_detail", args=[self.network_1.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        for user in [self.user_network_2, self.user_without_network_1, self.user_without_network_2]:
+            self.client.force_login(user)
+            url = reverse("dashboard:profile_network_detail", args=[self.network_1.slug])
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 302)
+            self.assertEqual(response.url, "/profil/")
