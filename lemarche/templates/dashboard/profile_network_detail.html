@@ -49,7 +49,13 @@
                         {% for siae in network_siaes %}
                             <tr>
                                 <td><a href="{% url 'siae:detail' siae.slug %}" target="_blank">{{ siae.name_display }}</a></td>
-                                <td>{{ siae.tender_email_send_count }}</td>
+                                <td>
+                                    {% if siae.tender_email_send_count %}
+                                        <a href="{% url 'dashboard:profile_network_siae_tender_list' network.slug siae.slug %}" title="Voir les besoins concernés">{{ siae.tender_email_send_count }}</a>
+                                    {% else %}
+                                        {{ siae.tender_email_send_count }}
+                                    {% endif %}
+                                </td>
                                 <td>{{ siae.tender_detail_display_count }}</td>
                                 <td>{{ siae.tender_detail_contact_click_count }}</td>
                             </tr>

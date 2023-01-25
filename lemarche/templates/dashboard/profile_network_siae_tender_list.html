@@ -1,0 +1,43 @@
+{% extends "layouts/base.html" %}
+{% load bootstrap4 static %}
+
+{% block title %}{{ page_title }}{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_detail' network.slug %}">Mon réseau</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ siae.name_display|truncatechars:25 }}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="pt-4 pb-6">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                <h1 class="mb-3 mb-lg-5">{{ tendersiaes.count }} besoins concernés</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                {% for tendersiae in tendersiaes %}
+                    {% include "tenders/_list_item_siae.html" with tender=tendersiae.tender %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
