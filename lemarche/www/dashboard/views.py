@@ -236,11 +236,13 @@ class ProfileNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
     template_name = "dashboard/profile_network_siae_tender_list.html"
     queryset = TenderSiae.objects.select_related("tender", "siae").all()
     context_object_name = "tendersiaes"
+    status = None
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, status=None, *args, **kwargs):
         """
         Check that the Siae belongs to the Network
         """
+        self.status = status
         if "slug" in self.kwargs:
             network = get_object_or_404(Network, slug=self.kwargs.get("slug"))
             if "siae_slug" in self.kwargs:
@@ -253,6 +255,12 @@ class ProfileNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         qs = qs.filter(siae__slug=self.kwargs.get("siae_slug"), email_send_date__isnull=False)
+        if self.status:
+            print("status", self.status)
+            if self.status == "DISPLAY":
+                qs = qs.filter(detail_display_date__isnull=False)
+            elif self.status == "CONTACT-CLICK":
+                qs = qs.filter(detail_contact_click_date__isnull=False)
         qs = qs.order_by("-created_at")
         return qs
 

@@ -52,6 +52,11 @@ urlpatterns = [
     # Network
     path("reseaux/<str:slug>/", ProfileNetworkDetailView.as_view(), name="profile_network_detail"),
     path(
+        "reseaux/<str:slug>/prestataires/<slug:siae_slug>/besoins/<status>",
+        ProfileNetworkSiaeTenderListView.as_view(),
+        name="profile_network_siae_tender_list",
+    ),
+    path(
         "reseaux/<str:slug>/prestataires/<slug:siae_slug>/besoins/",
         ProfileNetworkSiaeTenderListView.as_view(),
         name="profile_network_siae_tender_list",
