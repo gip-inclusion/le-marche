@@ -43,33 +43,33 @@
                     <div id="tendersList">
                         <ul role="navigation" class="nav nav-tabs nav-tabs--marche">
                             {% url 'tenders:list' as TENDERS_LIST_URL %}
-                            {% url 'tenders:list' status=STATUS_DRAFT as TENDERS_DRAFT_LIST_URL %}
-                            {% url 'tenders:list' status=STATUS_PUBLISHED as TENDERS_PUBLISHED_LIST_URL %}
-                            {% url 'tenders:list' status=STATUS_VALIDATED as TENDERS_VALIDATED_LIST_URL %}
+                            {% url 'tenders:list' status=tender_constants.STATUS_DRAFT as TENDERS_DRAFT_LIST_URL %}
+                            {% url 'tenders:list' status=tender_constants.STATUS_PUBLISHED as TENDERS_PUBLISHED_LIST_URL %}
+                            {% url 'tenders:list' status=tender_constants.STATUS_VALIDATED as TENDERS_VALIDATED_LIST_URL %}
 
                             <li class="nav-item">
-                                <a role="button" hx-push-url="true" hx-get="{{TENDERS_LIST_URL}}"
+                                <a role="button" hx-push-url="true" hx-get="{{ TENDERS_LIST_URL }}"
                                     class="nav-link{% if request.get_full_path == TENDERS_LIST_URL %} active{% endif %}"
                                     hx-target="#tendersList" hx-swap="outerHTML">
                                     Tous
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a role="button" hx-push-url="true" hx-get="{{TENDERS_DRAFT_LIST_URL}}"
+                                <a role="button" hx-push-url="true" hx-get="{{ TENDERS_DRAFT_LIST_URL }}"
                                     class="nav-link{% if request.get_full_path == TENDERS_DRAFT_LIST_URL %} active{% endif %}"
                                     hx-target="#tendersList" hx-swap="outerHTML">
                                     Brouillon
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a role="button" hx-push-url="true" hx-get="{{TENDERS_PUBLISHED_LIST_URL}}"
+                                <a role="button" hx-push-url="true" hx-get="{{ TENDERS_PUBLISHED_LIST_URL }}"
                                     class="nav-link{% if request.get_full_path == TENDERS_PUBLISHED_LIST_URL %} active{% endif %}"
                                     hx-target="#tendersList" hx-swap="outerHTML">
-                                    Publié
+                                    En cours de validation
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a role="button" hx-push-url="true" hx-get="{{TENDERS_VALIDATED_LIST_URL}}"
+                                <a role="button" hx-push-url="true" hx-get="{{ TENDERS_VALIDATED_LIST_URL }}"
                                     class="nav-link{% if request.get_full_path == TENDERS_VALIDATED_LIST_URL %} active{% endif %}"
                                     hx-target="#tendersList" hx-swap="outerHTML">
                                     Envoyé
@@ -87,14 +87,14 @@
                                     Publiez un besoin pour trouver des prestataires inclusifs près de chez vous.
                                 {% endif %}
                                 {% if request.get_full_path == TENDERS_DRAFT_LIST_URL %}
-                                    Vous n'avez aucun brouillon de besoin pour le moment.
+                                    Vous n'avez aucun besoin en brouillon pour le moment.
                                 {% endif %}
                                 {% if request.get_full_path == TENDERS_PUBLISHED_LIST_URL %}
-                                    Vous n'avez aucun besoin de publié pour le moment.
+                                    Vous n'avez aucun besoin en cours de validation pour le moment.
                                 {% endif %}
                                 {% if request.get_full_path == TENDERS_VALIDATED_LIST_URL %}
                                     Vous n'avez aucun besoin d'envoyé pour le moment.<br>
-                                    Contacter notre équipe en cas de problème avec un de vos dépôts de besoins publié et pas encore envoyé.
+                                    Contacter notre équipe en cas de problème avec un de vos dépôts de besoins en cours de validation.
                                 {% endif %}
                             </p>
                         {% endif %}
