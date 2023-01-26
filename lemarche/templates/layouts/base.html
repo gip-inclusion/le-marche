@@ -45,6 +45,7 @@
     <!-- custom css -->
     <link rel="stylesheet" href="{% static 'itou_marche/itou_marche.scss' %}" type="text/x-scss" />
     {% endcompress %}
+    <script type="text/javascript" src="{% static 'js/alpinejs@3.11.1.min.js'%}" defer></script>
 
     {% block extra_css %}{% endblock %}
 
@@ -101,7 +102,9 @@
     {% endblock %}
 
     <!-- popin -->
-    {% block modals %}{% endblock %}
+    <div id="modalsContent">
+        {% block modals %}{% endblock %}
+    </div>
 
     <!-- allow a user to go to the top of the page -->
     <div class="sr-only sr-only-focusable">
