@@ -9,6 +9,7 @@ from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
+from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
@@ -223,3 +224,55 @@ class SiaeDownloadForm(SiaeSearchForm):
     format = forms.ChoiceField(
         label="Format", widget=forms.RadioSelect, choices=(("XLS", "xls"), ("CLS", "csv")), required=False
     )
+
+
+SHARE_PLATEFORM = (
+    ("email", "E-Mail"),
+    ("linkedin", "Linkedin"),
+    ("facebook", "Facebook"),
+    ("twitter", "Twitter"),
+    ("download", "Téléchargement"),
+)
+
+
+class SiaeShareForm(SiaeSearchForm):
+    # global field
+    share_with = forms.ChoiceField(
+        label="Partager par",
+        widget=forms.RadioSelect(attrs={"x-model": "formData.share_with"}),
+        choices=SHARE_PLATEFORM,
+        required=False,
+    )
+
+    subject = forms.CharField(
+        label="Sujet",
+        widget=forms.Textarea(attrs={"x-model": "formData.subject", "rows": 1}),
+        required=False,
+    )
+    message = forms.CharField(
+        widget=forms.Textarea(attrs={"x-model": "formData.message", "rows": 2}),
+        required=False,
+    )
+    # download fields
+    marche_benefits = forms.MultipleChoiceField(
+        label="Pourquoi partagez-vous cette liste ?",
+        choices=Tender._meta.get_field("marche_benefits").base_field.choices,
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+    download_source = forms.CharField(required=False, widget=forms.HiddenInput())
+    format = forms.ChoiceField(
+        label="Format", widget=forms.RadioSelect, choices=(("XLS", "xls"), ("CLS", "csv")), required=False
+    )
+
+    def __init__(self, user: User, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if user.is_authenticated:
+            subject = self.fields.get("subject")
+            message = self.fields.get("message")
+            subject.initial = f"{user.full_name} vous envoie une liste de prestataires inclusifs"
+            message.initial = (
+                "Bonjour,\n"
+                + "Vous pouvez consulter cette liste de prestataires inclusifs dans le cadre de votre besoin de sous-traitance...\n"  # noqa
+                + f"{user.full_name}"
+            )

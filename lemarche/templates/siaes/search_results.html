@@ -136,17 +136,7 @@
                         </div>
                         {% if siaes %}
                             <div class="col-12 col-lg-auto">
-                                {% if user.is_authenticated %}
-                                    <button type="button" class="btn btn-ico white-space-nowrap text-decoration-none btn-link text-important px-0" data-toggle="modal" data-target="#download_click_survey_modal" data-download-source="siae-search-results">
-                                        <span class="text-decoration-none ml-0">Télécharger la liste</span>
-                                        <i class="ri-download-line ri-lg"></i>
-                                    </button>
-                                {% else %}
-                                    <a href="#" id="siae-export-anon" class="btn btn-ico white-space-nowrap text-decoration-none btn-link text-important px-0" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}">
-                                        <span class="text-decoration-none ml-0">Télécharger la liste</span>
-                                        <i class="ri-download-line ri-lg"></i>
-                                    </a>
-                                {% endif %}
+                                {% include "siaes/_share_search_results.html" %}
                             </div>
                         {% endif %}
                     </div>
