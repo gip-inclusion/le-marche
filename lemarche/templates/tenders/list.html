@@ -43,9 +43,9 @@
                     <div id="tendersList">
                         <ul role="navigation" class="nav nav-tabs nav-tabs--marche">
                             {% url 'tenders:list' as TENDERS_LIST_URL %}
-                            {% url 'tenders:list' status=STATUS_DRAFT as TENDERS_DRAFT_LIST_URL %}
-                            {% url 'tenders:list' status=STATUS_PUBLISHED as TENDERS_PUBLISHED_LIST_URL %}
-                            {% url 'tenders:list' status=STATUS_VALIDATED as TENDERS_VALIDATED_LIST_URL %}
+                            {% url 'tenders:list' status=tender_constants.STATUS_DRAFT as TENDERS_DRAFT_LIST_URL %}
+                            {% url 'tenders:list' status=tender_constants.STATUS_PUBLISHED as TENDERS_PUBLISHED_LIST_URL %}
+                            {% url 'tenders:list' status=tender_constants.STATUS_VALIDATED as TENDERS_VALIDATED_LIST_URL %}
 
                             <li class="nav-item">
                                 <a role="button" hx-push-url="true" hx-get="{{TENDERS_LIST_URL}}"
