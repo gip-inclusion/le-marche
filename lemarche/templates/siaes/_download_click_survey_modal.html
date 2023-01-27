@@ -7,20 +7,20 @@
     data-backdrop="static" data-keyboard="false"
     aria-labelledby="{{title}}"
 >
-    <div class="modal-dialog modal-dialog-centered"  x-data="shareComponent">
+    <div class="modal-dialog modal-dialog-centered" x-data="shareComponent">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">{{title}}</h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-                    <i class="ri-close-line"></i>
-                </button>
-            </div>
-            <!-- The tabs content -->
-            <div class="modal-body home-content-body">
-                    <form method="GET"
-                        :action="formData.share_with=='download' ? '{% url 'siae:search_results_download' %}': '#'"
-                        @submit="submitForm($event)"
-                    >
+            <form method="GET"
+                :action="formData.share_with=='download' ? '{% url 'siae:search_results_download' %}': '#'"
+                @submit="submitForm($event)"
+            >
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modalTitle">{{title}}</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <!-- The tabs content -->
+                <div class="modal-body home-content-body">
                         {% bootstrap_field form_share.share_with %}
                         <div x-show="displaySubject()">
                             {% bootstrap_field form_share.subject %}
@@ -31,16 +31,15 @@
                         <div x-show="formData.share_with=='download'">
                             {% include "siaes/_download_click_survey_modal_content.html" %}
                         </div>
-                        <div class="actions justify-content-end" x-show="formData.share_with && formData.share_with!='download'">
-                            <button class="btn btn-sm btn-outline-primary" type="button" data-dismiss="modal" aria-label="Fermer">Annuler</button>
-                            <button type="submit" class="btn btn-sm btn-primary btn-ico">
-                                <span class="text-decoration-none ml-0">Partager </span>
-                                <i class="ri-share-line ri-lg"></i>
-                            </button>
-                        </div>
-
-                    </form>
-            </div>
+                </div>
+                <div class="modal-footer" x-show="formData.share_with && formData.share_with!='download'">
+                    <button class="btn btn-sm btn-outline-primary" type="button" data-dismiss="modal" aria-label="Fermer">Annuler</button>
+                    <button type="submit" class="btn btn-sm btn-primary btn-ico">
+                        <span class="text-decoration-none ml-0">Partager</span>
+                        <i class="ri-share-line ri-lg"></i>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
