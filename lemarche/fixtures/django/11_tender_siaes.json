@@ -54,7 +54,7 @@
         "model": "tenders.tendersiae",
         "pk": 5,
         "fields": {
-            "tender": 1,
+            "tender": 2,
             "siae": 2653,
             "source": "EMAIL",
             "email_send_date": "2021-07-02T12:44:39Z",

@@ -14,7 +14,7 @@ from lemarche.cms.snippets import ArticleCategory
 from lemarche.favorites.models import FavoriteItem, FavoriteList
 from lemarche.networks.models import Network
 from lemarche.siaes.models import Siae, SiaeUser, SiaeUserRequest
-from lemarche.tenders.models import Tender, TenderSiae
+from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.utils.s3 import S3Upload
 from lemarche.www.dashboard.forms import (
@@ -234,8 +234,8 @@ class ProfileNetworkDetailView(NetworkMemberRequiredMixin, DetailView):
 
 class ProfileNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
     template_name = "dashboard/profile_network_siae_tender_list.html"
-    queryset = TenderSiae.objects.select_related("tender", "siae").all()
-    context_object_name = "tendersiaes"
+    queryset = Tender.objects.all()
+    context_object_name = "tenders"
     status = None
 
     def get(self, request, status=None, *args, **kwargs):
@@ -254,14 +254,14 @@ class ProfileNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        qs = qs.filter(siae__slug=self.kwargs.get("siae_slug"), email_send_date__isnull=False)
+        siae = Siae.objects.get(slug=self.kwargs.get("siae_slug"))
+        qs = qs.filter_with_siaes([siae]).filter(tendersiae__email_send_date__isnull=False)
         if self.status:
-            print("status", self.status)
             if self.status == "DISPLAY":
-                qs = qs.filter(detail_display_date__isnull=False)
+                qs = qs.filter(tendersiae__detail_display_date__isnull=False)
             elif self.status == "CONTACT-CLICK":
-                qs = qs.filter(detail_contact_click_date__isnull=False)
-        qs = qs.order_by("-created_at")
+                qs = qs.filter(tendersiae__detail_contact_click_date__isnull=False)
+        qs = qs.order_by_deadline_date()
         return qs
 
     def get_context_data(self, **kwargs):

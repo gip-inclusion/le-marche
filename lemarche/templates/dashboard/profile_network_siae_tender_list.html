@@ -27,7 +27,7 @@
     <div class="container">
         <div class="row">
             <div class="col-12 col-lg-8">
-                <h1 class="mb-3 mb-lg-5">Cette structure a reçu {{ tendersiaes.count }} demande{{ tendersiaes.count|pluralize }}</h1>
+                <h1 class="mb-3 mb-lg-5">Cette structure a reçu {{ tenders.count }} demande{{ tenders.count|pluralize }}</h1>
             </div>
         </div>
 
@@ -43,7 +43,7 @@
                                 <a role="button" hx-push-url="true" hx-get="{{ NETWORK_SIAE_TENDER_LIST_URL }}"
                                     class="nav-link{% if request.get_full_path == NETWORK_SIAE_TENDER_LIST_URL %} active{% endif %}"
                                     hx-target="#tendersList" hx-swap="outerHTML">
-                                    Toutes les demandes
+                                    Demandes reçues
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -61,18 +61,18 @@
                                 </a>
                             </li>
                         </ul>
-                        {% for tendersiae in tendersiaes %}
-                            {% include "tenders/_list_item_siae.html" with tender=tendersiae.tender %}
+                        {% for tender in tenders %}
+                            {% include "tenders/_list_item_siae.html" with tender=tender %}
                         {% endfor %}
                         {% if not tenders %}
                             <p class="text-muted my-5">
                                 {% if request.get_full_path == NETWORK_SIAE_TENDER_LIST_URL %}
                                     Cette structure n'a reçue aucune demande.
                                 {% endif %}
-                                {% if request.get_full_path == TENDERS_DRAFT_LIST_URL %}
+                                {% if request.get_full_path == NETWORK_SIAE_TENDER_DISPLAY_LIST_URL %}
                                     Cette structure n'a vu aucune des demandes reçues.
                                 {% endif %}
-                                {% if request.get_full_path == TENDERS_PUBLISHED_LIST_URL %}
+                                {% if request.get_full_path == NETWORK_SIAE_TENDER_CONTACT_CLICK_LIST_URL %}
                                     Cette structure ne s'est jamais montré intéressé par une des demandes reçues.
                                 {% endif %}
                             </p>
