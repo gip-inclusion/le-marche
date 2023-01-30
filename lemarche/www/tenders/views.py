@@ -389,8 +389,8 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
 
 
 class TenderSiaeInterestedListView(TenderAuthorOrAdminRequiredMixin, ListView):
-    queryset = TenderSiae.objects.select_related("tender", "siae").all()
     template_name = "tenders/siae_interested_list.html"
+    queryset = TenderSiae.objects.select_related("tender", "siae").all()
     context_object_name = "tendersiaes"
 
     def get_queryset(self):

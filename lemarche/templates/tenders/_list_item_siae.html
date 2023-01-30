@@ -11,7 +11,7 @@
                     {% endif %}
                     <span class="float-right badge badge-base badge-pill badge-emploi">
                         {% if tender.kind == "PROJ" %}
-                            {{ title_kind_sourcing_siae }}
+                            {{ title_kind_sourcing_siae|default:tender.get_kind_display }}
                         {% else %}
                             {{ tender.get_kind_display }}
                         {% endif %}
