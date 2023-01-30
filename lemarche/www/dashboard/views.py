@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
@@ -159,8 +159,8 @@ class ProfileFavoriteListCreateView(LoginRequiredMixin, SuccessMessageMixin, Cre
 
 class ProfileFavoriteListDetailView(FavoriteListOwnerRequiredMixin, DetailView):
     template_name = "dashboard/profile_favorite_list_detail.html"
-    context_object_name = "favorite_list"
     queryset = FavoriteList.objects.prefetch_related("siaes").all()
+    context_object_name = "favorite_list"
 
 
 class ProfileFavoriteListEditView(FavoriteListOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -222,13 +222,52 @@ class ProfileFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, Del
 
 class ProfileNetworkDetailView(NetworkMemberRequiredMixin, DetailView):
     template_name = "dashboard/profile_network_detail.html"
-    context_object_name = "network"
     queryset = Network.objects.all()
+    context_object_name = "network"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         network = self.get_object()
         context["network_siaes"] = network.siaes.with_tender_stats()
+        return context
+
+
+class ProfileNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
+    template_name = "dashboard/profile_network_siae_tender_list.html"
+    queryset = Tender.objects.all()
+    context_object_name = "tenders"
+    status = None
+
+    def get(self, request, status=None, *args, **kwargs):
+        """
+        Check that the Siae belongs to the Network
+        """
+        self.status = status
+        if "slug" in self.kwargs:
+            network = get_object_or_404(Network, slug=self.kwargs.get("slug"))
+            if "siae_slug" in self.kwargs:
+                siae = get_object_or_404(Siae, slug=self.kwargs.get("siae_slug"))
+                if siae not in network.siaes.all():
+                    return redirect("dashboard:profile_network_detail", slug=network.slug)
+
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        siae = Siae.objects.get(slug=self.kwargs.get("siae_slug"))
+        qs = qs.filter_with_siaes([siae]).filter(tendersiae__email_send_date__isnull=False)
+        if self.status:
+            if self.status == "DISPLAY":
+                qs = qs.filter(tendersiae__detail_display_date__isnull=False)
+            elif self.status == "CONTACT-CLICK":
+                qs = qs.filter(tendersiae__detail_contact_click_date__isnull=False)
+        qs = qs.order_by_deadline_date()
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["network"] = Network.objects.get(slug=self.kwargs.get("slug"))
+        context["siae"] = Siae.objects.get(slug=self.kwargs.get("siae_slug"))
         return context
 
 

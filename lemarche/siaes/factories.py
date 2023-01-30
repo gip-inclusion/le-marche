@@ -36,14 +36,17 @@ class SiaeFactory(DjangoModelFactory):
     @factory.post_generation
     def users(self, create, extracted, **kwargs):
         if extracted:
-            # Add the iterable of groups using bulk addition
             self.users.add(*extracted)
 
     @factory.post_generation
     def sectors(self, create, extracted, **kwargs):
         if extracted:
-            # Add the iterable of groups using bulk addition
             self.sectors.add(*extracted)
+
+    @factory.post_generation
+    def networks(self, create, extracted, **kwargs):
+        if extracted:
+            self.networks.add(*extracted)
 
 
 class SiaeOfferFactory(DjangoModelFactory):
