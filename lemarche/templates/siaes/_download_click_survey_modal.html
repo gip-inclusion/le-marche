@@ -7,20 +7,20 @@
     data-backdrop="static" data-keyboard="false"
     aria-labelledby="{{title}}"
 >
-    <div class="modal-dialog modal-dialog-centered" x-data="shareComponent">
+    <div class="modal-dialog modal-dialog-centered"  x-data="shareComponent">
         <div class="modal-content">
-            <form method="GET"
-                :action="formData.share_with=='download' ? '{% url 'siae:search_results_download' %}': '#'"
-                @submit="submitForm($event)"
-            >
-                <div class="modal-header">
-                    <h3 class="modal-title" id="modalTitle">{{title}}</h3>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-                        <i class="ri-close-line"></i>
-                    </button>
-                </div>
-                <!-- The tabs content -->
-                <div class="modal-body home-content-body">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">{{title}}</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <!-- The tabs content -->
+            <div class="modal-body home-content-body">
+                    <form method="GET"
+                        :action="formData.share_with=='download' ? '{% url 'siae:search_results_download' %}': '#'"
+                        @submit="submitForm($event)"
+                    >
                         {% bootstrap_field form_share.share_with %}
                         <div x-show="displaySubject()">
                             {% bootstrap_field form_share.subject %}
@@ -31,15 +31,16 @@
                         <div x-show="formData.share_with=='download'">
                             {% include "siaes/_download_click_survey_modal_content.html" %}
                         </div>
-                </div>
-                <div class="modal-footer" x-show="formData.share_with && formData.share_with!='download'">
-                    <button class="btn btn-sm btn-outline-primary" type="button" data-dismiss="modal" aria-label="Fermer">Annuler</button>
-                    <button type="submit" class="btn btn-sm btn-primary btn-ico">
-                        <span class="text-decoration-none ml-0">Partager</span>
-                        <i class="ri-share-line ri-lg"></i>
-                    </button>
-                </div>
-            </form>
+                        <div class="actions justify-content-end" x-show="formData.share_with && formData.share_with!='download'">
+                            <button class="btn btn-sm btn-outline-primary" type="button" data-dismiss="modal" aria-label="Fermer">Annuler</button>
+                            <button type="submit" class="btn btn-sm btn-primary btn-ico">
+                                <span class="text-decoration-none ml-0">Partager </span>
+                                <i class="ri-share-line ri-lg"></i>
+                            </button>
+                        </div>
+
+                    </form>
+            </div>
         </div>
     </div>
 </div>
@@ -58,8 +59,7 @@
                 formData:{
                     share_with:"",
                     subject:"{{form_share.subject.initial|escapejs}}",
-                    {% comment %} message: "Liste à des entreprises de notre réseau..." {% endcomment %}
-                    message: "{{form_share.message.initial|escapejs}}"
+                    message: `{{form_share.message.initial|escapejs}}\n\n${document.URL}`
                 },
                 displaySubject() {
                     return ['Linkedin','email'].includes(this.formData.share_with);
@@ -90,10 +90,9 @@
                         socialWindow(url_share);
                     } else if (this.formData.share_with=="email"){
                         let mailToUrl = new URL('mailto:');
-                        mailToUrl.searchParams.append("subject", this.formData.subject);
-                        mailToUrl.searchParams.append("body", this.formData.message);
                         mailToUrl.searchParams.append("cci", "{{ CONTACT_EMAIL }}");
-                        window.location.href = mailToUrl;
+                        let url = `${mailToUrl}&subject=${this.formData.subject}&body=${this.formData.message}`;
+                        window.location.href = url;
                     }
                 }
             }
