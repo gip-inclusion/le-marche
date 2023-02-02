@@ -75,12 +75,19 @@ def add_to_contact_list_async(email_address, properties, contact_list_id, client
 
 @task()
 def send_transactional_email_with_template(
-    template_id, subject, recipient_email, recipient_name, variables, client=None
+    template_id,
+    subject,
+    recipient_email,
+    recipient_name,
+    variables,
+    from_email=settings.DEFAULT_FROM_EMAIL,
+    from_name=settings.DEFAULT_FROM_NAME,
+    client=None,
 ):
     data = {
         "Messages": [
             {
-                "From": {"Email": settings.DEFAULT_FROM_EMAIL, "Name": settings.DEFAULT_FROM_NAME},
+                "From": {"Email": from_email, "Name": from_name},
                 "To": [{"Email": recipient_email, "Name": recipient_name}],
                 "TemplateID": template_id,
                 "TemplateLanguage": True,
@@ -108,12 +115,18 @@ def send_transactional_email_with_template(
 
 @task()
 def send_transactional_email_many_recipient_with_template(
-    template_id, subject, recipient_email_list, variables, client=None
+    template_id,
+    subject,
+    recipient_email_list,
+    variables,
+    from_email=settings.DEFAULT_FROM_EMAIL,
+    from_name=settings.DEFAULT_FROM_NAME,
+    client=None,
 ):
     data = {
         "Messages": [
             {
-                "From": {"Email": settings.DEFAULT_FROM_EMAIL, "Name": settings.DEFAULT_FROM_NAME},
+                "From": {"Email": from_email, "Name": from_name},
                 "To": [{"Email": recipient_email} for recipient_email in recipient_email_list],
                 "TemplateID": template_id,
                 "TemplateLanguage": True,
