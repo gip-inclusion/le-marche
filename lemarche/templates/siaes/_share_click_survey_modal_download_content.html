@@ -2,7 +2,7 @@
 
 {% with title="Partager la liste des structures" %}
 <div class="modal fade modal-siae"
-    id="download_click_survey_modal"
+    id="share_click_survey_modal"
     tabindex="-1" role="dialog" aria-modal="true"
     data-backdrop="static" data-keyboard="false"
     aria-labelledby="{{title}}"
@@ -90,7 +90,7 @@
                         socialWindow(url_share);
                     } else if (this.formData.share_with=="email"){
                         let mailToUrl = new URL('mailto:');
-                        mailToUrl.searchParams.append("cci", "{{ CONTACT_EMAIL }}");
+                        mailToUrl.searchParams.append("bcc", "{{ CONTACT_EMAIL }}");
                         let url = `${mailToUrl}&subject=${this.formData.subject}&body=${this.formData.message}`;
                         window.location.href = url;
                     }
@@ -100,7 +100,7 @@
         Alpine.data('shareComponent', shareComponent);
     });
     document.addEventListener("DOMContentLoaded", function() {
-        const MODAL_ID = '#download_click_survey_modal';
+        const MODAL_ID = '#share_click_survey_modal';
         $(MODAL_ID).on('show.bs.modal', function (event) {
             // Button that triggered the modal
             var button = $(event.relatedTarget);

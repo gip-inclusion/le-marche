@@ -4,7 +4,7 @@
             type="button"
             class="{{ class_button }}"
             data-toggle="modal"
-            data-target="#download_click_survey_modal"
+            data-target="#share_click_survey_modal"
             data-download-source="siae-search-results"
         >
             <span class="text-decoration-none ml-0">Partager la liste</span>
@@ -27,5 +27,4 @@
 
 <template x-teleport="#modalsContent">
     {% include "auth/_login_or_signup_modal.html" %}
-    {% include "siaes/_download_click_survey_modal.html" %}
 </template>
