@@ -137,8 +137,8 @@ de la documentation autogénérée.
 
 ### Dépendances et environnement
 
-Tant que faire ce peut, le projet centralise ses dépendances dans le fichier [pyproject.toml](pyproject.toml).
-Poetry utilise le fichier `poetry.lock`, et génère également un fichier `requirements.txt`.
+Le projet centralise ses dépendances dans le fichier [pyproject.toml](pyproject.toml).
+Poetry utilise le fichier `poetry.lock`, et une commande permet de générer le fichier `requirements.txt`.
 
 (c'est ce choix qui motive l'utilisation de `pflake8` et `poethepoet`).
 
@@ -149,6 +149,12 @@ $ poetry update
 $ poetry run poe export
 # Mise à jour requirements/dev.txt
 $ poetry run poe export_dev
+```
+
+Et pour connaître les dépendances à mettre à jour :
+
+```bash
+$ poetry show --outdated
 ```
 
 ### Migrations
