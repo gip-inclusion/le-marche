@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
+from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
-from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
 from lemarche.common.admin import admin_site
@@ -16,6 +16,8 @@ urlpatterns = [
     path("prestataires/", include("lemarche.www.siaes.urls")),
     path("profil/", include("lemarche.www.dashboard.urls")),
     path("select2/", include("django_select2.urls")),
+    # advanced filters urls
+    path("advanced_filters/", include("advanced_filters.urls")),
     # admin blog
     path("cms/", include(wagtailadmin_urls)),
     # url docuemnts of glog

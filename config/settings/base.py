@@ -104,6 +104,7 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    "advanced_filters",  # django-advanced-filters
     "anymail",  # django-anymail
     "bootstrap4",  # django-bootstrap4
     "ckeditor",  # django-ckeditor
@@ -156,7 +157,7 @@ WAGTAIL_APPS = [
     "wagtail.images",
     "wagtail.search",
     "wagtail.admin",
-    "wagtail.core",
+    "wagtail",
     "modelcluster",
     "taggit",
     "storages",

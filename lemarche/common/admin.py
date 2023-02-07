@@ -1,5 +1,6 @@
 from datetime import date
 
+from advanced_filters.admin import AdvancedFilter, AdvancedFilterAdmin
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.sites.models import Site
@@ -30,3 +31,4 @@ class MarcheAdminSite(admin.AdminSite):
 
 admin_site = MarcheAdminSite(name="myadmin")
 admin_site.register(Site)
+admin_site.register(AdvancedFilter, AdvancedFilterAdmin)
