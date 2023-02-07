@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from advanced_filters.admin import AdminAdvancedFiltersMixin
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -60,7 +61,7 @@ def restart_send_tender_task(tender: Tender):
 
 
 @admin.register(Tender, site=admin_site)
-class TenderAdmin(admin.ModelAdmin):
+class TenderAdmin(AdminAdvancedFiltersMixin, admin.ModelAdmin):
     list_display = [
         "id",
         "status",
@@ -79,6 +80,7 @@ class TenderAdmin(admin.ModelAdmin):
         "created_at",
         "validated_at",
     ]
+
     list_filter = [
         "kind",
         "status",
@@ -88,6 +90,13 @@ class TenderAdmin(admin.ModelAdmin):
         ResponseKindFilter,
         "siae_transactioned",
     ]
+    advanced_filter_fields = (
+        "kind",
+        "status",
+        "scale_marche_useless",
+        "deadline_date",
+        "start_working_date",
+    )
     # filter on "perimeters"? (loads ALL the perimeters... Use django-admin-autocomplete-filter instead?)
     search_fields = ["id", "title", "author__id", "author__email"]
     search_help_text = "Cherche sur les champs : ID, Titre, Auteur (ID, E-mail)"
