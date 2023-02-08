@@ -20,8 +20,8 @@ from lemarche.www.tenders.tasks import (
 )
 
 
-class MyChoicesFilter(MultiChoice):
-    FILTER_LABEL = "Selectionner les options"
+class ScaleMarcheUselessFilter(MultiChoice):
+    FILTER_LABEL = "Utilité du marché de l'inclusion"
     BUTTON_LABEL = "Appliquer"
 
 
@@ -89,7 +89,7 @@ class TenderAdmin(admin.ModelAdmin):
     list_filter = [
         "kind",
         "status",
-        ("scale_marche_useless", MyChoicesFilter),
+        ("scale_marche_useless", ScaleMarcheUselessFilter),
         "deadline_date",
         "start_working_date",
         ResponseKindFilter,
