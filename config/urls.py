@@ -16,8 +16,6 @@ urlpatterns = [
     path("prestataires/", include("lemarche.www.siaes.urls")),
     path("profil/", include("lemarche.www.dashboard.urls")),
     path("select2/", include("django_select2.urls")),
-    # advanced filters urls
-    path("advanced_filters/", include("advanced_filters.urls")),
     # admin blog
     path("cms/", include(wagtailadmin_urls)),
     # url docuemnts of glog

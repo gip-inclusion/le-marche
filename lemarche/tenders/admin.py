@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from advanced_filters.admin import AdminAdvancedFiltersMixin
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.html import format_html
+from django_admin_filters import MultiChoice
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 
 from lemarche.common.admin import admin_site
@@ -18,6 +18,11 @@ from lemarche.www.tenders.tasks import (
     send_tender_emails_to_partners,
     send_tender_emails_to_siaes,
 )
+
+
+class MyChoicesFilter(MultiChoice):
+    FILTER_LABEL = "Selectionner les options"
+    BUTTON_LABEL = "Appliquer"
 
 
 class ResponseKindFilter(admin.SimpleListFilter):
@@ -61,7 +66,7 @@ def restart_send_tender_task(tender: Tender):
 
 
 @admin.register(Tender, site=admin_site)
-class TenderAdmin(AdminAdvancedFiltersMixin, admin.ModelAdmin):
+class TenderAdmin(admin.ModelAdmin):
     list_display = [
         "id",
         "status",
@@ -84,7 +89,7 @@ class TenderAdmin(AdminAdvancedFiltersMixin, admin.ModelAdmin):
     list_filter = [
         "kind",
         "status",
-        "scale_marche_useless",
+        ("scale_marche_useless", MyChoicesFilter),
         "deadline_date",
         "start_working_date",
         ResponseKindFilter,

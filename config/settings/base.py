@@ -104,12 +104,12 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    "advanced_filters",  # django-advanced-filters
     "anymail",  # django-anymail
     "bootstrap4",  # django-bootstrap4
     "ckeditor",  # django-ckeditor
     "compressor",  # django-compressor
     "corsheaders",  # django-cors-headers
+    "django_admin_filters",  # django-admin-list-filters
     "django_better_admin_arrayfield",  # django-better-admin-arrayfield
     "django_filters",  # django-filter
     "django_htmx",  # django-htmx

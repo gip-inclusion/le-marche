@@ -6,15 +6,14 @@
 {% block extrahead %}
 {{ block.super }}
 <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
-<style>
-#header-env-notice {
-    line-height: 1.5;
-    font-size: 1.5rem;
-    text-transform: uppercase;
-    text-align: center;
-    background-color: {{ BITOUBI_ENV_COLOR }};
-}
-</style>
+    {% block extrastyle %}
+    <link rel='stylesheet' href='{% static 'itou_marche/admin.css' %}'>
+    <style>
+        #header-env-notice {
+            background-color: {{ BITOUBI_ENV_COLOR }};
+        }
+    </style>
+    {% endblock %}
 {% endblock %}
 
 {% block header %}
