@@ -18,8 +18,8 @@
             <!-- The tabs content -->
             <div class="modal-body home-content-body">
                     <form method="GET"
-                        :action="formData.share_with=='download' ? '{% url 'siae:search_results_download' %}': '#'"
-                        @submit="submitForm($event)"
+                        id="shareForm"
+                        :action="formData.share_with=='download' ? '{% url 'siae:search_results_download' %}': ''"
                     >
                         {% bootstrap_field form_share.share_with %}
                         <div x-show="displaySubject()">
@@ -33,7 +33,7 @@
                         </div>
                         <div class="actions justify-content-end" x-show="formData.share_with && formData.share_with!='download'">
                             <button class="btn btn-sm btn-outline-primary" type="button" data-dismiss="modal" aria-label="Fermer">Annuler</button>
-                            <button type="submit" class="btn btn-sm btn-primary btn-ico">
+                            <button @click="submitForm($event)" type="button" class="btn btn-sm btn-primary btn-ico">
                                 <span class="text-decoration-none ml-0">Partager </span>
                                 <i class="ri-share-line ri-lg"></i>
                             </button>
@@ -53,6 +53,8 @@
         var params = "menubar=no,toolbar=no,status=no,width=570,height=570,top=" + top + ",left=" + left;
         window.open(url,"NewWindow",params);
     }
+    const MODAL_ID = '#share_click_survey_modal';
+
     document.addEventListener('alpine:init', () => {
         function shareComponent() {
             return {
@@ -91,8 +93,11 @@
                     } else if (this.formData.share_with=="email"){
                         let mailToUrl = new URL('mailto:');
                         mailToUrl.searchParams.append("bcc", "{{ CONTACT_EMAIL }}");
-                        let url = `${mailToUrl}&subject=${this.formData.subject}&body=${this.formData.message}`;
+                        let subject = encodeURIComponent(this.formData.subject);
+                        let message = encodeURIComponent(this.formData.message);
+                        let url = `${mailToUrl}&subject=${subject}&body=${message}`;
                         window.location.href = url;
+                        $(MODAL_ID).modal('toggle');
                     }
                 }
             }
@@ -100,7 +105,6 @@
         Alpine.data('shareComponent', shareComponent);
     });
     document.addEventListener("DOMContentLoaded", function() {
-        const MODAL_ID = '#share_click_survey_modal';
         $(MODAL_ID).on('show.bs.modal', function (event) {
             // Button that triggered the modal
             var button = $(event.relatedTarget);

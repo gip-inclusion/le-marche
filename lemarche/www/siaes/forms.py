@@ -228,9 +228,9 @@ class SiaeDownloadForm(SiaeSearchForm):
 
 SHARE_PLATEFORM = (
     ("email", "E-Mail"),
-    ("linkedin", "Linkedin"),
-    ("facebook", "Facebook"),
-    ("twitter", "Twitter"),
+    # ("linkedin", "Linkedin"),
+    # ("facebook", "Facebook"),
+    # ("twitter", "Twitter"),
     ("download", "Téléchargement"),
 )
 
