@@ -220,16 +220,21 @@ class ProfileFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, Del
         )
 
 
-class ProfileNetworkDetailView(NetworkMemberRequiredMixin, DetailView):
-    template_name = "dashboard/profile_network_detail.html"
-    queryset = Network.objects.all()
-    context_object_name = "network"
+class ProfileNetworkSiaeListView(NetworkMemberRequiredMixin, ListView):
+    template_name = "dashboard/profile_network_siae_list.html"
+    queryset = Siae.objects.prefetch_related("networks").all()
+    context_object_name = "siaes"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        network = self.get_object()
-        context["network_siaes"] = network.siaes.with_tender_stats().annotate_with_brand_or_name(with_order_by=True)
+        context["network"] = Network.objects.get(slug=self.kwargs.get("slug"))
         return context
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        network = Network.objects.get(slug=self.kwargs.get("slug"))
+        qs = qs.filter(networks__in=[network]).with_tender_stats().annotate_with_brand_or_name(with_order_by=True)
+        return qs
 
 
 class ProfileNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
