@@ -1,0 +1,12 @@
+#header-env-notice {
+    line-height: 1.5;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+/* fix bug for apply multiselect filter */
+#changelist-filter details input[type=submit] {
+    margin-left: 1em;
+    margin-bottom: 1.5em;
+}

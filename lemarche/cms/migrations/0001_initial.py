@@ -3,7 +3,7 @@
 import django.db.models.deletion
 import modelcluster.fields
 import wagtail.contrib.routable_page.models
-import wagtail.core.fields
+import wagtail.fields
 from django.db import migrations, models
 
 
@@ -83,7 +83,7 @@ class Migration(migrations.Migration):
                         verbose_name="Nom de la template",
                     ),
                 ),
-                ("body", wagtail.core.fields.RichTextField(blank=True, verbose_name="Contenu de l'article")),
+                ("body", wagtail.fields.RichTextField(blank=True, verbose_name="Contenu de l'article")),
                 ("categories", modelcluster.fields.ParentalManyToManyField(blank=True, to="cms.ArticleCategory")),
                 (
                     "image",

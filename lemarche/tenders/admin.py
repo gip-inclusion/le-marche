@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.html import format_html
+from django_admin_filters import MultiChoice
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 
 from lemarche.common.admin import admin_site
@@ -17,6 +18,16 @@ from lemarche.www.tenders.tasks import (
     send_tender_emails_to_partners,
     send_tender_emails_to_siaes,
 )
+
+
+class ScaleMarcheUselessFilter(MultiChoice):
+    FILTER_LABEL = "Utilité du marché de l'inclusion"
+    BUTTON_LABEL = "Appliquer"
+
+
+class KindFilter(MultiChoice):
+    FILTER_LABEL = "Type de besoin"
+    BUTTON_LABEL = "Appliquer"
 
 
 class ResponseKindFilter(admin.SimpleListFilter):
@@ -79,15 +90,23 @@ class TenderAdmin(admin.ModelAdmin):
         "created_at",
         "validated_at",
     ]
+
     list_filter = [
-        "kind",
+        ("kind", KindFilter),
         "status",
-        "scale_marche_useless",
+        ("scale_marche_useless", ScaleMarcheUselessFilter),
         "deadline_date",
         "start_working_date",
         ResponseKindFilter,
         "siae_transactioned",
     ]
+    advanced_filter_fields = (
+        "kind",
+        "status",
+        "scale_marche_useless",
+        "deadline_date",
+        "start_working_date",
+    )
     # filter on "perimeters"? (loads ALL the perimeters... Use django-admin-autocomplete-filter instead?)
     search_fields = ["id", "title", "author__id", "author__email"]
     search_help_text = "Cherche sur les champs : ID, Titre, Auteur (ID, E-mail)"
