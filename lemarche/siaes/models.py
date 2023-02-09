@@ -357,14 +357,17 @@ class SiaeQuerySet(models.QuerySet):
             ),
         )
 
-    def annotate_with_brand_or_name(self):
+    def annotate_with_brand_or_name(self, with_order_by=False):
         """
         We usually want to display the brand by default
         See Siae.name_display()
         """
-        return self.annotate(
+        qs = self.annotate(
             brand_or_name=Case(When(brand="", then=F("name")), default=F("brand"), output_field=CharField())
         )
+        if with_order_by:
+            qs = qs.order_by("brand_or_name")
+        return qs
 
 
 class Siae(models.Model):

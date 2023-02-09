@@ -228,7 +228,7 @@ class ProfileNetworkDetailView(NetworkMemberRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         network = self.get_object()
-        context["network_siaes"] = network.siaes.with_tender_stats()
+        context["network_siaes"] = network.siaes.with_tender_stats().annotate_with_brand_or_name(with_order_by=True)
         return context
 
 
