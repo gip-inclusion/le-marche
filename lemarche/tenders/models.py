@@ -183,6 +183,13 @@ class Tender(models.Model):
         blank=True,
         null=True,
     )
+    why_amount_is_blank = models.CharField(
+        verbose_name="Pourquoi le montant du besoin n'est pas renseigné ?",
+        max_length=18,
+        choices=tender_constants.WHY_AMOUNT_IS_BLANK_CHOICES,
+        blank=True,
+        null=True,
+    )
     accept_share_amount = models.BooleanField(
         verbose_name="Partage du montant du besoin",
         help_text="Je souhaite partager ce montant aux prestataires inclusifs recevant mon besoin",

@@ -78,17 +78,20 @@ class AddTenderStepDescriptionForm(forms.ModelForm):
             "external_link",
             "constraints",
             "amount",
+            "why_amount_is_blank",
             "accept_share_amount",
             "accept_cocontracting",
         ]
         widgets = {
             "start_working_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
+            "why_amount_is_blank": forms.widgets.RadioSelect,
         }
 
     def __init__(self, kind, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.kind = kind
-
+        # to remove blank option
+        self.fields["why_amount_is_blank"].choices = self.fields["why_amount_is_blank"].choices[1:]
         if self.instance.start_working_date:
             self.initial["start_working_date"] = self.instance.start_working_date.isoformat()
 
