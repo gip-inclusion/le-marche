@@ -21,7 +21,7 @@ from lemarche.siaes.models import Siae
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.www.auth.tasks import add_to_contact_list
-from lemarche.www.siaes.forms import SiaeDownloadForm, SiaeFavoriteForm, SiaeSearchForm
+from lemarche.www.siaes.forms import SiaeDownloadForm, SiaeFavoriteForm, SiaeSearchForm, SiaeShareForm
 
 
 CURRENT_SEARCH_QUERY_COOKIE_NAME = "current_search"
@@ -59,6 +59,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         siae_search_form = self.filter_form if self.filter_form else SiaeSearchForm(data=self.request.GET)
         context["form"] = siae_search_form
         context["form_download"] = SiaeDownloadForm(data=self.request.GET)
+        context["form_share"] = SiaeShareForm(data=self.request.GET, user=self.request.user)
         if len(self.request.GET.keys()):
             if siae_search_form.is_valid():
                 current_perimeters = siae_search_form.cleaned_data.get("perimeters")
