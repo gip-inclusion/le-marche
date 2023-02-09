@@ -109,6 +109,7 @@ THIRD_PARTY_APPS = [
     "ckeditor",  # django-ckeditor
     "compressor",  # django-compressor
     "corsheaders",  # django-cors-headers
+    "django_admin_filters",  # django-admin-list-filters
     "django_better_admin_arrayfield",  # django-better-admin-arrayfield
     "django_filters",  # django-filter
     "django_htmx",  # django-htmx
@@ -156,7 +157,7 @@ WAGTAIL_APPS = [
     "wagtail.images",
     "wagtail.search",
     "wagtail.admin",
-    "wagtail.core",
+    "wagtail",
     "modelcluster",
     "taggit",
     "storages",
