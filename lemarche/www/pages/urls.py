@@ -21,6 +21,17 @@ app_name = "pages"
 urlpatterns = [
     path("", HomeView.as_view(), name="home"),
     path("contact/", ContactView.as_view(), name="contact"),
+    # Calculator endpoints
+    path("calibrer-achat-socialement-responsable/", ImpactCalculatorView.as_view(), name="impact_calculator"),
+    path(
+        "calculer-impact-social-achat-inclusif/",
+        SocialImpactBuyersCalculatorView.as_view(),
+        name="buyer_social_impact_calculator",
+    ),
+    path("acheteurs-reference-client/", CompanyReferenceCalculatorView.as_view(), name="company_reference_calculator"),
+    # Other dynamic pages
+    path("groupements/", SiaeGroupListView.as_view(), name="groupements"),
+    path("stats/", StatsView.as_view(), name="stats"),
     # Static pages
     path(
         "filiere/restauration/",
@@ -52,21 +63,11 @@ urlpatterns = [
         TemplateView.as_view(template_name="pages/accessibilite.html"),
         name="accessibilite",
     ),
-    path("groupements/", SiaeGroupListView.as_view(), name="groupements"),
-    path("stats/", StatsView.as_view(), name="stats"),
     # Sentry endpoint for frontend errors
     path("sentry-debug/", trigger_error, name="sentry_debug"),
     # Tracking endpoint for the frontend
     path("track/", TrackView.as_view(), name="track_frontend"),
-    # Calculator endpoints
-    path("calibrer-achat-socialement-responsable/", ImpactCalculatorView.as_view(), name="impact_calculator"),
-    path(
-        "calculer-impact-social-achat-inclusif/",
-        SocialImpactBuyersCalculatorView.as_view(),
-        name="buyer_social_impact_calculator",
-    ),
-    path("acheteurs-reference-client/", CompanyReferenceCalculatorView.as_view(), name="company_reference_calculator"),
-    # Flatpages (created in the admin)
+    # Flatpages (created in the admin: faq, qui-sommes-nous, cgu, confidentialité
     # path("", include("django.contrib.flatpages.urls")),
     path("<path:url>", PageView.as_view(), name="flatpage"),
     # Error pages
