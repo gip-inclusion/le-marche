@@ -273,6 +273,16 @@ class SiaeModelQuerysetTest(TestCase):
     # def test_with_tender_stats(self):
     # see tenders > tests.py > TenderModelQuerysetStatsTest
 
+    def test_annotate_with_brand_or_name(self):
+        siae_1 = SiaeFactory(name="ZZZ", brand="ABC")
+        siae_2 = SiaeFactory(name="Test", brand="")
+        siae_queryset = Siae.objects.annotate_with_brand_or_name()
+        self.assertEqual(siae_queryset.get(id=siae_1.id).brand_or_name, siae_1.brand)
+        self.assertEqual(siae_queryset.get(id=siae_2.id).brand_or_name, siae_2.name)
+        self.assertEqual(siae_queryset.first(), siae_2)  # default order is by "name"
+        siae_queryset_with_new_order = Siae.objects.annotate_with_brand_or_name().order_by("brand_or_name")
+        self.assertEqual(siae_queryset_with_new_order.first(), siae_1)
+
 
 class SiaeGroupModelTest(TestCase):
     @classmethod
