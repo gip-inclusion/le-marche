@@ -77,13 +77,14 @@ class SiaeSearchForm(forms.Form):
         widget=forms.TextInput(attrs={"placeholder": "Votre entreprise…"}),
     )
 
-    def filter_queryset(self):  # noqa C901
+    def filter_queryset(self, qs=None):  # noqa C901
         """
         Method to filter the Siaes depending on the search filters.
         We also make sure there are no duplicates.
         """
-        # we only display live Siae
-        qs = Siae.objects.search_query_set()
+        if not qs:
+            # we only display live Siae
+            qs = Siae.objects.search_query_set()
 
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
@@ -276,3 +277,25 @@ class SiaeShareForm(SiaeSearchForm):
                 + "Vous pouvez consulter cette liste de prestataires inclusifs dans le cadre de votre besoin de sous-traitance...\n"  # noqa
                 + f"{user.full_name}"
             )
+
+
+class NetworkSiaeFilterForm(forms.Form):
+    perimeter = forms.ModelChoiceField(
+        label="Filtrer par région",
+        queryset=Perimeter.objects.regions().order_by("name"),
+        to_field_name="slug",
+        required=False,
+    )
+
+    def filter_queryset(self, qs=None):
+        if not qs:
+            qs = Siae.objects.search_query_set()
+
+        if not hasattr(self, "cleaned_data"):
+            self.full_clean()
+
+        perimeter = self.cleaned_data.get("perimeter", None)
+        if perimeter:
+            qs = qs.in_perimeters_area([perimeter])
+
+        return qs

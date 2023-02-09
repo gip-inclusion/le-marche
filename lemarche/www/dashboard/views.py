@@ -44,6 +44,7 @@ from lemarche.www.dashboard.tasks import (
     send_siae_user_request_email_to_assignee,
     send_siae_user_request_response_email_to_initiator,
 )
+from lemarche.www.siaes.forms import NetworkSiaeFilterForm
 
 
 SLUG_RESSOURCES_CAT_SIAES = "solutions"
@@ -220,20 +221,25 @@ class ProfileFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, Del
         )
 
 
-class ProfileNetworkSiaeListView(NetworkMemberRequiredMixin, ListView):
+class ProfileNetworkSiaeListView(NetworkMemberRequiredMixin, FormMixin, ListView):
     template_name = "dashboard/profile_network_siae_list.html"
+    form_class = NetworkSiaeFilterForm
     queryset = Siae.objects.prefetch_related("networks").all()
     context_object_name = "siaes"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["network"] = Network.objects.get(slug=self.kwargs.get("slug"))
+        siae_search_form = self.filter_form if self.filter_form else NetworkSiaeFilterForm(data=self.request.GET)
+        context["form"] = siae_search_form
         return context
 
     def get_queryset(self):
         qs = super().get_queryset()
         network = Network.objects.get(slug=self.kwargs.get("slug"))
         qs = qs.filter(networks__in=[network]).with_tender_stats().annotate_with_brand_or_name(with_order_by=True)
+        self.filter_form = NetworkSiaeFilterForm(data=self.request.GET)
+        qs = self.filter_form.filter_queryset(qs)
         return qs
 
 
