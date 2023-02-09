@@ -694,6 +694,7 @@ CKEDITOR_CONFIGS = {
             ["SpecialChar"],
             # ['HorizontalRule', 'Smiley'],
             ["Undo", "Redo"],
+            ["Image", "Flash", "Table", "HorizontalRule", "Smiley", "SpecialChar", "Iframe"],
             ["RemoveFormat", "Source"],
         ],
         # avoid special characters encoding
