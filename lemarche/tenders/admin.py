@@ -155,6 +155,7 @@ class TenderAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "amount",
+                    "why_amount_is_blank",
                     "accept_share_amount",
                 ),
             },
