@@ -6,7 +6,7 @@
 }
 
 /* fix bug for apply multiselect filter */
-#btn_mchoice_scale_marche_useless {
+#changelist-filter details input[type=submit] {
     margin-left: 1em;
-    margin-bottom: 2em;
+    margin-bottom: 1.5em;
 }

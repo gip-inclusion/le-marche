@@ -25,6 +25,11 @@ class ScaleMarcheUselessFilter(MultiChoice):
     BUTTON_LABEL = "Appliquer"
 
 
+class KindFilter(MultiChoice):
+    FILTER_LABEL = "Type de besoin"
+    BUTTON_LABEL = "Appliquer"
+
+
 class ResponseKindFilter(admin.SimpleListFilter):
     title = Tender._meta.get_field("response_kind").verbose_name
     parameter_name = "response_kind"
@@ -87,7 +92,7 @@ class TenderAdmin(admin.ModelAdmin):
     ]
 
     list_filter = [
-        "kind",
+        ("kind", KindFilter),
         "status",
         ("scale_marche_useless", ScaleMarcheUselessFilter),
         "deadline_date",
