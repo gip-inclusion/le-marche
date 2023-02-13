@@ -511,6 +511,8 @@ REST_FRAMEWORK = {
 # ------------------------------------------------------------------------------
 
 API_DESCRIPTION = """
+<a href="https://lemarche.inclusion.beta.gouv.fr/cgu-api/">Conditions générales d'utilisation</a>
+
 Une initiative de <a href="https://inclusion.beta.gouv.fr/" target="_blank" rel="noopener">
 la Plateforme de l'inclusion</a>
 
@@ -694,6 +696,7 @@ CKEDITOR_CONFIGS = {
             ["SpecialChar"],
             # ['HorizontalRule', 'Smiley'],
             ["Undo", "Redo"],
+            ["Image", "Flash", "Table", "HorizontalRule", "Smiley", "SpecialChar", "Iframe"],
             ["RemoveFormat", "Source"],
         ],
         # avoid special characters encoding
