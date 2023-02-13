@@ -132,12 +132,11 @@ def set_is_delisted(siae):
 
 class Command(BaseCommand):
     """
-    What does the script do?
-    It syncs the list of siae (creates new, updates existing) from C1 to C4.
+    This command syncs the list of siae (creates new, updates existing) from C1 to C4.
 
     Steps:
     1. First we fetch all the siae from C1
-    2. Then we loop on each of them, to create or update it (if siae with c1_id already exists)
+    2. Then we loop on each of them, to create or update it (depends if its c1_id already exists or not)
     3. Don't forget to delist the siae who were not updated or inactive
 
     Usage:
@@ -160,13 +159,17 @@ class Command(BaseCommand):
         c1_list = self.c1_export()
 
         self.stdout_info("-" * 80)
-        self.stdout_info("Step 2: update C4 data")
+        self.stdout_info("Step 2: filter C1 data")
+        c1_list_filtered = self.filter_c1_export(c1_list)
+
+        self.stdout_info("-" * 80)
+        self.stdout_info("Step 3: update C4 data")
         # count before
         siae_total_before = Siae.objects.all().count()
         siae_active_before = Siae.objects.filter(is_active=True).count()
         siae_delisted_before = Siae.objects.filter(is_delisted=True).count()
 
-        self.c4_update(c1_list, dry_run)
+        self.c4_update(c1_list_filtered, dry_run)
         self.c4_delist_old_siae(dry_run)
 
         # count after
@@ -176,7 +179,7 @@ class Command(BaseCommand):
 
         self.stdout_info("Done ! Some stats...")
         created_count = siae_total_after - siae_total_before
-        updated_count = len(c1_list) - created_count
+        updated_count = len(c1_list_filtered) - created_count
         msg_success = [
             "----- Recap: sync C1/C4 -----",
             f"Siae total: before {siae_total_before} / after {siae_total_after} / +{created_count}",
@@ -265,6 +268,19 @@ class Command(BaseCommand):
             api_slack.send_message_to_channel("Erreur de connexion à la db du C1 lors de la synchronisation C1 <-> C4")
             raise psycopg2.OperationalError(e)
 
+    def filter_c1_export(self, c1_list):
+        """
+        Some rules to filter out the siae that we don't want:
+        - siae with kind='RESERVED'
+        """
+        c1_list_filtered = []
+
+        for c1_siae in c1_list:
+            if c1_siae["kind"] not in ("RESERVED",):
+                c1_list_filtered.append(c1_siae)
+
+        return c1_list_filtered
+
     def c4_update(self, c1_list, dry_run):
         """
         Loop on c1_list and figure out if each siae needs to be created OR already exists (update)
@@ -299,8 +315,6 @@ class Command(BaseCommand):
         c1_siae["contact_email"] = c1_siae["admin_email"] or c1_siae["email"]
         c1_siae["contact_phone"] = c1_siae["phone"]
 
-        # TODO: call API Entreprise
-
         # other fields
         c1_siae["is_delisted"] = False
 
@@ -326,21 +340,16 @@ class Command(BaseCommand):
         """
         Here we update an existing Siae with a subset of C1 data
         """
-        # self.stdout_info("Updating Siae...")
-
-        if dry_run:
-            return
-
-        # other fields
-        # c1_siae["is_delisted"] = True if not c1_siae["convention_is_active"] else False
-
-        # keep only certain fields for update
-        c1_siae_filtered = dict()
-        for key in UPDATE_FIELDS:
-            if key in c1_siae:
-                c1_siae_filtered[key] = c1_siae[key]
-
         if not dry_run:
+            # other fields
+            # c1_siae["is_delisted"] = True if not c1_siae["convention_is_active"] else False
+
+            # keep only certain fields for update
+            c1_siae_filtered = dict()
+            for key in UPDATE_FIELDS:
+                if key in c1_siae:
+                    c1_siae_filtered[key] = c1_siae[key]
+
             Siae.objects.filter(c1_id=c4_siae.c1_id).update(**c1_siae_filtered)  # avoid updated_at change
             # self.stdout_info(f"Siae updated / {c4_siae.id} / {c4_siae.siret}")
 
