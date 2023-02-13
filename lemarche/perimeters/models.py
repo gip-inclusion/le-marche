@@ -11,6 +11,11 @@ from lemarche.siaes.constants import DEPARTMENTS_PRETTY, REGIONS
 from lemarche.utils.fields import ChoiceArrayField
 
 
+class PerimeterQuerySet(models.QuerySet):
+    def regions(self):
+        return self.filter(kind="REGION")
+
+
 class Perimeter(models.Model):
     KIND_CITY = "CITY"
     KIND_DEPARTMENT = "DEPARTMENT"
@@ -52,6 +57,8 @@ class Perimeter(models.Model):
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(PerimeterQuerySet)()
 
     class Meta:
         verbose_name = "Périmètre"
