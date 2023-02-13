@@ -27,7 +27,7 @@
         <div class="row">
             <div class="col-12">
                 <h1 class="h1 mb-3 mb-lg-5">
-                    <strong>Mon réseau : {{ user.partner_network }}</strong>
+                    <strong>Mon réseau : {{ network }}</strong>
                     <span class="badge badge-pill badge-marche-light fs-xs" style="vertical-align:middle;" title="{{ network.siaes.count }} adhérent{{ network.siaes.count|pluralize }}">{{ network.siaes.count }}</span>
                 </h1>
             </div>
@@ -35,7 +35,40 @@
 
         <div class="row">
             <div class="col-12">
-                <h2>Statistiques : toutes les demandes de devis, appel d'offres et sourcing</h2>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <form method="GET" role="search">
+                            {% bootstrap_form_errors form type="all" %}
+                            <div class="row">
+                                <div class="col-12 col-lg-8">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            {% bootstrap_field form.perimeter %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-4">
+                                    <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
+                                    <button id="text-search-submit" class="btn btn-primary btn-block btn-ico" type="submit">
+                                        <span>Filtrer</span>
+                                        <i class="ri-search-line ri-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <h2>
+                    Statistiques : toutes les demandes de devis, appel d'offres et sourcing
+                    {% if siaes.count != network.siaes.count %}
+                        <span class="badge badge-pill fs-xs" style="vertical-align:middle;" title="{{ siaes.count }} structure{{ siaes.count|pluralize }} trouvée{{ siaes.count|pluralize }}">{{ siaes.count }}</span>
+                    {% endif %}
+                </h2>
                 <table class="table table-striped table-bordred">
                     <thead>
                         <tr>
@@ -46,7 +79,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for siae in network_siaes %}
+                        {% for siae in siaes %}
                             <tr>
                                 <td>
                                     <a href="{% url 'siae:detail' siae.slug %}" target="_blank">{{ siae.brand_or_name }}</a>
@@ -78,7 +111,6 @@
                 </table>
             </div>
         </div>
-
     </div>
 </section>
 {% endblock %}
