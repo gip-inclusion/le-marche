@@ -49,7 +49,7 @@
                         {% for siae in network_siaes %}
                             <tr>
                                 <td>
-                                    <a href="{% url 'siae:detail' siae.slug %}" target="_blank">{{ siae.name_display }}</a>
+                                    <a href="{% url 'siae:detail' siae.slug %}" target="_blank">{{ siae.brand_or_name }}</a>
                                 </td>
                                 <td>
                                     {% if siae.tender_email_send_count > 0 %}

@@ -7,7 +7,7 @@ from django.contrib.gis.measure import D
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.contrib.postgres.search import TrigramSimilarity  # SearchVector
 from django.db import IntegrityError, models, transaction
-from django.db.models import Case, Count, IntegerField, Q, Sum, When
+from django.db.models import Case, CharField, Count, F, IntegerField, Q, Sum, When
 from django.db.models.functions import Greatest
 from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
@@ -356,6 +356,18 @@ class SiaeQuerySet(models.QuerySet):
                 )
             ),
         )
+
+    def annotate_with_brand_or_name(self, with_order_by=False):
+        """
+        We usually want to display the brand by default
+        See Siae.name_display()
+        """
+        qs = self.annotate(
+            brand_or_name=Case(When(brand="", then=F("name")), default=F("brand"), output_field=CharField())
+        )
+        if with_order_by:
+            qs = qs.order_by("brand_or_name")
+        return qs
 
 
 class Siae(models.Model):
