@@ -276,9 +276,8 @@ class Command(BaseCommand):
         c1_list_filtered = []
 
         for c1_siae in c1_list:
-            if c1_siae["kind"] in ("RESERVED",):
-                continue  # skip this siae
-            c1_list_filtered.append(c1_siae)
+            if c1_siae["kind"] not in ("RESERVED",):
+                c1_list_filtered.append(c1_siae)
 
         return c1_list_filtered
 
