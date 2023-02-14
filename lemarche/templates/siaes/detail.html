@@ -19,7 +19,7 @@
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'siae:search_results' %}?{{ current_search_query }}" title="Revenir aux résultats de recherche">Recherche</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'siae:search_results' %}?{{ current_search_query }}" aria-label="Revenir aux résultats de recherche">Recherche</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ siae.name_display }}</li>
                     </ol>
                 </nav>
@@ -56,16 +56,16 @@
                                         </h1>
                                         {% if user.is_authenticated %}
                                             {% if siae.in_user_favorite_list_count %}
-                                                <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_remove_modal" title="Dans votre liste d'achat">
+                                                <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_remove_modal" aria-label="Dans votre liste d'achat">
                                                     <i class="ri-star-fill ri-xl"></i>
                                                 </a>
                                                 {% else %}
-                                                <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_add_modal" title="Ajouter à votre liste d'achat" >
+                                                <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_add_modal" aria-label="Ajouter à votre liste d'achat" >
                                                     <i class="ri-star-line ri-xl"></i>
                                                 </a>
                                             {% endif %}
                                         {% else %}
-                                            <a href="#" id="favorite-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}" title="Ajouter à votre liste d'achat">
+                                            <a href="#" id="favorite-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}" aria-label="Ajouter à votre liste d'achat">
                                                 <i class="ri-star-line ri-xl"></i>
                                             </a>
                                         {% endif %}
@@ -80,10 +80,10 @@
                                 <div class="row">
                                     <div class="col-12">
                                         {% if siae.is_qpv %}
-                                            <span class="badge badge-pill badge-emploi-lightest" title="Quartier prioritaire de la politique de la ville">QPV</span>
+                                            <span class="badge badge-pill badge-emploi-lightest" aria-label="Quartier prioritaire de la politique de la ville">QPV</span>
                                         {% endif %}
                                         {% if siae.is_zrr %}
-                                            <span class="badge badge-pill badge-emploi-lightest" title="Zone de revitalisation rurale">ZRR</span>
+                                            <span class="badge badge-pill badge-emploi-lightest" aria-label="Zone de revitalisation rurale">ZRR</span>
                                         {% endif %}
                                         {% for group in siae.groups.all %}
                                             <span class="badge badge-pill badge-emploi-light">{{ group.name }}</span>
@@ -311,7 +311,7 @@
                                             {% endfor %}
                                             </ul>
                                         </div>
-                                        <a class="mt-3 is-collapse-caret-clients has-collapse-caret collapsed" data-toggle="collapse" href="#collapseMoreRefClients" role="button" aria-expanded="false" aria-controls="collapseMoreRefClients" title="Plus de références clients">de références clients</a>
+                                        <a class="mt-3 is-collapse-caret-clients has-collapse-caret collapsed" data-toggle="collapse" href="#collapseMoreRefClients" role="button" aria-expanded="false" aria-controls="collapseMoreRefClients" aria-label="Plus de références clients">de références clients</a>
                                     {% endif %}
                                 </div>
                             </div>
@@ -404,7 +404,7 @@
                         <div id="image-grid" class="row">
                             {% for image in siae.images.all %}
                                 <div class="col-12 col-sm-4 pb-3"> <!-- 3 per row -->
-                                    <img src="{{ image.image_url }}" class="img-fluid" title="{{ image.name|default:'' }}" loading="lazy" />
+                                    <img src="{{ image.image_url }}" class="img-fluid" alt="{{ image.name|default:'' }}" loading="lazy" />
                                 </div>
                             {% endfor %}
                         </div>

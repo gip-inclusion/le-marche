@@ -10,7 +10,7 @@
     {% csrf_token %}
 
     {% bootstrap_form_errors form type="all" %}
-        
+
     <div class="row mb-3 mb-lg-5">
         <div class="col-12 col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
@@ -46,7 +46,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="row mb-3 mb-lg-5">
         <div class="col-12 col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
@@ -95,13 +95,13 @@
                     <div id="client-reference-formset-empty-form" class="d-none">
                         <div class="form-group">
                             <label for="id_client_references-__prefix__-name">Nom</label>
-                            <input type="text" name="client_references-__prefix__-name" maxlength="255" class="form-control" title="" id="id_client_references-__prefix__-name">
+                            <input type="text" name="client_references-__prefix__-name" maxlength="255" class="form-control" aria-label="" id="id_client_references-__prefix__-name">
                         </div>
                         <div class="row">
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     <!-- <label for="id_client_references-__prefix__-logo_url">Lien vers le logo</label> -->
-                                    <input type="hidden" name="client_references-__prefix__-logo_url" maxlength="500" class="form-control" title="" id="id_client_references-__prefix__-logo_url">
+                                    <input type="hidden" name="client_references-__prefix__-logo_url" maxlength="500" class="form-control" aria-label="" id="id_client_references-__prefix__-logo_url">
                                     <label for="id_client_references-__prefix__-logo_form" class="js-display-if-javascript-enabled">Logo</label>
                                     {% include "storage/s3_upload_form.html" with dropzone_form_id="id_client_references-__prefix__-logo_form" %}
                                 </div>
@@ -187,13 +187,13 @@
                     <div id="image-formset-empty-form" class="d-none">
                         <div class="form-group">
                             <label for="id_images-__prefix__-name">Nom</label>
-                            <input type="text" name="images-__prefix__-name" maxlength="255" class="form-control" title="" id="id_images-__prefix__-name">
+                            <input type="text" name="images-__prefix__-name" maxlength="255" class="form-control" aria-label="" id="id_images-__prefix__-name">
                         </div>
                         <div class="row">
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     <!-- <label for="id_images-__prefix__-image_url">Lien vers l'image</label> -->
-                                    <input type="hidden" name="images-__prefix__-image_url" maxlength="500" class="form-control" title="" id="id_images-__prefix__-image_url">
+                                    <input type="hidden" name="images-__prefix__-image_url" maxlength="500" class="form-control" aria-label="" id="id_images-__prefix__-image_url">
                                     <label for="id_images-__prefix__-image_form" class="js-display-if-javascript-enabled">Image</label>
                                     {% include "storage/s3_upload_form.html" with dropzone_form_id="id_images-__prefix__-image_form" %}
                                 </div>

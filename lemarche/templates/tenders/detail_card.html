@@ -18,16 +18,16 @@
             </div>
         </div>
         <div class="row text-bold">
-            <div class="col" title="Secteurs d'activité : {{ tender.sectors_full_list_string|safe }}">
+            <div class="col" aria-label="Secteurs d'activité : {{ tender.sectors_full_list_string|safe }}">
                 <i class="ri-award-line"></i>
                 {{ tender.sectors_list_string }}
             </div>
-            <div class="col" title="Lieu d'éxécution">
+            <div class="col" aria-label="Lieu d'éxécution">
                 <i class="ri-map-pin-2-line"></i>
                 {{ tender.location_display|safe }}
             </div>
             {% if tender.presta_type %}
-                <div class="col" title="Type de prestation">
+                <div class="col" aria-label="Type de prestation">
                     <i class="ri-briefcase-4-line"></i>
                     {% array_choices_display tender 'presta_type' %}
                 </div>

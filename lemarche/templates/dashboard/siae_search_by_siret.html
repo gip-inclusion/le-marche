@@ -52,19 +52,19 @@
                         <hr />
                         <div class="row">
                             <div class="col">
-                                <p title="{% get_verbose_name siae 'name' %}" class="mb-0">
+                                <p aria-label="{% get_verbose_name siae 'name' %}" class="mb-0">
                                     <strong>{% get_verbose_name siae 'name' %} :</strong>
                                     {{ siae.name }}
                                 </p>
-                                <p title="{% get_verbose_name siae 'brand' %}" class="mb-0">
+                                <p aria-label="{% get_verbose_name siae 'brand' %}" class="mb-0">
                                     <strong>{% get_verbose_name siae 'brand' %} :</strong>
                                     {{ siae.brand|default:'' }}
                                 </p>
-                                <p title="{% get_verbose_name siae 'siret' %}" class="mb-0">
+                                <p aria-label="{% get_verbose_name siae 'siret' %}" class="mb-0">
                                     <strong>{% get_verbose_name siae 'siret' %} :</strong>
                                     {{ siae.siret_display }}
                                 </p>
-                                <p title="Localisation" class="mb-0">
+                                <p aria-label="Localisation" class="mb-0">
                                     <strong>Localisation :</strong>
                                     {{ siae.city }} {{ siae.post_code }}
                                 </p>
