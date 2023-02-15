@@ -111,6 +111,9 @@ class TenderAdmin(admin.ModelAdmin):
 
     autocomplete_fields = ["sectors", "location", "perimeters", "author"]
     readonly_fields = [field.name for field in Tender._meta.fields if field.name.endswith("_last_seen_date")] + [
+        # slug
+        # status
+        "validated_at",
         "siae_count_with_link",
         "siae_email_send_count_with_link",
         "siae_email_link_click_count_with_link",
@@ -221,10 +224,18 @@ class TenderAdmin(admin.ModelAdmin):
             },
         ),
         (
-            "Stats et autres",
+            "Status",
             {
                 "fields": (
                     "status",
+                    "validated_at",
+                )
+            },
+        ),
+        (
+            "Stats et autres",
+            {
+                "fields": (
                     "siae_interested_list_last_seen_date",
                     "source",
                     "logs_display",
