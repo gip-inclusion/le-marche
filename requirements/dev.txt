@@ -43,7 +43,7 @@ django-select2==7.11.1
 django-storages==1.13.2; python_version >= "3.7"
 django-taggit==3.1.0; python_version >= "3.7"
 django-treebeard==4.6.1; python_version >= "3.8"
-django==4.1.6; python_version >= "3.8"
+django==4.1.7; python_version >= "3.8"
 djangorestframework==3.14.0; python_version >= "3.6"
 draftjs-exporter==2.1.7; python_version >= "3.7"
 drf-spectacular==0.24.2; python_version >= "3.6"
