@@ -46,9 +46,7 @@ class ResponseKindFilter(admin.SimpleListFilter):
 
 def update_and_send_tender_task(tender: Tender):
     # 1) validate the tender
-    tender.validated_at = datetime.now()
-    tender.status = constants.STATUS_VALIDATED
-    tender.save()
+    tender.set_validated(with_save=True)
     # 2) find the matching Siaes? done in Tender post_save signal
     send_confirmation_published_email_to_author(tender, nb_matched_siaes=tender.siaes.count())
     # 3) send the tender to all matching Siaes & Partners
@@ -62,7 +60,6 @@ def restart_send_tender_task(tender: Tender):
         "action": "restart_send",
         "date": str(datetime.now()),
     }
-
     tender.logs.append(log_item)
     tender.save()
     # 2) send the tender to all matching Siaes & Partners
