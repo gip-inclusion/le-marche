@@ -473,14 +473,16 @@ MAILJET_NL_CL_BUYER_ID = env.int("MAILJET_NL_CL_BUYER_ID", 2500034)
 MAILJET_NL_CL_SIAE_ID = env.int("MAILJET_NL_CL_SIAE_ID", 2500034)
 # contact list "Facilitateurs des clauses sociales"
 MAILJET_NL_CL_PARTNER_FACILITATORS_ID = env.int("MAILJET_NL_CL_PARTNER_FACILITATORS_ID", 2500034)
-# contact list “Réseaux IAE” et “Réseau secteur handicap”
+# contact list "Réseaux IAE" et "Réseau secteur handicap"
 MAILJET_NL_CL_PARTNER_NETWORKS_IAE_HANDICAP_ID = env.int("MAILJET_NL_CL_PARTNER_NETWORKS_IAE_HANDICAP_ID", 2500034)
-# contact list “DREETS/DDETS"
+# contact list "DREETS/DDETS"
 MAILJET_NL_CL_PARTNER_DREETS_ID = env.int("MAILJET_NL_CL_PARTNER_DREETS_ID", 2500034)
-# contact list "acheteurs ayant téléchargés la liste excel des structure"
+# contact list "acheteurs ayant téléchargés la liste excel des structures"
 MAILJET_NL_CL_BUYER_DOWNLOAD_SIAE_LIST_ID = env.int("MAILJET_NL_CL_BUYER_DOWNLOAD_SIAE_LIST_ID", 2500034)
-# contact list "acheteurs ayant recherchés des structure"
+# contact list "acheteurs ayant recherchés des structures"
 MAILJET_NL_CL_BUYER_SEARCH_SIAE_LIST_ID = env.int("MAILJET_NL_CL_BUYER_SEARCH_SIAE_LIST_ID", 2504377)
+# contact list "acheteurs ayant recherchés des structures 'traiteur'"
+MAILJET_NL_CL_BUYER_SEARCH_SIAE_TRAITEUR_LIST_ID = env.int("MAILJET_NL_CL_BUYER_SEARCH_SIAE_TRAITEUR_LIST_ID", 2543033)
 # contact list import c1
 MAILJET_NL_CL_IMPORT_C1_SIAE_LIST_ID = env.int("MAILJET_NL_CL_IMPORT_C1_SIAE_LIST_ID", 2502857)
 

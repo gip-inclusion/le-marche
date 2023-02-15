@@ -87,12 +87,20 @@ class SiaeSearchResultsView(FormMixin, ListView):
         return context
 
     def get(self, request, *args, **kwargs):
+        """
+        Additional actions:
+        - add buyer to contact list
+        - add buyer who searched for sector 'traiteur' to contact list
+        """
         self.object_list = self.get_queryset()
         user = request.user
-        if not user.is_anonymous and user.kind == user.KIND_BUYER:
-            add_to_contact_list(user, "buyer_search")
-
         context = self.get_context_data()
+        if user.is_authenticated:
+            if user.kind == user.KIND_BUYER:
+                add_to_contact_list(user, "buyer_search")
+                if "current_sectors" in context:
+                    if next((sector for sector in context["current_sectors"] if sector["slug"] == "traiteur"), False):
+                        add_to_contact_list(user, "buyer_search_traiteur")
         return self.render_to_response(context)
 
 
@@ -108,7 +116,9 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         return results
 
     def get(self, request, *args, **kwargs):
-        """Build and return a CSV or XLS."""
+        """
+        Build and return a CSV or XLS.
+        """
         siae_list = self.get_queryset()
         format = self.request.GET.get("format", "xls")
         with_contact_info = True if self.request.GET.get("tender", None) else False
