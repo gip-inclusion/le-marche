@@ -28,18 +28,18 @@ class Command(BaseCommand):
         self.stdout.write("Step 1: Find Tender validated J+2")
         two_days_ago = timezone.now() - timedelta(days=2)
         three_days_ago = timezone.now() - timedelta(days=3)
-        tender_validated = Tender.objects.validated()
-        tender_validated_2_days = tender_validated.filter(created_at__gte=two_days_ago).filter(
+        tender_validated_incremental = Tender.objects.validated().is_incremental()
+        tender_validated_incremental_2_days = tender_validated_incremental.filter(created_at__gte=two_days_ago).filter(
             created_at__lt=three_days_ago
         )
-        self.stdout.write(f"Found {tender_validated_2_days.count()} Tenders")
+        self.stdout.write(f"Found {tender_validated_incremental_2_days.count()} Tenders")
 
         if not dry_run:
             self.stdout.write("-" * 80)
             self.stdout.write("Step 2: Send emails")
-            for tender in tender_validated_2_days:
+            for tender in tender_validated_incremental_2_days:
                 send_author_incremental_2_days_emails(tender)
-            self.stdout.write(f"Sent {tender_validated_2_days.count()} J+2 emails")
+            self.stdout.write(f"Sent {tender_validated_incremental_2_days.count()} J+2 emails")
 
         self.stdout.write("-" * 80)
         self.stdout.write("Done!")
