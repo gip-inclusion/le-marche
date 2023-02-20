@@ -14,7 +14,7 @@ from lemarche.cms.snippets import ArticleCategory
 from lemarche.favorites.models import FavoriteItem, FavoriteList
 from lemarche.networks.models import Network
 from lemarche.siaes.models import Siae, SiaeUser, SiaeUserRequest
-from lemarche.tenders.models import Tender
+from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils.s3 import S3Upload
 from lemarche.www.dashboard.forms import (
@@ -245,8 +245,8 @@ class ProfileNetworkSiaeListView(NetworkMemberRequiredMixin, FormMixin, ListView
 
 class ProfileNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
     template_name = "dashboard/profile_network_siae_tender_list.html"
-    queryset = Tender.objects.prefetch_related("perimeters", "sectors").all()
-    context_object_name = "tenders"
+    queryset = TenderSiae.objects.select_related("tender", "siae").all()
+    context_object_name = "tendersiaes"
     status = None
 
     def get(self, request, status=None, *args, **kwargs):
@@ -259,19 +259,18 @@ class ProfileNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
             if "siae_slug" in self.kwargs:
                 self.siae = get_object_or_404(Siae, slug=self.kwargs.get("siae_slug"))
                 if self.siae not in self.network.siaes.all():
-                    return redirect("dashboard:profile_network_detail", slug=self.network.slug)
+                    return redirect("dashboard:profile_network_siae_list", slug=self.network.slug)
 
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
         qs = super().get_queryset()
-        qs = qs.filter_with_siaes([self.siae]).filter(tendersiae__email_send_date__isnull=False)
+        qs = qs.filter(siae=self.siae).filter(email_send_date__isnull=False)
         if self.status:
             if self.status == "DISPLAY":
-                qs = qs.filter(tendersiae__detail_display_date__isnull=False)
+                qs = qs.filter(detail_display_date__isnull=False)
             elif self.status == "CONTACT-CLICK":
-                qs = qs.filter(tendersiae__detail_contact_click_date__isnull=False)
-        qs = qs.order_by_deadline_date()
+                qs = qs.filter(detail_contact_click_date__isnull=False)
         return qs
 
     def get_context_data(self, **kwargs):

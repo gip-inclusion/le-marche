@@ -12,7 +12,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_detail' network.slug %}">Mon réseau</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_siae_list' network.slug %}">Mon réseau</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ siae.name_display|truncatechars:25 }}</li>
                     </ol>
                 </nav>
@@ -27,7 +27,7 @@
     <div class="container">
         <div class="row">
             <div class="col-12 col-lg-8">
-                <h1 class="mb-3 mb-lg-5">Cette structure a reçu {{ tenders.count }} demande{{ tenders.count|pluralize }}</h1>
+                <h1 class="mb-3 mb-lg-5">Cette structure a reçu {{ tendersiaes.count }} demande{{ tendersiaes.count|pluralize }}</h1>
             </div>
         </div>
 
@@ -61,10 +61,10 @@
                                 </a>
                             </li>
                         </ul>
-                        {% for tender in tenders %}
-                            {% include "tenders/_list_item_siae.html" with tender=tender %}
+                        {% for tendersiae in tendersiaes %}
+                            {% include "tenders/_list_item_siae.html" with tender=tendersiae.tender %}
                         {% endfor %}
-                        {% if not tenders %}
+                        {% if not tendersiaes %}
                             <p class="text-muted my-5">
                                 {% if request.get_full_path == NETWORK_SIAE_TENDER_LIST_URL %}
                                     Cette structure n'a reçue aucune demande.
