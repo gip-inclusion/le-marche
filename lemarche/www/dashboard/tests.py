@@ -317,27 +317,27 @@ class DashboardNetworkViewTest(TestCase):
         )
 
     def test_anonymous_user_cannot_view_network_detail(self):
-        url = reverse("dashboard:profile_network_detail", args=[self.network_1.slug])
+        url = reverse("dashboard:profile_network_siae_list", args=[self.network_1.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.startswith("/accounts/login/"))
 
     def test_only_network_member_can_access_network_detail(self):
         self.client.force_login(self.user_network_1)
-        url = reverse("dashboard:profile_network_detail", args=[self.network_1.slug])
+        url = reverse("dashboard:profile_network_siae_list", args=[self.network_1.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
         for user in [self.user_network_2, self.user_buyer, self.user_without_network]:
             self.client.force_login(user)
-            url = reverse("dashboard:profile_network_detail", args=[self.network_1.slug])
+            url = reverse("dashboard:profile_network_siae_list", args=[self.network_1.slug])
             response = self.client.get(url)
             self.assertEqual(response.status_code, 302)
             self.assertEqual(response.url, "/profil/")
 
     def test_siae_list_in_network_detail(self):
         self.client.force_login(self.user_network_1)
-        url = reverse("dashboard:profile_network_detail", args=[self.network_1.slug])
+        url = reverse("dashboard:profile_network_siae_list", args=[self.network_1.slug])
         response = self.client.get(url)
         self.assertContains(response, self.siae_1.name_display)
         self.assertNotContains(response, self.siae_2.name_display)

@@ -50,7 +50,7 @@ urlpatterns = [
         name="profile_favorite_list_delete",
     ),
     # Network
-    path("reseaux/<str:slug>/", ProfileNetworkSiaeListView.as_view(), name="profile_network_detail"),
+    path("reseaux/<str:slug>/", ProfileNetworkSiaeListView.as_view(), name="profile_network_siae_list"),
     path(
         "reseaux/<str:slug>/prestataires/<slug:siae_slug>/besoins/<status>",
         ProfileNetworkSiaeTenderListView.as_view(),
