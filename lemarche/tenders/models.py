@@ -69,7 +69,12 @@ class TenderQuerySet(models.QuerySet):
         - the tender-siae matching has already been done with filter_with_tender()
         - we return only validated tenders
         """
-        return Tender.objects.filter(tendersiae__siae__in=siaes).validated().distinct()
+        return (
+            self.prefetch_related("tendersiae_set", "tendersiae_set__siae")
+            .filter(tendersiae__siae__in=siaes)
+            .validated()
+            .distinct()
+        )
 
     def with_deadline_date_is_outdated(self, limit_date=datetime.today()):
         return self.annotate(

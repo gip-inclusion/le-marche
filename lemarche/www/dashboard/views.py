@@ -245,7 +245,7 @@ class ProfileNetworkSiaeListView(NetworkMemberRequiredMixin, FormMixin, ListView
 
 class ProfileNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
     template_name = "dashboard/profile_network_siae_tender_list.html"
-    queryset = Tender.objects.all()
+    queryset = Tender.objects.prefetch_related("perimeters", "sectors").all()
     context_object_name = "tenders"
     status = None
 
@@ -255,18 +255,17 @@ class ProfileNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
         """
         self.status = status
         if "slug" in self.kwargs:
-            network = get_object_or_404(Network, slug=self.kwargs.get("slug"))
+            self.network = get_object_or_404(Network, slug=self.kwargs.get("slug"))
             if "siae_slug" in self.kwargs:
-                siae = get_object_or_404(Siae, slug=self.kwargs.get("siae_slug"))
-                if siae not in network.siaes.all():
-                    return redirect("dashboard:profile_network_detail", slug=network.slug)
+                self.siae = get_object_or_404(Siae, slug=self.kwargs.get("siae_slug"))
+                if self.siae not in self.network.siaes.all():
+                    return redirect("dashboard:profile_network_detail", slug=self.network.slug)
 
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
         qs = super().get_queryset()
-        siae = Siae.objects.get(slug=self.kwargs.get("siae_slug"))
-        qs = qs.filter_with_siaes([siae]).filter(tendersiae__email_send_date__isnull=False)
+        qs = qs.filter_with_siaes([self.siae]).filter(tendersiae__email_send_date__isnull=False)
         if self.status:
             if self.status == "DISPLAY":
                 qs = qs.filter(tendersiae__detail_display_date__isnull=False)
@@ -277,8 +276,8 @@ class ProfileNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["network"] = Network.objects.get(slug=self.kwargs.get("slug"))
-        context["siae"] = Siae.objects.get(slug=self.kwargs.get("siae_slug"))
+        context["network"] = self.network
+        context["siae"] = self.siae
         return context
 
 
