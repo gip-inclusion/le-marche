@@ -46,9 +46,7 @@ class ResponseKindFilter(admin.SimpleListFilter):
 
 def update_and_send_tender_task(tender: Tender):
     # 1) validate the tender
-    tender.validated_at = datetime.now()
-    tender.status = constants.STATUS_VALIDATED
-    tender.save()
+    tender.set_validated(with_save=True)
     # 2) find the matching Siaes? done in Tender post_save signal
     send_confirmation_published_email_to_author(tender, nb_matched_siaes=tender.siaes.count())
     # 3) send the tender to all matching Siaes & Partners
@@ -62,7 +60,6 @@ def restart_send_tender_task(tender: Tender):
         "action": "restart_send",
         "date": str(datetime.now()),
     }
-
     tender.logs.append(log_item)
     tender.save()
     # 2) send the tender to all matching Siaes & Partners
@@ -114,6 +111,9 @@ class TenderAdmin(admin.ModelAdmin):
 
     autocomplete_fields = ["sectors", "location", "perimeters", "author"]
     readonly_fields = [field.name for field in Tender._meta.fields if field.name.endswith("_last_seen_date")] + [
+        # slug
+        # status
+        "validated_at",
         "siae_count_with_link",
         "siae_email_send_count_with_link",
         "siae_email_link_click_count_with_link",
@@ -224,10 +224,18 @@ class TenderAdmin(admin.ModelAdmin):
             },
         ),
         (
-            "Stats et autres",
+            "Status",
             {
                 "fields": (
                     "status",
+                    "validated_at",
+                )
+            },
+        ),
+        (
+            "Stats et autres",
+            {
+                "fields": (
                     "siae_interested_list_last_seen_date",
                     "source",
                     "logs_display",
