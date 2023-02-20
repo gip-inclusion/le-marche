@@ -1,10 +1,10 @@
 #!/bin/bash -l
 
-# Send e-mail to Tender author if incremental
+# Send SiaeUserRequest reminders
 
 # Do not run if this env var is not set:
-if [[ -z "$CRON_TENDER_SEND_AUTHOR_INCREMENTAL_ENABLED" ]]; then
-    echo "CRON_TENDER_SEND_AUTHOR_INCREMENTAL_ENABLED not set. Exiting..."
+if [[ -z "$CRON_SIAE_SEND_USER_REQUEST_REMINDERS_ENABLED" ]]; then
+    echo "CRON_SIAE_SEND_USER_REQUEST_REMINDERS_ENABLED not set. Exiting..."
     exit 0
 fi
 
@@ -19,4 +19,4 @@ fi
 # $APP_HOME is set by default by clever cloud.
 cd $APP_HOME
 
-django-admin send_tender_author_incremental_emails
+django-admin send_siae_user_request_reminder_emails

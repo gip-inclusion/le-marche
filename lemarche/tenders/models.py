@@ -37,6 +37,14 @@ class TenderQuerySet(models.QuerySet):
     def validated(self):
         return self.filter(validated_at__isnull=False)
 
+    def is_incremental(self):
+        return self.filter(
+            scale_marche_useless__in=[
+                tender_constants.SURVEY_SCALE_QUESTION_0,
+                tender_constants.SURVEY_SCALE_QUESTION_1,
+            ]
+        )
+
     def is_live(self):
         return self.validated().filter(deadline_date__gte=datetime.today())
 

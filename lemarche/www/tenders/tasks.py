@@ -89,40 +89,6 @@ def send_tender_email_to_partner(email_subject: str, tender: Tender, partner: Pa
         partner.save()
 
 
-def send_tenders_author_feedback_30_days(tender: Tender):
-    email_subject = "Concernant votre dépôt de besoin sur le marché de l'inclusion"
-    recipient_list = whitelist_recipient_list([tender.author.email])
-    if recipient_list:
-        recipient_email = recipient_list[0] if recipient_list else ""
-        recipient_name = tender.author.full_name
-
-        variables = {
-            "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
-            "TENDER_TITLE": tender.title,
-            "TENDER_VALIDATE_AT": tender.validated_at.strftime("%d %B %Y"),
-            "TENDER_KIND": tender.get_kind_display(),
-        }
-
-        api_mailjet.send_transactional_email_with_template(
-            template_id=settings.MAILJET_TENDERS_AUTHOR_FEEDBACK_30D_TEMPLATE_ID,
-            subject=email_subject,
-            recipient_email=recipient_email,
-            recipient_name=recipient_name,
-            variables=variables,
-        )
-
-        # log email
-        log_item = {
-            "action": "email_feedback_30d_sent",
-            "email_to": recipient_email,
-            "email_subject": email_subject,
-            # "email_body": email_body,
-            "email_timestamp": timezone.now().isoformat(),
-        }
-        tender.logs.append(log_item)
-        tender.save()
-
-
 # @task()
 def send_tender_email_to_siae(email_subject: str, tender: Tender, siae: Siae):
     recipient_list = whitelist_recipient_list([siae.contact_email])
@@ -289,3 +255,71 @@ def notify_admin_tender_created(tender: Tender):
     )
 
     api_slack.send_message_to_channel(text=email_body, service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL)
+
+
+def send_author_incremental_2_days_email(tender: Tender):
+    email_subject = f"Concernant votre {tender.get_kind_display()} sur le marché de l'inclusion"
+    recipient_list = whitelist_recipient_list([tender.author.email])
+    if recipient_list:
+        recipient_email = recipient_list[0] if recipient_list else ""
+        recipient_name = tender.author.full_name
+
+        variables = {
+            "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
+            "TENDER_TITLE": tender.title,
+            "TENDER_VALIDATE_AT": tender.validated_at.strftime("%d %B %Y"),
+            "TENDER_KIND": tender.get_kind_display(),
+        }
+
+        api_mailjet.send_transactional_email_with_template(
+            template_id=settings.MAILJET_TENDERS_AUTHOR_INCREMENTAL_2D_TEMPLATE_ID,
+            subject=email_subject,
+            recipient_email=recipient_email,
+            recipient_name=recipient_name,
+            variables=variables,
+        )
+
+        # log email
+        log_item = {
+            "action": "email_incremental_2d_sent",
+            "email_to": recipient_email,
+            "email_subject": email_subject,
+            # "email_body": email_body,
+            "email_timestamp": timezone.now().isoformat(),
+        }
+        tender.logs.append(log_item)
+        tender.save()
+
+
+def send_tenders_author_feedback_30_days(tender: Tender):
+    email_subject = f"Concernant votre {tender.get_kind_display()} sur le marché de l'inclusion"
+    recipient_list = whitelist_recipient_list([tender.author.email])
+    if recipient_list:
+        recipient_email = recipient_list[0] if recipient_list else ""
+        recipient_name = tender.author.full_name
+
+        variables = {
+            "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
+            "TENDER_TITLE": tender.title,
+            "TENDER_VALIDATE_AT": tender.validated_at.strftime("%d %B %Y"),
+            "TENDER_KIND": tender.get_kind_display(),
+        }
+
+        api_mailjet.send_transactional_email_with_template(
+            template_id=settings.MAILJET_TENDERS_AUTHOR_FEEDBACK_30D_TEMPLATE_ID,
+            subject=email_subject,
+            recipient_email=recipient_email,
+            recipient_name=recipient_name,
+            variables=variables,
+        )
+
+        # log email
+        log_item = {
+            "action": "email_feedback_30d_sent",
+            "email_to": recipient_email,
+            "email_subject": email_subject,
+            # "email_body": email_body,
+            "email_timestamp": timezone.now().isoformat(),
+        }
+        tender.logs.append(log_item)
+        tender.save()
