@@ -57,7 +57,7 @@
             {% bootstrap_field form.amount %}
             {% bootstrap_field form.why_amount_is_blank class="inline-block" show_label=False %}
             <div x-show="displayMessage()" >
-                <p class="fs-sm" x-text="getImpactMessage"></p>
+                <p class="fs-sm text-success" x-text="getImpactMessage"></p>
                 {% bootstrap_field form.accept_share_amount %}
             </div>
         </span>
@@ -120,13 +120,18 @@ document.addEventListener('alpine:init', () => {
                 }
                 // amount format data is XX-XXK
                 let count = this.formData.amount.split("-")[1]; // remove first range
-                count = count.slice(0, -1) * 1000; // remove "k" unity and get the high limit
+                if(!count){ // manage case when amount is ">1M"
+                    count = "2M";
+                }
+                let unity = count.substring(count.length - 1);
+                let factor = unity == "K" ? 10**3 : 10**6; // "K" or "M"
+                count = count.slice(0, -1)* factor; // remove "k" unity and get the high limit
                 if(count < 5000){
                     let hours = Math.round(count / 26);
                     return `Bravo ! Votre achat inclusif pourrait contribuer à financer approximativement ${hours} heures de travail sur un mois.`
                 } else {
                     let nbJobs = Math.round(count / 3700);
-                    return `Bravo ! Votre achat inclusif pourrait contribuer à financer approximativement ${nbJobs} emploi(s) durant 1 mois.`
+                    return `Bravo ! Votre achat inclusif pourrait contribuer à financer approximativement ${nbJobs} emploi${nbJobs>1 ? "s":""} durant 1 mois.`
                 }
             }
         }
