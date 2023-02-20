@@ -432,11 +432,6 @@ class Tender(models.Model):
             return True
         return False
 
-    def set_hubspot_id(self, hubspot_deal_id, with_save=True):
-        self.extra_data.update({"hubspot_deal_id": hubspot_deal_id})
-        if with_save:
-            self.save()
-
     @property
     def hubspot_deal_id(self):
         return self.extra_data.get("hubspot_deal_id")
@@ -462,6 +457,22 @@ class Tender(models.Model):
 
     def get_absolute_url(self):
         return reverse("tenders:detail", kwargs={"slug": self.slug})
+
+    def set_hubspot_id(self, hubspot_deal_id, with_save=True):
+        self.extra_data.update({"hubspot_deal_id": hubspot_deal_id})
+        if with_save:
+            self.save()
+
+    def set_validated(self, with_save=True):
+        self.validated_at = datetime.now()
+        self.status = constants.STATUS_VALIDATED
+        log_item = {
+            "action": "validate",
+            "date": str(self.validated_at),
+        }
+        self.logs.append(log_item)
+        if with_save:
+            self.save()
 
 
 @receiver(post_save, sender=Tender)
