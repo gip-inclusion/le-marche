@@ -89,10 +89,12 @@ def add_to_contact_list(user: User, type: str):
             api_hubspot.add_user_to_crm(user)
     elif type == "buyer_search":
         contact_list_id = settings.MAILJET_NL_CL_BUYER_SEARCH_SIAE_LIST_ID
+    elif type == "buyer_search_traiteur":
+        contact_list_id = settings.MAILJET_NL_CL_BUYER_SEARCH_SIAE_TRAITEUR_LIST_ID
     elif type == "buyer_download":
         contact_list_id = settings.MAILJET_NL_CL_BUYER_DOWNLOAD_SIAE_LIST_ID
     else:
-        raise ValueError("kind must be siae or buyer_download")
+        raise ValueError("type must be defined")
     if contact_list_id:
         properties = {
             "nom": user.last_name.capitalize(),
