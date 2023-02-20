@@ -213,7 +213,7 @@ toml = ["tomli"]
 
 [[package]]
 name = "crawlerdetect"
-version = "0.1.4"
+version = "0.1.5"
 description = "CrawlerDetect is a Python class for detecting bots/crawlers/spiders via the user agent."
 category = "main"
 optional = false
@@ -1658,7 +1658,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10.4"
-content-hash = "d9cd96ee44eb2c31f0910dc01e463e668f023368430914719786fcc89c10d1a3"
+content-hash = "1de8fe0513ab25be0aff55585eb4231154d8c18cebf352acf08f4592b61130a6"
 
 [metadata.files]
 anyascii = [
@@ -1953,7 +1953,8 @@ coverage = [
     {file = "coverage-6.5.0.tar.gz", hash = "sha256:f642e90754ee3e06b0e7e51bce3379590e76b7f76b708e1a71ff043f87025c84"},
 ]
 crawlerdetect = [
-    {file = "crawlerdetect-0.1.4-py2.py3-none-any.whl", hash = "sha256:81793d14796b0707539e62855d18c0eb4af83f97297ca64f64f67a788781a5a2"},
+    {file = "crawlerdetect-0.1.5-py2.py3-none-any.whl", hash = "sha256:8e10591af6caa513044e611b238446c802feb3798b7a1429cc687bb550116df3"},
+    {file = "crawlerdetect-0.1.5.tar.gz", hash = "sha256:528468a540b807cf173c0734309a695a974b7a6cb76c210588652e915aa5c126"},
 ]
 decorator = [
     {file = "decorator-5.1.1-py3-none-any.whl", hash = "sha256:b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186"},
