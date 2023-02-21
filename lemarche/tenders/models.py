@@ -465,7 +465,7 @@ class Tender(models.Model):
 
     def set_validated(self, with_save=True):
         self.validated_at = datetime.now()
-        self.status = constants.STATUS_VALIDATED
+        self.status = tender_constants.STATUS_VALIDATED
         log_item = {
             "action": "validate",
             "date": str(self.validated_at),
