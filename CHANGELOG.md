@@ -4,6 +4,262 @@ Ressources :
 - [Calendar Versioning](https://calver.org/)
 - [CHANGELOG recommendations](https://keepachangelog.com/).
 
+## 2023.02.27
+
+### Ajouté
+
+- Recherche / Fiche
+    - Mailjet : après une recherche "traiteur", ajouter les acheteurs à une liste
+    - Scroll à la liste de recherche suite à une calibration
+- Dépôt de besoin
+    - Log lorsque le besoin est validé
+    - envoi d'un e-mail aux auteurs des besoins incrémentaux
+    - Formulaire : ajout d'une aide pour le champ "titre"
+
+### Modifié
+
+### Supprimé
+
+## 2023.02.13
+
+### Ajouté
+
+- Recherche / Fiche
+    - Partage d'une liste de structure par un mailto
+- Espace utilisateur
+    - Page "animer mon réseau" : ordonner les structures par nom ; filtre par région
+- Contenu / Blog
+    - Nouvelles pages "Conditions générales d’utilisation" & "Conditions générales d’utilisation de l'API" & "Politique de confidentialité"
+- Dépôt de besoin
+    - Formulaire : ajouter une question sur le montant des dépôts de besoins
+    - Admin : ajout de filtres complexe pour le dépôt de besoins dans l'admin
+- Données
+    - Stats : utiliser Matomo UserID
+
+### Modifié
+
+- Dépôt de besoin
+    - modification de l'e-mail envoyé aux structures concernées
+- Données
+    - Réparé la synchro avec le C1
+- Tech
+    - Mise à jour du Thème
+    - Tech : mise à jour de Django (v4.1.6)
+
+### Supprimé
+
+## 2023.01.30
+
+### Ajouté
+
+- Espace utilisateur
+    - Nouvelle page pour les partenaires liés à un réseau : afficher la liste de leur structures, et les statistiques correspondantes
+- Contenu / Blog
+    - Nouvelle page "calculateur d'impact social"
+    - Home : pouvoir afficher un bandeau ; pouvoir modifier son contenu dans l'admin
+- Dépôt de besoin
+    - Admin : filtre des besoins par "utilité"
+- Données
+    - Admin : pouvoir rattacher un utilisateur à un réseau
+    - Admin : pour chaque réseau, indiquer le nombre de structures et le nombre d'utilisateurs rattachés
+
+### Modifié
+
+- Dépôt de besoin
+    - remonter les coordonnées de contact pour les structures qui se sont montrés intéressées + CTA à droite du besoin
+    - Admin : ne pas pouvoir modifier le slug d'un besoin une fois qu'il est validé
+- Données
+    - CRM : ajout de la propiété incrémental dans la création de transaction hubspot
+
+### Supprimé
+
+- Espace utilisateur
+    - Favoris : enlever le bouton "Demande groupée"
+
+## 2023.01.16
+
+### Ajouté
+
+- Recherche / Fiche
+    - mise à jour du nom des onglets
+- Dépôt de besoin
+    - Admin : possibilité de renvoyer les emails des dépôts de besoins
+    - Admin : filtre sur "transactionné"
+    - Aperçu : afficher un encart incitant les structures à intéragir avec le besoin ("Déjà X prestataires inclusifs ont vu le besoin de ce client")
+    - indiquer à l'acheteur lorsqu'un de ses besoin est en cours de validation
+    - s'assurer que les besoins pas encore validés ne sont pas accessibles (le lien du besoin fonctionne seulement pour l'auteur ou les admin)
+- Données
+    - Admin : pouvoir indiquer pour chaque utilisateur leur typologie (Public / Privé / détail)
+    - CRM : ajout des dépôts de besoins (à la création) dans les transactions hubspot
+- Contenu / Blog
+    - Ajout d'une page "Accessibilité" (lien dans le footer)
+
+### Modifié
+
+- Dépôt de besoin
+    - Afficher "Sourcing inversé" au lieu de "Sourcing" (header, formulaire de dépôt)
+    - Affichage dynamique du "Lien externe" (renomme si ce n'est pas un appel d'offres)
+    - quelques modifs sur la notification Slack (indiquer le lieu d'intervention, le statut, la date de cloture, la question impact)
+    - répare un bug pour accéder au formulaire de création de besoin (/besoins/ajouter/ marchait mais /besoins/ajouter provoquait une erreur)
+    - répare un bug sur la création de besoin via l'erreur CSRF
+- Contenu / Blog
+    - légères améliorations UI sur les 2 calculateurs
+- Tech
+    - Thème : maj v0.5.7 ; homogénéisation du formulaire de dépôt de besoin, du formulaire de contact
+
+### Supprimé
+
+## 2023.01.01
+
+### Ajouté
+
+- Espace utilisateur
+    - Ajouter le calculateur “calibrer” dans le TDB acheteur
+- Dépôt de besoin
+    - différencier le lieu d'intervention des périmètres ciblés
+    - Formulaire : ajout d'info bulles à l'étape de description
+    - afficher une infobulle pour les vendeurs les incitant à prendre contact avec l'acheteur
+    - Stat : nouvelle stat Date de clic sur le lien dans l'e-mail
+
+### Modifié
+
+- Dépôt de besoin
+    - réduire l'affichage des secteurs d'activité aux 5 premiers
+    - Changer le wording pour le contact des partenaire
+    - fix des filtres de dépôt de besoins (filtre "Publié")
+    - Admin : ajout d'un utilisateur par défaut lors d'un ajout de besoin depuis la prod
+    - Admin : possibilité de modifier le statut du dépôt de besoin lorsqu'on est l'auteur du dépôt de besoin
+
+### Supprimé
+
+## 2022.12.12
+
+### Ajouté
+
+- Dépôt de besoin
+    - Formulaire : ajout de l'étape sur l'utilité du dépôt de besoin
+    - Formulaire : ajout du mode brouillon
+    - Possibilité de trier les dépôts de besoins par statuts (Brouillon, Publié, Validé)
+    - Affichage des dépôt de besoin par ordre de clôture
+    - Dans l'aperçu, si le besoin a une date de réponse dépassée, ajouter un badge "Clôturé"
+    - Admin : pouvoir indiquer si un besoin a transactionné
+    - Admin : possibilité d'exporter les stats des siaes
+- Contenu / Blog
+    - Nouveau menu-dropdown "Solutions"
+- Données
+    - Nouveau tableau de bord Metabase sur la page stats
+
+### Modifié
+
+- Recherche / Fiche
+    - Fix la vitesse du téléchargement lorsque l'utilisateur souhaite télécharger toutes les structures
+- Espace utilisateur
+    - Fix l'affichage de "type de prestation" dans le formulaire d'édition de sa structure
+- Dépôt de besoin
+    - Formulaire : maj des labels et des message d'aide autour du montant et des moyens de réponse
+    - Formulaire : cacher à la fin le nombre de structures dans le message de succès
+    - dans l'aperçu : remonter la section contact (CTA "Répondre à cette opportunité" / les informations de contact)
+    - dans l'aperçu : cacher la section contraintes techniques si elle est vide
+    - dans l'aperçu : si le besoin est clotûré, cacher le bouton "Répondre à cette opportunité"
+- Contenu / Blog
+    - Calculateur "calibrage clause sociale" : ajoute un lien vers la liste complète des structures
+    - Calculateur "références clients" : mise à jour du contenu, ajoute un lien vers la liste complète des structures
+
+- Tech
+    - Stats : améliorations sur le téléchargement
+    - Thème : mise à jour v0.5.4 ; évite les retours à la ligne dans les boutons ; ajoute un peu d'espacements entre les périmètres du formulaire de recherche
+    - Thème : mise à jour v0.5.5, mini-ajustements sur les TDB
+
+### Supprimé
+
+- Dépôt de besoin
+    - enlever le mail automatique à l'auteur du besoin à J+30
+
+## 2022.11.28
+
+### Ajouté
+
+- Recherche / Fiche
+    - Téléchargement : modale pour demander à l'utilisateur les bénéfices du marché
+- Espace utilisateur
+    - Acheteur : afficher un message incitant à déposer un besoin si l'utilisateur ne l'a pas encore fait
+    - Structure : afficher 2 stats pour chacune des structure de l'utilisateur
+- Contenu / Blog
+    - Nouveau calculateur "références clients"
+- Données
+    - CRM : Ajout des acheteurs à l'inscription
+    - CRM : Création d'un deal à la création d'un dépôt de besoin
+
+### Modifié
+
+- Dépôt de besoin
+    - exclure par défaut les structures 'France entière', permettre aux admin de les ré-inclure
+- Contenu / Blog
+    - Calculateur "clause sociale" : transformation de la recherche en "GET" (ca permet d'avoir les détails de la recherche dans l'URL)
+- Tech
+    - améliorer l'affichage des secteurs d'activité pour éviter d'avoir "Autre" en premier
+    - mise à jour des dépendances (dont Django à la v4.1.3, Python 3.10)
+
+### Supprimé
+
+## 2022.11.14
+
+### Ajouté
+
+- Contenu / Blog
+    - Nouveau calculateur "calibrer votre achat"
+    - Tracking du calcul de calibrations de clauses sociales
+
+### Modifié
+
+- Recherche / Fiche
+    - Modification de l'icone de la carte
+- Dépôt de besoin
+    - Désélectionner par défaut la question “Utilité du Marché”
+    - Changement des titres des mails transactionnels des dépôts de besoins
+- Tech
+    - Mise à jour du thème, changement de police du texte (on utilise maintenant celle du Design System de l'Etat)
+    - Quelques améliorations sur les scripts de synchro/API du Lundi matin
+
+### Supprimé
+
+## 2022.10.31
+
+### Ajouté
+
+- Dépôt de besoin
+    - Formulaire : rendre le champ numéro de téléphone obligatoire si l'utilisateur est anonyme
+    - permettre aux structures non concernées par un besoin (mais à qui on aurait partagé le lien du besoin), d'afficher les contacts de l'acheteur et de se montrer intéressé
+    - Stats : pour chaque besoin validé, rajouter maintenant dans les "logs historiques" le nombre de structures contactées ainsi que le nombre de partenaires contactés
+    - permettre à certains partenaires de voir directement les coordonnées de contact des acheteurs
+- Contenu / Blog
+    - Articles : pouvoir ajouter un CTA "publier votre besoin"
+- Inscription
+    - nouveaux champs pour les acheteurs afin de connaitre leur niveau de maturité
+
+### Modifié
+
+- Recherche / Fiche
+    - pour une recherche sur une (ou plusieurs) ville, renvoyer aussi les structures qui sont dans le même département (avant on n'en renvoyait qu'une partie)
+    - Affichage de 20 résultats au lieu de 10
+- Dépôt de besoin
+    - ajuster la fréquence des mails envoyés à l'auteur : 1ère structure intéressée ; 2è structure (nouveau :!) ; 5è structure ; toutes les 5 structures additionnelles (jusqu'à 50 : donc 12 mails max)
+    - Fix d'une URL malformée lors des envois d'emails
+    - Améliorer la génération du slug ("fragment d'url"), pour éviter les erreurs et de devoir les réecrire
+    - Afficher les sauts à la ligne pour le champ "contraintes techniques"
+    - envoyer le titre du besoin à Mailjet (pour pouvoir l'afficher dans les templates)
+    - Admin : rajoute une colonne avec la date de validation ; filtre par type de structure
+- Contenu / Blog
+    - modifier le lien CTA des fiches ESAT & EA, les faire pointer sur une de nos ressources
+    - sur le page /partenaires/ renommer les CTA Gesat & Handeco et les faire pointer vers un Google Form
+- Tech
+    - clean des messages généré par les scripts "automatiques"
+    - Mise à jour de Wagtail à la v4
+    - Mise à jour de Django à la v4.1.2
+    - Thème : mise à jour v0.5.2
+
+### Supprimé
+
 ## 2022.10.17
 
 ### Ajouté
