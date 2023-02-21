@@ -154,19 +154,19 @@
                 </div>
                 <div class="row">
                     <div class="col-12 col-md-6">
-                        <div class="row" title="{% get_verbose_name siae 'siret' %}">
+                        <div class="row" aria-label="{% get_verbose_name siae 'siret' %}">
                             <div class="col-12 mb-3">
                                 <i class="ri-profile-line"></i>
                                 <span>{{ siae.siret_display }}</span>
                             </div>
                         </div>
-                        <div class="row" title="{% get_verbose_name siae 'kind' %}">
+                        <div class="row" aria-label="{% get_verbose_name siae 'kind' %}">
                             <div class="col-12 mb-3">
                                 <i class="ri-building-4-line"></i>
                                 <span>{{ siae.get_kind_display }}</span>
                             </div>
                         </div>
-                        <div class="row" title="{% get_verbose_name siae 'address' %}">
+                        <div class="row" aria-label="{% get_verbose_name siae 'address' %}">
                             <div class="col-12 mb-3">
                                 <i class="ri-map-pin-line"></i>
                                 <span>{{ siae.address }},</span>
@@ -178,19 +178,19 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-6">
-                        <div class="row" title="{% get_verbose_name siae 'api_entreprise_date_constitution' %}">
+                        <div class="row" aria-label="{% get_verbose_name siae 'api_entreprise_date_constitution' %}">
                             <div class="col-12 mb-3">
                                 <span>Année de création :</span>
                                 <span>{{ siae.api_entreprise_date_constitution|date:"Y"|default:"" }}</span>
                             </div>
                         </div>
-                        <div class="row" title="{% get_verbose_name siae 'api_entreprise_employees' %}">
+                        <div class="row" aria-label="{% get_verbose_name siae 'api_entreprise_employees' %}">
                             <div class="col-12 mb-3">
                                 <span>{% if siae.kind == 'SEP' %}Travailleurs détenus{% else %}Salariés{% endif %} :</span>
                                 <span>{{ siae.api_entreprise_employees|default:"non disponible" }}</span>
                             </div>
                         </div>
-                        <div class="row" title="{% get_verbose_name siae 'api_entreprise_ca' %}">
+                        <div class="row" aria-label="{% get_verbose_name siae 'api_entreprise_ca' %}">
                             <div class="col-12 mb-3">
                                 <span>Chiffre d'affaire :</span>
                                 <span>{{ siae.api_entreprise_ca|default:"non disponible" }}</span>
@@ -202,14 +202,14 @@
                     <div class="row">
                         <div class="col-12 col-md-6">
                             {% if siae.is_qpv %}
-                                <div class="row" title="{% get_verbose_name siae 'is_qpv' %}">
+                                <div class="row" aria-label="{% get_verbose_name siae 'is_qpv' %}">
                                     <div class="col-12 mb-3">
                                         <span>QPV : {{ siae.qpv_name }} ({{ siae.qpv_code }})</span>
                                     </div>
                                 </div>
                             {% endif %}
                             {% if siae.is_zrr %}
-                                <div class="row" title="{% get_verbose_name siae 'is_zrr' %}">
+                                <div class="row" aria-label="{% get_verbose_name siae 'is_zrr' %}">
                                     <div class="col-12 mb-3">
                                         <span>ZRR : {{ siae.zrr_name }} ({{ siae.zrr_code }})</span>
                                     </div>

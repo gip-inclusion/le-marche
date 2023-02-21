@@ -35,38 +35,38 @@
                 <p class="mb-0">
                    <i>Données fixes provenant de {{ siae.source_display }}.</i>
                 </p>
-                
+
                 <hr />
-                
-                <p title="{% get_verbose_name siae 'name' %}" class="mb-0">
+
+                <p aria-label="{% get_verbose_name siae 'name' %}" class="mb-0">
                     <strong>{% get_verbose_name siae 'name' %} :</strong>
                     {{ siae.name }}
                 </p>
-                <p title="{% get_verbose_name siae 'brand' %}" class="mb-0">
+                <p aria-label="{% get_verbose_name siae 'brand' %}" class="mb-0">
                     <strong>{% get_verbose_name siae 'brand' %} :</strong>
                     {{ siae.brand|default:'' }}
                 </p>
-                <p title="{% get_verbose_name siae 'siret' %}" class="mb-0">
+                <p aria-label="{% get_verbose_name siae 'siret' %}" class="mb-0">
                     <strong>{% get_verbose_name siae 'siret' %} :</strong>
                     {{ siae.siret_display }}
                 </p>
-                <p title="{% get_verbose_name siae 'kind' %}" class="mb-0">
+                <p aria-label="{% get_verbose_name siae 'kind' %}" class="mb-0">
                     <strong>{% get_verbose_name siae 'kind' %} :</strong>
                     {{ siae.get_kind_display }}
                 </p>
-                <p title="{% get_verbose_name siae 'nature' %}" class="mb-0">
+                <p aria-label="{% get_verbose_name siae 'nature' %}" class="mb-0">
                     <strong>{% get_verbose_name siae 'nature' %} :</strong>
                     {{ siae.get_nature_display }}
                 </p>
-                <p title="{% get_verbose_name siae 'city' %}" class="mb-0">
+                <p aria-label="{% get_verbose_name siae 'city' %}" class="mb-0">
                     <strong>{% get_verbose_name siae 'city' %} :</strong>
                     {{ siae.city }}
                 </p>
-                <p title="{% get_verbose_name siae 'post_code' %}" class="mb-0">
+                <p aria-label="{% get_verbose_name siae 'post_code' %}" class="mb-0">
                     <strong>{% get_verbose_name siae 'post_code' %} :</strong>
                     {{ siae.post_code }}
                 </p>
-                <p title="{% get_verbose_name siae 'region' %}">
+                <p aria-label="{% get_verbose_name siae 'region' %}">
                     <strong>{% get_verbose_name siae 'region' %} :</strong>
                     {{ siae.region }}
                 </p>

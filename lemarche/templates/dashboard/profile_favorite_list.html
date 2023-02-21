@@ -59,7 +59,7 @@
                     <ul class="list-group">
                     {% for favorite_list in favorite_lists.all %}
                         <li class="list-group-item">
-                            <a href="{% url 'dashboard:profile_favorite_list_detail' favorite_list.slug %}" class="d-flex justify-content-between align-items-center text-decoration-none" title="Voir la liste">
+                            <a href="{% url 'dashboard:profile_favorite_list_detail' favorite_list.slug %}" class="d-flex justify-content-between align-items-center text-decoration-none" aria-label="Voir la liste">
                                 <span>{{ favorite_list.name }} <span class="ml-2 fs-xs badge badge-marche-light badge-pill">{{ favorite_list.siaes.count }}</span></span>
                                 <i class="ri-eye-line ri-lg"></i>
                             </a>
@@ -68,7 +68,7 @@
                     </ul>
                 {% else %}
                     <p class="text-danger font-weight-bold">Vous n'avez pas encore créé de listes !</p>
-                {% endif %}                
+                {% endif %}
             </div>
         </div>
 

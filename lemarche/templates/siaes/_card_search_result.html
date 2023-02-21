@@ -37,16 +37,16 @@
                     </ul>
                     {% if user.is_authenticated %}
                         {% if from_profile or siae.in_user_favorite_list_count %}
-                            <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_remove_modal" data-siae-id="{{ siae.id }}" data-siae-slug="{{ siae.slug }}" data-siae-name-display="{{ siae.name_display }}" title="Dans votre liste d'achat">
+                            <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_remove_modal" data-siae-id="{{ siae.id }}" data-siae-slug="{{ siae.slug }}" data-siae-name-display="{{ siae.name_display }}" aria-label="Dans votre liste d'achat">
                                 <i class="ri-star-fill ri-xl"></i>
                             </a>
                         {% else %}
-                            <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_add_modal" data-siae-id="{{ siae.id }}" data-siae-slug="{{ siae.slug }}" data-siae-name-display="{{ siae.name_display }}" title="Ajouter à votre liste d'achat">
+                            <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_add_modal" data-siae-id="{{ siae.id }}" data-siae-slug="{{ siae.slug }}" data-siae-name-display="{{ siae.name_display }}" aria-label="Ajouter à votre liste d'achat">
                                 <i class="ri-star-line ri-xl"></i>
                             </a>
                         {% endif %}
                     {% else %}
-                        <a href="#" id="favorite-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}" title="Ajouter à votre liste d'achat">
+                        <a href="#" id="favorite-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}" aria-label="Ajouter à votre liste d'achat">
                             <i class="ri-star-line ri-xl"></i>
                         </a>
                     {% endif %}
@@ -61,10 +61,10 @@
                 <span class="sr-only">Situé à {{ siae.city }}</span>
                 <span>{{ siae.city }}</span>
                 {% if siae.is_qpv %}
-                    <span class="badge badge-sm badge-pill badge-emploi-lightest" title="Quartier prioritaire de la politique de la ville">QPV</span>
+                    <span class="badge badge-sm badge-pill badge-emploi-lightest" aria-label="Quartier prioritaire de la politique de la ville">QPV</span>
                 {% endif %}
                 {% if siae.is_zrr %}
-                    <span class="badge badge-sm badge-pill badge-emploi-lightest" title="Zone de revitalisation rurale">ZRR</span>
+                    <span class="badge badge-sm badge-pill badge-emploi-lightest" aria-label="Zone de revitalisation rurale">ZRR</span>
                 {% endif %}
             </span>
             <span class="ml-3">

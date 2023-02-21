@@ -28,7 +28,7 @@
             <div class="col-12">
                 <h1 class="h1 mb-3 mb-lg-5">
                     <strong>Mon réseau : {{ network }}</strong>
-                    <span class="badge badge-pill badge-marche-light fs-xs" style="vertical-align:middle;" title="{{ network.siaes.count }} adhérent{{ network.siaes.count|pluralize }}">{{ network.siaes.count }}</span>
+                    <span class="badge badge-pill badge-marche-light fs-xs" style="vertical-align:middle;" aria-label="{{ network.siaes.count }} adhérent{{ network.siaes.count|pluralize }}">{{ network.siaes.count }}</span>
                 </h1>
             </div>
         </div>
@@ -66,7 +66,7 @@
                 <h2>
                     Statistiques : toutes les demandes de devis, appel d'offres et sourcing
                     {% if siaes.count != network.siaes.count %}
-                        <span class="badge badge-pill fs-xs" style="vertical-align:middle;" title="{{ siaes.count }} structure{{ siaes.count|pluralize }} trouvée{{ siaes.count|pluralize }}">{{ siaes.count }}</span>
+                        <span class="badge badge-pill fs-xs" style="vertical-align:middle;" aria-label="{{ siaes.count }} structure{{ siaes.count|pluralize }} trouvée{{ siaes.count|pluralize }}">{{ siaes.count }}</span>
                     {% endif %}
                 </h2>
                 <table class="table table-striped table-bordred">
@@ -86,21 +86,21 @@
                                 </td>
                                 <td>
                                     {% if siae.tender_email_send_count > 0 %}
-                                        <a href="{% url 'dashboard:profile_network_siae_tender_list' network.slug siae.slug %}" title="Voir les besoins concernés">{{ siae.tender_email_send_count }}</a>
+                                        <a href="{% url 'dashboard:profile_network_siae_tender_list' network.slug siae.slug %}" aria-label="Voir les besoins concernés">{{ siae.tender_email_send_count }}</a>
                                     {% else %}
                                         0
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if siae.tender_detail_display_count > 0 %}
-                                        <a href="{% url 'dashboard:profile_network_siae_tender_list' network.slug siae.slug "DISPLAY" %}" title="Voir les besoins concernés">{{ siae.tender_detail_display_count }}</a>
+                                        <a href="{% url 'dashboard:profile_network_siae_tender_list' network.slug siae.slug "DISPLAY" %}" aria-label="Voir les besoins concernés">{{ siae.tender_detail_display_count }}</a>
                                     {% else %}
                                         0
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if siae.tender_detail_contact_click_count > 0 %}
-                                        <a href="{% url 'dashboard:profile_network_siae_tender_list' network.slug siae.slug "CONTACT-CLICK" %}" title="Voir les besoins concernés">{{ siae.tender_detail_contact_click_count }}</a>
+                                        <a href="{% url 'dashboard:profile_network_siae_tender_list' network.slug siae.slug "CONTACT-CLICK" %}" aria-label="Voir les besoins concernés">{{ siae.tender_detail_contact_click_count }}</a>
                                     {% else %}
                                         0
                                     {% endif %}

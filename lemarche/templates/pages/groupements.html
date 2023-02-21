@@ -53,7 +53,7 @@
                         <div class="card-body">
                             <p class="h3 lh-sm">{{ group.name }}</p>
                             {% if group.sectors.count %}
-                                <div class="d-flex" title="Secteurs d'activité">
+                                <div class="d-flex" aria-label="Secteurs d'activité">
                                     <i class="ri-award-line ri-xl mr-1"></i>
                                     <ul class="list-unstyled">
                                         {% siae_sectors_display group display_max=6 output_format='li' %}
@@ -61,7 +61,7 @@
                                 </div>
                             {% endif %}
                             {% if group.siae_count %}
-                                <p title="Nombre de structures">
+                                <p aria-label="Nombre de structures">
                                     <i class="ri-hotel-line ri-xl mr-1"></i>
                                     <span>{{ group.siae_count }} structures</span>
                                 </p>
