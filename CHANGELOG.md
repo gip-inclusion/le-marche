@@ -4,19 +4,318 @@ Ressources :
 - [Calendar Versioning](https://calver.org/)
 - [CHANGELOG recommendations](https://keepachangelog.com/).
 
+## 2022.10.17
+
+### Ajouté
+
+- Recherche / Fiche
+    - transformer une recherche en dépôt de besoin (CTA + indiquer les périmètres et les secteurs d'activité)
+- Dépôt de besoin
+    - nouveau champ "Ouvert à la co-traitance ?" (modèle de donnée, formulaire, admin)
+    - modale de confirmation pour mettre un peu de friction avant d'afficher les contact
+    - Formulaire : finir par 2 questions pour mesurer l'impact du marché (pour identifier les besoins qui n’étaient pas destinés au ESI)
+    - logger des infos supplémentaires lors d'envois d'emails (pour aider à débugger ensuite)
+    - Admin : pour chaque structure, avoir le nombre et le lien vers les besoins concernés
+- Contenu / Blog
+    - Home : nouvelle section "labels & certifications"
+- Tech
+    - Documentation : petite liste pour expliciter les termes en anglais dans le code
+
+### Modifié
+
+- Recherche / Fiche
+    - Hotjar : ajout d'un event lors du click sur le bouton "Afficher les coordonnées" (utilisateurs connectés)
+- Dépôt de besoin
+    - Admin : ajout du champ "source"
+    - réparer certaines erreurs qui pouvaient arriver dans le parcours "CSRF" (suite à l'ajout des nouveaux champs)
+    - répare le fait que des utilisateurs SIAE pouvaient voir des besoins non-validés dans leur TDB
+- API
+    - répare l'erreur pour accéder à la documentation
+- Tech
+    - mise à jour de Django v4.0.8
+
+### Supprimé
+
+- API
+    - enlève les endpoints du CMS
+
+## 2022.10.03
+
+### Ajouté
+
+- Recherche / Fiche
+    - afficher une banière dans les résultats pour pousser au dépôt de besoin
+- Dépôt de besoin
+    - rendre le formulaire accessible à tous les utilisateurs (même les utilisateurs anonymes)
+    - ajout d'une case à cocher pour demander à l'acheteur si il souhaite partager le montant de son besoin
+    - demander le nom de l'entreprise aux utilisateurs anonymes
+    - Admin : indiquer pour chaque utilisateur le nombre de dépôt de besoins déposés
+- Espace utilisateur
+    - nouveau bandeau pour les utilisateurs "SIAE" qui ne sont pas encore rattachés à une structure
+- Inscription
+    - Admin : indiquer la source de la création de compte utilisateur (formulaire d'inscription ou formulaire de dépôt de besoin)
+
+- Tech
+    - Meta titles & description sur les pages clés du site
+    - Message d'erreurs en cas de problèmes sur les taches asynchrones (synchronisation avec c1, etc...)
+
+### Modifié
+
+- Dépôt de besoin
+    - fix sur l'affichage des boutons "Précédent" et "Suivant" (ils étaient inversés)
+    - réparé certaines erreurs lors du remplissage du formulaire pour les auteurs anonyme qui ont leurs erreurs CSRF
+    - élargissement du choix des montants
+- Tech
+    - thème : mise à jour, homogénéisations sur les formulaires d'authentification
+
+### Supprimé
+
+## 2022.09.19
+
+### Ajouté
+
+- Contenu / Blog
+    - Home : nouvelle section étude de cas
+- Dépôt de besoin
+    - ajout de textes d'aides sur le formulaire
+- Tech
+    - Tracker géré dans l'application
+    -  Import des utilisateurs dans metabase (avec la synchro)
+
+### Modifié
+
+- Dépôt de besoin
+    - Formulaire : le champ "montant" devient obligatoire lorsqu'il s'agit d'un type "Appel d'offre"
+- Tech
+    - Modification de la page utilisateur dans l'admin pour chargement plus rapide
+
+### Supprimé
+
+## 2022.09.05
+
+### Ajouté
+
+- Espace utilisateur
+    - Ressources : ajout des images
+    - Ajout du nombre de collaborateurs par structure
+- Données
+    - CPV : table de correspondance à mettre à jour directement dans l'admin
+
+### Modifié
+
+- Dépôt de besoin
+    - fix de l'erreur d'envoi de mail des feedback à j+30
+- Espace utilisateur
+    - Ressources : affichage par types d'utilisateurs ; redirection sur chaque catégorie en fonction du type d'utilisateurs
+- Tech
+    - Mise à jour de la version de wagtail (petits changement dans l'interface CMS)
+    - Mise à jour de la version de python
+    - Mise en place d'un bot pour nous alerter des nouvelles mis à jours de librairies à faire
+
+### Supprimé
+
+## 2022.08.08
+
+### Ajouté
+
+- Dépôt de besoin
+    - créer les besoins malgrès l'erreur CSRF (je récupère la donnée du formulaire, c'est transparent pour l'utilisateur)
+- Tech
+    - Stats : on stock la date de la dernière visite sur le tableau de bord
+    - Stats : on stock la date de la dernière visite sur la page "liste des besoins"
+
+### Modifié
+
+- Recherche / Fiche
+    - ajustements sur le formulaire (style, alignement, bug du select caché par le header, badgers pour les périmètres sélectionnés)
+    - fix sur le dropdown qui avait des comportement bizarre
+    - mise à jour du style du bouton "Télécharger la liste"
+- Dépôt de besoin
+    - mise à jour du style du bouton "Télécharger la liste" sur la page des structures intéressées
+    - mettre les notifications de nouveaux besoins dans un canal Slack séparé
+- Espace utilisateur
+    - Tableau de bord : v2 pour les utilisateurs "structures"
+    - Tableau de bord : v2 pour les utilisateurs acheteurs/partenaires (sans la recherche)
+- Tech
+    - Mise à jour du thème v0.4.9
+
+### Supprimé
+
+## 2022.07.18
+
+### Ajouté
+
+- Recherche / Fiche
+    - nouvel onglet avec recherche par "Nom" (ou "Enseigne") ou "SIRET"
+    - multi-selection sur les champs "Type de presta" et "Réseau"
+    - Fiche : afficher le badge QPV ou ZRR si concernée
+- Dépôt de besoin
+    - permettre aux utilisateurs anonyme d'accéder à un besoin si ils ont l'URL. Et afficher une modale freemium lors du clic sur "Je souhaite répondre à ce besoin"
+    - notifier dans un canal Slack à chaque échec du formulaire (erreur CSRF)
+    - indiquer dans l'email aux structures les secteurs d'activité & périmètre qu'elles ont sélectionnés
+    - garder une trace des envois effectués aux partenaires
+- Espace utilisateur
+    - barre de complétion affichée sur la carte de sa structure
+    - afficher le logo à coté du nom de la structure
+
+### Modifié
+
+- Recherche / Fiche
+    - ordonner par défaut par date de dernière mise à jour
+- Dépôt de besoin
+    - renommer le bouton "Afficher les coordonnées" en "Répondre à cette opportunité"
+    - Admin : pouvoir chercher un auteur avant de le sélectionner
+- Contenu / Blog
+    - interverti les boutons "Mon profil" et "Tableau de bord"
+    - ajout d'icones sur les liens dans le dropdown
+- Tech
+    - mise à jour de Django à la version 4.0.6
+    - remplacer une librairie qui avait une faille de sécurité (httpx par requests)
+
+### Supprimé
+
+- Espace utilisateur
+    - retirer la section "Mon profil", la rendre accessible depuis le header
+
+## 2022.07.04
+
+### Ajouté
+
+- Recherche
+    - multi-périmètres
+- Dépôt de besoin
+    - Envoi d'un email à l'auteur 30j après la validation de son besoin (pour feedback)
+    - Permettre à l'auteur de télécharger la liste des structures intéressées (avec leur informations de contact)
+- Contenu / Blog
+    - Home : nouvelle section bandeau de logos
+
+### Modifié
+
+- Recherche / Fiche
+    - modifier le message (et le CTA !) lorsqu'il n'y a aucun résultats retournés
+    - remonte le bouton "télécharger la liste"
+    - fiche : cacher/déplier les références clients si il y'en a plus de 6
+- Dépôt de besoin
+    - remplacé "déposer" par "publier" pour homogénéiser
+- Contenu / Blog
+    - Dans la section ressources, enlever la carte "groupement" "restauration" pour remonter le bouton "découvrir toutes nos ressources" à la 2e ligne
+- Tech
+    - répare une erreur récurrente lors de l'envoi des messages à Slack
+
+### Supprimé
+
+## 2022.06.20
+
+### Ajouté
+
+- Dépôt de besoin
+    - Formulaire en 4 étapes
+    - Nouveau filtre par type de prestation
+    - Ajout des placeholder et help_text manquants
+    - Ajoute un spinner sur le bouton "Publier" pour indiquer à l'utilisateur que ca mouline
+    - Après la soumission du formulaire, afficher à l'acheteur le nombre de structures concernées
+
+### Modifié
+
+- Dépôt de besoin
+    - Pour les administrateurs, la modification d'un besoin non validé recalcule le nombre de structures concernées
+    - Fix du bug qui empêchait de revenir en arrière à la dernière étape du formulaire
+    - Fix du bug sur la vérification de la présence du lien externe. désactiver le bouton de soumission post-soumission pour éviter le double clic
+    - Fix l'affichage des périmètres sélectionnés à la première étape (qui disparaissaient si on revenait en arrière)
+    - Ajout de la liste des partenaires
+- Tech
+    - Mise à jour du thème (v0.4.5)
+
+### Supprimé
+
+## 2022.06.06
+
+### Ajouté
+
+- Dépôt de besoin
+    - Ajout d'un modèle "Partenaire de dépôt de besoins", pour partager le dépôt de besoin à des partenaires
+
+### Modifié
+
+- Dépôt de besoin
+    - Fix de l'erreur d'affichage du dépôt de besoin (un utilisateur avec plusieurs SIAES)
+- Recherche / Fiche
+    - Fiche structure : bouton "Afficher les coordonnées" en vert
+- Espace utilisateur
+    - Adopter d'une structure : rediriger vers le formulaire de modification de la fiche
+- Contenu / Blog
+    - Ajustement de la home page, changer le wording, le style des boutons, l'espacement
+    - Fix : la home page ne se mettait plus à jour (stats, header), c'est réparé
+    - Mise à jour du thème (sur-header)
+- Données
+    - Export : ajoute une colonne "Lien vers le marché" dans l'export Excel (avec l'URL de la structure sur le marché)
+    - Synchro avec le C1 : modif pour remplir d'avantage le champ "contact_email" (et script lancé sur 1078 structures à qui on a rempli le champ "contact_email" grâce au champ "admin_email")
+
+### Supprimé
+
+- Recherche / Fiche
+    - Cacher la "pub" sur les favoris
+- Données
+    - Cacher les structures OPCS de la recherche et des téléchargements Excel
+
+## 2022.05.18
+
+### Ajouté
+
+- Mailjet
+    - Ajout des acheteurs qui font des recherches à une liste
+    - Ajout des emails des nouvelles structures récupéré lors de l'import C1 à une liste
+- Dépôt de besoin
+    - Afficher une notif à l'utilisateur indiquant le nombre de nouvelles structures intéressées
+    - Ajout de l'option "France entière"
+    - Notifier par email l'auteur du besoin lorsqu'il est validé/envoyé aux structures
+    - Admin : pouvoir accéder à la liste des structures intéressées
+
+### Modifié
+
+- Dépôt de besoin
+    - afficher les saut de ligne dans la description
+    - pour l'acheteur, cacher le badge "type de besoin", afficher un badge "en cours de validation" si pas encore validé
+    - pour les vendeurs, changer le wording pour la section coordonnées du besoin
+    - Modification de l'intitulé Sourcing pour les ESI
+    - Fix de l'affichage des infos de contacts
+    - Fix du problème d'icone des dates dans le formulaire de dépôt
+    - Ajout du pluriel à appel d'offre
+    - Faute d'ortographe "Appel d'offre" --> "Appel d'offres"
+- Contenu / Blog
+    - Mise à jour du texte d'Handeco
+    - Fix du css du CMS (images et vidéos embarqués)
+- Tech
+    - Thème : mise à jour (impact sur le favicon et sur les breadcrumbs)
+    - Mise à jour des dépendances
+
+    ### Supprimé
+
 ## 2022.04.28
 
 ### Ajouté
 
 - Dépôt de besoins
     - statistiques d'envoi, de clic et d'affichage des coordonnées entre les besoins et les Siae
+    - Envoi aux partenaires identifiés quand le dépôt de besoin est validé
+    - Validation et envoi des dépôts de besoin depuis l'interface d'administration django
+    - Mise à jour du formulaire de création pour correspondre davantage au thème
+    - Notifier (par email et slack) les admins quand un dépôt de besoin a été ajouté par un acheteur
+    - Notifier les acheteurs lorsque une 1ère structure est intéressée (puis toutes les 5 structures intéressées)
 - Blog
     - Nouvelle fonctionnalité CMS
 - Inscription / Connexion
     - Nouveau champ optin pour partager les données de contacts des Siaes à des partenaires externes
+- Groupements
+    - Nouvelle page qui les liste tous (/groupements)
+    - Carte sur la home pour pointer vers cette nouvelle page
+- API
+    - ajouter le champ "is_active" dans la liste des structures, et comme champ filtrable
 - Tech
     - Ajout du script Matomo Tag Manager
     - Ajout d'ids HTML sur certains liens et boutons
+    - Stats : 2 nouveaux boutons dans l'admin : pour télécharger la liste enrichie de tous les téléchargements et de toutes les recherches
+    - Stats : envoyer aussi "siae_id" et "results_count" lorsque c'est pertinent (fiche vue, résultats de recherche, etc)
 
 ### Modifié
 
@@ -24,11 +323,19 @@ Ressources :
     - Mettre le bouton "Afficher les coordonnées" en vert
 - Dépôt de besoins
     - Modifié le champ montant en champ select
+    - Afficher pour les siaes uniquement les dépôts de besoins qui sont validé et dont la date est supérieur à la date du jour
     - Petites modifications d'affichage
+- Blog
+    - Mise en forme des pages de blog pour qu'elles correspondent davantage au thème
 - Inscription / Connexion
     - Rediriger les utilisateurs SIAE vers leur tableau de bord
+- Admin
+    - clarifier la différence entre structure "active" et "masquée"
+    - permettre de modifier le champ "masquée"
 - Tech
     - Enrichir les données de test pour les recettes jetables
+    - Passage à postgres14
+    - Stats : cleanup en profondeur (suppression d'evenements inutile, en doublon, etc)
 
 ### Supprimé
 
