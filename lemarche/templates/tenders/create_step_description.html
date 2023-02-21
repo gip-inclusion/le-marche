@@ -118,20 +118,28 @@ document.addEventListener('alpine:init', () => {
                 if ( this.formData.amount=="null"){
                     return;
                 }
-                // amount format data is XX-XXK
-                let count = this.formData.amount.split("-")[1]; // remove first range
-                if(!count){ // manage case when amount is ">1M"
-                    count = "2M";
+                // amount format data is XX-XX<K|M>
+                let completeCount = this.formData.amount.split("-"); // remove first range
+                let count, unity;
+                if(!completeCount[1]){ // manage case when amount is ">1M"
+                    count = 2;
+                    unity = "M";
+                } else if (completeCount[0]==0){
+                    count = 0.1;
+                    unity = "K";
+                } else {
+                    count = completeCount[0];
+                    unity = completeCount[1].substring(completeCount[1].length - 1);
                 }
-                let unity = count.substring(count.length - 1);
                 let factor = unity == "K" ? 10**3 : 10**6; // "K" or "M"
-                count = count.slice(0, -1)* factor; // remove "k" unity and get the high limit
+                count = count * factor;
                 if(count < 5000){
                     let hours = Math.round(count / 26);
                     return `Bravo ! Votre achat inclusif pourrait contribuer à financer approximativement ${hours} heures de travail sur un mois.`
                 } else {
                     let nbJobs = Math.round(count / 3700);
-                    return `Bravo ! Votre achat inclusif pourrait contribuer à financer approximativement ${nbJobs} emploi${nbJobs>1 ? "s":""} durant 1 mois.`
+                    let strPlurial = nbJobs>1 ? "s":"";
+                    return `Bravo ! Votre achat inclusif pourrait contribuer à financer approximativement ${nbJobs} emploi${strPlurial} inclusif${strPlurial} durant 1 mois.`
                 }
             }
         }
