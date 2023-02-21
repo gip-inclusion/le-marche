@@ -285,6 +285,13 @@ class SiaeModelQuerysetTest(TestCase):
         siae_queryset_with_order_by_parameter = Siae.objects.annotate_with_brand_or_name(with_order_by=True)
         self.assertEqual(siae_queryset_with_order_by_parameter.first(), siae_1)
 
+    def test_with_content_filled_stats(self):
+        siae_empty = SiaeFactory(name="Empty")
+        siae_filled_basic = SiaeFactory(name="Filled basic", user_count=1, sector_count=2, description="desc")
+        siae_queryset = Siae.objects.with_content_filled_stats()
+        self.assertEqual(siae_queryset.get(id=siae_empty.id).content_filled_basic, False)
+        self.assertEqual(siae_queryset.get(id=siae_filled_basic.id).content_filled_basic, True)
+
 
 class SiaeGroupModelTest(TestCase):
     @classmethod
