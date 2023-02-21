@@ -1,10 +1,10 @@
 # Journal des modifications
 
 Ressources :
-- [Semantic Versioning](http://semver.org/)
-- [CHANGELOG recommendations](http://keepachangelog.com/).
+- [Calendar Versioning](https://calver.org/)
+- [CHANGELOG recommendations](https://keepachangelog.com/).
 
-## [2022.7] - 2022-04-08
+## 2022.04.28
 
 ### Ajouté
 
@@ -32,7 +32,7 @@ Ressources :
 
 ### Supprimé
 
-## [2022.6] - 2022-03-25
+## 2022.03.25
 
 ### Ajouté
 
@@ -60,7 +60,7 @@ Ressources :
 ### Supprimé
 
 
-## [2022.5] - 2022-03-11
+## 2022.03.11
 
 ### Ajouté
 
@@ -84,7 +84,7 @@ Ressources :
 
 ### Supprimé
 
-## [2022.4] - 2022-02-28
+## 2022.02.28
 
 ### Ajouté
 
@@ -114,7 +114,7 @@ Ressources :
 
 ### Supprimé
 
-## [2022.3] - 2022-02-11
+## 2022.02.11
 
 ### Ajouté
 
@@ -141,7 +141,7 @@ Ressources :
 
 ### Supprimé
 
-## [2022.2] - 2022-01-28
+## 2022.01.28
 
 ### Ajouté
 
@@ -177,7 +177,7 @@ Ressources :
 -  Recherche / Fiche
     - Suppression de la modale "type d'utilisateur" (qui s'affichait pour les utilisateurs anonynmes)
 
-## [2022.1] - 2022-01-14
+## 2022.01.14
 
 ### Ajouté
 
@@ -208,7 +208,7 @@ Ressources :
 
 ### Supprimé
 
-## [1.4] - 2021-12-31
+## 2021.12.31
 
 ### Ajouté
 
@@ -247,7 +247,7 @@ Ressources :
 
 ### Supprimé
 
-## [1.3] - 2021-12-03
+## 2021.12.03
 
 ### Ajouté
 
@@ -286,7 +286,7 @@ Ressources :
 - Pages
     - Enlevé le bandeau concernant la migration
 
-## [1.2] - 2021-11-19
+## 2021.11.19
 
 ### Ajouté
 
@@ -326,7 +326,7 @@ Ressources :
 - Tech
     - Eviter les valeurs "null" sur les champs texte (base de donnée)
 
-## [1.1] - 2021-11-05
+## 2021.11.05
 
 ### Ajouté
 
@@ -368,11 +368,11 @@ Ressources :
 
 ### Supprimé
 
-## [1.0] - 2021-10-26
+## 2021.10.26
 
 - Migration de la prod Cocorico vers la prod Django 🚀
 
-## [0.9] - 2021-10
+## 2021.10
 
 - Ajout des pages espace utilisateur
 - Ajout du formulaire de modification d'une structure
@@ -382,7 +382,7 @@ Ressources :
 - API : afficher les champs d'origine pour les Siae
 - Ajout des différents trackers et tierces parties Javascript
 
-## [0.8] - 2021-09
+## 2021.09
 
 - Premier script de migration pour récupérer la donnée des Siae, Réseaux, Secteurs, Prestations, Labels et Références
 - Ajout du modèle SiaeOffer
@@ -401,7 +401,7 @@ Ressources :
 - Màj homepage API
 - Correctif SASS Django pour developpement
 
-## [0.7] - 2021-08
+## 2021.08
 
 - Correctifs docker pour déploiement prod
 - Bouge le modèle Siae dans sa propre app. Ajoute des champs manquants. Renomme les DateTimeFields.
@@ -411,7 +411,7 @@ Ressources :
 - API : préfixe les urls avec /api
 - Admin : premiers interfaces pour les modèles Siae et Sector
 
-## [0.6] - 2021-07
+## 2021.07c
 
 - Intégration bootstrap
 - Ajout flux de traitement SCSS/SASS
@@ -420,7 +420,7 @@ Ressources :
 - Première page & assets graphiques : c'est quoi l'inclusion
 - Compression par défaut des assets CSS & JS
 
-## [0.5] - 2021-07
+## 2021.07b
 
 - Écriture des vues simplifiée (ModelViewSet et Mixins
 - Filtres sur certains champs
@@ -432,27 +432,27 @@ Ressources :
 - Nouvelle page d'accueil
 - Recherche par plage de date de mise à jour
 
-## [0.4] - 2021-07
+## 2021.07
 
 - Logging amélioré
 - Page d'accueil primitive
 - Ajout donnée QPV
 - Environnement Docker optimisé
 
-## [0.3.1] - 2021-06
+## 2021.06d
 
 - Correction de la publication des fichiers statiques quand le déboguage de django est désactivé
 
-## [0.3] - 2021-06
+## 2021.06c
 
 - Ajout intergiciel de tracking utilisateur
 
-## [0.2] - 2021-06
+## 2021.06b
 
 - Réorganisation du code (structure fichiers, config, ...
 - Utilisation de model.querysets pour les requêtes
 - Utilisation contexte du serializer pour "hasher" les identifiants
 
-## [0.1] - 2021-06
+## 2021.06
 
 - Premiers pas
