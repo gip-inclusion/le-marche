@@ -44,6 +44,7 @@
                                     class="nav-link{% if request.get_full_path == NETWORK_SIAE_TENDER_LIST_URL %} active{% endif %}"
                                     hx-target="#tendersList" hx-swap="outerHTML">
                                     Demandes reçues
+                                    <span class="badge badge-pill badge-primary fs-xs" style="vertical-align:middle;">{{ siae.tender_email_send_count }}</span>
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -51,6 +52,7 @@
                                     class="nav-link{% if request.get_full_path == NETWORK_SIAE_TENDER_DISPLAY_LIST_URL %} active{% endif %}"
                                     hx-target="#tendersList" hx-swap="outerHTML">
                                     Demandes vues
+                                    <span class="badge badge-pill badge-primary fs-xs" style="vertical-align:middle;">{{ siae.tender_detail_display_count }}</span>
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -58,6 +60,7 @@
                                     class="nav-link{% if request.get_full_path == NETWORK_SIAE_TENDER_CONTACT_CLICK_LIST_URL %} active{% endif %}"
                                     hx-target="#tendersList" hx-swap="outerHTML">
                                     Demandes intéressées
+                                    <span class="badge badge-pill badge-primary fs-xs" style="vertical-align:middle;">{{ siae.tender_detail_contact_click_count }}</span>
                                 </a>
                             </li>
                         </ul>

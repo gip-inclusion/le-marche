@@ -257,7 +257,7 @@ class ProfileNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
         if "slug" in self.kwargs:
             self.network = get_object_or_404(Network, slug=self.kwargs.get("slug"))
             if "siae_slug" in self.kwargs:
-                self.siae = get_object_or_404(Siae, slug=self.kwargs.get("siae_slug"))
+                self.siae = get_object_or_404(Siae.objects.with_tender_stats(), slug=self.kwargs.get("siae_slug"))
                 if self.siae not in self.network.siaes.all():
                     return redirect("dashboard:profile_network_siae_list", slug=self.network.slug)
 
