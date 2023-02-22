@@ -98,8 +98,6 @@ class AddTenderStepDescriptionForm(forms.ModelForm):
 
         # required fields
         self.fields["description"].required = True
-        if self.kind == Tender.TENDER_KIND_TENDER:
-            self.fields["amount"].required = True
         # label, placeholder & help_text
         if self.kind != Tender.TENDER_KIND_TENDER:
             self.fields["external_link"].label = "Lien à partager"
