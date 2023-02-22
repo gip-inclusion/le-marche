@@ -392,6 +392,12 @@ class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView)
             context["label_formset"] = SiaeLabelFormSet(self.request.POST, instance=self.object)
         else:
             context["label_formset"] = SiaeLabelFormSet(instance=self.object)
+        context["last_3_siae_content_filled_full"] = (
+            Siae.objects.with_content_filled_stats()
+            .filter(content_filled_full=True)
+            .exclude(id=self.object.id)
+            .order_by("-updated_at")[:3]
+        )
         return context
 
     def post(self, request, *args, **kwargs):
