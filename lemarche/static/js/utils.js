@@ -16,7 +16,7 @@ $(document).ready(() => {
         return this.nodeType == 3;
     }).wrap('<span class="group-title"></span>');
 
-    $('#share-siae-list').on('click', function(e){
+    $('.btn_mail_encrypt').on('click', function(e){
         location.href = "mailto:?" + rot13(this.dataset['nextUrl']);
     });
 });
