@@ -32,7 +32,7 @@ def get_share_url(user, request):
     user_full_name = "" if not user.is_authenticated else user.full_name
     params = {
         "subject": "Voici une liste de prestataires inclusifs",
-        "cci": settings.CONTACT_EMAIL,
+        "bcc": settings.CONTACT_EMAIL,
         "body": "Bonjour,\n\n"
         + "Vous pouvez consulter cette liste de prestataires inclusifs dans le cadre de votre besoin de sous-traitance...\n\n"  # noqa
         + f"à l'adresse suivante : https://{request.get_host()}{request.get_full_path()} \n\n"
