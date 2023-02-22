@@ -1,5 +1,7 @@
 // https://github.com/betagouv/itou/blob/master/itou/static/js/utils.js
 
+const rot13 = str =>  str.replace(/[a-z]/gi, letter => String.fromCharCode(letter.charCodeAt(0) + (letter.toLowerCase() <= 'm' ? 13 : -13)));
+
 $(document).ready(() => {
     // prevent default on click
     $('.js-prevent-default').on('click', (event) => {
@@ -13,6 +15,10 @@ $(document).ready(() => {
     $('#id_sectors').children('.form-check.checkbox-title').contents().filter(function() {
         return this.nodeType == 3;
     }).wrap('<span class="group-title"></span>');
+
+    $('#share-siae-list').on('click', function(e){
+        location.href = "mailto:?" + rot13(this.dataset['nextUrl']);
+    });
 });
 
 let toggleRequiredClasses = (toggle, element) => {

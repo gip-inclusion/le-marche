@@ -1,6 +1,7 @@
+import codecs
 import csv
 from datetime import date
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
 
 from django.conf import settings
 from django.contrib import messages
@@ -27,6 +28,19 @@ from lemarche.www.siaes.forms import SiaeDownloadForm, SiaeFavoriteForm, SiaeSea
 CURRENT_SEARCH_QUERY_COOKIE_NAME = "current_search"
 
 
+def get_share_url(user, request):
+    user_full_name = "" if not user.is_authenticated else user.full_name
+    params = {
+        "subject": "Voici une liste de prestataires inclusifs",
+        "cci": settings.CONTACT_EMAIL,
+        "body": "Bonjour,\n\n"
+        + "Vous pouvez consulter cette liste de prestataires inclusifs dans le cadre de votre besoin de sous-traitance...\n\n"  # noqa
+        + f"à l'adresse suivante : https://{request.get_host()}{request.get_full_path()} \n\n"
+        + user_full_name,
+    }
+    return codecs.encode(urlencode(params, quote_via=quote), "rot_13")  # encode to avoid spam from mailto
+
+
 class SiaeSearchResultsView(FormMixin, ListView):
     template_name = "siaes/search_results.html"
     form_class = SiaeSearchForm
@@ -48,7 +62,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
             results_ordered = results_ordered.annotate_with_user_favorite_list_count(self.request.user)
         return results_ordered
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, user, **kwargs):
         """
         - initialize the form with the query parameters (only if they are present)
         - store the current search query in the session
@@ -60,6 +74,8 @@ class SiaeSearchResultsView(FormMixin, ListView):
         context["form"] = siae_search_form
         context["form_download"] = SiaeDownloadForm(data=self.request.GET)
         context["form_share"] = SiaeShareForm(data=self.request.GET, user=self.request.user)
+        context["url_share_list"] = get_share_url(user, self.request)
+        print("\n\n\n\nurl_share_list: ", get_share_url(user, self.request), "\n\n\n\n")
         if len(self.request.GET.keys()):
             if siae_search_form.is_valid():
                 current_perimeters = siae_search_form.cleaned_data.get("perimeters")
@@ -94,7 +110,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         """
         self.object_list = self.get_queryset()
         user = request.user
-        context = self.get_context_data()
+        context = self.get_context_data(user)
         if user.is_authenticated:
             if user.kind == user.KIND_BUYER:
                 add_to_contact_list(user, "buyer_search")
