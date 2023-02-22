@@ -41,6 +41,24 @@
                 </fieldset>
             </div>
         </div>
+        {% if last_3_siae_content_filled_full %}
+            <div class="col-12 col-lg-4">
+                <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                    <p class="mb-1">
+                        <i class="ri-information-line ri-lg"></i>
+                        <strong>Conseil</strong>
+                    </p>
+                    <p class="mb-1">
+                        Inspirez-vous des fiches commerciales des prestataires inclusifs
+                        <a href="{% url 'siae:detail' last_3_siae_content_filled_full.0.slug %}" target="_blank" style="white-space:nowrap;">{{ last_3_siae_content_filled_full.0.name_display }}</a>
+                        et <a href="{% url 'siae:detail' last_3_siae_content_filled_full.1.slug %}" target="_blank" style="white-space:nowrap;">{{ last_3_siae_content_filled_full.1.name_display }}</a>.
+                    </p>
+                    <p class="mb-0">
+                        Une fiche commerciale bien complétée c'est davantage de chances d'être sollicité par des clients.
+                    </p>
+                </div>
+            </div>
+        {% endif %}
     </div>
 
     <div class="row mb-3 mb-lg-5">

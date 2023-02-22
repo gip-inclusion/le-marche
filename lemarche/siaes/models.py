@@ -7,7 +7,7 @@ from django.contrib.gis.measure import D
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.contrib.postgres.search import TrigramSimilarity  # SearchVector
 from django.db import IntegrityError, models, transaction
-from django.db.models import Case, CharField, Count, F, IntegerField, Q, Sum, When
+from django.db.models import BooleanField, Case, CharField, Count, F, IntegerField, Q, Sum, When
 from django.db.models.functions import Greatest
 from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
@@ -369,6 +369,36 @@ class SiaeQuerySet(models.QuerySet):
             qs = qs.order_by("brand_or_name")
         return qs
 
+    def with_content_filled_stats(self):
+        """
+        Content fill levels:
+        - Level 1 (basic): user_count + sector_count + description
+        - Level 2: user_count + sector_count + description + logo + client_reference_count
+        - Level 3: user_count + sector_count + description + logo + client_reference_count + image_count
+        - Level 4 (full): user_count + sector_count + description + logo + client_reference_count + image_count + label_count  # noqa
+        """
+        return self.annotate(
+            content_filled_basic=Case(
+                When(Q(user_count__gte=1) & Q(sector_count__gte=1) & ~Q(description=""), then=True),
+                default=False,
+                output_field=BooleanField(),
+            ),
+            content_filled_full=Case(
+                When(
+                    Q(user_count__gte=1)
+                    & Q(sector_count__gte=1)
+                    & ~Q(description="")
+                    & ~Q(logo_url="")
+                    & Q(client_reference_count__gte=1)
+                    & Q(image_count__gte=1)
+                    & Q(label_count__gte=1),
+                    then=True,
+                ),
+                default=False,
+                output_field=BooleanField(),
+            ),
+        )
+
 
 class Siae(models.Model):
     READONLY_FIELDS_FROM_C1 = [
@@ -707,11 +737,8 @@ class Siae(models.Model):
 
     def set_content_fill_dates(self):
         """
-        Content fill levels:
-        - Level 1 (basic): user_count + sector_count + description
-        - Level 2: user_count + sector_count + description + logo + client_reference_count
-        - Level 3: user_count + sector_count + description + logo + client_reference_count + image_count
-        - Level 4: user_count + sector_count + description + logo + client_reference_count + image_count + label_count
+        Content fill levels?
+        See with_content_filled_stats()
         """
         if self.id:
             if all(getattr(self, field) for field in ["user_count", "sector_count", "description"]):
