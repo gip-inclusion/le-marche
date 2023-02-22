@@ -85,6 +85,7 @@ class AddTenderStepDescriptionForm(forms.ModelForm):
         widgets = {
             "start_working_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
             "why_amount_is_blank": forms.widgets.RadioSelect,
+            "amount": forms.Select(attrs={"x-model": "formData.amount", "x-on:change": "getImpactMessage()"}),
         }
 
     def __init__(self, kind, *args, **kwargs):
