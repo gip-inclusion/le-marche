@@ -53,9 +53,14 @@
 </div>
 <div class="row">
     <div class="col-12 col-lg-7">
-        {% bootstrap_field form.amount %}
-        {% bootstrap_field form.why_amount_is_blank class="inline-block" show_label=False %}
-        {% bootstrap_field form.accept_share_amount %}
+        <span x-data="SocialImpactCalculatorComponent">
+            {% bootstrap_field form.amount %}
+            {% bootstrap_field form.why_amount_is_blank class="inline-block" show_label=False %}
+            <div x-show="displayMessage()" >
+                <p class="fs-sm text-success" x-text="getImpactMessage"></p>
+                {% bootstrap_field form.accept_share_amount %}
+            </div>
+        </span>
     </div>
     <div class="col-12 col-lg-5">
         <div class="c-form-conseil">
@@ -81,6 +86,8 @@
 {% endblock content_form %}
 
 {% block extra_js %}
+<script type="text/javascript" src="{% static 'vendor/alpinejs@3.11.1.min.js'%}" defer></script>
+
 <script>
 
 function toggleRadioSelectElement(divToToggle, value) {
@@ -97,6 +104,49 @@ function toggleRadioSelectElement(divToToggle, value) {
         })
     }
 }
+
+document.addEventListener('alpine:init', () => {
+    function SocialImpactCalculatorComponent() {
+        return {
+            formData:{
+                amount: "{{form.amount.initial|default_if_none:'null'}}",
+            },
+            displayMessage() {
+                return this.formData.amount != "null" && this.formData.amount;
+            },
+            getImpactMessage() {
+                if ( this.formData.amount=="null"){
+                    return;
+                }
+                // amount format data is XX-XX<K|M>
+                let completeCount = this.formData.amount.split("-"); // remove first range
+                let count, unity;
+                if(!completeCount[1]){ // manage case when amount is ">1M"
+                    count = 2;
+                    unity = "M";
+                } else if (completeCount[0]==0){
+                    count = 0.1;
+                    unity = "K";
+                } else {
+                    count = completeCount[0];
+                    unity = completeCount[1].substring(completeCount[1].length - 1);
+                }
+                let factor = unity == "K" ? 10**3 : 10**6; // "K" or "M"
+                count = count * factor;
+                if(count < 5000){
+                    let hours = Math.round(count / 26);
+                    return `Bravo ! Votre achat inclusif pourrait contribuer à financer approximativement ${hours} heures de travail sur un mois.`
+                } else {
+                    let nbJobs = Math.round(count / 3700);
+                    let strPlurial = nbJobs>1 ? "s":"";
+                    return `Bravo ! Votre achat inclusif pourrait contribuer à financer approximativement ${nbJobs} emploi${strPlurial} inclusif${strPlurial} durant 1 mois.`
+                }
+            }
+        }
+    }
+    Alpine.data('SocialImpactCalculatorComponent', SocialImpactCalculatorComponent);
+});
+
 document.addEventListener('DOMContentLoaded', function () {
     const selectDesciptionAmount = document.getElementById('id_description-amount');
     const divWhyIsBlank = document.getElementById('id_description-why_amount_is_blank');
