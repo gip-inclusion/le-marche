@@ -71,14 +71,14 @@ urlpatterns = [
             [
                 path(
                     "",
-                    RedirectView.as_view(pattern_name="dashboard:siae_edit_search", permanent=False),
+                    RedirectView.as_view(pattern_name="dashboard:siae_edit_contact", permanent=False),
                     name="siae_edit",
                 ),
+                path("contact/", SiaeEditContactView.as_view(), name="siae_edit_contact"),
                 path("recherche/", SiaeEditSearchView.as_view(), name="siae_edit_search"),
                 path("info/", SiaeEditInfoView.as_view(), name="siae_edit_info"),
                 path("offre/", SiaeEditOfferView.as_view(), name="siae_edit_offer"),
                 path("liens/", SiaeEditLinksView.as_view(), name="siae_edit_links"),
-                path("contact/", SiaeEditContactView.as_view(), name="siae_edit_contact"),
             ]
         ),
     ),
