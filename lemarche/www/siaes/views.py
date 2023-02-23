@@ -20,6 +20,7 @@ from lemarche.favorites.models import FavoriteList
 from lemarche.siaes.models import Siae
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
+from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
 from lemarche.www.auth.tasks import add_to_contact_list
 from lemarche.www.siaes.forms import SiaeDownloadForm, SiaeFavoriteForm, SiaeSearchForm, SiaeShareForm
 
@@ -48,6 +49,23 @@ class SiaeSearchResultsView(FormMixin, ListView):
             results_ordered = results_ordered.annotate_with_user_favorite_list_count(self.request.user)
         return results_ordered
 
+    def get_mailto_share_url(self):
+        """Function to generate url for share search with url
+
+        Returns:
+            _type_: _description_
+        """
+        user_full_name = "" if not self.request.user.is_authenticated else self.request.user.full_name
+        params = {
+            "subject": "Voici une liste de prestataires inclusifs",
+            "bcc": settings.CONTACT_EMAIL,
+            "body": "Bonjour,\n\n"
+            + "Vous pouvez consulter cette liste de prestataires inclusifs dans le cadre de votre besoin de sous-traitance "  # noqa
+            + f"à l'adresse suivante : https://{get_domain_url()}{self.request.get_full_path()} \n\n"
+            + user_full_name,
+        }
+        return get_encoded_url_from_params(params)  # encode to avoid spam from mailto
+
     def get_context_data(self, **kwargs):
         """
         - initialize the form with the query parameters (only if they are present)
@@ -60,6 +78,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         context["form"] = siae_search_form
         context["form_download"] = SiaeDownloadForm(data=self.request.GET)
         context["form_share"] = SiaeShareForm(data=self.request.GET, user=self.request.user)
+        context["url_share_list"] = self.get_mailto_share_url()
         if len(self.request.GET.keys()):
             if siae_search_form.is_valid():
                 current_perimeters = siae_search_form.cleaned_data.get("perimeters")

@@ -1,4 +1,6 @@
 # https://github.com/betagouv/itou/blob/master/itou/utils/urls.py
+from codecs import encode as codecs_encode
+from urllib.parse import quote, urlencode
 
 from django.conf import settings
 from django.contrib.sites.models import Site
@@ -60,3 +62,7 @@ def get_share_url_object(obj: Model):
 def get_admin_url_object(obj: Model):
     admin_url = reverse_lazy(f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change", args=[obj.id])
     return f"https://{get_domain_url()}{admin_url}"
+
+
+def get_encoded_url_from_params(params: dict, encoding: str = "rot_13"):
+    return codecs_encode(urlencode(params, quote_via=quote), encoding=encoding)
