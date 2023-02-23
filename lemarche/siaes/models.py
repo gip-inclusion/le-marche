@@ -550,7 +550,11 @@ class Siae(models.Model):
     contact_website = models.URLField(
         verbose_name="Site internet", help_text="Doit commencer par http:// ou https://", blank=True
     )
-    contact_email = models.EmailField(verbose_name="E-mail", blank=True)
+    contact_email = models.EmailField(
+        verbose_name="E-mail",
+        blank=True,
+        help_text="Le contact renseigné ici recevra les opportunités commerciales par mail",
+    )
     contact_phone = models.CharField(verbose_name="Téléphone", max_length=150, blank=True)
     contact_social_website = models.URLField(
         verbose_name="Réseau social", help_text="Doit commencer par http:// ou https://", blank=True
