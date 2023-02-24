@@ -15,17 +15,17 @@
         {% include "includes/_completion_progress_bar.html" with completion_percent=siae.completion_percent %}
     </div>
     <div class="col-12 col-md-auto ml-auto d-flex flex-column">
+        <a href="{% url 'dashboard:siae_edit' siae.slug %}" id="dashboard-siae-edit-btn" class="btn btn-important btn-sm btn-ico mb-2">
+            <i class="ri-pencil-fill ri-lg"></i>
+            <span>Compléter votre fiche</span>
+        </a>
         <a href="{% url 'siae:detail' siae.slug %}" target="_blank" id="dashboard-siae-view-btn" class="btn btn-outline-primary btn-sm btn-ico mb-2">
             <i class="ri-eye-line ri-lg"></i>
             <span>Voir votre fiche</span>
         </a>
-        <a href="{% url 'dashboard:siae_users' siae.slug %}" id="dashboard-siae-edit-btn" class="btn btn-outline-primary btn-sm btn-ico mb-2">
+        <a href="{% url 'dashboard:siae_users' siae.slug %}" id="dashboard-siae-edit-btn" class="btn btn-outline-primary btn-sm btn-ico">
             <i class="ri-group-line ri-lg"></i>
             <span>Collaborateurs ({{ siae.user_count }})</span>
-        </a>
-        <a href="{% url 'dashboard:siae_edit' siae.slug %}" id="dashboard-siae-edit-btn" class="btn btn-important btn-sm btn-ico">
-            <i class="ri-pencil-fill ri-lg"></i>
-            <span>Voir votre fiche</span>
         </a>
     </div>
 </div>
