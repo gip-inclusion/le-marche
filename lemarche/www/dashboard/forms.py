@@ -146,10 +146,10 @@ class SiaeEditInfoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["description"].label = "Présentation générale de votre structure"
+        self.fields["description"].label = "Présentation commerciale de votre structure"
         self.fields["description"].widget.attrs.update(
             {
-                "placeholder": "Soyez le plus concret possible",
+                "placeholder": "Décrivez votre activité commerciale puis votre projet social",
             }
         )
         # self.fields["logo_url"].label = "Importez votre logo"

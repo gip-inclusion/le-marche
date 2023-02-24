@@ -58,7 +58,6 @@ class HomeView(TemplateView):
         context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
         context["siae_count"] = Siae.objects.is_live().count()
         context["tender_count"] = Tender.objects.validated().count() + 30  # historic number (before form)
-        context["siaes_first_page"] = Siae.objects.filter(is_first_page=True)
         return context
 
 

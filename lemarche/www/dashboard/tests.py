@@ -53,7 +53,7 @@ class DashboardHomeViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Ajouter une structure")
-        self.assertContains(response, "Les opportunités du marché")
+        self.assertContains(response, "Vos opportunités commerciales")
         self.assertContains(response, "Solutions et ressources")
         self.assertContains(response, "Aides-territoires")
         self.assertNotContains(response, "Mes besoins")
@@ -186,7 +186,7 @@ class DashboardSiaeEditViewTest(TestCase):
         url = reverse("dashboard:siae_edit", args=[self.siae_with_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, f"/profil/prestataires/{self.siae_with_user.slug}/modifier/recherche/")
+        self.assertEqual(response.url, f"/profil/prestataires/{self.siae_with_user.slug}/modifier/contact/")
 
         self.client.force_login(self.other_user_siae)
         url = reverse("dashboard:siae_edit", args=[self.siae_with_user.slug])

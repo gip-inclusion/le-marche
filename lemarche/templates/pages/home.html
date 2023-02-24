@@ -128,7 +128,7 @@
                         <img src="{% static 'img/hp-02-photo-03.min.jpg' %}" class="img-fluid img-fitcover" alt="" loading="lazy" />
                     </div>
                     <div class="card-body">
-                        <p class="h3 lh-sm">Être acteur de l’inclusion dans l’emploi</p>
+                        <p class="h3 lh-sm">C’est quoi l’inclusion ?</p>
                         <p><span class="badge badge-sm badge-pill badge-accent-03 text-primary">Je gère ma structure</span></p>
                         <p>
                             Devenez acteur d’une société plus juste en orientant votre politique d’achat vers des structures d'insertion et du handicap qui luttent activement contre l'exclusion sociale.
@@ -137,7 +137,7 @@
                     </div>
                     <div class="card-footer text-right">
                         <a href="{% url 'pages:decouvrir_inclusion' %}" id="track_home_inclusion" class="btn btn-link btn-ico stretched-link">
-                            <span class="ml-0">Découvrir l’inclusion dans l’emploi</span>
+                            <span class="ml-0">Découvrir l’inclusion</span>
                             <i class="ri-arrow-right-up-line ri-lg"></i>
                         </a>
                     </div>
@@ -201,23 +201,6 @@
         </div>
     </div>
 </section>
-
-{% if siaes_first_page %}
-    <section class="s-cards-grid-01 bg-nuance-09">
-        <div class="s-cards-grid-01__container container">
-            <div class="s-cards-grid-01__row row">
-                <div class="s-cards-grid-01__col s-cards-grid-01__col--title col-12">
-                    <h2 class="h2 mb-3 mb-lg-5"><strong>Nos structures à la une</strong></h2>
-                </div>
-            </div>
-            <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4">
-                {% for siae in siaes_first_page %}
-                    {% include "siaes/_card_home.html" with siae=siae %}
-                {% endfor %}
-            </div>
-        </div>
-    </section>
-{% endif %}
 
 <section class="s-cards-grid-01 has-illustration-bg-01 bg-gray-400">
     <div class="s-cards-grid-01__container container">
