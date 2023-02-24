@@ -86,21 +86,21 @@
                                 </td>
                                 <td>
                                     {% if siae.tender_email_send_count > 0 %}
-                                        <a href="{% url 'dashboard:profile_network_siae_tender_list' network.slug siae.slug %}" title="Voir les besoins concernés">{{ siae.tender_email_send_count }}</a>
+                                        <a href="{% url 'dashboard:profile_network_siae_tender_list' network.slug siae.slug %}" title="Voir les demandes reçues">{{ siae.tender_email_send_count }}</a>
                                     {% else %}
                                         0
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if siae.tender_detail_display_count > 0 %}
-                                        <a href="{% url 'dashboard:profile_network_siae_tender_list' network.slug siae.slug "DISPLAY" %}" title="Voir les besoins concernés">{{ siae.tender_detail_display_count }}</a>
+                                        <a href="{% url 'dashboard:profile_network_siae_tender_list' network.slug siae.slug "DISPLAY" %}" title="Voir les demandes vues">{{ siae.tender_detail_display_count }}</a>
                                     {% else %}
                                         0
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if siae.tender_detail_contact_click_count > 0 %}
-                                        <a href="{% url 'dashboard:profile_network_siae_tender_list' network.slug siae.slug "CONTACT-CLICK" %}" title="Voir les besoins concernés">{{ siae.tender_detail_contact_click_count }}</a>
+                                        <a href="{% url 'dashboard:profile_network_siae_tender_list' network.slug siae.slug "CONTACT-CLICK" %}" title="Voir les demandes intéressées">{{ siae.tender_detail_contact_click_count }}</a>
                                     {% else %}
                                         0
                                     {% endif %}

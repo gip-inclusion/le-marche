@@ -85,7 +85,9 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "label_count_with_link",
         "client_reference_count_with_link",
         "image_count_with_link",
-        "tender_count_with_link",
+        "tender_email_send_count_with_link",
+        "tender_detail_display_count_with_link",
+        "tender_detail_contact_click_count_with_link",
         "created_at",
     ]
     list_filter = [
@@ -117,6 +119,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "logo_url_display",
         "tender_count_with_link",
         "tender_email_send_count_with_link",
+        "tender_email_link_click_count_with_link",
         "tender_detail_display_count_with_link",
         "tender_detail_contact_click_count_with_link",
         "signup_date",
@@ -228,6 +231,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                 "fields": (
                     "tender_count_with_link",
                     "tender_email_send_count_with_link",
+                    "tender_email_link_click_count_with_link",
                     "tender_detail_display_count_with_link",
                     "tender_detail_contact_click_count_with_link",
                 )
@@ -456,7 +460,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         )
         return format_html(f'<a href="{url}">{getattr(siae, "tender_email_send_count", 0)}</a>')
 
-    tender_email_send_count_with_link.short_description = "Besoins contactés"
+    tender_email_send_count_with_link.short_description = "Besoins reçus"
     tender_email_send_count_with_link.admin_order_field = "tender_email_send_count"
 
     def tender_email_link_click_count_with_link(self, siae):
