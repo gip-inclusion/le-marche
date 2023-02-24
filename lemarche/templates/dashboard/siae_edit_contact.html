@@ -1,5 +1,12 @@
 {% extends "dashboard/siae_edit_base.html" %}
 {% load static bootstrap4 get_verbose_name %}
+{% block extra_css %}
+<style>
+    #id_contact_email+small{
+        color: #FF5655 !important;
+    }
+</style>
+{% endblock %}
 
 {% block content_siae_form %}
 <form method="POST" action="" class="mb-3 mb-lg-5">
@@ -9,7 +16,7 @@
 
     <div class="row mb-3 mb-lg-5">
         <div class="col-12 col-lg-8">
-            <h3>Contact commercial affiché sur votre fiche commerciale</h3>
+            <h3>Contacts affichés sur votre fiche commerciale</h3>
         </div>
     </div>
 
