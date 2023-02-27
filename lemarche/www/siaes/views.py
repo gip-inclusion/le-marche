@@ -110,6 +110,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         Additional actions:
         - add buyer to contact list
         - add buyer who searched for sector 'traiteur' to contact list
+        - add buyer who searched for sector 'nettoyage' to contact list
         """
         self.object_list = self.get_queryset()
         user = request.user
@@ -120,6 +121,8 @@ class SiaeSearchResultsView(FormMixin, ListView):
                 if "current_sectors" in context:
                     if next((sector for sector in context["current_sectors"] if sector["slug"] == "traiteur"), False):
                         add_to_contact_list(user, "buyer_search_traiteur")
+                    if next((sector for sector in context["current_sectors"] if sector["slug"] == "autre-56"), False):
+                        add_to_contact_list(user, "buyer_search_nettoyage")
         return self.render_to_response(context)
 
 
