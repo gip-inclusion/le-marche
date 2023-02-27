@@ -18,13 +18,16 @@ def send_tender_emails_to_siaes(tender: Tender):
     """
     email_subject = "Une opportunité commerciale pour vous sur le Marché de l'inclusion"
     siaes = tender.siaes.all()
+    siae_users_count = 0
     siae_users_send_count = 0
 
     for siae in siaes:
         send_tender_email_to_siae(email_subject, tender, siae)
         for user in siae.users.all():
-            send_tender_email_to_siae(email_subject, tender, siae, email_to_override=user.email)
-            siae_users_send_count += 1
+            siae_users_count += 1
+            if user.email != siae.contact_email:
+                send_tender_email_to_siae(email_subject, tender, siae, email_to_override=user.email)
+                siae_users_send_count += 1
 
     tender.tendersiae_set.update(email_send_date=timezone.now(), updated_at=timezone.now())
 
@@ -41,6 +44,7 @@ def send_tender_emails_to_siaes(tender: Tender):
         "email_subject": email_subject,
         "email_count": siae_users_send_count,
         "email_timestamp": timezone.now().isoformat(),
+        "siae_users_count": siae_users_count,
     }
     tender.logs.append(siae_users_log_item)
     tender.save()
