@@ -18,8 +18,11 @@ def send_tender_emails_to_siaes(tender: Tender):
     """
     email_subject = "Une opportunité commerciale pour vous sur le Marché de l'inclusion"
     siaes = tender.siaes.all()
+
     for siae in siaes:
         send_tender_email_to_siae(email_subject, tender, siae)
+        for user in siae.users.all():
+            send_tender_email_to_siae(email_subject, tender, siae, email_to_override=user.email)
 
     tender.tendersiae_set.update(email_send_date=timezone.now(), updated_at=timezone.now())
 
@@ -40,6 +43,7 @@ def send_tender_emails_to_partners(tender: Tender):
     """
     partners = PartnerShareTender.objects.filter_by_tender(tender)
     email_subject = f"{tender.get_kind_display()} : {tender.title} ({tender.author.company_name})"
+
     for partner in partners:
         send_tender_email_to_partner(email_subject, tender, partner)
 
@@ -90,8 +94,10 @@ def send_tender_email_to_partner(email_subject: str, tender: Tender, partner: Pa
 
 
 # @task()
-def send_tender_email_to_siae(email_subject: str, tender: Tender, siae: Siae):
-    recipient_list = whitelist_recipient_list([siae.contact_email])
+def send_tender_email_to_siae(email_subject: str, tender: Tender, siae: Siae, email_to_override=None):
+    # override siae.contact_email if email_to_override is provided
+    email_to = email_to_override or siae.contact_email
+    recipient_list = whitelist_recipient_list([email_to])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
         recipient_name = siae.contact_full_name
