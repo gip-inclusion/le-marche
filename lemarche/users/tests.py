@@ -5,6 +5,7 @@ from lemarche.siaes.factories import SiaeFactory
 from lemarche.tenders.factories import TenderFactory
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
+from lemarche.utils import constants
 
 
 class UserModelTest(TestCase):
@@ -20,28 +21,50 @@ class UserModelTest(TestCase):
         user = UserFactory(first_name="Paul", last_name="Anploi")
         self.assertEqual(user.full_name, "Paul Anploi")
 
+    def test_kind_detail_display(self):
+        user_siae = UserFactory(kind=constants.USER_KIND_SIAE)
+        user_buyer = UserFactory(kind=constants.USER_KIND_BUYER)
+        user_buyer_public = UserFactory(kind=constants.USER_KIND_BUYER, buyer_kind=User.BUYER_KIND_PUBLIC)
+        user_buyer_private_pme = UserFactory(
+            kind=constants.USER_KIND_BUYER,
+            buyer_kind=User.BUYER_KIND_PRIVATE,
+            buyer_kind_detail=User.BUYER_KIND_DETAIL_PRIVATE_PME,
+        )
+        user_partner = UserFactory(kind=constants.USER_KIND_PARTNER)
+        user_partner_facilitator = UserFactory(
+            kind=constants.USER_KIND_PARTNER, partner_kind=User.PARTNER_KIND_FACILITATOR
+        )
+        self.assertEqual(user_siae.kind_detail_display, "Structure")
+        self.assertEqual(user_buyer.kind_detail_display, "Acheteur")
+        self.assertEqual(user_partner.kind_detail_display, "Partenaire")
+        self.assertEqual(user_buyer_public.kind_detail_display, "Acheteur")
+        self.assertEqual(user_buyer_private_pme.kind_detail_display, "Acheteur : Privé : PME")
+        self.assertEqual(
+            user_partner_facilitator.kind_detail_display, "Partenaire : Facilitateur des clauses sociales"
+        )
+
     def test_has_siae_queryset(self):
         user = UserFactory()
         siae = SiaeFactory()
         siae.users.add(user)
-        self.assertEqual(User.objects.count(), 2)
+        self.assertEqual(User.objects.count(), 1 + 1)
         self.assertEqual(User.objects.has_siae().count(), 1)
 
     def test_has_tender_queryset(self):
         user = UserFactory()
         TenderFactory(author=user)
-        self.assertEqual(User.objects.count(), 2)
+        self.assertEqual(User.objects.count(), 1 + 1)
         self.assertEqual(User.objects.has_tender().count(), 1)
 
     def test_has_favorite_list_queryset(self):
         user = UserFactory()
         FavoriteListFactory(user=user)
-        self.assertEqual(User.objects.count(), 2)
+        self.assertEqual(User.objects.count(), 1 + 1)
         self.assertEqual(User.objects.has_favorite_list().count(), 1)
 
     def test_has_api_key_queryset(self):
         UserFactory(api_key="coucou")
-        self.assertEqual(User.objects.count(), 2)
+        self.assertEqual(User.objects.count(), 1 + 1)
         self.assertEqual(User.objects.has_api_key().count(), 1)
 
 

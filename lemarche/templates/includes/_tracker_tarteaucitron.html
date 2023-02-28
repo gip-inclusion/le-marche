@@ -101,6 +101,7 @@ _paq.push(['enableLinkTracking']);
     {% if user.is_authenticated %}
         _paq.push(['setUserId', '{{ user.id }}']);  // User ID
         _paq.push(['setCustomDimension', 1, '{{ user.kind }}']);  // User Type
+        _paq.push(['setCustomDimension', 2, '{{ user.kind_detail_display }}']);  // User Type Display
     {% endif %}
 </script>
 <!-- Matomo Tag Manager -->
