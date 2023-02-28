@@ -99,7 +99,8 @@ _paq.push(['enableLinkTracking']);
 <script>
     var _paq = window._paq || [];
     {% if user.is_authenticated %}
-        _paq.push(['setUserId', '{{ user.id }}']);
+        _paq.push(['setUserId', '{{ user.id }}']);  // User ID
+        _paq.push(['setCustomDimension', 1, '{{ user.kind }}']);  // User Type
     {% endif %}
 </script>
 <!-- Matomo Tag Manager -->
