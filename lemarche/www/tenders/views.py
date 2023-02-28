@@ -388,7 +388,7 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
         return "<strong>Répondre à cette opportunité</strong><br />Pour répondre à cette opportunité, vous devez accepter d'être mis en relation avec l'acheteur."  # noqa
 
 
-class TenderSiaeInterestedListView(TenderAuthorOrAdminRequiredMixin, ListView):
+class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, ListView):
     template_name = "tenders/siae_interested_list.html"
     queryset = TenderSiae.objects.select_related("tender", "siae").all()
     context_object_name = "tendersiaes"
