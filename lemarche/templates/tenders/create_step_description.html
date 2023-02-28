@@ -127,11 +127,16 @@ document.addEventListener('alpine:init', () => {
                 } else if (completeCount[0]==0){
                     count = 0.1;
                     unity = "K";
+                } else if(completeCount[0]=="750K") { // manage special case of 750k-1M
+                    unity = completeCount[0].substring(completeCount[0].length - 1);
+                    count = completeCount[0].slice(0, -1);
+
                 } else {
                     count = completeCount[0];
                     unity = completeCount[1].substring(completeCount[1].length - 1);
                 }
                 let factor = unity == "K" ? 10**3 : 10**6; // "K" or "M"
+
                 count = count * factor;
                 if(count < 5000){
                     let hours = Math.round(count / 26);
