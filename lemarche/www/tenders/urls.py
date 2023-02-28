@@ -25,7 +25,7 @@ urlpatterns = [
         "<str:slug>/structures-interesses",
         RedirectView.as_view(pattern_name="tenders:detail-siae-list", permanent=True),
         name="detail-siae-list-old",
-    ),
+    ),  # TODO: delete in 2024
     path("<str:slug>/prestataires", TenderSiaeListView.as_view(), name="detail-siae-list"),
     path("<str:slug>/contact-click-stat", TenderDetailContactClickStat.as_view(), name="detail-contact-click-stat"),
 ]
