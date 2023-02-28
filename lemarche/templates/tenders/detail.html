@@ -82,7 +82,7 @@
                         </a>
                     {% endif %}
                     {% if is_validated %}
-                        <a href="{% url 'tenders:detail-siae-interested' tender.slug %}" id="show-tender-siae-list-from-detail-btn" class="btn btn-primary">
+                        <a href="{% url 'tenders:detail-siae-list' tender.slug %}" id="show-tender-siae-list-from-detail-btn" class="btn btn-primary">
                             {{ siae_detail_contact_click_date_count }} structures intéressées
                         </a>
                     {% endif %}

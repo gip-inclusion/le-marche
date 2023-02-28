@@ -6,7 +6,7 @@ from lemarche.www.tenders.views import (
     TenderDetailContactClickStat,
     TenderDetailView,
     TenderListView,
-    TenderSiaeInterestedListView,
+    TenderSiaeListView,
 )
 
 
@@ -21,6 +21,11 @@ urlpatterns = [
     path("<str:slug>", TenderDetailView.as_view(), name="detail"),
     path("status/<status>", TenderListView.as_view(), name="list"),
     path("", TenderListView.as_view(), name="list"),
-    path("<str:slug>/structures-interessees", TenderSiaeInterestedListView.as_view(), name="detail-siae-interested"),
+    path(
+        "<str:slug>/structures-interesses",
+        RedirectView.as_view(pattern_name="tenders:detail-siae-list", permanent=True),
+        name="detail-siae-list-old",
+    ),  # TODO: delete in 2024
+    path("<str:slug>/prestataires", TenderSiaeListView.as_view(), name="detail-siae-list"),
     path("<str:slug>/contact-click-stat", TenderDetailContactClickStat.as_view(), name="detail-contact-click-stat"),
 ]
