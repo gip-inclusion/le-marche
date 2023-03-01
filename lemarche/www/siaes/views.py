@@ -26,6 +26,18 @@ from lemarche.www.siaes.forms import SiaeDownloadForm, SiaeFavoriteForm, SiaeSea
 
 
 CURRENT_SEARCH_QUERY_COOKIE_NAME = "current_search"
+# TODO: how to avoid hard-coded sector values like these?
+SECTOR_TRAITEUR_SLUG = "traiteur"
+SECTOR_GROUP_HYGIERE_SLUG_LIST = [
+    "nettoyage-specifique-chantiers-parkings-6",
+    "nettoyage-de-vehicules-12",
+    "nettoyage-de-locaux-16",
+    "produits-dentretien-et-desinfectants-29",
+    "articles-protection-covid-19",
+    "autre-56",
+    "nettoyage-urbain",
+    "nettoyage-industriel",
+]
 
 
 class SiaeSearchResultsView(FormMixin, ListView):
@@ -110,6 +122,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         Additional actions:
         - add buyer to contact list
         - add buyer who searched for sector 'traiteur' to contact list
+        - add buyer who searched for sector 'nettoyage' to contact list
         """
         self.object_list = self.get_queryset()
         user = request.user
@@ -118,8 +131,20 @@ class SiaeSearchResultsView(FormMixin, ListView):
             if user.kind == user.KIND_BUYER:
                 add_to_contact_list(user, "buyer_search")
                 if "current_sectors" in context:
-                    if next((sector for sector in context["current_sectors"] if sector["slug"] == "traiteur"), False):
+                    if next(
+                        (sector for sector in context["current_sectors"] if sector["slug"] == SECTOR_TRAITEUR_SLUG),
+                        False,
+                    ):
                         add_to_contact_list(user, "buyer_search_traiteur")
+                    if next(
+                        (
+                            sector
+                            for sector in context["current_sectors"]
+                            if sector["slug"] in SECTOR_GROUP_HYGIERE_SLUG_LIST
+                        ),
+                        False,
+                    ):
+                        add_to_contact_list(user, "buyer_search_nettoyage")
         return self.render_to_response(context)
 
 
