@@ -13,6 +13,8 @@ from lemarche.utils.urls import get_admin_url_object, get_share_url_object
 def send_tender_emails_to_siaes(tender: Tender):
     """
     All corresponding Siae will be contacted
+    - we send emails to both the Siae's 'contact_email' & the Siae's users 'email'
+    - but we avoid sending duplicate emails
 
     previous email_subject: f"{tender.get_kind_display()} : {tender.title} ({tender.author.company_name})"
     """
@@ -22,7 +24,9 @@ def send_tender_emails_to_siaes(tender: Tender):
     siae_users_send_count = 0
 
     for siae in siaes:
+        # send to siae 'contact_email'
         send_tender_email_to_siae(email_subject, tender, siae)
+        # also send to the siae's user(s) 'email' (if its value is different)
         for user in siae.users.all():
             siae_users_count += 1
             if user.email != siae.contact_email:
