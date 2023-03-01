@@ -91,6 +91,8 @@ def add_to_contact_list(user: User, type: str):
         contact_list_id = settings.MAILJET_NL_CL_BUYER_SEARCH_SIAE_LIST_ID
     elif type == "buyer_search_traiteur":
         contact_list_id = settings.MAILJET_NL_CL_BUYER_SEARCH_SIAE_TRAITEUR_LIST_ID
+    elif type == "buyer_search_nettoyage":
+        contact_list_id = settings.MAILJET_NL_CL_BUYER_SEARCH_SIAE_NETTOYAGE_LIST_ID
     elif type == "buyer_download":
         contact_list_id = settings.MAILJET_NL_CL_BUYER_DOWNLOAD_SIAE_LIST_ID
     else:
