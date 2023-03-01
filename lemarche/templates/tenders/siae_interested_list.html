@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load bootstrap4 static %}
 
-{% block title %}{{ page_title }}{{ block.super }}{% endblock %}
+{% block title %}Prestataires intéressés par mon besoin{{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
 <section>
@@ -14,7 +14,7 @@
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">Mes besoins</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'tenders:detail' tender.slug %}">{{ tender.title|truncatechars:25 }}</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Structures intéressées</li>
+                        <li class="breadcrumb-item active" aria-current="page">Prestataires intéressés</li>
                     </ol>
                 </nav>
             </div>
@@ -28,7 +28,7 @@
     <div class="container">
         <div class="row">
             <div class="col-12 col-lg-8">
-                <h1 class="mb-3 mb-lg-5">{{ tendersiaes.count }} structures intéressées</h1>
+                <h1 class="mb-3 mb-lg-5">{{ tendersiaes.count }} prestataire{{ tendersiaes.count|pluralize }} intéressé{{ tendersiaes.count|pluralize }}</h1>
             </div>
             <div class="col-12 col-lg-4">
                 <button type="button" class="btn btn-ico white-space-nowrap text-decoration-none btn-link text-important px-0 float-right {% if tendersiaes.count == 0 %}disabled{% endif %}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
