@@ -272,7 +272,8 @@ class TenderListViewTest(TestCase):
     def setUpTestData(cls):
         perimeter = PerimeterFactory(post_codes=["43705"], insee_code="06", name="Auvergne-Rhône-Alpes")
         cls.siae_user_1 = UserFactory(kind=User.KIND_SIAE)
-        cls.siae_1 = SiaeFactory(post_code=perimeter.post_codes[0])
+        cls.siae_1 = SiaeFactory()
+        cls.siae_2 = SiaeFactory(post_code=perimeter.post_codes[0])
         cls.siae_user_2 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_1])
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
@@ -288,7 +289,13 @@ class TenderListViewTest(TestCase):
             perimeters=[perimeter],
         )
         cls.tendersiae_3_1 = TenderSiae.objects.create(
-            tender=cls.tender_3, siae=cls.siae_1, detail_contact_click_date=timezone.now()
+            tender=cls.tender_3, siae=cls.siae_1, email_send_date=timezone.now()
+        )
+        cls.tendersiae_3_2 = TenderSiae.objects.create(
+            tender=cls.tender_3,
+            siae=cls.siae_2,
+            email_send_date=timezone.now(),
+            detail_contact_click_date=timezone.now(),
         )
 
     def test_anonymous_user_cannot_list_tenders(self):
@@ -311,6 +318,7 @@ class TenderListViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["tenders"]), 1)
+        self.assertNotContains(response, "2 prestataires ciblés")  # tender_3, but only visible to author
         self.assertNotContains(response, "1 prestataire intéressé")  # tender_3, but only visible to author
 
     def test_buyer_user_should_only_see_his_tenders(self):
@@ -319,6 +327,7 @@ class TenderListViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["tenders"]), 3)
+        self.assertContains(response, "2 prestataires ciblés")  # tender_3
         self.assertContains(response, "1 prestataire intéressé")  # tender_3
 
     def test_other_user_without_tender_should_not_see_any_tenders(self):
@@ -360,6 +369,7 @@ class TenderDetailViewTest(TestCase):
             tender=cls.tender_1,
             siae=cls.siae_1,
             source="EMAIL",
+            email_send_date=timezone.now(),
             email_link_click_date=timezone.now(),
             detail_display_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
@@ -456,11 +466,13 @@ class TenderDetailViewTest(TestCase):
         self.client.force_login(self.user_buyer_1)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
+        self.assertContains(response, "1 prestataire ciblé")
         self.assertContains(response, "1 prestataire intéressé")
         # but hidden for non-author
         self.client.force_login(self.user_buyer_2)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
+        self.assertNotContains(response, "1 prestataire ciblé")
         self.assertNotContains(response, "1 prestataire intéressé")
 
     def test_update_tendersiae_stats_on_tender_view(self):
@@ -751,14 +763,25 @@ class TenderSiaeListView(TestCase):
         cls.tender_1 = TenderFactory(author=cls.user_buyer_1)
         cls.tender_2 = TenderFactory(author=cls.user_buyer_2)
         cls.tendersiae_1_1 = TenderSiae.objects.create(
-            tender=cls.tender_1, siae=cls.siae_1, detail_contact_click_date=timezone.now()
+            tender=cls.tender_1,
+            siae=cls.siae_1,
+            email_send_date=timezone.now(),
+            detail_contact_click_date=timezone.now(),
         )
-        cls.tendersiae_1_2 = TenderSiae.objects.create(tender=cls.tender_1, siae=cls.siae_2)
+        cls.tendersiae_1_2 = TenderSiae.objects.create(
+            tender=cls.tender_1, siae=cls.siae_2, email_send_date=timezone.now()
+        )
         cls.tendersiae_1_3 = TenderSiae.objects.create(
-            tender=cls.tender_1, siae=cls.siae_3, detail_contact_click_date=timezone.now() - timedelta(hours=1)
+            tender=cls.tender_1,
+            siae=cls.siae_3,
+            email_send_date=timezone.now() - timedelta(hours=1),
+            detail_contact_click_date=timezone.now() - timedelta(hours=1),
         )
         cls.tendersiae_2_1 = TenderSiae.objects.create(
-            tender=cls.tender_2, siae=cls.siae_2, detail_contact_click_date=timezone.now()
+            tender=cls.tender_2,
+            siae=cls.siae_2,
+            email_send_date=timezone.now(),
+            detail_contact_click_date=timezone.now(),
         )
 
     def test_anonymous_user_cannot_view_tender_siae_interested_list(self):
@@ -773,7 +796,7 @@ class TenderSiaeListView(TestCase):
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["tendersiaes"]), 2)
+        self.assertEqual(len(response.context["tendersiaes"]), 3)  # email_send_date
         # forbidden
         for user in [self.user_buyer_2, self.user_partner, self.siae_user_1, self.siae_user_2]:
             self.client.force_login(user)
@@ -788,7 +811,7 @@ class TenderSiaeListView(TestCase):
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["tendersiaes"]), 2)
+        self.assertEqual(len(response.context["tendersiaes"]), 3)  # email_send_date
         self.assertIsNotNone(Tender.objects.get(id=self.tender_1.id).siae_interested_list_last_seen_date)
 
     def test_order_tender_siae_by_last_detail_contact_click_date(self):
@@ -796,6 +819,6 @@ class TenderSiaeListView(TestCase):
         self.assertEqual(self.tender_1.tendersiae_set.first().id, self.tendersiae_1_3.id)
         # but TenderSiaeListView are ordered by -detail_contact_click_date
         self.client.force_login(self.user_buyer_1)
-        url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
+        url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug, "status": "INTERESTED"})
         response = self.client.get(url)
         self.assertEqual(response.context["tendersiaes"][0].id, self.tendersiae_1_1.id)

@@ -68,6 +68,8 @@ class SiaeSearchForm(forms.Form):
     tender = forms.ModelChoiceField(
         queryset=Tender.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
     )
+    tender_status = forms.CharField(required=False, widget=forms.HiddenInput())
+
     favorite_list = forms.ModelChoiceField(
         queryset=FavoriteList.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
     )
@@ -126,10 +128,13 @@ class SiaeSearchForm(forms.Form):
         if networks:
             qs = qs.filter_networks(networks)
 
-        # un auteur d'un dépôt de besoin peut exporter la liste des structures intéressées
+        # un auteur d'un dépôt de besoin peut exporter la liste des prestataires (ciblés ou intéressés)
         tender = self.cleaned_data.get("tender", None)
         if tender:
-            qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_contact_click_date__isnull=False)
+            qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
+            tender_status = self.cleaned_data.get("tender_status", None)
+            if tender_status:
+                qs = qs.filter(tendersiae__detail_contact_click_date__isnull=False)
 
         favorite_list = self.cleaned_data.get("favorite_list", None)
         if favorite_list:

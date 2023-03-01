@@ -452,6 +452,10 @@ class Tender(models.Model):
         )
 
     @property
+    def siae_email_send_date_count(self):
+        return self.tendersiae_set.filter(email_send_date__isnull=False).count()
+
+    @property
     def siae_detail_contact_click_date_count(self):
         return self.tendersiae_set.filter(detail_contact_click_date__isnull=False).count()
 
