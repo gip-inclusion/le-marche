@@ -57,10 +57,10 @@
                     <i class="ri-download-line ri-lg"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-right">
-                    <a href="{% url 'siae:search_results_download' %}?tender={{ tender.slug }}&format=xls" id="tender-siae-interested-export-xls" class="dropdown-item">
+                    <a href="{% url 'siae:search_results_download' %}?tender={{ tender.slug }}&tender_status={{ status|default:"" }}&format=xls" id="tender-siae-interested-export-xls" class="dropdown-item">
                         Télécharger la liste (.xls)
                     </a>
-                    <a href="{% url 'siae:search_results_download' %}?tender={{ tender.slug }}&format=csv" id="tender-siae-interested-export-csv" class="dropdown-item">
+                    <a href="{% url 'siae:search_results_download' %}?tender={{ tender.slug }}&tender_status={{ status|default:"" }}&format=csv" id="tender-siae-interested-export-csv" class="dropdown-item">
                         Télécharger la liste (.csv)
                     </a>
                 </div>

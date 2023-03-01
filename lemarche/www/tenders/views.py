@@ -397,9 +397,10 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         qs = qs.filter(tender__slug=self.kwargs.get("slug"), email_send_date__isnull=False)
-        qs = qs.order_by("-detail_contact_click_date")
+        qs = qs.order_by("-email_send_date")
         if self.status:
             qs = qs.filter(detail_contact_click_date__isnull=False)
+            qs = qs.order_by("-detail_contact_click_date")
         return qs
 
     def get(self, request, status=None, *args, **kwargs):
@@ -414,4 +415,5 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["tender"] = Tender.objects.get(slug=self.kwargs.get("slug"))
+        context["status"] = self.status
         return context
