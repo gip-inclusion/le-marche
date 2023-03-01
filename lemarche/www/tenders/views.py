@@ -264,7 +264,8 @@ class TenderListView(LoginRequiredMixin, ListView):
 
     def get(self, request, status=None, *args, **kwargs):
         """
-        Update 'tender_list_last_seen_date'
+        - set status
+        - update 'tender_list_last_seen_date'
         """
         user = self.request.user
         self.status = status
@@ -328,7 +329,6 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
             context["siae_detail_display_date_count_all"] = siae_detail_display_date_count_all
         if user.is_authenticated:
             if tender.author == user:
-                context["siae_detail_contact_click_date_count"] = tender.siae_detail_contact_click_date_count
                 context["is_draft"] = tender.status == tender_constants.STATUS_DRAFT
                 context["is_pending_validation"] = tender.status == tender_constants.STATUS_PUBLISHED
                 context["is_validated"] = tender.status == tender_constants.STATUS_VALIDATED
@@ -392,17 +392,22 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, ListView):
     template_name = "tenders/siae_interested_list.html"
     queryset = TenderSiae.objects.select_related("tender", "siae").all()
     context_object_name = "tendersiaes"
+    status = None
 
     def get_queryset(self):
         qs = super().get_queryset()
-        qs = qs.filter(tender__slug=self.kwargs.get("slug"), detail_contact_click_date__isnull=False)
+        qs = qs.filter(tender__slug=self.kwargs.get("slug"), email_send_date__isnull=False)
         qs = qs.order_by("-detail_contact_click_date")
+        if self.status:
+            qs = qs.filter(detail_contact_click_date__isnull=False)
         return qs
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, status=None, *args, **kwargs):
         """
-        User should be tender owner : we update siae_interested_list_last_seen_date
+        - set status
+        - update 'siae_interested_list_last_seen_date'
         """
+        self.status = status
         Tender.objects.filter(slug=self.kwargs.get("slug")).update(siae_interested_list_last_seen_date=timezone.now())
         return super().get(request, *args, **kwargs)
 

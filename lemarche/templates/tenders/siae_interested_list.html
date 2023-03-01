@@ -1,4 +1,4 @@
-{% extends "layouts/base.html" %}
+{% extends BASE_TEMPLATE %}
 {% load bootstrap4 static %}
 
 {% block title %}Prestataires intéressés par mon besoin{{ block.super }}{% endblock %}
@@ -25,10 +25,31 @@
 
 {% block content %}
 <section class="pt-4 pb-6">
-    <div class="container">
+    {% block htmx %}
+    <div class="container" id="tenderSiaeList">
+        <ul role="navigation" class="nav nav-tabs nav-tabs--marche" style="border-bottom:0;">
+            {% url 'tenders:detail-siae-list' slug=tender.slug as TENDER_SIAE_LIST_URL %}
+            {% url 'tenders:detail-siae-list' slug=tender.slug status="INTERESTED" as TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL %}
+
+            <li class="nav-item">
+                <a role="button" hx-push-url="true" hx-get="{{ TENDER_SIAE_LIST_URL }}"
+                    class="nav-link{% if request.get_full_path == TENDER_SIAE_LIST_URL %} active{% endif %}"
+                    hx-target="#tenderSiaeList" hx-swap="outerHTML">
+                    Prestataires ciblés
+                </a>
+            </li>
+            <li class="nav-item">
+                <a role="button" hx-push-url="true" hx-get="{{ TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL }}"
+                    class="nav-link{% if request.get_full_path == TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL %} active{% endif %}"
+                    hx-target="#tenderSiaeList" hx-swap="outerHTML">
+                    Prestataires intéressés
+                </a>
+            </li>
+        </ul>
+
         <div class="row">
             <div class="col-12 col-lg-8">
-                <h1 class="mb-3 mb-lg-5">{{ tendersiaes.count }} prestataire{{ tendersiaes.count|pluralize }} intéressé{{ tendersiaes.count|pluralize }}</h1>
+                <h1 class="mb-3 mb-lg-5">{{ tendersiaes.count }} prestataire{{ tendersiaes.count|pluralize }}</h1>
             </div>
             <div class="col-12 col-lg-4">
                 <button type="button" class="btn btn-ico white-space-nowrap text-decoration-none btn-link text-important px-0 float-right {% if tendersiaes.count == 0 %}disabled{% endif %}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -55,5 +76,6 @@
             </div>
         </div>
     </div>
+    {% endblock %}
 </section>
 {% endblock %}
