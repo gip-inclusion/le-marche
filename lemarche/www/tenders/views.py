@@ -405,10 +405,10 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, ListView):
     def get(self, request, status=None, *args, **kwargs):
         """
         - set status
-        - update 'siae_interested_list_last_seen_date'
+        - update 'siae_list_last_seen_date'
         """
         self.status = status
-        Tender.objects.filter(slug=self.kwargs.get("slug")).update(siae_interested_list_last_seen_date=timezone.now())
+        Tender.objects.filter(slug=self.kwargs.get("slug")).update(siae_list_last_seen_date=timezone.now())
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

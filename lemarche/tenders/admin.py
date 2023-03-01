@@ -236,7 +236,7 @@ class TenderAdmin(admin.ModelAdmin):
             "Stats et autres",
             {
                 "fields": (
-                    "siae_interested_list_last_seen_date",
+                    "siae_list_last_seen_date",
                     "source",
                     "logs_display",
                     "extra_data_prettier",

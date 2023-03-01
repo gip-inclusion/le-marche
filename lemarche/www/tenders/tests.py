@@ -806,13 +806,13 @@ class TenderSiaeListView(TestCase):
             self.assertEqual(response.url, "/besoins/")
 
     def test_viewing_tender_siae_interested_list_should_update_stats(self):
-        self.assertIsNone(self.tender_1.siae_interested_list_last_seen_date)
+        self.assertIsNone(self.tender_1.siae_list_last_seen_date)
         self.client.force_login(self.user_buyer_1)
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["tendersiaes"]), 3)  # email_send_date
-        self.assertIsNotNone(Tender.objects.get(id=self.tender_1.id).siae_interested_list_last_seen_date)
+        self.assertIsNotNone(Tender.objects.get(id=self.tender_1.id).siae_list_last_seen_date)
 
     def test_order_tender_siae_by_last_detail_contact_click_date(self):
         # TenderSiae are ordered by -created_at by default
