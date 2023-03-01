@@ -397,7 +397,6 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         qs = qs.filter(tender__slug=self.kwargs.get("slug"), email_send_date__isnull=False)
-        qs = qs.order_by("-email_send_date")
         if self.status:
             qs = qs.filter(detail_contact_click_date__isnull=False)
             qs = qs.order_by("-detail_contact_click_date")

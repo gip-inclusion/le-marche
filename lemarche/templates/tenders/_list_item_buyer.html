@@ -45,7 +45,7 @@
                 {% if tender.status == tender.STATUS_VALIDATED %}
                     {% if tender.siae_detail_contact_click_since_last_seen_date_count %}
                         <span class="badge badge-base badge-pill badge-pilotage">
-                            <i class="ri-thumb-up-line ri-xl"></i> {{ tender.siae_detail_contact_click_since_last_seen_date_count }} nouveau{{ tender.siae_detail_contact_click_since_last_seen_date_count|pluralize:"x" }} prestataire{{ tender.siae_detail_contact_click_since_last_seen_date_count|pluralize }}
+                            <i class="ri-thumb-up-line ri-xl"></i> {{ tender.siae_detail_contact_click_since_last_seen_date_count }} nouveau{{ tender.siae_detail_contact_click_since_last_seen_date_count|pluralize:"x" }} prestataire{{ tender.siae_detail_contact_click_since_last_seen_date_count|pluralize }} intéressé{{ tender.siae_detail_contact_click_since_last_seen_date_count|pluralize }}
                         </span>
                     {% endif %}
                     <div class="row">
