@@ -38,10 +38,6 @@
                             <i class="ri-time-line"></i>
                             Publié le {{ tender.validated_at|date }}
                         </div>
-                        <div class="col-md-4">
-                            <i class="ri-mail-check-line"></i>
-                            <strong>{{ tender.siae_email_send_count|default:0 }} prestataire{{ tender.siae_email_send_count|pluralize }} contacté{{ tender.siae_email_send_count|pluralize }}</strong>
-                        </div>
                     {% endif %}
                 </div>
             </div>
@@ -53,6 +49,16 @@
                         </span>
                     {% endif %}
                     <div class="row">
+                        <div class="col-6">
+                            <h4 class="mt-2">
+                                <i class="ri-mail-check-line font-weight-light"></i> {{ tender.siae_email_send_count|default:0 }} prestataire{{ tender.siae_email_send_count|pluralize }} ciblé{{ tender.siae_email_send_count|pluralize }}
+                            </h4>
+                            {% if tender.siae_email_send_count %}
+                                <a href="{% url 'tenders:detail-siae-list' tender.slug %}" id="show-tender-siae-list-btn" class="btn btn-sm btn-primary">
+                                    Voir la liste
+                                </a>
+                            {% endif %}
+                        </div>
                         <div class="col-6">
                             <h4 class="mt-2">
                                 <i class="ri-thumb-up-line font-weight-light"></i> {{ tender.siae_detail_contact_click_count|default:0 }} prestataire{{ tender.siae_detail_contact_click_count|pluralize }} intéressé{{ tender.siae_detail_contact_click_count|pluralize }}
