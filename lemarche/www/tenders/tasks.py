@@ -13,24 +13,44 @@ from lemarche.utils.urls import get_admin_url_object, get_share_url_object
 def send_tender_emails_to_siaes(tender: Tender):
     """
     All corresponding Siae will be contacted
+    - we send emails to both the Siae's 'contact_email' & the Siae's users 'email'
+    - but we avoid sending duplicate emails
 
     previous email_subject: f"{tender.get_kind_display()} : {tender.title} ({tender.author.company_name})"
     """
     email_subject = "Une opportunité commerciale pour vous sur le Marché de l'inclusion"
     siaes = tender.siaes.all()
+    siae_users_count = 0
+    siae_users_send_count = 0
+
     for siae in siaes:
+        # send to siae 'contact_email'
         send_tender_email_to_siae(email_subject, tender, siae)
+        # also send to the siae's user(s) 'email' (if its value is different)
+        for user in siae.users.all():
+            siae_users_count += 1
+            if user.email != siae.contact_email:
+                send_tender_email_to_siae(email_subject, tender, siae, email_to_override=user.email)
+                siae_users_send_count += 1
 
     tender.tendersiae_set.update(email_send_date=timezone.now(), updated_at=timezone.now())
 
     # log email batch
-    log_item = {
+    siaes_log_item = {
         "action": "email_siaes_matched",
         "email_subject": email_subject,
         "email_count": siaes.count(),
         "email_timestamp": timezone.now().isoformat(),
     }
-    tender.logs.append(log_item)
+    tender.logs.append(siaes_log_item)
+    siae_users_log_item = {
+        "action": "email_siae_users_matched",
+        "email_subject": email_subject,
+        "email_count": siae_users_send_count,
+        "email_timestamp": timezone.now().isoformat(),
+        "siae_users_count": siae_users_count,
+    }
+    tender.logs.append(siae_users_log_item)
     tender.save()
 
 
@@ -40,6 +60,7 @@ def send_tender_emails_to_partners(tender: Tender):
     """
     partners = PartnerShareTender.objects.filter_by_tender(tender)
     email_subject = f"{tender.get_kind_display()} : {tender.title} ({tender.author.company_name})"
+
     for partner in partners:
         send_tender_email_to_partner(email_subject, tender, partner)
 
@@ -90,8 +111,10 @@ def send_tender_email_to_partner(email_subject: str, tender: Tender, partner: Pa
 
 
 # @task()
-def send_tender_email_to_siae(email_subject: str, tender: Tender, siae: Siae):
-    recipient_list = whitelist_recipient_list([siae.contact_email])
+def send_tender_email_to_siae(email_subject: str, tender: Tender, siae: Siae, email_to_override=None):
+    # override siae.contact_email if email_to_override is provided
+    email_to = email_to_override or siae.contact_email
+    recipient_list = whitelist_recipient_list([email_to])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
         recipient_name = siae.contact_full_name
