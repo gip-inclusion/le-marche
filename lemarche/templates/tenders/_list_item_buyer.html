@@ -3,7 +3,7 @@
 <div class="card c-card c-card--marche c-card--link siae-card" role="button" data-url="{% url 'tenders:detail' tender.slug %}">
     <div class="card-body">
         <div class="row">
-            <div class="col-md-8" style="border-right:1px solid">
+            <div class="col-md-8" style="border-right:1px solid;">
                 <p class="mb-1">
                     Date de clôture : {{ tender.deadline_date|default:"" }}
                     {% if tender.deadline_date_is_outdated %}
@@ -49,13 +49,13 @@
                         </span>
                     {% endif %}
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-6" style="border-right:1px solid;">
                             <h4 class="mt-2">
                                 <i class="ri-mail-check-line font-weight-light"></i> {{ tender.siae_email_send_count|default:0 }} prestataire{{ tender.siae_email_send_count|pluralize }} ciblé{{ tender.siae_email_send_count|pluralize }}
                             </h4>
                             {% if tender.siae_email_send_count %}
                                 <a href="{% url 'tenders:detail-siae-list' tender.slug %}" id="show-tender-siae-list-btn" class="btn btn-sm btn-primary">
-                                    Voir la liste
+                                    Voir
                                 </a>
                             {% endif %}
                         </div>
@@ -65,7 +65,7 @@
                             </h4>
                             {% if tender.siae_detail_contact_click_count %}
                                 <a href="{% url 'tenders:detail-siae-list' tender.slug %}" id="show-tender-siae-list-btn" class="btn btn-sm btn-primary">
-                                    Voir la liste
+                                    Voir
                                 </a>
                             {% endif %}
                         </div>
