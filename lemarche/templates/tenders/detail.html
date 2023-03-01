@@ -90,13 +90,13 @@
                                 <i class="ri-checkbox-circle ri-xl text-info"></i>
                             </div>
                             <div class="col">
-                                <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} est validé et publié !</p>
+                                <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} est validé et envoyé !</p>
                             </div>
                         </div>
                     </div>
                     <a href="{% url 'tenders:detail-siae-list' tender.slug %}" id="show-tender-siae-list-from-detail-btn" class="btn btn-primary">
                         <i class="ri-thumb-up-line"></i>
-                        {{ siae_detail_contact_click_date_count }} prestataires intéressés
+                        {{ siae_detail_contact_click_date_count }} prestataire{{ siae_detail_contact_click_date_count|pluralize }} intéressé{{ siae_detail_contact_click_date_count|pluralize }}
                     </a>
                 {% endif %}
             {% endif %}

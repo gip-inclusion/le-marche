@@ -31,25 +31,31 @@
                 <div class="row">
                     <div class="col-md-4">
                         <i class="ri-time-line"></i>
-                        Publié le {{ tender.updated_at|date }}
+                        Créé le {{ tender.created_at|date }}
                     </div>
-                    <div class="col-md-4">
-                        <i class="ri-mail-check-line"></i>
-                        <strong>{{ tender.siae_email_send_count|default:0 }} structures contactées</strong>
-                    </div>
+                    {% if tender.status == tender.STATUS_VALIDATED %}
+                        <div class="col-md-4">
+                            <i class="ri-time-line"></i>
+                            Publié le {{ tender.validated_at|date }}
+                        </div>
+                        <div class="col-md-4">
+                            <i class="ri-mail-check-line"></i>
+                            <strong>{{ tender.siae_email_send_count|default:0 }} prestataire{{ tender.siae_email_send_count|pluralize }} contacté{{ tender.siae_email_send_count|pluralize }}</strong>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="col-md-4 text-center my-auto">
                 {% if tender.status == tender.STATUS_VALIDATED %}
                     {% if tender.siae_detail_contact_click_since_last_seen_date_count %}
                         <span class="badge badge-base badge-pill badge-pilotage">
-                            <i class="ri-thumb-up-line ri-xl"></i> {{ tender.siae_detail_contact_click_since_last_seen_date_count }} nouveaux prestataires
+                            <i class="ri-thumb-up-line ri-xl"></i> {{ tender.siae_detail_contact_click_since_last_seen_date_count }} nouveau{{ tender.siae_detail_contact_click_since_last_seen_date_count|pluralize:"x" }} prestataire{{ tender.siae_detail_contact_click_since_last_seen_date_count|pluralize }}
                         </span>
                     {% endif %}
                     <div class="row">
                         <div class="col-6">
                             <h4 class="mt-2">
-                                <i class="ri-thumb-up-line font-weight-light"></i> {{ tender.siae_detail_contact_click_count|default:0 }} prestataires intéressés
+                                <i class="ri-thumb-up-line font-weight-light"></i> {{ tender.siae_detail_contact_click_count|default:0 }} prestataire{{ tender.siae_detail_contact_click_count|pluralize }} intéressé{{ tender.siae_detail_contact_click_count|pluralize }}
                             </h4>
                             {% if tender.siae_detail_contact_click_count %}
                                 <a href="{% url 'tenders:detail-siae-list' tender.slug %}" id="show-tender-siae-list-btn" class="btn btn-sm btn-primary">
@@ -59,7 +65,7 @@
                         </div>
                     </div>
                 {% else %}
-                    <i>Le besoin n'est pas encore envoyé.</i>
+                    <i>Le besoin n'a pas encore été envoyé.</i>
                 {% endif %}
             </div>
         </div>
