@@ -113,7 +113,7 @@ class TenderQuerySet(models.QuerySet):
                 Case(
                     When(
                         tendersiae__detail_contact_click_date__gte=Greatest(
-                            F("siae_interested_list_last_seen_date"), F("created_at")
+                            F("siae_list_last_seen_date"), F("created_at")
                         ),
                         then=1,
                     ),
@@ -309,7 +309,7 @@ class Tender(models.Model):
     )
 
     # stats
-    siae_interested_list_last_seen_date = models.DateTimeField(
+    siae_list_last_seen_date = models.DateTimeField(
         "Date de dernière visite de l'auteur sur la page 'structures intéressées'", blank=True, null=True
     )
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
