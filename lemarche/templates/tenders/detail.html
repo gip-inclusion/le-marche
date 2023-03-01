@@ -95,7 +95,7 @@
                         </div>
                     </div>
                     <a href="{% url 'tenders:detail-siae-list' tender.slug %}" id="show-tender-siae-list-from-detail-btn" class="btn btn-primary mb-2">
-                        <i class="ri-mail-check-line"></i>
+                        <i class="ri-focus-2-line"></i>
                         {{ tender.siae_email_send_date_count }} prestataire{{ tender.siae_email_send_date_count|pluralize }} ciblé{{ tender.siae_email_send_date_count|pluralize }}
                     </a>
                     <a href="{% url 'tenders:detail-siae-list' tender.slug "INTERESTED" %}" id="show-tender-siae-list-from-detail-btn" class="btn btn-primary">
