@@ -311,7 +311,7 @@ class TenderListViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["tenders"]), 1)
-        self.assertNotContains(response, "1 structures intéressées")  # tender_3, but only visible to author
+        self.assertNotContains(response, "1 prestataire intéressé")  # tender_3, but only visible to author
 
     def test_buyer_user_should_only_see_his_tenders(self):
         self.client.force_login(self.user_buyer_1)
@@ -319,7 +319,7 @@ class TenderListViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["tenders"]), 3)
-        self.assertContains(response, "1 structures intéressées")  # tender_3
+        self.assertContains(response, "1 prestataire intéressé")  # tender_3
 
     def test_other_user_without_tender_should_not_see_any_tenders(self):
         self.client.force_login(self.user_partner)
@@ -456,12 +456,12 @@ class TenderDetailViewTest(TestCase):
         self.client.force_login(self.user_buyer_1)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
-        self.assertContains(response, "1 structures intéressées")
+        self.assertContains(response, "1 prestataire intéressé")
         # but hidden for non-author
         self.client.force_login(self.user_buyer_2)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
-        self.assertNotContains(response, "1 structures intéressées")
+        self.assertNotContains(response, "1 prestataire intéressé")
 
     def test_update_tendersiae_stats_on_tender_view(self):
         self.tender_1.siaes.add(self.siae_2)
