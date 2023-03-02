@@ -53,9 +53,8 @@
                         <div class="col-6" style="border-right:1px solid;">
                             <p class="font-weight-bold mt-2">
                                 <i class="ri-focus-2-line font-weight-light"></i>&nbsp;{{ tender.siae_email_send_count|default:0 }} prestataire{{ tender.siae_email_send_count|pluralize }} ciblé{{ tender.siae_email_send_count|pluralize }}
-                            </h6>
+                            </p>
                             {% if tender.siae_email_send_count %}
-                                <br />
                                 <a href="{% url 'tenders:detail-siae-list' tender.slug %}" id="show-tender-siae-list-btn" class="btn btn-sm btn-primary">
                                     Voir
                                 </a>
@@ -66,7 +65,6 @@
                                 <i class="ri-thumb-up-line font-weight-light"></i>&nbsp;{{ tender.siae_detail_contact_click_count|default:0 }} prestataire{{ tender.siae_detail_contact_click_count|pluralize }} intéressé{{ tender.siae_detail_contact_click_count|pluralize }}
                             </p>
                             {% if tender.siae_detail_contact_click_count %}
-                                <br />
                                 <a href="{% url 'tenders:detail-siae-list' tender.slug "INTERESTED" %}" id="show-tender-siae-list-btn" class="btn btn-sm btn-primary">
                                     Voir
                                 </a>
