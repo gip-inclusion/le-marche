@@ -314,10 +314,14 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        """ """
         context = super().get_context_data(**kwargs)
+        # init
         tender: Tender = self.get_object()
         user = self.request.user
         user_kind = user.kind if user.is_authenticated else "anonymous"
+        show_nps = self.request.GET.get("nps", None)
+        # enrich context
         context["parent_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
         context["tender_kind_display"] = (
             TITLE_KIND_SOURCING_SIAE
@@ -333,6 +337,8 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
                 context["user_siae_has_detail_contact_click_date"] = TenderSiae.objects.filter(
                     tender=tender, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False
                 ).exists()
+                if show_nps:
+                    context["show_nps"] = True
             elif user.kind == User.KIND_PARTNER:
                 context["user_partner_can_display_tender_contact_details"] = user.can_display_tender_contact_details
             else:
@@ -372,12 +378,15 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
                 messages.add_message(
                     self.request, messages.WARNING, self.get_success_message(detail_contact_click_confirm)
                 )
-            return HttpResponseRedirect(self.get_success_url())
+            return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm))
         else:
             return HttpResponseForbidden()
 
-    def get_success_url(self):
-        return reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
+    def get_success_url(self, detail_contact_click_confirm):
+        success_url = reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
+        if detail_contact_click_confirm:
+            success_url += "?nps=true"
+        return success_url
 
     def get_success_message(self, detail_contact_click_confirm):
         if detail_contact_click_confirm:

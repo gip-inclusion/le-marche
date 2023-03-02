@@ -105,7 +105,7 @@
                 {% endif %}
             {% endif %}
             {% if tender.author != request.user and not tender.deadline_date_outdated %}
-                {% if tender.siae_detail_display_date_count_all %}
+                {% if tender.siae_detail_display_date_count_all > 0 %}
                     <div class="alert alert-warning mt-3 mt-lg-0" role="alert">
                         <p class="mb-0 fs-sm">
                             Déjà {{ tender.siae_detail_display_date_count_all }} prestataire{{ tender.siae_detail_display_date_count_all|pluralize }} inclusif{{ tender.siae_detail_display_date_count_all|pluralize }}
@@ -165,4 +165,31 @@
 {% block modals %}
 {% include "auth/_login_or_signup_siae_tender_modal.html" %}
 {% include "tenders/_detail_contact_click_confirm_modal.html" %}
+{% endblock %}
+
+{% block extra_js %}
+{% if TALLY_NPS_FORM_ID and show_nps %}
+    <script async type="text/javascript" src="https://tally.so/widgets/embed.js"></script>
+    <script type="text/javascript">
+        console.log("tally");
+        window.TallyConfig = {
+            "formId": "{{ TALLY_NPS_FORM_ID }}",
+            "popup": {
+                "width": 300,
+                "emoji": {
+                    "text": "👋",
+                    "animation": "wave"
+                },
+                // "showOnce": true,  // show once even if the user doesn't submit?
+                "doNotShowAfterSubmit": true,
+                "autoClose": 0,  // hide on submit delay
+                "hideTitle": true
+            },
+            "open": {
+                "trigger": "time",
+                "ms": 2000
+            }
+        };
+    </script>
+{% endif %}
 {% endblock %}
