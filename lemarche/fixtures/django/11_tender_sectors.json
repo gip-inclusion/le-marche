@@ -12,5 +12,12 @@
             "tender": 1,
             "sector": 2
         }
+    },
+    {
+        "model": "tenders.tender_sectors",
+        "fields": {
+            "tender": 2,
+            "sector": 30
+        }
     }
 ]
