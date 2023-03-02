@@ -934,21 +934,24 @@ class Siae(models.Model):
 
     @cached_property
     def stat_view_count_last_3_months(self):
-        if Tracker:
+        try:
             return Tracker.objects.siae_views_last_3_months(self.slug).count()
-        return "-"
+        except:  # noqa
+            return "-"
 
     @cached_property
     def stat_buyer_view_count_last_3_months(self):
-        if Tracker:
+        try:
             return Tracker.objects.siae_buyer_views_last_3_months(self.slug).count()
-        return "-"
+        except:  # noqa
+            return "-"
 
     @cached_property
     def stat_partner_view_count_last_3_months(self):
-        if Tracker:
+        try:
             return Tracker.objects.siae_partner_views_last_3_months(self.slug).count()
-        return "-"
+        except:  # noqa
+            return "-"
 
     def siae_user_requests_pending_count(self):
         # TODO: optimize + filter on assignee
