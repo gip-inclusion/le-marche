@@ -728,6 +728,7 @@ TYPEFORM_GROUPEMENT_AJOUT = "https://itou.typeform.com/to/AENCiOWD"
 FORM_PARTENAIRES = (
     "https://docs.google.com/forms/d/e/1FAIpQLScx1k-UJ-962_rSgPJGabc327gGjFUho6ypgcZHCubuwTl7Lg/viewform"
 )
+TALLY_NPS_FORM_ID = env.str("TALLY_NPS_FORM_ID", "")
 
 
 # Misc
