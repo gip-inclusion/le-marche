@@ -171,24 +171,24 @@
 {% if TALLY_NPS_FORM_ID and show_nps %}
     <script async type="text/javascript" src="https://tally.so/widgets/embed.js"></script>
     <script type="text/javascript">
-        console.log("tally");
         window.TallyConfig = {
             "formId": "{{ TALLY_NPS_FORM_ID }}",
             "popup": {
-                "width": 300,
+                "width": 400,
                 "emoji": {
                     "text": "👋",
                     "animation": "wave"
                 },
-                // "showOnce": true,  // show once even if the user doesn't submit?
-                "doNotShowAfterSubmit": true,
-                "autoClose": 0,  // hide on submit delay
-                "hideTitle": true
+                "open": {
+                    "trigger": "time",
+                    "ms": 2000
+                },
+                // "showOnce": true,  // show the popup only once to the same visitor (even if he didn't submit)
+                "doNotShowAfterSubmit": true,  // after the visitor submits the form, don't show the popup again
+                "autoClose": 0,  // automatically hide the popup after the form is submitted. optionally set a delay in seconds.
+                "hideTitle": true,
+                "layout": "modal"  // display in the center instead of bottom right corner
             },
-            "open": {
-                "trigger": "time",
-                "ms": 2000
-            }
         };
     </script>
 {% endif %}
