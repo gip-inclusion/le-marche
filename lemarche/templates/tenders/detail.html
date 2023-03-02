@@ -105,11 +105,11 @@
                 {% endif %}
             {% endif %}
             {% if tender.author != request.user and not tender.deadline_date_outdated %}
-                {% if siae_detail_display_date_count_all %}
+                {% if tender.siae_detail_display_date_count_all %}
                     <div class="alert alert-warning mt-3 mt-lg-0" role="alert">
                         <p class="mb-0 fs-sm">
-                            Déjà {{ siae_detail_display_date_count_all }} prestataire{{ siae_detail_display_date_count_all|pluralize }} inclusif{{ siae_detail_display_date_count_all|pluralize }}
-                            {{ siae_detail_display_date_count_all|pluralize:"a,ont" }} vu le besoin de ce client.
+                            Déjà {{ tender.siae_detail_display_date_count_all }} prestataire{{ tender.siae_detail_display_date_count_all|pluralize }} inclusif{{ tender.siae_detail_display_date_count_all|pluralize }}
+                            {{ tender.siae_detail_display_date_count_all|pluralize:"a,ont" }} vu le besoin de ce client.
                         </p>
                     </div>
                 {% endif %}

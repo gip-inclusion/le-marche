@@ -324,9 +324,6 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
             if user_kind == User.KIND_SIAE and tender.kind == Tender.TENDER_KIND_PROJECT
             else tender.get_kind_display()
         )
-        siae_detail_display_date_count_all = tender.siae_detail_display_date_count_all
-        if siae_detail_display_date_count_all > 0:
-            context["siae_detail_display_date_count_all"] = siae_detail_display_date_count_all
         if user.is_authenticated:
             if tender.author == user:
                 context["is_draft"] = tender.status == tender_constants.STATUS_DRAFT
