@@ -14,7 +14,6 @@
             "response_kind": [
                 "EMAIL"
             ],
-            "location": 58,
             "author": 2,
             "contact_first_name": "Acheteur",
             "contact_last_name": "Dupont",
@@ -41,7 +40,6 @@
             "response_kind": [
                 "EMAIL", "TEL"
             ],
-            "location": 14326,
             "author": 2,
             "contact_first_name": "Acheteur",
             "contact_last_name": "Dupont",
