@@ -33,7 +33,7 @@
     <div class="s-section__container container">
         <div class="s-section__row row">
             <div class="s-section__col col-12 col-lg-7">
-                <form method="POST" action="">
+                <form method="POST" action="" id="signup-form">
                     {% csrf_token %}
 
                     <div class="c-form">
@@ -83,7 +83,7 @@
                             <div class="col-12">
                                 <div class="form-row justify-content-end align-items-center">
                                     <div class="form-group col-12 col-lg-auto">
-                                        <button type="submit" class="btn btn-block btn-primary">
+                                        <button type="submit" id="signup-submit-btn" class="btn btn-block btn-primary">
                                             <span>Valider</span>
                                         </button>
                                     </div>
