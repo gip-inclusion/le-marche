@@ -58,7 +58,7 @@
                             <div class="col-12 float">
                                 <div class="form-row align-items-center justify-content-end">
                                     <div class="form-group col-12 col-lg-auto">
-                                        <button type="submit" class="btn btn-ico btn-block btn-primary">
+                                        <button type="submit" id="social-impact-calculator-submit-btn" class="btn btn-ico btn-block btn-primary">
                                             <i class="ri-search-line ri-lg"></i>
                                             <span>Calculer mon impact social</span>
                                         </button>
@@ -96,13 +96,13 @@
                     </p>
 
                     <div class="d-block d-lg-inline-block">
-                        <a id="acheter-inclusif-impact-social-buyers" href="{% url 'tenders:create' %}" class="btn btn-block btn-outline-primary btn-ico">
+                        <a href="{% url 'tenders:create' %}" id="acheter-inclusif-impact-social-buyers" class="btn btn-block btn-outline-primary btn-ico">
                             <span>Acheter inclusif</span>
                             <i class="ri-arrow-right-s-line ri-lg"></i>
                         </a>
                     </div>
                     <div class="fs-xs mt-3 mt-lg-5">
-                        <p class="mb-0">Il s’agit d’une estimation basée sur le mode de calcul d’un échantillon non représentatif de l’ensemble des prestataires inclusifs.</p>
+                        <p class="mb-0">Il s'agit d'une estimation basée sur le mode de calcul d'un échantillon non représentatif de l'ensemble des prestataires inclusifs.</p>
                     </div>
                 </div>
             {% endif %}

@@ -63,7 +63,7 @@
                                         </div>
                                         {% endif %}
                                         <div class="form-group col-12 col-lg-auto">
-                                            <button type="submit" class="btn btn-ico btn-block btn-primary">
+                                            <button type="submit" id="company-reference-calculator-submit-btn" class="btn btn-ico btn-block btn-primary">
                                                 <i class="ri-search-line ri-lg"></i>
                                                 <span>Lancer la recherche</span>
                                             </button>
@@ -82,7 +82,7 @@
                                 Bravo ! Votre entreprise travaille déjà avec <strong>{{ results.count }}</strong> prestataires inclusifs.
                             </p>
                             <div class="d-block d-lg-inline-block">
-                                <a href="{% url 'siae:search_results' %}?{{ current_search_query }}#searchContent" class="btn btn-block btn-outline-primary btn-ico" target="_blank">
+                                <a href="{% url 'siae:search_results' %}?{{ current_search_query }}#searchContent" id="company-reference-calculator-siae-list-btn" class="btn btn-block btn-outline-primary btn-ico" target="_blank">
                                     <span>Découvrir ces prestataires</span>
                                     <i class="ri-arrow-right-s-line"></i>
                                 </a>
