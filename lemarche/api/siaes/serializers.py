@@ -54,6 +54,7 @@ class SiaeDetailSerializer(serializers.ModelSerializer):
             "contact_email",
             "contact_phone",
             "contact_social_website",
+            "logo_url",
             "address",
             "city",
             "post_code",
@@ -86,17 +87,16 @@ class SiaeListSerializer(SiaeDetailSerializer):
             "kind",
             "presta_type",
             "contact_website",
-            # extra contact_ stuff available in detail
+            "logo_url",
+            # additional contact_ fields available in detail
             "address",
             "city",
             "post_code",
             "department",
             "region",
-            # "is_qpv",
-            # "is_cocontracting",
             "is_active",
-            # boolean stuff available in detail
-            # M2M stuff available in detail
+            # is_ boolean fields available in detail
+            # M2M fields available in detail
             "created_at",
             "updated_at",
         ]
