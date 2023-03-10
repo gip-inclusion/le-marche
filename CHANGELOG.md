@@ -4,6 +4,45 @@ Ressources :
 - [Calendar Versioning](https://calver.org/)
 - [CHANGELOG recommendations](https://keepachangelog.com/).
 
+## 2023.03.10
+### Ajouté
+ - [#edcc4]: Après une recherche 'nettoyage', ajouter les acheteurs à une list (#675)
+ - [#1b92e]: Tracking : ajout d'IDs sur certains éléments (#687)
+ - [#2fe5e]: Petits adjustements des stats des siaes dans le dépôt de besoin. ref #683
+ - [#a74f4]: Stats : nouvelles Custom Dimension Matomo (#676)
+ - [#d3262]: Mise à jour supplémentaire de textes (#673)
+ - [#94e2b]: Mise à jours de textes à destination des utilisateurs  (#672)
+ - [#6d36d]: Ajout d'un bouton pour inciter les utilisateurs à déposer un besoin dans la liste de favoris (#671)
+ - [#602da]: Simplification du partage de liste de structures (#669)
+ - [#2a8a2]: Formulaire de modification d'un Siae : ajouter un encart pour s'inspirer des structures complètes (#667)
+ - [#d1a4b]: Réseaux : afficher les stats à coté des onglets (#665)
+ - [#f48b6]: Après une recherche 'traiteur', ajouter les acheteurs à une list (#658)
+ - [#6abcb]: Scroll à la liste de recherche suite à une calibration (#656)
+ - [#f5f17]: Stats : ajout du formulaire NPS après une mise en relation (#685)
+ - Dépôt de besoin :
+    - [#25ded]: Calcul d'impact à la création d'un besoin (#653)
+    - [#380d9]: Dépôt de besoin : envoi d'un e-mail aux auteurs des besoins incrémentaux (#657)
+    - [#bd446]: Dépôt de besoin : fix de l'url généré après une mise en relation (#688)
+    - [#51c6c]: Ajout d'un conseil dans l'étape générale (#655)
+    - [#16df1]: envoyer le mail aux utilisateurs des structures (#674)
+    - [#93595]: renommer la stat siae_interested_list_last_seen_date (#684)
+    - [#b73cb]: séparer les prestataires ciblés & intéressés (#683)
+    - [#e351f]: mettre en vert le bouton "Répondre à cette opportunité" (#682)
+    - [#ab8c2]: cleanup de l'affichage d'un besoin (#681)
+    - [#34685]: renommer l'URL de la liste des structures intéressées (#680)
+    - [#010c6]: Dépôt de besoin : optimisations sur certaines pages / requêtes (#663)
+    - [#31edc]: Dépôt de besoin : logger lorsque le besoin est validé (#660)
+### Modifié
+- [#09cdf]: Mise à jour des dépendances (#664)
+- [#6e085]: Fix line-break on Tender siae stats. ref #683
+- [#e3601]: TDB: fix Siae stat display again. ref #512
+- [#ba566]: Fix du bug du calcul de l'impact social à la création de dépôt de besoin (gestion du cas 750k-1M) (#679)
+- [#76996]: fix amount required (#670)
+- [#23195]: Fix typo in Tender set_validated. ref #660
+- API:
+    - [#c3233]: ajouter le champ Siae.logo_url (#689)
+### Supprimé
+
 ## 2023.02.27
 
 ### Ajouté
