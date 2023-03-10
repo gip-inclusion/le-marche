@@ -216,7 +216,7 @@ def send_siae_interested_email_to_author(tender: Tender):
             template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_5_TEMPLATE_ID
         elif tender_siae_detail_contact_click_count % 5 == 0:
             should_send_email = True
-            email_subject = "5 nouveaux prestataire intéressés !"
+            email_subject = "5 nouveaux prestataires intéressés !"
             template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_5_MORE_TEMPLATE_ID
         else:
             pass
