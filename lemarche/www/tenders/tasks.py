@@ -204,19 +204,19 @@ def send_siae_interested_email_to_author(tender: Tender):
 
         if tender_siae_detail_contact_click_count == 1:
             should_send_email = True
-            email_subject = "Une première structure intéressée !"
+            email_subject = "Un premier prestataire intéressé !"
             template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_1_TEMPLATE_ID
         elif tender_siae_detail_contact_click_count == 2:
             should_send_email = True
-            email_subject = "Une deuxième structure intéressée !"
+            email_subject = "Un deuxième prestataire intéressé !"
             template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_2_TEMPLATE_ID
         elif tender_siae_detail_contact_click_count == 5:
             should_send_email = True
-            email_subject = "Une cinquième structure intéressée !"
+            email_subject = "Un cinquième prestataire intéressé !"
             template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_5_TEMPLATE_ID
         elif tender_siae_detail_contact_click_count % 5 == 0:
             should_send_email = True
-            email_subject = "5 nouvelles structures intéressées !"
+            email_subject = "5 nouveaux prestataire intéressés !"
             template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_5_MORE_TEMPLATE_ID
         else:
             pass
