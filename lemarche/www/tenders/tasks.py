@@ -204,19 +204,19 @@ def send_siae_interested_email_to_author(tender: Tender):
 
         if tender_siae_detail_contact_click_count == 1:
             should_send_email = True
-            email_subject = "Une première structure intéressée !"
+            email_subject = "Un premier prestataire intéressé !"
             template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_1_TEMPLATE_ID
         elif tender_siae_detail_contact_click_count == 2:
             should_send_email = True
-            email_subject = "Une deuxième structure intéressée !"
+            email_subject = "Un deuxième prestataire intéressé !"
             template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_2_TEMPLATE_ID
         elif tender_siae_detail_contact_click_count == 5:
             should_send_email = True
-            email_subject = "Une cinquième structure intéressée !"
+            email_subject = "Un cinquième prestataire intéressé !"
             template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_5_TEMPLATE_ID
         elif tender_siae_detail_contact_click_count % 5 == 0:
             should_send_email = True
-            email_subject = "5 nouvelles structures intéressées !"
+            email_subject = "5 nouveaux prestataires intéressés !"
             template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_5_MORE_TEMPLATE_ID
         else:
             pass
@@ -230,7 +230,7 @@ def send_siae_interested_email_to_author(tender: Tender):
                 variables = {
                     "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
                     "TENDER_TITLE": tender.title,
-                    "TENDER_SIAE_INTERESTED_LIST_URL": f"{get_share_url_object(tender)}/structures-interessees",  # noqa
+                    "TENDER_SIAE_INTERESTED_LIST_URL": f"{get_share_url_object(tender)}/prestataires",  # noqa
                 }
 
                 api_mailjet.send_transactional_email_with_template(
