@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load static bootstrap4 %}
 {% load theme_inclusion %}
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags advert_cms %}
 
 {% block title %}Trouvez des prestataires socialement responsables en 2 clics{{ block.super }}{% endblock %}
 {% block meta_description %}
@@ -70,6 +70,8 @@
         </div>
     </div>
 </section>
+
+{% advert %}
 
 {% include "pages/home_sections/_tenders_users_companies.html" %}
 {% include "pages/home_sections/_tenders_studies_case.html" %}

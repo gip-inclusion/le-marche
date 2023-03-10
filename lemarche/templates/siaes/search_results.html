@@ -1,5 +1,6 @@
 {% extends "layouts/base.html" %}
 {% load static bootstrap4 %}
+{% load wagtailcore_tags advert_cms %}
 
 {% block title %}Trouvez votre prestataire parmi 8600 structures inclusives{{ block.super }}{% endblock %}
 {% block meta_description %}
@@ -174,10 +175,14 @@
                 </div>
                 <div class="col-12 col-lg-4 siae-info mt-6 mt-sm-0">
                     <div class="siae-info-sticky">
+
                         <div class="map-holder mb-4">
                             <div id="map-siae-list" class="map-canvas"></div>
                         </div>
                         <hr />
+
+                        {% advert layout="card" %}
+
                         <div class="si-ideas">
                             <h3 class="h2 my-3">Idées reçues</h3>
                             <p>

@@ -1,0 +1,43 @@
+{% load wagtailimages_tags %}
+
+{% if advert %}
+    {% if layout == "horizontal" %}
+    <section class="s-article-picture-01 s-article-picture-01--marche">
+        <div class="s-article-picture-01__container container">
+            <div class="s-article-picture-01__row row">
+                <div class="s-article-picture-01__col s-article-picture-01__col--picture col-12 col-lg-5 d-flex align-items-center px-lg-4">
+                    <picture class="w-100">
+                        {% image advert.image width-400 %}
+                    </picture>
+                </div>
+                <div class="s-article-picture-01__col s-article-picture-01__col--article col-12 col-lg-7 d-flex align-items-center">
+                    <article>
+                        <h2>{{advert.title}}</h2>
+                        <p class="s-article-picture-01__col--article__cta" id="{{advert.id_call_to_action}}">
+                            <a href="{{advert.url}}" {% if advert.open_in_new_tab %}target="_blank"{% endif %}>
+                                <span>{{advert.call_to_action}}</span>
+                                <i class="ri-arrow-right-line ri-lg"></i>
+                            </a>
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% elif layout == "card" %}
+    <div class="card c-card has-links-inside mb-4">
+        <div class="card-header">
+            {% image advert.image width-400 %}
+        </div>
+        <div class="card-body">
+            <p class="h2 mb-0">{{advert.title}}</p>
+        </div>
+        <div class="card-footer text-right">
+            <a href="{{advert.url}}" id="{{advert.id_call_to_action}}" class="btn btn-sm btn-ico btn-link">
+                <span>{{advert.call_to_action}}</span>
+                <i class="ri-arrow-right-up-line"></i>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+{% endif %}
