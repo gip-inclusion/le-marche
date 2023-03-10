@@ -230,7 +230,7 @@ def send_siae_interested_email_to_author(tender: Tender):
                 variables = {
                     "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
                     "TENDER_TITLE": tender.title,
-                    "TENDER_SIAE_INTERESTED_LIST_URL": f"{get_share_url_object(tender)}/structures-interessees",  # noqa
+                    "TENDER_SIAE_INTERESTED_LIST_URL": f"{get_share_url_object(tender)}/prestataires",  # noqa
                 }
 
                 api_mailjet.send_transactional_email_with_template(
