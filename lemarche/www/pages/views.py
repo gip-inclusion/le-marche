@@ -10,7 +10,7 @@ from django.views.generic import DetailView, FormView, ListView, TemplateView, V
 from django.views.generic.edit import FormMixin
 
 from lemarche.pages.models import Page, PageFragment
-from lemarche.pages.utils import replace_page_content_strong, strip_page_content_surroundings_p
+from lemarche.pages.utils import add_class_to_element, strip_page_content_surroundings_p
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae, SiaeGroup
@@ -59,13 +59,14 @@ class HomeView(TemplateView):
         try:
             context["impact_custom_message"] = PageFragment.objects.get(title="Impact", is_live=True).content
             context["impact_custom_message"] = strip_page_content_surroundings_p(context["impact_custom_message"])
-            context["impact_custom_message"] = replace_page_content_strong(context["impact_custom_message"])
+            context["impact_custom_message"] = add_class_to_element(
+                context["impact_custom_message"], element="<strong>", class_to_add="text-important"
+            )
         except PageFragment.DoesNotExist:
             pass
         context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
         context["siae_count"] = Siae.objects.is_live().count()
         context["tender_count"] = Tender.objects.validated().count() + 30  # historic number (before form)
-        print(PageFragment.objects.get(title="Impact", is_live=True))
         return context
 
 

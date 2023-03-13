@@ -19,11 +19,11 @@ def strip_page_content_surroundings_p(content):
     return content
 
 
-def replace_page_content_strong(content):
+def add_class_to_element(content, element="<strong>", class_to_add="", style_to_add=""):
     """
-    on certain pages, we want to change the style of the <strong>text</strong>
+    on certain pages, we want to change the style of some elements
     """
-    content = content.replace(OPENING_STRONG, '<span class="text-important">')
-    content = content.replace(CLOSING_STRONG, "</span>")
+    element_with_class_and_style = f'{element[:-1]} class="{class_to_add}" style="{style_to_add}">'
+    content = content.replace(element, element_with_class_and_style)
 
     return content
