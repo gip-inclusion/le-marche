@@ -61,15 +61,20 @@
     </div>
 </section>
 
-<section class="s-section m-0 bg-nuance-09">
-    <div class="s-section__container container">
-        <div class="s-section__row row">
-            <div class="s-section__col col-12 py-5">
-                <h2 class="h1 font-weight-bolder m-0">Le marché c'est <span class="text-important">{{ user_buyer_count }}&nbsp;acheteurs</span> inscrits, <span class="text-important">{{ siae_count }}&nbsp;prestataires</span> référencés, <span class="text-important">{{ tender_count }}&nbsp;besoins</span> publiés.</h1>
+{% if impact_custom_message %}
+    <section class="s-section m-0 bg-nuance-09">
+        <div class="s-section__container container">
+            <div class="s-section__row row">
+                <div class="s-section__col col-12 py-5">
+                    {# <h2 class="h1 font-weight-bolder m-0">Le marché c'est <span class="text-important">{{ user_buyer_count }}&nbsp;acheteurs</span> inscrits, <span class="text-important">{{ siae_count }}&nbsp;prestataires</span> référencés, <span class="text-important">{{ tender_count }}&nbsp;besoins</span> publiés.</h1> #}
+                    <h2 class="h1 font-weight-bolder m-0">
+                        <i class="ri-shield-star-fill mr-2"></i>{{ impact_custom_message|safe }}
+                    </h2>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+{% endif %}
 
 {% include "pages/home_sections/_tenders_users_companies.html" %}
 {% include "pages/home_sections/_tenders_studies_case.html" %}
