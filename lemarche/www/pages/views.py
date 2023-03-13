@@ -16,7 +16,6 @@ from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae, SiaeGroup
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender
-from lemarche.users.models import User
 from lemarche.utils.apis import api_hubspot
 from lemarche.utils.tracker import track
 from lemarche.www.pages.forms import (
@@ -64,9 +63,6 @@ class HomeView(TemplateView):
             )
         except PageFragment.DoesNotExist:
             pass
-        context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
-        context["siae_count"] = Siae.objects.is_live().count()
-        context["tender_count"] = Tender.objects.validated().count() + 30  # historic number (before form)
         return context
 
 
