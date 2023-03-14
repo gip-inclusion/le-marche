@@ -5,9 +5,10 @@ from django.db.models import Q
 from modelcluster.fields import ParentalManyToManyField
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
-from wagtail.fields import RichTextField
+from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Page
 
+from lemarche.cms import blocks
 from lemarche.cms.forms import ArticlePageForm
 from lemarche.cms.snippets import ArticleCategory
 
@@ -140,3 +141,53 @@ class ArticleList(RoutablePageMixin, Page):
 
     parent_page_types = ["wagtailcore.Page"]
     subpage_types = ["cms.ArticlePage"]
+
+
+class HomePage(Page):
+    max_count = 1
+    banner_title = models.CharField(
+        default="Votre recherche de prestataires inclusifs est chronophage ?", max_length=120
+    )
+    banner_subtitle = models.CharField(
+        blank=True, max_length=120, default="Confiez votre sourcing au marché de l'inclusion !"
+    )
+    # banner_image = models.ForeignKey(
+    #     "wagtailimages.Image",
+    #     null=True,
+    #     blank=False,
+    #     on_delete=models.SET_NULL,
+    #     # related_name=''
+    # )
+    banner_id_call_to_action = models.SlugField(
+        default="home-demande",
+        verbose_name="slug",
+        allow_unicode=True,
+        max_length=255,
+        help_text="id du call to action (pour le suivi)",
+    )
+    banner_call_to_action = models.CharField(
+        default="Publier un besoin d'achat", max_length=255, verbose_name="Titre du call to action"
+    )
+
+    content = StreamField(
+        [
+            ("website_stats", blocks.StatsWebsite()),
+            ("section_they_publish_tenders", blocks.SectionTheyPublishTenders()),
+            ("section_studies_cases_tenders", blocks.SectionStudiesCasesTenders()),
+            ("section_our_siaes", blocks.SectionOurSiaes()),
+            ("section_our_ressources", blocks.SectionOurRessources()),
+            ("section_what_find_here", blocks.SectionWhatFindHere()),
+            ("section_our_partners", blocks.SectionOurRessources()),
+        ],
+        null=True,
+        blank=True,
+        use_json_field=True,
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("banner_title"),
+        FieldPanel("banner_subtitle"),
+        FieldPanel("banner_id_call_to_action"),
+        FieldPanel("banner_call_to_action"),
+        FieldPanel("content"),
+    ]

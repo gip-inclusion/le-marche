@@ -1,0 +1,128 @@
+{% load static bootstrap4 wagtailcore_tags %}
+
+<section class="s-cards-grid-01 bg-gray-light">
+    <div class="s-cards-grid-01__container container">
+        <div class="s-cards-grid-01__row row">
+            <div class="s-cards-grid-01__col s-cards-grid-01__col--title col-12">
+                <h2 class="h2 mb-3 mb-lg-5">Nos ressources</h2>
+            </div>
+        </div>
+        <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3">
+            <div class="s-cards-grid-01__col col mb-3 mb-lg-5">
+                <div class="card c-card has-one-link-inside h-100 w-100 c-card--marche">
+                    <div class="card-header">
+                        <img src="{% static 'img/hp-02-photo-06.min.jpg' %}" class="img-fluid img-fitcover" alt="" loading="lazy">
+                    </div>
+                    <div class="card-body">
+                        <p class="h3 lh-base">Les groupements</p>
+                        <p>
+                            Les groupements d’entreprises sociales inclusives sont des partenaires de choix, vous garantissant : une excellence dans l’exécution un interlocuteur unique tout au long de la prestation, un impact social fort.
+                        </p>
+                    </div>
+                    <div class="card-footer text-right">
+                        <a href="{% url 'pages:groupements' %}" id="track_home_groups" class="btn btn-link btn-ico stretched-link">
+                            <span>Découvrir les groupements</span>
+                            <i class="ri-arrow-right-up-line ri-lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="s-cards-grid-01__col col mb-3 mb-lg-5">
+                <div class="card c-card has-one-link-inside h-100 w-100 c-card--marche">
+                    <div class="card-header">
+                        <img src="{% static 'img/hp-02-photo-05.jpg' %}" class="img-fluid img-fitcover" alt="" loading="lazy" />
+                    </div>
+                    <div class="card-body">
+                        <p class="h3 lh-sm">Valoriser vos achats</p>
+                        <p><span class="badge badge-sm badge-pill badge-accent-01 text-white">J’achète inclusif</span></p>
+                        <p>
+                            Il se peut que vous travailliez déjà avec des entreprises sociales inclusives (insertion / handicap) sans le savoir. Retrouvez la liste complète des structures réferencées sur le marché
+                        </p>
+                    </div>
+                    <div class="card-footer text-right">
+                        <a href="{% url 'pages:valoriser_achats' %}" id="track_home_achats" class="btn btn-link btn-ico stretched-link">
+                            <span>Découvrir la valorisation</span>
+                            <i class="ri-arrow-right-up-line ri-lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="s-cards-grid-01__col col mb-3 mb-lg-5">
+                <div class="card c-card has-one-link-inside h-100 w-100 c-card--marche">
+                    <div class="card-header">
+                        <img src="{% static 'img/hp-02-photo-03.min.jpg' %}" class="img-fluid img-fitcover" alt="" loading="lazy" />
+                    </div>
+                    <div class="card-body">
+                        <p class="h3 lh-sm">C’est quoi l’inclusion ?</p>
+                        <p><span class="badge badge-sm badge-pill badge-accent-03 text-primary">Je gère ma structure</span></p>
+                        <p>
+                            Devenez acteur d’une société plus juste en orientant votre politique d’achat vers des structures d'insertion et du handicap qui luttent activement contre l'exclusion sociale.
+                            Achetez inclusif !
+                        </p>
+                    </div>
+                    <div class="card-footer text-right">
+                        <a href="{% url 'pages:decouvrir_inclusion' %}" id="track_home_inclusion" class="btn btn-link btn-ico stretched-link">
+                            <span class="ml-0">Découvrir l’inclusion</span>
+                            <i class="ri-arrow-right-up-line ri-lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="s-cards-grid-01__col col mb-3 mb-lg-5">
+                <div class="card c-card has-one-link-inside h-100 w-100 c-card--marche">
+                    <div class="card-header">
+                        <img src="{% static 'img/hp-02-photo-04.min.jpg' %}" class="img-fluid img-fitcover" alt="" loading="lazy" />
+                    </div>
+                    <div class="card-body">
+                        <p class="h3 lh-sm">Vous souhaitez être accompagné dans vos achats</p>
+                        <p><span class="badge badge-sm badge-pill badge-accent-03 text-primary">Je gère ma structure</span></p>
+                        <p>
+                            Des organisations reconnues ont développé une expertise pour vous aider à aller plus loin dans votre démarche d'achat inclusif.
+                            Découvrez-les !
+                        </p>
+                    </div>
+                    <div class="card-footer text-right">
+                        <a href="{% url 'pages:partenaires' %}" id="track_home_partners" class="btn btn-link btn-ico stretched-link">
+                            <span>Découvrir des partenaires</span>
+                            <i class="ri-arrow-right-up-line ri-lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="s-cards-grid-01__col col mb-3 mb-lg-5">
+                <div class="card c-card has-one-link-inside h-100 w-100 c-card--marche">
+                    <div class="card-header">
+                        <img src="{% static 'img/hp-02-photo-02.min.jpg' %}" class="img-fluid img-fitcover" alt="" loading="lazy" />
+                    </div>
+                    <div class="card-body">
+                        <p class="h3 lh-sm">Acheteurs, alliez impact social et environnemental !</p>
+                        <p><span class="badge badge-sm badge-pill badge-pilotage text-primary">Les actus du marché</span></p>
+                        <p>
+                            Quelques soient les déchets que produit votre entreprise, vous trouverez forcément un prestataire capable de répondre à vos besoins.
+                        </p>
+                    </div>
+                    <div class="card-footer text-right">
+                        <a href="{% url 'pages:filiere_recyclage' %}" id="track_home_recycling" class="btn btn-link btn-ico stretched-link">
+                            <span>Découvrir le recyclage inclusif</span>
+                            <i class="ri-arrow-right-up-line ri-lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- Card CTA doit être la 6e (pour n'afficher que 2 lignes de ressources) -->
+            <div class="s-cards-grid-01__col col mb-3 mb-lg-5">
+                <div class="card c-card has-one-link-inside h-100 w-100 c-card--marche">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="w-100 text-center py-5">
+                            <p class="h3 lh-sm">Découvrez toutes nos ressources</p>
+                            <a href="{% slugurl 'ressources' %}" id="track_home_ressources" class="btn btn-primary btn-sm btn-ico stretched-link">
+                                <i class="ri-search-eye-line ri-lg"></i>
+                                <span>Découvrir</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
