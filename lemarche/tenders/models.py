@@ -170,6 +170,12 @@ class Tender(models.Model):
     description = models.TextField(
         verbose_name="Description du besoin", help_text="Décrivez en quelques mots votre besoin", blank=True
     )
+    presta_type = ChoiceArrayField(
+        verbose_name="Type de prestation",
+        base_field=models.CharField(max_length=20, choices=siae_constants.PRESTA_CHOICES),
+        blank=True,
+        default=list,
+    )
     constraints = models.TextField(
         verbose_name="Contraintes techniques spécifiques",
         help_text="Renseignez les contraintes liées à votre besoin",
@@ -256,12 +262,6 @@ class Tender(models.Model):
         verbose_name="France entière",
         help_text="Retournera uniquement les structures qui ont comme périmètre d'intervention 'France entière'",
         default=False,
-    )
-    presta_type = ChoiceArrayField(
-        verbose_name="Type de prestation",
-        base_field=models.CharField(max_length=20, choices=siae_constants.PRESTA_CHOICES),
-        blank=True,
-        default=list,
     )
     siae_kind = ChoiceArrayField(
         verbose_name="Type de structure",
