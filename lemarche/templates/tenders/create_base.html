@@ -57,7 +57,7 @@
             <div class="s-section__col col-12">
                 <div class="c-form">
                     <form method="POST" action="" id="tender-create-{{ wizard.steps.current }}-form" enctype="multipart/form-data">
-
+                        {% csrf_token %}
                         {{ wizard.management_form }}
 
                         {% block content_form %}
