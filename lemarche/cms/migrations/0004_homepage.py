@@ -6,6 +6,18 @@ import wagtail.fields
 from django.db import migrations, models
 
 
+def remove_homepage(apps, schema_editor):
+    Homepage = apps.get_model("cms", "homepage")
+    # need to delete first the homepage, go to scripts/create_wagtail_homepage.py
+    # comment above line (after script delete) to downgrade the migration
+    Homepage.objects.first().delete()
+
+
+def create_homepage(apps, schema_editor):
+    # use script scripts/create_wagtail_homepage.py
+    pass
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -165,4 +177,5 @@ class Migration(migrations.Migration):
             },
             bases=("wagtailcore.page",),
         ),
+        migrations.RunPython(code=create_homepage, reverse_code=remove_homepage),
     ]
