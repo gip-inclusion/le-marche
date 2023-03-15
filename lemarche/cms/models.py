@@ -158,26 +158,26 @@ class HomePage(Page):
     #     on_delete=models.SET_NULL,
     #     # related_name=''
     # )
-    banner_id_call_to_action = models.SlugField(
+    banner_cta_id = models.SlugField(
         default="home-demande",
         verbose_name="slug",
         allow_unicode=True,
         max_length=255,
         help_text="id du call to action (pour le suivi)",
     )
-    banner_call_to_action = models.CharField(
+    banner_cta_text = models.CharField(
         default="Publier un besoin d'achat", max_length=255, verbose_name="Titre du call to action"
     )
 
     content = StreamField(
         [
             ("website_stats", blocks.StatsWebsite()),
-            ("section_they_publish_tenders", blocks.SectionTheyPublishTenders()),
-            ("section_studies_cases_tenders", blocks.SectionStudiesCasesTenders()),
-            ("section_our_siaes", blocks.SectionOurSiaes()),
-            ("section_our_ressources", blocks.SectionOurRessources()),
-            ("section_what_find_here", blocks.SectionWhatFindHere()),
-            ("section_our_partners", blocks.SectionOurRessources()),
+            ("section_they_publish_tenders", blocks.TendersTestimonialsSection()),
+            ("section_studies_cases_tenders", blocks.TendersStudiesCasesSection()),
+            ("section_our_siaes", blocks.OurSiaesSection()),
+            ("section_our_ressources", blocks.OurRessourcesSection()),
+            ("section_what_find_here", blocks.WhatFindHereSection()),
+            ("section_our_partners", blocks.OurRessourcesSection()),
         ],
         null=True,
         blank=True,
@@ -187,7 +187,7 @@ class HomePage(Page):
     content_panels = Page.content_panels + [
         FieldPanel("banner_title"),
         FieldPanel("banner_subtitle"),
-        FieldPanel("banner_id_call_to_action"),
-        FieldPanel("banner_call_to_action"),
+        FieldPanel("banner_cta_id"),
+        FieldPanel("banner_cta_text"),
         FieldPanel("content"),
     ]
