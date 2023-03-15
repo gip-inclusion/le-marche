@@ -1,0 +1,41 @@
+{% load wagtailimages_tags %}
+
+{% if advert %}
+    {% if layout == "horizontal" %}
+    <section class="s-section bg-gray-light my-0 py-2">
+        <div class="container">
+            <div class="card my-3">
+                <div class="row no-gutters">
+                    <div class="col-md-6">
+                        {% image advert.image fill-600x200 class="img-fluid" %}
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card-body h-100 pt-6 px-6">
+                            <h2>{{advert.title}}</h2>
+                            <a id="{{advert.cta_id}}" href="{{advert.cta_url}}" class="btn btn-link px-0" {% if advert.cta_open_in_new_tab %}target="_blank"{% endif %}>
+                                <span>{{advert.cta_text}}</span>
+                                <i class="ri-arrow-right-line ri-lg"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% elif layout == "card" %}
+    <div class="card c-card has-links-inside mb-4">
+        <div class="card-header p-0">
+            {% image advert.image fill-600x150 class="img-fluid" %}
+        </div>
+        <div class="card-body">
+            <p class="h2 mb-0">{{advert.title}}</p>
+        </div>
+        <div class="card-footer text-right">
+            <a href="{{advert.cta_url}}" {% if advert.cta_open_in_new_tab %}target="_blank"{% endif %} id="{{advert.cta_id}}" class="btn btn-sm btn-ico btn-link">
+                <span>{{advert.cta_text}}</span>
+                <i class="ri-arrow-right-up-line"></i>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+{% endif %}
