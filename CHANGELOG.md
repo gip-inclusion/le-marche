@@ -8,7 +8,7 @@ Ressources :
 ### Ajouté
  - [#edcc4]: Après une recherche 'nettoyage', ajouter les acheteurs à une list (#675)
  - [#1b92e]: Tracking : ajout d'IDs sur certains éléments (#687)
- - [#2fe5e]: Petits adjustements des stats des siaes dans le dépôt de besoin. ref #683
+ - [#2fe5e]: Petits adjustements des stats des siaes dans le dépôt de besoin. (#683)
  - [#a74f4]: Stats : nouvelles Custom Dimension Matomo (#676)
  - [#d3262]: Mise à jour supplémentaire de textes (#673)
  - [#94e2b]: Mise à jours de textes à destination des utilisateurs  (#672)
