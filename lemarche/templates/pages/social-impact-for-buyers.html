@@ -1,6 +1,5 @@
 {% extends BASE_TEMPLATE %}
-{% load bootstrap4 static humanize %}
-{% load wagtailcore_tags advert_cms %}
+{% load bootstrap4 static humanize wagtailcore_tags advert_cms %}
 
 {% block title %}Calculer l’impact social d’un achat inclusif{{ block.super }}{% endblock %}
 {% block meta_description %}
@@ -112,7 +111,7 @@
     </div>
 </section>
 
-{% advert %}
+{% cms_advert %}
 
 {% endblock %}
 

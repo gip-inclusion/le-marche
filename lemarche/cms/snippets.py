@@ -37,27 +37,28 @@ class Advert(models.Model):
     )
 
     # call to action
-    url = models.URLField(null=True, blank=True)
-    id_call_to_action = models.SlugField(
+    cta_url = models.URLField(null=True, blank=True)
+    cta_id = models.SlugField(
         verbose_name="slug",
         allow_unicode=True,
         max_length=255,
         help_text="id du call to action (pour le suivi)",
     )
-    call_to_action = models.CharField(max_length=255, verbose_name="Titre du call to action")
-    open_in_new_tab = models.BooleanField(default=True, blank=True, verbose_name="Ouvrir dans une nouvelle fenêtre")
+    cta_text = models.CharField(max_length=255, verbose_name="Titre du call to action")
+    cta_open_in_new_tab = models.BooleanField(default=True, verbose_name="Ouvrir dans une nouvelle fenêtre")
 
     panels = [
         FieldPanel("title"),
         FieldPanel("image"),
-        FieldPanel("url"),
-        FieldPanel("id_call_to_action"),
-        FieldPanel("call_to_action"),
-        FieldPanel("open_in_new_tab"),
+        FieldPanel("cta_url"),
+        FieldPanel("cta_id"),
+        FieldPanel("cta_text"),
+        FieldPanel("cta_open_in_new_tab"),
     ]
 
     class Meta:
         verbose_name = "Panneau publicitaire"
+        verbose_name_plural = "Panneaux publicitaires"
 
     def __str__(self):
         return self.title

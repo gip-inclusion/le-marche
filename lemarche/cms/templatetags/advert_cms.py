@@ -7,8 +7,8 @@ register = template.Library()
 
 
 # Advert snippets
-@register.inclusion_tag("includes/_advert_snippet.html", takes_context=True)
-def advert(context, layout="horizontal"):
+@register.inclusion_tag("cms/snippets/_advert_snippet.html", takes_context=True)
+def cms_advert(context, layout="horizontal"):
     advert = Advert.objects.first()
     return {
         "advert": advert,

@@ -1,6 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load static bootstrap4 %}
-{% load wagtailcore_tags advert_cms %}
+{% load static bootstrap4 wagtailcore_tags advert_cms %}
 
 {% block title %}Trouvez votre prestataire parmi 8600 structures inclusives{{ block.super }}{% endblock %}
 {% block meta_description %}
@@ -181,7 +180,7 @@
                         </div>
                         <hr />
 
-                        {% advert layout="card" %}
+                        {% cms_advert layout="card" %}
 
                         <div class="si-ideas">
                             <h3 class="h2 my-3">Idées reçues</h3>
