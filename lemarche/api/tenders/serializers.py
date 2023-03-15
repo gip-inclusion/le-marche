@@ -1,17 +1,23 @@
 from rest_framework import serializers
 
+from lemarche.perimeters.models import Perimeter
+from lemarche.sectors.models import Sector
 from lemarche.tenders.models import Tender
 
 
 class TenderSerializer(serializers.ModelSerializer):
+    slug = serializers.CharField(read_only=True)
     sectors = serializers.SlugRelatedField(
-        slug_field="slug", many=True, read_only=True, allow_null=True, required=False
+        queryset=Sector.objects.all(), slug_field="slug", many=True, allow_null=True, required=False
     )
-    location = serializers.SlugRelatedField(slug_field="slug", read_only=True, allow_null=True, required=False)
+    location = serializers.SlugRelatedField(
+        queryset=Perimeter.objects.all(), slug_field="slug", allow_null=True, required=False
+    )
 
     class Meta:
         model = Tender
         fields = [
+            "slug",
             # general
             "kind",
             "title",

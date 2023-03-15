@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from lemarche.perimeters.factories import PerimeterFactory
-from lemarche.perimeters.models import Perimeter
+from lemarche.sectors.factories import SectorFactory
 from lemarche.tenders.models import Tender
 from lemarche.users.factories import UserFactory
 
@@ -37,6 +37,8 @@ class TenderCreateApiTest(TestCase):
         UserFactory()
         cls.user_with_token = UserFactory(api_key="admin")
         cls.perimeter = PerimeterFactory()
+        cls.sector_1 = SectorFactory()
+        cls.sector_2 = SectorFactory()
 
     def test_anonymous_user_cannot_create_tender(self):
         url = reverse("api:tenders-list")
@@ -53,14 +55,48 @@ class TenderCreateApiTest(TestCase):
         TENDER_JSON["title"] = "Test author"
         response = self.client.post(url, data=TENDER_JSON)
         self.assertEqual(response.status_code, 201)
+        self.assertIn("slug", response.data.keys())
         tender = Tender.objects.get(title="Test author")
         self.assertEqual(tender.author, self.user_with_token)
-        # with location
+
+    def test_create_tender_with_location(self):
+        url = reverse("api:tenders-list") + "?token=admin"
         TENDER_JSON["title"] = "Test location"
         TENDER_JSON["location"] = self.perimeter.slug
-        print(TENDER_JSON)
-        print(Perimeter.objects.first().__dict__)
         response = self.client.post(url, data=TENDER_JSON)
         self.assertEqual(response.status_code, 201)
         tender = Tender.objects.get(title="Test location")
         self.assertEqual(tender.location, self.perimeter)
+        # location can be empty
+        TENDER_JSON["title"] = "Test empty location"
+        TENDER_JSON["location"] = ""
+        response = self.client.post(url, data=TENDER_JSON)
+        self.assertEqual(response.status_code, 201)
+        # location must be valid
+        TENDER_JSON["title"] = "Test wrong location"
+        TENDER_JSON["location"] = self.perimeter.slug + "wrong"
+        response = self.client.post(url, data=TENDER_JSON)
+        self.assertEqual(response.status_code, 400)
+
+    def test_create_tender_with_sectors(self):
+        url = reverse("api:tenders-list") + "?token=admin"
+        TENDER_JSON["title"] = "Test sectors"
+        TENDER_JSON["sectors"] = [self.sector_1.slug, self.sector_2.slug]
+        response = self.client.post(url, data=TENDER_JSON)
+        self.assertEqual(response.status_code, 201)
+        tender = Tender.objects.get(title="Test sectors")
+        self.assertEqual(tender.sectors.count(), 2)
+        # sectors can be empty
+        TENDER_JSON["title"] = "Test empty sectors"
+        TENDER_JSON["sectors"] = []
+        response = self.client.post(url, data=TENDER_JSON)
+        self.assertEqual(response.status_code, 201)
+        # sectors must be valid
+        TENDER_JSON["title"] = "Test wrong sectors"
+        TENDER_JSON["sectors"] = [self.sector_1.slug + "wrong"]
+        response = self.client.post(url, data=TENDER_JSON)
+        self.assertEqual(response.status_code, 400)
+        TENDER_JSON["title"] = "Test wrong empty sectors"
+        TENDER_JSON["sectors"] = ""
+        response = self.client.post(url, data=TENDER_JSON)
+        self.assertEqual(response.status_code, 400)
