@@ -1,16 +1,18 @@
 from django.test import TestCase
 from django.urls import reverse
 
+from lemarche.perimeters.factories import PerimeterFactory
+from lemarche.perimeters.models import Perimeter
 from lemarche.tenders.models import Tender
 from lemarche.users.factories import UserFactory
 
 
 TENDER_JSON = {
     "kind": "TENDER",
-    "title": "string",
-    "sectors": [],
+    "title": "Test",
+    # "sectors": [],
     "presta_type": ["DISP"],
-    "location": "",
+    # "location": "",
     # "is_country_area": True,
     "description": "string",
     "start_working_date": "2023-03-14",
@@ -34,6 +36,7 @@ class TenderCreateApiTest(TestCase):
     def setUpTestData(cls):
         UserFactory()
         cls.user_with_token = UserFactory(api_key="admin")
+        cls.perimeter = PerimeterFactory()
 
     def test_anonymous_user_cannot_create_tender(self):
         url = reverse("api:tenders-list")
@@ -47,7 +50,17 @@ class TenderCreateApiTest(TestCase):
 
     def test_user_with_valid_api_key_can_create_tender(self):
         url = reverse("api:tenders-list") + "?token=admin"
+        TENDER_JSON["title"] = "Test author"
         response = self.client.post(url, data=TENDER_JSON)
         self.assertEqual(response.status_code, 201)
-        tender = Tender.objects.first()
+        tender = Tender.objects.get(title="Test author")
         self.assertEqual(tender.author, self.user_with_token)
+        # with location
+        TENDER_JSON["title"] = "Test location"
+        TENDER_JSON["location"] = self.perimeter.slug
+        print(TENDER_JSON)
+        print(Perimeter.objects.first().__dict__)
+        response = self.client.post(url, data=TENDER_JSON)
+        self.assertEqual(response.status_code, 201)
+        tender = Tender.objects.get(title="Test location")
+        self.assertEqual(tender.location, self.perimeter)
