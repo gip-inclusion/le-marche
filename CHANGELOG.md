@@ -5,7 +5,9 @@ Ressources :
 - [CHANGELOG recommendations](https://keepachangelog.com/).
 
 ## 2023.03.10
+
 ### Ajouté
+
  - [#edcc4]: Après une recherche 'nettoyage', ajouter les acheteurs à une list (#675)
  - [#1b92e]: Tracking : ajout d'IDs sur certains éléments (#687)
  - [#2fe5e]: Petits adjustements des stats des siaes dans le dépôt de besoin. (#683)
@@ -32,15 +34,18 @@ Ressources :
     - [#34685]: renommer l'URL de la liste des structures intéressées (#680)
     - [#010c6]: Dépôt de besoin : optimisations sur certaines pages / requêtes (#663)
     - [#31edc]: Dépôt de besoin : logger lorsque le besoin est validé (#660)
+
 ### Modifié
+
 - [#09cdf]: Mise à jour des dépendances (#664)
-- [#6e085]: Fix line-break on Tender siae stats. ref #683
-- [#e3601]: TDB: fix Siae stat display again. ref #512
+- [#6e085]: Fix line-break on Tender siae stats. (#683)
+- [#e3601]: TDB: fix Siae stat display again. (#512)
 - [#ba566]: Fix du bug du calcul de l'impact social à la création de dépôt de besoin (gestion du cas 750k-1M) (#679)
 - [#76996]: fix amount required (#670)
-- [#23195]: Fix typo in Tender set_validated. ref #660
+- [#23195]: Fix typo in Tender set_validated. (#660)
 - API:
     - [#c3233]: ajouter le champ Siae.logo_url (#689)
+
 ### Supprimé
 
 ## 2023.02.27
