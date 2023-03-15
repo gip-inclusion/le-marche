@@ -19,18 +19,12 @@
                 <h1 class="h1-hero lh-sm">{{page.banner_title}}</h1>
                 <h2 class="h2 mb-3 mb-lg-5">{{page.banner_subtitle}}</h2>
                 <ul class="list-unstyled mb-5">
+                {% for item in page.banner_arguments_list %}
                     <li class="d-flex mb-2">
                         <i class="text-success ri-checkbox-circle-fill display-2"></i>
-                        <span class="ml-2">Obtenez des réponses en moins de 24 heures.</span>
+                        <span class="ml-2">{{item}}</span>
                     </li>
-                    <li class="d-flex mb-2">
-                        <i class="text-success ri-checkbox-circle-fill display-2"></i>
-                        <span class="ml-2">Uniquement des prestataires conventionnés par l'Etat.</span>
-                    </li>
-                    <li class="d-flex mb-2">
-                        <i class="text-success ri-checkbox-circle-fill display-2"></i>
-                        <span class="ml-2">Impact social garanti.</span>
-                    </li>
+                {% endfor %}
                 </ul>
                 <p class="mb-0 mt-5">
                     <a href="{% url 'tenders:create' %}" id="{{page.banner_cta_id}}" class="btn btn-primary d-block d-md-inline-block mb-2">

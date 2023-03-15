@@ -6,7 +6,7 @@
     <div class="s-cards-grid-01__container container">
         <div class="s-cards-grid-01__row row">
             <div class="s-cards-grid-01__col s-cards-grid-01__col--title col-12">
-                <h2 class="h2 mb-3 mb-lg-5">Sur le marché</h2>
+                <h2 class="h2 mb-3 mb-lg-5">{{self.title}}</h2>
             </div>
         </div>
         <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3 justify-content-center">
@@ -16,7 +16,7 @@
                         <img height="80" src="{% static_theme_images 'ico-bicro-marche-local.svg' %}" alt="" />
                     </div>
                     <div class="card-body">
-                        <p class="h3 lh-base">Participez à la dynamique économique et sociale de votre territoire avec des partenaires de proximité.</p>
+                        <p class="h3 lh-base">{{self.subtitle}}</p>
                     </div>
                     <div class="card-footer"></div>
                 </div>
