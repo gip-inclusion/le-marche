@@ -3,6 +3,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from modelcluster.fields import ParentalManyToManyField
+from wagtail import blocks as wagtail_blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.fields import RichTextField, StreamField
@@ -151,6 +152,14 @@ class HomePage(Page):
     banner_subtitle = models.CharField(
         blank=True, max_length=120, default="Confiez votre sourcing au marché de l'inclusion !"
     )
+    banner_arguments_list = StreamField(
+        [
+            ("item", wagtail_blocks.CharBlock()),
+        ],
+        min_num=3,
+        max_num=3,
+        use_json_field=True,
+    )
     # banner_image = models.ForeignKey(
     #     "wagtailimages.Image",
     #     null=True,
@@ -177,7 +186,7 @@ class HomePage(Page):
             ("section_our_siaes", blocks.OurSiaesSection()),
             ("section_our_ressources", blocks.OurRessourcesSection()),
             ("section_what_find_here", blocks.WhatFindHereSection()),
-            ("section_our_partners", blocks.OurRessourcesSection()),
+            ("section_our_partners", blocks.OurPartnersSection()),
         ],
         null=True,
         blank=True,
@@ -189,5 +198,6 @@ class HomePage(Page):
         FieldPanel("banner_subtitle"),
         FieldPanel("banner_cta_id"),
         FieldPanel("banner_cta_text"),
+        FieldPanel("banner_arguments_list"),
         FieldPanel("content"),
     ]
