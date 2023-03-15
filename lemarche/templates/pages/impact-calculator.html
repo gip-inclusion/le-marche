@@ -1,5 +1,5 @@
 {% extends BASE_TEMPLATE %}
-{% load bootstrap4 static humanize %}
+{% load bootstrap4 static humanize wagtailcore_tags advert_cms %}
 
 {% block title %}Calibrer votre achat socialement responsable{{ block.super }}{% endblock %}
 {% block meta_description %}
@@ -117,6 +117,9 @@
         {% endblock htmx %}
     </div>
 </section>
+
+{% cms_advert %}
+
 {% endblock %}
 
 {% block extra_js %}
