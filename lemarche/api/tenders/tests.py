@@ -52,8 +52,9 @@ class TenderCreateApiTest(TestCase):
 
     def test_user_with_valid_api_key_can_create_tender(self):
         url = reverse("api:tenders-list") + "?token=admin"
-        TENDER_JSON["title"] = "Test author"
-        response = self.client.post(url, data=TENDER_JSON)
+        tender_data = TENDER_JSON.copy()
+        tender_data["title"] = "Test author"
+        response = self.client.post(url, data=tender_data)
         self.assertEqual(response.status_code, 201)
         self.assertIn("slug", response.data.keys())
         tender = Tender.objects.get(title="Test author")
@@ -61,42 +62,49 @@ class TenderCreateApiTest(TestCase):
 
     def test_create_tender_with_location(self):
         url = reverse("api:tenders-list") + "?token=admin"
-        TENDER_JSON["title"] = "Test location"
-        TENDER_JSON["location"] = self.perimeter.slug
-        response = self.client.post(url, data=TENDER_JSON)
+        tender_data = TENDER_JSON.copy()
+        tender_data["title"] = "Test location"
+        tender_data["location"] = self.perimeter.slug
+        response = self.client.post(url, data=tender_data)
         self.assertEqual(response.status_code, 201)
         tender = Tender.objects.get(title="Test location")
         self.assertEqual(tender.location, self.perimeter)
         # location can be empty
-        TENDER_JSON["title"] = "Test empty location"
-        TENDER_JSON["location"] = ""
-        response = self.client.post(url, data=TENDER_JSON)
+        tender_data = TENDER_JSON.copy()
+        tender_data["title"] = "Test empty location"
+        tender_data["location"] = ""
+        response = self.client.post(url, data=tender_data)
         self.assertEqual(response.status_code, 201)
         # location must be valid
-        TENDER_JSON["title"] = "Test wrong location"
-        TENDER_JSON["location"] = self.perimeter.slug + "wrong"
-        response = self.client.post(url, data=TENDER_JSON)
+        tender_data = TENDER_JSON.copy()
+        tender_data["title"] = "Test wrong location"
+        tender_data["location"] = self.perimeter.slug + "wrong"
+        response = self.client.post(url, data=tender_data)
         self.assertEqual(response.status_code, 400)
 
     def test_create_tender_with_sectors(self):
         url = reverse("api:tenders-list") + "?token=admin"
-        TENDER_JSON["title"] = "Test sectors"
-        TENDER_JSON["sectors"] = [self.sector_1.slug, self.sector_2.slug]
-        response = self.client.post(url, data=TENDER_JSON)
+        tender_data = TENDER_JSON.copy()
+        tender_data["title"] = "Test sectors"
+        tender_data["sectors"] = [self.sector_1.slug, self.sector_2.slug]
+        response = self.client.post(url, data=tender_data)
         self.assertEqual(response.status_code, 201)
         tender = Tender.objects.get(title="Test sectors")
         self.assertEqual(tender.sectors.count(), 2)
         # sectors can be empty
-        TENDER_JSON["title"] = "Test empty sectors"
-        TENDER_JSON["sectors"] = []
-        response = self.client.post(url, data=TENDER_JSON)
+        tender_data = TENDER_JSON.copy()
+        tender_data["title"] = "Test empty sectors"
+        tender_data["sectors"] = []
+        response = self.client.post(url, data=tender_data)
         self.assertEqual(response.status_code, 201)
         # sectors must be valid
-        TENDER_JSON["title"] = "Test wrong sectors"
-        TENDER_JSON["sectors"] = [self.sector_1.slug + "wrong"]
-        response = self.client.post(url, data=TENDER_JSON)
+        tender_data = TENDER_JSON.copy()
+        tender_data["title"] = "Test wrong sectors"
+        tender_data["sectors"] = [self.sector_1.slug + "wrong"]
+        response = self.client.post(url, data=tender_data)
         self.assertEqual(response.status_code, 400)
-        TENDER_JSON["title"] = "Test wrong empty sectors"
-        TENDER_JSON["sectors"] = ""
-        response = self.client.post(url, data=TENDER_JSON)
+        tender_data = TENDER_JSON.copy()
+        tender_data["title"] = "Test wrong empty sectors"
+        tender_data["sectors"] = ""
+        response = self.client.post(url, data=tender_data)
         self.assertEqual(response.status_code, 400)
