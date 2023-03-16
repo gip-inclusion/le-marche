@@ -156,10 +156,12 @@ class Tender(models.Model):
     SOURCE_FORM = "FORM"
     SOURCE_FORM_CSRF = "FORM_CSRF"
     SOURCE_STAFF_C4_CREATED = "STAFF_C4_CREATED"
+    SOURCE_API = "API"
     SOURCE_CHOICES = (
         (SOURCE_FORM, "Formulaire"),
         (SOURCE_FORM_CSRF, "Formulaire (erreur CSRF)"),
-        (SOURCE_STAFF_C4_CREATED, "Staff C4"),
+        (SOURCE_STAFF_C4_CREATED, "Staff Marché (via l'Admin)"),
+        (SOURCE_API, "API"),
     )
 
     title = models.CharField(verbose_name="Titre du besoin", max_length=255)

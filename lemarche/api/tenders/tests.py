@@ -59,6 +59,8 @@ class TenderCreateApiTest(TestCase):
         self.assertIn("slug", response.data.keys())
         tender = Tender.objects.get(title="Test author")
         self.assertEqual(tender.author, self.user_with_token)
+        self.assertEqual(tender.status, Tender.STATUS_PUBLISHED)
+        self.assertEqual(tender.source, Tender.SOURCE_API)
 
     def test_create_tender_with_location(self):
         url = reverse("api:tenders-list") + "?token=admin"
