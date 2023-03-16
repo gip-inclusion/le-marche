@@ -1,3 +1,4 @@
+from rest_framework import serializers
 from rest_framework.exceptions import APIException
 
 from lemarche.users.models import User
@@ -33,3 +34,8 @@ def custom_preprocessing_hook(endpoints):
         if path.startswith("/api/"):
             filtered.append((path, path_regex, method, callback))
     return filtered
+
+
+class BasicChoiceSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    name = serializers.CharField()
