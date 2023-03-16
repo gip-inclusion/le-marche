@@ -7,6 +7,7 @@ from lemarche.api.networks.views import NetworkViewSet
 from lemarche.api.perimeters.views import PerimeterAutocompleteViewSet, PerimeterKindViewSet, PerimeterViewSet
 from lemarche.api.sectors.views import SectorViewSet
 from lemarche.api.siaes.views import SiaeKindViewSet, SiaePrestaTypeViewSet, SiaeViewSet
+from lemarche.api.tenders.views import TenderViewSet
 
 
 # https://docs.djangoproject.com/en/dev/topics/http/urls/#url-namespaces-and-included-urlconfs
@@ -21,6 +22,7 @@ router.register(r"networks", NetworkViewSet, basename="networks")
 router.register(r"perimeters/kinds", PerimeterKindViewSet, basename="perimeter-kinds")
 router.register(r"perimeters/autocomplete", PerimeterAutocompleteViewSet, basename="perimeters-autocomplete")
 router.register(r"perimeters", PerimeterViewSet, basename="perimeters")
+router.register(r"tenders", TenderViewSet, basename="tenders")
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="api/home.html"), name="home"),

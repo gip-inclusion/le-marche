@@ -17,7 +17,7 @@ def check_user_token(token):
     auth protocol is implemented it will be replaced
     """
     try:
-        return User.objects.get(api_key=token)
+        return User.objects.has_api_key().get(api_key=token)
     except (User.DoesNotExist, AssertionError):
         raise Unauthorized
 
