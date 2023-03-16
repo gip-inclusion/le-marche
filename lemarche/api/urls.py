@@ -22,7 +22,7 @@ router.register(r"networks", NetworkViewSet, basename="networks")
 router.register(r"perimeters/kinds", PerimeterKindViewSet, basename="perimeter-kinds")
 router.register(r"perimeters/autocomplete", PerimeterAutocompleteViewSet, basename="perimeters-autocomplete")
 router.register(r"perimeters", PerimeterViewSet, basename="perimeters")
-router.register(r"tenders/kind", TenderKindViewSet, basename="tender-kinds")
+router.register(r"tenders/kinds", TenderKindViewSet, basename="tender-kinds")
 router.register(r"tenders", TenderViewSet, basename="tenders")
 
 urlpatterns = [
