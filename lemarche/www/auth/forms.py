@@ -77,6 +77,7 @@ class SignupForm(UserCreationForm):
             "first_name",
             "last_name",
             "phone",
+            "position",
             "company_name",
             "partner_kind",
             "email",
