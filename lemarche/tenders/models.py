@@ -127,16 +127,6 @@ class TenderQuerySet(models.QuerySet):
 class Tender(models.Model):
     """Appel d'offres et devis"""
 
-    TENDER_KIND_TENDER = "TENDER"
-    TENDER_KIND_QUOTE = "QUOTE"
-    TENDER_KIND_BOAMP = "BOAMP"
-    TENDER_KIND_PROJECT = "PROJ"
-    TENDER_KIND_CHOICES = (
-        (TENDER_KIND_TENDER, "Appel d'offres"),
-        (TENDER_KIND_QUOTE, "Devis"),
-        (TENDER_KIND_PROJECT, "Sourcing"),
-    )
-
     STATUS_DRAFT = tender_constants.STATUS_DRAFT
     STATUS_PUBLISHED = tender_constants.STATUS_PUBLISHED
     STATUS_VALIDATED = tender_constants.STATUS_VALIDATED
@@ -167,7 +157,10 @@ class Tender(models.Model):
     title = models.CharField(verbose_name="Titre du besoin", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
     kind = models.CharField(
-        verbose_name="Type de besoin", max_length=6, choices=TENDER_KIND_CHOICES, default=TENDER_KIND_TENDER
+        verbose_name="Type de besoin",
+        max_length=6,
+        choices=tender_constants.KIND_CHOICES,
+        default=tender_constants.KIND_TENDER,
     )
     description = models.TextField(
         verbose_name="Description du besoin", help_text="Décrivez en quelques mots votre besoin", blank=True
@@ -406,7 +399,7 @@ class Tender(models.Model):
 
     @cached_property
     def external_link_title(self):
-        if self.kind == self.TENDER_KIND_TENDER:
+        if self.kind == tender_constants.KIND_TENDER:
             return "Voir l'appel d'offres"
         return "Lien partagé"
 
