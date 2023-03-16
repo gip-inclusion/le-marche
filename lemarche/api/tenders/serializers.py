@@ -6,6 +6,7 @@ from lemarche.tenders.models import Tender
 
 
 class TenderSerializer(serializers.ModelSerializer):
+    slug = serializers.CharField(read_only=True)
     sectors = serializers.SlugRelatedField(
         queryset=Sector.objects.all(), slug_field="slug", many=True, allow_null=True, required=False
     )
@@ -16,6 +17,7 @@ class TenderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tender
         fields = [
+            "slug",
             # general
             "kind",
             "title",
