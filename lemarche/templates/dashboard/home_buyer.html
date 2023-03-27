@@ -159,6 +159,13 @@
                         </a>
                     </div>
                 </div>
+            </div>
+            <div class="s-section__col col-12 col-lg-7 mb-3 mb-lg-5">
+                {% include "dashboard/_ressource_card.html" with user_kind="BUYER" %}
+            </div>
+        </div>
+        <div class="s-section__row row">
+            <div class="s-section__col col-12 col-lg-6">
                 <div class="card h-45 w-100 rounded-lg mb-3 mb-lg-5">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -180,10 +187,9 @@
                         </a>
                     </div>
                 </div>
-                {% include "dashboard/_api_key_card.html" with api_key=user.api_key user_kind="BUYER" %}
             </div>
-            <div class="s-section__col col-12 col-lg-7 mb-3 mb-lg-5">
-                {% include "dashboard/_ressource_card.html" with user_kind="BUYER" %}
+            <div class="s-section__col col-12 col-lg-6">
+                {% include "dashboard/_api_key_card.html" with api_key=user.api_key user_kind="BUYER" %}
             </div>
         </div>
     </div>
