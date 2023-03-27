@@ -159,6 +159,27 @@
                         </a>
                     </div>
                 </div>
+                <div class="card h-45 w-100 rounded-lg mb-3 mb-lg-5">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <span class="d-none d-lg-inline-flex mr-3">
+                                <img src="{% static 'images/inclusion-03-picto-01.svg' %}" height="100" alt="" loading="lazy"></li>
+                            </span>
+                            <div>
+                                <p class="h4 lh-sm mb-lg-4">Mes favoris</p>
+                                <p>
+                                    Retrouvez tous vos prestataires favoris ici, et organisez-les par liste d'achat (ex : Liste prestataires nettoyage 2023).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer pt-0 bg-white text-right">
+                        <a href="{% url 'dashboard:profile_favorite_list' %}" id="track_dashboard_favorites" class="btn btn-link btn-ico">
+                            <span>Voir mes favoris</span>
+                            <i class="ri-arrow-right-s-line ri-xl"></i>
+                        </a>
+                    </div>
+                </div>
                 {% include "dashboard/_api_key_card.html" with api_key=user.api_key user_kind="BUYER" %}
             </div>
             <div class="s-section__col col-12 col-lg-7 mb-3 mb-lg-5">
