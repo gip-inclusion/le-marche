@@ -10,7 +10,7 @@
             <div class="col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
                         <li class="breadcrumb-item active" aria-current="page">API</li>
                     </ol>
                 </nav>
@@ -54,7 +54,7 @@
             <div class="col-12">
                 <h3 class="h1" id="auth">Authentification</h3>
                 <p>Certaines données nécessitent un <strong>token</strong> (jeton utilisateur).</p>
-                
+
                 <h4 class="h2">Comment obtenir un token ?</h4>
                 <ol>
                     <li><a href="{% url 'auth:signup' %}" class="text-dark">Créez-vous un compte</a> sur le marché de l'inclusion</li>

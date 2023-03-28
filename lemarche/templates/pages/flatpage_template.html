@@ -12,7 +12,7 @@
                 <div class="col-12">
                     <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ flatpage.title }}</li>
                         </ol>
                     </nav>
@@ -41,5 +41,5 @@
                 </div>
             </div>
         </div>
-    </section>  
+    </section>
 {% endblock %}
