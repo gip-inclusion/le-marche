@@ -1,7 +1,7 @@
 {% extends BASE_TEMPLATE %}
 {% load bootstrap4 static %}
 
-{% block title %}{{ page_title }}{{ block.super }}{% endblock %}
+{% block title %}{{ siae.name_display }}{{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
 <section>
@@ -12,7 +12,8 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_siae_list' network.slug %}">Mon réseau</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_detail' network.slug %}">Mon réseau</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_siae_list' network.slug %}">Mes adhérents</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ siae.name_display|truncatechars:25 }}</li>
                     </ol>
                 </nav>
@@ -27,7 +28,7 @@
     <div class="container">
         <div class="row">
             <div class="col-12 col-lg-8">
-                <h1 class="mb-3 mb-lg-5">Cette structure a reçu {{ tendersiaes.count }} demande{{ tendersiaes.count|pluralize }}</h1>
+                <h1 class="mb-3 mb-lg-5">Cet adhérent a reçu {{ tendersiaes.count }} demande{{ tendersiaes.count|pluralize }}</h1>
             </div>
         </div>
 
@@ -70,13 +71,13 @@
                         {% if not tendersiaes %}
                             <p class="text-muted my-5">
                                 {% if request.get_full_path == NETWORK_SIAE_TENDER_LIST_URL %}
-                                    Cette structure n'a reçue aucune demande.
+                                    Cet adhérent n'a reçu aucune demande.
                                 {% endif %}
                                 {% if request.get_full_path == NETWORK_SIAE_TENDER_DISPLAY_LIST_URL %}
-                                    Cette structure n'a vu aucune des demandes reçues.
+                                    Cet adhérent n'a vu aucune des demandes reçues.
                                 {% endif %}
                                 {% if request.get_full_path == NETWORK_SIAE_TENDER_CONTACT_CLICK_LIST_URL %}
-                                    Cette structure ne s'est jamais montré intéressé par une des demandes reçues.
+                                    Cet adhérent ne s'est jamais montré intéressé par une des demandes reçues.
                                 {% endif %}
                             </p>
                         {% endif %}

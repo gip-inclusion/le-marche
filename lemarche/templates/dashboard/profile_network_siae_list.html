@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load bootstrap4 %}
 
-{% block title %}Mon réseau{{ block.super }}{% endblock %}
+{% block title %}Mes adhérents{{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
 <section>
@@ -12,7 +12,8 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Mon réseau</li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_detail' network.slug %}">Mon réseau</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Mes adhérents</li>
                     </ol>
                 </nav>
             </div>
@@ -27,8 +28,9 @@
         <div class="row">
             <div class="col-12">
                 <h1 class="h1 mb-3 mb-lg-5">
-                    <strong>Mon réseau : {{ network }}</strong>
-                    <span class="badge badge-pill badge-marche-light fs-xs" style="vertical-align:middle;" title="{{ network.siaes.count }} adhérent{{ network.siaes.count|pluralize }}">{{ network.siaes.count }}</span>
+                    <strong>Mes adhérents</strong>
+                    <br />
+                    <small>Statistiques : toutes les demandes de devis, appel d'offres et sourcing</small>
                 </h1>
             </div>
         </div>
@@ -64,10 +66,8 @@
         <div class="row">
             <div class="col-12">
                 <h2>
-                    Statistiques : toutes les demandes de devis, appel d'offres et sourcing
-                    {% if siaes.count != network.siaes.count %}
-                        <span class="badge badge-pill fs-xs" style="vertical-align:middle;" title="{{ siaes.count }} structure{{ siaes.count|pluralize }} trouvée{{ siaes.count|pluralize }}">{{ siaes.count }}</span>
-                    {% endif %}
+                    {{ siaes.count }} structure{{ siaes.count|pluralize }}
+                    {% if siaes.count != network.siaes.count %}trouvée{{ siaes.count|pluralize }}{% endif %}
                 </h2>
                 <table class="table table-striped table-bordred">
                     <thead>
