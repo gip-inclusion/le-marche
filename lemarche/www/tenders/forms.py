@@ -3,17 +3,17 @@ from datetime import date
 from django import forms
 
 from lemarche.sectors.models import Sector
-from lemarche.tenders import constants
+from lemarche.tenders import constants, constants as tender_constants
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
 class AddTenderStepGeneralForm(forms.ModelForm):
-    TENDER_KIND_CHOICES = (
-        (Tender.TENDER_KIND_TENDER, "Appel d'offres"),
-        (Tender.TENDER_KIND_QUOTE, "Devis"),
-        (Tender.TENDER_KIND_PROJECT, "Sourcing inversé"),  # modif par rapport à Tender.TENDER_KIND_CHOICES
+    FORM_KIND_CHOICES = (
+        (tender_constants.KIND_TENDER, "Appel d'offres"),
+        (tender_constants.KIND_QUOTE, "Devis"),
+        (tender_constants.KIND_PROJECT, "Sourcing inversé"),  # modif par rapport à tender_constants.KIND_CHOICES
     )
 
     sectors = GroupedModelMultipleChoiceField(
@@ -46,7 +46,7 @@ class AddTenderStepGeneralForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["kind"].choices = self.TENDER_KIND_CHOICES
+        self.fields["kind"].choices = self.FORM_KIND_CHOICES
         self.fields["location"].to_field_name = "slug"
         # required fields
         # self.fields["perimeters"].required = True  # JS
@@ -99,7 +99,7 @@ class AddTenderStepDescriptionForm(forms.ModelForm):
         # required fields
         self.fields["description"].required = True
         # label, placeholder & help_text
-        if self.kind != Tender.TENDER_KIND_TENDER:
+        if self.kind != tender_constants.KIND_TENDER:
             self.fields["external_link"].label = "Lien à partager"
             self.fields["external_link"].help_text = None
         self.fields["amount"].label = "Montant € estimé de votre besoin"

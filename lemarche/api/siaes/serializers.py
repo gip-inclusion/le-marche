@@ -100,8 +100,3 @@ class SiaeListSerializer(SiaeDetailSerializer):
             "created_at",
             "updated_at",
         ]
-
-
-class SiaeChoiceSerializer(serializers.Serializer):
-    id = serializers.CharField()
-    name = serializers.CharField()

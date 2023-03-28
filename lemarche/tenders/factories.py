@@ -17,7 +17,7 @@ class TenderFactory(DjangoModelFactory):
 
     title = factory.Faker("name", locale="fr_FR")
     # slug auto-generated
-    kind = Tender.TENDER_KIND_QUOTE
+    kind = tender_constants.KIND_QUOTE
     presta_type = []
     response_kind = factory.List(
         [
