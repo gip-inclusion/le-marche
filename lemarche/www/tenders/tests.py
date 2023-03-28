@@ -359,7 +359,7 @@ class TenderDetailViewTest(TestCase):
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
         cls.user_admin = UserFactory(kind=User.KIND_ADMIN)
         cls.tender_1 = TenderFactory(
-            kind=Tender.TENDER_KIND_TENDER,
+            kind=tender_constants.KIND_TENDER,
             author=cls.user_buyer_1,
             amount=tender_constants.AMOUNT_RANGE_100_150,
             accept_share_amount=True,
@@ -632,7 +632,7 @@ class TenderDetailViewTest(TestCase):
         self.assertNotContains(response, "Lien partagé")
         # tender with same kind & different response_kind
         tender_2 = TenderFactory(
-            kind=Tender.TENDER_KIND_TENDER,
+            kind=tender_constants.KIND_TENDER,
             author=self.user_buyer_1,
             response_kind=[Tender.RESPONSE_KIND_EMAIL, Tender.RESPONSE_KIND_EXTERNAL],
             external_link="https://example.com",
@@ -646,7 +646,7 @@ class TenderDetailViewTest(TestCase):
         self.assertContains(response, "Voir l'appel d'offres")  # RESPONSE_KIND_EXTERNAL
         # tender with different kind & response_kind
         tender_3 = TenderFactory(
-            kind=Tender.TENDER_KIND_PROJECT,
+            kind=tender_constants.KIND_PROJECT,
             author=self.user_buyer_2,
             response_kind=[Tender.RESPONSE_KIND_TEL, Tender.RESPONSE_KIND_EXTERNAL],
             external_link="https://example.com",

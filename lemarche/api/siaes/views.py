@@ -5,8 +5,8 @@ from rest_framework import mixins, viewsets
 from rest_framework.response import Response
 
 from lemarche.api.siaes.filters import SiaeFilter
-from lemarche.api.siaes.serializers import SiaeChoiceSerializer, SiaeDetailSerializer, SiaeListSerializer
-from lemarche.api.utils import check_user_token
+from lemarche.api.siaes.serializers import SiaeDetailSerializer, SiaeListSerializer
+from lemarche.api.utils import BasicChoiceSerializer, check_user_token
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 
@@ -132,7 +132,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
 
 
 class SiaeKindViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    serializer_class = SiaeChoiceSerializer
+    serializer_class = BasicChoiceSerializer
     queryset = Siae.objects.none()
 
     def get_queryset(self):
@@ -145,7 +145,7 @@ class SiaeKindViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 
 class SiaePrestaTypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    serializer_class = SiaeChoiceSerializer
+    serializer_class = BasicChoiceSerializer
     queryset = Siae.objects.none()
 
     def get_queryset(self):

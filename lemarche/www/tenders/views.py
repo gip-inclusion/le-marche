@@ -118,7 +118,7 @@ class TenderCreateMultiStepView(SessionWizardView):
         if self.steps.current == self.STEP_CONFIRMATION:
             tender_dict = self.get_all_cleaned_data()
             tender_dict["sectors_list_string"] = ", ".join(tender_dict["sectors"].values_list("name", flat=True))
-            tender_dict["get_kind_display"] = get_choice(Tender.TENDER_KIND_CHOICES, tender_dict["kind"])
+            tender_dict["get_kind_display"] = get_choice(tender_constants.KIND_CHOICES, tender_dict["kind"])
             tender_dict["get_amount_display"] = get_choice(
                 tender_constants.AMOUNT_RANGE_CHOICES, tender_dict["amount"]
             )
@@ -325,7 +325,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
         context["parent_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
         context["tender_kind_display"] = (
             TITLE_KIND_SOURCING_SIAE
-            if user_kind == User.KIND_SIAE and tender.kind == Tender.TENDER_KIND_PROJECT
+            if user_kind == User.KIND_SIAE and tender.kind == tender_constants.KIND_PROJECT
             else tender.get_kind_display()
         )
         if user.is_authenticated:

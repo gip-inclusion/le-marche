@@ -110,3 +110,13 @@ class TenderCreateApiTest(TestCase):
         tender_data["sectors"] = ""
         response = self.client.post(url, data=tender_data)
         self.assertEqual(response.status_code, 400)
+
+
+class TenderChoicesApiTest(TestCase):
+    def test_should_return_tender_kinds_list(self):
+        url = reverse("api:tender-kinds-list")  # anonymous user
+        response = self.client.get(url)
+        self.assertEqual(response.data["count"], 3)
+        self.assertEqual(len(response.data["results"]), 3)
+        self.assertTrue("id" in response.data["results"][0])
+        self.assertTrue("name" in response.data["results"][0])
