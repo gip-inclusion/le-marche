@@ -12,12 +12,14 @@
 {% block title %}{{ page.title }} | {{ block.super }}{% endblock %}
 
 {% block content %}
-<section class="s-page-menu-01 s-page-menu-01--marche p-0">
+<section class="s-page-menu-01 s-page-menu-01--marche p-4">
     <div class="s-page-menu-01__container container">
         <div class="s-page-menu-01__row row">
             <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-md-8">
                 <h1 class="h1-hero lh-sm">{{page.banner_title}}</h1>
-                <h2 class="h2 mb-3 mb-lg-5">{{page.banner_subtitle}}</h2>
+                {% if page.banner_subtitle %}
+                    <h2 class="h2 mb-3 mb-lg-5">{{page.banner_subtitle}}</h2>
+                {% endif %}
                 <ul class="list-unstyled mb-5">
                 {% for item in page.banner_arguments_list %}
                     <li class="d-flex mb-2">

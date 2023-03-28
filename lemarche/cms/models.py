@@ -140,7 +140,7 @@ class ArticleList(RoutablePageMixin, Page):
             request,
         )
 
-    parent_page_types = ["wagtailcore.Page"]
+    # parent_page_types = ["cms.HomePage"]
     subpage_types = ["cms.ArticlePage"]
 
 
@@ -189,7 +189,15 @@ class HomePage(Page):
             ("section_our_partners", blocks.OurPartnersSection()),
         ],
         null=True,
-        blank=True,
+        block_counts={
+            "website_stats": {"min_num": 1, "max_num": 1},
+            "section_they_publish_tenders": {"min_num": 1, "max_num": 1},
+            "section_studies_cases_tenders": {"min_num": 1, "max_num": 1},
+            "section_our_siaes": {"min_num": 1, "max_num": 1},
+            "section_our_ressource": {"min_num": 1, "max_num": 1},
+            "section_what_find_her": {"min_num": 1, "max_num": 1},
+            "section_our_partners": {"min_num": 1, "max_num": 1},
+        },
         use_json_field=True,
     )
 
@@ -201,3 +209,5 @@ class HomePage(Page):
         FieldPanel("banner_arguments_list"),
         FieldPanel("content"),
     ]
+
+    parent_page_types = ["wagtailcore.Page"]
