@@ -3,11 +3,13 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from modelcluster.fields import ParentalManyToManyField
+from wagtail import blocks as wagtail_blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
-from wagtail.fields import RichTextField
+from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Page
 
+from lemarche.cms import blocks
 from lemarche.cms.forms import ArticlePageForm
 from lemarche.cms.snippets import ArticleCategory
 
@@ -138,5 +140,74 @@ class ArticleList(RoutablePageMixin, Page):
             request,
         )
 
-    parent_page_types = ["wagtailcore.Page"]
+    # parent_page_types = ["cms.HomePage"]
     subpage_types = ["cms.ArticlePage"]
+
+
+class HomePage(Page):
+    max_count = 1
+    banner_title = models.CharField(
+        default="Votre recherche de prestataires inclusifs est chronophage ?", max_length=120
+    )
+    banner_subtitle = models.CharField(
+        blank=True, max_length=120, default="Confiez votre sourcing au marché de l'inclusion !"
+    )
+    banner_arguments_list = StreamField(
+        [
+            ("item", wagtail_blocks.CharBlock()),
+        ],
+        min_num=3,
+        max_num=3,
+        use_json_field=True,
+    )
+    # banner_image = models.ForeignKey(
+    #     "wagtailimages.Image",
+    #     null=True,
+    #     blank=False,
+    #     on_delete=models.SET_NULL,
+    #     # related_name=''
+    # )
+    banner_cta_id = models.SlugField(
+        default="home-demande",
+        verbose_name="slug",
+        allow_unicode=True,
+        max_length=255,
+        help_text="id du call to action (pour le suivi)",
+    )
+    banner_cta_text = models.CharField(
+        default="Publier un besoin d'achat", max_length=255, verbose_name="Titre du call to action"
+    )
+
+    content = StreamField(
+        [
+            ("website_stats", blocks.StatsWebsite()),
+            ("section_they_publish_tenders", blocks.TendersTestimonialsSection()),
+            ("section_studies_cases_tenders", blocks.TendersStudiesCasesSection()),
+            ("section_our_siaes", blocks.OurSiaesSection()),
+            ("section_our_ressources", blocks.OurRessourcesSection()),
+            ("section_what_find_here", blocks.WhatFindHereSection()),
+            ("section_our_partners", blocks.OurPartnersSection()),
+        ],
+        null=True,
+        block_counts={
+            "website_stats": {"min_num": 1, "max_num": 1},
+            "section_they_publish_tenders": {"min_num": 1, "max_num": 1},
+            "section_studies_cases_tenders": {"min_num": 1, "max_num": 1},
+            "section_our_siaes": {"min_num": 1, "max_num": 1},
+            "section_our_ressources": {"min_num": 1, "max_num": 1},
+            "section_what_find_here": {"min_num": 1, "max_num": 1},
+            "section_our_partners": {"min_num": 1, "max_num": 1},
+        },
+        use_json_field=True,
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("banner_title"),
+        FieldPanel("banner_subtitle"),
+        FieldPanel("banner_cta_id"),
+        FieldPanel("banner_cta_text"),
+        FieldPanel("banner_arguments_list"),
+        FieldPanel("content"),
+    ]
+
+    parent_page_types = ["wagtailcore.Page"]

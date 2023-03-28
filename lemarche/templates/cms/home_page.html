@@ -1,0 +1,52 @@
+{% extends "layouts/base.html" %}
+{% load static bootstrap4 %}
+
+{% load wagtailcore_tags %}
+{% load wagtailimages_tags %}
+
+{% block meta_description %}
+<meta name="description" content="{{ page.search_description }}">
+{% endblock %}
+{% block body_class %}p-homepage{{ block.super }}{% endblock %}
+
+{% block title %}{{ page.title }} | {{ block.super }}{% endblock %}
+
+{% block content %}
+<section class="s-page-menu-01 s-page-menu-01--marche p-4">
+    <div class="s-page-menu-01__container container">
+        <div class="s-page-menu-01__row row">
+            <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-md-8">
+                <h1 class="h1-hero lh-sm">{{page.banner_title}}</h1>
+                {% if page.banner_subtitle %}
+                    <h2 class="h2 mb-3 mb-lg-5">{{page.banner_subtitle}}</h2>
+                {% endif %}
+                <ul class="list-unstyled mb-5">
+                {% for item in page.banner_arguments_list %}
+                    <li class="d-flex mb-2">
+                        <i class="text-success ri-checkbox-circle-fill display-2"></i>
+                        <span class="ml-2">{{item}}</span>
+                    </li>
+                {% endfor %}
+                </ul>
+                <p class="mb-0 mt-5">
+                    <a href="{% url 'tenders:create' %}" id="{{page.banner_cta_id}}" class="btn btn-primary d-block d-md-inline-block mb-2">
+                        <i class="ri-mail-send-line ri-lg mr-2"></i>{{page.banner_cta_text}}
+                    </a>
+                    <span class="d-block d-sm-inline pl-4 py-2">ou</span>
+                    <a href="{% url 'siae:search_results' %}" id="home-siae-search" class="btn btn-link">
+                        <i class="ri-search-line ri-xl mr-2"></i>Rechercher un prestataire
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% for block in page.content %}
+        {% include_block block %}
+{% endfor %}
+{% endblock %}
+
+{% block modals %}
+    {% include "auth/_login_or_signup_modal.html" %}
+{% endblock %}
