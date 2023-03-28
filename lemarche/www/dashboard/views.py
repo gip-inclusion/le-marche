@@ -221,6 +221,12 @@ class ProfileFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, Del
         )
 
 
+class ProfileNetworkDetailView(NetworkMemberRequiredMixin, DetailView):
+    template_name = "dashboard/profile_network_detail.html"
+    queryset = Network.objects.prefetch_related("siaes").all()
+    context_object_name = "network"
+
+
 class ProfileNetworkSiaeListView(NetworkMemberRequiredMixin, FormMixin, ListView):
     template_name = "dashboard/profile_network_siae_list.html"
     form_class = NetworkSiaeFilterForm

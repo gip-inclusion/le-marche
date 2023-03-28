@@ -1,0 +1,78 @@
+{% extends "layouts/base.html" %}
+{% load bootstrap4 %}
+
+{% block title %}Mon réseau{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Mon réseau</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="s-title-01">
+    <div class="s-title-01__container container">
+        <div class="s-title-01__row row">
+            <div class="s-title-01__col col-12">
+                <h1 class="s-title-01__title h1"><strong>Mon réseau : {{ network }}</strong></h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="s-section">
+    <div class="s-section__container container">
+        <div class="s-section__row row">
+            <div class="s-section__col col-12 col-lg-4">
+                <div class="card h-45 w-100 rounded-lg mb-3 mb-lg-5">
+                    <div class="card-body">
+                        <p class="h4 lh-sm mb-lg-4">Informations</p>
+                        <div class="d-flex">
+                            <div class="flex-fill text-center">
+                                <span class="h2 text-info d-block mb-1">{{ network.siaes.count }}</span>
+                                <span class="fs-sm lh-sm d-block">Adhérents</span>
+                            </div>
+                            {% if network.website %}
+                                <div class="flex-fill text-center">
+                                    <a href="{{ network.website }}" target="_blank" class="h2 text-info d-block mb-1">
+                                        Lien
+                                    </a>
+                                    <span class="fs-sm lh-sm d-block">vers le site internet <i class="ri-external-link-line" aria-hidden="true"></i></span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="s-section__col col-12 col-lg-4">
+                <div class="card h-45 w-100 mb-3 mb-lg-5">
+                    <div class="card-body">
+                        <p class="h4 lh-sm mb-lg-4">Mes adhérents</p>
+                        <p>
+                            Consultez la liste complète de vos adhérents, ainsi que le nombre de besoins qu'ils ont chacuns reçus.
+                        </p>
+                    </div>
+                    <div class="card-footer pt-0 bg-white text-right">
+                        <a href="{% url 'dashboard:profile_network_siae_list' network.slug %}" class="btn btn-link btn-ico">
+                            <span>Voir la liste</span>
+                            <i class="ri-arrow-right-s-line ri-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
