@@ -96,12 +96,6 @@
                         </li>
                         {% if user.is_authenticated %}
                             <li>
-                                <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites">
-                                    <i class="ri-star-line ri-lg"></i>
-                                    Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
-                                </a>
-                            </li>
-                            <li>
                                 <div class="dropdown">
                                     <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Mon espace
@@ -110,6 +104,10 @@
                                         <a href="{% url 'dashboard:home' %}" class="dropdown-item">
                                             <i class="ri-dashboard-line"></i>
                                             Tableau de bord
+                                        </a>
+                                        <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites" class="dropdown-item">
+                                            <i class="ri-star-line"></i>
+                                            Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
                                         </a>
                                         <a href="{% url 'dashboard:profile_edit' %}" class="dropdown-item">
                                             <i class="ri-user-line"></i>
@@ -203,16 +201,15 @@
                         <hr />
                         {% if user.is_authenticated %}
                             <li>
-                                <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites">
-                                    <i class="ri-star-line ri-lg"></i>
-                                    Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
-                                </a>
-                            </li>
-                            <hr />
-                            <li>
                                 <a href="{% url 'dashboard:home' %}" id="h_dashboard">
                                     <i class="ri-dashboard-line"></i>
                                     Tableau de bord
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites">
+                                    <i class="ri-star-line"></i>
+                                    Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
                                 </a>
                             </li>
                             <li>
