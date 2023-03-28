@@ -37,3 +37,16 @@ class TenderKindViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     @extend_schema(summary="Lister tous les types de besoins d'achat", tags=[Tender._meta.verbose_name_plural])
     def list(self, request, *args, **kwargs):
         return super().list(request, args, kwargs)
+
+
+class TenderAmountViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = BasicChoiceSerializer
+    queryset = Tender.objects.none()
+
+    def get_queryset(self):
+        tender_amounts = [{"id": id, "name": name} for (id, name) in tender_constants.AMOUNT_RANGE_CHOICES]
+        return tender_amounts
+
+    @extend_schema(summary="Lister tous les montants de besoins d'achat", tags=[Tender._meta.verbose_name_plural])
+    def list(self, request, *args, **kwargs):
+        return super().list(request, args, kwargs)
