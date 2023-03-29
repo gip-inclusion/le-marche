@@ -67,7 +67,7 @@ class ContactView(SuccessMessageMixin, FormView):
     success_message = (
         "Votre message a bien été envoyé, merci ! Notre délai de traitement est en moyenne de 3 jours ouvrés."
     )
-    success_url = reverse_lazy("pages:home")
+    success_url = reverse_lazy("wagtail_serve", args=("",))
 
     def get_initial(self):
         """If the user is logged in, fill the form with the user's basic info."""

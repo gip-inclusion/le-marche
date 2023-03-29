@@ -10,7 +10,7 @@
             <div class="col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'pages:home' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Liste d'achat favoris</li>
                     </ol>
@@ -68,7 +68,7 @@
                     </ul>
                 {% else %}
                     <p class="text-danger font-weight-bold">Vous n'avez pas encore créé de listes !</p>
-                {% endif %}                
+                {% endif %}
             </div>
         </div>
 

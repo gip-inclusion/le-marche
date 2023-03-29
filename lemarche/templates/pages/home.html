@@ -5,6 +5,9 @@
 {% block meta_description %}
 <meta name="description" content="Toutes les structures de l'insertion et du handicap à un seul endroit (ESAT, EA, EI...). Le marché de l'inclusion, un service gratuit porté par le ministère du Travail.">
 {% endblock %}
+{% block extra_head %}
+    <meta name="robots" content="noindex">
+{% endblock extra_head %}
 {% block body_class %}p-homepage{{ block.super }}{% endblock %}
 
 {% block content %}

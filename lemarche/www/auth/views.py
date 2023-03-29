@@ -67,7 +67,7 @@ class LoginView(auth_views.LoginView):
 class SignupView(SuccessMessageMixin, CreateView):
     template_name = "auth/signup.html"
     form_class = SignupForm
-    # success_url = reverse_lazy("pages:home")  # # doesn't work + see get_success_url() below
+    # success_url = reverse_lazy("wagtail_serve", args=("",))  # # doesn't work + see get_success_url() below
     success_message = "Inscription validée !"  # see get_success_message() below
 
     def form_valid(self, form):
@@ -95,7 +95,7 @@ class SignupView(SuccessMessageMixin, CreateView):
         - next_url if there is a next param
         - or dashboard if SIAE
         """
-        success_url = reverse_lazy("pages:home")
+        success_url = reverse_lazy("wagtail_serve", args=("",))
         next_url = self.request.GET.get("next", None)
         # sanitize next_url
         if next_url:

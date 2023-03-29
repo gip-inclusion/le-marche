@@ -167,4 +167,4 @@ class TenderAuthorOrAdminRequiredIfNotValidatedMixin(UserPassesTestMixin):
 
     def handle_no_permission(self):
         messages.add_message(self.request, messages.WARNING, "Vous n'avez pas accès à cette page.")
-        return HttpResponseRedirect(reverse_lazy("pages:home"))
+        return HttpResponseRedirect(reverse_lazy("wagtail_serve", args=("",)))

@@ -19,7 +19,7 @@ from lemarche.www.pages.views import (
 app_name = "pages"
 
 urlpatterns = [
-    path("", HomeView.as_view(), name="home"),
+    path("ancien_accueil", HomeView.as_view(), name="home"),
     path("contact/", ContactView.as_view(), name="contact"),
     # Calculator endpoints
     path("calibrer-achat-socialement-responsable/", ImpactCalculatorView.as_view(), name="impact_calculator"),
