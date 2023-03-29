@@ -1,6 +1,6 @@
 {% load static %}
 
-<div class="card h-45 w-100 rounded-lg  mb-3 mb-lg-5">
+<div class="card h-45 w-100 rounded-lg mb-3 mb-lg-5">
     <div class="card-body">
         <div class="d-flex align-items-center">
             <span class="d-none d-lg-inline-flex mr-3">
@@ -14,7 +14,7 @@
                         <div class="input-group input-group-sm">
                             <input type="text" id="user-api-key" class="form-control" value="{{ api_key }}" readonly />
                             <div class="input-group-append">
-                                <button id="user-api-key-copy-button" class="btn btn-primary" type="button" id="button-addon2">Copier</button>
+                                <button type="button" id="user-api-key-copy-button" class="btn btn-sm btn-primary">Copier</button>
                             </div>
                         </div>
                         <small class="form-text text-muted">Votre token</small>
@@ -22,7 +22,8 @@
                 {% else %}
                     {% if user_kind == "BUYER" %}
                         <p>
-                            Vous souhaitez entrer la liste de toutes les structures dans votre système d'information ? Découvrez comment faire.
+                            Vous souhaitez entrer la liste de toutes les structures dans votre système d'information ?
+                            Découvrez comment faire.
                         </p>
                     {% endif %}
                 {% endif %}
