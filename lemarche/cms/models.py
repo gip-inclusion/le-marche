@@ -12,6 +12,7 @@ from wagtail.models import Page
 from lemarche.cms import blocks
 from lemarche.cms.forms import ArticlePageForm
 from lemarche.cms.snippets import ArticleCategory
+from lemarche.pages.models import PageFragment
 
 
 class ArticlePage(Page):
@@ -211,3 +212,11 @@ class HomePage(Page):
     ]
 
     parent_page_types = ["wagtailcore.Page"]
+
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+        try:
+            context["sub_header_custom_message"] = PageFragment.objects.get(title="Bandeau", is_live=True).content
+        except PageFragment.DoesNotExist:
+            pass
+        return context
