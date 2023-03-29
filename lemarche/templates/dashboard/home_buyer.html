@@ -38,7 +38,7 @@
         <div class="s-section__row row">
             <div class="s-section__col col-12 col-lg-7 mb-3 mb-lg-5">
                 {% if user.tenders.count %}
-                    <div class="card h-100 w-100 rounded-lg">
+                    <div class="card h-100 w-100">
                         <div class="card-body">
                             <div class="row mb-sm-4">
                                 <div class="col-12 col-md">
@@ -70,7 +70,7 @@
                 {% endif %}
             </div>
             <div class="s-section__col col-12 col-lg-5">
-                <div class="card h-45 w-100 rounded-lg mb-3 mb-lg-5">
+                <div class="card h-45 w-100 mb-3 mb-lg-5">
                     <div class="card-body">
                         <p class="h4 lh-sm mb-lg-4">M'informer sur le marché</p>
                         <div class="d-flex">
@@ -107,10 +107,18 @@
                 {% else %}
                     <div class="card h-45 w-100 mb-3 mb-lg-5">
                         <div class="card-body">
-                            <p class="h4 lh-sm mb-lg-4">Mon réseau : {{ user.partner_network }}</p>
-                            <p>
-                                Suivez en temps réel les demandes de devis, appels d'offres et marchés reçus par vos adhérents et aidez-les à développer leur activité commerciale.
-                            </p>
+                            <div class="d-flex align-items-center">
+                                <span class="d-none d-lg-inline-flex mr-3">
+                                    <img src="{% static 'images/illustration-14.svg' %}" height="100" alt="" loading="lazy" />
+                                </span>
+                                <div>
+                                    <p class="h4 lh-sm mb-lg-4">Mon réseau : {{ user.partner_network }}</p>
+                                    <p>
+                                        Suivez en temps réel les demandes de devis, appels d'offres et marchés reçus par vos adhérents,
+                                        et aidez-les à développer leur activité commerciale.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                         <div class="card-footer pt-0 bg-white text-right">
                             <a href="{% url 'dashboard:profile_network_detail' user.partner_network.slug %}" id="dashboard_network_detail" class="btn btn-link btn-ico">
@@ -126,19 +134,26 @@
             <div class="s-section__col col-12 col-lg-5">
                 <div class="card h-45 w-100 mb-3 mb-lg-5">
                     <div class="card-body">
-                        <p class="h4 lh-sm mb-lg-4">Annuaire des facilitateurs</p>
-                        <p>
-                            Besoin d'aide pour travailler avec des structures de l'insertion ou du handicap ?
-                            Trouvez le partenaire qui pourra vous aider.
-                        </p>
+                        <div class="d-flex align-items-center">
+                            <span class="d-none d-lg-inline-flex mr-3">
+                                <img src="{% static 'images/illustration-15.svg' %}" height="100" alt="" loading="lazy" />
+                            </span>
+                            <div>
+                                <p class="h4 lh-sm mb-lg-4">Annuaire des facilitateurs</p>
+                                <p>
+                                    Besoin d'aide pour travailler avec des structures de l'insertion ou du handicap ?
+                                    Trouvez le partenaire qui pourra vous aider.
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-footer pt-0 bg-white">
+                    <div class="card-footer pt-0 bg-white text-right">
                         <a href="{{ FACILITATOR_LIST }}" id="track_dashboard_partners_facilitator_list" class="btn btn-outline-primary width-100 width-lg-auto" target="_blank" rel="noopener">
                             <i class="ri-download-line ri-lg mr-2"></i>Télécharger l'annuaire
                         </a>
                     </div>
                 </div>
-                <div class="card h-45 w-100 rounded-lg mb-3 mb-lg-5">
+                <div class="card h-45 w-100 mb-3 mb-lg-5">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <span class="d-none d-lg-inline-flex mr-3">
@@ -166,7 +181,7 @@
         </div>
         <div class="s-section__row row">
             <div class="s-section__col col-12 col-lg-6">
-                <div class="card h-45 w-100 rounded-lg mb-3 mb-lg-5">
+                <div class="card h-45 w-100 mb-3 mb-lg-5">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <span class="d-none d-lg-inline-flex mr-3">
