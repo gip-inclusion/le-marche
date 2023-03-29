@@ -300,8 +300,10 @@ class ProfileNetworkTenderListView(NetworkMemberRequiredMixin, ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         self.network = Network.objects.prefetch_related("siaes").get(slug=self.kwargs.get("slug"))
+        self.network_siaes = self.network.siaes.all()
         qs = qs.prefetch_many_to_many().select_foreign_keys()
-        qs = qs.filter_with_siaes(self.network.siaes.all())
+        qs = qs.filter_with_siaes(self.network_siaes)
+        qs = qs.with_network_siae_stats(self.network_siaes)
         qs = qs.order_by_deadline_date()
         return qs
 

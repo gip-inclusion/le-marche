@@ -319,7 +319,7 @@ class DashboardNetworkViewTest(TestCase):
             deadline_date=timezone.now() - timedelta(days=5),
         )
         cls.tendersiae_1_1 = TenderSiae.objects.create(
-            tender=cls.tender_1, siae=cls.siae_1, detail_contact_click_date=timezone.now()
+            tender=cls.tender_1, siae=cls.siae_1, email_send_date=timezone.now()
         )
         cls.tender_2 = TenderFactory()
 
@@ -370,4 +370,5 @@ class DashboardNetworkViewTest(TestCase):
         url = reverse("dashboard:profile_network_tender_list", args=[self.network_1.slug])
         response = self.client.get(url)
         self.assertContains(response, self.tender_1.title)
+        self.assertContains(response, "1 adhérent ciblé")
         self.assertNotContains(response, self.tender_2.title)
