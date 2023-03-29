@@ -1,11 +1,21 @@
 # common blocks
 from wagtail import blocks
 
+from lemarche.siaes.models import Siae
+from lemarche.tenders.models import Tender
+from lemarche.users.models import User
+
 
 class StatsWebsite(blocks.StructBlock):
     """A stats of marche website section"""
 
     # def get_context(self, request, *args, **kwargs):
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context)
+        context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
+        context["siae_count"] = Siae.objects.is_live().count()
+        context["tender_count"] = Tender.objects.validated().count() + 30  # historic number (before form)
+        return context
 
     class Meta:
         template = "cms/streams/stats_website.html"
