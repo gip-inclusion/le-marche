@@ -140,7 +140,7 @@ class SignupFormTest(StaticLiveServerTestCase):
 
         self._complete_form(user_profile=BUYER, with_submit=True)
 
-        self._assert_signup_success(redirect_url=reverse("pages:home"))
+        self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)))
 
     def test_buyer_submits_signup_form_success_extra_data(self):
 
@@ -174,7 +174,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.driver.find_element(By.XPATH, "//select[@id='id_partner_kind']/option[text()='Réseaux IAE']").click()
         self.driver.find_element(By.CSS_SELECTOR, "form button").click()
 
-        self._assert_signup_success(redirect_url=reverse("pages:home"))
+        self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)))
 
     def test_partner_submits_signup_form_error(self):
         user_profile = PARTNER.copy()
@@ -237,7 +237,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         driver.find_element(By.CSS_SELECTOR, "form button").click()
 
         # should redirect BUYER to home
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('pages:home')}")
+        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('wagtail_serve', args=('',))}")
 
     def test_user_can_sign_in_with_email_containing_capital_letters(self):
         UserFactory(email="siae5@example.com", kind=User.KIND_SIAE)

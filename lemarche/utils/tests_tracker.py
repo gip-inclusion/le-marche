@@ -13,7 +13,7 @@ def mock_track(path, action, **kargs):
 class TrackerTest(TestCase):
     @mock.patch("lemarche.utils.tracker.track")
     def test_tracker_is_called(self, mock_track):
-        url = reverse("pages:home")
+        url = reverse("wagtail_serve", args=("",))
         self.client.get(url)
         self.assertEqual(mock_track.call_count, 1)
 
@@ -32,7 +32,7 @@ class TrackerTest(TestCase):
     @mock.patch("lemarche.utils.tracker.track")
     def test_tracker_is_not_called_for_request_from_bot(self, mock_track):
         bot_ua = "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)"
-        url = reverse("pages:home")
+        url = reverse("wagtail_serve", args=("",))
         self.client.get(url, HTTP_USER_AGENT=bot_ua)
         self.assertEqual(mock_track.call_count, 0)
 

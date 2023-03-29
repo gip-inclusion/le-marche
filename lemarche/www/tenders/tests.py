@@ -74,7 +74,7 @@ class TenderCreateViewTest(TestCase):
 
         return [step_1, step_2, step_3, step_4, step_5]
 
-    def _check_every_step(self, tenders_step_data, final_redirect_page: str = reverse("pages:home")):
+    def _check_every_step(self, tenders_step_data, final_redirect_page: str = reverse("wagtail_serve", args=("",))):
         for step, data_step in enumerate(tenders_step_data, 1):
             response = self.client.post(reverse("tenders:create"), data=data_step)
             if step == len(tenders_step_data):
@@ -121,7 +121,7 @@ class TenderCreateViewTest(TestCase):
 
     def test_tender_wizard_form_all_good_anonymous(self):
         tenders_step_data = self._generate_fake_data_form()
-        self._check_every_step(tenders_step_data, final_redirect_page=reverse("pages:home"))
+        self._check_every_step(tenders_step_data, final_redirect_page=reverse("wagtail_serve", args=("",)))
         tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
