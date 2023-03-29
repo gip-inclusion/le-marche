@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -233,20 +234,20 @@ class ProfileNetworkSiaeListView(NetworkMemberRequiredMixin, FormMixin, ListView
     queryset = Siae.objects.prefetch_related("networks").all()
     context_object_name = "siaes"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["network"] = Network.objects.get(slug=self.kwargs.get("slug"))
-        siae_search_form = self.filter_form if self.filter_form else NetworkSiaeFilterForm(data=self.request.GET)
-        context["form"] = siae_search_form
-        return context
-
     def get_queryset(self):
         qs = super().get_queryset()
-        network = Network.objects.get(slug=self.kwargs.get("slug"))
-        qs = qs.filter(networks__in=[network]).with_tender_stats().annotate_with_brand_or_name(with_order_by=True)
+        self.network = Network.objects.get(slug=self.kwargs.get("slug"))
+        qs = qs.filter(networks__in=[self.network]).with_tender_stats().annotate_with_brand_or_name(with_order_by=True)
         self.filter_form = NetworkSiaeFilterForm(data=self.request.GET)
         qs = self.filter_form.filter_queryset(qs)
         return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["network"] = self.network
+        siae_search_form = self.filter_form if self.filter_form else NetworkSiaeFilterForm(data=self.request.GET)
+        context["form"] = siae_search_form
+        return context
 
 
 class ProfileNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
@@ -286,6 +287,27 @@ class ProfileNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["network"] = self.network
         context["siae"] = self.siae
+        return context
+
+
+class ProfileNetworkTenderListView(NetworkMemberRequiredMixin, ListView):
+    template_name = "dashboard/profile_network_tender_list.html"
+    queryset = Tender.objects.all()
+    context_object_name = "tenders"
+    paginate_by = 10
+    paginator_class = Paginator
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        self.network = Network.objects.prefetch_related("siaes").get(slug=self.kwargs.get("slug"))
+        qs = qs.prefetch_many_to_many().select_foreign_keys()
+        qs = qs.filter_with_siaes(self.network.siaes.all())
+        qs = qs.order_by_deadline_date()
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["network"] = self.network
         return context
 
 

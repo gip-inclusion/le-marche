@@ -35,10 +35,12 @@
                         <i class="ri-add-fill ri-lg mr-2"></i>Publier un besoin d'achat
                     </a>
                 </div>
-                {% endif %}
-                <div class="col-12 my-5">
-                    <!-- "buyer": display tenders which the user is the author -->
-                    {% if user.kind != user.KIND_SIAE %}
+            {% endif %}
+        </div>
+        <div class="row">
+            <div class="col-12 my-5">
+                <!-- "buyer": display tenders which the user is the author -->
+                {% if user.kind != user.KIND_SIAE %}
                     {% block htmx %}
                     <div id="tendersList">
                         <ul role="navigation" class="nav nav-tabs nav-tabs--marche" style="border-bottom:0;">
@@ -92,15 +94,15 @@
                                     Vous n'avez aucun besoin en cours de validation pour le moment.
                                 {% endif %}
                                 {% if request.get_full_path == TENDERS_VALIDATED_LIST_URL %}
-                                    Vous n'avez aucun besoin d'envoyé pour le moment.<br>
+                                    Vous n'avez aucun besoin d'envoyé pour le moment.
+                                    <br />
                                     Contacter notre équipe en cas de problème avec un de vos dépôts de besoins en cours de validation.
                                 {% endif %}
                             </p>
                         {% endif %}
                     </div>
+                    {% endblock %}
                 <!-- "siae": display opportunities -->
-                {% endblock %}
-
                 {% else %}
                     {% for tender in tenders %}
                         {% include "tenders/_list_item_siae.html" with tender=tender %}

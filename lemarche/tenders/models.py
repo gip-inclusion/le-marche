@@ -31,6 +31,12 @@ def get_perimeter_filter(siae):
 
 
 class TenderQuerySet(models.QuerySet):
+    def prefetch_many_to_many(self):
+        return self.prefetch_related("sectors")  # "perimeters", "siaes"
+
+    def select_foreign_keys(self):
+        return self.select_related("location")
+
     def by_user(self, user):
         return self.filter(author=user)
 
