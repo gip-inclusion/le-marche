@@ -67,7 +67,12 @@ urlpatterns = [
     ),
     path("reseaux/<str:slug>/besoins/", ProfileNetworkTenderListView.as_view(), name="profile_network_tender_list"),
     path(
-        "reseaux/<str:slug>/besoins/<slug:tender_slug>/",
+        "reseaux/<str:slug>/besoins/<slug:tender_slug>/prestataires/<status>",
+        ProfileNetworkTenderSiaeListView.as_view(),
+        name="profile_network_tender_siae_list",
+    ),
+    path(
+        "reseaux/<str:slug>/besoins/<slug:tender_slug>/prestataires/",
         ProfileNetworkTenderSiaeListView.as_view(),
         name="profile_network_tender_siae_list",
     ),
