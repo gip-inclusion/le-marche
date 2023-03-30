@@ -1,0 +1,49 @@
+{% extends "layouts/base.html" %}
+{% load bootstrap4 static %}
+
+{% block title %}{{ tender.title }}{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_detail' network.slug %}">Mon réseau</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_tender_list' network.slug %}">Opportunités commerciales</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ tender.title|truncatechars:25 }}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="pt-4 pb-6">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                <h1 class="mb-3 mb-lg-5">Mes adhérents ciblés par cette opportunité</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                {% for tendersiae in tendersiaes %}
+                    {% include "siaes/_card_tender.html" with siae=tendersiae.siae %}
+                {% endfor %}
+                {% if not tendersiaes %}
+                    <p class="text-muted my-5">
+                        Aucun de mes adhérents n'a été ciblé par cette opportunité.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

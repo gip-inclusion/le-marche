@@ -321,6 +321,9 @@ class DashboardNetworkViewTest(TestCase):
         cls.tendersiae_1_1 = TenderSiae.objects.create(
             tender=cls.tender_1, siae=cls.siae_1, email_send_date=timezone.now()
         )
+        cls.tendersiae_1_2 = TenderSiae.objects.create(
+            tender=cls.tender_1, siae=cls.siae_2, email_send_date=timezone.now()
+        )
         cls.tender_2 = TenderFactory()
 
     def test_anonymous_user_cannot_view_network_pages(self):
@@ -358,6 +361,7 @@ class DashboardNetworkViewTest(TestCase):
         url = reverse("dashboard:profile_network_siae_tender_list", args=[self.network_1.slug, self.siae_1.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.tender_1.title)
         # siae_2 not linked to network
         self.client.force_login(self.user_network_1)
         url = reverse("dashboard:profile_network_siae_tender_list", args=[self.network_1.slug, self.siae_2.slug])
@@ -372,3 +376,11 @@ class DashboardNetworkViewTest(TestCase):
         self.assertContains(response, self.tender_1.title)
         self.assertContains(response, "1 adhérent ciblé")
         self.assertNotContains(response, self.tender_2.title)
+
+    def test_network_siae_list_in_network_tender_siae_list(self):
+        self.client.force_login(self.user_network_1)
+        url = reverse("dashboard:profile_network_tender_siae_list", args=[self.network_1.slug, self.tender_1.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.siae_1.name_display)
+        self.assertNotContains(response, self.siae_2.name_display)

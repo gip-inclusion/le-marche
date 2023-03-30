@@ -268,7 +268,6 @@ class ProfileNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
                 self.siae = get_object_or_404(Siae.objects.with_tender_stats(), slug=self.kwargs.get("siae_slug"))
                 if self.siae not in self.network.siaes.all():
                     return redirect("dashboard:profile_network_siae_list", slug=self.network.slug)
-
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -310,6 +309,35 @@ class ProfileNetworkTenderListView(NetworkMemberRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["network"] = self.network
+        return context
+
+
+class ProfileNetworkTenderSiaeListView(NetworkMemberRequiredMixin, ListView):
+    template_name = "dashboard/profile_network_tender_siae_list.html"
+    queryset = TenderSiae.objects.select_related("tender", "siae").all()
+    context_object_name = "tendersiaes"
+
+    def get(self, request, status=None, *args, **kwargs):
+        """
+        - fetch the Network & the Tender
+        """
+        self.status = status
+        if "slug" in self.kwargs:
+            self.network = get_object_or_404(Network, slug=self.kwargs.get("slug"))
+            if "tender_slug" in self.kwargs:
+                self.tender = get_object_or_404(Tender.objects.validated(), slug=self.kwargs.get("tender_slug"))
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.filter(tender=self.tender).filter(email_send_date__isnull=False)
+        qs = qs.filter(siae__in=self.network.siaes.all())
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["network"] = self.network
+        context["tender"] = self.tender
         return context
 
 
