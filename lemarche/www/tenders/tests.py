@@ -755,6 +755,7 @@ class TenderSiaeListView(TestCase):
         cls.siae_1 = SiaeFactory(name="ZZ ESI")
         cls.siae_2 = SiaeFactory(name="ABC Insertion")
         cls.siae_3 = SiaeFactory(name="Une autre structure")
+        cls.siae_4 = SiaeFactory(name="Une dernière structure")
         cls.siae_user_1 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_1, cls.siae_2])
         cls.siae_user_2 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_3])
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
@@ -776,6 +777,9 @@ class TenderSiaeListView(TestCase):
             siae=cls.siae_3,
             email_send_date=timezone.now() - timedelta(hours=1),
             detail_contact_click_date=timezone.now() - timedelta(hours=1),
+        )
+        cls.tendersiae_1_4 = TenderSiae.objects.create(
+            tender=cls.tender_1, siae=cls.siae_4, detail_contact_click_date=timezone.now() - timedelta(hours=2)
         )
         cls.tendersiae_2_1 = TenderSiae.objects.create(
             tender=cls.tender_2,
@@ -816,9 +820,11 @@ class TenderSiaeListView(TestCase):
 
     def test_order_tender_siae_by_last_detail_contact_click_date(self):
         # TenderSiae are ordered by -created_at by default
-        self.assertEqual(self.tender_1.tendersiae_set.first().id, self.tendersiae_1_3.id)
+        self.assertEqual(self.tender_1.tendersiae_set.first().id, self.tendersiae_1_4.id)
         # but TenderSiaeListView are ordered by -detail_contact_click_date
         self.client.force_login(self.user_buyer_1)
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug, "status": "INTERESTED"})
         response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["tendersiaes"]), 3)  # detail_contact_click_date
         self.assertEqual(response.context["tendersiaes"][0].id, self.tendersiae_1_1.id)
