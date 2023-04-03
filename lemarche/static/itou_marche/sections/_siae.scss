@@ -15,12 +15,10 @@
 }
 
 .s-siae-02 {
-	background-color: $gray-400;
-	padding-top: 1.5rem;
-	padding-bottom: 1.5rem;
+	padding-top: 0.5rem;
+	padding-bottom: 3rem;
 
 	@media (min-width:992px) {
-		padding-top: 2rem;
 		padding-bottom: 5rem;
 	}
 
@@ -354,7 +352,7 @@ $purple-marche: #6C38D9;
     background-color: $purple-marche!important;
 }
 
-.text-marche-purple{
+.text-marche-purple {
 	color: $purple-marche;
 }
 
