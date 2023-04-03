@@ -122,7 +122,7 @@
 <section class="s-siae-02">
     <div class="container">
         <div id="dir_list">
-            <div id="searchContent" class="row dir_list-row">
+            <div id="searchResults" class="row dir_list-row">
                 <div class="col-12 col-lg-8">
                     <div class="c-box mb-3">
                         <div class="d-flex align-items-center mb-3">
@@ -130,7 +130,7 @@
                                 <h1 class="h4 mb-0">
                                     {% with paginator.count as siae_count %}
                                         {% if siae_count > 0 %}
-                                        {{ siae_count }} prestataire{% siae_count|pluralize %} correspond{% siae_count|pluralize:"ent" %} à vos critères
+                                        {{ siae_count }} prestataire{{ siae_count|pluralize }} correspond{{ siae_count|pluralize:"ent" }} à vos critères
                                         {% else %}
                                             Oups, aucun prestataire trouvé !
                                         {% endif %}
@@ -169,16 +169,17 @@
                         {% endif %}
                     </div>
                 </div>
+                <!-- sidebar -->
                 <div class="col-12 col-lg-4 siae-info mt-6 mt-sm-0">
+                    <div class="map-holder mb-4">
+                        <div id="map-siae-list" class="map-canvas"></div>
+                    </div>
+
+                    {% cms_advert layout="card" %}
+
                     <div class="siae-info-sticky c-box bg-light mb-3">
-                        <div class="map-holder mb-4">
-                            <div id="map-siae-list" class="map-canvas"></div>
-                        </div>
-
-                        {% cms_advert layout="card" %}
-
                         <div class="si-ideas">
-                            <h3 class="h4 my-3">Idées reçues</h3>
+                            <h3 class="h4">Idées reçues</h3>
                             <p>
                                 <span>
                                     <i class="ri-check-fill ri-xl font-weight-bold"></i>
