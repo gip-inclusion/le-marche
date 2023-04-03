@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load static bootstrap4 wagtailcore_tags advert_cms %}
 
-{% block title %}Trouvez votre prestataire parmi 8600 structures inclusives{{ block.super }}{% endblock %}
+{% block title %}Trouvez votre prestataire parmi 8600 prestataires inclusifs{{ block.super }}{% endblock %}
 {% block meta_description %}
     <meta name="description" content="Recherchez en fonction de votre segment d'achats, périmètre géographique et types de prestation afin de trouver le prestataire idéal.">
 {% endblock %}
@@ -49,7 +49,7 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane fade" id="search-filter" role="tabpanel" aria-labelledby="search-filter-tab">
-                        <form method="GET" action="{% url 'siae:search_results' %}" id="filter-search-form" aria-label="Rechercher des structures de l’insertion et du handicap" role="search">
+                        <form method="GET" action="{% url 'siae:search_results' %}" id="filter-search-form" aria-label="Rechercher des prestataires de l'insertion et du handicap" role="search">
                             {% bootstrap_form_errors form type="all" %}
                             <div class="row align-items-start">
                                 <div class="col-12 col-md-6 col-lg-4">
@@ -93,7 +93,7 @@
                         </form>
                     </div>
                     <div class="tab-pane fade" id="search-text" role="tabpanel" aria-labelledby="search-text-tab">
-                        <form method="GET" action="{% url 'siae:search_results' %}" id="text-search-form" aria-label="Rechercher des structures de l’insertion et du handicap" role="search">
+                        <form method="GET" action="{% url 'siae:search_results' %}" id="text-search-form" aria-label="Rechercher des prestataires de l'insertion et du handicap" role="search">
                             {% bootstrap_form_errors form type="all" %}
                             <div class="row">
                                 <div class="col-12 col-lg-8">
@@ -185,8 +185,8 @@
                                     <i class="ri-check-fill ri-xl font-weight-bold"></i>
                                 </span>
                                 <span class="ml-2">
-                                    La structure est trop petite pour répondre à mon besoin…
-                                    <b>Mais elle est sûrement ouverte à la co-traitance.</b>
+                                    Le prestataire est trop petit pour répondre à mon besoin…
+                                    <b>Mais il est sûrement ouvert à la co-traitance.</b>
                                 </span>
                             </p>
                             <p>
@@ -194,7 +194,7 @@
                                     <i class="ri-check-fill ri-xl font-weight-bold"></i>
                                 </span>
                                 <span class="ml-2">
-                                    Son chiffre d’affaire est trop bas et je ne veux pas être
+                                    Son chiffre d'affaire est trop bas et je ne veux pas être
                                     son seul client… <b>Mais Vous pouvez commencer par lui confier
                                     un marché de plus faible périmètre, sans prendre de risque,
                                     puis faire grandir ce partenariat si vous en êtes satisfait.</b>

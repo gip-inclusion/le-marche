@@ -1,7 +1,7 @@
 {% comment %} {% load static bootstrap4 %} {% endcomment %}
 
 <div class="c-box mb-4">
-    <div class="row justify-content-center">
+    <div class="row">
         <div class="col-md">
             <span class="badge badge-sm badge-pill badge-warning-light mb-2">Information pratique</span>
             <h2 class="h2 mb-2">Pas de temps à perdre ?</h1>
@@ -10,42 +10,42 @@
                 <i class="ri-mail-send-line ri-lg"></i>&nbsp;Publier un besoin d'achat
             </a>
         </div>
-        {% if current_perimeters %}
+        {% if current_perimeters or current_sectors %}
             <div class="col-md">
-                {% with perimeters_length=current_perimeters|length %}
-                    <h5>Lieu{{ perimeters_length|pluralize:"x" }} d'intervention</h5>
-                    {% for perimeter in current_perimeters %}
-                        <span class="badge badge-base badge-outline-primary mr-1">{{ perimeter.name }}</span>
-                        {% if forloop.counter == 2 and perimeters_length > 2 %}
-                            <a class="w-100 d-block text-decoration-none has-collapse-caret collapsed" data-toggle="collapse" href="#perimetersSearchHidden" role="button" aria-expanded="false" aria-controls="perimetersSearchHidden">
-                                Afficher les {{ perimeters_length|add:"-2" }} autres lieux d'interventions
-                            </a>
-                            <div id="perimetersSearchHidden" class="collapse">
-                        {% endif %}
-                        {% if forloop.counter == perimeters_length and perimeters_length > 2 %}
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                {% endwith %}
-            </div>
-        {% endif %}
-        {% if current_sectors %}
-            <div class="col-md">
-                {% with sectors_length=current_sectors|length %}
-                    <h5 class="mt-4">Secteur{{ sectors_length|pluralize }} d'activité</h5>
-                    {% for sector in current_sectors %}
-                        <span class="badge badge-base badge-outline-primary ml-0 mb-1">{{ sector.name|truncatechars:42 }}</span><br>
-                        {% if forloop.counter == 2 and sectors_length > 2 %}
-                            <a class="w-100 d-block text-decoration-none has-collapse-caret collapsed" data-toggle="collapse" href="#sectorsSearchHidden" role="button" aria-expanded="false" aria-controls="sectorsSearchHidden">
-                                Afficher les {{ sectors_length|add:"-2" }} autres secteurs
-                            </a>
-                            <div id="sectorsSearchHidden" class="collapse">
-                        {% endif %}
-                        {% if forloop.counter == sectors_length and sectors_length > 2  %}
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                {% endwith %}
+                {% if current_perimeters %}
+                    {% with perimeters_length=current_perimeters|length %}
+                        <h5 class="mb-2">Lieu{{ perimeters_length|pluralize:"x" }} d'intervention</h5>
+                        {% for perimeter in current_perimeters %}
+                            <span class="badge badge-base badge-outline-primary mr-1">{{ perimeter.name }}</span>
+                            {% if forloop.counter == 2 and perimeters_length > 2 %}
+                                <a class="w-100 d-block text-decoration-none has-collapse-caret collapsed" data-toggle="collapse" href="#perimetersSearchHidden" role="button" aria-expanded="false" aria-controls="perimetersSearchHidden">
+                                    Afficher les {{ perimeters_length|add:"-2" }} autres lieux d'interventions
+                                </a>
+                                <div id="perimetersSearchHidden" class="collapse">
+                            {% endif %}
+                            {% if forloop.counter == perimeters_length and perimeters_length > 2 %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endwith %}
+                {% endif %}
+                {% if current_sectors %}
+                    {% with sectors_length=current_sectors|length %}
+                        <h5 class="{% if current_perimeters %}mt-4{% endif %} mb-2">Secteur{{ sectors_length|pluralize }} d'activité</h5>
+                        {% for sector in current_sectors %}
+                            <span class="badge badge-base badge-outline-primary ml-0 mb-1">{{ sector.name|truncatechars:42 }}</span><br>
+                            {% if forloop.counter == 2 and sectors_length > 2 %}
+                                <a class="w-100 d-block text-decoration-none has-collapse-caret collapsed" data-toggle="collapse" href="#sectorsSearchHidden" role="button" aria-expanded="false" aria-controls="sectorsSearchHidden">
+                                    Afficher les {{ sectors_length|add:"-2" }} autres secteurs
+                                </a>
+                                <div id="sectorsSearchHidden" class="collapse">
+                            {% endif %}
+                            {% if forloop.counter == sectors_length and sectors_length > 2  %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endwith %}
+                {% endif %}
             </div>
         {% endif %}
     </div>
