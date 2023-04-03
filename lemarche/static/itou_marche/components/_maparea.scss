@@ -10,18 +10,14 @@
 	width: 100%;
 }
 
-// #map-siae-list
-.siae-info-sticky .map-holder {
+// siae search results view
+#searchResults .map-holder {
 	height: 19rem;
 	border-radius: 5px;
 	border: $gray-500 solid 1px;
 }
 
-// #map-siae
+// siae detail view
 #sidebar .map-holder {
 	height: 200px;
-	width: 100%;
 }
-
-// #map-siae-edit
-// see defaults

@@ -41,7 +41,7 @@
                             <div class="gallery-small col-12 col-lg-3">
                                 <div class="img-container">
                                     {% if siae.logo_url %}
-                                        <img src="{{ siae.logo_url }}" class="img-fluid" alt="Logo de la structure {{ siae.name }}" />
+                                        <img src="{{ siae.logo_url }}" class="img-fluid" alt="Logo du prestataire {{ siae.name }}" />
                                     {% else %}
                                         <img src="{% static 'img/default-listing.png' %}" class="img-fluid" alt="{{ siae.name }}" />
                                     {% endif %}
@@ -254,7 +254,7 @@
                                     <img src="{% static_theme_images 'ico-bicro-marche-descript-act.svg' %}" alt="" height="32" />
                                 </div>
                                 <div class="il-r">
-                                    <h3 class="h2 mb-1 mt-1">Présentation de la structure</h3>
+                                    <h3 class="h2 mb-1 mt-1">Présentation du prestataire</h3>
                                     <div>
                                         {% if siae.description %}
                                             {{ siae.description|linebreaks }}

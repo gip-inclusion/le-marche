@@ -1,10 +1,12 @@
 {% extends "layouts/base.html" %}
 {% load static bootstrap4 wagtailcore_tags advert_cms %}
 
-{% block title %}Trouvez votre prestataire parmi 8600 structures inclusives{{ block.super }}{% endblock %}
+{% block title %}Trouvez votre prestataire parmi 8600 prestataires inclusifs{{ block.super }}{% endblock %}
 {% block meta_description %}
-<meta name="description" content="Recherchez en fonction de votre segment d'achats, périmètre géographique et types de prestation afin de trouver le prestataire idéal.">
+    <meta name="description" content="Recherchez en fonction de votre segment d'achats, périmètre géographique et types de prestation afin de trouver le prestataire idéal.">
 {% endblock %}
+
+{% block body_class %}bg-light{% endblock %}"
 
 {% block breadcrumbs %}
 <section>
@@ -47,7 +49,7 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane fade" id="search-filter" role="tabpanel" aria-labelledby="search-filter-tab">
-                        <form method="GET" action="{% url 'siae:search_results' %}" id="filter-search-form" aria-label="Rechercher des structures de l’insertion et du handicap" role="search">
+                        <form method="GET" action="{% url 'siae:search_results' %}" id="filter-search-form" aria-label="Rechercher des prestataires de l'insertion et du handicap" role="search">
                             {% bootstrap_form_errors form type="all" %}
                             <div class="row align-items-start">
                                 <div class="col-12 col-md-6 col-lg-4">
@@ -91,7 +93,7 @@
                         </form>
                     </div>
                     <div class="tab-pane fade" id="search-text" role="tabpanel" aria-labelledby="search-text-tab">
-                        <form method="GET" action="{% url 'siae:search_results' %}" id="text-search-form" aria-label="Rechercher des structures de l’insertion et du handicap" role="search">
+                        <form method="GET" action="{% url 'siae:search_results' %}" id="text-search-form" aria-label="Rechercher des prestataires de l'insertion et du handicap" role="search">
                             {% bootstrap_form_errors form type="all" %}
                             <div class="row">
                                 <div class="col-12 col-lg-8">
@@ -120,77 +122,71 @@
 <section class="s-siae-02">
     <div class="container">
         <div id="dir_list">
-            <div id="searchContent" class="row">
-                <div class="col-12 col-lg-8 d-flex mb-3 mb-md-5">
-                    <div class="row align-items-center">
-                        <div class="col-12 col-lg">
-                            <h1 class="h2 mb-1">
-                                {% with paginator.count as siae_count %}
-                                    {% if siae_count > 0 %}
-                                        {{ siae_count }} structure{% if siae_count > 1 %}s{% endif %} correspond{% if siae_count > 1 %}ent{% endif %} à vos critères
-                                    {% else %}
-                                        Oups, nous n'avons pas trouvé de prestataires !
-                                    {% endif %}
-                                {% endwith %}
-                            </h1>
+            <div id="searchResults" class="row dir_list-row">
+                <div class="col-12 col-lg-8">
+                    <div class="c-box mb-3">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-grow-1">
+                                <h1 class="h4 mb-0">
+                                    {% with paginator.count as siae_count %}
+                                        {% if siae_count > 0 %}
+                                        {{ siae_count }} prestataire{{ siae_count|pluralize }} correspond{{ siae_count|pluralize:"ent" }} à vos critères
+                                        {% else %}
+                                            Oups, aucun prestataire trouvé !
+                                        {% endif %}
+                                    {% endwith %}
+                                </h1>
+                            </div>
+                            {% if siaes %}
+                                <div class="col-12 col-lg-auto">
+                                    {% include "siaes/_share_search_results.html" %}
+                                </div>
+                            {% endif %}
                         </div>
                         {% if siaes %}
-                            <div class="col-12 col-lg-auto">
-                                {% include "siaes/_share_search_results.html" %}
-                            </div>
+                            {% for siae in siaes %}
+                                {% include "siaes/_card_search_result.html" with siae=siae %}
+                                <!-- insert to nudge tender creation -->
+                                {% if forloop.counter in position_promote_tenders and page_obj.number == 1 %}
+                                    {% include "siaes/_card_suggest_tender.html" %}
+                                {% endif %}
+                            {% endfor %}
+                            {% include "includes/_pagination.html" %}
+                        {% else %}
+                            <!-- no results -->
+                            <p>
+                                Il y a encore de l'espoir ❤️
+                            </p>
+                            <p>
+                                Publiez votre besoin, et on s'occupe de vous trouver des prestataires inclusifs.
+                            </p>
+                            <p>
+                                Obtenez des réponses en moins de 24 heures (en moyenne).
+                            </p>
+                            <a href="{% url 'tenders:create' %}" id="siae-search-empty-demande" class="btn btn-primary d-block d-md-inline-block mb-2">
+                                <i class="ri-mail-send-line ri-lg mr-2"></i>Publier un besoin d'achat
+                            </a>
                         {% endif %}
                     </div>
                 </div>
-            </div>
-            <div class="row dir_list-row">
-                <div class="col-12 col-lg-8">
-                {% if siaes %}
-                    {% for siae in siaes %}
-                        {% include "siaes/_card_search_result.html" with siae=siae %}
-                        <!-- insert to nudge tender creation -->
-                        {% if forloop.counter in position_promote_tenders and page_obj.number == 1 %}
-                            {% include "siaes/_card_suggest_tender.html" %}
-                        {% endif %}
-                    {% endfor %}
-
-                    {% include "includes/_pagination.html" %}
-                {% else %}
-                    <!-- no results -->
-                    <div>
-                        <p>
-                            Il y a encore de l'espoir ❤️
-                        </p>
-                        <p>
-                            Publiez votre besoin, et on s'occupe de vous trouver des prestataires inclusifs.
-                        </p>
-                        <p>
-                            Obtenez des réponses en moins de 24 heures (en moyenne).
-                        </p>
-                        <a href="{% url 'tenders:create' %}" id="siae-search-empty-demande" class="btn btn-primary d-block d-md-inline-block mb-2">
-                            <i class="ri-mail-send-line ri-lg mr-2"></i>Publier un besoin d'achat
-                        </a>
-                    </div>
-                {% endif %}
-                </div>
+                <!-- sidebar -->
                 <div class="col-12 col-lg-4 siae-info mt-6 mt-sm-0">
-                    <div class="siae-info-sticky">
+                    <div class="map-holder mb-4">
+                        <div id="map-siae-list" class="map-canvas"></div>
+                    </div>
 
-                        <div class="map-holder mb-4">
-                            <div id="map-siae-list" class="map-canvas"></div>
-                        </div>
-                        <hr />
+                    {% cms_advert layout="card" %}
 
-                        {% cms_advert layout="card" %}
-
+                    <div class="siae-info-sticky c-box bg-light mb-3">
                         <div class="si-ideas">
-                            <h3 class="h2 my-3">Idées reçues</h3>
+                            <h3 class="h4">Idées reçues</h3>
                             <p>
                                 <span>
                                     <i class="ri-check-fill ri-xl font-weight-bold"></i>
                                 </span>
                                 <span class="ml-2">
-                                    La structure est trop petite pour répondre à mon besoin…
-                                    <b>Mais elle est sûrement ouverte à la co-traitance.</b>
+                                    Le prestataire est trop petit pour répondre à mon besoin…
+                                    <b>Mais il est sûrement ouvert à la co-traitance.</b>
                                 </span>
                             </p>
                             <p>
@@ -198,7 +194,7 @@
                                     <i class="ri-check-fill ri-xl font-weight-bold"></i>
                                 </span>
                                 <span class="ml-2">
-                                    Son chiffre d’affaire est trop bas et je ne veux pas être
+                                    Son chiffre d'affaire est trop bas et je ne veux pas être
                                     son seul client… <b>Mais Vous pouvez commencer par lui confier
                                     un marché de plus faible périmètre, sans prendre de risque,
                                     puis faire grandir ce partenariat si vous en êtes satisfait.</b>

@@ -1,7 +1,7 @@
 {% load url_add_query %}
 
 {% if is_paginated %}
-<nav class="nav-pagination mb-5">
+<nav class="nav-pagination mb-3 mb-md-5">
     {% if paginator.num_pages > 1 %}
         <ul class="pagination justify-content-center">
             {% if page_obj.number > 1 %}
