@@ -257,7 +257,8 @@ class ProfileNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
 
     def get(self, request, status=None, *args, **kwargs):
         """
-        Check that the Siae belongs to the Network
+        - check that both the Siae & the Network exist
+        - check that the Siae belongs to the Network
         """
         self.status = status
         if "slug" in self.kwargs:
@@ -271,12 +272,14 @@ class ProfileNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        qs = qs.filter(siae=self.siae).filter(email_send_date__isnull=False)
+        qs = qs.filter(siae=self.siae)
         if self.status:
             if self.status == "DISPLAY":
                 qs = qs.filter(detail_display_date__isnull=False)
             elif self.status == "CONTACT-CLICK":
                 qs = qs.filter(detail_contact_click_date__isnull=False)
+        else:  # default
+            qs = qs.filter(email_send_date__isnull=False)
         return qs
 
     def get_context_data(self, **kwargs):
