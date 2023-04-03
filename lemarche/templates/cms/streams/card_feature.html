@@ -1,0 +1,12 @@
+{% load theme_inclusion %}
+<div class="card c-card c-card--marche">
+    <div class="card-header text-center">
+        <img height="80"
+             src="{% static_theme_images 'ico-bicro-marche-local.svg' %}"
+             alt=""/>
+    </div>
+    <div class="card-body">
+        <p class="h3 lh-base">{{ block.value.title }}</p>
+    </div>
+    <div class="card-footer"></div>
+</div>

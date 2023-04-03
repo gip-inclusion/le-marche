@@ -188,6 +188,7 @@ class HomePage(Page):
             ("section_our_ressources", blocks.OurRessourcesSection()),
             ("section_what_find_here", blocks.WhatFindHereSection()),
             ("section_our_partners", blocks.OurPartnersSection()),
+            ("section_our_features", blocks.OurFeaturesSection()),
         ],
         null=True,
         block_counts={
@@ -198,6 +199,7 @@ class HomePage(Page):
             "section_our_ressources": {"min_num": 1, "max_num": 1},
             "section_what_find_here": {"min_num": 1, "max_num": 1},
             "section_our_partners": {"min_num": 1, "max_num": 1},
+            "section_our_features": {"max_num": 1},
         },
         use_json_field=True,
     )
