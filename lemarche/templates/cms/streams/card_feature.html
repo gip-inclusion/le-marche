@@ -1,12 +1,10 @@
-{% load theme_inclusion %}
-<div class="card c-card c-card--marche">
-    <div class="card-header text-center">
-        <img height="80"
-             src="{% static_theme_images 'ico-bicro-marche-local.svg' %}"
-             alt=""/>
+{% load theme_inclusion wagtailimages_tags %}
+<div class="item">
+    <div class="card c-card c-card--marche">
+        <div class="card-header text-center">{% image self.image fill-150x150 class="img-fluid" %}</div>
+        <div class="card-body">
+            <p class="h3 lh-base">{{ self.title }}</p>
+        </div>
+        <div class="card-footer"></div>
     </div>
-    <div class="card-body">
-        <p class="h3 lh-base">{{ block.value.title }}</p>
-    </div>
-    <div class="card-footer"></div>
 </div>

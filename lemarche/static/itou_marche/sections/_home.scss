@@ -1,21 +1,20 @@
 .s-hp-01 {
-
 	&__form {
 		position: relative;
 
 		&::before {
-			content: '';
+			content: "";
 			position: absolute;
 			left: -30px;
 			top: 50%;
 			width: 100px;
 			height: 100px;
 			border-radius: 100%;
-			background-color: #FFDDDD;
+			background-color: #ffdddd;
 			z-index: -1;
 			display: none;
 
-			@media (min-width:992px) {
+			@media (min-width: 992px) {
 				display: inline-block;
 			}
 		}
@@ -28,7 +27,7 @@
 			right: 50%;
 			bottom: -80px;
 			font-size: 27px;
-			background-image: url('/static/vendor/theme-inclusion/images/ico-hand-arrow-up.svg');
+			background-image: url("/static/vendor/theme-inclusion/images/ico-hand-arrow-up.svg");
 			background-repeat: no-repeat;
 			background-position: center right;
 			padding-right: 60px;
@@ -36,7 +35,7 @@
 			transform: rotate(-5deg);
 			display: none;
 
-			@media (min-width:576px) {
+			@media (min-width: 576px) {
 				display: inline-block;
 			}
 		}
@@ -44,11 +43,11 @@
 }
 
 #main .s-article-picture-01.has-illustration-bg-01 {
-    /*
+	/*
         Force overide theme setting to avoid negative
         effect on homepage sector dropdown
     */
-    overflow: visible;
+	overflow: visible;
 }
 
 .s-hp-slider-partners-tenders {
@@ -59,7 +58,7 @@
 	padding-top: 1.5rem;
 	padding-bottom: 1.5rem;
 
-	@media (min-width:992px) {
+	@media (min-width: 992px) {
 		padding-top: 3rem;
 		padding-bottom: 3rem;
 	}
@@ -85,41 +84,42 @@
 	}
 }
 
-.multi-item-carousel{
-	.carousel-inner{
-	  > .card{
-		transition: 500ms ease-in-out left;
-		width: 30%;
-		float :left;
-		margin-right: 1em;
-	  }
-	  .active{
-		&.left{
-		  left:-33%;
-		}
-		&.right{
-		  left:33%;
-		}
-	  }
-	  .next{
-		left: 33%;
-	  }
-	  .prev{
-		left: -33%;
-	  }
-	  @media all and (transform-3d), (-webkit-transform-3d) {
-		> .item{
-		  // use your favourite prefixer here
-		  transition: 500ms ease-in-out left;
-		  transition: 500ms ease-in-out all;
-		  backface-visibility: visible;
-		  transform: none!important;
-		}
-	  }
-	}
-	.carouse-control{
-	  &.left, &.right{
-		background-image: none;
-	  }
-	}
-  }
+.MultiCarousel {
+	float: left;
+	overflow: hidden;
+	padding: 15px;
+	width: 100%;
+	position: relative;
+}
+.MultiCarousel .MultiCarousel-inner {
+	transition: 1s ease all;
+	float: left;
+}
+.MultiCarousel .MultiCarousel-inner .item {
+	float: left;
+}
+.MultiCarousel .MultiCarousel-inner .item > div {
+	text-align: center;
+	padding: 10px;
+	margin: 10px;
+	background: #f1f1f1;
+	color: #666;
+}
+.MultiCarousel .leftLst,
+.MultiCarousel .rightLst {
+	position: absolute;
+	border-radius: 50%;
+	top: calc(50% - 20px);
+}
+.MultiCarousel .leftLst {
+	left: 0;
+}
+.MultiCarousel .rightLst {
+	right: 0;
+}
+
+.MultiCarousel .leftLst.over,
+.MultiCarousel .rightLst.over {
+	pointer-events: none;
+	background: #ccc;
+}
