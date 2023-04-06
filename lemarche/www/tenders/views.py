@@ -329,9 +329,6 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
             if user_kind == User.KIND_SIAE and tender.kind == tender_constants.KIND_PROJECT
             else tender.get_kind_display()
         )
-        context["tender_cta_text"] = (
-            "Voir cet appel d'offre" if tender.kind == tender_constants.KIND_TENDER else "Répondre à cette opportunité"
-        )
         if user.is_authenticated:
             if tender.author == user:
                 context["is_draft"] = tender.status == tender_constants.STATUS_DRAFT
@@ -395,7 +392,7 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
     def get_success_message(self, detail_contact_click_confirm):
         if detail_contact_click_confirm:
             return "<strong>Bravo !</strong><br />Vos coordonnées, ainsi que le lien vers votre fiche commerciale ont été transmis à l'acheteur. Assurez-vous d'avoir une fiche commerciale bien renseignée."  # noqa
-        return "<strong>Répondre à cette opportunité</strong><br />Pour répondre à cette opportunité, vous devez accepter d'être mis en relation avec l'acheteur."  # noqa
+        return f"<strong>{self.object.cta_text}</strong><br />Pour {self.object.cta_text.lower()}, vous devez accepter d'être mis en relation avec l'acheteur."  # noqa
 
 
 class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, ListView):

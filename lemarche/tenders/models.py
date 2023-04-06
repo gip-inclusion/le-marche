@@ -400,8 +400,14 @@ class Tender(models.Model):
     @cached_property
     def external_link_title(self):
         if self.kind == tender_constants.KIND_TENDER:
-            return "Voir l'appel d'offres"
+            return "Lien vers appel d'offres"
         return "Lien partagé"
+
+    @property
+    def cta_text(self):
+        if self.kind == tender_constants.KIND_TENDER:
+            return "Voir cet appel d'offres"
+        return "Répondre à cette opportunité"
 
     @cached_property
     def can_display_contact_email(self):

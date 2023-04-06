@@ -682,7 +682,7 @@ class TenderDetailContactClickStatViewTest(TestCase):
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
-        cls.tender = TenderFactory(author=cls.user_buyer_1, siaes=[cls.siae])
+        cls.tender = TenderFactory(kind=tender_constants.KIND_TENDER, author=cls.user_buyer_1, siaes=[cls.siae])
 
     def test_anonymous_user_cannot_call_tender_contact_click(self):
         url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
