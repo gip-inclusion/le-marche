@@ -143,8 +143,8 @@
                                 </p>
                             </div>
                         {% elif not user_siae_has_detail_contact_click_date %}
-                            <button type="button" id="show-tender-contact-modal-btn" class="btn btn-success float-right mb-4" data-toggle="modal" data-target="#detail_contact_click_confirm_modal" title="Répondre à cette opportunité">
-                                Répondre à cette opportunité
+                            <button type="button" id="show-tender-contact-modal-btn" class="btn btn-success float-right mb-4" data-toggle="modal" data-target="#detail_contact_click_confirm_modal" title="{{ tender_cta_text }}">
+                                {{ tender_cta_text }}
                             </button>
                             <div id="show-tender-contact-content" style="display:none">
                                 {% include "tenders/_detail_contact.html" with tender=tender %}
@@ -153,7 +153,7 @@
                     {% endif %}
                 {% else %}
                     <a href="#" id="show-tender-contact-modal-btn" class="btn btn-success float-right mb-4" data-toggle="modal" data-target="#login_or_signup_siae_tender_modal" data-next-params="{% url 'tenders:detail' tender.slug %}">
-                        <span>Répondre à cette opportunité</span>
+                        <span>{{ tender_cta_text }}</span>
                     </a>
                 {% endif %}
             {% endif %}

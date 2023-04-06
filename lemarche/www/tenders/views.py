@@ -329,6 +329,9 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
             if user_kind == User.KIND_SIAE and tender.kind == tender_constants.KIND_PROJECT
             else tender.get_kind_display()
         )
+        context["tender_cta_text"] = (
+            "Voir cet appel d'offre" if tender.kind == tender_constants.KIND_TENDER else "Répondre à cette opportunité"
+        )
         if user.is_authenticated:
             if tender.author == user:
                 context["is_draft"] = tender.status == tender_constants.STATUS_DRAFT
