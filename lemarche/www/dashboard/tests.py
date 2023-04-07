@@ -374,7 +374,7 @@ class DashboardNetworkViewTest(TestCase):
         url = reverse("dashboard:profile_network_tender_list", args=[self.network_1.slug])
         response = self.client.get(url)
         self.assertContains(response, self.tender_1.title)
-        self.assertContains(response, "1 adhérent ciblé")
+        self.assertContains(response, "1 adhérent notifié")
         self.assertNotContains(response, self.tender_2.title)
 
     def test_network_siae_list_in_network_tender_siae_list(self):

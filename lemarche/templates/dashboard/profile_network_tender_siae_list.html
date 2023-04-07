@@ -28,7 +28,7 @@
     <div class="container">
         <div class="row">
             <div class="col-12 col-lg-8">
-                <h1 class="mb-3 mb-lg-5">Mes adhérents ciblés et intéressés par cette opportunité</h1>
+                <h1 class="mb-3 mb-lg-5">Mes adhérents notifiés et intéressés par cette opportunité</h1>
             </div>
         </div>
 
@@ -43,7 +43,7 @@
                             <a role="button" hx-push-url="true" hx-get="{{ NETWORK_TENDER_SIAE_LIST_URL }}"
                                 class="nav-link{% if request.get_full_path == NETWORK_TENDER_SIAE_LIST_URL %} active{% endif %}"
                                 hx-target="#siaeTenderList" hx-swap="outerHTML">
-                                Adhérents ciblés
+                                Adhérents notifiés
                                 <span class="badge badge-pill badge-primary fs-xs" style="vertical-align:middle;">{{ tender.network_siae_email_send_count }}</span>
                             </a>
                         </li>
@@ -62,7 +62,7 @@
                     {% if not tendersiaes %}
                         <p class="text-muted my-5">
                             {% if request.get_full_path == NETWORK_TENDER_SIAE_LIST_URL %}
-                                Aucun de mes adhérents n'a été ciblé par cette opportunité.
+                                Aucun de mes adhérents n'a été notifié de cette opportunité.
                             {% endif %}
                             {% if request.get_full_path == NETWORK_TENDER_SIAE_CONTACT_CLICK_LIST_URL %}
                                 Aucun de mes adhérents ne s'est montré intéressé par cette opportunité.
