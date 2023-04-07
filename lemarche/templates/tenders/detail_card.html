@@ -56,13 +56,13 @@
                 <span class="float-right fs-sm text-muted">Début d'intervention : {{ tender.start_working_date }}</span>
             {% endif %}
         </h2>
-        <p>{{ tender.description|linebreaks }}</p>
+        <p>{{ tender.description|linebreaks|safe }}</p>
 
         {% if source_form or not source_form and tender.constraints %}
             <hr class="my-5">
 
             <h2>Contraintes techniques spécifiques</h2>
-            <p>{{ tender.constraints|default:"-"|linebreaks }}</p>
+            <p>{{ tender.constraints|default:"-"|linebreaks|safe }}</p>
         {% endif %}
 
         {% if source_form or tender.author == request.user or tender.accept_share_amount %}
