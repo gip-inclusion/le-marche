@@ -1,6 +1,6 @@
 {% load static humanize %}
 
-<div class="card c-card c-card--marche siae-card">
+<div class="card c-card c-card--marche c-card--link siae-card" role="button" data-url="{% url 'tenders:detail' tender.slug %}">
     <div class="card-body">
         <div class="row">
             <div class="col-md-8" style="border-right:1px solid;">
@@ -48,8 +48,13 @@
                 <div class="row">
                     <div class="col-12">
                         <p class="font-weight-bold">
-                            <i class="ri-focus-2-line font-weight-light"></i>&nbsp;{{ tender.network_siae_email_send_count|default:0 }} adhérent{{ tender.network_siae_email_send_count|pluralize }} ciblé{{ tender.network_siae_email_send_count|pluralize }}
+                            <i class="ri-focus-2-line font-weight-light"></i>&nbsp;{{ tender.network_siae_email_send_count|default:0 }} adhérent{{ tender.network_siae_email_send_count|pluralize }} notifié{{ tender.network_siae_email_send_count|pluralize }}
                         </p>
+                        {% if tender.network_siae_email_send_count %}
+                            <a href="{% url 'dashboard:profile_network_tender_siae_list' network.slug tender.slug %}" id="dashboard-network-tender-show-siae-list-btn" class="btn btn-sm btn-primary">
+                                Voir la liste
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
