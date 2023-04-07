@@ -296,15 +296,39 @@ class ProfileNetworkTenderListView(NetworkMemberRequiredMixin, ListView):
     paginate_by = 10
     paginator_class = Paginator
 
-    def get_queryset(self):
-        qs = super().get_queryset()
+    def get(self, request, *args, **kwargs):
+        # self.network = self.get_object()
         self.network = Network.objects.prefetch_related("siaes").get(slug=self.kwargs.get("slug"))
         self.network_siaes = self.network.siaes.all()
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        qs = super().get_queryset()
         qs = qs.prefetch_many_to_many().select_foreign_keys()
         qs = qs.filter_with_siaes(self.network_siaes)
         qs = qs.with_network_siae_stats(self.network_siaes)
         qs = qs.order_by_deadline_date()
         return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["network"] = self.network
+        return context
+
+
+class ProfileNetworkTenderDetailView(NetworkMemberRequiredMixin, DetailView):
+    model = Tender
+    template_name = "dashboard/profile_network_tender_detail.html"
+    context_object_name = "tender"
+
+    def get_object(self):
+        self.network = Network.objects.prefetch_related("siaes").get(slug=self.kwargs.get("slug"))
+        self.network_siaes = self.network.siaes.all()
+        self.tender = get_object_or_404(
+            Tender.objects.validated().with_network_siae_stats(self.network_siaes),
+            slug=self.kwargs.get("tender_slug"),
+        )
+        return self.tender
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

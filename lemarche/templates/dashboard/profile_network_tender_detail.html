@@ -1,0 +1,45 @@
+{% extends "layouts/base.html" %}
+{% load bootstrap4 static humanize %}
+
+{% block title %}{{ tender.title }}{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_detail' network.slug %}">Mon réseau</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_tender_list' network.slug %}">Opportunités commerciales</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ tender.title|truncatechars:25 }}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="container">
+    <div class="row">
+        <div class="col-12 col-lg-8 order-2">
+            {% include "tenders/detail_card.html" with tender=tender %}
+        </div>
+        {# Sidebar "actions" #}
+        <div class="col-12 col-lg-4 order-1 order-lg-2">
+            <a href="{% url 'dashboard:profile_network_tender_siae_list' network.slug tender.slug %}" id="show-tender-siae-list-from-network-tender-detail-btn" class="btn btn-primary mb-3">
+                <i class="ri-focus-2-line"></i>
+                {{ tender.network_siae_email_send_count }} adhérent{{ tender.network_siae_email_send_count|pluralize }} notifié{{ tender.network_siae_email_send_count|pluralize }}
+            </a>
+            <a href="{% url 'dashboard:profile_network_tender_siae_list' network.slug tender.slug "CONTACT-CLICK" %}" id="show-tender-siae-interested-list-from-network-tender-detail-btn" class="btn btn-primary mb-3">
+                <i class="ri-thumb-up-line"></i>
+                {{ tender.network_siae_detail_contact_click_count }} adhérent{{ tender.network_siae_detail_contact_click_count|pluralize }} intéressé{{ tender.network_siae_detail_contact_click_count|pluralize }}
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
