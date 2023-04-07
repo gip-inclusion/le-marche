@@ -33,7 +33,7 @@
         <div class="row">
             <div class="col-12 my-5">
                 {% for tender in tenders %}
-                    {% include "tenders/_list_item_network.html" with tender=tender %}
+                    {% include "tenders/_list_item_network.html" with tender=tender network=network %}
                 {% endfor %}
                 {% include "includes/_pagination.html" %}
                 {% if not tenders %}

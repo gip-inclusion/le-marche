@@ -8,6 +8,7 @@ from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.networks.factories import NetworkFactory
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.siaes.models import SiaeUser
+from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.factories import TenderFactory
 from lemarche.tenders.models import TenderSiae
 from lemarche.users.factories import UserFactory
@@ -303,6 +304,7 @@ class DashboardNetworkViewTest(TestCase):
             "dashboard:profile_network_detail",
             "dashboard:profile_network_siae_list",
             "dashboard:profile_network_tender_list",
+            # "dashboard:profile_network_tender_detail"
             # "dashboard:profile_network_siae_tender_list"
         ]
         cls.network_1 = NetworkFactory(name="Liste 1")
@@ -315,6 +317,7 @@ class DashboardNetworkViewTest(TestCase):
         cls.siae_2 = SiaeFactory()
         cls.tender_1 = TenderFactory(
             author=cls.user_buyer,
+            status=tender_constants.STATUS_VALIDATED,
             validated_at=timezone.now(),
             deadline_date=timezone.now() - timedelta(days=5),
         )
@@ -373,8 +376,19 @@ class DashboardNetworkViewTest(TestCase):
         self.client.force_login(self.user_network_1)
         url = reverse("dashboard:profile_network_tender_list", args=[self.network_1.slug])
         response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.tender_1.title)
         self.assertContains(response, "1 adhérent notifié")
+        self.assertNotContains(response, self.tender_2.title)
+
+    def test_tender_detail_in_network_tender_detail(self):
+        self.client.force_login(self.user_network_1)
+        url = reverse("dashboard:profile_network_tender_detail", args=[self.network_1.slug, self.tender_1.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.tender_1.title)
+        self.assertContains(response, "1 adhérent notifié")
+        self.assertContains(response, "0 adhérents intéressés")
         self.assertNotContains(response, self.tender_2.title)
 
     def test_network_siae_list_in_network_tender_siae_list(self):
