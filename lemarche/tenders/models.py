@@ -137,7 +137,17 @@ class TenderQuerySet(models.QuerySet):
                     default=0,
                     output_field=IntegerField(),
                 )
-            )
+            ),
+            network_siae_detail_contact_click_count=Sum(
+                Case(
+                    When(
+                        Q(tendersiae__detail_contact_click_date__isnull=False) & Q(tendersiae__siae__in=network_siaes),
+                        then=1,
+                    ),
+                    default=0,
+                    output_field=IntegerField(),
+                )
+            ),
         )
 
 

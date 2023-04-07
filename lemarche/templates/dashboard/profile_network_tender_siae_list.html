@@ -1,0 +1,78 @@
+{% extends BASE_TEMPLATE %}
+{% load bootstrap4 static %}
+
+{% block title %}{{ tender.title }}{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_detail' network.slug %}">Mon réseau</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_tender_list' network.slug %}">Opportunités commerciales</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ tender.title|truncatechars:25 }}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="pt-4 pb-6">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                <h1 class="mb-3 mb-lg-5">Mes adhérents notifiés et intéressés par cette opportunité</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                {% block htmx %}
+                <div id="siaeTenderList">
+                    <ul role="navigation" class="nav nav-tabs nav-tabs--marche">
+                        {% url 'dashboard:profile_network_tender_siae_list' network.slug tender.slug as NETWORK_TENDER_SIAE_LIST_URL %}
+                        {% url 'dashboard:profile_network_tender_siae_list' network.slug tender.slug "CONTACT-CLICK" as NETWORK_TENDER_SIAE_CONTACT_CLICK_LIST_URL %}
+                        <li class="nav-item">
+                            <a role="button" hx-push-url="true" hx-get="{{ NETWORK_TENDER_SIAE_LIST_URL }}"
+                                class="nav-link{% if request.get_full_path == NETWORK_TENDER_SIAE_LIST_URL %} active{% endif %}"
+                                hx-target="#siaeTenderList" hx-swap="outerHTML">
+                                Adhérents notifiés
+                                <span class="badge badge-pill badge-primary fs-xs" style="vertical-align:middle;">{{ tender.network_siae_email_send_count }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a role="button" hx-push-url="true" hx-get="{{ NETWORK_TENDER_SIAE_CONTACT_CLICK_LIST_URL }}"
+                                class="nav-link{% if request.get_full_path == NETWORK_TENDER_SIAE_CONTACT_CLICK_LIST_URL %} active{% endif %}"
+                                hx-target="#siaeTenderList" hx-swap="outerHTML">
+                                Adhérents intéressés
+                                <span class="badge badge-pill badge-primary fs-xs" style="vertical-align:middle;">{{ tender.network_siae_detail_contact_click_count }}</span>
+                            </a>
+                        </li>
+                    </ul>
+                    {% for tendersiae in tendersiaes %}
+                        {% include "siaes/_card_tender.html" with siae=tendersiae.siae %}
+                    {% endfor %}
+                    {% if not tendersiaes %}
+                        <p class="text-muted my-5">
+                            {% if request.get_full_path == NETWORK_TENDER_SIAE_LIST_URL %}
+                                Aucun de mes adhérents n'a été notifié de cette opportunité.
+                            {% endif %}
+                            {% if request.get_full_path == NETWORK_TENDER_SIAE_CONTACT_CLICK_LIST_URL %}
+                                Aucun de mes adhérents ne s'est montré intéressé par cette opportunité.
+                            {% endif %}
+                        </p>
+                    {% endif %}
+                </div>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
