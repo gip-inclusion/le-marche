@@ -1,0 +1,56 @@
+{% extends "layouts/base.html" %}
+{% load bootstrap4 static %}
+
+{% block title %}Opportunités commerciales{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_detail' network.slug %}">Mon réseau</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Opportunités commerciales</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section>
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-12 col-lg">
+                <h1>Opportunités commerciales reçues par mes adhérents</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 my-5">
+                {% for tender in tenders %}
+                    {% include "tenders/_list_item_network.html" with tender=tender %}
+                {% endfor %}
+                {% include "includes/_pagination.html" %}
+                {% if not tenders %}
+                    <p class="text-muted">
+                        Désolé, nous n'avons aucune opportunités à vous présenter pour le moment.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+    $(document).on("click", ".c-card--link", function(e) {
+        window.location.href = $(this).data("url");
+    });
+</script>
+{% endblock %}

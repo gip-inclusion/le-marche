@@ -252,7 +252,6 @@ class TenderListView(LoginRequiredMixin, ListView):
         user = self.request.user
         qs = Tender.objects.none()
         if user.kind == User.KIND_SIAE and user.siaes:
-            # TODO: manage many siaes
             siaes = user.siaes.all()
             if siaes:
                 qs = Tender.objects.filter_with_siaes(siaes)
@@ -260,6 +259,7 @@ class TenderListView(LoginRequiredMixin, ListView):
             qs = Tender.objects.by_user(user).with_siae_stats()
             if self.status:
                 qs = qs.filter(status=self.status)
+        qs = qs.prefetch_many_to_many().select_foreign_keys()
         qs = qs.order_by_deadline_date()
         return qs
 
