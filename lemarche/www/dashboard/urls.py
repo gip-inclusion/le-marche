@@ -13,6 +13,7 @@ from lemarche.www.dashboard.views import (
     ProfileNetworkDetailView,
     ProfileNetworkSiaeListView,
     ProfileNetworkSiaeTenderListView,
+    ProfileNetworkTenderListView,
     SiaeEditContactView,
     SiaeEditInfoView,
     SiaeEditLinksView,
@@ -63,6 +64,7 @@ urlpatterns = [
         ProfileNetworkSiaeTenderListView.as_view(),
         name="profile_network_siae_tender_list",
     ),
+    path("reseaux/<str:slug>/besoins/", ProfileNetworkTenderListView.as_view(), name="profile_network_tender_list"),
     # Adopt Siae
     path("prestataires/rechercher/", SiaeSearchBySiretView.as_view(), name="siae_search_by_siret"),
     path("prestataires/<str:slug>/adopter/", SiaeSearchAdoptConfirmView.as_view(), name="siae_search_adopt_confirm"),

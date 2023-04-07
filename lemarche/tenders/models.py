@@ -31,6 +31,12 @@ def get_perimeter_filter(siae):
 
 
 class TenderQuerySet(models.QuerySet):
+    def prefetch_many_to_many(self):
+        return self.prefetch_related("sectors")  # "perimeters", "siaes"
+
+    def select_foreign_keys(self):
+        return self.select_related("location")
+
     def by_user(self, user):
         return self.filter(author=user)
 
@@ -121,6 +127,17 @@ class TenderQuerySet(models.QuerySet):
                     output_field=IntegerField(),
                 )
             ),
+        )
+
+    def with_network_siae_stats(self, network_siaes):
+        return self.annotate(
+            network_siae_email_send_count=Sum(
+                Case(
+                    When(Q(tendersiae__email_send_date__isnull=False) & Q(tendersiae__siae__in=network_siaes), then=1),
+                    default=0,
+                    output_field=IntegerField(),
+                )
+            )
         )
 
 

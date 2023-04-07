@@ -1,0 +1,58 @@
+{% load static humanize %}
+
+<div class="card c-card c-card--marche siae-card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8" style="border-right:1px solid;">
+                <p class="mb-1">
+                    Date de clôture : {{ tender.deadline_date|default:"" }}
+                    {% if tender.deadline_date_is_outdated %}
+                        <span class="badge badge-sm badge-base badge-pill badge-pilotage">Clôturé</span>
+                    {% endif %}
+                    <span class="float-right badge badge-base badge-pill badge-emploi">
+                        {% if tender.kind == "PROJ" %}
+                            {{ title_kind_sourcing_siae|default:tender.get_kind_display }}
+                        {% else %}
+                            {{ tender.get_kind_display }}
+                        {% endif %}
+                    </span>
+                </p>
+
+                <h2 class="py-2">{{ tender.title }}</h2>
+
+                <hr />
+
+                <div class="row">
+                    <div class="col-md-4" title="Secteurs d'activité">
+                        {% if tender.sectors.count %}
+                            <i class="ri-award-line"></i>
+                            {{ tender.sectors_list_string|safe }}
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4 text-center" title="Lieu d'intervention">
+                        {% if tender.perimeters_list_string %}
+                            <i class="ri-map-pin-2-line"></i>
+                            {{ tender.location_display|safe }}
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4 text-center">
+                        {% if tender.amount %}
+                            <i class="ri-money-euro-circle-line"></i>
+                            {{ tender.get_amount_display|default:"-" }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-center my-auto">
+                <hr class="d-md-none" />
+                <div class="row">
+                    <div class="col-12">
+                        <p class="font-weight-bold">
+                            <i class="ri-focus-2-line font-weight-light"></i>&nbsp;{{ tender.network_siae_email_send_count|default:0 }} adhérent{{ tender.network_siae_email_send_count|pluralize }} ciblé{{ tender.network_siae_email_send_count|pluralize }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
