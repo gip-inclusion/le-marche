@@ -36,7 +36,7 @@
             <div class="col-12 col-lg-8">
                 <!-- New list -->
                 <h2>Nouvelle liste</h2>
-                <form method="POST" action="{% url 'dashboard:profile_favorite_list_create' %}">
+                <form method="POST" action="{% url 'dashboard_favorites:list_create' %}">
                     {% csrf_token %}
                     {% bootstrap_form_errors form type="all" %}
                     <label class="mb-2 d-inline-block font-weight-bold" for="id_name">Créer une {% if favorite_lists.count %}nouvelle {% endif %}liste</label>
@@ -59,7 +59,7 @@
                     <ul class="list-group">
                     {% for favorite_list in favorite_lists.all %}
                         <li class="list-group-item">
-                            <a href="{% url 'dashboard:profile_favorite_list_detail' favorite_list.slug %}" class="d-flex justify-content-between align-items-center text-decoration-none" title="Voir la liste">
+                            <a href="{% url 'dashboard_favorites:list_detail' favorite_list.slug %}" class="d-flex justify-content-between align-items-center text-decoration-none" title="Voir la liste">
                                 <span>{{ favorite_list.name }} <span class="ml-2 fs-xs badge badge-marche-light badge-pill">{{ favorite_list.siaes.count }}</span></span>
                                 <i class="ri-eye-line ri-lg"></i>
                             </a>
