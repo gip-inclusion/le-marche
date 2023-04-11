@@ -3,8 +3,16 @@
     <div class="card c-card c-card--marche">
         <div class="card-header text-center">{% image self.image fill-150x150 class="img-fluid" %}</div>
         <div class="card-body">
-            <p class="h3 lh-base">{{ self.title }}</p>
+            <p class="h4 lh-base">{{ self.title }}</p>
+            <p>{{ self.subtitle }}</p>
         </div>
-        <div class="card-footer"></div>
+        <div class="card-footer text-right">
+            <a href="{{ self.url }}"
+               target="_blank"
+               class="btn btn-link btn-ico stretched-link">
+                <span>Découvrir</span>
+                <i class="ri-arrow-right-up-line ri-lg"></i>
+            </a>
+        </div>
     </div>
 </div>

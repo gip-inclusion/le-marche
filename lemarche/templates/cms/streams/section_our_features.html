@@ -4,23 +4,25 @@
     <div class="container py-4">
         <h2 class="h2 mb-3 mb-lg-5">{{ self.title }}</h2>
         <div class="row">
-            <div class="col-md-12">
-                <div class="MultiCarousel"
-                     id="MultiCarousel"
+            <div class="col-md-12 px-0">
+                <div class="multiCarousel px-0"
+                     id="multiCarousel"
                      data-items="1,3,3,3"
                      data-slide="1"
                      data-interval="1000">
-                    <div class="MultiCarousel-inner">
+                    <div class="multiCarousel-inner">
                         {% for block in self.constats %}
                             {% include_block block %}
                         {% endfor %}
                     </div>
-                    <button class="btn leftLst" href="#MultiCarousel" data-slide="prev">
-                        <i class="ri-arrow-left-line"></i>
-                    </button>
-                    <button class="btn rightLst" href="#MultiCarousel" data-slide="next">
-                        <i class="ri-arrow-right-line"></i>
-                    </button>
+                    <div class="controls text-center">
+                        <button class="btn btn-lg leftLst" href="#multiCarousel" data-slide="prev">
+                            <i class="ri-arrow-left-line"></i>
+                        </button>
+                        <button class="btn btn-lg rightLst" href="#multiCarousel" data-slide="next">
+                            <i class="ri-arrow-right-line"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -104,6 +104,11 @@ class FeatureBlock(blocks.StructBlock):
     """An external or internal URL."""
 
     title = blocks.CharBlock(required=True, max_length=60)
+    subtitle = blocks.RichTextBlock(
+        required=True,
+        features=["bold", "italic"],
+    )
+
     image = ImageChooserBlock(required=True)
     url = blocks.URLBlock(required=True)
 
