@@ -183,6 +183,10 @@ def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes
         tender.save()
 
 
+def send_siae_reminder_email(tender: Tender):
+    pass
+
+
 def send_siae_interested_email_to_author(tender: Tender):
     """
     The author is notified (by intervals) when new Siaes show interest (detail_contact_click_date set)
