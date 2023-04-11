@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from lemarche.tenders.models import Tender
-from lemarche.www.tenders.tasks import send_author_incremental_2_days_emails
+from lemarche.www.tenders.tasks import send_author_incremental_2_days_email
 
 
 class Command(BaseCommand):
@@ -38,7 +38,7 @@ class Command(BaseCommand):
             self.stdout.write("-" * 80)
             self.stdout.write("Step 2: Send emails")
             for tender in tender_validated_incremental_2_days:
-                send_author_incremental_2_days_emails(tender)
+                send_author_incremental_2_days_email(tender)
             self.stdout.write(f"Sent {tender_validated_incremental_2_days.count()} J+2 emails")
 
         self.stdout.write("-" * 80)
