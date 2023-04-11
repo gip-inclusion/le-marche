@@ -380,7 +380,6 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        print(response.content)
         self.assertContains(response, "Voir cet appel d")  # 'offre
         # users
         for user in User.objects.all():
