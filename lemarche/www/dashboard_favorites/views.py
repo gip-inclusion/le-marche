@@ -84,7 +84,7 @@ class DashboardFavoriteListDeleteView(FavoriteListOwnerRequiredMixin, SuccessMes
 
 class DashboardFavoriteItemDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     # FavoriteListOwnerRequiredMixin  # doesn't work because we don't have the FavoriteList slug
-    template_name = "siaes/_favorite_item_remove_modal.html"
+    template_name = "favorites/_favorite_item_remove_modal.html"
     model = FavoriteItem
     # success_message = "La structure a été supprimée de votre liste d'achat avec succès."
     success_url = reverse_lazy("dashboard_favorites:list_detail")
