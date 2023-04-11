@@ -281,7 +281,7 @@ def notify_admin_tender_created(tender: Tender):
 
 
 def send_author_incremental_2_days_email(tender: Tender):
-    email_subject = f"Concernant votre {tender.get_kind_display()} sur le marché de l'inclusion"
+    email_subject = f"Concernant votre {tender.get_kind_display()} sur le Marché de l'inclusion"
     recipient_list = whitelist_recipient_list([tender.author.email])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
@@ -315,7 +315,7 @@ def send_author_incremental_2_days_email(tender: Tender):
 
 
 def send_tenders_author_feedback_30_days(tender: Tender):
-    email_subject = f"Concernant votre {tender.get_kind_display()} sur le marché de l'inclusion"
+    email_subject = f"Concernant votre {tender.get_kind_display()} sur le Marché de l'inclusion"
     recipient_list = whitelist_recipient_list([tender.author.email])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
