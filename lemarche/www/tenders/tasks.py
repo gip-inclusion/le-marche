@@ -18,7 +18,7 @@ def send_tender_emails_to_siaes(tender: Tender):
 
     previous email_subject: f"{tender.get_kind_display()} : {tender.title} ({tender.author.company_name})"
     """
-    email_subject = "Une opportunité commerciale pour vous sur le Marché de l'inclusion"
+    email_subject = "J'ai une opportunité commerciale pour vous sur le Marché de l'inclusion"
     siaes = tender.siaes.all()
     siae_users_count = 0
     siae_users_send_count = 0
