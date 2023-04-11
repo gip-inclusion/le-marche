@@ -3,7 +3,7 @@ from django import forms
 from lemarche.favorites.models import FavoriteList
 
 
-class ProfileFavoriteEditForm(forms.ModelForm):
+class FavoriteListEditForm(forms.ModelForm):
     class Meta:
         model = FavoriteList
         fields = ["name"]
