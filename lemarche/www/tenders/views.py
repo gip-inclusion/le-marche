@@ -293,24 +293,26 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
         - update 'email_link_click_date' (if ?siae_id in the URL)
         - update 'detail_display_date' (if the User has any Siae linked to this Tender)
         """
-        tender: Tender = self.get_object()
+        self.object = self.get_object()
         user = self.request.user
         siae_id = request.GET.get("siae_id", None)
         # update 'email_link_click_date'
         if siae_id:
-            TenderSiae.objects.filter(tender=tender, siae_id=siae_id, email_link_click_date=None).update(
+            TenderSiae.objects.filter(tender=self.object, siae_id=siae_id, email_link_click_date=None).update(
                 email_link_click_date=timezone.now(), updated_at=timezone.now()
             )
         # update 'detail_display_date'
         if user.is_authenticated:
             if user.kind == User.KIND_SIAE:
                 # user might not be concerned with this tender: we create TenderSiae stats
-                if not user.has_tender_siae(tender):
+                if not user.has_tender_siae(self.object):
                     for siae in user.siaes.all():
-                        TenderSiae.objects.create(tender=tender, siae=siae, source=TenderSiae.TENDER_SIAE_SOURCE_LINK)
+                        TenderSiae.objects.create(
+                            tender=self.object, siae=siae, source=TenderSiae.TENDER_SIAE_SOURCE_LINK
+                        )
                 # update stats
                 TenderSiae.objects.filter(
-                    tender=tender, siae__in=user.siaes.all(), detail_display_date__isnull=True
+                    tender=self.object, siae__in=user.siaes.all(), detail_display_date__isnull=True
                 ).update(detail_display_date=timezone.now(), updated_at=timezone.now())
         return super().get(request, *args, **kwargs)
 
@@ -318,7 +320,6 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
         """ """
         context = super().get_context_data(**kwargs)
         # init
-        tender: Tender = self.get_object()
         user = self.request.user
         user_kind = user.kind if user.is_authenticated else "anonymous"
         show_nps = self.request.GET.get("nps", None)
@@ -326,17 +327,17 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
         context["parent_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
         context["tender_kind_display"] = (
             TITLE_KIND_SOURCING_SIAE
-            if user_kind == User.KIND_SIAE and tender.kind == tender_constants.KIND_PROJECT
-            else tender.get_kind_display()
+            if user_kind == User.KIND_SIAE and self.object.kind == tender_constants.KIND_PROJECT
+            else self.object.get_kind_display()
         )
         if user.is_authenticated:
-            if tender.author == user:
-                context["is_draft"] = tender.status == tender_constants.STATUS_DRAFT
-                context["is_pending_validation"] = tender.status == tender_constants.STATUS_PUBLISHED
-                context["is_validated"] = tender.status == tender_constants.STATUS_VALIDATED
+            if self.object.author == user:
+                context["is_draft"] = self.object.status == tender_constants.STATUS_DRAFT
+                context["is_pending_validation"] = self.object.status == tender_constants.STATUS_PUBLISHED
+                context["is_validated"] = self.object.status == tender_constants.STATUS_VALIDATED
             elif user.kind == User.KIND_SIAE:
                 context["user_siae_has_detail_contact_click_date"] = TenderSiae.objects.filter(
-                    tender=tender, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False
+                    tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False
                 ).exists()
                 if show_nps:
                     context["show_nps"] = True
@@ -360,17 +361,17 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
         return get_object_or_404(Tender, slug=self.kwargs.get("slug"))
 
     def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
         user = self.request.user
         detail_contact_click_confirm = self.request.POST.get("detail_contact_click_confirm", False) == "true"
         if user.kind == User.KIND_SIAE:
             if detail_contact_click_confirm:
                 # update detail_contact_click_date
-                tender = self.get_object()
                 TenderSiae.objects.filter(
-                    tender=tender, siae__in=user.siaes.all(), detail_contact_click_date__isnull=True
+                    tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=True
                 ).update(detail_contact_click_date=timezone.now(), updated_at=timezone.now())
                 # notify the tender author
-                send_siae_interested_email_to_author(tender)
+                send_siae_interested_email_to_author(self.object)
                 # redirect
                 messages.add_message(
                     self.request, messages.SUCCESS, self.get_success_message(detail_contact_click_confirm)
@@ -392,7 +393,7 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
     def get_success_message(self, detail_contact_click_confirm):
         if detail_contact_click_confirm:
             return "<strong>Bravo !</strong><br />Vos coordonnées, ainsi que le lien vers votre fiche commerciale ont été transmis à l'acheteur. Assurez-vous d'avoir une fiche commerciale bien renseignée."  # noqa
-        return "<strong>Répondre à cette opportunité</strong><br />Pour répondre à cette opportunité, vous devez accepter d'être mis en relation avec l'acheteur."  # noqa
+        return f"<strong>{self.object.cta_text}</strong><br />Pour {self.object.cta_text.lower()}, vous devez accepter d'être mis en relation avec l'acheteur."  # noqa
 
 
 class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, ListView):

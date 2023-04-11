@@ -430,6 +430,12 @@ class Tender(models.Model):
             return "Voir l'appel d'offres"
         return "Lien partagé"
 
+    @property
+    def cta_text(self):
+        if self.kind == tender_constants.KIND_TENDER:
+            return "Voir cet appel d'offres"
+        return "Répondre à cette opportunité"
+
     @cached_property
     def can_display_contact_email(self):
         return (self.RESPONSE_KIND_EMAIL in self.response_kind) and self.contact_email
