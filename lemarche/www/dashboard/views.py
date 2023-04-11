@@ -122,7 +122,7 @@ class ProfileEditView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
 class ProfileFavoriteListView(LoginRequiredMixin, ListView):
     # form_class = ProfileFavoriteEditForm
-    template_name = "dashboard/profile_favorite_list.html"
+    template_name = "favorites/dashboard_favorite_list.html"
     queryset = FavoriteList.objects.all()
     context_object_name = "favorite_lists"
 
@@ -160,14 +160,14 @@ class ProfileFavoriteListCreateView(LoginRequiredMixin, SuccessMessageMixin, Cre
 
 
 class ProfileFavoriteListDetailView(FavoriteListOwnerRequiredMixin, DetailView):
-    template_name = "dashboard/profile_favorite_list_detail.html"
+    template_name = "favorites/dashboard_favorite_list_detail.html"
     queryset = FavoriteList.objects.prefetch_related("siaes").all()
     context_object_name = "favorite_list"
 
 
 class ProfileFavoriteListEditView(FavoriteListOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = ProfileFavoriteEditForm
-    template_name = "siaes/_favorite_list_edit_modal.html"
+    template_name = "favorites/_favorite_list_edit_modal.html"
     success_message = "Votre liste d'achat a été modifiée avec succès."
     # success_url = reverse_lazy("dashboard:profile_favorite_list_detail")
 
@@ -179,7 +179,7 @@ class ProfileFavoriteListEditView(FavoriteListOwnerRequiredMixin, SuccessMessage
 
 
 class ProfileFavoriteListDeleteView(FavoriteListOwnerRequiredMixin, SuccessMessageMixin, DeleteView):
-    template_name = "siaes/_favorite_list_delete_modal.html"
+    template_name = "favorites/_favorite_list_delete_modal.html"
     model = FavoriteList
     # success_message = "Votre liste d'achat a été supprimée avec succès."
     success_url = reverse_lazy("dashboard:profile_favorite_list")
