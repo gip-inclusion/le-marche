@@ -112,7 +112,10 @@
                                     <img src="{% static 'images/illustration-14.svg' %}" height="100" alt="" loading="lazy" />
                                 </span>
                                 <div>
-                                    <p class="h4 lh-sm mb-lg-4">Mon réseau : {{ user.partner_network }}</p>
+                                    <p class="h4 lh-sm mb-lg-4">
+                                        Mon réseau : {{ user.partner_network }}
+                                        <span class="badge badge-sm badge-pill badge-important">Nouveauté</span>
+                                    </p>
                                     <p>
                                         Suivez en temps réel les demandes de devis, appels d'offres et marchés reçus par vos adhérents,
                                         et aidez-les à développer leur activité commerciale.
