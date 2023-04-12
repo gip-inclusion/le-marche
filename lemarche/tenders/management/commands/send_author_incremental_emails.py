@@ -29,9 +29,9 @@ class Command(BaseCommand):
         two_days_ago = timezone.now() - timedelta(days=2)
         three_days_ago = timezone.now() - timedelta(days=3)
         tender_validated_incremental = Tender.objects.validated().is_incremental()
-        tender_validated_incremental_2_days = tender_validated_incremental.filter(created_at__gte=two_days_ago).filter(
-            created_at__lt=three_days_ago
-        )
+        tender_validated_incremental_2_days = tender_validated_incremental.filter(
+            created_at__gte=three_days_ago
+        ).filter(created_at__lt=two_days_ago)
         self.stdout.write(f"Found {tender_validated_incremental_2_days.count()} Tenders")
 
         if not dry_run:
