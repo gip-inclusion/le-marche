@@ -147,7 +147,7 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, em
 
 
 def send_tender_reminder_email_to_siaes(tender: Tender, days_since_email_send_date=2):
-    email_subject = "Une opportunité commerciale pour vous sur le Marché de l'inclusion"
+    email_subject = f"Un {tender.get_kind_display().lower()} pour vous sur le Marché de l'inclusion"
 
     # queryset
     lt_days_ago = timezone.now() - timedelta(days=days_since_email_send_date)
