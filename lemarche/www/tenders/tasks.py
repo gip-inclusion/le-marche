@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -19,18 +21,20 @@ def send_tender_emails_to_siaes(tender: Tender):
     previous email_subject: f"{tender.get_kind_display()} : {tender.title} ({tender.author.company_name})"
     """
     email_subject = "J'ai une opportunité commerciale pour vous sur le Marché de l'inclusion"
-    siaes = tender.siaes.all()
     siae_users_count = 0
     siae_users_send_count = 0
 
+    # queryset
+    siaes = tender.siaes.all()
+
     for siae in siaes:
         # send to siae 'contact_email'
-        send_tender_email_to_siae(email_subject, tender, siae)
+        send_tender_email_to_siae(tender, siae, email_subject)
         # also send to the siae's user(s) 'email' (if its value is different)
         for user in siae.users.all():
             siae_users_count += 1
             if user.email != siae.contact_email:
-                send_tender_email_to_siae(email_subject, tender, siae, email_to_override=user.email)
+                send_tender_email_to_siae(tender, siae, email_subject, email_to_override=user.email)
                 siae_users_send_count += 1
 
     tender.tendersiae_set.update(email_send_date=timezone.now(), updated_at=timezone.now())
@@ -111,7 +115,7 @@ def send_tender_email_to_partner(email_subject: str, tender: Tender, partner: Pa
 
 
 # @task()
-def send_tender_email_to_siae(email_subject: str, tender: Tender, siae: Siae, email_to_override=None):
+def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, email_to_override=None):
     # override siae.contact_email if email_to_override is provided
     email_to = email_to_override or siae.contact_email
     recipient_list = whitelist_recipient_list([email_to])
@@ -139,6 +143,64 @@ def send_tender_email_to_siae(email_subject: str, tender: Tender, siae: Siae, em
             variables=variables,
             from_email=settings.CONTACT_EMAIL,
             from_name="Raphaël du Marché de l'inclusion",
+        )
+
+
+def send_tender_reminder_email_to_siaes(tender: Tender, days_since_email_send_date=2):
+    email_subject = "Une opportunité commerciale pour vous sur le Marché de l'inclusion"
+
+    # queryset
+    lt_days_ago = timezone.now() - timedelta(days=days_since_email_send_date)
+    gte_days_ago = timezone.now() - timedelta(days=days_since_email_send_date + 1)
+    tendersiae_reminder_list = (
+        TenderSiae.objects.filter(tender_id=tender.id)
+        .filter(email_send_date__gte=gte_days_ago)
+        .filter(email_send_date__lt=lt_days_ago)
+        .filter(email_link_click_date__isnull=True)
+    )
+
+    for tendersiae in tendersiae_reminder_list:
+        # send to siae 'contact_email'
+        send_tender_reminder_email_to_siae(tender, tendersiae.siae, email_subject)
+
+    # TODO
+    # tender.tendersiae_set.update(email_send_date=timezone.now(), updated_at=timezone.now())
+
+    # log email batch
+    siaes_reminder_log_item = {
+        "action": f"email_siaes_reminder_{days_since_email_send_date}d",
+        "email_subject": email_subject,
+        "email_count": tendersiae_reminder_list.count(),
+        "email_timestamp": timezone.now().isoformat(),
+    }
+    tender.logs.append(siaes_reminder_log_item)
+    tender.save()
+
+
+def send_tender_reminder_email_to_siae(tender: Tender, siae: Siae, email_subject):
+    recipient_list = whitelist_recipient_list([siae.contact_email])
+    if recipient_list:
+        recipient_email = recipient_list[0] if recipient_list else ""
+        recipient_name = tender.author.full_name
+
+        variables = {
+            "SIAE_CONTACT_FIRST_NAME": siae.contact_first_name,
+            "SIAE_SECTORS": siae.sectors_list_string(),
+            "SIAE_PERIMETER": siae.geo_range_pretty_display,
+            "TENDER_TITLE": tender.title,
+            "TENDER_AUTHOR_COMPANY": tender.author.company_name,
+            "TENDER_KIND": tender.get_kind_display(),
+            "TENDER_SECTORS": tender.sectors_list_string(),
+            "TENDER_PERIMETERS": tender.location_display,
+            "TENDER_URL": f"{get_share_url_object(tender)}?siae_id={siae.id}&source=relance",
+        }
+
+        api_mailjet.send_transactional_email_with_template(
+            template_id=settings.MAILJET_TENDERS_AUTHOR_INCREMENTAL_2D_TEMPLATE_ID,
+            subject=email_subject,
+            recipient_email=recipient_email,
+            recipient_name=recipient_name,
+            variables=variables,
         )
 
 
@@ -181,10 +243,6 @@ def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes
         }
         tender.logs.append(log_item)
         tender.save()
-
-
-def send_siae_reminder_email(tender: Tender):
-    pass
 
 
 def send_siae_interested_email_to_author(tender: Tender):
