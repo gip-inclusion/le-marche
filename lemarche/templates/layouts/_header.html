@@ -64,11 +64,11 @@
             <div class="s-header__col s-header__col--nav col d-none d-xl-inline-flex d-xl-flex align-items-center justify-content-end">
                 <nav id="nav-primary" role="navigation" aria-label="Navigation principale">
                     <ul>
-                        {% if not user.is_authenticated %}
-                            <li>
-                                {% include "includes/_newsletter_button.html" %}
-                            </li>
-                        {% endif %}
+                        <li>
+                            <a href="/ressources/quest-ce-quun-prestataire-inclusif/" id="header-ressource-prestataire" class="btn btn-link pr-0 text-decoration-none {{ custom_class }}">
+                                Qu'est-ce qu'un<br />prestataire inclusif ?
+                            </a>
+                        </li>
                         <li>
                             <div class="dropdown">
                                 <button class="btn btn-link dropdown-toggle" type="button" id="solutionsDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -171,11 +171,11 @@
             <div id="burgerNav">
                 <nav role="navigation">
                     <ul>
-                        {% if not user.is_authenticated %}
-                            <li>
-                                {% include "includes/_newsletter_button.html" with custom_class="btn-sm p-0" %}
-                            </li>
-                        {% endif %}
+                        <li>
+                            <a href="/ressources/quest-ce-quun-prestataire-inclusif/" id="header-ressource-prestataire" class="btn btn-link pr-0 text-decoration-none {{ custom_class }}">
+                                Qu'est-ce qu'un prestataire inclusif ?
+                            </a>
+                        </li>
                         <hr />
                         <li>
                             <a href="{% url 'tenders:create' %}" id="header-dropdown-tender-create-btn">
