@@ -453,6 +453,10 @@ class Tender(models.Model):
         return (self.RESPONSE_KIND_EXTERNAL in self.response_kind) and self.external_link
 
     @cached_property
+    def response_kind_is_only_external(self):
+        return (len(self.response_kind) == 1) and self.can_display_contact_external_link
+
+    @cached_property
     def accept_share_amount_display(self):
         if self.accept_share_amount:
             return self.TENDER_ACCEPT_SHARE_AMOUNT_TRUE

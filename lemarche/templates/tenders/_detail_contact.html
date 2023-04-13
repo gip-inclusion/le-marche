@@ -33,6 +33,14 @@
         </div>
     {% endif %}
 </div>
+{% if not tender.response_kind_is_only_external %}
+    <div class="row">
+        <div class="col-md-6">
+            <i class="ri-at-line"></i>
+            {{ SOFIANE_CONTACT_EMAIL }}
+        </div>
+    </div>
+{% endif %}
 {% if tender.can_display_contact_external_link %}
     <div class="row">
         <div class="col-12">
