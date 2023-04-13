@@ -33,7 +33,7 @@
         </div>
     {% endif %}
 </div>
-{% if not tender.response_kind_is_only_external %}
+{% if source == "alert" and not tender.response_kind_is_only_external %}
     <div class="row">
         <div class="col-md-6">
             <i class="ri-at-line"></i>
