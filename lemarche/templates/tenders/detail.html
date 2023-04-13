@@ -15,7 +15,7 @@
                             <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
                             <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">{{ parent_title }}</a></li>
                         {% endif %}
-                        <li class="breadcrumb-item active" aria-current="page">{{ tender.title|truncatechars:25 }}</li>
+                        <li class="breadcrumb-item active" aria-current="page" title="{{ tender.title }}">{{ tender.title|truncatechars:25 }}</li>
                     </ol>
                 </nav>
             </div>
