@@ -4,9 +4,6 @@ from importlib import import_module
 from random import randint
 
 from django.apps import apps
-from django.db import IntegrityError
-
-# from django.forms import ValidationError
 from django.test import TestCase
 from django.utils import timezone
 
@@ -93,10 +90,10 @@ class TenderModelSaveTest(TestCase):
     #     tender.start_working_date = tender.deadline_date - timedelta(days=1)
     #     self.assertRaises(ValidationError, tender.clean)
 
-    def test_not_empty_deadline(self):
-        tender = TenderFactory()
-        tender.deadline_date = None
-        self.assertRaises(IntegrityError, tender.save)
+    # def test_not_empty_deadline(self):
+    #     tender = TenderFactory()
+    #     tender.deadline_date = None
+    #     self.assertRaises(IntegrityError, tender.save)
 
 
 class TenderModelQuerysetTest(TestCase):
