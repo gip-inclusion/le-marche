@@ -1,9 +1,18 @@
+import re
+
 from django.conf import settings
 from django.core.mail import send_mail
 from huey.contrib.djhuey import task
 
 
 EMAIL_SUBJECT_PREFIX = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_ENV != "prod" else ""
+
+
+def anonymize_email(email):
+    email_split = email.split("@")
+    email_username = email_split[0]
+    email_username_anonymized = email_username[0] + re.sub("[a-z]", "*", email_username[1:-1]) + email_username[-1]
+    return "@".join([email_username_anonymized, email_split[1]])
 
 
 # TODO: wrap this method on every send_mail. ex: use email base layout like C1
