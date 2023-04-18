@@ -13,7 +13,7 @@
                         <li class="breadcrumb-item"><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard_favorites:list' %}">Liste d'achat favoris</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ favorite_list.name }}</li>
+                        <li class="breadcrumb-item active" aria-current="page" title="{{ favorite_list.name }}">{{ favorite_list.name }}</li>
                     </ol>
                 </nav>
             </div>

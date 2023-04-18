@@ -14,7 +14,7 @@
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_detail' network.slug %}">Mon réseau</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_tender_list' network.slug %}">Opportunités commerciales</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_tender_detail' network.slug tender.slug %}">{{ tender.title|truncatechars:25 }}</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_tender_detail' network.slug tender.slug %}" title="{{ tender.title }}">{{ tender.title|truncatechars:25 }}</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Adhérents notifiés</li>
                     </ol>
                 </nav>
