@@ -20,7 +20,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'siae:search_results' %}?{{ current_search_query }}" title="Revenir aux résultats de recherche">Recherche</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ siae.name_display }}</li>
+                        <li class="breadcrumb-item active" aria-current="page"title="{{ siae.name_display }}">{{ siae.name_display }}</li>
                     </ol>
                 </nav>
             </div>
