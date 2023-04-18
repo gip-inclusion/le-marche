@@ -9,6 +9,7 @@ from django.utils import timezone
 
 from lemarche.stats.models import StatsUser
 from lemarche.utils import constants
+from lemarche.utils.emails import anonymize_email
 
 
 class UserQueryset(models.QuerySet):
@@ -309,6 +310,10 @@ class User(AbstractUser):
         if self.first_name and self.last_name:
             return f"{self.first_name.upper()[:1]}. {self.last_name.upper()}"
         return ""
+
+    @property
+    def email_anonymized(self):
+        return anonymize_email(self.email)
 
     @property
     def kind_detail_display(self):
