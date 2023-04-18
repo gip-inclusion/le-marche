@@ -153,6 +153,8 @@ class AddTenderStepContactForm(forms.ModelForm):
         # required fields
         self.fields["contact_first_name"].required = True
         self.fields["contact_last_name"].required = True
+        self.fields["response_kind"].required = True
+        self.fields["deadline_date"].required = True
         if user_is_anonymous:
             self.fields["contact_email"].required = True
             self.fields["contact_phone"].required = True

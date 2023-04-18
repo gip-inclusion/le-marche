@@ -209,6 +209,8 @@ class Tender(models.Model):
     deadline_date = models.DateField(
         verbose_name="Date de clôture des réponses",
         help_text="Sélectionnez la date jusqu'à laquelle vous acceptez des réponses",
+        blank=True,
+        null=True,
     )
     start_working_date = models.DateField(verbose_name="Date idéale de début des prestations", blank=True, null=True)
     amount = models.CharField(
@@ -234,6 +236,8 @@ class Tender(models.Model):
     response_kind = ChoiceArrayField(
         verbose_name="Comment souhaitez-vous être contacté ?",
         base_field=models.CharField(max_length=6, choices=RESPONSE_KIND_CHOICES),
+        blank=True,
+        default=list,
     )
     accept_cocontracting = models.BooleanField(
         verbose_name="Ouvert à la co-traitance",
