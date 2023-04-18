@@ -105,7 +105,7 @@
                                             <i class="ri-dashboard-line"></i>
                                             Tableau de bord
                                         </a>
-                                        <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites" class="dropdown-item">
+                                        <a href="{% url 'dashboard_favorites:list' %}" id="header-favorites" class="dropdown-item">
                                             <i class="ri-star-line"></i>
                                             Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
                                         </a>
@@ -207,7 +207,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{% url 'dashboard:profile_favorite_list' %}" id="header-favorites">
+                                <a href="{% url 'dashboard_favorites:list' %}" id="header-favorites">
                                     <i class="ri-star-line"></i>
                                     Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
                                 </a>

@@ -12,7 +12,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_favorite_list' %}">Liste d'achat favoris</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard_favorites:list' %}">Liste d'achat favoris</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ favorite_list.name }}</li>
                     </ol>
                 </nav>
@@ -75,9 +75,9 @@
 {% endblock %}
 
 {% block modals %}
-    {% include "siaes/_favorite_item_remove_modal.html" with favorite_list=favorite_list %}
-    {% include "siaes/_favorite_list_edit_modal.html" with favorite_list=favorite_list %}
-    {% include "siaes/_favorite_list_delete_modal.html" with favorite_list=favorite_list %}
+    {% include "favorites/_favorite_item_remove_modal.html" with favorite_list=favorite_list %}
+    {% include "favorites/_favorite_list_edit_modal.html" with favorite_list=favorite_list %}
+    {% include "favorites/_favorite_list_delete_modal.html" with favorite_list=favorite_list %}
 {% endblock %}
 
 {% block extra_js %}

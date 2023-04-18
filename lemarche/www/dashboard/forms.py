@@ -2,7 +2,6 @@ from django import forms
 from django.forms.models import inlineformset_factory
 from django_select2.forms import ModelSelect2MultipleWidget
 
-from lemarche.favorites.models import FavoriteList
 from lemarche.networks.models import Network
 from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
@@ -33,16 +32,6 @@ class ProfileEditForm(forms.ModelForm):
 
         # Disabled fields
         self.fields["email"].disabled = True
-
-
-class ProfileFavoriteEditForm(forms.ModelForm):
-    class Meta:
-        model = FavoriteList
-        fields = ["name"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["name"].widget.attrs.update({"placeholder": "Entretien des locaux, achat de masque…"})
 
 
 class SiaeSearchBySiretForm(forms.Form):

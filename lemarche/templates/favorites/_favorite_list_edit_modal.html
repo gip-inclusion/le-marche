@@ -1,18 +1,17 @@
-<div class="modal fade modal-siae" id="favorite_item_remove_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="modalTitle">
+<div class="modal fade modal-siae" id="favorite_list_edit_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="modalTitle">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">Supprimer</h3>
+                <h3 class="modal-title" id="modalTitle">Modifier</h3>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
                     <i class="ri-close-line"></i>
                 </button>
             </div>
-            <form method="POST" action="{% url 'dashboard:profile_favorite_item_delete' favorite_list.slug|default:'favorite-list-slug' siae.slug|default:'siae-slug-to-replace' %}">
+            <form method="POST" action="{% url 'dashboard_favorites:list_edit' favorite_list.slug %}">
                 {% csrf_token %}
                 <div class="modal-body home-content-body">
-                    <p class="font-weight-bold">
-                        Supprimer la structure <strong>{% if siae %}{{ siae.name_display }}{% else %}<span id="siae-name-display"></span>{% endif %}</strong> de votre liste d'achat ?
-                    </p>
+                    <p class="font-weight-bold">Modifier le nom de la liste</p>
+                    <input type="text" class="form-control form-control-sm" name="name" value="{{ favorite_list.name }}" required />
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-sm btn-outline-primary" type="button" data-dismiss="modal" aria-label="Fermer">Annuler</button>

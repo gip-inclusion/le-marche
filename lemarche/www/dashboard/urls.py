@@ -4,12 +4,6 @@ from django.views.generic.base import RedirectView
 from lemarche.www.dashboard.views import (
     DashboardHomeView,
     ProfileEditView,
-    ProfileFavoriteItemDeleteView,
-    ProfileFavoriteListCreateView,
-    ProfileFavoriteListDeleteView,
-    ProfileFavoriteListDetailView,
-    ProfileFavoriteListEditView,
-    ProfileFavoriteListView,
     ProfileNetworkDetailView,
     ProfileNetworkSiaeListView,
     ProfileNetworkSiaeTenderListView,
@@ -30,29 +24,13 @@ from lemarche.www.dashboard.views import (
 )
 
 
-# https://docs.djangoproject.com/en/dev/topics/http/urls/#url-namespaces-and-included-urlconfs
 app_name = "dashboard"
 
 urlpatterns = [
     path("", DashboardHomeView.as_view(), name="home"),
     path("modifier/", ProfileEditView.as_view(), name="profile_edit"),
     # FavoriteList
-    path("listes-dachats/", ProfileFavoriteListView.as_view(), name="profile_favorite_list"),
-    path("listes-dachats/creer/", ProfileFavoriteListCreateView.as_view(), name="profile_favorite_list_create"),
-    path("listes-dachats/<str:slug>/", ProfileFavoriteListDetailView.as_view(), name="profile_favorite_list_detail"),
-    path(
-        "listes-dachats/<slug:slug>/prestataires/<slug:siae_slug>/",
-        ProfileFavoriteItemDeleteView.as_view(),
-        name="profile_favorite_item_delete",
-    ),
-    path(
-        "listes-dachats/<str:slug>/modifier/", ProfileFavoriteListEditView.as_view(), name="profile_favorite_list_edit"
-    ),
-    path(
-        "listes-dachats/<str:slug>/supprimer/",
-        ProfileFavoriteListDeleteView.as_view(),
-        name="profile_favorite_list_delete",
-    ),
+    # see dashboard_favorites/urls.py
     # Network
     path("reseaux/<str:slug>/", ProfileNetworkDetailView.as_view(), name="profile_network_detail"),
     path("reseaux/<str:slug>/prestataires/", ProfileNetworkSiaeListView.as_view(), name="profile_network_siae_list"),
