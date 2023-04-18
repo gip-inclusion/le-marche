@@ -10,16 +10,13 @@ from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, ListView, UpdateView
 from formtools.wizard.views import SessionWizardView
 
+from lemarche.common.mixins import TenderAuthorOrAdminRequiredIfNotValidatedMixin, TenderAuthorOrAdminRequiredMixin
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils.apis import api_hubspot
 from lemarche.utils.data import get_choice
 from lemarche.www.auth.tasks import send_new_user_password_reset_link
-from lemarche.www.dashboard.mixins import (
-    TenderAuthorOrAdminRequiredIfNotValidatedMixin,
-    TenderAuthorOrAdminRequiredMixin,
-)
 from lemarche.www.tenders.forms import (
     AddTenderStepConfirmationForm,
     AddTenderStepContactForm,
