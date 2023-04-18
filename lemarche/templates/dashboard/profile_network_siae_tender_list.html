@@ -14,7 +14,7 @@
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_detail' network.slug %}">Mon réseau</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_siae_list' network.slug %}">Mes adhérents</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ siae.name_display|truncatechars:25 }}</li>
+                        <li class="breadcrumb-item active" aria-current="page" title="{{ siae.name_display }}">{{ siae.name_display|truncatechars:25 }}</li>
                     </ol>
                 </nav>
             </div>

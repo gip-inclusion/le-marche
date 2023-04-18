@@ -14,7 +14,7 @@
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_detail' network.slug %}">Mon réseau</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_tender_list' network.slug %}">Opportunités commerciales</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ tender.title|truncatechars:25 }}</li>
+                        <li class="breadcrumb-item active" aria-current="page" title="{{ tender.title }}">{{ tender.title|truncatechars:25 }}</li>
                     </ol>
                 </nav>
             </div>

@@ -18,7 +18,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% slugurl 'ressources' %}">Ressources</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ page.title }}</li>
+                        <li class="breadcrumb-item active" aria-current="page" title="{{ page.title }}">{{ page.title }}</li>
                     </ol>
                 </nav>
             </div>
