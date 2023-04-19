@@ -19,4 +19,4 @@ fi
 # $APP_HOME is set by default by clever cloud.
 cd $APP_HOME
 
-django-admin send_siae_reminder_emails
+django-admin send_siae_reminder_emails --days-since-email-send-date 2
