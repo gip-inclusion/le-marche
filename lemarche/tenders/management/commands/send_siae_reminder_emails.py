@@ -45,18 +45,14 @@ class Command(BaseCommand):
             self.stdout.write(f"- where email_send_date J+{options['days_since_email_send_date']}")
             self.stdout.write("- where email_link_click_date is None")
 
+            lt_days_ago = timezone.now() - timedelta(days=options["days_since_email_send_date"])
+            gte_days_ago = timezone.now() - timedelta(days=options["days_since_email_send_date"] + 1)
             # Monday: special case (the script doesn't run during on weekends)
             # gte_days_ago = gte_days_ago+2 to account for Saturday & Sunday
             if current_weekday == 0:
-                lt_days_ago = timezone.now() - timedelta(days=options["days_since_email_send_date"])
                 gte_days_ago = timezone.now() - timedelta(days=options["days_since_email_send_date"] + 1 + 2)
-            else:
-                lt_days_ago = timezone.now() - timedelta(days=options["days_since_email_send_date"])
-                gte_days_ago = timezone.now() - timedelta(days=options["days_since_email_send_date"] + 1)
-            tendersiae_reminder_list = (
-                TenderSiae.objects.filter(email_send_date__gte=gte_days_ago)
-                .filter(email_send_date__lt=lt_days_ago)
-                .filter(email_link_click_date__isnull=True)
+            tendersiae_reminder_list = TenderSiae.objects.email_click_reminder(
+                gte_days_ago=gte_days_ago, lt_days_ago=lt_days_ago
             )
 
             if options["tender_id"]:
