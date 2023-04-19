@@ -19,4 +19,4 @@ fi
 # $APP_HOME is set by default by clever cloud.
 cd $APP_HOME
 
-django-admin send_author_incremental_emails
+django-admin send_author_incremental_emails --days-since-email-send-date 2
