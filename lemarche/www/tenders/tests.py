@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.test import TestCase
 from django.urls import reverse
@@ -633,7 +634,7 @@ class TenderDetailViewTest(TestCase):
         self.assertContains(response, "Coordonnées")
         self.assertContains(response, self.tender_1.contact_email)  # RESPONSE_KIND_EMAIL
         self.assertNotContains(response, self.tender_1.contact_phone)
-        self.assertNotContains(response, "sofiane.contact@example.com")
+        self.assertNotContains(response, settings.TEAM_CONTACT_EMAIL)
         self.assertNotContains(response, "Voir l'appel d'offres")
         self.assertNotContains(response, "Lien partagé")
         # tender with same kind & different response_kind
@@ -650,7 +651,7 @@ class TenderDetailViewTest(TestCase):
         self.assertContains(response, "Coordonnées")
         self.assertContains(response, tender_2.contact_email)  # RESPONSE_KIND_EMAIL
         self.assertNotContains(response, tender_2.contact_phone)
-        self.assertNotContains(response, "sofiane.contact@example.com")
+        self.assertNotContains(response, settings.TEAM_CONTACT_EMAIL)
         self.assertContains(response, "Voir l'appel d'offres")  # KIND_TENDER & RESPONSE_KIND_EXTERNAL
         self.assertNotContains(response, "Lien partagé")
         # tender with different kind & response_kind
@@ -668,7 +669,7 @@ class TenderDetailViewTest(TestCase):
         self.assertContains(response, "Coordonnées")
         self.assertNotContains(response, tender_3.contact_email)
         self.assertContains(response, tender_3.contact_phone)  # RESPONSE_KIND_TEL
-        self.assertNotContains(response, "sofiane.contact@example.com")
+        self.assertNotContains(response, settings.TEAM_CONTACT_EMAIL)
         self.assertNotContains(response, "Voir l'appel d'offres")
         self.assertContains(response, "Lien partagé")  # !KIND_TENDER & RESPONSE_KIND_EXTERNAL
         # tender_3 siae user interested
@@ -678,7 +679,7 @@ class TenderDetailViewTest(TestCase):
         self.assertContains(response, "Contactez le client dès maintenant")
         self.assertNotContains(response, tender_3.contact_email)
         self.assertContains(response, tender_3.contact_phone)
-        self.assertContains(response, "sofiane.contact@example.com")
+        self.assertContains(response, settings.TEAM_CONTACT_EMAIL)
         self.assertNotContains(response, "Voir l'appel d'offres")
         self.assertContains(response, "Lien partagé")
         # tender with different response_kind
@@ -696,7 +697,7 @@ class TenderDetailViewTest(TestCase):
         self.assertContains(response, "Coordonnées")
         self.assertNotContains(response, tender_4.contact_email)
         self.assertNotContains(response, tender_4.contact_phone)
-        self.assertNotContains(response, "sofiane.contact@example.com")
+        self.assertNotContains(response, settings.TEAM_CONTACT_EMAIL)
         self.assertNotContains(response, "Voir l'appel d'offres")
         self.assertContains(response, "Lien partagé")  # !KIND_TENDER & RESPONSE_KIND_EXTERNAL
         # tender_4 siae user interested
@@ -706,7 +707,7 @@ class TenderDetailViewTest(TestCase):
         self.assertContains(response, "Contactez le client dès maintenant")
         self.assertNotContains(response, tender_4.contact_email)
         self.assertNotContains(response, tender_4.contact_phone)
-        self.assertNotContains(response, "sofiane.contact@example.com")
+        self.assertNotContains(response, settings.TEAM_CONTACT_EMAIL)
         self.assertNotContains(response, "Voir l'appel d'offres")
         self.assertContains(response, "Lien partagé")
 

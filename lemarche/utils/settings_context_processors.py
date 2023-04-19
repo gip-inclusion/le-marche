@@ -19,7 +19,7 @@ def expose_settings(request):
         "CRISP_ID": settings.CRISP_ID,
         "API_GOUV_URL": settings.API_GOUV_URL,
         "CONTACT_EMAIL": settings.CONTACT_EMAIL,
-        "SOFIANE_CONTACT_EMAIL": settings.SOFIANE_CONTACT_EMAIL,
+        "TEAM_CONTACT_EMAIL": settings.TEAM_CONTACT_EMAIL,
         "GIP_CONTACT_EMAIL": settings.GIP_CONTACT_EMAIL,
         # forms & docs
         "FACILITATOR_SLIDE": settings.FACILITATOR_SLIDE,

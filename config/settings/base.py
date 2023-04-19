@@ -300,7 +300,7 @@ EMAIL_BACKEND = "anymail.backends.mailjet.EmailBackend"
 DEFAULT_FROM_EMAIL = "noreply@inclusion.beta.gouv.fr"
 DEFAULT_FROM_NAME = "Marché de l'inclusion"
 CONTACT_EMAIL = env("CONTACT_EMAIL", default="contact@example.com")
-SOFIANE_CONTACT_EMAIL = env("SOFIANE_CONTACT_EMAIL", default="sofiane.contact@example.com")
+TEAM_CONTACT_EMAIL = env("TEAM_CONTACT_EMAIL", default="team.contact@example.com")
 NOTIFY_EMAIL = env("NOTIFY_EMAIL", default="notif@example.com")
 GIP_CONTACT_EMAIL = env("GIP_CONTACT_EMAIL", default="gip.contact@example.com")
 
