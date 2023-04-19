@@ -20,10 +20,17 @@
             {{ tender.author.company_name }}
         </div>
     {% endif %}
-    {% if tender.can_display_contact_email %}
+    {% if tender.can_display_contact_email or source == "alert" and not tender.response_kind_is_only_external %}
         <div class="col-md-6">
-            <i class="ri-at-line"></i>
-            {{ tender.contact_email }}
+            {% if tender.can_display_contact_email %}
+                <i class="ri-at-line"></i>
+                {{ tender.contact_email }}
+            {% endif %}
+            {% if source == "alert" and not tender.response_kind_is_only_external %}
+                {% if tender.can_display_contact_email %}<br />{% endif %}
+                <i class="ri-at-line"></i>
+                {{ TEAM_CONTACT_EMAIL }}
+            {% endif %}
         </div>
     {% endif %}
     {% if tender.can_display_contact_phone %}
@@ -33,14 +40,6 @@
         </div>
     {% endif %}
 </div>
-{% if source == "alert" and not tender.response_kind_is_only_external %}
-    <div class="row">
-        <div class="col-md-6">
-            <i class="ri-at-line"></i>
-            {{ TEAM_CONTACT_EMAIL }}
-        </div>
-    </div>
-{% endif %}
 {% if tender.can_display_contact_external_link %}
     <div class="row">
         <div class="col-12">
