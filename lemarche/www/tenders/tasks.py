@@ -146,17 +146,19 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, em
         )
 
 
-def send_tender_reminder_email_to_siaes(tender: Tender, days_since_email_send_date=2):
+def send_tender_reminder_email_to_siaes(tender: Tender, days_since_email_send_date=2, send_on_weekends=False):
     email_subject = f"Un {tender.get_kind_display().lower()} pour vous sur le Marché de l'inclusion"
+
+    current_weekday = timezone.now().weekday()
 
     # queryset
     lt_days_ago = timezone.now() - timedelta(days=days_since_email_send_date)
     gte_days_ago = timezone.now() - timedelta(days=days_since_email_send_date + 1)
-    tendersiae_reminder_list = (
-        TenderSiae.objects.filter(tender_id=tender.id)
-        .filter(email_send_date__gte=gte_days_ago)
-        .filter(email_send_date__lt=lt_days_ago)
-        .filter(email_link_click_date__isnull=True)
+    if current_weekday == 0 and not send_on_weekends:
+        # Monday: special case (need to account for Saturday & Sunday)
+        gte_days_ago = timezone.now() - timedelta(days=days_since_email_send_date + 1 + 2)
+    tendersiae_reminder_list = TenderSiae.objects.filter(tender_id=tender.id).email_click_reminder(
+        gte_days_ago=gte_days_ago, lt_days_ago=lt_days_ago
     )
 
     for tendersiae in tendersiae_reminder_list:

@@ -529,6 +529,17 @@ def tender_m2m_changed(sender, instance, action, **kwargs):
             instance.set_siae_found_list()
 
 
+class TenderSiaeQuerySet(models.QuerySet):
+    def email_click_reminder(self, gte_days_ago, lt_days_ago):
+        return (
+            self.filter(email_send_date__gte=gte_days_ago)
+            .filter(email_send_date__lt=lt_days_ago)
+            .filter(email_link_click_date__isnull=True)
+            .filter(detail_display_date__isnull=True)
+            .filter(detail_contact_click_date__isnull=True)
+        )
+
+
 class TenderSiae(models.Model):
     TENDER_SIAE_SOURCE_EMAIL = "EMAIL"
     TENDER_SIAE_SOURCE_DASHBOARD = "DASHBOARD"
@@ -555,6 +566,8 @@ class TenderSiae(models.Model):
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(TenderSiaeQuerySet)()
 
     class Meta:
         verbose_name = "Structure correspondant au besoin"

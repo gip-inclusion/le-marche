@@ -21,6 +21,7 @@ from lemarche.users.models import User
 
 date_tomorrow = datetime.now() + timedelta(days=1)
 date_next_week = datetime.now() + timedelta(days=7)
+date_two_days_ago = datetime.now() - timedelta(days=2)
 date_last_week = datetime.now() - timedelta(days=7)
 
 
@@ -180,10 +181,10 @@ class TenderModelQuerysetTest(TestCase):
 
 class TenderModelQuerysetOrderTest(TestCase):
     @classmethod
-    def setUpTestData(self):
-        self.tender_1 = TenderFactory(deadline_date=timezone.make_aware(date_next_week))
-        self.tender_2 = TenderFactory(deadline_date=timezone.make_aware(date_tomorrow))
-        self.tender_3 = TenderFactory(deadline_date=timezone.make_aware(date_last_week))
+    def setUpTestData(cls):
+        cls.tender_1 = TenderFactory(deadline_date=timezone.make_aware(date_next_week))
+        cls.tender_2 = TenderFactory(deadline_date=timezone.make_aware(date_tomorrow))
+        cls.tender_3 = TenderFactory(deadline_date=timezone.make_aware(date_last_week))
 
     def test_default_order(self):
         tender_queryset = Tender.objects.all()
@@ -199,52 +200,52 @@ class TenderModelQuerysetOrderTest(TestCase):
 
 class TenderModelQuerysetStatsTest(TestCase):
     @classmethod
-    def setUpTestData(self):
-        self.user_siae = UserFactory(kind=User.KIND_SIAE)
-        self.siae_with_tender_1 = SiaeFactory(users=[self.user_siae])
-        siae_with_tender_2 = SiaeFactory(users=[self.user_siae])
-        siae_with_tender_3 = SiaeFactory(users=[self.user_siae])
+    def setUpTestData(cls):
+        cls.user_siae = UserFactory(kind=User.KIND_SIAE)
+        cls.siae_with_tender_1 = SiaeFactory(users=[cls.user_siae])
+        siae_with_tender_2 = SiaeFactory(users=[cls.user_siae])
+        siae_with_tender_3 = SiaeFactory(users=[cls.user_siae])
         siae_with_tender_4 = SiaeFactory()
         siae_with_tender_5 = SiaeFactory()
         siae_with_tender_6 = SiaeFactory()
-        self.siae_without_tender = SiaeFactory()
-        self.tender_with_siae_1 = TenderFactory(
-            siaes=[self.siae_with_tender_1, siae_with_tender_2], deadline_date=timezone.make_aware(date_tomorrow)
+        cls.siae_without_tender = SiaeFactory()
+        cls.tender_with_siae_1 = TenderFactory(
+            siaes=[cls.siae_with_tender_1, siae_with_tender_2], deadline_date=timezone.make_aware(date_tomorrow)
         )
         TenderSiae.objects.create(
-            tender=self.tender_with_siae_1, siae=siae_with_tender_3, email_send_date=timezone.now()
+            tender=cls.tender_with_siae_1, siae=siae_with_tender_3, email_send_date=timezone.now()
         )
         TenderSiae.objects.create(
-            tender=self.tender_with_siae_1,
+            tender=cls.tender_with_siae_1,
             siae=siae_with_tender_4,
             email_send_date=timezone.now(),
             email_link_click_date=timezone.now(),
         )
         TenderSiae.objects.create(
-            tender=self.tender_with_siae_1,
+            tender=cls.tender_with_siae_1,
             siae=siae_with_tender_5,
             email_send_date=timezone.now(),
             email_link_click_date=timezone.now(),
             detail_display_date=timezone.now(),
         )
         TenderSiae.objects.create(
-            tender=self.tender_with_siae_1,
+            tender=cls.tender_with_siae_1,
             siae=siae_with_tender_6,
             email_send_date=timezone.now(),
             email_link_click_date=timezone.now(),
             detail_display_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
         )
-        self.tender_with_siae_2 = TenderFactory()
+        cls.tender_with_siae_2 = TenderFactory()
         TenderSiae.objects.create(
-            tender=self.tender_with_siae_2,
-            siae=self.siae_with_tender_1,
+            tender=cls.tender_with_siae_2,
+            siae=cls.siae_with_tender_1,
             email_send_date=timezone.now(),
             email_link_click_date=timezone.now(),
             detail_display_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
         )
-        self.tender_without_siae = TenderFactory(deadline_date=timezone.make_aware(date_tomorrow))
+        cls.tender_without_siae = TenderFactory(deadline_date=timezone.make_aware(date_tomorrow))
 
     def test_filter_with_siaes_queryset(self):
         self.tender_with_siae_2.validated_at = None
@@ -338,18 +339,18 @@ class TenderMigrationToSelectTest(TestCase):
 
 class TenderPartnerMatchingTest(TestCase):
     @classmethod
-    def setUpTestData(self):
+    def setUpTestData(cls):
         # perimeters
-        self.auvergne_rhone_alpes_perimeter = PerimeterFactory(
+        cls.auvergne_rhone_alpes_perimeter = PerimeterFactory(
             name="Auvergne-Rhône-Alpes", kind=Perimeter.KIND_REGION, insee_code="R84"
         )
-        self.isere_perimeter = PerimeterFactory(
+        cls.isere_perimeter = PerimeterFactory(
             name="Isère", kind=Perimeter.KIND_DEPARTMENT, insee_code="38", region_code="84"
         )
-        self.rhone_perimeter = PerimeterFactory(
+        cls.rhone_perimeter = PerimeterFactory(
             name="Rhône", kind=Perimeter.KIND_DEPARTMENT, insee_code="69", region_code="84"
         )
-        self.grenoble_perimeter = PerimeterFactory(
+        cls.grenoble_perimeter = PerimeterFactory(
             name="Grenoble",
             kind=Perimeter.KIND_CITY,
             insee_code="38185",
@@ -360,14 +361,14 @@ class TenderPartnerMatchingTest(TestCase):
         )
         # partners
         PartnerShareTenderFactory(perimeters=[])
-        PartnerShareTenderFactory(perimeters=[self.auvergne_rhone_alpes_perimeter])
-        PartnerShareTenderFactory(perimeters=[self.isere_perimeter])
-        PartnerShareTenderFactory(perimeters=[self.grenoble_perimeter])
+        PartnerShareTenderFactory(perimeters=[cls.auvergne_rhone_alpes_perimeter])
+        PartnerShareTenderFactory(perimeters=[cls.isere_perimeter])
+        PartnerShareTenderFactory(perimeters=[cls.grenoble_perimeter])
         PartnerShareTenderFactory(perimeters=[], amount_in=tender_constants.AMOUNT_RANGE_0_1)
         PartnerShareTenderFactory(perimeters=[], amount_in=tender_constants.AMOUNT_RANGE_10_15)
         PartnerShareTenderFactory(perimeters=[], amount_in=tender_constants.AMOUNT_RANGE_100_150)
         PartnerShareTenderFactory(
-            perimeters=[self.isere_perimeter, self.rhone_perimeter], amount_in=tender_constants.AMOUNT_RANGE_10_15
+            perimeters=[cls.isere_perimeter, cls.rhone_perimeter], amount_in=tender_constants.AMOUNT_RANGE_10_15
         )
 
     def test_tender_country_matching(self):
@@ -419,3 +420,44 @@ class TenderPartnerMatchingTest(TestCase):
         tender_3 = TenderFactory(perimeters=[self.isere_perimeter], amount=tender_constants.AMOUNT_RANGE_10_15)
         result = PartnerShareTender.objects.filter_by_tender(tender_3)
         self.assertEqual(len(result), 3 + 3)
+
+
+class TenderSiaeModelQuerysetTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_siae = UserFactory(kind=User.KIND_SIAE)
+        cls.siae_with_tender_1 = SiaeFactory(users=[cls.user_siae])
+        siae_with_tender_2 = SiaeFactory(users=[cls.user_siae])
+        siae_with_tender_3 = SiaeFactory(users=[cls.user_siae])
+        siae_with_tender_4 = SiaeFactory()
+        siae_with_tender_5 = SiaeFactory()
+        cls.siae_without_tender = SiaeFactory()
+        cls.tender_with_siae_1 = TenderFactory(
+            siaes=[cls.siae_with_tender_1, siae_with_tender_2], deadline_date=timezone.make_aware(date_tomorrow)
+        )
+        TenderSiae.objects.create(
+            tender=cls.tender_with_siae_1, siae=siae_with_tender_3, email_send_date=date_last_week
+        )
+        TenderSiae.objects.create(
+            tender=cls.tender_with_siae_1, siae=siae_with_tender_4, email_send_date=date_two_days_ago
+        )
+        TenderSiae.objects.create(
+            tender=cls.tender_with_siae_1,
+            siae=siae_with_tender_5,
+            email_send_date=date_two_days_ago,
+            email_link_click_date=timezone.now(),
+        )
+        TenderSiae.objects.create(
+            tender=cls.tender_with_siae_1, siae=siae_with_tender_5, detail_display_date=timezone.now()
+        )
+        cls.tender_with_siae_2 = TenderFactory(
+            siaes=[siae_with_tender_2, siae_with_tender_3], deadline_date=timezone.make_aware(date_tomorrow)
+        )
+
+    def test_email_click_reminder_queryset(self):
+        lt_days_ago = timezone.now() - timedelta(days=2)
+        gte_days_ago = timezone.now() - timedelta(days=2 + 1)
+        self.assertEqual(TenderSiae.objects.count(), 2 + 2 + 4)
+        self.assertEqual(
+            TenderSiae.objects.email_click_reminder(lt_days_ago=lt_days_ago, gte_days_ago=gte_days_ago).count(), 1
+        )
