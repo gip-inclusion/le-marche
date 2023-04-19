@@ -161,10 +161,7 @@ def send_tender_reminder_email_to_siaes(tender: Tender, days_since_email_send_da
 
     for tendersiae in tendersiae_reminder_list:
         # send to siae 'contact_email'
-        send_tender_reminder_email_to_siae(tender, tendersiae.siae, email_subject)
-
-    # TODO
-    # tender.tendersiae_set.update(email_send_date=timezone.now(), updated_at=timezone.now())
+        send_tender_reminder_email_to_siae(tendersiae, email_subject, days_since_email_send_date)
 
     # log email batch
     siaes_reminder_log_item = {
@@ -177,22 +174,22 @@ def send_tender_reminder_email_to_siaes(tender: Tender, days_since_email_send_da
     tender.save()
 
 
-def send_tender_reminder_email_to_siae(tender: Tender, siae: Siae, email_subject):
-    recipient_list = whitelist_recipient_list([siae.contact_email])
+def send_tender_reminder_email_to_siae(tendersiae: TenderSiae, email_subject, days_since_email_send_date):
+    recipient_list = whitelist_recipient_list([tendersiae.siae.contact_email])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
-        recipient_name = tender.author.full_name
+        recipient_name = tendersiae.tender.author.full_name
 
         variables = {
-            "SIAE_CONTACT_FIRST_NAME": siae.contact_first_name,
-            "SIAE_SECTORS": siae.sectors_list_string(),
-            "SIAE_PERIMETER": siae.geo_range_pretty_display,
-            "TENDER_TITLE": tender.title,
-            "TENDER_AUTHOR_COMPANY": tender.author.company_name,
-            "TENDER_KIND": tender.get_kind_display(),
-            "TENDER_SECTORS": tender.sectors_list_string(),
-            "TENDER_PERIMETERS": tender.location_display,
-            "TENDER_URL": f"{get_share_url_object(tender)}?siae_id={siae.id}&source=relance",
+            "SIAE_CONTACT_FIRST_NAME": tendersiae.siae.contact_first_name,
+            "SIAE_SECTORS": tendersiae.siae.sectors_list_string(),
+            "SIAE_PERIMETER": tendersiae.siae.geo_range_pretty_display,
+            "TENDER_TITLE": tendersiae.tender.title,
+            "TENDER_AUTHOR_COMPANY": tendersiae.tender.author.company_name,
+            "TENDER_KIND": tendersiae.tender.get_kind_display(),
+            "TENDER_SECTORS": tendersiae.tender.sectors_list_string(),
+            "TENDER_PERIMETERS": tendersiae.tender.location_display,
+            "TENDER_URL": f"{get_share_url_object(tendersiae.tender)}?siae_id={tendersiae.siae.id}&source=relance",
         }
 
         api_mailjet.send_transactional_email_with_template(
@@ -202,6 +199,17 @@ def send_tender_reminder_email_to_siae(tender: Tender, siae: Siae, email_subject
             recipient_name=recipient_name,
             variables=variables,
         )
+
+        # log email
+        log_item = {
+            "action": f"email_siae_reminder_{days_since_email_send_date}d",
+            "email_to": recipient_email,
+            "email_subject": email_subject,
+            # "email_body": email_body,
+            "email_timestamp": timezone.now().isoformat(),
+        }
+        tendersiae.logs.append(log_item)
+        tendersiae.save()
 
 
 def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes: int):

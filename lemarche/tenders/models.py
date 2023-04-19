@@ -547,6 +547,7 @@ class TenderSiae(models.Model):
     detail_contact_click_date = models.DateTimeField(
         "Date de clic sur les coordonnées du besoin", blank=True, null=True
     )
+    logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
