@@ -1,5 +1,6 @@
 # common blocks
 from wagtail import blocks
+from wagtail.images.blocks import ImageChooserBlock
 
 
 class StatsWebsite(blocks.StructBlock):
@@ -39,11 +40,10 @@ class TendersStudiesCasesSection(blocks.StructBlock):
 class OurSiaesSection(blocks.StructBlock):
     """An external or internal URL."""
 
-    title = (
-        blocks.CharBlock(
-            default="Les prestataires inclusifs, des partenaires d'excellence", required=True, max_length=60
-        ),
+    title = blocks.CharBlock(
+        default="Les prestataires inclusifs, des partenaires d'excellence", required=True, max_length=60
     )
+
     subtitle = blocks.RichTextBlock(
         default="""
             Faire appel à nos 8500 prestataires inclusifs, c'est la garantie d'être accompagné
@@ -97,3 +97,44 @@ class OurPartnersSection(blocks.StructBlock):
         template = "cms/streams/section_our_partners.html"
         icon = "pen"
         label = "Nos partenaires"
+
+
+class FeatureBlock(blocks.StructBlock):
+    """An external or internal URL."""
+
+    title = blocks.CharBlock(required=True, max_length=60)
+    subtitle = blocks.RichTextBlock(
+        required=True,
+        features=["bold", "italic"],
+    )
+
+    image = ImageChooserBlock(required=True)
+    url = blocks.URLBlock(required=True)
+
+    class Meta:
+        template = "cms/streams/card_feature.html"
+        icon = "pen"
+        label = "Section nos structures"
+
+
+class OurFeaturesSection(blocks.StructBlock):
+    """An external or internal URL."""
+
+    title = blocks.CharBlock(
+        default="Une solution complète pour vos achats socialement responsables", required=True, max_length=120
+    )
+
+    constats = blocks.StreamBlock(
+        [
+            (
+                "feature",
+                FeatureBlock(),
+            )
+        ],
+        min_num=1,
+    )
+
+    class Meta:
+        template = "cms/streams/section_our_features.html"
+        icon = "pen"
+        label = "Nos fonctionnalités"

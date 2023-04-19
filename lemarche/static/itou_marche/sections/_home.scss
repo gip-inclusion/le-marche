@@ -1,21 +1,20 @@
 .s-hp-01 {
-
 	&__form {
 		position: relative;
 
 		&::before {
-			content: '';
+			content: "";
 			position: absolute;
 			left: -30px;
 			top: 50%;
 			width: 100px;
 			height: 100px;
 			border-radius: 100%;
-			background-color: #FFDDDD;
+			background-color: #ffdddd;
 			z-index: -1;
 			display: none;
 
-			@media (min-width:992px) {
+			@media (min-width: 992px) {
 				display: inline-block;
 			}
 		}
@@ -28,7 +27,7 @@
 			right: 50%;
 			bottom: -80px;
 			font-size: 27px;
-			background-image: url('/static/vendor/theme-inclusion/images/ico-hand-arrow-up.svg');
+			background-image: url("/static/vendor/theme-inclusion/images/ico-hand-arrow-up.svg");
 			background-repeat: no-repeat;
 			background-position: center right;
 			padding-right: 60px;
@@ -36,7 +35,7 @@
 			transform: rotate(-5deg);
 			display: none;
 
-			@media (min-width:576px) {
+			@media (min-width: 576px) {
 				display: inline-block;
 			}
 		}
@@ -44,11 +43,11 @@
 }
 
 #main .s-article-picture-01.has-illustration-bg-01 {
-    /*
+	/*
         Force overide theme setting to avoid negative
         effect on homepage sector dropdown
     */
-    overflow: visible;
+	overflow: visible;
 }
 
 .s-hp-slider-partners-tenders {
@@ -59,7 +58,7 @@
 	padding-top: 1.5rem;
 	padding-bottom: 1.5rem;
 
-	@media (min-width:992px) {
+	@media (min-width: 992px) {
 		padding-top: 3rem;
 		padding-bottom: 3rem;
 	}
@@ -83,4 +82,32 @@
 			}
 		}
 	}
+}
+
+.multiCarousel {
+	float: left;
+	overflow: hidden;
+	padding: 15px;
+	width: 100%;
+	position: relative;
+}
+.multiCarousel .multiCarousel-inner {
+	transition: 1s ease all;
+	float: left;
+}
+.multiCarousel .multiCarousel-inner .item {
+	float: left;
+}
+.multiCarousel .multiCarousel-inner .item > div {
+	text-align: center;
+	padding: 10px;
+	margin: 10px;
+	background: #f1f1f1;
+	color: #666;
+}
+
+.multiCarousel .leftLst.over,
+.multiCarousel .rightLst.over {
+	pointer-events: none;
+	color: #ccc;
 }
