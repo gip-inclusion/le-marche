@@ -135,11 +135,9 @@
     {% comment "migrate first" %}
     {% include '@CocoricoCore/Frontend/Common/_cookie_consent_js.html.twig' only %}
     {% endcomment %}
-    {% if not user.is_authenticated %}
-        <!-- Mailjet newsletter -->
-        <data id="mj-w-res-data" data-token="0d87cc6eac81c8037144017a95fdecdb" class="mj-w-data" data-apikey="4guK" data-w-id="KAV" data-lang="fr_FR" data-base="https://app.mailjet.com" data-width="640" data-height="450" data-statics="statics"></data>
-        <script type="text/javascript" type="text/javascript" src="https://app.mailjet.com/statics/js/widget.modal.js"></script>
-    {% endif %}
+    <!-- Mailjet newsletter -->
+    <data id="mj-w-res-data" data-token="0d87cc6eac81c8037144017a95fdecdb" class="mj-w-data" data-apikey="4guK" data-w-id="KAV" data-lang="fr_FR" data-base="https://app.mailjet.com" data-width="640" data-height="450" data-statics="statics"></data>
+    <script type="text/javascript" type="text/javascript" src="https://app.mailjet.com/statics/js/widget.modal.js"></script>
     {% endblock %}
 
     {% block extra_js %}{% endblock %}
