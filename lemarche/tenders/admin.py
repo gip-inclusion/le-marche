@@ -122,7 +122,9 @@ class TenderAdmin(admin.ModelAdmin):
         "siae_detail_display_count_with_link",
         "siae_detail_contact_click_count_with_link",
         "logs_display",
-        "extra_data_prettier",
+        "extra_data_display",
+        # "import_raw_object",
+        "import_raw_object_display",
         "created_at",
         "updated_at",
     ]
@@ -242,10 +244,11 @@ class TenderAdmin(admin.ModelAdmin):
                     "siae_list_last_seen_date",
                     "source",
                     "logs_display",
-                    "extra_data_prettier",
+                    "extra_data_display",
                 ),
             },
         ),
+        ("Si importé", {"fields": ("import_raw_object_display",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
 
@@ -367,12 +370,19 @@ class TenderAdmin(admin.ModelAdmin):
 
         return super().response_change(request, obj)
 
-    def extra_data_prettier(self, instance: Tender = None):
+    def extra_data_display(self, instance: Tender = None):
         if instance:
             return pretty_print_readonly_jsonfield(instance.extra_data)
         return "-"
 
-    extra_data_prettier.short_description = Tender._meta.get_field("extra_data").verbose_name
+    extra_data_display.short_description = Tender._meta.get_field("extra_data").verbose_name
+
+    def import_raw_object_display(self, instance: Tender = None):
+        if instance:
+            return pretty_print_readonly_jsonfield(instance.import_raw_object)
+        return "-"
+
+    import_raw_object_display.short_description = Tender._meta.get_field("import_raw_object").verbose_name
 
 
 @admin.register(PartnerShareTender, site=admin_site)

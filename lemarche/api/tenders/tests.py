@@ -61,6 +61,8 @@ class TenderCreateApiTest(TestCase):
         self.assertEqual(tender.author, self.user_with_token)
         self.assertEqual(tender.status, Tender.STATUS_PUBLISHED)
         self.assertEqual(tender.source, Tender.SOURCE_API)
+        self.assertNotEqual(tender.import_raw_object, None)
+        self.assertEqual(tender.import_raw_object["title"], "Test author")
 
     def test_create_tender_with_location(self):
         url = reverse("api:tenders-list") + "?token=admin"
