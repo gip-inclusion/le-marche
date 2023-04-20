@@ -23,7 +23,12 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         return super().create(request, args, kwargs)
 
     def perform_create(self, serializer):
-        serializer.save(author=self.user, status=Tender.STATUS_PUBLISHED, source=Tender.SOURCE_API)
+        serializer.save(
+            author=self.user,
+            status=Tender.STATUS_PUBLISHED,
+            source=Tender.SOURCE_API,
+            import_raw_object=self.request.POST,
+        )
 
 
 class TenderKindViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

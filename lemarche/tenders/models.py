@@ -317,6 +317,15 @@ class Tender(models.Model):
         default=False,
     )
 
+    # validation
+    status = models.CharField(
+        verbose_name="Statut",
+        max_length=10,
+        choices=tender_constants.STATUS_CHOICES,
+        default=tender_constants.STATUS_DRAFT,
+    )
+    validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
+
     # survey
     scale_marche_useless = models.CharField(
         verbose_name="Utilité du marché de l'inclusion",
@@ -341,15 +350,7 @@ class Tender(models.Model):
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
     source = models.CharField(verbose_name="Source", max_length=20, choices=SOURCE_CHOICES, default=SOURCE_FORM)
     extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)
-
-    status = models.CharField(
-        verbose_name="Statut",
-        max_length=10,
-        choices=tender_constants.STATUS_CHOICES,
-        default=tender_constants.STATUS_DRAFT,
-    )
-
-    validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
+    import_raw_object = models.JSONField(verbose_name="Données d'import", editable=False, null=True)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)

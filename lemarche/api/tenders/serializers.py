@@ -41,4 +41,5 @@ class TenderSerializer(serializers.ModelSerializer):
             "contact_phone",
             "response_kind",
             "deadline_date",
+            # "import_raw_object",
         ]

@@ -439,12 +439,12 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
 
     logo_url_display.short_description = "Logo"
 
-    def import_raw_object_display(self, siae=None):
-        if siae:
-            return pretty_print_readonly_jsonfield(siae.import_raw_object)
+    def import_raw_object_display(self, instance: Siae = None):
+        if instance:
+            return pretty_print_readonly_jsonfield(instance.import_raw_object)
         return "-"
 
-    import_raw_object_display.short_description = "Donnée brute importée"
+    import_raw_object_display.short_description = Siae._meta.get_field("import_raw_object").verbose_name
 
     def tender_count_with_link(self, siae):
         url = reverse("admin:tenders_tender_changelist") + f"?siaes__in={siae.id}"
