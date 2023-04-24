@@ -13,7 +13,7 @@ class TenderSerializer(serializers.ModelSerializer):
     location = serializers.SlugRelatedField(
         queryset=Perimeter.objects.all(), slug_field="slug", allow_null=True, required=False
     )
-    extra_data = serializers.JSONField()
+    extra_data = serializers.JSONField(required=False)
 
     class Meta:
         model = Tender
