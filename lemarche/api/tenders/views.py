@@ -27,7 +27,7 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             author=self.user,
             status=Tender.STATUS_PUBLISHED,
             source=Tender.SOURCE_API,
-            import_raw_object=self.request.POST,
+            import_raw_object=self.request.data,
         )
 
 
