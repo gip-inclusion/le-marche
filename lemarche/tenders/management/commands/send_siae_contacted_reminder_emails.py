@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from lemarche.tenders.models import Tender, TenderSiae
-from lemarche.www.tenders.tasks import send_tender_reminder_email_to_siaes
+from lemarche.www.tenders.tasks import send_tender_contacted_reminder_email_to_siaes
 
 
 class Command(BaseCommand):
@@ -13,10 +13,10 @@ class Command(BaseCommand):
     When? J+2 (but doesn't run on weekends!)
 
     Usage:
-    python manage.py send_siae_reminder_emails --dry-run
-    python manage.py send_siae_reminder_emails --days-since-email-send-date 2
-    python manage.py send_siae_reminder_emails --tender-id 1
-    python manage.py send_siae_reminder_emails
+    python manage.py send_siae_contacted_reminder_emails --dry-run
+    python manage.py send_siae_contacted_reminder_emails --days-since-email-send-date 2
+    python manage.py send_siae_contacted_reminder_emails --tender-id 1
+    python manage.py send_siae_contacted_reminder_emails
     """
 
     def add_arguments(self, parser):
@@ -51,29 +51,35 @@ class Command(BaseCommand):
             # gte_days_ago = gte_days_ago+2 to account for Saturday & Sunday
             if current_weekday == 0:
                 gte_days_ago = timezone.now() - timedelta(days=options["days_since_email_send_date"] + 1 + 2)
-            tendersiae_reminder_list = TenderSiae.objects.email_click_reminder(
+            tendersiae_contacted_reminder_list = TenderSiae.objects.email_click_reminder(
                 gte_days_ago=gte_days_ago, lt_days_ago=lt_days_ago
             )
 
             if options["tender_id"]:
-                tendersiae_reminder_list = tendersiae_reminder_list.filter(tender_id=options["tender_id"])
-            self.stdout.write(f"Found {tendersiae_reminder_list.count()} TenderSiaes to remind")
+                tendersiae_contacted_reminder_list = tendersiae_contacted_reminder_list.filter(
+                    tender_id=options["tender_id"]
+                )
+            self.stdout.write(f"Found {tendersiae_contacted_reminder_list.count()} TenderSiaes to remind")
 
             if not dry_run:
                 self.stdout.write("-" * 80)
                 self.stdout.write("Step 2: Send emails for each tender")
-                tender_id_list = tendersiae_reminder_list.values_list("tender_id", flat=True).distinct().order_by()
+                tender_id_list = (
+                    tendersiae_contacted_reminder_list.values_list("tender_id", flat=True).distinct().order_by()
+                )
                 self.stdout.write(f"{tender_id_list.count()} tenders concerned")
                 for tender_id in tender_id_list:
                     tender = Tender.objects.get(id=tender_id)
-                    tender_tendersiae_reminder_list = tendersiae_reminder_list.filter(tender_id=tender_id)
+                    tender_tendersiae_contacted_reminder_list = tendersiae_contacted_reminder_list.filter(
+                        tender_id=tender_id
+                    )
                     tender_tendersiae = TenderSiae.objects.filter(tender_id=tender_id).filter(
                         email_send_date__isnull=False
                     )
                     self.stdout.write(
-                        f"Tender {tender_id}: {tender_tendersiae_reminder_list.count()} TenderSiaes to remind (out of {tender_tendersiae.count()})"  # noqa
+                        f"Tender {tender_id}: {tender_tendersiae_contacted_reminder_list.count()} TenderSiaes to remind (out of {tender_tendersiae.count()})"  # noqa
                     )
-                    send_tender_reminder_email_to_siaes(
+                    send_tender_contacted_reminder_email_to_siaes(
                         tender, days_since_email_send_date=options["days_since_email_send_date"]
                     )
                     self.stdout.write("Emails sent")
