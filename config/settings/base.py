@@ -524,13 +524,16 @@ REST_FRAMEWORK = {
 # ------------------------------------------------------------------------------
 
 API_DESCRIPTION = """
-<a href="https://lemarche.inclusion.beta.gouv.fr/cgu-api/">Conditions générales d'utilisation</a>
+Une documentation alternative de l'API est aussi disponible
+<a href="https://lemarche.inclusion.beta.gouv.fr/api/redoc/">ici</a>.
+
+Certaines ressources nécessitent un <strong>token</strong> pour accéder complètement à la donnée.<br />
+Plus de détails pour l'obtenir <a href="https://lemarche.inclusion.beta.gouv.fr/api/#auth">ici</a>.
 
 Une initiative de <a href="https://inclusion.beta.gouv.fr/" target="_blank" rel="noopener">
 la Plateforme de l'inclusion</a>
 
-Certaines ressources nécessitent un <strong>token</strong> pour accéder complètement à la donnée.<br />
-Plus de détails pour l'obtenir <a href="https://lemarche.inclusion.beta.gouv.fr/api/#auth">ici</a>.
+<a href="https://lemarche.inclusion.beta.gouv.fr/cgu-api/">Conditions générales d'utilisation</a>
 """
 
 SPECTACULAR_SETTINGS = {
