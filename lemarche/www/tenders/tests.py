@@ -355,7 +355,7 @@ class TenderDetailViewTest(TestCase):
         cls.siae_user_1 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_1])
         cls.siae_user_2 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_2])
         cls.siae_user_3 = UserFactory(kind=User.KIND_SIAE)
-        cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
+        cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER, company_name="Entreprise Buyer")
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
         cls.user_admin = UserFactory(kind=User.KIND_ADMIN)
@@ -411,6 +411,13 @@ class TenderDetailViewTest(TestCase):
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, 302)  # redirect
                 self.assertEqual(response.url, "/")
+
+    def test_tender_basic_fields_display(self):
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # tender.author.company_name
+        self.assertContains(response, "Entreprise Buyer")
 
     def test_tender_constraints_display(self):
         # tender with constraints: section should be visible
