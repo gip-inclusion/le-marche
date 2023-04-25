@@ -1,5 +1,5 @@
 # import datetime
-from datetime import datetime, timedelta
+from datetime import timedelta
 from importlib import import_module
 from random import randint
 
@@ -19,10 +19,10 @@ from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 
 
-date_tomorrow = datetime.now() + timedelta(days=1)
-date_next_week = datetime.now() + timedelta(days=7)
-date_two_days_ago = datetime.now() - timedelta(days=2)
-date_last_week = datetime.now() - timedelta(days=7)
+date_tomorrow = timezone.now() + timedelta(days=1)
+date_next_week = timezone.now() + timedelta(days=7)
+date_two_days_ago = timezone.now() - timedelta(days=2)
+date_last_week = timezone.now() - timedelta(days=7)
 
 
 class TenderModelTest(TestCase):
@@ -182,9 +182,9 @@ class TenderModelQuerysetTest(TestCase):
 class TenderModelQuerysetOrderTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.tender_1 = TenderFactory(deadline_date=timezone.make_aware(date_next_week))
-        cls.tender_2 = TenderFactory(deadline_date=timezone.make_aware(date_tomorrow))
-        cls.tender_3 = TenderFactory(deadline_date=timezone.make_aware(date_last_week))
+        cls.tender_1 = TenderFactory(deadline_date=date_next_week)
+        cls.tender_2 = TenderFactory(deadline_date=date_tomorrow)
+        cls.tender_3 = TenderFactory(deadline_date=date_last_week)
 
     def test_default_order(self):
         tender_queryset = Tender.objects.all()
@@ -210,7 +210,7 @@ class TenderModelQuerysetStatsTest(TestCase):
         siae_with_tender_6 = SiaeFactory()
         cls.siae_without_tender = SiaeFactory()
         cls.tender_with_siae_1 = TenderFactory(
-            siaes=[cls.siae_with_tender_1, siae_with_tender_2], deadline_date=timezone.make_aware(date_tomorrow)
+            siaes=[cls.siae_with_tender_1, siae_with_tender_2], deadline_date=date_tomorrow
         )
         TenderSiae.objects.create(
             tender=cls.tender_with_siae_1, siae=siae_with_tender_3, email_send_date=timezone.now()
@@ -245,7 +245,7 @@ class TenderModelQuerysetStatsTest(TestCase):
             detail_display_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
         )
-        cls.tender_without_siae = TenderFactory(deadline_date=timezone.make_aware(date_tomorrow))
+        cls.tender_without_siae = TenderFactory(deadline_date=date_tomorrow)
 
     def test_filter_with_siaes_queryset(self):
         self.tender_with_siae_2.validated_at = None
@@ -294,7 +294,7 @@ class TenderModelQuerysetStatsTest(TestCase):
         self.assertEqual(siae_without_tender.tender_detail_contact_click_count, 0)
 
     def test_with_deadline_date_is_outdated_queryset(self):
-        TenderFactory(deadline_date=timezone.make_aware(date_last_week))
+        TenderFactory(deadline_date=date_last_week)
         tender_queryset = Tender.objects.with_deadline_date_is_outdated()
         tender_3 = tender_queryset.first()  # order by -created_at
         self.assertTrue(tender_3.deadline_date_is_outdated)
@@ -433,7 +433,7 @@ class TenderSiaeModelQuerysetTest(TestCase):
         siae_with_tender_5 = SiaeFactory()
         cls.siae_without_tender = SiaeFactory()
         cls.tender_with_siae_1 = TenderFactory(
-            siaes=[cls.siae_with_tender_1, siae_with_tender_2], deadline_date=timezone.make_aware(date_tomorrow)
+            siaes=[cls.siae_with_tender_1, siae_with_tender_2], deadline_date=date_tomorrow
         )
         TenderSiae.objects.create(
             tender=cls.tender_with_siae_1, siae=siae_with_tender_3, email_send_date=date_last_week
@@ -445,13 +445,17 @@ class TenderSiaeModelQuerysetTest(TestCase):
             tender=cls.tender_with_siae_1,
             siae=siae_with_tender_5,
             email_send_date=date_two_days_ago,
-            email_link_click_date=timezone.now(),
+            email_link_click_date=date_two_days_ago,
+            detail_contact_click_date=date_two_days_ago,
         )
         TenderSiae.objects.create(
-            tender=cls.tender_with_siae_1, siae=siae_with_tender_5, detail_display_date=timezone.now()
+            tender=cls.tender_with_siae_1,
+            siae=siae_with_tender_5,
+            detail_display_date=date_last_week,
+            detail_contact_click_date=date_last_week,
         )
         cls.tender_with_siae_2 = TenderFactory(
-            siaes=[siae_with_tender_2, siae_with_tender_3], deadline_date=timezone.make_aware(date_tomorrow)
+            siaes=[siae_with_tender_2, siae_with_tender_3], deadline_date=date_tomorrow
         )
 
     def test_email_click_reminder_queryset(self):
@@ -460,4 +464,15 @@ class TenderSiaeModelQuerysetTest(TestCase):
         self.assertEqual(TenderSiae.objects.count(), 2 + 2 + 4)
         self.assertEqual(
             TenderSiae.objects.email_click_reminder(lt_days_ago=lt_days_ago, gte_days_ago=gte_days_ago).count(), 1
+        )
+
+    def test_detail_contact_click_post_reminder_queryset(self):
+        lt_days_ago = timezone.now() - timedelta(days=2)
+        gte_days_ago = timezone.now() - timedelta(days=2 + 1)
+        self.assertEqual(TenderSiae.objects.count(), 2 + 2 + 4)
+        self.assertEqual(
+            TenderSiae.objects.detail_contact_click_post_reminder(
+                lt_days_ago=lt_days_ago, gte_days_ago=gte_days_ago
+            ).count(),
+            1,
         )
