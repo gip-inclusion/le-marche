@@ -168,13 +168,13 @@ def send_tender_contacted_reminder_email_to_siaes(
         send_tender_contacted_reminder_email_to_siae(tendersiae, email_subject, days_since_email_send_date)
 
     # log email batch
-    siaes_reminder_log_item = {
-        "action": f"email_siaes_reminder_{days_since_email_send_date}d",
+    log_item = {
+        "action": f"email_siaes_contacted_reminder_{days_since_email_send_date}d",
         "email_subject": email_subject,
         "email_count": tendersiae_contacted_reminder_list.count(),
         "email_timestamp": timezone.now().isoformat(),
     }
-    tender.logs.append(siaes_reminder_log_item)
+    tender.logs.append(log_item)
     tender.save()
 
 
@@ -193,11 +193,11 @@ def send_tender_contacted_reminder_email_to_siae(tendersiae: TenderSiae, email_s
             "TENDER_KIND": tendersiae.tender.get_kind_display(),
             "TENDER_SECTORS": tendersiae.tender.sectors_list_string(),
             "TENDER_PERIMETERS": tendersiae.tender.location_display,
-            "TENDER_URL": f"{get_share_url_object(tendersiae.tender)}?siae_id={tendersiae.siae.id}&source=relance",
+            "TENDER_URL": f"{get_share_url_object(tendersiae.tender)}?siae_id={tendersiae.siae.id}&mtm_campaign=relance-esi-contactees",  # noqa
         }
 
         api_mailjet.send_transactional_email_with_template(
-            template_id=settings.MAILJET_TENDERS_AUTHOR_INCREMENTAL_2D_TEMPLATE_ID,
+            template_id=settings.MAILJET_TENDERS_CONTACTED_REMINDER_2D_TEMPLATE_ID,
             subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
