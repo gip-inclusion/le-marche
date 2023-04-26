@@ -54,6 +54,7 @@ poethepoet = "0.12.2"
 pre-commit = "2.20.0"
 pyproject-flake8 = "0.0.1a2"
 pytest-django = "4.5.2"
+pytest-xdist = "^3.2.1"
 selenium = "4.6.0"
 
 [tool.poetry.scripts]
