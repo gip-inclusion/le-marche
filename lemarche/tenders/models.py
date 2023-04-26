@@ -540,6 +540,11 @@ class TenderSiaeQuerySet(models.QuerySet):
             .filter(detail_contact_click_date__isnull=True)
         )
 
+    def detail_contact_click_post_reminder(self, gte_days_ago, lt_days_ago):
+        return self.filter(detail_contact_click_date__gte=gte_days_ago).filter(
+            detail_contact_click_date__lt=lt_days_ago
+        )
+
 
 class TenderSiae(models.Model):
     TENDER_SIAE_SOURCE_EMAIL = "EMAIL"
