@@ -1,0 +1,9 @@
+{% if user.is_authenticated %}
+    <button type="button" id="show-tender-contact-modal-btn" class="btn btn-success float-right mb-4" data-toggle="modal" data-target="#detail_contact_click_confirm_modal" title="{{ tender.cta_text }}">
+        {{ tender.cta_text }}
+    </button>
+{% else %}
+    <a href="#" id="show-tender-contact-modal-btn" class="btn btn-success float-right mb-4" data-toggle="modal" data-target="#login_or_signup_siae_tender_modal" data-next-params="{% url 'tenders:detail' tender.slug %}">
+        <span>{{ tender.cta_text }}</span>
+    </a>
+{% endif %}

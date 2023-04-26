@@ -143,18 +143,14 @@
                                 </p>
                             </div>
                         {% elif not user_siae_has_detail_contact_click_date %}
-                            <button type="button" id="show-tender-contact-modal-btn" class="btn btn-success float-right mb-4" data-toggle="modal" data-target="#detail_contact_click_confirm_modal" title="{{ tender.cta_text }}">
-                                {{ tender.cta_text }}
-                            </button>
+                            {% include "tenders/_detail_cta.html" with user=user tender=tender %}
                             <div id="show-tender-contact-content" style="display:none">
                                 {% include "tenders/_detail_contact.html" with tender=tender %}
                             </div>
                         {% endif %}
                     {% endif %}
                 {% else %}
-                    <a href="#" id="show-tender-contact-modal-btn" class="btn btn-success float-right mb-4" data-toggle="modal" data-target="#login_or_signup_siae_tender_modal" data-next-params="{% url 'tenders:detail' tender.slug %}">
-                        <span>{{ tender.cta_text }}</span>
-                    </a>
+                    {% include "tenders/_detail_cta.html" with user=user tender=tender %}
                 {% endif %}
             {% endif %}
         </div>
