@@ -217,29 +217,29 @@ def send_tender_contacted_reminder_email_to_siae(tendersiae: TenderSiae, email_s
 
 
 def send_tender_interested_reminder_email_to_siaes(
-    tender: Tender, days_since_email_send_date=2, send_on_weekends=False
+    tender: Tender, days_since_detail_contact_click_date=2, send_on_weekends=False
 ):
     email_subject = f"{tender.title}"
 
     current_weekday = timezone.now().weekday()
 
     # queryset
-    lt_days_ago = timezone.now() - timedelta(days=days_since_email_send_date)
-    gte_days_ago = timezone.now() - timedelta(days=days_since_email_send_date + 1)
+    lt_days_ago = timezone.now() - timedelta(days=days_since_detail_contact_click_date)
+    gte_days_ago = timezone.now() - timedelta(days=days_since_detail_contact_click_date + 1)
     if current_weekday == 0 and not send_on_weekends:
         # Monday: special case (need to account for Saturday & Sunday)
-        gte_days_ago = timezone.now() - timedelta(days=days_since_email_send_date + 1 + 2)
+        gte_days_ago = timezone.now() - timedelta(days=days_since_detail_contact_click_date + 1 + 2)
     tendersiae_interested_reminder_list = TenderSiae.objects.filter(
         tender_id=tender.id
     ).detail_contact_click_post_reminder(gte_days_ago=gte_days_ago, lt_days_ago=lt_days_ago)
 
     for tendersiae in tendersiae_interested_reminder_list:
         # send to siae 'contact_email'
-        send_tender_contacted_reminder_email_to_siae(tendersiae, email_subject, days_since_email_send_date)
+        send_tender_contacted_reminder_email_to_siae(tendersiae, email_subject, days_since_detail_contact_click_date)
 
     # log email batch
     log_item = {
-        "action": f"email_siaes_interested_reminder_{days_since_email_send_date}d",
+        "action": f"email_siaes_interested_reminder_{days_since_detail_contact_click_date}d",
         "email_subject": email_subject,
         "email_count": tendersiae_interested_reminder_list.count(),
         "email_timestamp": timezone.now().isoformat(),
@@ -248,7 +248,9 @@ def send_tender_interested_reminder_email_to_siaes(
     tender.save()
 
 
-def send_tender_interested_reminder_email_to_siae(tendersiae: TenderSiae, email_subject, days_since_email_send_date):
+def send_tender_interested_reminder_email_to_siae(
+    tendersiae: TenderSiae, email_subject, days_since_detail_contact_click_date
+):
     recipient_list = whitelist_recipient_list([tendersiae.siae.contact_email])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
@@ -276,7 +278,7 @@ def send_tender_interested_reminder_email_to_siae(tendersiae: TenderSiae, email_
 
         # log email
         log_item = {
-            "action": f"email_siae_interested_reminder_{days_since_email_send_date}d",
+            "action": f"email_siae_interested_reminder_{days_since_detail_contact_click_date}d",
             "email_to": recipient_email,
             "email_subject": email_subject,
             # "email_body": email_body,

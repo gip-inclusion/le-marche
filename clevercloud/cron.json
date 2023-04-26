@@ -3,12 +3,12 @@
     "15 0 * * * $ROOT/clevercloud/stats_export_user_download_list_to_file.sh",
     "30 0 * * * $ROOT/clevercloud/stats_export_user_search_list_to_file.sh",
     "0 7 * * 1 $ROOT/clevercloud/siaes_sync_c1_c4.sh",
-    "15 7 * * 1 $ROOT/clevercloud/siaes_sync_c2_c4.sh",
-    "30 7 * * 1 $ROOT/clevercloud/siaes_update_api_entreprise_fields.sh",
-    "45 7 * * 1 $ROOT/clevercloud/siaes_update_api_qpv_fields.sh",
-    "0 8 * * 1 $ROOT/clevercloud/siaes_update_api_zrr_fields.sh",
-    "0 9 * * * $ROOT/clevercloud/siaes_send_user_request_reminder_emails.sh",
-    "5 9 * * * $ROOT/clevercloud/tenders_send_siae_contacted_reminder_emails.sh",
+    "10 7 * * 1 $ROOT/clevercloud/siaes_sync_c2_c4.sh",
+    "20 7 * * 1 $ROOT/clevercloud/siaes_update_api_entreprise_fields.sh",
+    "30 7 * * 1 $ROOT/clevercloud/siaes_update_api_qpv_fields.sh",
+    "40 7 * * 1 $ROOT/clevercloud/siaes_update_api_zrr_fields.sh",
+    "0 8 * * * $ROOT/clevercloud/siaes_send_user_request_reminder_emails.sh",
+    "0 9 * * * $ROOT/clevercloud/tenders_send_siae_contacted_reminder_emails.sh",
     "10 9 * * * $ROOT/clevercloud/tenders_send_siae_interested_reminder_emails.sh",
-    "10 9 * * * $ROOT/clevercloud/tenders_send_author_incremental.sh"
+    "20 9 * * * $ROOT/clevercloud/tenders_send_author_incremental.sh"
 ]
