@@ -44,3 +44,6 @@ test:
 
 test_parallel:
 	pytest --numprocesses=logical --create-db
+
+test_parallel_with_coverage:
+	pytest --cov=lemarche --numprocesses=logical --create-db
