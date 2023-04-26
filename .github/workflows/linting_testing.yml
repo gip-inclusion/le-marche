@@ -124,5 +124,5 @@ jobs:
         run: |
           source .venv/bin/activate
           python manage.py collectstatic
-          coverage run --source='./lemarche' ./manage.py test
+          coverage run --source='./lemarche' -m pytest --numprocesses=logical --create-db
           coverage report
