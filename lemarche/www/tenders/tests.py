@@ -381,7 +381,7 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Voir cet appel d")  # 'offre
+        self.assertContains(response, "Voir l'appel d'offres")
         # users
         for user in User.objects.all():
             self.client.force_login(user)
@@ -550,30 +550,30 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertNotContains(response, "Clôturé")
-        self.assertContains(response, "Voir cet appel d")  # 'offre
+        self.assertContains(response, "Voir l'appel d'offres")
         # siae user interested
         self.client.force_login(self.siae_user_1)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertContains(response, "Contactez le client dès maintenant")
-        self.assertNotContains(response, "Voir cet appel d")  # 'offre
+        self.assertNotContains(response, "Voir l'appel d'offres")
         # siae user not concerned
         self.client.force_login(self.siae_user_2)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
-        self.assertContains(response, "Voir cet appel d")  # 'offre
+        self.assertContains(response, "Voir l'appel d'offres")
         # siae user without siae
         self.client.force_login(self.siae_user_3)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertContains(response, "veuillez d'abord vous")
-        self.assertNotContains(response, "Voir cet appel d")  # 'offre
+        self.assertNotContains(response, "Voir l'appel d'offres")
         # author
         self.client.force_login(self.user_buyer_1)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertContains(response, "Coordonnées")
-        self.assertNotContains(response, "Voir cet appel d")  # 'offre
+        self.assertNotContains(response, "Voir l'appel d'offres")
 
     def test_tender_outdated_contact_display(self):
         tender_2 = TenderFactory(
@@ -623,7 +623,7 @@ class TenderDetailViewTest(TestCase):
         response = self.client.get(url)
         self.assertContains(response, "pour être mis en relation avec le client.")
         self.assertNotContains(response, "Contactez le client dès maintenant")
-        self.assertNotContains(response, "Voir cet appel d")  # 'offre
+        self.assertNotContains(response, "Voir l'appel d'offres")
         # this one can!
         user_partner_2 = UserFactory(kind=User.KIND_PARTNER, can_display_tender_contact_details=True)
         self.client.force_login(user_partner_2)
@@ -631,7 +631,7 @@ class TenderDetailViewTest(TestCase):
         response = self.client.get(url)
         self.assertNotContains(response, "pour être mis en relation avec le client.")
         self.assertContains(response, "Contactez le client dès maintenant")
-        self.assertNotContains(response, "Voir cet appel d")  # 'offre
+        self.assertNotContains(response, "Voir l'appel d'offres")
 
     def test_tender_contact_details_display(self):
         # tender_1 author

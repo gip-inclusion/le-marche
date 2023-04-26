@@ -449,7 +449,7 @@ class Tender(models.Model):
     @property
     def cta_card_paragraph_text(self):
         if self.kind == tender_constants.KIND_TENDER:
-            return "Accéder à l'appel d'offre afin d'y répondre."
+            return "Accéder à l'appel d'offres afin d'y répondre."
         elif self.kind == tender_constants.KIND_QUOTE:
             return "Accéder aux coordonnées du client afin de lui envoyer un devis."
         elif self.kind == tender_constants.KIND_PROJECT:
@@ -460,7 +460,7 @@ class Tender(models.Model):
     @property
     def cta_card_button_text(self):
         if self.kind == tender_constants.KIND_TENDER:
-            return "Voir l'appel d'offre"
+            return "Voir l'appel d'offres"
         return "Accéder aux coordonnées"
 
     @cached_property
