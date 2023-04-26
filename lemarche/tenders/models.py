@@ -436,10 +436,32 @@ class Tender(models.Model):
         return "Lien partagé"
 
     @property
-    def cta_text(self):
+    def cta_card_title_text(self):
         if self.kind == tender_constants.KIND_TENDER:
-            return "Voir cet appel d'offres"
-        return "Répondre à cette opportunité"
+            return "Cet appel d'offres vous intéresse ?"
+        elif self.kind == tender_constants.KIND_QUOTE:
+            return "Cette demande de devis vous intéresse ?"
+        elif self.kind == tender_constants.KIND_PROJECT:
+            return "Cette consultation vous intéresse ?"
+        # just in case
+        return "Cette opportunité vous intéresse ?"
+
+    @property
+    def cta_card_paragraph_text(self):
+        if self.kind == tender_constants.KIND_TENDER:
+            return "Accéder à l'appel d'offre afin d'y répondre."
+        elif self.kind == tender_constants.KIND_QUOTE:
+            return "Accéder aux coordonnées du client afin de lui envoyer un devis."
+        elif self.kind == tender_constants.KIND_PROJECT:
+            return "Accéder aux coordonnées du client afin de lui présenter vos services et produits."
+        # just in case
+        return "Accédez aux coordonnées de ce client afin de prendre contact avec lui."
+
+    @property
+    def cta_card_button_text(self):
+        if self.kind == tender_constants.KIND_TENDER:
+            return "Voir l'appel d'offre"
+        return "Accéder aux coordonnées"
 
     @cached_property
     def can_display_contact_email(self):
