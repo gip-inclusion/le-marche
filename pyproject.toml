@@ -88,7 +88,12 @@ target-version = ['py38', 'py39']
 include = '\.pyi?$'
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "lemarche.settings.test"
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+python_files = [
+    "tests.py",
+    "test_*.py",
+    "*_tests.py",
+]
 
 [tool.poe.tasks]
 export = { shell = "poetry export --without-hashes --output requirements/staging.txt" }
