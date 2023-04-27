@@ -235,7 +235,7 @@ def send_tender_interested_reminder_email_to_siaes(
 
     for tendersiae in tendersiae_interested_reminder_list:
         # send to siae 'contact_email'
-        send_tender_contacted_reminder_email_to_siae(tendersiae, email_subject, days_since_detail_contact_click_date)
+        send_tender_interested_reminder_email_to_siae(tendersiae, email_subject, days_since_detail_contact_click_date)
 
     # log email batch
     log_item = {
