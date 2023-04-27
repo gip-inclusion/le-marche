@@ -25,10 +25,31 @@
         "pk": 4,
         "fields": {
             "hostname": "localhost",
-            "port": 80,
+            "port": 8000,
             "site_name": "lemarche",
             "root_page": 25,
             "is_default_site": true
+        }
+    },
+    {
+        "model": "wagtailimages.image",
+        "pk": 1,
+        "fields": {
+            "collection": 1,
+            "title": "fakeit",
+            "file": "original_images/fakeit_zEVwbxo.png",
+            "width": 800,
+            "height": 800,
+            "created_at": "2023-04-27T17:42:13.144Z",
+            "uploaded_by_user": [
+                "admin@test.com"
+            ],
+            "focal_point_x": null,
+            "focal_point_y": null,
+            "focal_point_width": null,
+            "focal_point_height": null,
+            "file_size": 14751,
+            "file_hash": "272fb6b785bbe698753080d89a6a462c330ccff5"
         }
     },
     {
@@ -40,18 +61,9 @@
             "numchild": 6,
             "translation_key": "4ef3968a-e12d-4c44-afcd-beaebf6d9cc2",
             "locale": 1,
-            "latest_revision": null,
             "live": true,
-            "has_unpublished_changes": false,
             "first_published_at": null,
             "last_published_at": null,
-            "live_revision": null,
-            "go_live_at": null,
-            "expire_at": null,
-            "expired": false,
-            "locked": false,
-            "locked_at": null,
-            "locked_by": null,
             "title": "Root",
             "draft_title": "Root",
             "slug": "root",
@@ -64,7 +76,6 @@
             "seo_title": "",
             "show_in_menus": false,
             "search_description": "",
-            "latest_revision_created_at": null,
             "alias_of": null
         }
     },
@@ -77,18 +88,9 @@
             "numchild": 13,
             "translation_key": "26fa6a07-b731-4d3e-b7c1-0f455e1636c3",
             "locale": 1,
-            "latest_revision": 72,
             "live": true,
-            "has_unpublished_changes": false,
             "first_published_at": "2022-04-06T14:12:56.336Z",
             "last_published_at": "2023-03-28T11:29:48.753Z",
-            "live_revision": 72,
-            "go_live_at": null,
-            "expire_at": null,
-            "expired": false,
-            "locked": false,
-            "locked_at": null,
-            "locked_by": null,
             "title": "Ressources",
             "draft_title": "Ressources",
             "slug": "ressources",
@@ -98,12 +100,11 @@
             ],
             "url_path": "/accueil/ressources/",
             "owner": [
-                "madjid@udez.fr"
+                "admin@test.com"
             ],
             "seo_title": "test d'article",
             "show_in_menus": false,
             "search_description": "",
-            "latest_revision_created_at": "2023-03-28T11:29:48.645Z",
             "alias_of": null
         }
     },
@@ -116,18 +117,9 @@
             "numchild": 0,
             "translation_key": "4fbd5781-f5c1-4de6-a0e4-ab8bb425e176",
             "locale": 1,
-            "latest_revision": 7,
             "live": true,
-            "has_unpublished_changes": false,
             "first_published_at": "2022-04-06T14:48:07.792Z",
             "last_published_at": "2022-04-07T10:02:30.030Z",
-            "live_revision": 7,
-            "go_live_at": null,
-            "expire_at": null,
-            "expired": false,
-            "locked": false,
-            "locked_at": null,
-            "locked_by": null,
             "title": "Qu’est-ce que l’inclusion ?",
             "draft_title": "Qu’est-ce que l’inclusion ?",
             "slug": "quest-ce-que-linclusion",
@@ -137,12 +129,11 @@
             ],
             "url_path": "/accueil/ressources/quest-ce-que-linclusion/",
             "owner": [
-                "madjid@udez.fr"
+                "admin@test.com"
             ],
             "seo_title": "",
             "show_in_menus": false,
             "search_description": "",
-            "latest_revision_created_at": "2022-04-07T10:02:29.945Z",
             "alias_of": null
         }
     },
@@ -155,18 +146,9 @@
             "numchild": 0,
             "translation_key": "dd308740-552a-4d30-86b5-f3ee1a7ac853",
             "locale": 1,
-            "latest_revision": 10,
             "live": true,
-            "has_unpublished_changes": false,
             "first_published_at": "2022-04-07T10:07:19.831Z",
             "last_published_at": "2022-04-11T13:08:37.407Z",
-            "live_revision": 10,
-            "go_live_at": null,
-            "expire_at": null,
-            "expired": false,
-            "locked": false,
-            "locked_at": null,
-            "locked_by": null,
             "title": "Le Plan National pour des Achats Durables (PNAD) 2022",
             "draft_title": "Le Plan National pour des Achats Durables (PNAD) 2022",
             "slug": "le-plan-national-pour-des-achats-durables-pnad-2022",
@@ -176,12 +158,11 @@
             ],
             "url_path": "/accueil/ressources/le-plan-national-pour-des-achats-durables-pnad-2022/",
             "owner": [
-                "mehdi@aiida.me"
+                "admin@test.com"
             ],
             "seo_title": "",
             "show_in_menus": false,
             "search_description": "",
-            "latest_revision_created_at": "2022-04-11T13:08:37.281Z",
             "alias_of": null
         }
     },
@@ -194,18 +175,9 @@
             "numchild": 0,
             "translation_key": "6c309508-1714-4e4c-870a-30be0559a7b9",
             "locale": 1,
-            "latest_revision": 33,
             "live": true,
-            "has_unpublished_changes": false,
             "first_published_at": "2022-04-28T14:09:09.744Z",
             "last_published_at": "2022-05-23T15:39:12.975Z",
-            "live_revision": 33,
-            "go_live_at": null,
-            "expire_at": null,
-            "expired": false,
-            "locked": false,
-            "locked_at": null,
-            "locked_by": null,
             "title": "14 agences de communication inclusives pour une comm’ responsable",
             "draft_title": "14 agences de communication inclusives pour une comm’ responsable",
             "slug": "14-agences-de-communication-inclusives-pour-une-comm-responsable",
@@ -215,12 +187,11 @@
             ],
             "url_path": "/accueil/ressources/14-agences-de-communication-inclusives-pour-une-comm-responsable/",
             "owner": [
-                "mehdi@aiida.me"
+                "admin@test.com"
             ],
             "seo_title": "",
             "show_in_menus": false,
             "search_description": "",
-            "latest_revision_created_at": "2022-05-23T15:39:12.849Z",
             "alias_of": null
         }
     },
@@ -233,18 +204,9 @@
             "numchild": 0,
             "translation_key": "ed3f24f4-5b97-46a2-8452-2b5f83de8d0d",
             "locale": 1,
-            "latest_revision": 36,
             "live": true,
-            "has_unpublished_changes": false,
             "first_published_at": "2022-06-21T08:38:25.458Z",
             "last_published_at": "2022-06-21T08:39:54.145Z",
-            "live_revision": 36,
-            "go_live_at": null,
-            "expire_at": null,
-            "expired": false,
-            "locked": false,
-            "locked_at": null,
-            "locked_by": null,
             "title": "C'est quoi l'inclusion ?",
             "draft_title": "C'est quoi l'inclusion ?",
             "slug": "cest-quoi-linclusion",
@@ -254,12 +216,11 @@
             ],
             "url_path": "/accueil/ressources/cest-quoi-linclusion/",
             "owner": [
-                "madjid@udez.fr"
+                "admin@test.com"
             ],
             "seo_title": "",
             "show_in_menus": false,
             "search_description": "",
-            "latest_revision_created_at": "2022-06-21T08:39:54.018Z",
             "alias_of": null
         }
     },
@@ -272,18 +233,9 @@
             "numchild": 0,
             "translation_key": "6b6b95eb-6015-4a45-9a50-3a33044e9ca5",
             "locale": 1,
-            "latest_revision": 37,
             "live": true,
-            "has_unpublished_changes": false,
             "first_published_at": "2022-06-21T08:42:37.266Z",
             "last_published_at": "2022-06-21T08:42:37.266Z",
-            "live_revision": 37,
-            "go_live_at": null,
-            "expire_at": null,
-            "expired": false,
-            "locked": false,
-            "locked_at": null,
-            "locked_by": null,
             "title": "Filière : Recyclage",
             "draft_title": "Filière : Recyclage",
             "slug": "filière-recyclage",
@@ -293,12 +245,11 @@
             ],
             "url_path": "/accueil/ressources/filière-recyclage/",
             "owner": [
-                "madjid@udez.fr"
+                "admin@test.com"
             ],
             "seo_title": "",
             "show_in_menus": false,
             "search_description": "",
-            "latest_revision_created_at": "2022-06-21T08:42:34.312Z",
             "alias_of": null
         }
     },
@@ -311,18 +262,9 @@
             "numchild": 0,
             "translation_key": "2fb35d77-c3c6-4a88-8f1b-0087001e6313",
             "locale": 1,
-            "latest_revision": 38,
             "live": true,
-            "has_unpublished_changes": false,
             "first_published_at": "2022-06-21T08:48:51.321Z",
             "last_published_at": "2022-06-21T08:48:51.321Z",
-            "live_revision": 38,
-            "go_live_at": null,
-            "expire_at": null,
-            "expired": false,
-            "locked": false,
-            "locked_at": null,
-            "locked_by": null,
             "title": "Filière : restauration",
             "draft_title": "Filière : restauration",
             "slug": "filière-restauration",
@@ -332,12 +274,11 @@
             ],
             "url_path": "/accueil/ressources/filière-restauration/",
             "owner": [
-                "madjid@udez.fr"
+                "admin@test.com"
             ],
             "seo_title": "",
             "show_in_menus": false,
             "search_description": "",
-            "latest_revision_created_at": "2022-06-21T08:48:51.235Z",
             "alias_of": null
         }
     },
@@ -350,18 +291,9 @@
             "numchild": 0,
             "translation_key": "b7db8da2-9d0b-48ba-81ce-35ff1c9a7636",
             "locale": 1,
-            "latest_revision": 63,
             "live": true,
-            "has_unpublished_changes": false,
             "first_published_at": "2022-06-21T08:52:11.006Z",
             "last_published_at": "2022-10-26T07:34:34.229Z",
-            "live_revision": 63,
-            "go_live_at": null,
-            "expire_at": null,
-            "expired": false,
-            "locked": false,
-            "locked_at": null,
-            "locked_by": null,
             "title": "Valoriser vos achats",
             "draft_title": "Valoriser vos achats",
             "slug": "valoriser-vos-achats",
@@ -371,12 +303,11 @@
             ],
             "url_path": "/accueil/ressources/valoriser-vos-achats/",
             "owner": [
-                "madjid@udez.fr"
+                "admin@test.com"
             ],
             "seo_title": "",
             "show_in_menus": false,
             "search_description": "",
-            "latest_revision_created_at": "2022-10-26T07:34:34.087Z",
             "alias_of": null
         }
     },
@@ -389,18 +320,9 @@
             "numchild": 0,
             "translation_key": "50e1aeb4-82a2-4779-a89e-0a14101b8791",
             "locale": 1,
-            "latest_revision": 42,
             "live": true,
-            "has_unpublished_changes": false,
             "first_published_at": "2022-07-28T16:45:05.899Z",
             "last_published_at": "2022-07-28T16:49:09.217Z",
-            "live_revision": 42,
-            "go_live_at": null,
-            "expire_at": null,
-            "expired": false,
-            "locked": false,
-            "locked_at": null,
-            "locked_by": null,
             "title": "Les acteurs inclusifs témoignent ! Marine Le Borgne, Nantes Métropole",
             "draft_title": "Les acteurs inclusifs témoignent ! Marine Le Borgne, Nantes Métropole",
             "slug": "les-acteurs-inclusifs-témoignent-marine-le-borgne-nantes-métropole",
@@ -410,12 +332,11 @@
             ],
             "url_path": "/accueil/ressources/les-acteurs-inclusifs-témoignent-marine-le-borgne-nantes-métropole/",
             "owner": [
-                "sofiane.zekri@beta.gouv.fr"
+                "admin@test.com"
             ],
             "seo_title": "",
             "show_in_menus": false,
             "search_description": "",
-            "latest_revision_created_at": "2022-07-28T16:49:09.131Z",
             "alias_of": null
         }
     },
@@ -428,18 +349,9 @@
             "numchild": 0,
             "translation_key": "773f312d-634f-4896-98af-213daccb67a3",
             "locale": 1,
-            "latest_revision": 64,
             "live": true,
-            "has_unpublished_changes": false,
             "first_published_at": "2022-08-11T09:35:57.463Z",
             "last_published_at": "2022-10-26T07:34:49.183Z",
-            "live_revision": 64,
-            "go_live_at": null,
-            "expire_at": null,
-            "expired": false,
-            "locked": false,
-            "locked_at": null,
-            "locked_by": null,
             "title": "Bouygues Construction : Recherche d’une entreprise de nettoyage",
             "draft_title": "Bouygues Construction : Recherche d’une entreprise de nettoyage",
             "slug": "bouygues-construction-recherche-dune-entreprise-de-nettoyage",
@@ -449,12 +361,11 @@
             ],
             "url_path": "/accueil/ressources/bouygues-construction-recherche-dune-entreprise-de-nettoyage/",
             "owner": [
-                "mehdi@aiida.me"
+                "admin@test.com"
             ],
             "seo_title": "",
             "show_in_menus": false,
             "search_description": "",
-            "latest_revision_created_at": "2022-10-26T07:34:49.062Z",
             "alias_of": null
         }
     },
@@ -467,18 +378,9 @@
             "numchild": 0,
             "translation_key": "63032a26-074a-41ed-93e9-a41867346c50",
             "locale": 1,
-            "latest_revision": 51,
             "live": true,
-            "has_unpublished_changes": false,
             "first_published_at": "2022-08-11T09:39:20.545Z",
             "last_published_at": "2022-09-08T15:05:07.280Z",
-            "live_revision": 51,
-            "go_live_at": null,
-            "expire_at": null,
-            "expired": false,
-            "locked": false,
-            "locked_at": null,
-            "locked_by": null,
             "title": "Siemens : Besoin en développement d’applications IT",
             "draft_title": "Siemens : Besoin en développement d’applications IT",
             "slug": "siemens-besoin-en-développement-dapplications-it",
@@ -488,12 +390,11 @@
             ],
             "url_path": "/accueil/ressources/siemens-besoin-en-développement-dapplications-it/",
             "owner": [
-                "mehdi@aiida.me"
+                "admin@test.com"
             ],
             "seo_title": "",
             "show_in_menus": false,
             "search_description": "",
-            "latest_revision_created_at": "2022-09-08T15:05:07.159Z",
             "alias_of": null
         }
     },
@@ -506,18 +407,9 @@
             "numchild": 0,
             "translation_key": "f25194c9-acef-43cf-bbf3-1f5e3a6fa8d9",
             "locale": 1,
-            "latest_revision": 50,
             "live": true,
-            "has_unpublished_changes": false,
             "first_published_at": "2022-09-06T15:21:28.338Z",
             "last_published_at": "2022-09-06T15:21:28.338Z",
-            "live_revision": 50,
-            "go_live_at": null,
-            "expire_at": null,
-            "expired": false,
-            "locked": false,
-            "locked_at": null,
-            "locked_by": null,
             "title": "Ministère de l’Agriculture :  Besoin en prestations de cocktails et de buffet",
             "draft_title": "Ministère de l’Agriculture :  Besoin en prestations de cocktails et de buffet",
             "slug": "ministère-de-lagriculture-besoin-en-prestations-de-cocktails-et-de-buffet",
@@ -527,12 +419,11 @@
             ],
             "url_path": "/accueil/ressources/ministère-de-lagriculture-besoin-en-prestations-de-cocktails-et-de-buffet/",
             "owner": [
-                "mehdi@aiida.me"
+                "admin@test.com"
             ],
             "seo_title": "",
             "show_in_menus": false,
             "search_description": "",
-            "latest_revision_created_at": "2022-09-06T15:21:28.220Z",
             "alias_of": null
         }
     },
@@ -545,18 +436,9 @@
             "numchild": 0,
             "translation_key": "7b3d2d8d-c0bd-4954-89f0-3bb333b36b15",
             "locale": 1,
-            "latest_revision": 55,
             "live": true,
-            "has_unpublished_changes": false,
             "first_published_at": "2022-09-19T14:15:49.186Z",
             "last_published_at": "2022-09-19T14:16:19.988Z",
-            "live_revision": 55,
-            "go_live_at": null,
-            "expire_at": null,
-            "expired": false,
-            "locked": false,
-            "locked_at": null,
-            "locked_by": null,
             "title": "Comment prendre en compte les considérations sociales et écologiques de manière plus ambitieuse dans les achats publics",
             "draft_title": "Comment prendre en compte les considérations sociales et écologiques de manière plus ambitieuse dans les achats publics",
             "slug": "comment-prendre-en-compte-les-considérations-sociales-et-écologiques-de-manière-plus-ambitieuse-dans-les-achats-publics",
@@ -566,12 +448,11 @@
             ],
             "url_path": "/accueil/ressources/comment-prendre-en-compte-les-considérations-sociales-et-écologiques-de-manière-plus-ambitieuse-dans-les-achats-publics/",
             "owner": [
-                "mehdi@aiida.me"
+                "admin@test.com"
             ],
             "seo_title": "",
             "show_in_menus": false,
             "search_description": "",
-            "latest_revision_created_at": "2022-09-19T14:16:19.886Z",
             "alias_of": null
         }
     },
@@ -584,18 +465,9 @@
             "numchild": 0,
             "translation_key": "27342466-d14f-4159-8e00-f107ae4873a8",
             "locale": 1,
-            "latest_revision": 61,
             "live": true,
-            "has_unpublished_changes": false,
             "first_published_at": "2022-10-17T16:48:36.125Z",
             "last_published_at": "2022-10-17T16:50:00.636Z",
-            "live_revision": 61,
-            "go_live_at": null,
-            "expire_at": null,
-            "expired": false,
-            "locked": false,
-            "locked_at": null,
-            "locked_by": null,
             "title": "Facilitez-vous les achats responsables avec Handeco et le réseau GESAT !",
             "draft_title": "Facilitez-vous les achats responsables avec Handeco et le réseau GESAT !",
             "slug": "faciltez-vous-les-achats-responsables",
@@ -605,12 +477,11 @@
             ],
             "url_path": "/accueil/ressources/faciltez-vous-les-achats-responsables/",
             "owner": [
-                "abdessamad.yssf@gmail.com"
+                "admin@test.com"
             ],
             "seo_title": "",
             "show_in_menus": false,
             "search_description": "",
-            "latest_revision_created_at": "2022-10-17T16:50:00.513Z",
             "alias_of": null
         }
     },
@@ -623,18 +494,9 @@
             "numchild": 1,
             "translation_key": "e096fefb-af3f-4798-801e-569407403cea",
             "locale": 1,
-            "latest_revision": 123,
             "live": true,
-            "has_unpublished_changes": false,
             "first_published_at": "2023-03-28T11:33:31.399Z",
             "last_published_at": "2023-04-26T09:03:37.088Z",
-            "live_revision": 123,
-            "go_live_at": null,
-            "expire_at": null,
-            "expired": false,
-            "locked": false,
-            "locked_at": null,
-            "locked_by": null,
             "title": "Page d'accueil",
             "draft_title": "Page d'accueil",
             "slug": "accueil",
@@ -647,7 +509,6 @@
             "seo_title": "",
             "show_in_menus": false,
             "search_description": "",
-            "latest_revision_created_at": "2023-04-26T09:03:37.039Z",
             "alias_of": null
         }
     },
@@ -672,7 +533,7 @@
         "pk": 4,
         "fields": {
             "intro": "Dans cet article, nous expliquons les concepts d'inclusion et d'exclusion sociale, d'insertion par l'activité économique, et de handicap.",
-            "image": 4,
+            "image": 1,
             "is_static_page": false,
             "with_cta_tender": false,
             "template_name": "",
@@ -687,7 +548,7 @@
         "pk": 5,
         "fields": {
             "intro": "Le mois dernier, sortait l’édition 2022 du Plan National des Achats Durables. Dans cet article nous allons résumer ce qu’il contient, quels sont ses objectifs, et le rôle que va jouer le Marché de l’inclusion pour les atteindre.",
-            "image": 5,
+            "image": 1,
             "is_static_page": false,
             "with_cta_tender": false,
             "template_name": "",
@@ -702,7 +563,7 @@
         "pk": 6,
         "fields": {
             "intro": "Quand il s’agit de communication, les ESI ne sont pas en reste. Il existe de nombreuses structures inclusives qui proposent des prestations de communication. Dans cet article, nous allons vous en présenter quelques unes qui proposent leur travail dans toute la France !",
-            "image": 7,
+            "image": 1,
             "is_static_page": false,
             "with_cta_tender": false,
             "template_name": "",
@@ -717,7 +578,7 @@
         "pk": 7,
         "fields": {
             "intro": "Aujourd'hui, plus de deux millions de personnes sont en situation d'exclusion. Pourtant elles souhaitent travailler, mais pour différentes raisons elles ne retrouvent plus le chemin de l'emploi.\r\n L'inclusion dans l'emploi, c'est agir pour que ces personnes retrouvent espoir, résolvent leurs difficultés, décrochent à nouveau un travail, touchent un salaire et se projettent durablement dans la vie active.",
-            "image": 8,
+            "image": 1,
             "is_static_page": true,
             "with_cta_tender": false,
             "template_name": "decouvrir-inclusion.html",
@@ -732,7 +593,7 @@
         "pk": 8,
         "fields": {
             "intro": "Et si vous confiez le recyclage de vos déchets à un prestataire inclusif ?",
-            "image": 9,
+            "image": 1,
             "is_static_page": true,
             "with_cta_tender": false,
             "template_name": "filiere_recyclage.html",
@@ -747,7 +608,7 @@
         "pk": 9,
         "fields": {
             "intro": "Il y a en France plus de 6000 personnes en insertion qui sont accompagnées chaque année sur les métiers de la restauration et sont mobilisables par les employeurs.",
-            "image": 10,
+            "image": 1,
             "is_static_page": true,
             "with_cta_tender": false,
             "template_name": "filiere_restauration.html",
@@ -762,7 +623,7 @@
         "pk": 10,
         "fields": {
             "intro": "Il se peut que vous travailliez déjà avec des entreprises sociales inclusives (insertion / handicap) sans le savoir.",
-            "image": 11,
+            "image": 1,
             "is_static_page": true,
             "with_cta_tender": false,
             "template_name": "valoriser-achats.html",
@@ -777,7 +638,7 @@
         "pk": 11,
         "fields": {
             "intro": "Découvrez ici le métier de facilitateur ainisi que l'importance du marché de l'inclusion comme outil pour trouver les attributaires du marché.",
-            "image": 12,
+            "image": 1,
             "is_static_page": false,
             "with_cta_tender": false,
             "template_name": "",
@@ -845,7 +706,7 @@
         "pk": 16,
         "fields": {
             "intro": "",
-            "image": 14,
+            "image": 1,
             "is_static_page": false,
             "with_cta_tender": false,
             "template_name": "",
