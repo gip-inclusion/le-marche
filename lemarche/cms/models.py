@@ -189,6 +189,7 @@ class HomePage(Page):
             ("section_what_find_here", blocks.WhatFindHereSection()),
             ("section_our_partners", blocks.OurPartnersSection()),
             ("section_our_features", blocks.OurFeaturesSection()),
+            ("section_why_call_siaes", blocks.WhyCallSiaes()),
         ],
         null=True,
         block_counts={
@@ -200,6 +201,7 @@ class HomePage(Page):
             "section_what_find_here": {"max_num": 1},
             "section_our_partners": {"max_num": 1},
             "section_our_features": {"max_num": 1},
+            "section_why_call_siaes": {"max_num": 1},
         },
         use_json_field=True,
     )
