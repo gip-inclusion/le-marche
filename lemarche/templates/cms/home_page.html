@@ -72,14 +72,11 @@
             {% comment %} improve in the futur to be more generic {% endcomment %}
             Alpine.data('ToggleComponent', () => (
                 {
-                    show:false,
+                    first_elmt_is_visible: true,
                     update_view() {
-                        this.show = !this.show;
+                        this.first_elmt_is_visible = !this.first_elmt_is_visible;
 
                     },
-                    is_active(){
-                        return (this.$el.id=="impactForMe") ? this.show : !this.show;
-                    }
                 }
             ));
         });
