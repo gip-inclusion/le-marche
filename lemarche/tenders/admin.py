@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from ckeditor.widgets import CKEditorWidget
+from django import forms
 from django.contrib import admin
 from django.db import models
 from django.http import HttpResponseRedirect
@@ -14,7 +15,7 @@ from lemarche.perimeters.admin import PerimeterRegionFilter
 from lemarche.tenders import constants
 from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import PartnerShareTender, Tender
-from lemarche.utils.fields import pretty_print_readonly_jsonfield
+from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
 from lemarche.www.tenders.tasks import (
     send_confirmation_published_email_to_author,
     send_tender_emails_to_partners,
@@ -128,7 +129,10 @@ class TenderAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
     ]
-    formfield_overrides = {models.TextField: {"widget": CKEditorWidget}}
+    formfield_overrides = {
+        models.TextField: {"widget": CKEditorWidget},
+        ChoiceArrayField: {"widget": forms.CheckboxSelectMultiple(attrs={"class": "custom-checkbox-select-multiple"})},
+    }
 
     fieldsets = (
         (

@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from django.contrib.gis import admin as gis_admin
 from django.db.models import Count
@@ -18,7 +19,7 @@ from lemarche.siaes.models import (
 )
 from lemarche.users.models import User
 from lemarche.utils.admin.actions import export_as_xls
-from lemarche.utils.fields import pretty_print_readonly_jsonfield
+from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
 
 
 class IsLiveFilter(admin.SimpleListFilter):
@@ -129,6 +130,9 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "created_at",
         "updated_at",
     ]
+    formfield_overrides = {
+        ChoiceArrayField: {"widget": forms.CheckboxSelectMultiple(attrs={"class": "custom-checkbox-select-multiple"})},
+    }
 
     # OSMGeoAdmin param for coords fields
     modifiable = False
