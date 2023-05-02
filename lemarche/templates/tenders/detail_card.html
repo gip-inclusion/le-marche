@@ -26,10 +26,10 @@
                 <i class="ri-map-pin-2-line"></i>
                 {{ tender.location_display|safe }}
             </div>
-            {% if tender.presta_type %}
+            {% if tender.author.company_name %}
                 <div class="col" title="Type de prestation">
-                    <i class="ri-briefcase-4-line"></i>
-                    {% array_choices_display tender 'presta_type' %}
+                    <i class="ri-building-4-line"></i>
+                    {{ tender.author.company_name }}
                 </div>
             {% endif %}
         </div>
