@@ -1,0 +1,71 @@
+{% load static bootstrap4 %}
+{% load theme_inclusion wagtailcore_tags wagtailimages_tags %}
+<section class="bg-gray-400" x-data="ToggleComponent">
+    <div class="container py-4">
+        <h2 class="h2 mb-3 mb-lg-5 text-center">{{ self.title }}</h2>
+        <div class="row">
+            <div class="col-md-12 px-0">
+                <ul class="nav nav-tabs nav-tabs--marche justify-content-center">
+                    <li class="nav-item">
+                        <a @click="update_view()"
+                           :aria-expanded="first_elmt_is_visible ? 'true' : 'false'"
+                           href="#impactForMe"
+                           :class="{ 'active': first_elmt_is_visible }"
+                           class="nav-link">Impact pour mon entreprise</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#impactForSociety"
+                           class="nav-link"
+                           @click="update_view()"
+                           :aria-expanded="first_elmt_is_visible ? 'false' : 'true'"
+                           :class="{ 'active': !first_elmt_is_visible }">Impact pour la société</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row mt-3" id="impactForMe" x-show="first_elmt_is_visible">
+            <div class="col-md-4">
+                <h4>Financier</h4>
+                <p>
+                    Baisser le montant de votre contribution AGEFIPH ou FIPHFP en collaborant avec un prestataire inclusif du secteur du handicap. Répondez à l'Obligation d'Emploi de Travailleurs Handicapés en recrutant inclusif (OETH).
+                </p>
+            </div>
+            <div class="col-md-4">
+                <h4>Marque employeur</h4>
+                <p>
+                    Attirez les meilleurs talents et fidélisez-les grâce à vos engagements sociaux et sociétaux. Donnez du sens à vos collaborateurs en leur permettant d'allier performance économique et impact social.
+                </p>
+            </div>
+            <div class="col-md-4">
+                <h4>Gain de temps</h4>
+                <p>
+                    Une plateforme unique pour l'ensemble de vos achats et recrutements inclusifs. Accédez en quelques clics à plus de 6000 prestataires inclusifs partout en France.
+                </p>
+            </div>
+        </div>
+        <div class="row mt-3"
+             id="impactForSociety"
+             x-show="!first_elmt_is_visible">
+            <div class="col-md-4">
+                <h4>Social</h4>
+                <p>
+                    Contribuer à l'emploi de personnes vulnérables ou en situation de handicap.
+                    <br/>
+                    Nos 6000 prestataires inclusifs recrutent et forment chaque année 300 000 personnes.
+                </p>
+            </div>
+            <div class="col-md-4">
+                <h4>Environnement</h4>
+                <p>
+                    Privilégier les circuits courts et l'achat local. Achetez français auprès de prestataires certifiés (Ecocert, ISO 14001, AB, Imprim'vert, Qualibat...)
+                </p>
+            </div>
+            <div class="col-md-4">
+                <h4>Économique</h4>
+                <p>
+                    Contribuer à la création d'emplois locaux, non délocalisables, au service du développement économique et social de votre territoire.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
