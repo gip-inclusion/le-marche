@@ -3,8 +3,8 @@ from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html
 
-from lemarche.common.admin import admin_site
 from lemarche.networks.models import Network
+from lemarche.utils.admin.admin_site import admin_site
 
 
 @admin.register(Network, site=admin_site)

@@ -12,16 +12,16 @@ from django.views.generic.edit import FormMixin
 
 from lemarche.cms.models import ArticlePage
 from lemarche.cms.snippets import ArticleCategory
-from lemarche.common.mixins import (
+from lemarche.networks.models import Network
+from lemarche.siaes.models import Siae, SiaeUser, SiaeUserRequest
+from lemarche.tenders.models import Tender, TenderSiae
+from lemarche.users.models import User
+from lemarche.utils.mixins import (
     NetworkMemberRequiredMixin,
     SiaeMemberRequiredMixin,
     SiaeUserAndNotMemberRequiredMixin,
     SiaeUserRequiredMixin,
 )
-from lemarche.networks.models import Network
-from lemarche.siaes.models import Siae, SiaeUser, SiaeUserRequest
-from lemarche.tenders.models import Tender, TenderSiae
-from lemarche.users.models import User
 from lemarche.utils.s3 import S3Upload
 from lemarche.www.dashboard.forms import (
     ProfileEditForm,

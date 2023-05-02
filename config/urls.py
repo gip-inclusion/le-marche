@@ -5,7 +5,7 @@ from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
-from lemarche.common.admin import admin_site
+from lemarche.utils.admin.admin_site import admin_site
 
 
 urlpatterns = [

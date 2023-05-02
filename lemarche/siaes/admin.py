@@ -6,7 +6,6 @@ from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
-from lemarche.common.admin import admin_site
 from lemarche.siaes.models import (
     Siae,
     SiaeClientReference,
@@ -19,6 +18,7 @@ from lemarche.siaes.models import (
 )
 from lemarche.users.models import User
 from lemarche.utils.admin.actions import export_as_xls
+from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
 
 
