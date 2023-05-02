@@ -138,3 +138,14 @@ class OurFeaturesSection(blocks.StructBlock):
         template = "cms/streams/section_our_features.html"
         icon = "pen"
         label = "Nos fonctionnalités"
+
+
+class WhyCallSiaes(blocks.StructBlock):
+    """Why call siaes"""
+
+    title = blocks.CharBlock(default="Pourquoi faire appel à un prestataire inclusif ?", required=True, max_length=120)
+
+    class Meta:
+        template = "cms/streams/section_why_call_siaes.html"
+        icon = "pen"
+        label = "Pourquoi faire appel à un prestataire inclusif ?"

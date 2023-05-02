@@ -19,5 +19,716 @@
             "name": "Solutions",
             "slug": "solutions"
         }
+    },
+    {
+        "model": "wagtailcore.site",
+        "pk": 4,
+        "fields": {
+            "hostname": "localhost",
+            "port": 8000,
+            "site_name": "lemarche",
+            "root_page": 25,
+            "is_default_site": true
+        }
+    },
+    {
+        "model": "wagtailimages.image",
+        "pk": 1,
+        "fields": {
+            "collection": 1,
+            "title": "fakeit",
+            "file": "original_images/fakeit_zEVwbxo.png",
+            "width": 800,
+            "height": 800,
+            "created_at": "2023-04-27T17:42:13.144Z",
+            "uploaded_by_user": [
+                "admin@test.com"
+            ],
+            "focal_point_x": null,
+            "focal_point_y": null,
+            "focal_point_width": null,
+            "focal_point_height": null,
+            "file_size": 14751,
+            "file_hash": "272fb6b785bbe698753080d89a6a462c330ccff5"
+        }
+    },
+    {
+        "model": "wagtailcore.page",
+        "pk": 1,
+        "fields": {
+            "path": "0001",
+            "depth": 1,
+            "numchild": 6,
+            "translation_key": "4ef3968a-e12d-4c44-afcd-beaebf6d9cc2",
+            "locale": 1,
+            "live": true,
+            "first_published_at": null,
+            "last_published_at": null,
+            "title": "Root",
+            "draft_title": "Root",
+            "slug": "root",
+            "content_type": [
+                "wagtailcore",
+                "page"
+            ],
+            "url_path": "/",
+            "owner": null,
+            "seo_title": "",
+            "show_in_menus": false,
+            "search_description": "",
+            "alias_of": null
+        }
+    },
+    {
+        "model": "wagtailcore.page",
+        "pk": 3,
+        "fields": {
+            "path": "000100030001",
+            "depth": 3,
+            "numchild": 13,
+            "translation_key": "26fa6a07-b731-4d3e-b7c1-0f455e1636c3",
+            "locale": 1,
+            "live": true,
+            "first_published_at": "2022-04-06T14:12:56.336Z",
+            "last_published_at": "2023-03-28T11:29:48.753Z",
+            "title": "Ressources",
+            "draft_title": "Ressources",
+            "slug": "ressources",
+            "content_type": [
+                "cms",
+                "articlelist"
+            ],
+            "url_path": "/accueil/ressources/",
+            "owner": [
+                "admin@test.com"
+            ],
+            "seo_title": "test d'article",
+            "show_in_menus": false,
+            "search_description": "",
+            "alias_of": null
+        }
+    },
+    {
+        "model": "wagtailcore.page",
+        "pk": 4,
+        "fields": {
+            "path": "0001000300010001",
+            "depth": 4,
+            "numchild": 0,
+            "translation_key": "4fbd5781-f5c1-4de6-a0e4-ab8bb425e176",
+            "locale": 1,
+            "live": true,
+            "first_published_at": "2022-04-06T14:48:07.792Z",
+            "last_published_at": "2022-04-07T10:02:30.030Z",
+            "title": "Qu’est-ce que l’inclusion ?",
+            "draft_title": "Qu’est-ce que l’inclusion ?",
+            "slug": "quest-ce-que-linclusion",
+            "content_type": [
+                "cms",
+                "articlepage"
+            ],
+            "url_path": "/accueil/ressources/quest-ce-que-linclusion/",
+            "owner": [
+                "admin@test.com"
+            ],
+            "seo_title": "",
+            "show_in_menus": false,
+            "search_description": "",
+            "alias_of": null
+        }
+    },
+    {
+        "model": "wagtailcore.page",
+        "pk": 5,
+        "fields": {
+            "path": "0001000300010002",
+            "depth": 4,
+            "numchild": 0,
+            "translation_key": "dd308740-552a-4d30-86b5-f3ee1a7ac853",
+            "locale": 1,
+            "live": true,
+            "first_published_at": "2022-04-07T10:07:19.831Z",
+            "last_published_at": "2022-04-11T13:08:37.407Z",
+            "title": "Le Plan National pour des Achats Durables (PNAD) 2022",
+            "draft_title": "Le Plan National pour des Achats Durables (PNAD) 2022",
+            "slug": "le-plan-national-pour-des-achats-durables-pnad-2022",
+            "content_type": [
+                "cms",
+                "articlepage"
+            ],
+            "url_path": "/accueil/ressources/le-plan-national-pour-des-achats-durables-pnad-2022/",
+            "owner": [
+                "admin@test.com"
+            ],
+            "seo_title": "",
+            "show_in_menus": false,
+            "search_description": "",
+            "alias_of": null
+        }
+    },
+    {
+        "model": "wagtailcore.page",
+        "pk": 6,
+        "fields": {
+            "path": "0001000300010003",
+            "depth": 4,
+            "numchild": 0,
+            "translation_key": "6c309508-1714-4e4c-870a-30be0559a7b9",
+            "locale": 1,
+            "live": true,
+            "first_published_at": "2022-04-28T14:09:09.744Z",
+            "last_published_at": "2022-05-23T15:39:12.975Z",
+            "title": "14 agences de communication inclusives pour une comm’ responsable",
+            "draft_title": "14 agences de communication inclusives pour une comm’ responsable",
+            "slug": "14-agences-de-communication-inclusives-pour-une-comm-responsable",
+            "content_type": [
+                "cms",
+                "articlepage"
+            ],
+            "url_path": "/accueil/ressources/14-agences-de-communication-inclusives-pour-une-comm-responsable/",
+            "owner": [
+                "admin@test.com"
+            ],
+            "seo_title": "",
+            "show_in_menus": false,
+            "search_description": "",
+            "alias_of": null
+        }
+    },
+    {
+        "model": "wagtailcore.page",
+        "pk": 7,
+        "fields": {
+            "path": "0001000300010004",
+            "depth": 4,
+            "numchild": 0,
+            "translation_key": "ed3f24f4-5b97-46a2-8452-2b5f83de8d0d",
+            "locale": 1,
+            "live": true,
+            "first_published_at": "2022-06-21T08:38:25.458Z",
+            "last_published_at": "2022-06-21T08:39:54.145Z",
+            "title": "C'est quoi l'inclusion ?",
+            "draft_title": "C'est quoi l'inclusion ?",
+            "slug": "cest-quoi-linclusion",
+            "content_type": [
+                "cms",
+                "articlepage"
+            ],
+            "url_path": "/accueil/ressources/cest-quoi-linclusion/",
+            "owner": [
+                "admin@test.com"
+            ],
+            "seo_title": "",
+            "show_in_menus": false,
+            "search_description": "",
+            "alias_of": null
+        }
+    },
+    {
+        "model": "wagtailcore.page",
+        "pk": 8,
+        "fields": {
+            "path": "0001000300010005",
+            "depth": 4,
+            "numchild": 0,
+            "translation_key": "6b6b95eb-6015-4a45-9a50-3a33044e9ca5",
+            "locale": 1,
+            "live": true,
+            "first_published_at": "2022-06-21T08:42:37.266Z",
+            "last_published_at": "2022-06-21T08:42:37.266Z",
+            "title": "Filière : Recyclage",
+            "draft_title": "Filière : Recyclage",
+            "slug": "filière-recyclage",
+            "content_type": [
+                "cms",
+                "articlepage"
+            ],
+            "url_path": "/accueil/ressources/filière-recyclage/",
+            "owner": [
+                "admin@test.com"
+            ],
+            "seo_title": "",
+            "show_in_menus": false,
+            "search_description": "",
+            "alias_of": null
+        }
+    },
+    {
+        "model": "wagtailcore.page",
+        "pk": 9,
+        "fields": {
+            "path": "0001000300010006",
+            "depth": 4,
+            "numchild": 0,
+            "translation_key": "2fb35d77-c3c6-4a88-8f1b-0087001e6313",
+            "locale": 1,
+            "live": true,
+            "first_published_at": "2022-06-21T08:48:51.321Z",
+            "last_published_at": "2022-06-21T08:48:51.321Z",
+            "title": "Filière : restauration",
+            "draft_title": "Filière : restauration",
+            "slug": "filière-restauration",
+            "content_type": [
+                "cms",
+                "articlepage"
+            ],
+            "url_path": "/accueil/ressources/filière-restauration/",
+            "owner": [
+                "admin@test.com"
+            ],
+            "seo_title": "",
+            "show_in_menus": false,
+            "search_description": "",
+            "alias_of": null
+        }
+    },
+    {
+        "model": "wagtailcore.page",
+        "pk": 10,
+        "fields": {
+            "path": "0001000300010007",
+            "depth": 4,
+            "numchild": 0,
+            "translation_key": "b7db8da2-9d0b-48ba-81ce-35ff1c9a7636",
+            "locale": 1,
+            "live": true,
+            "first_published_at": "2022-06-21T08:52:11.006Z",
+            "last_published_at": "2022-10-26T07:34:34.229Z",
+            "title": "Valoriser vos achats",
+            "draft_title": "Valoriser vos achats",
+            "slug": "valoriser-vos-achats",
+            "content_type": [
+                "cms",
+                "articlepage"
+            ],
+            "url_path": "/accueil/ressources/valoriser-vos-achats/",
+            "owner": [
+                "admin@test.com"
+            ],
+            "seo_title": "",
+            "show_in_menus": false,
+            "search_description": "",
+            "alias_of": null
+        }
+    },
+    {
+        "model": "wagtailcore.page",
+        "pk": 11,
+        "fields": {
+            "path": "0001000300010008",
+            "depth": 4,
+            "numchild": 0,
+            "translation_key": "50e1aeb4-82a2-4779-a89e-0a14101b8791",
+            "locale": 1,
+            "live": true,
+            "first_published_at": "2022-07-28T16:45:05.899Z",
+            "last_published_at": "2022-07-28T16:49:09.217Z",
+            "title": "Les acteurs inclusifs témoignent ! Marine Le Borgne, Nantes Métropole",
+            "draft_title": "Les acteurs inclusifs témoignent ! Marine Le Borgne, Nantes Métropole",
+            "slug": "les-acteurs-inclusifs-témoignent-marine-le-borgne-nantes-métropole",
+            "content_type": [
+                "cms",
+                "articlepage"
+            ],
+            "url_path": "/accueil/ressources/les-acteurs-inclusifs-témoignent-marine-le-borgne-nantes-métropole/",
+            "owner": [
+                "admin@test.com"
+            ],
+            "seo_title": "",
+            "show_in_menus": false,
+            "search_description": "",
+            "alias_of": null
+        }
+    },
+    {
+        "model": "wagtailcore.page",
+        "pk": 12,
+        "fields": {
+            "path": "0001000300010009",
+            "depth": 4,
+            "numchild": 0,
+            "translation_key": "773f312d-634f-4896-98af-213daccb67a3",
+            "locale": 1,
+            "live": true,
+            "first_published_at": "2022-08-11T09:35:57.463Z",
+            "last_published_at": "2022-10-26T07:34:49.183Z",
+            "title": "Bouygues Construction : Recherche d’une entreprise de nettoyage",
+            "draft_title": "Bouygues Construction : Recherche d’une entreprise de nettoyage",
+            "slug": "bouygues-construction-recherche-dune-entreprise-de-nettoyage",
+            "content_type": [
+                "cms",
+                "articlepage"
+            ],
+            "url_path": "/accueil/ressources/bouygues-construction-recherche-dune-entreprise-de-nettoyage/",
+            "owner": [
+                "admin@test.com"
+            ],
+            "seo_title": "",
+            "show_in_menus": false,
+            "search_description": "",
+            "alias_of": null
+        }
+    },
+    {
+        "model": "wagtailcore.page",
+        "pk": 13,
+        "fields": {
+            "path": "000100030001000A",
+            "depth": 4,
+            "numchild": 0,
+            "translation_key": "63032a26-074a-41ed-93e9-a41867346c50",
+            "locale": 1,
+            "live": true,
+            "first_published_at": "2022-08-11T09:39:20.545Z",
+            "last_published_at": "2022-09-08T15:05:07.280Z",
+            "title": "Siemens : Besoin en développement d’applications IT",
+            "draft_title": "Siemens : Besoin en développement d’applications IT",
+            "slug": "siemens-besoin-en-développement-dapplications-it",
+            "content_type": [
+                "cms",
+                "articlepage"
+            ],
+            "url_path": "/accueil/ressources/siemens-besoin-en-développement-dapplications-it/",
+            "owner": [
+                "admin@test.com"
+            ],
+            "seo_title": "",
+            "show_in_menus": false,
+            "search_description": "",
+            "alias_of": null
+        }
+    },
+    {
+        "model": "wagtailcore.page",
+        "pk": 14,
+        "fields": {
+            "path": "000100030001000B",
+            "depth": 4,
+            "numchild": 0,
+            "translation_key": "f25194c9-acef-43cf-bbf3-1f5e3a6fa8d9",
+            "locale": 1,
+            "live": true,
+            "first_published_at": "2022-09-06T15:21:28.338Z",
+            "last_published_at": "2022-09-06T15:21:28.338Z",
+            "title": "Ministère de l’Agriculture :  Besoin en prestations de cocktails et de buffet",
+            "draft_title": "Ministère de l’Agriculture :  Besoin en prestations de cocktails et de buffet",
+            "slug": "ministère-de-lagriculture-besoin-en-prestations-de-cocktails-et-de-buffet",
+            "content_type": [
+                "cms",
+                "articlepage"
+            ],
+            "url_path": "/accueil/ressources/ministère-de-lagriculture-besoin-en-prestations-de-cocktails-et-de-buffet/",
+            "owner": [
+                "admin@test.com"
+            ],
+            "seo_title": "",
+            "show_in_menus": false,
+            "search_description": "",
+            "alias_of": null
+        }
+    },
+    {
+        "model": "wagtailcore.page",
+        "pk": 15,
+        "fields": {
+            "path": "000100030001000C",
+            "depth": 4,
+            "numchild": 0,
+            "translation_key": "7b3d2d8d-c0bd-4954-89f0-3bb333b36b15",
+            "locale": 1,
+            "live": true,
+            "first_published_at": "2022-09-19T14:15:49.186Z",
+            "last_published_at": "2022-09-19T14:16:19.988Z",
+            "title": "Comment prendre en compte les considérations sociales et écologiques de manière plus ambitieuse dans les achats publics",
+            "draft_title": "Comment prendre en compte les considérations sociales et écologiques de manière plus ambitieuse dans les achats publics",
+            "slug": "comment-prendre-en-compte-les-considérations-sociales-et-écologiques-de-manière-plus-ambitieuse-dans-les-achats-publics",
+            "content_type": [
+                "cms",
+                "articlepage"
+            ],
+            "url_path": "/accueil/ressources/comment-prendre-en-compte-les-considérations-sociales-et-écologiques-de-manière-plus-ambitieuse-dans-les-achats-publics/",
+            "owner": [
+                "admin@test.com"
+            ],
+            "seo_title": "",
+            "show_in_menus": false,
+            "search_description": "",
+            "alias_of": null
+        }
+    },
+    {
+        "model": "wagtailcore.page",
+        "pk": 16,
+        "fields": {
+            "path": "000100030001000D",
+            "depth": 4,
+            "numchild": 0,
+            "translation_key": "27342466-d14f-4159-8e00-f107ae4873a8",
+            "locale": 1,
+            "live": true,
+            "first_published_at": "2022-10-17T16:48:36.125Z",
+            "last_published_at": "2022-10-17T16:50:00.636Z",
+            "title": "Facilitez-vous les achats responsables avec Handeco et le réseau GESAT !",
+            "draft_title": "Facilitez-vous les achats responsables avec Handeco et le réseau GESAT !",
+            "slug": "faciltez-vous-les-achats-responsables",
+            "content_type": [
+                "cms",
+                "articlepage"
+            ],
+            "url_path": "/accueil/ressources/faciltez-vous-les-achats-responsables/",
+            "owner": [
+                "admin@test.com"
+            ],
+            "seo_title": "",
+            "show_in_menus": false,
+            "search_description": "",
+            "alias_of": null
+        }
+    },
+    {
+        "model": "wagtailcore.page",
+        "pk": 25,
+        "fields": {
+            "path": "00010003",
+            "depth": 2,
+            "numchild": 1,
+            "translation_key": "e096fefb-af3f-4798-801e-569407403cea",
+            "locale": 1,
+            "live": true,
+            "first_published_at": "2023-03-28T11:33:31.399Z",
+            "last_published_at": "2023-04-26T09:03:37.088Z",
+            "title": "Page d'accueil",
+            "draft_title": "Page d'accueil",
+            "slug": "accueil",
+            "content_type": [
+                "cms",
+                "homepage"
+            ],
+            "url_path": "/accueil/",
+            "owner": null,
+            "seo_title": "",
+            "show_in_menus": false,
+            "search_description": "",
+            "alias_of": null
+        }
+    },
+    {
+        "model": "cms.articlecategory",
+        "pk": 1,
+        "fields": {
+            "name": "Acheteurs",
+            "slug": "acheteurs"
+        }
+    },
+    {
+        "model": "cms.articlecategory",
+        "pk": 2,
+        "fields": {
+            "name": "Solutions",
+            "slug": "solutions"
+        }
+    },
+    {
+        "model": "cms.articlepage",
+        "pk": 4,
+        "fields": {
+            "intro": "Dans cet article, nous expliquons les concepts d'inclusion et d'exclusion sociale, d'insertion par l'activité économique, et de handicap.",
+            "image": 1,
+            "is_static_page": false,
+            "with_cta_tender": false,
+            "template_name": "",
+            "body": "<p data-block-key=\"6n7up\"></p><h2 data-block-key=\"6o6u1\"><b>La société inclusive, et l’exclusion sociale</b></h2><h3 data-block-key=\"45j00\">La définition d’une société inclusive</h3><p data-block-key=\"b2ne9\">Charles Gardou, anthropologue spécialisé dans les questions relatives au handicap, définit le concept comme ceci :</p><p data-block-key=\"54tlj\"><i>“Une société inclusive c’est une société sans privilèges, exclusivités et exclusions”.</i></p><p data-block-key=\"ajkbu\">Une société inclusive donne sa place à chacun de ses membres. Elle ne définit pas de norme, mais considère tout le monde comme “normal”. Lorsqu’il s’agit de l’accès aux possibilités qu’elle offre, tout le monde peu importe son sexe, son origine ou son handicap peut en profiter au même degré.</p><p data-block-key=\"c5tl2\">Une société démocratique est censée garantir à ses membres l’égalité en droits et devoirs. Et donc l’inclusion de tous dans la société. Comme le souligne Thibaut Guilluy, Haut Commissaire à l&#x27;emploi et à l&#x27;engagement des entreprises :</p><p data-block-key=\"feusb\"><i>“Il n’y a pas de société prospère et durable qui puisse tolérer en son sein une exclusion persistante.”</i></p><p data-block-key=\"6bmmu\">L’un des leviers les plus pertinents pour améliorer cette situation semble être le travail, et surtout, <b>les politiques d’insertion par l’activité économique (IAE) structurées depuis les années 1970 fonctionnent ! 55% des parcours d’insertion aboutissent à une sortie positive.</b></p><p data-block-key=\"9m3ls\">Alors qu’aujourd’hui, le taux de chômage baisse, on constate que les chômeurs de longue durée ne profitent pas de cet effet positif. Environ 2 millions de personnes sont considérées comme éloignées de l’emploi. Ces personnes sont donc exposées à l’exclusion.</p><h3 data-block-key=\"csppo\">Quelle est la différence entre Inclusion et Intégration ?</h3><p data-block-key=\"aihjh\">Un modèle d’intégration proposé à ceux qui ne sont pas dans la “norme” de venir faire partie du groupe, à la condition de se rapprocher au maximum de ce qui constitue la “norme”.</p><p data-block-key=\"5km66\">Un modèle inclusif, comme dit plus haut, considère tout le monde comme normal. C’est plutôt à l’environnement de s’adapter, et de se rendre accessible à tous.La logique d’inclusion implique une responsabilité collective. Et c’est à chacun d&#x27;œuvrer pour une société plus inclusive.</p><h2 data-block-key=\"5h9rj\"><b>Qu’est ce que l’IAE ?</b></h2><p data-block-key=\"12ika\">L’insertion par l’activité économique (IAE) aide les publics éloignés de l’emploi à retrouver le chemin du travail. Ces personnes ont souvent des difficultés sociales et personnelles (âge, origine, problèmes de santé…), elles ont donc besoin d’un accompagnement adapté pour surmonter leurs difficultés.</p><p data-block-key=\"ejvnf\"><b>Fin 2019, la France comptait 3843 structures d’insertion par l’activité économique (SIAE). En mars 2022, ce sont 4263 structures qui sont conventionnées.</b></p><h2 data-block-key=\"3g049\"><b>Et le handicap ?</b></h2><p data-block-key=\"7lafh\">Le secteur du Handicap est composé de structures qui accompagnent un public en situation de handicap dans l’emploi.</p><p data-block-key=\"d2tnf\">On y compte 2 604 entreprises qui embauchent et accompagnent des personnes en situation de handicap dans leur projet professionnel. <b>Et ces structures embauchent en tout plus de 146 000 travailleurs handicapés.</b></p><h2 data-block-key=\"3v0pl\"><b>Quel enjeu pour la France ?</b></h2><p data-block-key=\"5mjat\">Dès septembre 2018, le président de la République a fixé l’objectif d’accueillir 240 000 personnes en parcours d’insertion par an d’ici 2022. La loi du 14 décembre 2020, dite “Loi Inclusion”, prévoit plusieurs mesures pour l’atteindre :</p><ul><li data-block-key=\"a805j\">Simplifier et fluidifier les recrutements dans l’IAE;</li><li data-block-key=\"9m7\">Adapter les formats de parcours d’insertion aux besoins des publics;</li><li data-block-key=\"f7s6q\">Accompagner la dynamique de croissance du secteur tout en garantissant la qualité des parcours d’insertion;</li></ul><p data-block-key=\"e1l9k\"></p><p data-block-key=\"9pp15\">Pour la mettre en œuvre, plusieurs mesures ont été prévues : le CDI Inclusion, l’expérimentation du contrat-passerelle, des dérogations à la durée hebdomadaire minimale de travail, etc.<br/><br/><b>D’importants moyens financiers ont été alloués à l’inclusion : 1,3 Milliard d’€ en 2022.</b></p><p data-block-key=\"faj9e\">En simplifiant les procédures, en sécurisant la transition vers l’emploi après un parcours d’insertion, en investissant massivement, et en communiquant; l&#x27;État fait de l’inclusion une priorité dans sa politique d’emploi. <b>Mais un autre acteur doit aussi intervenir afin d’atteindre ces objectifs : l’entreprise.</b></p><h2 data-block-key=\"7nqrv\"><b>Pourquoi l&#x27;inclusion est un enjeu pour les entreprises ?</b></h2><p data-block-key=\"16qrn\">Le rôle sociétal des entreprises évolue, et elles deviennent un acteur incontournable des questions liées à l’écologie et aux inégalités.</p><p data-block-key=\"650po\">Aussi, les salariés et les clients réclament des actions concrètes de leurs parts sur ces sujets. Selon une étude menée par Denjean &amp; Associés, 90% des consommateurs déclarent favoriser les grands groupes qui ont une bonne politique RSE. Aussi, sur la question des comportements en matière de gestion des ressources humaines, les consommateurs estiment la politique d’emploi des personnes handicapées parmi les plus importantes.</p><p data-block-key=\"b6o25\">Mais les entreprises peuvent avoir un impact aussi important notamment via leurs achats.</p><h3 data-block-key=\"9l39o\"><b>Quel est l’impact attendu ?</b></h3><p data-block-key=\"f8m71\">Les achats représentent en moyenne 60% du chiffre d’affaires des entreprises, ce qui représente environ 2200 Milliards d’euros pour la France.</p><p data-block-key=\"d75c9\">Si les entreprises Françaises ne réalisaient qu’un pour cent de leurs achats auprès de structures inclusives, cela leur rapporterait 1,9 Milliards d’euros. Ce qui permettrait d’atteindre cet objectif d’aider 140 000 personnes supplémentaires à retrouver un emploi stable.</p><h2 data-block-key=\"f7qb1\"><b>Le Marché de l’inclusion</b></h2><p data-block-key=\"3u2lh\">Le Marché de l’inclusion vous permet de trouver des structures inclusives (SIAE et Handicap) pour tous vos besoins d’achats professionnels.</p><p data-block-key=\"9e1l1\">Plus de 8000 structures y sont référencées, et elles représentent plus de 150 secteurs d’activités dans toute la France.</p><p data-block-key=\"du7vg\">Vous pouvez l’utiliser dès maintenant de plusieurs manières :</p><ul><li data-block-key=\"flg75\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/prestataires/\">Recherche un partenaire inclusif sur le moteur de recherche</a></li><li data-block-key=\"b5uo8\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/valoriser-achats/\">Télécharger la liste des structures inclusives en France</a></li><li data-block-key=\"7vjgs\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/besoins/ajouter\">Déposer directement votre besoin, et être mis en relation avec les structures pertinentes</a></li></ul><p data-block-key=\"48j2m\">Une manière incontournable de s’engager pour une société plus inclusive !</p>",
+            "categories": [
+                1
+            ]
+        }
+    },
+    {
+        "model": "cms.articlepage",
+        "pk": 5,
+        "fields": {
+            "intro": "Le mois dernier, sortait l’édition 2022 du Plan National des Achats Durables. Dans cet article nous allons résumer ce qu’il contient, quels sont ses objectifs, et le rôle que va jouer le Marché de l’inclusion pour les atteindre.",
+            "image": 1,
+            "is_static_page": false,
+            "with_cta_tender": false,
+            "template_name": "",
+            "body": "<p data-block-key=\"finie\"></p><h2 data-block-key=\"2h02h\"><b>Qu’est ce que le PNAD ?</b></h2><p data-block-key=\"9sj8s\">Depuis les années 2000, la France rédige un Plan d’action national pour encourager les achats durables au sein de la commande publique. Pour la troisième édition, le PNAD affiche deux objectifs clairs :</p><ul><li data-block-key=\"ad3ck\"><b>30% des contrats de la commande publique doivent avoir une considération sociale</b></li><li data-block-key=\"72u4i\"><b>100% des contrats de la commande publique doivent avoir une considération environnementale d’ici 2025</b></li></ul><p data-block-key=\"fkhne\">Concrètement, le PNAD est un outil qui vise à accompagner les acheteurs publics dans la mise en place de leur politique d’achats durables. Par ailleurs, certaines obligations légales ont été promulguées dans ce sens ces dernières années. Le PNAD en est la feuille de route opérationnelle.</p><p data-block-key=\"42jpr\">Le changement de l’intitulé de ce plan a aussi du sens, anciennement Plan National pour des Achats Public Durables, le terme Public est supprimé pour montrer l’importance des acteurs privés dans la démarche.</p><p data-block-key=\"b84do\">Les anciennes versions des PNAD n’avaient pas permis l’atteinte des objectifs fixés. Par exemple, le précédent PNAD visait une considération sociale pour 25% des contrats de la commande publique. En 2019, seulement 12,5% de ces contrats intégraient une considération sociale. Après analyse, il apparaît que le manque de suivi des actions en soit la cause, empêchant ainsi de les mesurer. Ce nouveau PNAD devrait éviter cet écueil !</p><h2 data-block-key=\"bj51u\"><b>Que contient il ?</b></h2><p data-block-key=\"5n27a\">Cette 3ème édition du PNAD affiche 22 actions regroupées en 2 axes.</p><p data-block-key=\"d5bku\"></p><p data-block-key=\"cck18\">L’état a souhaité fixer des objectifs clairs dont nous avons parlé plus haut. Pour les atteindre, des outils numériques sont mis en place pour intégrer les considérations environnementales et sociales dans les politiques d’achats. Aussi, il s’agira de promouvoir le plan à l’occasion d’évènements, de mobiliser tous les acteurs autour de sa mise en œuvre, et de le présenter au niveau Européen.</p><h3 data-block-key=\"33jlm\"><b><i>“Axe 1 : Aider les acheteurs à s’emparer des objectifs du PNAD”</i></b></h3><p data-block-key=\"etnt4\">Grâce à des actions d’auto-évaluation, de sensibilisation et de formation, l’Etat veut faciliter le recours aux achats durables dans les politiques d’achats publics.</p><p data-block-key=\"ena9g\">Il s’agit donc de mobiliser les acteurs publics et privés autour des thématiques sociales et environnementales.</p><h3 data-block-key=\"6epaa\"><b><i>“Axe 2 : Suivre, actualiser et promouvoir le plan”</i></b></h3><p data-block-key=\"cbclg\">L’Etat a élaboré des indicateurs qualitatifs pour s’assurer de l’atteinte des objectifs d’achats durables. Toutes ces actions seront suivies par un comité de pilotage composé du Commissaire général au développement durable, du Directeur des affaires juridiques du MEFR, du Directeur des achats de l’Etat, du Délégué général à l’emploi et à la formation professionnelle, ainsi que les différents acteurs qui ont contribué au Plan.</p><p data-block-key=\"8td1e\">Deux fois par an, un comité de haut niveau se réunit pour faire un point sur les avancées du PNAD. Ce comité est présidé par l’Ambassadeur du PNAD et son secrétariat est assuré par le Commissariat général au développement durable. Ce comité associera des représentants des collectivités locales, des acteurs de l’État, ainsi que des associations d’acheteurs et des directeurs achats d’organismes publics et d’entreprises.</p><p data-block-key=\"chnnd\">Ce comité veille à assurer la bonne articulation et la cohérence de l’ensemble des dispositifs et des plans en matière d’achat public.</p><h2 data-block-key=\"21o5o\"><b>Le volet social dans le PNAD</b></h2><p data-block-key=\"4f7ef\">La dimension sociale est entendue au sens large, comme par exemple :</p><ul><li data-block-key=\"2ade4\">L‘insertion des publics éloignés de l’emploi et de personnes en situation de handicap</li><li data-block-key=\"a9mcd\">La lutte contre les discriminations (notamment la promotion de l’égalité femme / homme)</li><li data-block-key=\"86rvq\">Le respect des exigences éthiques (respect des droits de l’homme…) ou équitables</li><li data-block-key=\"96m03\">La performance dans la protection ou la formation des salariés, etc.</li></ul><p data-block-key=\"9aath\">L’intégration de considérations sociales dans un contrat de la commande publique peut être réalisée par différents leviers juridiques :</p><ul><li data-block-key=\"ed9nv\">Dans les caractéristiques et exigences du contrat, sous forme de clauses administratives et techniques (objet, conditions d’exécution, spécifications techniques) présentant une dimension sociale</li><li data-block-key=\"fcm1b\">Dans les conditions d’attribution, impliquant que l’exécution du contrat soit réservée aux opérateurs économiques qui emploient majoritairement des travailleurs handicapés ou défavorisés, ou aux entreprises de l&#x27;économie sociale et solidaire</li></ul><p data-block-key=\"bnjh9\">Dans la consultation, à travers un critère d’attribution social, permettant aux opérateurs économiques de valoriser leurs efforts en matière sociale dans l’offre proposée pour exécuter la prestation.</p><h2 data-block-key=\"72r36\"><b>Quel est le rôle du Marché de l&#x27;inclusion dans ce PNAD ?</b></h2><p data-block-key=\"4h6u9\">Le Marché de l’inclusion est un outil numérique visant à mettre en relation des ESI (Entreprises Sociales et Inclusives) avec des entreprises et organisations publiques.</p><p data-block-key=\"3ue4e\">L’outil est donc mentionné dans plusieurs actions prévues par la PNAD. Notamment dans les actions 5 et 8 :</p><h3 data-block-key=\"71bc6\"><b><i>Faciliter le recours à des fournisseurs inclusifs (action 5)</i></b></h3><p data-block-key=\"c4e7d\">La totalité des ESI sont référencées sur le Marché de l’inclusion. Grâce au moteur de recherche, une entreprise ayant un besoin professionnel peut trouver un prestataire dans plus de 150 secteurs d’activités. 8000 prestataires sont présents sur le marché de l’inclusion, cette liste est mise à jour toutes les semaines !</p><p data-block-key=\"balec\">D’autres fonctionnalités sont présentes, comme le fait pour un acheteur de déposer un besoin et d’être mis en relation avec les ESI pertinentes, ou de télécharger la liste complète des ESI pour valoriser ses achats.</p><h3 data-block-key=\"4e1ts\"><b><i>Identifier et renforcer l’accès des acheteurs à l’offre inclusive et environnementale (action 6)</i></b></h3><p data-block-key=\"2kanj\">Il est essentiel que les acheteurs aient une connaissance fine des évolutions du secteur de l’inclusion afin d’élargir les domaines et types de marchés intégrant des considérations sociales en faveur de l’insertion professionnelle.</p><p data-block-key=\"7c978\">La plateforme du Marché de l’inclusion peut servir à développer ce secteur et à le promouvoir auprès des acheteurs publics par des formats pédagogiques et des ressources pratiques.</p><p data-block-key=\"53gp4\">Pour commencer à mettre en place ce PNAD, vous pouvez dès à présent <a href=\"https://lemarche.inclusion.beta.gouv.fr/besoins/ajouter\">partagez vos besoins d’achats ici</a></p>",
+            "categories": [
+                1
+            ]
+        }
+    },
+    {
+        "model": "cms.articlepage",
+        "pk": 6,
+        "fields": {
+            "intro": "Quand il s’agit de communication, les ESI ne sont pas en reste. Il existe de nombreuses structures inclusives qui proposent des prestations de communication. Dans cet article, nous allons vous en présenter quelques unes qui proposent leur travail dans toute la France !",
+            "image": 1,
+            "is_static_page": false,
+            "with_cta_tender": false,
+            "template_name": "",
+            "body": "<p data-block-key=\"bqq95\"></p><h2 data-block-key=\"46ibm\"><b>Coloz : Impressions et Communication</b></h2><p data-block-key=\"3fdn4\">Fondée en 1985 et située en Lozère, l’association AFLPH Coloz embauche 29 personnes. Elle propose de l’impression sur papier, bois, textile; des prestations de communication et de la fabrication d’articles publicitaires.</p><p data-block-key=\"1vctm\">En bref, tout ce qu’il faut à une entreprise pour gérer ses supports de communication.</p><p data-block-key=\"5vjf4\"></p><p data-block-key=\"d1fc5\"></p><p data-block-key=\"2mg6q\"></p><embed embedtype=\"media\" url=\"https://youtu.be/RuJacCYArN0?max_width=500\"/><p data-block-key=\"2umif\"></p><p data-block-key=\"5nctn\">Cliquez ici pour accéder à leur fiche :</p><p data-block-key=\"e0og1\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/prestataires/ea-aflph-48/\">Lien vers la fiche commerciale</a></p><h2 data-block-key=\"bds66\"></h2><h2 data-block-key=\"epmti\"><b>10MentionWeb :</b></h2><p data-block-key=\"2h2h4\">Développement web, intégration, conception graphique, hébergement… Portée par l’association Colombbus, 10mentionweb est une agence de communication solidaire qui œuvre pour une meilleure inclusion sociale.</p><p data-block-key=\"9l217\">Et elle dispose de belles références. Voyez donc cette plaquette réalisée pour la Marine nationale.</p><embed alt=\"affiche marine nationale\" embedtype=\"image\" format=\"left\" id=\"6\"/><p data-block-key=\"9nll8\"></p><p data-block-key=\"hg49r\"></p><p data-block-key=\"avcdr\"></p><p data-block-key=\"41t08\">Vous pouvez en savoir plus en cliquant ici :</p><p data-block-key=\"akupf\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/prestataires/colombbus-91/\">Lien vers la fiche commerciale</a></p><h2 data-block-key=\"2gup3\"></h2><h2 data-block-key=\"c35s6\"><b>Artothèque Sud :</b></h2><p data-block-key=\"mthd\">Pour les associations, les entreprises, les artistes, Artothèque réalise des supports de communication à des tarifs attractifs.</p><p data-block-key=\"7aeci\">Située à Nîmes, Artothèque cultive une ADN artistique et réalise des travaux d’une grande qualité. Vous pourrez voir dans cette vidéo réalisée en partenariat avec la ville de Nîmes l’excellent travail de photographie de l’agence.</p><embed embedtype=\"media\" url=\"https://youtu.be/w68ZDCDUa8M\"/><p data-block-key=\"b3kc6\"></p><p data-block-key=\"q6li\">Pour en savoir plus sur Arthotèque Sud, suivez ce lien :</p><p data-block-key=\"31tbg\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/prestataires/artotheque-sud-30/\">Lien vers la fiche commerciale</a></p><h2 data-block-key=\"4rdvg\"></h2><h2 data-block-key=\"4nkk0\"><b>Insercall :</b></h2><p data-block-key=\"3sorg\">Située en Avignon, Insercall propose des prestations multimédia : Création graphique, web, vidéo, community management. Mais pas que ! Cette agence est aussi un centre d’appel qui gère la relation client.</p><p data-block-key=\"cglop\">Voici un exemple de vidéo réalisée par Insercall, sur le thème de l’insertion par l’activité économique (IAE) en région PACA.</p><p data-block-key=\"6blp9\"></p><embed embedtype=\"media\" url=\"https://youtu.be/_pFZnNhY3oI\"/><p data-block-key=\"5lo1q\">Pour les contacter, suivez ce lien :</p><p data-block-key=\"da05q\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/prestataires/assoc-insercall-84/\">Lien vers la fiche commerciale</a></p><p data-block-key=\"i4u\"></p><h2 data-block-key=\"915f8\"><b>Ess’Team :</b></h2><p data-block-key=\"cuo8u\">L’agence Ess’Team se présente comme une agence de communication solidaire. Elle accompagne les associations et les entreprises socialement responsables dans leur communication.</p><p data-block-key=\"8brl4\">Fondée en 1992, et située à La Mée sur Seine, elle propose des prestations de maintenance de sites, de print, et de création web pour ses clients dans toute la France.</p><p data-block-key=\"akk79\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/prestataires/assoc-travail-entraide-77-ee07/\">Lien vers la fiche commerciale</a></p><h2 data-block-key=\"e5j2t\"></h2><h2 data-block-key=\"8rire\"><b>Assoc Urban Prod :</b></h2><p data-block-key=\"bjtb1\">L’association Urban Prod, située à Marseille, et fondée en 2015, propose des prestations graphiques et audiovisuelles dans toute la France. Cette association accueille un chantier d’insertion de 18 salariés.</p><p data-block-key=\"9dhjp\">Elle travaille notamment avec le Conseil régional PACA, la protection judiciaire de la jeunesse et le paysage associatif et culturel de la région.</p><p data-block-key=\"3gjv8\">Voici une de leur création, qui illustre bien la qualité de leur travail.</p><p data-block-key=\"700eb\"></p><embed embedtype=\"media\" url=\"https://youtu.be/jGL6D4-i7VA\"/><p data-block-key=\"e1vb\"></p><p data-block-key=\"dk50t\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/prestataires/assoc-urban-prod-13/\">Lien vers la fiche commerciale</a></p><p data-block-key=\"evivf\"></p><h2 data-block-key=\"420b0\"><b>Byron Bay :</b></h2><p data-block-key=\"djn55\">Byron Bay est une entreprise adaptée (EA), située à Lyon. Elle intervient sur des projets de communication pour des clients situées partout en France et en Suisse.</p><p data-block-key=\"3kvhg\">Elle propose des prestations de création graphique, de communication notamment sur des thématiques handicap et diversité, de motion design, de réalité augmentée.</p><p data-block-key=\"24kvr\">Parmi ses clients : Santé publique France, Cdiscount, CapGemini… De belles marques !</p><p data-block-key=\"1910g\">Voici une de leur créations</p><p data-block-key=\"e3e47\"><a href=\"https://www.byronbaycommunication.com/wp-content/uploads/2021/03/Film-animation-BB-sous-titrage.webm\">https://www.byronbaycommunication.com/wp-content/uploads/2021/03/Film-animation-BB-sous-titrage.webm</a></p><p data-block-key=\"4570p\">Et vous pouvez trouverez leurs informations de contact sur leur fiche :</p><p data-block-key=\"5odm3\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/prestataires/byron-bay-69/\">Lien vers la fiche commerciale</a></p><p data-block-key=\"q5pe\"></p><h2 data-block-key=\"54j0v\"><b>CMH Solutions :</b></h2><p data-block-key=\"304c0\">Fondée en 2017, CMH Solution est une entreprise adaptée composée à 80% de personnes en situation de handicap.</p><p data-block-key=\"ehmot\">Elle propose des prestations de Marketing social et sociétal, de création de sites web, de community management et de Brand design. Elle propose aussi toute une gamme d’objets publicitaires à personnaliser aux couleurs de votre entreprise.</p><p data-block-key=\"1lh5b\">Située à Montrouge, vous pouvez accéder à leur fiche en cliquant ici :</p><p data-block-key=\"8ud52\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/prestataires/cmh-solutions-92/\">Lien vers la fiche commerciale</a> :</p><h2 data-block-key=\"f3pbo\"></h2><h2 data-block-key=\"f1gv7\"><b>Com’EA :</b></h2><p data-block-key=\"550cm\">Situé à Lavaur, Com’EA propose des services d’assistance administrative et commerciale externalisés. Que ce soit pour de la prospection, de l’aide au recrutement, de la conception et envoi de campagnes emails, ou de la communication sur les réseaux sociaux; les experts de Com’EA sauront faciliter le quotidien de votre entreprise.</p><p data-block-key=\"c0k3s\">Pour les contacter, vous pouvez cliquer ici :</p><p data-block-key=\"18seh\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/prestataires/comea-81/\">Lien vers la fiche commerciale</a></p><h2 data-block-key=\"3prhr\"></h2><h2 data-block-key=\"7c5mj\"><b>Digitanie :</b></h2><p data-block-key=\"4mjag\">Créée en 2017, et située à Saverdun en Ariège, Digitanie accompagne des publics éloignés de l’emploi vers la réinsertion professionnelle. Les Digitaniens conçoivent des solutions de communication pour améliorer la visibilité de leurs clients.<br/><br/>Les prestations vont de la création de sites internet, au community management. Ils peuvent aussi intervenir sur du traitement manuel de données.</p><p data-block-key=\"96cat\">Voici la vidéo de présentation de Digitanie pour en savoir plus.</p><p data-block-key=\"a53hc\"></p><embed embedtype=\"media\" url=\"https://youtu.be/9TrPUPVm2yw\"/><p data-block-key=\"fbeng\"></p><p data-block-key=\"4hg36\">Et le lien vers leur fiche pour les contacter :</p><p data-block-key=\"csf36\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/prestataires/digitanie-09/\">Lien vers la fiche commerciale</a></p><h2 data-block-key=\"5vqb5\"></h2><h2 data-block-key=\"ftku0\"><b>ESAT Image-Arts Graphiques :</b></h2><p data-block-key=\"76t8p\">L’ESAT Image-Arts Graphique a été créé en 1992 et intervient dans la France entière. Il propose des prestations de communication sous la forme de bandes dessinées. Si vous souhaitez illustrer des documents de communication, vous pouvez faire appel à eux !</p><p data-block-key=\"53ssc\">Ils ont d’ailleurs de belles références telles que 20minutes, BUT, ou encore La Mutuelle des Motards.</p><p data-block-key=\"98gor\">Pour en savoir plus, cliquez ici pour accéder à leur fiche :</p><p data-block-key=\"3mlfl\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/prestataires/esat-image-arts-graphiques-16/\">Lien vers la fiche commerciale</a></p><h2 data-block-key=\"km2t\"></h2><h2 data-block-key=\"4f23r\"><b>Les Papillons de jour :</b></h2><p data-block-key=\"fmg4j\">Les Papillons de jour accompagnent depuis 15 ans les entreprises dans leur stratégie de communication globale et RSE. Ils proposent des prestations de communication, de création de sites web, de Webmastering, de Motion design etc.</p><p data-block-key=\"97rto\">Cette agence dispose aussi de belles références telles que EDF, Ricoh ou encore le groupe Marie Claire.</p><p data-block-key=\"b51ed\">Voici une vidéo qui vous permettra de mieux connaître l’agence</p><p data-block-key=\"fljh0\"></p><embed embedtype=\"media\" url=\"https://youtu.be/2W0wv6y6dVw\"/><p data-block-key=\"9ec7p\"></p><p data-block-key=\"199rq\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/prestataires/les-papillons-de-jour-76/\">Lien vers la fiche commerciale</a></p><h2 data-block-key=\"5689e\"><b>Novasanco :</b></h2><p data-block-key=\"cpab8\">Novasanco, fondée en 2016, est l&#x27;unique agence de communication digitale agréée Entreprise Adaptée (EA), Entreprise Solidaire d’Utilité Sociale (ESUS), et un organisme de formation.</p><p data-block-key=\"9fu7c\">Leur approche se définit en trois mots : <b>innovation, performance</b> et <b>inclusion</b>.<br/>Leur expertise globale s’articule autour d’offres clés en main et sur-mesure aux croisées de la communication et des nouvelles technologies. Communiquer est leur maître-mot pour rassembler, valoriser, impacter, sensibiliser, connecter, former...</p><p data-block-key=\"4jnq7\"><b>Parce que le Handicap n&#x27;empêche pas le talent !</b></p><embed embedtype=\"media\" url=\"https://vimeo.com/novasanco/showreel2022\"/><p data-block-key=\"2pvns\"></p><p data-block-key=\"amiv\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/prestataires/novasanco-33-3de1/\">Lien vers la fiche commerciale</a></p><p data-block-key=\"6qp7u\"></p><h2 data-block-key=\"5jq3\"><b>Numerik EA :</b></h2><p data-block-key=\"64ng2\">Fondée en 2016, Numerik EA est une agence de communication solidaire, qui favorise l’emploi des personnes en situation de handicap.</p><p data-block-key=\"1lnrq\">Cette agence a déjà collaboré avec La Poste Immo, Science Po, ainsi que la Société du Grand Paris.</p><p data-block-key=\"f8573\">Vous pouvez les contacter en allant directement sur leur fiche :</p><p data-block-key=\"6oprv\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/prestataires/numerik-ea-93/\">Lien vers la fiche commerciale</a></p><p data-block-key=\"dpep\"></p><p data-block-key=\"f5h24\"><i>Vous pouvez retrouver toutes ces structures, ainsi que de nombreuses autres qui représentent plus de 150 secteurs d&#x27;activités sur</i> <a href=\"https://lemarche.inclusion.beta.gouv.fr/\"><i>le marché de l&#x27;inclusion</i></a><i>. Et si votre besoin est spécifique, il est possible de</i> <a href=\"https://lemarche.inclusion.beta.gouv.fr/besoins/ajouter\"><i>publier un besoin d&#x27;achat</i></a><i> et de solliciter automatiquement toutes les structures pertinentes.</i></p><p data-block-key=\"bpcmq\"></p>",
+            "categories": [
+                1
+            ]
+        }
+    },
+    {
+        "model": "cms.articlepage",
+        "pk": 7,
+        "fields": {
+            "intro": "Aujourd'hui, plus de deux millions de personnes sont en situation d'exclusion. Pourtant elles souhaitent travailler, mais pour différentes raisons elles ne retrouvent plus le chemin de l'emploi.\r\n L'inclusion dans l'emploi, c'est agir pour que ces personnes retrouvent espoir, résolvent leurs difficultés, décrochent à nouveau un travail, touchent un salaire et se projettent durablement dans la vie active.",
+            "image": 1,
+            "is_static_page": true,
+            "with_cta_tender": false,
+            "template_name": "decouvrir-inclusion.html",
+            "body": "",
+            "categories": [
+                2
+            ]
+        }
+    },
+    {
+        "model": "cms.articlepage",
+        "pk": 8,
+        "fields": {
+            "intro": "Et si vous confiez le recyclage de vos déchets à un prestataire inclusif ?",
+            "image": 1,
+            "is_static_page": true,
+            "with_cta_tender": false,
+            "template_name": "filiere_recyclage.html",
+            "body": "",
+            "categories": [
+                2
+            ]
+        }
+    },
+    {
+        "model": "cms.articlepage",
+        "pk": 9,
+        "fields": {
+            "intro": "Il y a en France plus de 6000 personnes en insertion qui sont accompagnées chaque année sur les métiers de la restauration et sont mobilisables par les employeurs.",
+            "image": 1,
+            "is_static_page": true,
+            "with_cta_tender": false,
+            "template_name": "filiere_restauration.html",
+            "body": "",
+            "categories": [
+                2
+            ]
+        }
+    },
+    {
+        "model": "cms.articlepage",
+        "pk": 10,
+        "fields": {
+            "intro": "Il se peut que vous travailliez déjà avec des entreprises sociales inclusives (insertion / handicap) sans le savoir.",
+            "image": 1,
+            "is_static_page": true,
+            "with_cta_tender": false,
+            "template_name": "valoriser-achats.html",
+            "body": "",
+            "categories": [
+                2
+            ]
+        }
+    },
+    {
+        "model": "cms.articlepage",
+        "pk": 11,
+        "fields": {
+            "intro": "Découvrez ici le métier de facilitateur ainisi que l'importance du marché de l'inclusion comme outil pour trouver les attributaires du marché.",
+            "image": 1,
+            "is_static_page": false,
+            "with_cta_tender": false,
+            "template_name": "",
+            "body": "<p data-block-key=\"8lpaj\"></p><embed embedtype=\"media\" url=\"https://youtu.be/s101cTO8RAk\"/><p data-block-key=\"bjgco\"></p><p data-block-key=\"3c4d5\">Le facilitateur de clauses sociales joue un rôle central dans le bon fonctionnement du dispositif de la clause sociale.</p><p data-block-key=\"204tq\">Comme le souligne Marie Le Borgne dans cette vidéo, il initie, accompagne et de suit de près la mise en place des clauses sociales dans les marchés publics afin de favoriser l’insertion et l’emploi. Il a un rôle très transversal entre l&#x27;acheteur et les structures de l&#x27;insertion de l&#x27;handicap par tout un travail de communication et un contrôle très spécifique.</p><p data-block-key=\"7td54\"></p><p data-block-key=\"b0lf0\">De plus en plus de facilitateurs utilisent le marché de l&#x27;inclusion pour toucher et recenser un maximum de structures de l&#x27;insertion et de l&#x27;handicap.</p>",
+            "categories": [
+                1,
+                2
+            ]
+        }
+    },
+    {
+        "model": "cms.articlepage",
+        "pk": 12,
+        "fields": {
+            "intro": "Bouygues Construction est une filiale du groupe Bouygues présente dans plus de 60 pays.\r\n\r\nIls ont la volonté de collaborer avec des entreprises inclusives sur la mise en place d’un contrat cadre sur des prestations de nettoyage de base vie de ses chantiers.",
+            "image": null,
+            "is_static_page": false,
+            "with_cta_tender": true,
+            "template_name": "",
+            "body": "<h2 data-block-key=\"9nt6t\">1. <b>Publication du besoin sur le marché de l’inclusion</b></h2><p data-block-key=\"egpmv\">- Explication en détail du besoin</p><p data-block-key=\"34eto\">- Lieu d’exécution : Département des Bouches du Rhône, et du Rhône</p><p data-block-key=\"9fuui\">- Secteur d’activité : Nettoyage de locaux, nettoyage spécifique</p><h2 data-block-key=\"cau1c\">2. <b>Résultats</b></h2><p data-block-key=\"99s32\">- 389 structures concernées</p><p data-block-key=\"649gu\">- 93 structures qui ont consultées le besoin</p><p data-block-key=\"1s969\">- 61 structures sont intéressées par la demande</p><h2 data-block-key=\"3sn1i\">3. <b>Bénéfices</b></h2><p data-block-key=\"3vuju\">- Gain de temps : des jours à contacter toutes ces structures une par une !</p><p data-block-key=\"7ktq0\">- 61 structures qui ont montrées leur intérêt en moins d’une semaine</p><p data-block-key=\"9tdkl\">- Note de pertinence des propositions : 8/10</p><p data-block-key=\"6t4ht\"></p><p data-block-key=\"dnsfe\">Trouver des prestataires inclusifs n’a jamais été aussi simple. Vous aussi, publiez votre besoin sur le marché de l’inclusion !</p><p data-block-key=\"s5bg\"></p><p data-block-key=\"5gdq\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/besoins/ajouter\">Publier un besoin</a></p>",
+            "categories": []
+        }
+    },
+    {
+        "model": "cms.articlepage",
+        "pk": 13,
+        "fields": {
+            "intro": "Siemens est un groupe international d’origine allemande spécialisé dans les secteurs de l'énergie, de la santé, de l'industrie et du bâtiment.\r\n\r\nPrésents en France, ils souhaitent collaborer avec des entreprises sociales et inclusives pour des besoins en développement d’applications.",
+            "image": null,
+            "is_static_page": false,
+            "with_cta_tender": false,
+            "template_name": "",
+            "body": "<h2 data-block-key=\"j6y5f\">1. <b>Publication du besoin sur le marché de l’inclusion</b></h2><p data-block-key=\"gl86\">- Explication en détail du besoin</p><p data-block-key=\"dt5gp\">- Lieu d’exécution : toute la France</p><p data-block-key=\"ca4v8\">- Secteur d’activité : Conception de logiciels</p><h2 data-block-key=\"3niv1\">2. <b>Résultats</b></h2><p data-block-key=\"5t4uc\">- 589 structures concernées</p><p data-block-key=\"eesb7\">- 68 structures qui ont consultées le besoin</p><p data-block-key=\"e04g6\">- 48 structures sont intéressées par la demande</p><h2 data-block-key=\"93nc8\"><b>3. Bénéfices</b></h2><p data-block-key=\"aa4gc\">- Gain de temps, 23 besoins de ce type ont été publiés sur le marché de l’inclusion par Siemens</p><p data-block-key=\"63vjc\">- 48 structures sont montrées leur intérêt en moins d’une semaine</p><p data-block-key=\"5lbht\">- Note de pertinence : ?</p><p data-block-key=\"8p6e5\"></p><p data-block-key=\"7l7m7\">Trouver des prestataires inclusifs n’a jamais été aussi simple. Vous aussi, publiez votre besoin sur le marché de l’inclusion !</p><p data-block-key=\"elq0j\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/besoins/ajouter\">Publier un besoin</a></p>",
+            "categories": []
+        }
+    },
+    {
+        "model": "cms.articlepage",
+        "pk": 14,
+        "fields": {
+            "intro": "Le Ministère de l’Agriculture souhaite collaborer avec des entreprises sociales et inclusives pour la réalisation de prestations de cocktails, de buffets et de plateaux repas.",
+            "image": null,
+            "is_static_page": false,
+            "with_cta_tender": false,
+            "template_name": "",
+            "body": "<h2 data-block-key=\"h1wh5\">1. <b>Publication du besoin sur le marché de l’inclusion</b></h2><p data-block-key=\"i60d\">- Explication en détail du besoin</p><p data-block-key=\"e0gho\">- Lieu d’exécution : toute la France</p><p data-block-key=\"abunu\">- Secteur d’activité : Conception de logiciels</p><h2 data-block-key=\"9v0gs\">2. <b>Résultats</b></h2><p data-block-key=\"9hj6t\">- 157 structures concernées</p><p data-block-key=\"cou2b\">- 23 structures qui ont consultées le besoin</p><p data-block-key=\"er075\">- 18 structures sont intéressées par la demande</p><h2 data-block-key=\"9m4pb\">3. <b>Bénéfices</b></h2><p data-block-key=\"73k30\">- Gain de temps !</p><p data-block-key=\"6psrr\">- 18 structures sont montrées leur intérêt en moins d’une semaine</p><p data-block-key=\"1169c\">- Note de pertinence : 8/10</p><p data-block-key=\"2lorg\"></p><p data-block-key=\"3r1vo\">Trouver des prestataires inclusifs n’a jamais été aussi simple. Vous aussi, publiez votre besoin sur le marché de l’inclusion !</p><p data-block-key=\"6h5d1\"><a href=\"https://lemarche.inclusion.beta.gouv.fr/besoins/ajouter\">Publier un besoin</a></p>",
+            "categories": []
+        }
+    },
+    {
+        "model": "cms.articlepage",
+        "pk": 15,
+        "fields": {
+            "intro": "",
+            "image": null,
+            "is_static_page": false,
+            "with_cta_tender": false,
+            "template_name": "",
+            "body": "<p data-block-key=\"gqdiu\"></p><p data-block-key=\"finll\">L’Observatoire économique de la commande publique (OECP) publie une nouvelle version du guide sur les aspects sociaux et écologiques de la commande publique.</p><p data-block-key=\"57jke\"><br/>Ce guide est entre autre un outil d’accompagnement des acheteurs publics à l’activation des clauses sociales d’insertion. Il s’inscrit aussi dans le cadre du Plan national pour des achats durables (PNAD) 2022-2025 porté par le Commissariat général au Développement durable et qui a vocation à structurer l’action en faveur des achats socialement et écologiquement responsables.</p><p data-block-key=\"4nfqd\"></p><p data-block-key=\"2134o\">Ce guide a été réalisé par la direction des Affaires juridiques (Observatoire économique de la commande publique) du ministère de l’Economie, des Finances et de la Souveraineté industrielle et numérique, en coopération étroite avec la direction des Achats de l’Etat (DAE) et la délégation générale à l’Emploi et la Formation professionnelle (DGEFP), et avec la participation du haut-commissariat à l’Emploi et à l’Engagement des entreprises (HC3E) ainsi que d’une cinquantaine de contributeurs (institutions, acheteurs de l’Etat, collectivités, acteurs de l’économie sociale et solidaire, fédérations professionnelles…).</p><p data-block-key=\"dul6t\"></p><p data-block-key=\"4a1rr\">Découvrir le guide : <a href=\"https://www.economie.gouv.fr/daj/guide-sur-les-aspects-sociaux-de-la-commande-publique\">https://www.economie.gouv.fr/daj/guide-sur-les-aspects-sociaux-de-la-commande-publique</a></p><p data-block-key=\"939p7\"></p>",
+            "categories": []
+        }
+    },
+    {
+        "model": "cms.articlepage",
+        "pk": 16,
+        "fields": {
+            "intro": "",
+            "image": 1,
+            "is_static_page": false,
+            "with_cta_tender": false,
+            "template_name": "",
+            "body": "<p data-block-key=\"fcpjh\">Savez-vous qu’il existe près de 2300 structures du handicap à travers toute la France, actives dans plus de 150 secteurs d’activité ?</p><p data-block-key=\"d3t5k\"></p><p data-block-key=\"bie4l\"><a href=\"https://docs.google.com/forms/d/e/1FAIpQLScx1k-UJ-962_rSgPJGabc327gGjFUho6ypgcZHCubuwTl7Lg/viewform\"><b>Contactez le réseau GESAT et Handeco !</b></a></p>",
+            "categories": []
+        }
+    },
+    {
+        "model": "cms.articlelist",
+        "pk": 3,
+        "fields": {}
+    },
+    {
+        "model": "cms.homepage",
+        "pk": 25,
+        "fields": {
+            "banner_title": "Votre recherche de prestataires inclusifs est chronopage ?",
+            "banner_subtitle": "Confiez votre sourcing au marché de l'inclusion !",
+            "banner_arguments_list": "[{\"id\": \"59cc2723-3e85-483d-85af-680111db6cf9\", \"type\": \"item\", \"value\": \"test\"}, {\"id\": \"c03a7ab3-2b95-4f86-80f6-11e1fdd80665\", \"type\": \"item\", \"value\": \"test5\"}, {\"id\": \"64bb4d69-f2b9-4bdf-9309-e063274395f6\", \"type\": \"item\", \"value\": \"5\"}]",
+            "banner_cta_id": "home-demande",
+            "banner_cta_text": "Publier un besoin d'achat",
+            "content": "[{\"id\": \"38bcd8d3-ad0f-42b5-a90f-5d92da4c2d78\", \"type\": \"section_they_publish_tenders\", \"value\": {\"title\": \"Ils ont publi\\u00e9 un besoin sur le march\\u00e9\"}}, {\"id\": \"bd7d5806-3595-4326-b296-056ab6d32f14\", \"type\": \"website_stats\", \"value\": {}}, {\"id\": \"354c4b1d-1b0b-4f2c-8c6d-0a7b6f58c865\", \"type\": \"section_studies_cases_tenders\", \"value\": {\"title\": \"100% des besoins ont re\\u00e7u des r\\u00e9ponses en 24h\", \"subtitle\": \"Gagnez du temps en utilisant le march\\u00e9.\"}}, {\"id\": \"7f829a46-e510-473d-a3d3-4ee51163594c\", \"type\": \"section_our_siaes\", \"value\": {\"title\": \"Les prestataires inclusifs, des partenaires d'excellence\", \"subtitle\": \"<p data-block-key=\\\"5uejd\\\">Faire appel \\u00e0 nos 8500 prestataires inclusifs, c&#x27;est la garantie d&#x27;\\u00eatre accompagn\\u00e9 par des professionnels reconnus et certifi\\u00e9s dans leur domaine.</p>\"}}, {\"id\": \"df3e14c0-1f8c-41f1-b4a6-90fca272c004\", \"type\": \"section_what_find_here\", \"value\": {\"title\": \"Sur le march\\u00e9\"}}, {\"id\": \"a7c18544-3e7b-466a-addc-b0322aec9018\", \"type\": \"section_our_ressources\", \"value\": {\"title\": \"Nos ressources\"}}, {\"id\": \"f8033851-00f3-4133-8a4f-8ce8ea3ce091\", \"type\": \"section_our_partners\", \"value\": {\"title\": \"Les partenaires du march\\u00e9\"}}, {\"id\": \"2a718fbf-4241-404c-a3b8-78f4c7317b4d\", \"type\": \"section_our_features\", \"value\": {\"title\": \"Une solution compl\\u00e8te pour vos achats socialement responsables\", \"constats\": [{\"id\": \"a0a30bc1-9b99-4b7d-8699-4fc1290558cf\", \"type\": \"feature\", \"value\": {\"url\": \"http://127.0.0.1:8000/cms/pages/25/edit/#tab-contenu\", \"image\": 17, \"title\": \"test\", \"subtitle\": \"<p data-block-key=\\\"ycnl8\\\">test</p>\"}}, {\"id\": \"b6e95504-81f3-4735-b8bb-726a7a0d94b6\", \"type\": \"feature\", \"value\": {\"url\": \"http://127.0.0.1:8000/cms/pages/25/edit/#tab-contenu\", \"image\": 17, \"title\": \"test\", \"subtitle\": \"<p data-block-key=\\\"ycnl8\\\">test</p>\"}}, {\"id\": \"65ed0aa0-3cce-4306-bb18-6cd3e9707362\", \"type\": \"feature\", \"value\": {\"url\": \"http://127.0.0.1:8000/cms/pages/25/edit/#tab-contenu\", \"image\": 17, \"title\": \"test\", \"subtitle\": \"<p data-block-key=\\\"ycnl8\\\">test</p>\"}}]}}, {\"id\": \"d7a2467a-3cb9-4523-873c-0db0d6390a78\", \"type\": \"section_why_call_siaes\", \"value\": {\"title\": \"Pourquoi faire appel \\u00e0 un prestataire inclusif ?\", \"constats\": [{\"id\": \"d4073c2e-0d32-4507-9a5b-753e6f377344\", \"type\": \"feature\", \"value\": {\"url\": \"https://getbootstrap.com/docs/4.0/components/collapse/\", \"image\": 16, \"title\": \"okokok\", \"subtitle\": \"<p data-block-key=\\\"3ko38\\\">pokokokok</p>\"}}]}}]"
+        }
     }
 ]

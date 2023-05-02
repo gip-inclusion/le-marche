@@ -64,4 +64,21 @@
 {% endblock %}
 {% block extra_js %}
     <script type="text/javascript" src="{% static 'js/multicarousel_items.js' %}"></script>
+    <script type="text/javascript"
+            src="{% static 'vendor/alpinejs@3.11.1.min.js'%}"
+            defer></script>
+    <script>
+        document.addEventListener('alpine:init', function() {
+            {% comment %} improve in the futur to be more generic {% endcomment %}
+            Alpine.data('ToggleComponent', () => (
+                {
+                    first_elmt_is_visible: true,
+                    update_view() {
+                        this.first_elmt_is_visible = !this.first_elmt_is_visible;
+
+                    },
+                }
+            ));
+        });
+    </script>
 {% endblock extra_js %}
