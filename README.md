@@ -9,7 +9,7 @@ Voici un tableau explicatif de la nomenclature utilisée dans le code (par rappo
 
 |Dans le métier|Dans le code|
 |--------------|------------|
-|Appel d'offre |Tender      |
+|Appel d'offres|Tender      |
 |Devis         |Quote       |
 |Sourcing      |Project     |
 |Liste de favoris|Favorite list|
