@@ -120,7 +120,7 @@ class Command(BaseCommand):
         # defaults
         esat["kind"] = siae_constants.KIND_ESAT
         esat["source"] = Siae.SOURCE_ESAT
-        esat["geo_range"] = Siae.GEO_RANGE_DEPARTMENT
+        esat["geo_range"] = siae_constants.GEO_RANGE_DEPARTMENT
 
         # basic fields
         rename_dict_key(esat, "title", "name")

@@ -97,7 +97,7 @@ class Command(BaseCommand):
         # defaults
         siae["kind"] = siae_constants.KIND_SEP
         siae["source"] = siae_constants.KIND_SEP
-        siae["geo_range"] = Siae.GEO_RANGE_DEPARTMENT
+        siae["geo_range"] = siae_constants.GEO_RANGE_DEPARTMENT
 
         # basic fields
         rename_dict_key(siae, "Raison sociale", "name")
