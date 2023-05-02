@@ -6,10 +6,10 @@ from django.core.management.base import BaseCommand
 
 from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.constants import DEPARTMENT_TO_REGION, department_from_postcode
 from lemarche.siaes.models import Siae
 from lemarche.siaes.validators import validate_siret
 from lemarche.utils.apis.geocoding import get_geocoding_data
+from lemarche.utils.constants import DEPARTMENT_TO_REGION, department_from_postcode
 from lemarche.utils.data import rename_dict_key, reset_app_sql_sequences
 
 

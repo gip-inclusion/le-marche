@@ -11,10 +11,10 @@ from django.utils import timezone
 from stdnum.fr import siret
 
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.constants import DEPARTMENT_TO_REGION
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis import api_mailjet, api_slack
 from lemarche.utils.commands import BaseCommand
+from lemarche.utils.constants import DEPARTMENT_TO_REGION
 from lemarche.utils.data import rename_dict_key
 
 

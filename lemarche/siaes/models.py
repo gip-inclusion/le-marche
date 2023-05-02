@@ -23,6 +23,7 @@ from lemarche.siaes.tasks import set_siae_coords
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
 from lemarche.stats.models import Tracker
 from lemarche.users.models import User
+from lemarche.utils.constants import DEPARTMENTS_PRETTY, REGIONS_PRETTY
 from lemarche.utils.data import round_by_base
 from lemarche.utils.fields import ChoiceArrayField
 
@@ -489,8 +490,8 @@ class Siae(models.Model):
         (NATURE_ANTENNA, "Rattaché à un autre conventionnement"),
     )
 
-    DEPARTMENT_CHOICES = siae_constants.DEPARTMENTS_PRETTY.items()
-    REGION_CHOICES = siae_constants.REGIONS_PRETTY.items()
+    DEPARTMENT_CHOICES = DEPARTMENTS_PRETTY.items()
+    REGION_CHOICES = REGIONS_PRETTY.items()
     GEO_RANGE_COUNTRY = GEO_RANGE_COUNTRY  # 3
     GEO_RANGE_REGION = GEO_RANGE_REGION  # 2
     GEO_RANGE_DEPARTMENT = GEO_RANGE_DEPARTMENT  # 1
