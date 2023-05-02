@@ -1,0 +1,17 @@
+<div class="card c-card rounded-lg shadow-lg">
+    <div class="card-body">
+        <h3>{{ tender.cta_card_title_text|safe }}</h3>
+        
+        <p>{{ tender.cta_card_paragraph_text|safe }}</p>
+
+        {% if user.is_authenticated %}
+            <button type="button" id="show-tender-contact-modal-btn" class="btn btn-primary btn-block" data-toggle="modal" data-target="#detail_contact_click_confirm_modal" title="{{ tender.cta_card_button_text|safe }}">
+                {{ tender.cta_card_button_text|safe }}
+            </button>
+        {% else %}
+            <a href="#" id="show-tender-contact-modal-btn" class="btn btn-primary btn-block" data-toggle="modal" data-target="#login_or_signup_siae_tender_modal" data-next-params="{% url 'tenders:detail' tender.slug %}">
+                <span>{{ tender.cta_card_button_text|safe }}</span>
+            </a>
+        {% endif %}
+    </div>
+</div>

@@ -390,7 +390,7 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
     def get_success_message(self, detail_contact_click_confirm):
         if detail_contact_click_confirm:
             return "<strong>Bravo !</strong><br />Vos coordonnées, ainsi que le lien vers votre fiche commerciale ont été transmis à l'acheteur. Assurez-vous d'avoir une fiche commerciale bien renseignée."  # noqa
-        return f"<strong>{self.object.cta_text}</strong><br />Pour {self.object.cta_text.lower()}, vous devez accepter d'être mis en relation avec l'acheteur."  # noqa
+        return f"<strong>{self.object.cta_card_button_text}</strong><br />Pour {self.object.cta_card_button_text.lower()}, vous devez accepter d'être mis en relation avec l'acheteur."  # noqa
 
 
 class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, ListView):
