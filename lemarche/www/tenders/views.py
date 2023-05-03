@@ -15,6 +15,7 @@ from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils.apis import api_hubspot
 from lemarche.utils.data import get_choice
+from lemarche.utils.mixins import TenderAuthorOrAdminRequiredIfNotValidatedMixin, TenderAuthorOrAdminRequiredMixin
 from lemarche.www.tenders.forms import (
     AddTenderStepConfirmationForm,
     AddTenderStepContactForm,

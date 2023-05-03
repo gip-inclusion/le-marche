@@ -7,6 +7,8 @@ from lemarche.tenders.models import Tender
 from lemarche.users.factories import UserFactory
 
 
+USER_CONTACT_EMAIL = "prenom.nom@example.com"
+
 TENDER_JSON = {
     "kind": "TENDER",
     "title": "Test",
@@ -24,8 +26,8 @@ TENDER_JSON = {
     "accept_cocontracting": True,
     "contact_first_name": "Prénom",
     "contact_last_name": "Nom",
-    "contact_email": "prenom.nom@example.com",
-    # "contact_phone": "string",
+    "contact_email": USER_CONTACT_EMAIL,
+    "contact_phone": "string",
     "response_kind": ["EMAIL"],
     "deadline_date": "2023-03-14",
 }
@@ -58,7 +60,7 @@ class TenderCreateApiTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertIn("slug", response.data.keys())
         tender = Tender.objects.get(title="Test author")
-        self.assertEqual(tender.author, self.user_with_token)
+        self.assertEqual(tender.author.email, USER_CONTACT_EMAIL)
         self.assertEqual(tender.status, Tender.STATUS_PUBLISHED)
         self.assertEqual(tender.source, Tender.SOURCE_API)
         self.assertNotEqual(tender.import_raw_object, None)
