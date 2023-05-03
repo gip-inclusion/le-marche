@@ -29,7 +29,7 @@ from lemarche.www.tenders.tasks import notify_admin_tender_created
 from lemarche.www.tenders.views import (
     TenderCreateMultiStepView,
     create_tender_from_dict,
-    create_user_from_anonymous_content,
+    get_or_create_user_from_anonymous_content,
 )
 
 
@@ -342,7 +342,7 @@ def csrf_failure(request, reason=""):  # noqa C901
                         tender_dict[key_cleaned] = list() if value[0] == "" else value
         # get user
         if not request.user.is_authenticated:
-            user = create_user_from_anonymous_content(tender_dict)
+            user = get_or_create_user_from_anonymous_content(tender_dict)
         else:
             user = request.user
         tender_dict["author"] = user

@@ -13,6 +13,7 @@ class TenderSerializer(serializers.ModelSerializer):
     location = serializers.SlugRelatedField(
         queryset=Perimeter.objects.all(), slug_field="slug", allow_null=True, required=False
     )
+    contact_company_name = serializers.CharField(required=False)
     extra_data = serializers.JSONField(required=False)
 
     class Meta:
@@ -40,6 +41,7 @@ class TenderSerializer(serializers.ModelSerializer):
             "contact_last_name",
             "contact_email",
             "contact_phone",
+            "contact_company_name",
             "response_kind",
             "deadline_date",
             # extra data
