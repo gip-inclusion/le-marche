@@ -26,7 +26,7 @@ from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
     notify_admin_tender_created,
     send_siae_interested_email_to_author,
 )
-from lemarche.www.tenders.utils import create_user_from_anonymous_content
+from lemarche.www.tenders.utils import get_or_create_user_from_anonymous_content
 
 
 TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
@@ -166,7 +166,7 @@ class TenderCreateMultiStepView(SessionWizardView):
     def set_or_create_user(self, tender_dict: dict):
         user: User = None
         if not self.request.user.is_authenticated:
-            user = create_user_from_anonymous_content(tender_dict)
+            user = get_or_create_user_from_anonymous_content(tender_dict)
         else:
             user = self.request.user
             need_to_be_saved = False

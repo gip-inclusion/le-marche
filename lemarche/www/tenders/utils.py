@@ -4,7 +4,7 @@ from lemarche.users.models import User
 from lemarche.www.auth.tasks import send_new_user_password_reset_link
 
 
-def create_user_from_anonymous_content(tender_dict: dict) -> User:
+def get_or_create_user_from_anonymous_content(tender_dict: dict) -> User:
     user, created = User.objects.get_or_create(
         email=tender_dict.get("contact_email"),
         defaults={
