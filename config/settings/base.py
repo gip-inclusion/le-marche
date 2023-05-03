@@ -123,7 +123,6 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     # Core
-    "lemarche.common",
     "lemarche.utils",
     "lemarche.cocorico",
     "lemarche.users",

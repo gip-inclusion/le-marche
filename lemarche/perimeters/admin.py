@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from lemarche.common.admin import admin_site
 from lemarche.perimeters.models import Perimeter
+from lemarche.utils.admin.admin_site import admin_site
 
 
 class PerimeterRegionFilter(admin.SimpleListFilter):

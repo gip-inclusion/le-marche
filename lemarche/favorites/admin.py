@@ -4,8 +4,8 @@ from django.urls import reverse
 from django.utils.html import format_html
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
-from lemarche.common.admin import admin_site
 from lemarche.favorites.models import FavoriteItem, FavoriteList
+from lemarche.utils.admin.admin_site import admin_site
 
 
 class FavoriteItemInline(admin.TabularInline):

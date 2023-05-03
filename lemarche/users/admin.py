@@ -5,10 +5,10 @@ from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
-from lemarche.common.admin import admin_site
 from lemarche.siaes.models import Siae, SiaeUser
 from lemarche.users.forms import UserChangeForm, UserCreationForm
 from lemarche.users.models import User
+from lemarche.utils.admin.admin_site import admin_site
 
 
 class HasSiaeFilter(admin.SimpleListFilter):
