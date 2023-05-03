@@ -3,8 +3,8 @@ from django.contrib import admin
 from django.contrib.flatpages.admin import FlatPageAdmin
 from django.db import models
 
-from lemarche.common.admin import admin_site
 from lemarche.pages.models import Page, PageFragment
+from lemarche.utils.admin.admin_site import admin_site
 
 
 @admin.register(Page, site=admin_site)
