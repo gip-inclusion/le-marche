@@ -16,7 +16,6 @@ from lemarche.users.models import User
 from lemarche.utils.apis import api_hubspot
 from lemarche.utils.data import get_choice
 from lemarche.utils.mixins import TenderAuthorOrAdminRequiredIfNotValidatedMixin, TenderAuthorOrAdminRequiredMixin
-from lemarche.www.auth.tasks import send_new_user_password_reset_link
 from lemarche.www.tenders.forms import (
     AddTenderStepConfirmationForm,
     AddTenderStepContactForm,
@@ -28,28 +27,12 @@ from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
     notify_admin_tender_created,
     send_siae_interested_email_to_author,
 )
+from lemarche.www.tenders.utils import get_or_create_user_from_anonymous_content
 
 
 TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
 TITLE_DETAIL_PAGE_OTHERS = "Mes besoins"
 TITLE_KIND_SOURCING_SIAE = "Consultation en vue d'un achat"
-
-
-def create_user_from_anonymous_content(tender_dict: dict) -> User:
-    user, created = User.objects.get_or_create(
-        email=tender_dict["contact_email"],
-        defaults={
-            "first_name": tender_dict["contact_first_name"],
-            "last_name": tender_dict["contact_last_name"],
-            "phone": tender_dict["contact_phone"],
-            "company_name": tender_dict["contact_company_name"],
-            "kind": User.KIND_BUYER,  # not necessarily true, could be a PARTNER
-            "source": User.SOURCE_TENDER_FORM,
-        },
-    )
-    if created and settings.BITOUBI_ENV == "prod":
-        send_new_user_password_reset_link(user)
-    return user
 
 
 def create_tender_from_dict(tender_dict: dict) -> Tender:
@@ -184,7 +167,7 @@ class TenderCreateMultiStepView(SessionWizardView):
     def set_or_create_user(self, tender_dict: dict):
         user: User = None
         if not self.request.user.is_authenticated:
-            user = create_user_from_anonymous_content(tender_dict)
+            user = get_or_create_user_from_anonymous_content(tender_dict)
         else:
             user = self.request.user
             need_to_be_saved = False
