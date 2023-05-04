@@ -585,6 +585,9 @@ class TenderQuestion(models.Model):
         verbose_name = "Question au client"
         verbose_name_plural = "Questions au client"
 
+    def __str__(self):
+        return self.text
+
 
 class TenderSiae(models.Model):
     TENDER_SIAE_SOURCE_EMAIL = "EMAIL"

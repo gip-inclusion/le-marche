@@ -13,7 +13,7 @@ from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.factories import PartnerShareTenderFactory, TenderFactory
+from lemarche.tenders.factories import PartnerShareTenderFactory, TenderFactory, TenderQuestionFactory
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
@@ -335,6 +335,17 @@ class TenderMigrationToSelectTest(TestCase):
         migration.reverse_update_amount(apps, None)
         tender_amount_range_0.refresh_from_db()
         self.assertEqual(int(tender_amount_range_0.amount), 24999)
+
+
+class TenderQuestionModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.tender = TenderFactory()
+
+    def test_str(self):
+        str_test = "Quelle est la taille de votre entreprise ?"
+        tender_question = TenderQuestionFactory(text=str_test, tender=self.tender)
+        self.assertEqual(str(tender_question), str_test)
 
 
 class TenderPartnerMatchingTest(TestCase):

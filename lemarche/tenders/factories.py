@@ -7,7 +7,7 @@ from django.utils import timezone
 from factory.django import DjangoModelFactory
 
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.models import PartnerShareTender, Tender
+from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion
 from lemarche.users.factories import UserFactory
 
 
@@ -62,6 +62,13 @@ class TenderFactory(DjangoModelFactory):
         if extracted:
             # Add the iterable of groups using bulk addition
             self.siaes.add(*extracted)
+
+
+class TenderQuestionFactory(DjangoModelFactory):
+    class Meta:
+        model = TenderQuestion
+
+    text = factory.Faker("paragraph", nb_sentences=1, locale="fr_FR")
 
 
 class PartnerShareTenderFactory(DjangoModelFactory):
