@@ -41,3 +41,9 @@ test_container:
 
 test:
 	django-admin test --settings=config.settings.test $(TARGET) --noinput --failfast --parallel
+
+test_parallel:
+	pytest --numprocesses=logical --create-db
+
+test_parallel_with_coverage:
+	pytest --cov=lemarche --numprocesses=logical --create-db

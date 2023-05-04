@@ -43,7 +43,6 @@ xlwt = "1.3.0"
 
 [tool.poetry.dev-dependencies]
 black = "22.10.0"
-coverage = "6.5.0"
 django-debug-toolbar = "^3.8.1"
 django-extensions = "3.2.1"
 factory-boy = "3.2.1"
@@ -53,7 +52,9 @@ isort = "5.10.1"
 poethepoet = "0.12.2"
 pre-commit = "2.20.0"
 pyproject-flake8 = "0.0.1a2"
+pytest-cov = "^4.0.0"
 pytest-django = "4.5.2"
+pytest-xdist = "^3.2.1"
 selenium = "4.6.0"
 
 [tool.poetry.scripts]
@@ -87,7 +88,12 @@ target-version = ['py38', 'py39']
 include = '\.pyi?$'
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "lemarche.settings.test"
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+python_files = [
+    "tests.py",
+    "test_*.py",
+    "*_tests.py",
+]
 
 [tool.poe.tasks]
 export = { shell = "poetry export --without-hashes --output requirements/staging.txt" }
