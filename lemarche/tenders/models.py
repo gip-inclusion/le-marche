@@ -87,6 +87,9 @@ class TenderQuerySet(models.QuerySet):
             "deadline_date_is_outdated", "deadline_date", "-updated_at"
         )
 
+    def with_question_stats(self):
+        return self.prefetch_related("questions").annotate(question_count=Count("questions", distinct=True))
+
     def with_siae_stats(self):
         """
         Enrich each Tender with stats on their linked Siae
