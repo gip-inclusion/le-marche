@@ -133,10 +133,10 @@ def map_siae_presta_type(input_value_byte):
 
 def map_geo_range(input_value_integer):
     geo_range_mapping = {
-        3: Siae.GEO_RANGE_COUNTRY,
-        2: Siae.GEO_RANGE_REGION,
-        1: Siae.GEO_RANGE_DEPARTMENT,
-        0: Siae.GEO_RANGE_CUSTOM,
+        3: siae_constants.GEO_RANGE_COUNTRY,
+        2: siae_constants.GEO_RANGE_REGION,
+        1: siae_constants.GEO_RANGE_DEPARTMENT,
+        0: siae_constants.GEO_RANGE_CUSTOM,
         None: None,
     }
     try:

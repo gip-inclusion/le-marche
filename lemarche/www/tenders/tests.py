@@ -10,7 +10,7 @@ from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeFactory
-from lemarche.siaes.models import GEO_RANGE_COUNTRY, GEO_RANGE_CUSTOM, GEO_RANGE_DEPARTMENT, Siae
+from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.factories import TenderFactory
 from lemarche.tenders.models import Tender, TenderSiae
@@ -158,7 +158,7 @@ class TenderMatchingTest(TestCase):
             is_active=True,
             kind=siae_constants.KIND_AI,
             presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
-            geo_range=GEO_RANGE_CUSTOM,
+            geo_range=siae_constants.GEO_RANGE_CUSTOM,
             coords=coords_paris,
             geo_range_custom_distance=100,
         )
@@ -166,7 +166,7 @@ class TenderMatchingTest(TestCase):
             is_active=True,
             kind=siae_constants.KIND_ESAT,
             presta_type=[siae_constants.PRESTA_BUILD],
-            geo_range=GEO_RANGE_CUSTOM,
+            geo_range=siae_constants.GEO_RANGE_CUSTOM,
             coords=coords_paris,
             geo_range_custom_distance=10,
         )
@@ -214,7 +214,7 @@ class TenderMatchingTest(TestCase):
 
     def test_matching_siae_perimeters_custom(self):
         # add Siae with geo_range_country
-        siae_country = SiaeFactory(is_active=True, geo_range=GEO_RANGE_COUNTRY)
+        siae_country = SiaeFactory(is_active=True, geo_range=siae_constants.GEO_RANGE_COUNTRY)
         siae_country.sectors.add(self.sectors[0])
         # tender perimeter custom with include_country_area = False
         tender_1 = TenderFactory(sectors=self.sectors, perimeters=self.perimeters)
@@ -227,7 +227,7 @@ class TenderMatchingTest(TestCase):
 
     def test_matching_siae_perimeters_custom_2(self):
         # add Siae with geo_range_department (75)
-        siae_department = SiaeFactory(is_active=True, department="75", geo_range=GEO_RANGE_DEPARTMENT)
+        siae_department = SiaeFactory(is_active=True, department="75", geo_range=siae_constants.GEO_RANGE_DEPARTMENT)
         siae_department.sectors.add(self.sectors[0])
         # tender perimeter custom
         tender = TenderFactory(sectors=self.sectors, perimeters=self.perimeters)
@@ -240,7 +240,7 @@ class TenderMatchingTest(TestCase):
         siae_found_list = Siae.objects.filter_with_tender(tender)
         self.assertEqual(len(siae_found_list), 0)
         # add Siae with geo_range_country
-        siae_country = SiaeFactory(is_active=True, geo_range=GEO_RANGE_COUNTRY)
+        siae_country = SiaeFactory(is_active=True, geo_range=siae_constants.GEO_RANGE_COUNTRY)
         siae_country.sectors.add(self.sectors[0])
         siae_found_list = Siae.objects.filter_with_tender(tender)
         self.assertEqual(len(siae_found_list), 1)
@@ -257,7 +257,9 @@ class TenderMatchingTest(TestCase):
 
     def test_with_no_contact_email(self):
         tender = TenderFactory(sectors=self.sectors, perimeters=self.perimeters)
-        SiaeFactory(is_active=True, geo_range=GEO_RANGE_COUNTRY, contact_email="", sectors=[self.sectors[0]])
+        SiaeFactory(
+            is_active=True, geo_range=siae_constants.GEO_RANGE_COUNTRY, contact_email="", sectors=[self.sectors[0]]
+        )
         siae_found_list = Siae.objects.filter_with_tender(tender)
         self.assertEqual(len(siae_found_list), 2 + 0)
 

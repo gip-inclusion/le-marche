@@ -88,7 +88,7 @@ class SiaeEditSearchForm(forms.ModelForm):
     )
     geo_range = forms.ChoiceField(
         label=Siae._meta.get_field("geo_range").verbose_name,
-        choices=Siae.GEO_RANGE_CHOICES,
+        choices=siae_constants.GEO_RANGE_CHOICES,
         required=True,
         widget=forms.RadioSelect,
     )
@@ -115,7 +115,7 @@ class SiaeEditSearchForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         """Clean geo_range_custom_distance before save."""
-        if self.cleaned_data["geo_range"] != Siae.GEO_RANGE_CUSTOM:
+        if self.cleaned_data["geo_range"] != siae_constants.GEO_RANGE_CUSTOM:
             self.instance.geo_range_custom_distance = None
         super().save(*args, **kwargs)
 

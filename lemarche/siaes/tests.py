@@ -30,14 +30,16 @@ class SiaeModelTest(TestCase):
         self.assertEqual(siae_with_anormal_siret.siret_display, "123123123123")
 
     def test_geo_range_pretty_display_property(self):
-        siae_country = SiaeFactory(geo_range=Siae.GEO_RANGE_COUNTRY)
+        siae_country = SiaeFactory(geo_range=siae_constants.GEO_RANGE_COUNTRY)
         self.assertEqual(siae_country.geo_range_pretty_display, "France entière")
-        siae_region = SiaeFactory(geo_range=Siae.GEO_RANGE_REGION, region="Guadeloupe")
+        siae_region = SiaeFactory(geo_range=siae_constants.GEO_RANGE_REGION, region="Guadeloupe")
         self.assertEqual(siae_region.geo_range_pretty_display, "région (Guadeloupe)")
-        siae_department = SiaeFactory(geo_range=Siae.GEO_RANGE_DEPARTMENT, region="Bretagne", department="29")
+        siae_department = SiaeFactory(
+            geo_range=siae_constants.GEO_RANGE_DEPARTMENT, region="Bretagne", department="29"
+        )
         self.assertEqual(siae_department.geo_range_pretty_display, "département (29)")
         siae_custom = SiaeFactory(
-            geo_range=Siae.GEO_RANGE_CUSTOM,
+            geo_range=siae_constants.GEO_RANGE_CUSTOM,
             region="Bretagne",
             department="29",
             city="Quimper",
@@ -45,7 +47,7 @@ class SiaeModelTest(TestCase):
         )
         self.assertEqual(siae_custom.geo_range_pretty_display, "50 km")
         siae_custom_empty = SiaeFactory(
-            geo_range=Siae.GEO_RANGE_CUSTOM, region="Bretagne", department="29", city="Quimper"
+            geo_range=siae_constants.GEO_RANGE_CUSTOM, region="Bretagne", department="29", city="Quimper"
         )
         self.assertEqual(siae_custom_empty.geo_range_pretty_display, "non disponible")
 

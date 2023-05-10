@@ -8,7 +8,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.core.management.base import BaseCommand
 
 from lemarche.perimeters.models import Perimeter
-from lemarche.siaes.constants import (
+from lemarche.utils.constants import (
     DEPARTMENT_TO_REGION,
     DEPARTMENTS,
     REGIONS,

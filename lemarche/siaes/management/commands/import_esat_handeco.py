@@ -8,10 +8,10 @@ from django.utils import timezone
 
 from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.constants import department_from_postcode
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis.api_entreprise import etablissement_get_or_error  # exercice_get_or_error
 from lemarche.utils.apis.geocoding import get_geocoding_data
+from lemarche.utils.constants import department_from_postcode
 from lemarche.utils.data import rename_dict_key, reset_app_sql_sequences
 
 
@@ -120,7 +120,7 @@ class Command(BaseCommand):
         # defaults
         esat["kind"] = siae_constants.KIND_ESAT
         esat["source"] = Siae.SOURCE_ESAT
-        esat["geo_range"] = Siae.GEO_RANGE_DEPARTMENT
+        esat["geo_range"] = siae_constants.GEO_RANGE_DEPARTMENT
 
         # basic fields
         rename_dict_key(esat, "title", "name")
