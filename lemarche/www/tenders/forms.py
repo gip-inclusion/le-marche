@@ -74,7 +74,7 @@ class TenderQuestionForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["text"].widget.attrs.update({"rows": 2})
+        self.fields["text"].widget.attrs.update({"rows": 1})
 
 
 TenderQuestionFormSet = inlineformset_factory(

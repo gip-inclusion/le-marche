@@ -28,7 +28,7 @@ class TenderCreateViewTest(TestCase):
 
     @classmethod
     def _generate_fake_data_form(
-        cls, _step_1={}, _step_2={}, _step_3={}, _step_4={}, _step_5={}, tender_not_saved: Tender = None
+        cls, _step_1={}, _step_2={}, _step_3={}, _step_4={}, _step_5={}, _step_6={}, tender_not_saved: Tender = None
     ):
         if not tender_not_saved:
             tender_not_saved = TenderFactory.build(author=cls.user_buyer)
@@ -51,6 +51,11 @@ class TenderCreateViewTest(TestCase):
             "description-amount": tender_constants.AMOUNT_RANGE_1000_MORE,
         } | _step_2
         step_3 = {
+            "tender_create_multi_step_view-current_step": "questions",
+            "questions-formset-questions": [{}],
+            # "questions-formset-questions": [{"text": "Une question ?"}],
+        } | _step_3
+        step_4 = {
             "tender_create_multi_step_view-current_step": "contact",
             "contact-contact_first_name": tender_not_saved.contact_first_name,
             "contact-contact_last_name": tender_not_saved.contact_last_name,
@@ -59,21 +64,20 @@ class TenderCreateViewTest(TestCase):
             "contact-contact_company_name": "TEST",
             "contact-response_kind": [Tender.RESPONSE_KIND_EMAIL],
             "contact-deadline_date": tender_not_saved.deadline_date,
-        } | _step_3
-        step_4 = {
+        } | _step_4
+        step_5 = {
             "tender_create_multi_step_view-current_step": "survey",
             "survey-scale_marche_useless": tender_constants.SURVEY_SCALE_QUESTION_0,
             "survey-worked_with_inclusif_siae_this_kind_tender": tender_constants.SURVEY_DONT_KNOW,
             "survey-is_encouraged_by_le_marche": tender_constants.SURVEY_NOT_ENCOURAGED_ONLY_BY_US,
             "survey-providers_out_of_insertion": tender_constants.SURVEY_SCALE_QUESTION_2,
             "survey-le_marche_doesnt_exist_how_to_find_siae": "TEST",
-        } | _step_4
-
-        step_5 = {
-            "tender_create_multi_step_view-current_step": "confirmation",
         } | _step_5
+        step_6 = {
+            "tender_create_multi_step_view-current_step": "confirmation",
+        } | _step_6
 
-        return [step_1, step_2, step_3, step_4, step_5]
+        return [step_1, step_2, step_3, step_4, step_5, step_6]
 
     def _check_every_step(self, tenders_step_data, final_redirect_page: str = reverse("wagtail_serve", args=("",))):
         for step, data_step in enumerate(tenders_step_data, 1):
@@ -86,7 +90,7 @@ class TenderCreateViewTest(TestCase):
             else:
                 self.assertEqual(response.status_code, 200)
                 current_errors = response.context_data["form"].errors
-                self.assertEquals(current_errors, {})
+                self.assertTrue(current_errors == {} or current_errors == [])
 
     def test_anyone_can_access_create_tender(self):
         # anonymous
@@ -116,7 +120,7 @@ class TenderCreateViewTest(TestCase):
         self.client.force_login(self.user_buyer)
         tenders_step_data = self._generate_fake_data_form()
         # remove required field in survey
-        tenders_step_data[3].pop("survey-scale_marche_useless")
+        tenders_step_data[4].pop("survey-scale_marche_useless")
         with self.assertRaises(AssertionError):
             self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
 

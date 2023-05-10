@@ -1,8 +1,8 @@
 {% extends "tenders/create_base.html" %}
 {% load bootstrap4 static %}
 
-{% block step_title %}Questions au client{% endblock %}
-{% block step_title_again %}Questions au client{% endblock %}
+{% block step_title %}Questions à poser aux prestataires ciblés{% endblock %}
+{% block step_title_again %}Questions à poser aux prestataires ciblés{% endblock %}
 {% block step_subtitle %}{% endblock %}
 
 {% block content_form %}
@@ -18,7 +18,7 @@
 
         <div id="tender-question-formset-empty-form" class="d-none">{% bootstrap_form form.empty_form %}</div>
         <button id="tender-question-formset-add-more" class="btn btn-outline-primary btn-sm btn-ico float-right" type="button">
-            <span>Ajouter une nouvelle question</span>
+            <span>Ajouter une autre question</span>
             <i class="ri-add-fill ri-lg"></i>
         </button>
     </div>
