@@ -23,14 +23,9 @@ from lemarche.siaes.tasks import set_siae_coords
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
 from lemarche.stats.models import Tracker
 from lemarche.users.models import User
+from lemarche.utils.constants import DEPARTMENTS_PRETTY, REGIONS_PRETTY
 from lemarche.utils.data import round_by_base
 from lemarche.utils.fields import ChoiceArrayField
-
-
-GEO_RANGE_DEPARTMENT = "DEPARTMENT"
-GEO_RANGE_REGION = "REGION"
-GEO_RANGE_CUSTOM = "CUSTOM"
-GEO_RANGE_COUNTRY = "COUNTRY"
 
 
 def get_filter_city(perimeter, with_country=False):
@@ -38,16 +33,16 @@ def get_filter_city(perimeter, with_country=False):
     used in Siae in_perimeters_area() queryset
     """
     filters = Q(post_code__in=perimeter.post_codes) | (
-        ~Q(geo_range=GEO_RANGE_CUSTOM) & Q(department=perimeter.department_code)
+        ~Q(geo_range=siae_constants.GEO_RANGE_CUSTOM) & Q(department=perimeter.department_code)
     )
     if perimeter.coords:
         filters |= (
-            Q(geo_range=GEO_RANGE_CUSTOM)
+            Q(geo_range=siae_constants.GEO_RANGE_CUSTOM)
             # why distance / 1000 ? because convert from meter to km
             & Q(geo_range_custom_distance__gte=Distance("coords", perimeter.coords) / 1000)
         )
     if with_country:
-        filters |= Q(geo_range=GEO_RANGE_COUNTRY)
+        filters |= Q(geo_range=siae_constants.GEO_RANGE_COUNTRY)
     return filters
 
 
@@ -230,7 +225,7 @@ class SiaeQuerySet(models.QuerySet):
             # return self.filter(Q(geo_range=GEO_RANGE_CUSTOM) & Q(coords__dwithin=(kwargs["city_coords"], D(km=F("geo_range_custom_distance")))))  # noqa
             # Distance returns a number in meters. But geo_range_custom_distance is stored in km. So we divide by 1000  # noqa
             return self.filter(
-                Q(geo_range=GEO_RANGE_CUSTOM)
+                Q(geo_range=siae_constants.GEO_RANGE_CUSTOM)
                 & Q(geo_range_custom_distance__lte=Distance("coords", kwargs["city_coords"]) / 1000)
             )
 
@@ -268,10 +263,10 @@ class SiaeQuerySet(models.QuerySet):
         return self.filter(coords__dwithin=(point, D(km=distance_km)))
 
     def with_country_geo_range(self):
-        return self.filter(Q(geo_range=GEO_RANGE_COUNTRY))
+        return self.filter(Q(geo_range=siae_constants.GEO_RANGE_COUNTRY))
 
     def exclude_country_geo_range(self):
-        return self.exclude(Q(geo_range=GEO_RANGE_COUNTRY))
+        return self.exclude(Q(geo_range=siae_constants.GEO_RANGE_COUNTRY))
 
     def annotate_with_user_favorite_list_count(self, user):
         """
@@ -489,18 +484,8 @@ class Siae(models.Model):
         (NATURE_ANTENNA, "Rattaché à un autre conventionnement"),
     )
 
-    DEPARTMENT_CHOICES = siae_constants.DEPARTMENTS_PRETTY.items()
-    REGION_CHOICES = siae_constants.REGIONS_PRETTY.items()
-    GEO_RANGE_COUNTRY = GEO_RANGE_COUNTRY  # 3
-    GEO_RANGE_REGION = GEO_RANGE_REGION  # 2
-    GEO_RANGE_DEPARTMENT = GEO_RANGE_DEPARTMENT  # 1
-    GEO_RANGE_CUSTOM = GEO_RANGE_CUSTOM  # 0
-    GEO_RANGE_CHOICES = (
-        (GEO_RANGE_COUNTRY, "France entière"),
-        (GEO_RANGE_REGION, "Région"),
-        (GEO_RANGE_DEPARTMENT, "Département"),
-        (GEO_RANGE_CUSTOM, "Distance en kilomètres"),
-    )
+    DEPARTMENT_CHOICES = DEPARTMENTS_PRETTY.items()
+    REGION_CHOICES = REGIONS_PRETTY.items()
 
     name = models.CharField(verbose_name="Raison sociale", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
@@ -539,7 +524,7 @@ class Siae(models.Model):
     # https://docs.djangoproject.com/en/2.2/ref/contrib/gis/model-api/#pointfield
     coords = gis_models.PointField(geography=True, blank=True, null=True)
     geo_range = models.CharField(
-        verbose_name="Périmètre d'intervention", max_length=20, choices=GEO_RANGE_CHOICES, blank=True
+        verbose_name="Périmètre d'intervention", max_length=20, choices=siae_constants.GEO_RANGE_CHOICES, blank=True
     )
     geo_range_custom_distance = models.IntegerField(
         verbose_name="Distance en kilomètres (périmètre d'intervention)", blank=True, null=True
@@ -847,26 +832,26 @@ class Siae(models.Model):
 
     @property
     def geo_range_pretty_display(self):
-        if self.geo_range == Siae.GEO_RANGE_COUNTRY:
+        if self.geo_range == siae_constants.GEO_RANGE_COUNTRY:
             return self.get_geo_range_display()
-        elif self.geo_range == Siae.GEO_RANGE_REGION:
+        elif self.geo_range == siae_constants.GEO_RANGE_REGION:
             return f"{self.get_geo_range_display().lower()} ({self.region})"
-        elif self.geo_range == Siae.GEO_RANGE_DEPARTMENT:
+        elif self.geo_range == siae_constants.GEO_RANGE_DEPARTMENT:
             return f"{self.get_geo_range_display().lower()} ({self.department})"
-        elif self.geo_range == Siae.GEO_RANGE_CUSTOM:
+        elif self.geo_range == siae_constants.GEO_RANGE_CUSTOM:
             if self.geo_range_custom_distance:
                 return f"{self.geo_range_custom_distance} km"
         return "non disponible"
 
     @property
     def geo_range_pretty_title(self):
-        if self.geo_range == Siae.GEO_RANGE_COUNTRY:
+        if self.geo_range == siae_constants.GEO_RANGE_COUNTRY:
             return self.geo_range_pretty_display
-        elif self.geo_range == Siae.GEO_RANGE_REGION:
+        elif self.geo_range == siae_constants.GEO_RANGE_REGION:
             return self.region
-        elif self.geo_range == Siae.GEO_RANGE_DEPARTMENT:
+        elif self.geo_range == siae_constants.GEO_RANGE_DEPARTMENT:
             return self.get_department_display()
-        elif self.geo_range == Siae.GEO_RANGE_CUSTOM:
+        elif self.geo_range == siae_constants.GEO_RANGE_CUSTOM:
             if self.geo_range_custom_distance:
                 return f"{self.geo_range_pretty_display} de {self.city}"
         return self.geo_range_pretty_display

@@ -5,7 +5,7 @@ import os
 from django.core.management.base import BaseCommand
 
 from lemarche.perimeters.models import Perimeter
-from lemarche.siaes.constants import DEPARTMENTS, REGIONS
+from lemarche.utils.constants import DEPARTMENTS, REGIONS
 
 
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
