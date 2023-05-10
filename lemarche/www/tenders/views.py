@@ -17,36 +17,22 @@ from lemarche.utils.apis import api_hubspot
 from lemarche.utils.data import get_choice
 from lemarche.utils.mixins import TenderAuthorOrAdminRequiredIfNotValidatedMixin, TenderAuthorOrAdminRequiredMixin
 from lemarche.www.tenders.forms import (
-    AddTenderStepConfirmationForm,
-    AddTenderStepContactForm,
-    AddTenderStepDescriptionForm,
-    AddTenderStepGeneralForm,
-    AddTenderStepSurveyForm,
+    TenderCreateStepConfirmationForm,
+    TenderCreateStepContactForm,
+    TenderCreateStepDescriptionForm,
+    TenderCreateStepGeneralForm,
+    TenderCreateStepSurveyForm,
 )
 from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
     notify_admin_tender_created,
     send_siae_interested_email_to_author,
 )
-from lemarche.www.tenders.utils import get_or_create_user_from_anonymous_content
+from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user
 
 
 TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
 TITLE_DETAIL_PAGE_OTHERS = "Mes besoins"
 TITLE_KIND_SOURCING_SIAE = "Consultation en vue d'un achat"
-
-
-def create_tender_from_dict(tender_dict: dict) -> Tender:
-    tender_dict.pop("contact_company_name", None)
-    tender_dict.pop("id_location_name", None)
-    location = tender_dict.get("location")
-    sectors = tender_dict.pop("sectors", [])
-    tender = Tender(**tender_dict)
-    tender.save()
-    if location:
-        tender.perimeters.set([location])
-    if sectors:
-        tender.sectors.set(sectors)
-    return tender
 
 
 class TenderCreateMultiStepView(SessionWizardView):
@@ -82,17 +68,55 @@ class TenderCreateMultiStepView(SessionWizardView):
     }
 
     form_list = [
-        (STEP_GENERAL, AddTenderStepGeneralForm),
-        (STEP_DESCRIPTION, AddTenderStepDescriptionForm),
-        (STEP_CONTACT, AddTenderStepContactForm),
-        (STEP_SURVEY, AddTenderStepSurveyForm),
-        (STEP_CONFIRMATION, AddTenderStepConfirmationForm),
+        (STEP_GENERAL, TenderCreateStepGeneralForm),
+        (STEP_DESCRIPTION, TenderCreateStepDescriptionForm),
+        (STEP_CONTACT, TenderCreateStepContactForm),
+        (STEP_SURVEY, TenderCreateStepSurveyForm),
+        (STEP_CONFIRMATION, TenderCreateStepConfirmationForm),
     ]
 
     def get_template_names(self):
+        print("get_template_names")
         return [self.TEMPLATES[self.steps.current]]
 
+    def get(self, request, *args, **kwargs):
+        """
+        Manage case when slug is sent (Tender draft edition)
+        """
+        if "slug" in self.kwargs:
+            self.instance = get_object_or_404(Tender, slug=self.kwargs.get("slug"))
+            if self.instance.status != tender_constants.STATUS_DRAFT:
+                return redirect("tenders:detail", slug=self.instance.slug)
+        return super().get(request, *args, **kwargs)
+
+    def get_form_kwargs(self, step):
+        """
+        Initial data
+        """
+        kwargs = super().get_form_kwargs(step)
+        if step == self.STEP_DESCRIPTION:
+            kwargs["kind"] = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("kind")
+        if step == self.STEP_CONTACT:
+            cleaned_data_description = self.get_cleaned_data_for_step(self.STEP_DESCRIPTION)
+            kwargs["max_deadline_date"] = cleaned_data_description.get("start_working_date")
+            kwargs["external_link"] = cleaned_data_description.get("external_link")
+            kwargs["user"] = self.request.user
+        return kwargs
+
+    def get_form_instance(self, step):
+        """
+        Manage case when slug is sent (Tender draft edition)
+        """
+        if "slug" in self.kwargs:
+            self.instance = get_object_or_404(Tender, slug=self.kwargs.get("slug"))
+        if self.instance is None:
+            self.instance = Tender()
+        return self.instance
+
     def get_context_data(self, form, **kwargs):
+        """
+        Pretty display of Tender at the last step
+        """
         context = super().get_context_data(form=form, **kwargs)
         # needed to display the Tender preview template
         if self.steps.current == self.STEP_CONFIRMATION:
@@ -109,33 +133,6 @@ class TenderCreateMultiStepView(SessionWizardView):
             )
             context.update({"tender": tender_dict})
         return context
-
-    def get_form_instance(self, step):
-        if "slug" in self.kwargs:
-            self.instance = get_object_or_404(Tender, slug=self.kwargs.get("slug"))
-
-        if self.instance is None:
-            self.instance = Tender()
-        return self.instance
-
-    def get(self, request, *args, **kwargs):
-        if "slug" in self.kwargs:
-            self.instance = get_object_or_404(Tender, slug=self.kwargs.get("slug"))
-            if self.instance.status != tender_constants.STATUS_DRAFT:
-                return redirect("tenders:detail", slug=self.instance.slug)
-
-        return super().get(request, *args, **kwargs)
-
-    def get_form_kwargs(self, step):
-        kwargs = super().get_form_kwargs(step)
-        if step == self.STEP_DESCRIPTION:
-            kwargs["kind"] = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("kind")
-        if step == self.STEP_CONTACT:
-            cleaned_data_description = self.get_cleaned_data_for_step(self.STEP_DESCRIPTION)
-            kwargs["max_deadline_date"] = cleaned_data_description.get("start_working_date")
-            kwargs["external_link"] = cleaned_data_description.get("external_link")
-            kwargs["user"] = self.request.user
-        return kwargs
 
     def save_instance_tender(self, tender_dict: dict, form_dict: dict, is_draft: bool):
         tender_status = tender_constants.STATUS_DRAFT if is_draft else tender_constants.STATUS_PUBLISHED
@@ -164,27 +161,10 @@ class TenderCreateMultiStepView(SessionWizardView):
             tender_dict |= {"status": tender_status}
             self.instance = create_tender_from_dict(tender_dict)
 
-    def set_or_create_user(self, tender_dict: dict):
-        user: User = None
-        if not self.request.user.is_authenticated:
-            user = get_or_create_user_from_anonymous_content(tender_dict)
-        else:
-            user = self.request.user
-            need_to_be_saved = False
-            if not user.phone:
-                user.phone = tender_dict.get("contact_phone")
-                need_to_be_saved = True
-            if not user.company_name:
-                user.company_name = tender_dict.get("contact_company_name")
-                need_to_be_saved = True
-            if need_to_be_saved:
-                user.save()
-        return user
-
     def done(self, _, form_dict, **kwargs):
         cleaned_data = self.get_all_cleaned_data()
         # anonymous user? create user (or get an existing user by email)
-        user = self.set_or_create_user(tender_dict=cleaned_data)
+        user = get_or_create_user(self.request.user, tender_dict=cleaned_data)
         # when it's done we save the tender
         tender_dict = cleaned_data | {"author": user, "source": Tender.SOURCE_FORM}
         is_draft: bool = self.request.POST.get("is_draft", False)
