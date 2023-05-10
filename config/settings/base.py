@@ -129,6 +129,7 @@ LOCAL_APPS = [
     "lemarche.siaes",
     "lemarche.sectors",
     "lemarche.networks",
+    "lemarche.labels",
     "lemarche.perimeters",
     "lemarche.favorites",
     "lemarche.tenders",
