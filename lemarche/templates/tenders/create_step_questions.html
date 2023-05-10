@@ -1,0 +1,56 @@
+{% extends "tenders/create_base.html" %}
+{% load bootstrap4 static %}
+
+{% block step_title %}Questions au client{% endblock %}
+{% block step_title_again %}Questions au client{% endblock %}
+{% block step_subtitle %}{% endblock %}
+
+{% block content_form %}
+{% csrf_token %}
+<div class="row">
+    <div class="col-12 col-lg-7">
+        {% bootstrap_formset_errors form %}
+        <!-- {% if form.errors %}
+            <div class="alert alert-danger" role="alert">{{ form.errors }}</div>
+        {% endif %} -->
+
+        {% bootstrap_formset form %}
+
+        <div id="tender-question-formset-empty-form" class="d-none">{% bootstrap_form form.empty_form %}</div>
+        <button id="tender-question-formset-add-more" class="btn btn-outline-primary btn-sm btn-ico float-right" type="button">
+            <span>Ajouter une nouvelle question</span>
+            <i class="ri-add-fill ri-lg"></i>
+        </button>
+    </div>
+    <div class="col-12 col-lg-5">
+    </div>
+</div>
+
+<br />
+{% endblock content_form %}
+
+{% block extra_js %}
+<script type="text/javascript">
+/**
+ * Add formset items dynamically
+ */
+const prefixRegex = new RegExp('__prefix__', 'g');
+
+// questions formset
+const totalTenderQuestionFormset = document.getElementById('id_questions-TOTAL_FORMS');
+const tenderQuestionFormsetEmptyForm = document.getElementById('tender-question-formset-empty-form');
+const tenderQuestionFormsetAddMoreButton = document.getElementById('tender-question-formset-add-more');
+
+tenderQuestionFormsetAddMoreButton.addEventListener('click', function(e) {
+    if (e) { e.preventDefault(); }
+    // add new form
+    const copyTenderQuestionFormsetEmptyForm = tenderQuestionFormsetEmptyForm.cloneNode(true);
+    copyTenderQuestionFormsetEmptyForm.innerHTML = copyTenderQuestionFormsetEmptyForm.innerHTML.replace(prefixRegex, totalTenderQuestionFormset.value);
+    copyTenderQuestionFormsetEmptyForm.childNodes.forEach(node => {
+        tenderQuestionFormsetEmptyForm.parentNode.insertBefore(node, tenderQuestionFormsetEmptyForm);
+    });
+    // update total forms count
+    totalTenderQuestionFormset.setAttribute('value', parseInt(totalTenderQuestionFormset.getAttribute('value'), 10) + 1);
+});
+</script>
+{% endblock %}

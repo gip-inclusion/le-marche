@@ -1,10 +1,11 @@
 from datetime import date
 
 from django import forms
+from django.forms.models import inlineformset_factory
 
 from lemarche.sectors.models import Sector
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.models import Tender
+from lemarche.tenders.models import Tender, TenderQuestion
 from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
@@ -64,6 +65,21 @@ class TenderCreateStepGeneralForm(forms.ModelForm):
             self.add_error("location", msg_field_missing.format("Lieu d'intervention"))
         if "sectors" in self.errors:
             self.add_error("sectors", msg_field_missing.format(Sector._meta.verbose_name_plural))
+
+
+class TenderQuestionForm(forms.ModelForm):
+    class Meta:
+        model = TenderQuestion
+        fields = ["text"]  # TODO: make text mandatory
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["text"].widget.attrs.update({"rows": 2})
+
+
+TenderQuestionFormSet = inlineformset_factory(
+    Tender, TenderQuestion, form=TenderQuestionForm, extra=1, can_delete=True
+)
 
 
 class TenderCreateStepDescriptionForm(forms.ModelForm):

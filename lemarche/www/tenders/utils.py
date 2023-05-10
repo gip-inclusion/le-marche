@@ -1,21 +1,29 @@
 from django.conf import settings
 
-from lemarche.tenders.models import Tender
+from lemarche.tenders.models import Tender, TenderQuestion
 from lemarche.users.models import User
 from lemarche.www.auth.tasks import send_new_user_password_reset_link
 
 
 def create_tender_from_dict(tender_dict: dict) -> Tender:
+    # pop special fields
     tender_dict.pop("contact_company_name", None)
     tender_dict.pop("id_location_name", None)
     location = tender_dict.get("location")
     sectors = tender_dict.pop("sectors", [])
+    questions = tender_dict.pop("formset-questions", [])
+    # save tender
     tender = Tender(**tender_dict)
     tender.save()
+    # manage special fields
     if location:
         tender.perimeters.set([location])
     if sectors:
         tender.sectors.set(sectors)
+    if questions:
+        for question in questions:
+            TenderQuestion.objects.create(text=question["text"], tender=tender)
+    # return
     return tender
 
 

@@ -25,6 +25,7 @@ from lemarche.www.tenders.forms import (
     TenderCreateStepDescriptionForm,
     TenderCreateStepGeneralForm,
     TenderCreateStepSurveyForm,
+    TenderQuestionFormSet,
 )
 from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
     notify_admin_tender_created,
@@ -59,6 +60,7 @@ class TenderCreateMultiStepView(SessionWizardView):
     """
     STEP_GENERAL = "general"
     STEP_DESCRIPTION = "description"
+    STEP_QUESTIONS = "questions"
     STEP_CONTACT = "contact"
     STEP_SURVEY = "survey"
     STEP_CONFIRMATION = "confirmation"
@@ -66,6 +68,7 @@ class TenderCreateMultiStepView(SessionWizardView):
     TEMPLATES = {
         STEP_GENERAL: "tenders/create_step_general.html",
         STEP_DESCRIPTION: "tenders/create_step_description.html",
+        STEP_QUESTIONS: "tenders/create_step_questions.html",
         STEP_CONTACT: "tenders/create_step_contact.html",
         STEP_SURVEY: "tenders/create_step_survey.html",
         STEP_CONFIRMATION: "tenders/create_step_confirmation.html",
@@ -74,6 +77,7 @@ class TenderCreateMultiStepView(SessionWizardView):
     form_list = [
         (STEP_GENERAL, TenderCreateStepGeneralForm),
         (STEP_DESCRIPTION, TenderCreateStepDescriptionForm),
+        (STEP_QUESTIONS, TenderQuestionFormSet),
         (STEP_CONTACT, TenderCreateStepContactForm),
         (STEP_SURVEY, TenderCreateStepSurveyForm),
         (STEP_CONFIRMATION, TenderCreateStepConfirmationForm),
@@ -125,6 +129,7 @@ class TenderCreateMultiStepView(SessionWizardView):
         if self.steps.current == self.STEP_CONFIRMATION:
             tender_dict = self.get_all_cleaned_data()
             tender_dict["sectors_list_string"] = ", ".join(tender_dict["sectors"].values_list("name", flat=True))
+            tender_dict["questions_list"] = [t["text"] for t in tender_dict["formset-questions"]]
             tender_dict["get_kind_display"] = get_choice(tender_constants.KIND_CHOICES, tender_dict["kind"])
             tender_dict["get_amount_display"] = get_choice(
                 tender_constants.AMOUNT_RANGE_CHOICES, tender_dict["amount"]
