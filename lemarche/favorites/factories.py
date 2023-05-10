@@ -9,4 +9,4 @@ class FavoriteListFactory(DjangoModelFactory):
         model = FavoriteList
 
     name = factory.Faker("company", locale="fr_FR")
-    # slug is auto-generated
+    # slug: auto-generated

@@ -1,12 +1,12 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from lemarche.networks.models import Network
+from lemarche.labels.models import Label
 
 
-class NetworkFactory(DjangoModelFactory):
+class LabelFactory(DjangoModelFactory):
     class Meta:
-        model = Network
+        model = Label
 
     name = factory.Faker("company", locale="fr_FR")
     # slug: auto-generated
