@@ -10,6 +10,7 @@ from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, ListView, UpdateView
 from formtools.wizard.views import SessionWizardView
 
+from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
@@ -358,19 +359,24 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
 
 class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, ListView):
     template_name = "tenders/siae_interested_list.html"
-    queryset = TenderSiae.objects.select_related("tender", "siae").all()
-    context_object_name = "tendersiaes"
+    # queryset = TenderSiae.objects.select_related("tender", "siae").all()
+    queryset = Siae.objects.prefetch_related("tendersiae_set").all()
+    context_object_name = "siaes"
     status = None
 
     def get_queryset(self):
         qs = super().get_queryset()
-        qs = qs.filter(tender__slug=self.kwargs.get("slug"))
+        print("get_queryset", self.status)
+        self.tender = Tender.objects.get(slug=self.kwargs.get("slug"))
+        qs = qs.filter(tendersiae__tender=self.tender)
         if self.status:  # status == "INTERESTED"
-            qs = qs.filter(detail_contact_click_date__isnull=False)
-            qs = qs.order_by("-detail_contact_click_date")
+            qs = qs.filter(tendersiae__detail_contact_click_date__isnull=False)
+            # qs = qs.order_by("-tendersiae__detail_contact_click_date")
         else:  # default
-            qs = qs.filter(email_send_date__isnull=False)
-            qs = qs.order_by("-email_send_date")
+            qs = qs.filter(tendersiae__email_send_date__isnull=False)
+            # qs = qs.order_by("-tendersiae__email_send_date")
+        # avoid duplicates
+        qs = qs.distinct()
         return qs
 
     def get(self, request, status=None, *args, **kwargs):
@@ -384,6 +390,6 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["tender"] = Tender.objects.get(slug=self.kwargs.get("slug"))
+        context["tender"] = self.tender
         context["status"] = self.status
         return context

@@ -2,43 +2,43 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-8" style="border-right:1px solid">
-                <div class="row">
+                {# <div class="row">
                     <div class="col-12">
-                        <span title="{{ tendersiae.created_at }}">{{ tendersiae.created_at|date }}</span>
+                        <span title="{{ siae.tendersiae_set.first.created_at }}">{{ siae.tendersiae_set.first.created_at|date }}</span>
                     </div>
-                </div>
+                </div> #}
                 <div class="row">
                     <div class="col-12">
-                        <h2 class="py-2">{{ tendersiae.siae.name_display }}</h2>
+                        <h2 class="py-2">{{ siae.name_display }}</h2>
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-4">
                         <i class="ri-user-line"></i>
-                        <span>{{ tendersiae.siae.contact_short_name }}</span>
+                        <span>{{ siae.contact_short_name }}</span>
                     </div>
                     <div class="col-md-4">
                         <i class="ri-phone-line"></i>
-                        <a href="tel:{{ tendersiae.siae.contact_phone }}" id="tender_siae_company_phone" style="text-overflow:ellipsis">{{ tendersiae.siae.contact_phone }}</a>
+                        <a href="tel:{{ siae.contact_phone }}" id="tender_siae_company_phone" style="text-overflow:ellipsis">{{ siae.contact_phone }}</a>
                     </div>
                     <div class="col-md-4 has-ellipsis">
                         <i class="ri-at-line"></i>
-                        <a href="mailto:{{ tendersiae.siae.contact_email }}" id="tender_siae_company_email">{{ tendersiae.siae.contact_email }}</a>
+                        <a href="mailto:{{ siae.contact_email }}" id="tender_siae_company_email">{{ siae.contact_email }}</a>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 has-ellipsis">
                         <i class="ri-window-2-line"></i>
-                        <a href="{{ tendersiae.siae.contact_website }}" id="tender_siae_company_website" target="_blank" rel="noopener">{{ tendersiae.siae.contact_website }}</a>
+                        <a href="{{ siae.contact_website }}" id="tender_siae_company_website" target="_blank" rel="noopener">{{ siae.contact_website }}</a>
                     </div>
                     <div class="col-md-6 has-ellipsis">
                         <i class="ri-earth-line"></i>
-                        <a href="{{ tendersiae.siae.contact_social_website }}" id="tender_siae_company_social_website" target="_blank" rel="noopener">{{ tendersiae.siae.contact_social_website }}</a>
+                        <a href="{{ siae.contact_social_website }}" id="tender_siae_company_social_website" target="_blank" rel="noopener">{{ siae.contact_social_website }}</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-4 text-center my-auto">
-                <a href="{% url 'siae:detail' tendersiae.siae.slug %}" class="btn btn-primary" target="_blank" rel="noopener">
+                <a href="{% url 'siae:detail' siae.slug %}" class="btn btn-primary" target="_blank" rel="noopener">
                     <span>Accéder à la fiche commerciale</span>
                 </a>
             </div>
