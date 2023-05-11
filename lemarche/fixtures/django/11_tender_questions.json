@@ -1,0 +1,32 @@
+[
+    {
+        "model": "tenders.tenderquestion",
+        "fields": {
+            "id": 1,
+            "tender": 1,
+            "text": "Avez-vous le label Qualibat ?",
+            "created_at": "2021-07-01T12:44:39Z",
+            "updated_at": "2021-07-01T12:44:39Z"
+        }
+    },
+    {
+        "model": "tenders.tenderquestion",
+        "fields": {
+            "id": 2,
+            "tender": 1,
+            "text": "Etes-vous basés en Isère ?",
+            "created_at": "2021-07-01T12:44:39Z",
+            "updated_at": "2021-07-01T12:44:39Z"
+        }
+    },
+    {
+        "model": "tenders.tenderquestion",
+        "fields": {
+            "id": 3,
+            "tender": 2,
+            "text": "Pouvez-vous travailler le dimanche ?",
+            "created_at": "2021-07-01T12:44:39Z",
+            "updated_at": "2021-07-01T12:44:39Z"
+        }
+    }
+]
