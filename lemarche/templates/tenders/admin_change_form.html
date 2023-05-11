@@ -1,5 +1,38 @@
 {% extends 'admin/change_form.html' %}
 
+{% comment %}
+Avoid conflict between fieldset_with_inlines & custom button
+--> add blocks "field_sets" & "inline_field_sets" from django-fieldsets-with-inlines
+
+Extra info
+- https://github.com/robertkovac/django-fieldsets-with-inlines
+- https://github.com/django/django/blob/main/django/contrib/admin/templates/admin/change_form.html
+{% endcomment %}
+
+{% block field_sets %}
+{% for fieldset in adminform %}
+    {% with fieldset_index=forloop.counter0 %}
+        {% for inline_admin_formset in inline_admin_formsets %}
+            {% if inline_admin_formset.opts.fieldset_index == fieldset_index %}
+                {% include inline_admin_formset.opts.template %}
+            {% endif %}
+        {% endfor %}
+    {% endwith %}
+
+    {% include "fieldsets_with_inlines/fieldset.html" %}
+{% endfor %}
+{% endblock %}
+
+{% block inline_field_sets %}
+{% comment %}
+Inlines are already included.
+No need to repeat them under fieldsets!
+{% for inline_admin_formset in inline_admin_formsets %}
+    {% include inline_admin_formset.opts.template %}
+{% endfor %}
+{% endcomment %}
+{% endblock %}
+
 {% block after_related_objects %}
     {{ block.super }}
     {% if original %}

@@ -549,7 +549,7 @@ class SiaeOfferAdmin(admin.ModelAdmin):
         url = reverse("admin:siaes_siae_change", args=[siae_offer.siae_id])
         return format_html(f'<a href="{url}">{siae_offer.siae}</a>')
 
-    siae_with_link.short_description = "Structure"
+    siae_with_link.short_description = Siae._meta.verbose_name
     siae_with_link.admin_order_field = "siae"
 
 
@@ -566,7 +566,7 @@ class SiaeLabelAdmin(admin.ModelAdmin):
         url = reverse("admin:siaes_siae_change", args=[siae_label.siae_id])
         return format_html(f'<a href="{url}">{siae_label.siae}</a>')
 
-    siae_with_link.short_description = "Structure"
+    siae_with_link.short_description = Siae._meta.verbose_name
     siae_with_link.admin_order_field = "siae"
 
 
@@ -583,7 +583,7 @@ class SiaeClientReferenceAdmin(admin.ModelAdmin):
         url = reverse("admin:siaes_siae_change", args=[siae_client_reference.siae_id])
         return format_html(f'<a href="{url}">{siae_client_reference.siae}</a>')
 
-    siae_with_link.short_description = "Structure"
+    siae_with_link.short_description = Siae._meta.verbose_name
     siae_with_link.admin_order_field = "siae"
 
     def logo_url_display(self, siae_client_reference):
@@ -611,7 +611,7 @@ class SiaeImageAdmin(admin.ModelAdmin):
         url = reverse("admin:siaes_siae_change", args=[siae_image.siae_id])
         return format_html(f'<a href="{url}">{siae_image.siae}</a>')
 
-    siae_with_link.short_description = "Structure"
+    siae_with_link.short_description = Siae._meta.verbose_name
     siae_with_link.admin_order_field = "siae"
 
     def image_url_display(self, siae_image):

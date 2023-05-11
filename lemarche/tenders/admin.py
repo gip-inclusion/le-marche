@@ -9,11 +9,12 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django_admin_filters import MultiChoice
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
+from fieldsets_with_inlines import FieldsetsInlineMixin
 
 from lemarche.perimeters.admin import PerimeterRegionFilter
 from lemarche.tenders import constants
 from lemarche.tenders.forms import TenderAdminForm
-from lemarche.tenders.models import PartnerShareTender, Tender
+from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion
 from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
 from lemarche.www.tenders.tasks import (
@@ -47,6 +48,13 @@ class ResponseKindFilter(admin.SimpleListFilter):
         return queryset
 
 
+class TenderQuestionInline(admin.TabularInline):
+    model = TenderQuestion
+    fields = ["text", "created_at", "updated_at"]
+    readonly_fields = ["created_at", "updated_at"]
+    extra = 0
+
+
 def update_and_send_tender_task(tender: Tender):
     # 1) validate the tender
     tender.set_validated(with_save=True)
@@ -71,7 +79,7 @@ def restart_send_tender_task(tender: Tender):
 
 
 @admin.register(Tender, site=admin_site)
-class TenderAdmin(admin.ModelAdmin):
+class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     list_display = [
         "id",
         "status",
@@ -81,6 +89,7 @@ class TenderAdmin(admin.ModelAdmin):
         "kind",
         "deadline_date",
         "start_working_date",
+        "question_count_with_link",
         "siae_count_with_link",
         # "siae_email_send_count_with_link",
         "siae_email_link_click_count_with_link",
@@ -117,6 +126,7 @@ class TenderAdmin(admin.ModelAdmin):
         # slug
         # status
         "validated_at",
+        "question_count_with_link",
         "siae_count_with_link",
         "siae_email_send_count_with_link",
         "siae_email_link_click_count_with_link",
@@ -134,7 +144,7 @@ class TenderAdmin(admin.ModelAdmin):
         ChoiceArrayField: {"widget": forms.CheckboxSelectMultiple(attrs={"class": "custom-checkbox-select-multiple"})},
     }
 
-    fieldsets = (
+    fieldsets_with_inlines = [
         (
             None,
             {
@@ -149,9 +159,11 @@ class TenderAdmin(admin.ModelAdmin):
                     "constraints",
                     "external_link",
                     "accept_cocontracting",
+                    "question_count_with_link",
                 ),
             },
         ),
+        TenderQuestionInline,
         (
             "Filtres",
             {
@@ -254,12 +266,13 @@ class TenderAdmin(admin.ModelAdmin):
         ),
         ("Si importé", {"fields": ("import_raw_object_display",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
-    )
+    ]
 
     change_form_template = "tenders/admin_change_form.html"
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
+        qs = qs.with_question_stats()
         qs = qs.with_siae_stats()
         return qs
 
@@ -307,6 +320,13 @@ class TenderAdmin(admin.ModelAdmin):
 
     user_with_link.short_description = "Auteur"
     user_with_link.admin_order_field = "author"
+
+    def question_count_with_link(self, tender):
+        url = reverse("admin:tenders_tenderquestion_changelist") + f"?tender__in={tender.id}"
+        return format_html(f'<a href="{url}">{getattr(tender, "question_count", 0)}</a>')
+
+    question_count_with_link.short_description = TenderQuestion._meta.verbose_name_plural
+    question_count_with_link.admin_order_field = "question_count"
 
     def siae_count_with_link(self, tender):
         url = reverse("admin:siaes_siae_changelist") + f"?tenders__in={tender.id}"
@@ -387,6 +407,23 @@ class TenderAdmin(admin.ModelAdmin):
         return "-"
 
     import_raw_object_display.short_description = Tender._meta.get_field("import_raw_object").verbose_name
+
+
+@admin.register(TenderQuestion, site=admin_site)
+class TenderQuestionAdmin(admin.ModelAdmin):
+    list_display = ["id", "text", "tender_with_link", "created_at"]
+    search_fields = ["id", "text", "tender__id", "tender__name"]
+    search_help_text = "Cherche sur les champs : ID, Texte, Besoin (ID, Titre)"
+
+    autocomplete_fields = ["tender"]
+    readonly_fields = ["created_at", "updated_at"]
+
+    def tender_with_link(self, tender_question):
+        url = reverse("admin:tenders_tender_change", args=[tender_question.tender_id])
+        return format_html(f'<a href="{url}">{tender_question.tender}</a>')
+
+    tender_with_link.short_description = "Besoin d'achat"
+    tender_with_link.admin_order_field = "tender"
 
 
 @admin.register(PartnerShareTender, site=admin_site)
