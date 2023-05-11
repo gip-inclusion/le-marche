@@ -12,7 +12,7 @@ from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.factories import TenderFactory
+from lemarche.tenders.factories import TenderFactory, TenderQuestionFactory
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
@@ -377,6 +377,7 @@ class TenderDetailViewTest(TestCase):
             detail_display_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
         )
+        TenderQuestionFactory(tender=cls.tender_1)
 
     def test_anyone_can_view_validated_tenders(self):
         # anonymous
@@ -421,6 +422,25 @@ class TenderDetailViewTest(TestCase):
         # tender.author.company_name
         self.assertContains(response, "Entreprise Buyer")
 
+    def test_tender_questions_display(self):
+        # tender with questions: section should be visible
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Questions du client")
+        # author has different wording
+        self.client.force_login(self.user_buyer_1)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "Questions à poser aux prestataires ciblés")
+        # tender without questions: section should be hidden
+        tender_2 = TenderFactory(author=self.user_buyer_2, constraints="")
+        url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Questions à poser aux prestataires ciblés")
+        self.assertNotContains(response, "Questions du client")
+
     def test_tender_constraints_display(self):
         # tender with constraints: section should be visible
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
@@ -453,6 +473,7 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Montant du marché")
         self.assertNotContains(response, "Budget du client")
         # author has section
         self.client.force_login(self.user_buyer_2)

@@ -405,34 +405,31 @@ class Tender(models.Model):
                 raise e
 
     @cached_property
-    def contact_full_name(self):
+    def contact_full_name(self) -> str:
         return f"{self.contact_first_name} {self.contact_last_name}"
 
     def sectors_list(self):
         return self.sectors.form_filter_queryset().values_list("name", flat=True)
 
-    def sectors_list_string(self, display_max=5):
+    def sectors_list_string(self, display_max=5) -> str:
         sectors_name_list = self.sectors_list()
         if display_max and len(sectors_name_list) > display_max:
             sectors_name_list = sectors_name_list[:display_max]
             sectors_name_list.append("…")
         return ", ".join(sectors_name_list)
 
-    def sectors_full_list_string(self):
+    def sectors_full_list_string(self) -> str:
         return self.sectors_list_string(display_max=None)
 
-    def perimeter_list(self):
+    def perimeters_list(self):
         return self.perimeters.values_list("name", flat=True)
 
     @cached_property
-    def perimeters_list_string(self):
-        return ", ".join(self.perimeter_list())
-
-    def questions_list(self):
-        return self.questions.values_list("text", flat=True)
+    def perimeters_list_string(self) -> str:
+        return ", ".join(self.perimeters_list())
 
     @cached_property
-    def location_display(self):
+    def location_display(self) -> str:
         if self.is_country_area:
             return "France entière"
         elif self.location:
@@ -441,14 +438,17 @@ class Tender(models.Model):
             # maintain legacy perimeters display
             return self.perimeters_list_string
 
+    def questions_list(self):
+        return self.questions.values_list("text", flat=True)
+
     @cached_property
-    def external_link_title(self):
+    def external_link_title(self) -> str:
         if self.kind == tender_constants.KIND_TENDER:
             return "Voir l'appel d'offres"
         return "Lien partagé"
 
     @property
-    def cta_card_title_text(self):
+    def cta_card_title_text(self) -> str:
         if self.kind == tender_constants.KIND_TENDER:
             return "Cet appel d'offres vous intéresse ?"
         elif self.kind == tender_constants.KIND_QUOTE:
