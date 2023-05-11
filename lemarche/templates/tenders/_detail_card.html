@@ -48,6 +48,7 @@
             {% endif %}
         {% endif %}
 
+        <!-- tender description -->
         <hr class="my-5">
 
         <h2>
@@ -58,6 +59,25 @@
         </h2>
         <p>{{ tender.description|safe|linebreaks }}</p>
 
+        <!-- tender questions -->
+        {% if source_form or not source_form and tender.questions_list|length %}
+            <hr class="my-5">
+
+            <h2>
+                {% if source_form or tender.author == request.user %}
+                    Questions à poser aux prestataires ciblés
+                {% else %}
+                    Questions du client
+                {% endif %}
+            </h2>
+            <ul>
+                {% for question in tender.questions_list %}
+                    <li>{{ question }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <!-- tender constraints -->
         {% if source_form or not source_form and tender.constraints %}
             <hr class="my-5">
 
@@ -65,6 +85,7 @@
             <p>{{ tender.constraints|default:"-"|safe|linebreaks }}</p>
         {% endif %}
 
+        <!-- tender amount -->
         {% if source_form or tender.author == request.user or tender.accept_share_amount %}
             <hr class="my-5">
 

@@ -32,7 +32,7 @@ def get_perimeter_filter(siae):
 
 class TenderQuerySet(models.QuerySet):
     def prefetch_many_to_many(self):
-        return self.prefetch_related("sectors")  # "perimeters", "siaes"
+        return self.prefetch_related("sectors")  # "perimeters", "siaes", "questions"
 
     def select_foreign_keys(self):
         return self.select_related("location")
@@ -408,8 +408,11 @@ class Tender(models.Model):
     def contact_full_name(self):
         return f"{self.contact_first_name} {self.contact_last_name}"
 
+    def sectors_list(self):
+        return self.sectors.form_filter_queryset().values_list("name", flat=True)
+
     def sectors_list_string(self, display_max=5):
-        sectors_name_list = self.sectors.form_filter_queryset().values_list("name", flat=True)
+        sectors_name_list = self.sectors_list()
         if display_max and len(sectors_name_list) > display_max:
             sectors_name_list = sectors_name_list[:display_max]
             sectors_name_list.append("…")
@@ -418,9 +421,15 @@ class Tender(models.Model):
     def sectors_full_list_string(self):
         return self.sectors_list_string(display_max=None)
 
+    def perimeter_list(self):
+        return self.perimeters.values_list("name", flat=True)
+
     @cached_property
     def perimeters_list_string(self):
-        return ", ".join(self.perimeters.values_list("name", flat=True))
+        return ", ".join(self.perimeter_list())
+
+    def questions_list(self):
+        return self.questions.values_list("text", flat=True)
 
     @cached_property
     def location_display(self):
