@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django_admin_filters import MultiChoice
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
+from fieldsets_with_inlines import FieldsetsInlineMixin
 
 from lemarche.perimeters.admin import PerimeterRegionFilter
 from lemarche.tenders import constants
@@ -47,6 +48,13 @@ class ResponseKindFilter(admin.SimpleListFilter):
         return queryset
 
 
+class TenderQuestionInline(admin.TabularInline):
+    model = TenderQuestion
+    fields = ["text", "created_at", "updated_at"]
+    readonly_fields = ["created_at", "updated_at"]
+    extra = 0
+
+
 def update_and_send_tender_task(tender: Tender):
     # 1) validate the tender
     tender.set_validated(with_save=True)
@@ -71,7 +79,7 @@ def restart_send_tender_task(tender: Tender):
 
 
 @admin.register(Tender, site=admin_site)
-class TenderAdmin(admin.ModelAdmin):
+class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     list_display = [
         "id",
         "status",
@@ -136,7 +144,7 @@ class TenderAdmin(admin.ModelAdmin):
         ChoiceArrayField: {"widget": forms.CheckboxSelectMultiple(attrs={"class": "custom-checkbox-select-multiple"})},
     }
 
-    fieldsets = (
+    fieldsets_with_inlines = [
         (
             None,
             {
@@ -155,6 +163,7 @@ class TenderAdmin(admin.ModelAdmin):
                 ),
             },
         ),
+        TenderQuestionInline,
         (
             "Filtres",
             {
@@ -257,7 +266,7 @@ class TenderAdmin(admin.ModelAdmin):
         ),
         ("Si importé", {"fields": ("import_raw_object_display",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
-    )
+    ]
 
     change_form_template = "tenders/admin_change_form.html"
 
@@ -313,10 +322,10 @@ class TenderAdmin(admin.ModelAdmin):
     user_with_link.admin_order_field = "author"
 
     def question_count_with_link(self, tender):
-        url = reverse("admin:tenders_tenderquestion_changelist") + f"?tenders__in={tender.id}"
+        url = reverse("admin:tenders_tenderquestion_changelist") + f"?tender__in={tender.id}"
         return format_html(f'<a href="{url}">{getattr(tender, "question_count", 0)}</a>')
 
-    question_count_with_link.short_description = "Questions au client"
+    question_count_with_link.short_description = TenderQuestion._meta.verbose_name_plural
     question_count_with_link.admin_order_field = "question_count"
 
     def siae_count_with_link(self, tender):

@@ -48,8 +48,8 @@ class Migration(migrations.Migration):
                 ),
             ],
             options={
-                "verbose_name": "Question au client",
-                "verbose_name_plural": "Questions au client",
+                "verbose_name": "Question de l'acheteur",
+                "verbose_name_plural": "Questions de l'acheteur",
             },
         ),
     ]

@@ -582,8 +582,8 @@ class TenderQuestion(models.Model):
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
     class Meta:
-        verbose_name = "Question au client"
-        verbose_name_plural = "Questions au client"
+        verbose_name = "Question de l'acheteur"
+        verbose_name_plural = "Questions de l'acheteur"
 
     def __str__(self):
         return self.text
