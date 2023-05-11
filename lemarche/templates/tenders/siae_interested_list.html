@@ -25,57 +25,98 @@
 
 {% block content %}
 <section class="pt-4 pb-6">
-    {% block htmx %}
-    <div class="container" id="tenderSiaeList">
-        <ul role="navigation" class="nav nav-tabs nav-tabs--marche" style="border-bottom:0;">
-            {% url 'tenders:detail-siae-list' slug=tender.slug as TENDER_SIAE_LIST_URL %}
-            {% url 'tenders:detail-siae-list' slug=tender.slug status="INTERESTED" as TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL %}
-
-            <li class="nav-item">
-                <a role="button" hx-push-url="true" hx-get="{{ TENDER_SIAE_LIST_URL }}"
-                    class="nav-link{% if request.get_full_path == TENDER_SIAE_LIST_URL %} active{% endif %}"
-                    hx-target="#tenderSiaeList" hx-swap="outerHTML">
-                    Prestataires ciblés
-                </a>
-            </li>
-            <li class="nav-item">
-                <a role="button" hx-push-url="true" hx-get="{{ TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL }}"
-                    class="nav-link{% if request.get_full_path == TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL %} active{% endif %}"
-                    hx-target="#tenderSiaeList" hx-swap="outerHTML">
-                    Prestataires intéressés
-                </a>
-            </li>
-        </ul>
-
+    <div class="container">
         <div class="row">
-            <div class="col-12 col-lg-8">
-                <h1 class="mb-3 mb-lg-5">{{ siaes.count }} prestataire{{ siaes.count|pluralize }}</h1>
-            </div>
-            <div class="col-12 col-lg-4">
-                <button type="button" class="btn btn-ico white-space-nowrap text-decoration-none btn-link text-important px-0 float-right {% if tendersiaes.count == 0 %}disabled{% endif %}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="text-decoration-none ml-0">Télécharger la liste</span>
-                    <i class="ri-download-line ri-lg"></i>
-                </button>
-                <div class="dropdown-menu dropdown-menu-right">
-                    <a href="{% url 'siae:search_results_download' %}?tender={{ tender.slug }}&tender_status={{ status|default:"" }}&format=xls" id="tender-siae-interested-export-xls" class="dropdown-item">
-                        Télécharger la liste (.xls)
-                    </a>
-                    <a href="{% url 'siae:search_results_download' %}?tender={{ tender.slug }}&tender_status={{ status|default:"" }}&format=csv" id="tender-siae-interested-export-csv" class="dropdown-item">
-                        Télécharger la liste (.csv)
-                    </a>
+            <div class="col-12">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <form method="GET" role="search" id="filter-search-form">
+                            {% bootstrap_form_errors form type="all" %}
+                            <div class="row align-items-start">
+                                <div class="col-12 col-md-6 col-lg-3">
+                                    <div class="form-group">
+                                        <label for="id_perimeters">{{ form.perimeters.label }}</label>
+                                        <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
+                                        <div id="perimeters-selected" class="mt-2"></div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-3">
+                                    {% bootstrap_field form.kind %}
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-3">
+                                    {% bootstrap_field form.territory %}
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-3">
+                                    <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
+                                    <button id="text-search-submit" class="btn btn-primary btn-block btn-ico" type="submit">
+                                        <span>Filtrer</span>
+                                        <i class="ri-search-line ri-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-12">
-                {% for siae in siaes %}
-                    {% include "siaes/_card_tender.html" with siae=siae %}
-                {% endfor %}
-                {% include "includes/_pagination.html" %}
+        {% block htmx %}
+        <div id="tenderSiaeList">
+            <ul role="navigation" class="nav nav-tabs nav-tabs--marche" style="border-bottom:0;">
+                {% url 'tenders:detail-siae-list' slug=tender.slug as TENDER_SIAE_LIST_URL %}
+                {% url 'tenders:detail-siae-list' slug=tender.slug status="INTERESTED" as TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL %}
+
+                <li class="nav-item">
+                    <a role="button" hx-push-url="true" hx-get="{{ TENDER_SIAE_LIST_URL }}"
+                        class="nav-link{% if TENDER_SIAE_LIST_URL in request.get_full_path %} active{% endif %}"
+                        hx-target="#tenderSiaeList" hx-swap="outerHTML">
+                        Prestataires ciblés
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a role="button" hx-push-url="true" hx-get="{{ TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL }}"
+                        class="nav-link{% if TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL in request.get_full_path %} active{% endif %}"
+                        hx-target="#tenderSiaeList" hx-swap="outerHTML">
+                        Prestataires intéressés
+                    </a>
+                </li>
+            </ul>
+
+            <div class="row">
+                <div class="col-12 col-lg-8">
+                    <h1 class="mb-3 mb-lg-5">{{ siaes.count }} prestataire{{ siaes.count|pluralize }}</h1>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <button type="button" class="btn btn-ico white-space-nowrap text-decoration-none btn-link text-important px-0 float-right {% if tendersiaes.count == 0 %}disabled{% endif %}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="text-decoration-none ml-0">Télécharger la liste</span>
+                        <i class="ri-download-line ri-lg"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a href="{% url 'siae:search_results_download' %}?tender={{ tender.slug }}&tender_status={{ status|default:"" }}&format=xls" id="tender-siae-interested-export-xls" class="dropdown-item">
+                            Télécharger la liste (.xls)
+                        </a>
+                        <a href="{% url 'siae:search_results_download' %}?tender={{ tender.slug }}&tender_status={{ status|default:"" }}&format=csv" id="tender-siae-interested-export-csv" class="dropdown-item">
+                            Télécharger la liste (.csv)
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    {% for siae in siaes %}
+                        {% include "siaes/_card_tender.html" with siae=siae %}
+                    {% endfor %}
+                    {% include "includes/_pagination.html" %}
+                </div>
             </div>
         </div>
+        {% endblock %}
     </div>
-    {% endblock %}
 </section>
+{% endblock %}
+
+{% block extra_js %}
+{{ current_perimeters|json_script:"current-perimeters" }}
+<script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
 {% endblock %}

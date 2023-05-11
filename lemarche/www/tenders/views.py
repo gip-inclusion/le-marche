@@ -8,6 +8,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, ListView, UpdateView
+from django.views.generic.edit import FormMixin
 from formtools.wizard.views import SessionWizardView
 
 from lemarche.siaes.models import Siae
@@ -17,6 +18,7 @@ from lemarche.users.models import User
 from lemarche.utils.apis import api_hubspot
 from lemarche.utils.data import get_choice
 from lemarche.utils.mixins import TenderAuthorOrAdminRequiredIfNotValidatedMixin, TenderAuthorOrAdminRequiredMixin
+from lemarche.www.siaes.forms import TenderSiaeFilterForm
 from lemarche.www.tenders.forms import (
     TenderCreateStepConfirmationForm,
     TenderCreateStepContactForm,
@@ -357,16 +359,15 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
         return f"<strong>{self.object.cta_card_button_text}</strong><br />Pour {self.object.cta_card_button_text.lower()}, vous devez accepter d'être mis en relation avec l'acheteur."  # noqa
 
 
-class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, ListView):
+class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
     template_name = "tenders/siae_interested_list.html"
-    # queryset = TenderSiae.objects.select_related("tender", "siae").all()
+    form_class = TenderSiaeFilterForm
     queryset = Siae.objects.prefetch_related("tendersiae_set").all()
     context_object_name = "siaes"
     status = None
 
     def get_queryset(self):
         qs = super().get_queryset()
-        print("get_queryset", self.status)
         self.tender = Tender.objects.get(slug=self.kwargs.get("slug"))
         qs = qs.filter(tendersiae__tender=self.tender)
         if self.status:  # status == "INTERESTED"
@@ -375,8 +376,8 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, ListView):
         else:  # default
             qs = qs.filter(tendersiae__email_send_date__isnull=False)
             # qs = qs.order_by("-tendersiae__email_send_date")
-        # avoid duplicates
-        qs = qs.distinct()
+        self.filter_form = TenderSiaeFilterForm(data=self.request.GET)
+        qs = self.filter_form.filter_queryset(qs)
         return qs
 
     def get(self, request, status=None, *args, **kwargs):
@@ -392,4 +393,11 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["tender"] = self.tender
         context["status"] = self.status
+        siae_search_form = self.filter_form if self.filter_form else TenderSiaeFilterForm(data=self.request.GET)
+        context["form"] = siae_search_form
+        if len(self.request.GET.keys()):
+            if siae_search_form.is_valid():
+                current_perimeters = siae_search_form.cleaned_data.get("perimeters")
+                if current_perimeters:
+                    context["current_perimeters"] = list(current_perimeters.values("id", "slug", "name"))
         return context

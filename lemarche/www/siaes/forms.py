@@ -13,16 +13,17 @@ from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
-class SiaeSearchForm(forms.Form):
-    FORM_KIND_CHOICES_GROUPED = (
-        ("Insertion par l'activité économique", siae_constants.KIND_CHOICES_WITH_EXTRA_INSERTION),
-        ("Handicap", siae_constants.KIND_CHOICES_WITH_EXTRA_HANDICAP),
-    )
-    FORM_TERRITORY_CHOICES = (
-        ("QPV", "Quartier prioritaire de la politique de la ville (QPV)"),
-        ("ZRR", "Zone de revitalisation rurale (ZRR)"),
-    )
+FORM_KIND_CHOICES_GROUPED = (
+    ("Insertion par l'activité économique", siae_constants.KIND_CHOICES_WITH_EXTRA_INSERTION),
+    ("Handicap", siae_constants.KIND_CHOICES_WITH_EXTRA_HANDICAP),
+)
+FORM_TERRITORY_CHOICES = (
+    ("QPV", "Quartier prioritaire de la politique de la ville (QPV)"),
+    ("ZRR", "Zone de revitalisation rurale (ZRR)"),
+)
 
+
+class SiaeSearchForm(forms.Form):
     q = forms.CharField(
         label="Recherche via le numéro de SIRET ou le nom de votre structure",
         required=False,
@@ -302,5 +303,63 @@ class NetworkSiaeFilterForm(forms.Form):
         perimeter = self.cleaned_data.get("perimeter", None)
         if perimeter:
             qs = qs.address_in_perimeter_list([perimeter])
+
+        # avoid duplicates
+        qs = qs.distinct()
+
+        return qs
+
+
+class TenderSiaeFilterForm(forms.Form):
+    # The hidden `perimeters` field is populated by the JS autocomplete library, see `perimeters_autocomplete_field.js`
+    perimeters = forms.ModelMultipleChoiceField(
+        label=Perimeter._meta.verbose_name_plural,
+        queryset=Perimeter.objects.all(),
+        to_field_name="slug",
+        required=False,
+        # widget=forms.HiddenInput()
+    )
+    kind = forms.MultipleChoiceField(
+        label=Siae._meta.get_field("kind").verbose_name,
+        choices=FORM_KIND_CHOICES_GROUPED,
+        required=False,
+    )
+    territory = forms.MultipleChoiceField(
+        label="Territoire spécifique",
+        choices=FORM_TERRITORY_CHOICES,
+        required=False,
+    )
+
+    def filter_queryset(self, qs=None):
+        if not qs:
+            qs = Siae.objects.search_query_set()
+
+        if not hasattr(self, "cleaned_data"):
+            self.full_clean()
+
+        perimeters = self.cleaned_data.get("perimeters", None)
+        if perimeters:
+            qs = qs.in_perimeters_area(perimeters)
+
+        kinds = self.cleaned_data.get("kind", None)
+        if kinds:
+            qs = qs.filter(kind__in=kinds)
+
+        presta_types = self.cleaned_data.get("presta_type", None)
+        if presta_types:
+            qs = qs.filter(presta_type__overlap=presta_types)
+
+        territory = self.cleaned_data.get("territory", None)
+        if territory:
+            if len(territory) == 1:
+                if "QPV" in territory:
+                    qs = qs.filter(is_qpv=True)
+                elif "ZRR" in territory:
+                    qs = qs.filter(is_zrr=True)
+            elif len(territory) == 2:
+                qs = qs.filter(Q(is_qpv=True) | Q(is_zrr=True))
+
+        # avoid duplicates
+        qs = qs.distinct()
 
         return qs
