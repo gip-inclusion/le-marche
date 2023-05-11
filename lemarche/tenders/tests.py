@@ -9,7 +9,7 @@ from django.utils import timezone
 
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
-from lemarche.sectors.factories import SectorFactory
+from lemarche.sectors.factories import SectorFactory, SectorGroupFactory
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
@@ -54,16 +54,49 @@ class TenderModelPropertyTest(TestCase):
             # coords=Point(5.8862, 45.1106),
         )
 
+    def test_sectors_list(self):
+        sector_group = SectorGroupFactory(name="Bricolage")
+        sector_1 = SectorFactory(name="Autre", group=sector_group)
+        sector_2 = SectorFactory(name="Un secteur", group=sector_group)
+        sector_3 = SectorFactory(name="Un autre secteur", group=None)
+        tender_without_sectors = TenderFactory()
+        self.assertEqual(len(tender_without_sectors.sectors_list()), 0)
+        self.assertEqual(tender_without_sectors.sectors_list_string(), "")
+        tender_with_sectors = TenderFactory(sectors=[sector_1, sector_2, sector_3])
+        self.assertEqual(len(tender_with_sectors.sectors_list()), 2)  # only sectors with groups are displayed
+        self.assertEqual(tender_with_sectors.sectors_list()[0], sector_2.name)  # Autre at the end
+        self.assertEqual(tender_with_sectors.sectors_list_string(), "Un secteur, Autre")
+
+    def test_perimeters_list(self):
+        tender_whithout_perimeters = TenderFactory()
+        self.assertEqual(len(tender_whithout_perimeters.perimeters_list()), 0)
+        self.assertEqual(tender_whithout_perimeters.perimeters_list_string, "")
+        tender_with_perimeters = TenderFactory(
+            title="Besoin 3", perimeters=[self.grenoble_perimeter, self.chamrousse_perimeter]
+        )
+        self.assertEqual(len(tender_with_perimeters.perimeters_list()), 2)
+        self.assertEqual(tender_with_perimeters.perimeters_list()[0], self.grenoble_perimeter.name)
+        self.assertEqual(tender_with_perimeters.perimeters_list_string, "Grenoble, Chamrousse")
+
     def test_location_display(self):
         tender_country_area = TenderFactory(title="Besoin 1", is_country_area=True)
         self.assertEqual(tender_country_area.location_display, "France entière")
         tender_location = TenderFactory(title="Besoin 2", location=self.grenoble_perimeter)
         self.assertTrue("Grenoble" in tender_location.location_display)
-        tender_perimeters = TenderFactory(
+        tender_with_perimeters = TenderFactory(
             title="Besoin 3", perimeters=[self.grenoble_perimeter, self.chamrousse_perimeter]
         )
-        self.assertTrue("Grenoble" in tender_perimeters.location_display)
-        self.assertTrue("Chamrousse" in tender_perimeters.location_display)
+        self.assertTrue("Grenoble" in tender_with_perimeters.location_display)
+        self.assertTrue("Chamrousse" in tender_with_perimeters.location_display)
+
+    def test_questions_list(self):
+        tender_without_questions = TenderFactory()
+        self.assertEqual(len(tender_without_questions.questions_list()), 0)
+        tender_with_questions = TenderFactory()
+        tender_question_1 = TenderQuestionFactory(tender=tender_with_questions)
+        TenderQuestionFactory(tender=tender_with_questions)
+        self.assertEqual(len(tender_with_questions.questions_list()), 2)
+        self.assertEqual(tender_with_questions.questions_list()[0], tender_question_1.text)
 
 
 class TenderModelSaveTest(TestCase):
