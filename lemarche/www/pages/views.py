@@ -26,11 +26,8 @@ from lemarche.www.pages.forms import (
 )
 from lemarche.www.pages.tasks import send_contact_form_email, send_contact_form_receipt
 from lemarche.www.tenders.tasks import notify_admin_tender_created
-from lemarche.www.tenders.views import (
-    TenderCreateMultiStepView,
-    create_tender_from_dict,
-    get_or_create_user_from_anonymous_content,
-)
+from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user_from_anonymous_content
+from lemarche.www.tenders.views import TenderCreateMultiStepView
 
 
 class HomeView(TemplateView):
