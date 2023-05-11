@@ -87,6 +87,9 @@ class TenderQuerySet(models.QuerySet):
             "deadline_date_is_outdated", "deadline_date", "-updated_at"
         )
 
+    def with_question_stats(self):
+        return self.prefetch_related("questions").annotate(question_count=Count("questions", distinct=True))
+
     def with_siae_stats(self):
         """
         Enrich each Tender with stats on their linked Siae
@@ -358,8 +361,8 @@ class Tender(models.Model):
     objects = models.Manager.from_queryset(TenderQuerySet)()
 
     class Meta:
-        verbose_name = "Besoin d'acheteur"
-        verbose_name_plural = "Besoins des acheteurs"
+        verbose_name = "Besoin d'achat"
+        verbose_name_plural = "Besoins d'achat"
         ordering = ["-created_at", "deadline_date"]
 
     def __str__(self):
@@ -568,6 +571,24 @@ class TenderSiaeQuerySet(models.QuerySet):
         )
 
 
+class TenderQuestion(models.Model):
+    text = models.TextField(verbose_name="Intitulé de la question", blank=False)
+
+    tender = models.ForeignKey(
+        "tenders.Tender", verbose_name="Besoin d'achat", related_name="questions", on_delete=models.CASCADE
+    )
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Question de l'acheteur"
+        verbose_name_plural = "Questions de l'acheteur"
+
+    def __str__(self):
+        return self.text
+
+
 class TenderSiae(models.Model):
     TENDER_SIAE_SOURCE_EMAIL = "EMAIL"
     TENDER_SIAE_SOURCE_DASHBOARD = "DASHBOARD"
@@ -578,7 +599,7 @@ class TenderSiae(models.Model):
         (TENDER_SIAE_SOURCE_LINK, "Lien"),
     )
 
-    tender = models.ForeignKey("tenders.Tender", verbose_name="Besoin d'acheteur", on_delete=models.CASCADE)
+    tender = models.ForeignKey("tenders.Tender", verbose_name="Besoin d'achat", on_delete=models.CASCADE)
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
 
     source = models.CharField(max_length=20, choices=TENDER_SIAE_SOURCE_CHOICES, default=TENDER_SIAE_SOURCE_EMAIL)
