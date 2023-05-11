@@ -3,13 +3,13 @@ from datetime import date
 from django import forms
 
 from lemarche.sectors.models import Sector
-from lemarche.tenders import constants, constants as tender_constants
+from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
-class AddTenderStepGeneralForm(forms.ModelForm):
+class TenderCreateStepGeneralForm(forms.ModelForm):
     FORM_KIND_CHOICES = (
         (tender_constants.KIND_TENDER, "Appel d'offres"),
         (tender_constants.KIND_QUOTE, "Devis"),
@@ -66,7 +66,7 @@ class AddTenderStepGeneralForm(forms.ModelForm):
             self.add_error("sectors", msg_field_missing.format(Sector._meta.verbose_name_plural))
 
 
-class AddTenderStepDescriptionForm(forms.ModelForm):
+class TenderCreateStepDescriptionForm(forms.ModelForm):
     # fields from previous step
     kind = None
 
@@ -111,7 +111,7 @@ class AddTenderStepDescriptionForm(forms.ModelForm):
         self.fields["accept_cocontracting"].help_text = None
 
 
-class AddTenderStepContactForm(forms.ModelForm):
+class TenderCreateStepContactForm(forms.ModelForm):
     # fields from previous step
     max_deadline_date = None
     external_link = None
@@ -210,31 +210,31 @@ class AddTenderStepContactForm(forms.ModelForm):
             )
 
 
-class AddTenderStepSurveyForm(forms.ModelForm):
+class TenderCreateStepSurveyForm(forms.ModelForm):
     scale_marche_useless = forms.ChoiceField(
         label=Tender._meta.get_field("scale_marche_useless").help_text,
-        choices=constants.SURVEY_SCALE_QUESTION_CHOICES,
+        choices=tender_constants.SURVEY_SCALE_QUESTION_CHOICES,
         widget=forms.RadioSelect,
         required=True,
     )
 
     worked_with_inclusif_siae_this_kind_tender = forms.ChoiceField(
         label="Q°2. Avez-vous déjà travaillé avec des prestataires inclusifs sur ce type de prestation ?",
-        choices=constants.SURVEY_YES_NO_DONT_KNOW_CHOICES,
+        choices=tender_constants.SURVEY_YES_NO_DONT_KNOW_CHOICES,
         widget=forms.RadioSelect,
         required=True,
     )
     # hidden if worked_with_inclusif_siae_this_kind_tender is no or don't know
     is_encouraged_by_le_marche = forms.ChoiceField(
         label="Q°3. Est-ce la plateforme du Marché de l'inclusion qui vous a encouragé à consulter des prestataires inclusifs pour ce besoin ?",  # noqa
-        choices=constants.SURVEY_ENCOURAGED_BY_US_CHOICES,
+        choices=tender_constants.SURVEY_ENCOURAGED_BY_US_CHOICES,
         widget=forms.RadioSelect,
         required=False,
     )
 
     providers_out_of_insertion = forms.ChoiceField(
         label="Q°4. Comptez-vous consulter d'autres prestataires en dehors de l'Insertion et du Handicap ?",
-        choices=constants.SURVEY_SCALE_QUESTION_CHOICES,
+        choices=tender_constants.SURVEY_SCALE_QUESTION_CHOICES,
         widget=forms.RadioSelect,
         required=True,
     )
@@ -276,5 +276,5 @@ class AddTenderStepSurveyForm(forms.ModelForm):
                 return cleaned_data
 
 
-class AddTenderStepConfirmationForm(forms.Form):
+class TenderCreateStepConfirmationForm(forms.Form):
     pass
