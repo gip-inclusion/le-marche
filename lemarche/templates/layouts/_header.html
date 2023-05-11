@@ -75,6 +75,9 @@
                                     Solutions
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="solutionsDropdownMenuButton">
+                                    <a href="{% url 'siae:search_results' %}" id="header-dropdown-siae-search-btn" class="dropdown-item">
+                                        Moteur de recherche multicritères
+                                    </a>
                                     <a href="{% url 'tenders:create' %}" id="header-dropdown-tender-create-btn" class="dropdown-item">
                                         Sourcing inversé
                                     </a>
@@ -177,6 +180,11 @@
                             </a>
                         </li>
                         <hr />
+                        <li>
+                            <a href="{% url 'siae:search_results' %}" id="header-dropdown-siae-search-btn">
+                                Moteur de recherche multicritères
+                            </a>
+                        </li>
                         <li>
                             <a href="{% url 'tenders:create' %}" id="header-dropdown-tender-create-btn">
                                 Sourcing inversé
