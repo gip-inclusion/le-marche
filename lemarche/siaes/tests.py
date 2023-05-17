@@ -344,11 +344,11 @@ class SiaeModelPerimeterQuerysetTest(TestCase):
         )
 
     def test_address_in_perimeter_list(self):
-        self.assertEqual(Siae.objects.geo_range_in_perimeter_list([]).count(), 5)
-        self.assertEqual(Siae.objects.geo_range_in_perimeter_list([self.guadeloupe_perimeter]).count(), 1)
-        self.assertEqual(Siae.objects.geo_range_in_perimeter_list([self.grenoble_perimeter]).count(), 1)
+        self.assertEqual(Siae.objects.address_in_perimeter_list([]).count(), 5)
+        self.assertEqual(Siae.objects.address_in_perimeter_list([self.guadeloupe_perimeter]).count(), 1)
+        self.assertEqual(Siae.objects.address_in_perimeter_list([self.grenoble_perimeter]).count(), 1)
         self.assertEqual(
-            Siae.objects.geo_range_in_perimeter_list([self.guadeloupe_perimeter, self.finistere_perimeter]).count(), 2
+            Siae.objects.address_in_perimeter_list([self.guadeloupe_perimeter, self.finistere_perimeter]).count(), 2
         )
 
     def test_geo_range_in_perimeter_list(self):
