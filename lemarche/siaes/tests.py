@@ -1,5 +1,7 @@
 from django.test import TestCase
 
+from lemarche.perimeters.factories import PerimeterFactory
+from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeFactory, SiaeGroupFactory, SiaeLabelFactory, SiaeOfferFactory
@@ -249,7 +251,8 @@ class SiaeModelSaveTest(TestCase):
 
 
 class SiaeModelQuerysetTest(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpTestData(cls):
         pass
 
     def test_is_live_queryset(self):
@@ -293,6 +296,68 @@ class SiaeModelQuerysetTest(TestCase):
         siae_queryset = Siae.objects.with_content_filled_stats()
         self.assertEqual(siae_queryset.get(id=siae_empty.id).content_filled_basic, False)
         self.assertEqual(siae_queryset.get(id=siae_filled_basic.id).content_filled_basic, True)
+
+
+class SiaeModelPerimeterQuerysetTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.auvergne_rhone_alpes_perimeter = PerimeterFactory(
+            name="Auvergne-Rhône-Alpes", kind=Perimeter.KIND_REGION, insee_code="R84"
+        )
+        cls.guadeloupe_perimeter = PerimeterFactory(name="Guadeloupe", kind=Perimeter.KIND_REGION, insee_code="R01")
+        cls.finistere_perimeter = PerimeterFactory(
+            name="Finistère", kind=Perimeter.KIND_DEPARTMENT, insee_code="29", region_code="53"
+        )
+        cls.grenoble_perimeter = PerimeterFactory(
+            name="Grenoble",
+            kind=Perimeter.KIND_CITY,
+            insee_code="38185",
+            department_code="38",
+            region_code="84",
+            post_codes=["38000", "38100", "38700"],
+            # coords=Point(5.7301, 45.1825),
+        )
+        cls.chamrousse_perimeter = PerimeterFactory(
+            name="Chamrousse",
+            kind=Perimeter.KIND_CITY,
+            insee_code="38567",
+            department_code="38",
+            region_code="84",
+            post_codes=["38410"],
+            # coords=Point(5.8862, 45.1106),
+        )
+        SiaeFactory()
+        SiaeFactory(region="Guadeloupe")
+        SiaeFactory(region="Bretagne", department="29")
+        SiaeFactory(
+            city=cls.grenoble_perimeter.name,
+            department=cls.grenoble_perimeter.department_code,
+            region=cls.auvergne_rhone_alpes_perimeter.name,
+            post_code=cls.grenoble_perimeter.post_codes[0],
+        )
+        SiaeFactory(
+            city=cls.chamrousse_perimeter.name,
+            department=cls.chamrousse_perimeter.department_code,
+            region=cls.auvergne_rhone_alpes_perimeter.name,
+            post_code=cls.chamrousse_perimeter.post_codes[0],
+            geo_range=siae_constants.GEO_RANGE_DEPARTMENT,
+        )
+
+    def test_address_in_perimeter_list(self):
+        self.assertEqual(Siae.objects.address_in_perimeter_list([]).count(), 5)
+        self.assertEqual(Siae.objects.address_in_perimeter_list([self.guadeloupe_perimeter]).count(), 1)
+        self.assertEqual(Siae.objects.address_in_perimeter_list([self.grenoble_perimeter]).count(), 1)
+        self.assertEqual(
+            Siae.objects.address_in_perimeter_list([self.guadeloupe_perimeter, self.finistere_perimeter]).count(), 2
+        )
+
+    def test_geo_range_in_perimeter_list(self):
+        self.assertEqual(Siae.objects.geo_range_in_perimeter_list([]).count(), 5)
+        self.assertEqual(Siae.objects.geo_range_in_perimeter_list([self.guadeloupe_perimeter]).count(), 1)
+        self.assertEqual(Siae.objects.geo_range_in_perimeter_list([self.grenoble_perimeter]).count(), 2)
+        self.assertEqual(
+            Siae.objects.geo_range_in_perimeter_list([self.guadeloupe_perimeter, self.finistere_perimeter]).count(), 2
+        )
 
 
 class SiaeGroupModelTest(TestCase):
