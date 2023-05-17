@@ -36,13 +36,20 @@ def get_department_filter(perimeter):
     return Q(department=perimeter.insee_code)
 
 
+def get_simple_city_filter(perimeter):
+    """
+    - if the perimeter is a CITY, return all Siae with the city's post_code
+    """
+    return Q(post_code__in=perimeter.post_codes)
+
+
 def get_city_filter(perimeter, with_country=False):
     """
     used in Siae geo_range_in_perimeter_list() queryset
     - if the perimeter is a CITY, return all Siae with the city's post_code
     - also return the Siae in the same department (if not GEO_RANGE_CUSTOM)
     """
-    filters = Q(post_code__in=perimeter.post_codes) | (
+    filters = get_simple_city_filter(perimeter) | (
         ~Q(geo_range=siae_constants.GEO_RANGE_CUSTOM) & Q(department=perimeter.department_code)
     )
     if perimeter.coords:
@@ -242,9 +249,25 @@ class SiaeQuerySet(models.QuerySet):
     def in_city_area(self, perimeter):
         return self.filter(get_city_filter(perimeter))
 
+    def address_in_perimeter_list(self, perimeters: models.QuerySet):
+        """
+        Simple method to filter the Siaes depending on the perimeter filter.
+        We only filter on the Siae's address field.
+        """
+        conditions = Q()
+        for perimeter in perimeters:
+            if perimeter.kind == Perimeter.KIND_CITY:
+                conditions |= get_simple_city_filter(perimeter)
+            if perimeter.kind == Perimeter.KIND_DEPARTMENT:
+                conditions |= get_department_filter(perimeter)
+            if perimeter.kind == Perimeter.KIND_REGION:
+                conditions |= get_region_filter(perimeter)
+        return self.filter(conditions)
+
     def geo_range_in_perimeter_list(self, perimeters: models.QuerySet, with_country=False):
         """
         Method to filter the Siaes depending on the perimeter filter.
+        We filter on the Siae's address & geo_range fields.
         Depending on the type of Perimeter that were chosen, different cases arise:
 
         **CITY**
