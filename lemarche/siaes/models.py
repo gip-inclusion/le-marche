@@ -28,11 +28,28 @@ from lemarche.utils.data import round_by_base
 from lemarche.utils.fields import ChoiceArrayField
 
 
-def get_filter_city(perimeter, with_country=False):
+def get_region_filter(perimeter):
+    return Q(region=perimeter.name)
+
+
+def get_department_filter(perimeter):
+    return Q(department=perimeter.insee_code)
+
+
+def get_simple_city_filter(perimeter):
     """
-    used in Siae in_perimeters_area() queryset
+    - if the perimeter is a CITY, return all Siae with the city's post_code
     """
-    filters = Q(post_code__in=perimeter.post_codes) | (
+    return Q(post_code__in=perimeter.post_codes)
+
+
+def get_city_filter(perimeter, with_country=False):
+    """
+    used in Siae geo_range_in_perimeter_list() queryset
+    - if the perimeter is a CITY, return all Siae with the city's post_code
+    - also return the Siae in the same department (if not GEO_RANGE_CUSTOM)
+    """
+    filters = get_simple_city_filter(perimeter) | (
         ~Q(geo_range=siae_constants.GEO_RANGE_CUSTOM) & Q(department=perimeter.department_code)
     )
     if perimeter.coords:
@@ -230,11 +247,27 @@ class SiaeQuerySet(models.QuerySet):
             )
 
     def in_city_area(self, perimeter):
-        return self.filter(get_filter_city(perimeter))
+        return self.filter(get_city_filter(perimeter))
 
-    def in_perimeters_area(self, perimeters: models.QuerySet, with_country=False):
+    def address_in_perimeter_list(self, perimeters: models.QuerySet):
+        """
+        Simple method to filter the Siaes depending on the perimeter filter.
+        We only filter on the Siae's address field.
+        """
+        conditions = Q()
+        for perimeter in perimeters:
+            if perimeter.kind == Perimeter.KIND_CITY:
+                conditions |= get_simple_city_filter(perimeter)
+            if perimeter.kind == Perimeter.KIND_DEPARTMENT:
+                conditions |= get_department_filter(perimeter)
+            if perimeter.kind == Perimeter.KIND_REGION:
+                conditions |= get_region_filter(perimeter)
+        return self.filter(conditions)
+
+    def geo_range_in_perimeter_list(self, perimeters: models.QuerySet, with_country=False):
         """
         Method to filter the Siaes depending on the perimeter filter.
+        We filter on the Siae's address & geo_range fields.
         Depending on the type of Perimeter that were chosen, different cases arise:
 
         **CITY**
@@ -252,11 +285,11 @@ class SiaeQuerySet(models.QuerySet):
         for perimeter in perimeters:
             if perimeter.kind == Perimeter.KIND_CITY:
                 # https://stackoverflow.com/questions/20222457/django-building-a-queryset-with-q-objects
-                conditions |= get_filter_city(perimeter, with_country)
+                conditions |= get_city_filter(perimeter, with_country)
             if perimeter.kind == Perimeter.KIND_DEPARTMENT:
-                conditions |= Q(department=perimeter.insee_code)
+                conditions |= get_department_filter(perimeter)
             if perimeter.kind == Perimeter.KIND_REGION:
-                conditions |= Q(region=perimeter.name)
+                conditions |= get_region_filter(perimeter)
         return self.filter(conditions)
 
     def within(self, point, distance_km=0):
@@ -310,7 +343,7 @@ class SiaeQuerySet(models.QuerySet):
             qs = qs.with_country_geo_range()
         else:
             if tender.perimeters.count():
-                qs = qs.in_perimeters_area(tender.perimeters.all(), with_country=True)
+                qs = qs.geo_range_in_perimeter_list(tender.perimeters.all(), with_country=True)
             if not tender.include_country_area:
                 qs = qs.exclude_country_geo_range()
         # filter by presta_type
