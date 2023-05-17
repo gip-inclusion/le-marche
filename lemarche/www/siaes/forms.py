@@ -301,6 +301,6 @@ class NetworkSiaeFilterForm(forms.Form):
 
         perimeter = self.cleaned_data.get("perimeter", None)
         if perimeter:
-            qs = qs.geo_range_in_perimeter_list([perimeter])
+            qs = qs.address_in_perimeter_list([perimeter])
 
         return qs
