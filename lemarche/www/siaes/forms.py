@@ -104,7 +104,7 @@ class SiaeSearchForm(forms.Form):
 
         perimeters = self.cleaned_data.get("perimeters", None)
         if perimeters:
-            qs = qs.in_perimeters_area(perimeters)
+            qs = qs.geo_range_in_perimeter_list(perimeters)
 
         kinds = self.cleaned_data.get("kind", None)
         if kinds:
@@ -301,6 +301,6 @@ class NetworkSiaeFilterForm(forms.Form):
 
         perimeter = self.cleaned_data.get("perimeter", None)
         if perimeter:
-            qs = qs.in_perimeters_area([perimeter])
+            qs = qs.geo_range_in_perimeter_list([perimeter])
 
         return qs
