@@ -395,9 +395,10 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
         context["status"] = self.status
         siae_search_form = self.filter_form if self.filter_form else TenderSiaeFilterForm(data=self.request.GET)
         context["form"] = siae_search_form
-        if len(self.request.GET.keys()):
-            if siae_search_form.is_valid():
-                current_perimeters = siae_search_form.cleaned_data.get("perimeters")
-                if current_perimeters:
-                    context["current_perimeters"] = list(current_perimeters.values("id", "slug", "name"))
+        # if len(self.request.GET.keys()):
+        #     if siae_search_form.is_valid():
+        #         current_perimeters = siae_search_form.cleaned_data.get("perimeters")
+        #         if current_perimeters:
+        #             context["current_perimeters"] = list(current_perimeters.values("id", "slug", "name"))
+        context["current_search_query"] = self.request.GET.urlencode()
         return context

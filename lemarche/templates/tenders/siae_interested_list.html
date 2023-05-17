@@ -33,13 +33,13 @@
                         <form method="GET" role="search" id="filter-search-form">
                             {% bootstrap_form_errors form type="all" %}
                             <div class="row align-items-start">
-                                <div class="col-12 col-md-6 col-lg-3">
+                                <!-- <div class="col-12 col-md-6 col-lg-3">
                                     <div class="form-group">
                                         <label for="id_perimeters">{{ form.perimeters.label }}</label>
                                         <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
                                         <div id="perimeters-selected" class="mt-2"></div>
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="col-12 col-md-6 col-lg-3">
                                     {% bootstrap_field form.kind %}
                                 </div>
@@ -67,14 +67,14 @@
                 {% url 'tenders:detail-siae-list' slug=tender.slug status="INTERESTED" as TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL %}
 
                 <li class="nav-item">
-                    <a role="button" hx-push-url="true" hx-get="{{ TENDER_SIAE_LIST_URL }}"
+                    <a role="button" hx-push-url="true" hx-get="{{ TENDER_SIAE_LIST_URL }}?{{ current_search_query }}"
                         class="nav-link{% if TENDER_SIAE_LIST_URL in request.get_full_path %} active{% endif %}"
                         hx-target="#tenderSiaeList" hx-swap="outerHTML">
                         Prestataires ciblés
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a role="button" hx-push-url="true" hx-get="{{ TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL }}"
+                    <a role="button" hx-push-url="true" hx-get="{{ TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL }}?{{ current_search_query }}"
                         class="nav-link{% if TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL in request.get_full_path %} active{% endif %}"
                         hx-target="#tenderSiaeList" hx-swap="outerHTML">
                         Prestataires intéressés
@@ -92,10 +92,10 @@
                         <i class="ri-download-line ri-lg"></i>
                     </button>
                     <div class="dropdown-menu dropdown-menu-right">
-                        <a href="{% url 'siae:search_results_download' %}?tender={{ tender.slug }}&tender_status={{ status|default:"" }}&format=xls" id="tender-siae-interested-export-xls" class="dropdown-item">
+                        <a href="{% url 'siae:search_results_download' %}?tender={{ tender.slug }}&tender_status={{ status|default:"" }}&{{ current_search_query }}&format=xls" id="tender-siae-interested-export-xls" class="dropdown-item">
                             Télécharger la liste (.xls)
                         </a>
-                        <a href="{% url 'siae:search_results_download' %}?tender={{ tender.slug }}&tender_status={{ status|default:"" }}&format=csv" id="tender-siae-interested-export-csv" class="dropdown-item">
+                        <a href="{% url 'siae:search_results_download' %}?tender={{ tender.slug }}&tender_status={{ status|default:"" }}&{{ current_search_query }}&format=csv" id="tender-siae-interested-export-csv" class="dropdown-item">
                             Télécharger la liste (.csv)
                         </a>
                     </div>
@@ -114,9 +114,4 @@
         {% endblock %}
     </div>
 </section>
-{% endblock %}
-
-{% block extra_js %}
-{{ current_perimeters|json_script:"current-perimeters" }}
-<script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
 {% endblock %}

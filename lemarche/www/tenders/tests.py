@@ -874,7 +874,7 @@ class TenderSiaeListView(TestCase):
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["tendersiaes"]), 3)  # email_send_date
+        self.assertEqual(len(response.context["siaes"]), 3)  # email_send_date
         # forbidden
         for user in [self.user_buyer_2, self.user_partner, self.siae_user_1, self.siae_user_2]:
             self.client.force_login(user)
@@ -889,7 +889,7 @@ class TenderSiaeListView(TestCase):
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["tendersiaes"]), 3)  # email_send_date
+        self.assertEqual(len(response.context["siaes"]), 3)  # email_send_date
         self.assertIsNotNone(Tender.objects.get(id=self.tender_1.id).siae_list_last_seen_date)
 
     def test_order_tender_siae_by_last_detail_contact_click_date(self):
@@ -900,5 +900,5 @@ class TenderSiaeListView(TestCase):
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug, "status": "INTERESTED"})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["tendersiaes"]), 3)  # detail_contact_click_date
-        self.assertEqual(response.context["tendersiaes"][0].id, self.tendersiae_1_1.id)
+        self.assertEqual(len(response.context["siaes"]), 3)  # detail_contact_click_date
+        self.assertEqual(response.context["siaes"][0].id, self.tendersiae_1_1.id)
