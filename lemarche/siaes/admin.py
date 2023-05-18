@@ -125,6 +125,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "tender_detail_contact_click_count_with_link",
         "signup_date",
         "content_filled_basic_date",
+        "logs_display",
         # "import_raw_object",
         "import_raw_object_display",
         "created_at",
@@ -247,6 +248,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                 "fields": (
                     "signup_date",
                     "content_filled_basic_date",
+                    "logs_display",
                 )
             },
         ),
@@ -496,6 +498,13 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
 
     tender_detail_contact_click_count_with_link.short_description = "Besoins intéressés"
     tender_detail_contact_click_count_with_link.admin_order_field = "tender_detail_contact_click_count"
+
+    def logs_display(self, siae=None):
+        if siae:
+            return pretty_print_readonly_jsonfield(siae.logs)
+        return "-"
+
+    logs_display.short_description = Siae._meta.get_field("logs").verbose_name
 
 
 @admin.register(SiaeUserRequest, site=admin_site)
