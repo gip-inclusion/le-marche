@@ -700,6 +700,8 @@ class Siae(models.Model):
         "Date de remplissage (basique) de la fiche", blank=True, null=True
     )
 
+    logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
+
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
 
