@@ -826,10 +826,10 @@ class TenderDetailContactClickStatViewTest(TestCase):
 class TenderSiaeListView(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.siae_1 = SiaeFactory(name="ZZ ESI")
-        cls.siae_2 = SiaeFactory(name="ABC Insertion")
-        cls.siae_3 = SiaeFactory(name="Une autre structure")
-        cls.siae_4 = SiaeFactory(name="Une dernière structure")
+        cls.siae_1 = SiaeFactory(name="ZZ ESI", kind=siae_constants.KIND_EI, is_qpv=True)
+        cls.siae_2 = SiaeFactory(name="ABC Insertion", kind=siae_constants.KIND_EI)
+        cls.siae_3 = SiaeFactory(name="Une autre structure", kind=siae_constants.KIND_ETTI)
+        cls.siae_4 = SiaeFactory(name="Une dernière structure", kind=siae_constants.KIND_ETTI)
         cls.siae_user_1 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_1, cls.siae_2])
         cls.siae_user_2 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_3])
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
@@ -875,6 +875,10 @@ class TenderSiaeListView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["siaes"]), 3)  # email_send_date
+        url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug, "status": "INTERESTED"})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["siaes"]), 3)  # detail_contact_click_date
         # forbidden
         for user in [self.user_buyer_2, self.user_partner, self.siae_user_1, self.siae_user_2]:
             self.client.force_login(user)
@@ -891,6 +895,29 @@ class TenderSiaeListView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["siaes"]), 3)  # email_send_date
         self.assertIsNotNone(Tender.objects.get(id=self.tender_1.id).siae_list_last_seen_date)
+
+    def test_filter_tender_siae_list(self):
+        self.client.force_login(self.user_buyer_1)
+        # filter by kind
+        url = (
+            reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
+            + f"?kind={siae_constants.KIND_ETTI}"
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["siaes"]), 1)  # email_send_date & ETTI
+        url = (
+            reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug, "status": "INTERESTED"})
+            + f"?kind={siae_constants.KIND_ETTI}"
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["siaes"]), 2)  # detail_contact_click_date & ETTI
+        # filter by territory
+        url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug}) + "?territory=QPV"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["siaes"]), 1)  # email_send_date & QPV
 
     def test_order_tender_siae_by_last_detail_contact_click_date(self):
         # TenderSiae are ordered by -created_at by default

@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -79,7 +80,6 @@ class TenderCreateMultiStepView(SessionWizardView):
     ]
 
     def get_template_names(self):
-        print("get_template_names")
         return [self.TEMPLATES[self.steps.current]]
 
     def get(self, request, *args, **kwargs):
@@ -369,13 +369,13 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         self.tender = Tender.objects.get(slug=self.kwargs.get("slug"))
-        qs = qs.filter(tendersiae__tender=self.tender)
+        # qs = qs.filter(tendersiae__tender=self.tender)
         if self.status:  # status == "INTERESTED"
-            qs = qs.filter(tendersiae__detail_contact_click_date__isnull=False)
-            # qs = qs.order_by("-tendersiae__detail_contact_click_date")
+            qs = qs.filter(Q(tendersiae__tender=self.tender) & Q(tendersiae__detail_contact_click_date__isnull=False))
+            qs = qs.order_by("-tendersiae__detail_contact_click_date")
         else:  # default
-            qs = qs.filter(tendersiae__email_send_date__isnull=False)
-            # qs = qs.order_by("-tendersiae__email_send_date")
+            qs = qs.filter(Q(tendersiae__tender=self.tender) & Q(tendersiae__email_send_date__isnull=False))
+            qs = qs.order_by("-tendersiae__email_send_date")
         self.filter_form = TenderSiaeFilterForm(data=self.request.GET)
         qs = self.filter_form.filter_queryset(qs)
         return qs
