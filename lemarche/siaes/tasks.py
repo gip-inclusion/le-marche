@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.urls import reverse_lazy
+from django.utils import timezone
 from huey.contrib.djhuey import task
 
 from lemarche.users.models import User
@@ -33,18 +34,6 @@ def set_siae_coords(model, siae):
         print(f"Geocoding not found,{siae.name},{siae.post_code}")
 
 
-def send_completion_reminder_email_to_siaes():
-    from lemarche.siaes.models import Siae
-
-    siaes = Siae.objects.content_not_filled()
-    siaes = siaes.filter(user_count__gte=1)  # we only contact siaes with at least 1 user
-
-    for siae in siaes:
-        send_completion_reminder_email_to_siae(siae)
-
-    # log / print something somewhere ?
-
-
 def send_completion_reminder_email_to_siae(siae):
     email_subject = "Vous avez raté des opportunités commerciales !"
     siae_user_emails = siae.users.values_list("email", flat=True)
@@ -68,4 +57,17 @@ def send_completion_reminder_email_to_siae(siae):
                 variables=variables,
             )
 
-            # log something
+        # log email
+        log_item = {
+            "action": "email_completion_reminder",
+            "email_to": recipient_list,
+            "email_subject": email_subject,
+            # "email_body": email_body,
+            "email_timestamp": timezone.now().isoformat(),
+            "metadata": {
+                "sector_count": siae.sector_count,
+                "contact_email": True if len(siae.contact_email) else False,
+            },
+        }
+        siae.logs.append(log_item)
+        siae.save()
