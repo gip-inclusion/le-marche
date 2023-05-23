@@ -1,45 +1,57 @@
 {% extends "tenders/create_base.html" %}
 {% load static bootstrap4 %}
-
 {% block step_title %}Evaluation de l’impact{% endblock %}
 {% block step_title_again %}Evaluation de l’impact{% endblock %}
 {% block step_subtitle %}
-Aidez-nous à évaluer l'impact de la plateforme du Marché de l’inclusion en répondant à ces quelques questions.<br />
-<i class="fs-sm"> ⚠️ Ces informations sont anonymisées et exploitées à des fins statistiques. Elles resteront strictement confidentielles.</i>
+    Aidez-nous à évaluer l'impact de la plateforme du Marché de l’inclusion en répondant à ces quelques questions.
+    <br />
+    <i class="fs-sm"> ⚠️ Ces informations sont anonymisées et exploitées à des fins statistiques. Elles resteront strictement confidentielles.</i>
 {% endblock %}
-
 {% block content_form %}
-{% csrf_token %}
-<div id="serveyTender">
-    <div class="row">
-        <div class="col-12 col-lg-7">
-            {% bootstrap_field form.scale_marche_useless wrapper_class="form-check-inline" form_group_class="form-group mb-lg-5" %}
-        </div>
-        <div class="col-12 col-lg-5">
-            <div class="c-form-conseil">
-                <div>
-                    <p>Le terme <i>*</i><strong>Prestataire inclusif</strong> fait référence aux structures agréées Insertion ou Handicap.</p>
-                    <p>Ici, le terme <strong>Prestataire inclusif</strong> ne fait pas référence à l'ensemble des prestataires relevant de l'E.S.S (Économie Sociale & Solidaire)</p>
+    {% csrf_token %}
+    <div id="serveyTender">
+        <div class="row">
+            <div class="col-12 col-lg-7">
+                {% bootstrap_field form.scale_marche_useless wrapper_class="form-check-inline" form_group_class="form-group mb-lg-5" %}
+            </div>
+            <div class="col-12 col-lg-5">
+                <div class="c-form-conseil">
+                    <div>
+                        <p>
+                            Le terme <i>*</i><strong>Prestataire inclusif</strong> fait référence aux structures agréées Insertion ou Handicap.
+                        </p>
+                        <p>
+                            Ici, le terme <strong>Prestataire inclusif</strong> ne fait pas référence à l'ensemble des prestataires relevant de l'E.S.S (Économie Sociale & Solidaire)
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-12 col-lg-7">
-            {% bootstrap_field form.worked_with_inclusif_siae_this_kind_tender form_group_class="form-group mb-lg-5" %}
-            <div id="div_is_encouraged_by_le_marche" class="{% if form.worked_with_inclusif_siae_this_kind_tender.value == '1' %}d-none{% endif %}">
-                {% bootstrap_field form.is_encouraged_by_le_marche form_group_class="form-group form-group-required mb-lg-5" %}
-            </div>
+        <div class="row">
+            <div class="col-12 col-lg-7">
+                {% bootstrap_field form.worked_with_inclusif_siae_this_kind_tender form_group_class="form-group mb-lg-5" %}
+                <div id="div_is_encouraged_by_le_marche"
+                     class="{% if form.worked_with_inclusif_siae_this_kind_tender.value == '1' %}d-none{% endif %}">
+                    {% bootstrap_field form.is_encouraged_by_le_marche form_group_class="form-group form-group-required mb-lg-5" %}
+                </div>
                 {% bootstrap_field form.providers_out_of_insertion form_group_class="form-group mb-lg-5" %}
                 {% bootstrap_field form.le_marche_doesnt_exist_how_to_find_siae form_group_class="form-group" %}
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}
-
-
+{% block submit_btn %}
+    <div class="form-group col-6 col-lg-auto order-2 order-lg-3">
+        <button type="submit"
+                id="tender-create-{{ wizard.steps.current }}-form-next-step-btn"
+                class="btn btn-primary btn-block"
+                aria-label="Aperçu avant publication">
+            Aperçu avant publication
+        </button>
+    </div>
+{% endblock submit_btn %}
 {% block extra_js %}
-<script>
+    <script>
 document.addEventListener('DOMContentLoaded', function () {
     {% comment %} div of the question 3 {% endcomment %}
     let divIsEncouragedByLeMarche = document.getElementById('div_is_encouraged_by_le_marche');
@@ -62,5 +74,5 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }));
 });
-</script>
+    </script>
 {% endblock %}
