@@ -45,7 +45,7 @@ class TenderCreateMultiStepView(SessionWizardView):
     """
 
     instance = None
-    success_url = reverse_lazy("tenders:list")
+    success_url = reverse_lazy("siae:search_results")
     success_message = """
         Votre besoin <strong>{tender_title}</strong> a été publié sur le marché !<br />
         Les prestataires inclusifs qui correspondent à vos critères seront notifiées
@@ -185,9 +185,9 @@ class TenderCreateMultiStepView(SessionWizardView):
         return redirect(self.get_success_url())
 
     def get_success_url(self):
-        if self.request.user.is_authenticated and not self.request.user.kind == User.KIND_SIAE:
-            return reverse_lazy("tenders:list")  # super().get_success_url() doesn't work if called from CSRF error
-        return reverse_lazy("wagtail_serve", args=("",))
+        # if self.request.user.is_authenticated and not self.request.user.kind == User.KIND_SIAE:
+        #     return reverse_lazy("tenders:list")  # super().get_success_url() doesn't work if called from CSRF error
+        return reverse_lazy("siae:search_results")
 
     def get_success_message(self, cleaned_data, tender, is_draft):
         return mark_safe(
