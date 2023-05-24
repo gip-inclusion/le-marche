@@ -104,6 +104,8 @@ class SignupView(SuccessMessageMixin, CreateView):
                 return safe_url
         elif self.request.POST.get("kind") == User.KIND_SIAE:
             return reverse_lazy("dashboard:home")
+        elif self.request.POST.get("kind") == User.KIND_BUYER:
+            return reverse_lazy("siae:search_results")
         return success_url
 
     def get_success_message(self, cleaned_data):
