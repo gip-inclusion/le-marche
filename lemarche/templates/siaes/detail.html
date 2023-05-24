@@ -161,8 +161,9 @@
                         <div class="profile_capsule">
                             <div class="map_coordonnees">
                                 {% if user.is_authenticated %}
-                                    <button id="show_data" class="btn btn-block btn-success btn-ico mb-4" type="button" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
-                                        <span>Afficher les coordonnées</span>
+                                    <button id="show_data" class="btn btn-primary btn-block btn-ico mb-4" type="button" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
+                                        <i class="ri-mail-send-line mr-2"></i>
+                                        <span>Accéder aux coordonnées</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-up"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 8l6 6H6z"/></svg>
                                     </button>
@@ -213,8 +214,8 @@
                                         </ul>
                                     </div>
                                 {% else %}
-                                    <a href="#" id="show_data-modal-btn" class="btn btn-block btn-success btn-ico mb-4" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}">
-                                        <span>Afficher les coordonnées</span>
+                                    <a href="#" id="show_data-modal-btn" class="btn btn-primary btn-block btn-ico mb-4" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}">
+                                        <span>Accéder aux coordonnées</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
                                     </a>
                                 {% endif %}
