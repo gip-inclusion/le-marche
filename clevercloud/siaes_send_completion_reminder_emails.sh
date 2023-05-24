@@ -19,4 +19,5 @@ fi
 # $APP_HOME is set by default by clever cloud.
 cd $APP_HOME
 
-django-admin send_completion_reminder_emails
+# Run only on the last Tuesday of each month
+django-admin send_completion_reminder_emails --day-of-week 1 --day-of-month last
