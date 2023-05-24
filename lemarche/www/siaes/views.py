@@ -228,8 +228,8 @@ class SiaeDetailView(DetailView):
         If the user is authenticated, annotate with favorite info
         """
         qs = super().get_queryset()
-        # if self.request.user.is_authenticated:
-        #     qs = qs.annotate_with_user_favorite_list_count(self.request.user)
+        if self.request.user.is_authenticated:
+            qs = qs.annotate_with_user_favorite_list_count(self.request.user)
         return qs
 
     def get_context_data(self, **kwargs):
