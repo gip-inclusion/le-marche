@@ -120,7 +120,6 @@ class SignupFormTest(StaticLiveServerTestCase):
         return messages
 
     def test_siae_submits_signup_form_success(self):
-
         self._complete_form(user_profile=SIAE.copy(), with_submit=True)
 
         messages = self._assert_signup_success(redirect_url=reverse("dashboard:home"))
@@ -137,13 +136,11 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
     def test_buyer_submits_signup_form_success(self):
-
         self._complete_form(user_profile=BUYER, with_submit=True)
 
-        self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)))
+        self._assert_signup_success(redirect_url=reverse("siae:search_results"))
 
     def test_buyer_submits_signup_form_success_extra_data(self):
-
         self._complete_form(user_profile=BUYER, with_submit=False)
         nb_of_handicap = "3"
         nb_of_inclusive = "4"
@@ -169,7 +166,6 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
     def test_partner_submits_signup_form_success(self):
-
         self._complete_form(user_profile=PARTNER, with_submit=False)
         self.driver.find_element(By.XPATH, "//select[@id='id_partner_kind']/option[text()='Réseaux IAE']").click()
         self.driver.find_element(By.CSS_SELECTOR, "form button").click()
