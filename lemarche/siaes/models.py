@@ -427,6 +427,9 @@ class SiaeQuerySet(models.QuerySet):
             ),
         )
 
+    def content_not_filled(self):
+        return self.filter(Q(sector_count=0) | Q(contact_email=""))
+
 
 class Siae(models.Model):
     READONLY_FIELDS_FROM_C1 = [
