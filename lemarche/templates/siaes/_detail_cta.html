@@ -1,57 +1,58 @@
 <div class="card c-card rounded-lg shadow-lg">
     <div class="card-body">
-        <h3>Cette structure vous intéresse ?</h3>
+        <h3>Ce prestataire vous intéresse ?</h3>
 
         <p>
-            Accédez aux coordonnées de cette structure afin de prendre contact avec elle.
+            Accédez gratuitement aux coordonnées de ce prestataire
+            afin de prendre contact avec leur responsable commerciale.
         </p>
 
         {% if user.is_authenticated %}
             <button type="button" id="show_data" class="btn btn-primary btn-block btn-ico" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
-                <i class="ri-mail-send-line mr-2"></i>
+                <i class="ri-mail-send-line"></i>
                 <span>Accéder aux coordonnées&nbsp;</span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-down"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 16l-6-6h12z"/></svg>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" id="collapse__ico-up"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M12 8l6 6H6z"/></svg>
             </button>
             <div id="collapseCoordonnees" class="collapse mt-2">
-                <ul class="list-unstyled fs-sm mb-0">
+                <ul class="list-unstyled mb-0">
                     {% if siae.is_missing_contact %}
-                        <li class="mb-1">
+                        <li class="mb-2">
                             <i class="ri-search-line"></i>
                             <a href="https://www.google.fr/search?q={{ siae.name_display }}" id="company_google" target="_blank" rel="noopener">Google</a>
                         </li>
                     {% endif %}
-                    {% if siae.contact_website %}
-                        <li class="mb-1">
-                            <i class="ri-window-2-line"></i>
-                            <a href="{{ siae.contact_website }}" id="company_website" target="_blank" rel="noopener">{{ siae.contact_website }}</a>
-                        </li>
+                    {% if siae.user_count %}
+                        {% if siae.contact_short_name %}
+                            <li class="mb-2">
+                                <i class="ri-user-line"></i>
+                                <span>{{ siae.contact_short_name }}</span>
+                            </li>
+                        {% endif %}
                     {% endif %}
                     {% if siae.contact_email %}
-                        <li class="mb-1">
+                        <li class="mb-2">
                             <i class="ri-at-line"></i>
                             <a href="mailto:{{ siae.contact_email }}" id="company_email">{{ siae.contact_email }}</a>
                         </li>
                     {% endif %}
                     {% if siae.contact_phone %}
-                        <li class="mb-1">
+                        <li class="mb-2">
                             <i class="ri-phone-line"></i>
                             <a href="tel:{{ siae.contact_phone }}" id="company_phone">{{ siae.contact_phone }}</a>
                         </li>
                     {% endif %}
+                    {% if siae.contact_website %}
+                        <li class="mb-2">
+                            <i class="ri-window-2-line"></i>
+                            <a href="{{ siae.contact_website }}" id="company_website" target="_blank" rel="noopener">{{ siae.contact_website }}</a>
+                        </li>
+                    {% endif %}
                     {% if siae.contact_social_website %}
-                        <li class="mb-1">
+                        <li class="mb-2">
                             <i class="ri-earth-line"></i>
                             <a href="{{ siae.contact_social_website }}" id="company_social_website" target="_blank" rel="noopener">{{ siae.contact_social_website }}</a>
                         </li>
-                    {% endif %}
-                    {% if siae.user_count %}
-                        {% if siae.contact_short_name %}
-                            <li class="mb-1">
-                                <i class="ri-user-line"></i>
-                                <span>{{ siae.contact_short_name }}</span>
-                            </li>
-                        {% endif %}
                     {% endif %}
                     <li>
                         <i class="ri-map-pin-line"></i>
@@ -60,8 +61,8 @@
                 </ul>
             </div>
         {% else %}
-            <a href="#" id="show_data-modal-btn" class="btn btn-primary btn-block btn-ico" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}">
-                <i class="ri-mail-send-line mr-2"></i>
+            <a href="#" id="show_data-modal-btn" class="btn btn-primary btn-block btn-ico" style="justify-content:center;" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}">
+                <i class="ri-mail-send-line"></i>
                 <span>Accéder aux coordonnées</span>
             </a>
         {% endif %}
