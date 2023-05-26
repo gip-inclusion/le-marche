@@ -67,8 +67,8 @@ class Command(BaseCommand):
         self.stdout.write("-" * 80)
         self.stdout.write("Done!")
         msg_success = [
-            "----- Recap: Completion fiche structures (e-mails de rappel) -----",
-            f"Structures contactées: {siae_reminder_list.count()}",
+            "----- Complétion fiches structures (e-mails de rappel) -----",
+            f"Siae contacted: {siae_reminder_list.count()}",
         ]
         self.stdout_messages_success(msg_success)
         api_slack.send_message_to_channel("\n".join(msg_success))

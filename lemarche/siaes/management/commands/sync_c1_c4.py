@@ -181,7 +181,7 @@ class Command(BaseCommand):
         created_count = siae_total_after - siae_total_before
         updated_count = len(c1_list_filtered) - created_count
         msg_success = [
-            "----- Recap: sync C1/C4 -----",
+            "----- Synchronisation C1/C4 -----",
             f"Siae total: before {siae_total_before} / after {siae_total_after} / +{created_count}",
             f"Siae updated: {updated_count}",
             f"Siae active: before {siae_active_before} / after {siae_active_after}",
