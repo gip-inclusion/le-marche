@@ -1,4 +1,4 @@
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/tarteaucitronjs@1.9.3/tarteaucitron.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/tarteaucitronjs@1.11.0/tarteaucitron.min.js"></script>
 <script type="text/javascript">
 // Tarteaucitron's language is set according to the browser configuration
 // but a lot of users don't know how to change it.
@@ -12,6 +12,7 @@ tarteaucitron.init({
     "cookieName": "tarteaucitron", /* Cookie name */
     "orientation": "bottom", /* Banner position (top - bottom) */  // itou is 'top'
     "groupServices": false, /* Group services by category */
+    "serviceDefaultState": "wait", /* Default state (true - wait - false) */
     "showAlertSmall": false, /* Show the small banner on bottom right */
     "cookieslist": false, /* Show the cookie list */
     "closePopup": false, /* Show a close X on the banner */
@@ -30,6 +31,7 @@ tarteaucitron.init({
     //"cookieDomain": ".my-multisite-domaine.fr", /* Shared cookie for multisite */
     "readmoreLink": "https://doc.inclusion.beta.gouv.fr/mentions/protection-des-donnees", /* Change the default readmore link */
     "mandatory": true, /* Show a message about mandatory cookies */
+    "mandatoryCta": true, /* Show the disabled accept button when mandatory on */
     "forceLanguage": "fr",
 });
 

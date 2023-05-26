@@ -5,99 +5,26 @@
     {% include "includes/_header_env_notice.html" %}
 {% endif %}
 
-<section class="s-preheader d-none d-xl-block">
-    <div class="container s-preheader__container">
-        <div class="row">
-            <div class="col-12 s-preheader__col d-flex align-items-center justify-content-end">
-                <ul>
-                    <li>
-                        <a href="https://inclusion.beta.gouv.fr" class="is-plateforme" rel="noopener" target="_blank" title="La Plateforme de l'inclusion (lien externe)">
-                            <span>La plateforme</span>
-                            <i class="ri-arrow-right-up-line ri-lg"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://emplois.inclusion.beta.gouv.fr" class="is-emploi" rel="noopener" target="_blank" title="Les emplois de l'inclusion (lien externe)">
-                            <span>Les emplois</span>
-                            <i class="ri-arrow-right-up-line ri-lg"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://communaute-experimentation.inclusion.beta.gouv.fr" class="is-communaute" rel="noopener" target="_blank" title="La communauté de l'inclusion (lien externe)">
-                            <span>La communauté</span>
-                            <i class="ri-arrow-right-up-line ri-lg"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://lemarche.inclusion.beta.gouv.fr" class="is-marche" rel="noopener" target="_blank" title="Le marché de l'inclusion (lien externe)">
-                            <span>Le marché</span>
-                            <i class="ri-arrow-right-up-line ri-lg"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://pilotage.inclusion.beta.gouv.fr" class="is-pilotage" rel="noopener" target="_blank" title="Le pilotage de l'inclusion (lien externe)">
-                            <span>Le pilotage</span>
-                            <i class="ri-arrow-right-up-line ri-lg"></i>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</section>
-
-<header id="header" class="s-header s-header--marche sticky-top" role="banner">
-    <section class="s-header__container container">
-        <div class="s-header__row row">
-            <!-- Logos -->
-            <div class="s-header__col s-header__col--logo col-auto d-flex align-items-center pr-0 pr-md-3">
-                <a href="{% url 'wagtail_serve' '' %}" class="s-header__logo-ministere">
-                    <img src="{% static_theme_images 'logo-ministere-emploi.svg' %}" alt="Ministère du travail, du plein emploi et de l'insertion">
-                </a>
-            </div>
-            <div class="s-header__col s-header__col--logo col-auto d-flex align-items-center px-0 px-md-3">
-                <a href="{% url 'wagtail_serve' '' %}" />
-                    <img src="{% static_theme_images 'logo-marche-inclusion.svg' %}" alt="Le marché de l'inclusion">
-                </a>
-            </div>
-            <!-- Visible only on large screens -->
-            <div class="s-header__col s-header__col--nav col d-none d-xl-inline-flex d-xl-flex align-items-center justify-content-end">
-                <nav id="nav-primary" role="navigation" aria-label="Navigation principale">
-                    <ul>
-                        <li>
-                            <a href="/ressources/quest-ce-quun-prestataire-inclusif/" id="header-ressource-prestataire" class="btn btn-link pr-0 text-decoration-none {{ custom_class }}">
-                                Qu'est-ce qu'un prestataire inclusif ?
-                            </a>
-                        </li>
-                        <li>
-                            <div class="dropdown">
-                                <button class="btn btn-link dropdown-toggle" type="button" id="solutionsDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Solutions
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="solutionsDropdownMenuButton">
-                                    <a href="{% url 'siae:search_results' %}" id="header-dropdown-siae-search-btn" class="dropdown-item">
-                                        Moteur de recherche multicritères
-                                    </a>
-                                    <a href="{% url 'tenders:create' %}" id="header-dropdown-tender-create-btn" class="dropdown-item">
-                                        Sourcing inversé
-                                    </a>
-                                    <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser" class="dropdown-item">
-                                        Auditer vos achats
-                                    </a>
-                                    <a href="{% url 'pages:impact_calculator' %}" id="header-calibrer" class="dropdown-item">
-                                        Calibrer vos achats
-                                    </a>
-                                    <a href="{% url 'pages:buyer_social_impact_calculator' %}" id="header-calculer-impact-social-achat" class="dropdown-item">
-                                        Calculer l'impact social d'un achat inclusif
-                                    </a>
-                                    <a href="{{ FACILITATOR_LIST }}" target="_blank" id="header-facilitator-list" class="dropdown-item">
-                                        Trouver un facilitateur des clauses sociales
-                                        <i class="ri-arrow-right-up-line"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </li>
-                        {% if user.is_authenticated %}
+<header role="banner" id="header">
+    <section class="s-header">
+        <div class="s-header__container container">
+            <div class="s-header__row row">
+                <div class="s-header__col s-header__col--logo-ministere col col-md-auto d-flex align-items-center pr-0">
+                    <a href="{% url 'wagtail_serve' '' %}" class="s-header__logo-ministere"><img src="{% static_theme_images 'logo-republique-francaise.svg' %}" alt="Rébublique Française"></a>
+                </div>
+                <div class="s-header__col s-header__col--logo-service col-auto d-flex align-items-center px-0">
+                    <a href="{% url 'wagtail_serve' '' %}"><img src="{% static_theme_images 'logo-marche-inclusion.svg' %}" alt="Le marché de l'inclusion"></a>
+                </div>
+                <div class="s-header__col s-header__col--nav col d-none d-xl-inline-flex d-xl-flex align-items-center justify-content-end">
+                    <nav role="navigation" id="nav-primary" aria-label="Navigation principale">
+                        <ul>
+                            {% if user.is_authenticated %}
+                            <li>
+                                <a href="{% url 'tenders:create' %}" id="header-demande" class="btn btn-outline-primary btn-ico">
+                                    <i class="ri-mail-send-line ri-lg"></i>
+                                    <span>Publier un besoin d'achat</span>
+                                </a>
+                            </li>
                             <li>
                                 <div class="dropdown">
                                     <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -124,165 +51,50 @@
                                     </div>
                                 </div>
                             </li>
-                        {% else %}
+                            {% else %}
                             <li>
-                                <a href="{% url 'auth:login' %}" id="h_login">
-                                    <span>Connexion</span>
-                                    <i class="ri-account-circle-line ri-lg ml-1"></i>
+                                <a href="{% url 'tenders:create' %}" id="header-demande" class="btn btn-link btn-ico">
+                                    <i class="ri-mail-send-line ri-lg"></i>
+                                    <span>Publier un besoin d'achat</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="{% url 'auth:signup' %}" id="h_signup" class="btn btn-primary btn-ico">
-                                    <span>Inscription</span>
-                                    <i class="ri-arrow-right-line ri-lg"></i>
+                                <a href="{% url 'auth:signup' %}" id="h_signup" class="btn btn-outline-primary btn-ico">
+                                    <i class="ri-user-add-line ri-lg"></i>
+                                    <span>S’inscrire</span>
                                 </a>
                             </li>
-                        {% endif %}
-                    </ul>
-                </nav>
+                            <li>
+                                <a href="{% url 'auth:login' %}" id="h_login" class="btn btn-primary btn-ico">
+                                    <i class="ri-login-box-line ri-lg"></i>
+                                    <span>Se connecter</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                <div class="s-header__col s-header__col--burger col d-flex align-items-center justify-content-end d-xl-none" data-toggle="burger">
+                    <i class="ri-menu-line" id="open" role="button" tabindex="0" aria-label="Ouverture du menu de navigation principale pour mobile"></i>
+                    <i class="ri-close-line" id="close" role="button" tabindex="0" aria-label="Fermeture du menu de navigation principale pour mobile"></i>
+                </div>
+                <div id="burgerNav">
+                    <nav role="navigation" aria-label="Navigation principale pour mobile">
+                        {% include 'layouts/_header_nav_primary_items.html' with is_mobile=True %}
+                        {% include 'layouts/_header_nav_secondary_items.html' with is_mobile=True %}
+                    </nav>
+                </div>
             </div>
-            <!-- Visible only on small screens -->
-            <div class="s-header__col s-header__col--burger col d-flex align-items-center justify-content-end d-xl-none" data-toggle="burger" aria-controls="burgerNav" tabindex="0">
-                <span id="burger">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="51" viewBox="0 0 36 51" role="img" aria-labelledby="title_burger">
-                      <g fill="none" fill-rule="evenodd">
-                        <g fill="#000638" fill-rule="nonzero" transform="translate(2)">
-                          <rect width="32" height="4" rx="2"></rect>
-                          <rect width="32" height="4" y="12" rx="2"></rect>
-                          <rect width="32" height="4" y="24" rx="2"></rect>
-                        </g>
-                        <text fill="#000638" font-family="Roboto" font-size="13" font-weight="400">
-                          <tspan x="2" y="45" id="title_burger">Menu</tspan>
-                        </text>
-                      </g>
-                    </svg>
-                  </span>
-                  <span id="close">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="44" height="45" viewBox="0 0 44 45" role="img" aria-labelledby="title_close">
-                      <g fill="none" fill-rule="evenodd" transform="translate(-1 -2)">
-                        <g fill="#000638" fill-rule="nonzero" transform="translate(10 1)">
-                          <rect width="32" height="4" x="-3" y="11" rx="2" transform="rotate(45 13 13)"></rect>
-                          <rect width="32" height="4" x="-3" y="11" rx="2" transform="rotate(-45 13 13)"></rect>
-                        </g>
-                        <text fill="#000638" font-family="Roboto" font-size="13" font-weight="400">
-                          <tspan x="3" y="45" id="title_close">Fermer</tspan>
-                        </text>
-                      </g>
-                    </svg>
-                  </span>
-            </div>
-            <div id="burgerNav">
-                <nav role="navigation">
-                    <ul>
-                        <li>
-                            <a href="/ressources/quest-ce-quun-prestataire-inclusif/" id="header-ressource-prestataire" class="btn btn-link pr-0 text-decoration-none {{ custom_class }}">
-                                Qu'est-ce qu'un prestataire inclusif ?
-                            </a>
-                        </li>
-                        <hr />
-                        <li>
-                            <a href="{% url 'siae:search_results' %}" id="header-dropdown-siae-search-btn">
-                                Moteur de recherche multicritères
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'tenders:create' %}" id="header-dropdown-tender-create-btn">
-                                Sourcing inversé
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser">
-                                Auditer vos achats
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'pages:impact_calculator' %}" id="header-calibrer">
-                                Calibrer vos achats
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ FACILITATOR_LIST }}" target="_blank" id="header-facilitator-list" rel="noopener">
-                                Trouver un facilitateur des clauses sociales
-                                <i class="ri-arrow-right-up-line"></i>
-                            </a>
-                        </li>
-                        <hr />
-                        {% if user.is_authenticated %}
-                            <li>
-                                <a href="{% url 'dashboard:home' %}" id="h_dashboard">
-                                    <i class="ri-dashboard-line"></i>
-                                    Tableau de bord
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'dashboard_favorites:list' %}" id="header-favorites">
-                                    <i class="ri-star-line"></i>
-                                    Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'dashboard:profile_edit' %}">
-                                    <i class="ri-user-line"></i>
-                                    Mon profil
-                                </a>
-                            </li>
-                            <hr />
-                            <li>
-                                <a href="{% url 'auth:logout' %}" id="h_logout">
-                                    <i class="ri-logout-box-line"></i>
-                                    Déconnexion
-                                </a>
-                            </li>
-                        {% else %}
-                            <li>
-                                <a href="{% url 'auth:login' %}" id="h_login">
-                                    <span>Connexion</span>
-                                    <i class="ri-account-circle-line ri-lg ml-1"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'auth:signup' %}" id="h_signup" class="btn btn-primary btn-ico">
-                                    <span>Inscription</span>
-                                    <i class="ri-arrow-right-line ri-lg"></i>
-                                </a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-                <div>
-                    <ul>
-                        <li>
-                            <a href="https://inclusion.beta.gouv.fr" class="is-plateforme" rel="noopener" target="_blank" title="La Plateforme de l'inclusion (lien externe)">
-                                <span>La plateforme</span>
-                                <i class="ri-arrow-right-up-line ri-lg"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://emplois.inclusion.beta.gouv.fr" class="is-emploi" rel="noopener" target="_blank" title="Les emplois de l'inclusion (lien externe)">
-                                <span>Les emplois</span>
-                                <i class="ri-arrow-right-up-line ri-lg"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://communaute-experimentation.inclusion.beta.gouv.fr" class="is-communaute" rel="noopener" target="_blank" title="La communauté de l'inclusion (lien externe)">
-                                <span>La communauté</span>
-                                <i class="ri-arrow-right-up-line ri-lg"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://lemarche.inclusion.beta.gouv.fr" class="is-marche" rel="noopener" target="_blank" title="Le marché de l'inclusion (lien externe)">
-                                <span>Le marché</span>
-                                <i class="ri-arrow-right-up-line ri-lg"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://pilotage.inclusion.beta.gouv.fr" class="is-pilotage" rel="noopener" target="_blank" title="Le pilotage de l'inclusion (lien externe)">
-                                <span>Le pilotage</span>
-                                <i class="ri-arrow-right-up-line ri-lg"></i>
-                            </a>
-                        </li>
-                    </ul>
-                  </div>
+        </div>
+    </section>
+    <section class="s-postheader d-none d-xl-block">
+        <div class="s-postheader__container container">
+            <div class="s-postheader__row row">
+                <div class="s-postheader__col col-12 d-flex align-items-center">
+                    <nav role="navigation" aria-label="Navigation secondaire">
+                        {% include 'layouts/_header_nav_secondary_items.html' %}
+                    </nav>
+                </div>
             </div>
         </div>
     </section>
