@@ -131,8 +131,10 @@ class ProfileNetworkSiaeListView(NetworkMemberRequiredMixin, FormMixin, ListView
 
     def get_queryset(self):
         qs = super().get_queryset()
+        # first get the network's siaes
         self.network = Network.objects.get(slug=self.kwargs.get("slug"))
         qs = qs.filter(networks__in=[self.network]).with_tender_stats().annotate_with_brand_or_name(with_order_by=True)
+        # then filter with the form
         self.filter_form = NetworkSiaeFilterForm(data=self.request.GET)
         qs = self.filter_form.filter_queryset(qs)
         return qs

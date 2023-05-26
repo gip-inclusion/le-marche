@@ -368,14 +368,15 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        # first get the tender's siaes
         self.tender = Tender.objects.get(slug=self.kwargs.get("slug"))
-        # qs = qs.filter(tendersiae__tender=self.tender)
         if self.status:  # status == "INTERESTED"
             qs = qs.filter(Q(tendersiae__tender=self.tender) & Q(tendersiae__detail_contact_click_date__isnull=False))
             qs = qs.order_by("-tendersiae__detail_contact_click_date")
         else:  # default
             qs = qs.filter(Q(tendersiae__tender=self.tender) & Q(tendersiae__email_send_date__isnull=False))
             qs = qs.order_by("-tendersiae__email_send_date")
+        # then filter with the form
         self.filter_form = TenderSiaeFilterForm(data=self.request.GET)
         qs = self.filter_form.filter_queryset(qs)
         return qs
@@ -395,10 +396,5 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
         context["status"] = self.status
         siae_search_form = self.filter_form if self.filter_form else TenderSiaeFilterForm(data=self.request.GET)
         context["form"] = siae_search_form
-        # if len(self.request.GET.keys()):
-        #     if siae_search_form.is_valid():
-        #         current_perimeters = siae_search_form.cleaned_data.get("perimeters")
-        #         if current_perimeters:
-        #             context["current_perimeters"] = list(current_perimeters.values("id", "slug", "name"))
         context["current_search_query"] = self.request.GET.urlencode()
         return context

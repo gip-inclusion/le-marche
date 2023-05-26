@@ -311,14 +311,6 @@ class NetworkSiaeFilterForm(forms.Form):
 
 
 class TenderSiaeFilterForm(forms.Form):
-    # # The hidden `perimeters` field is populated by the JS autocomplete library, see `perimeters_autocomplete_field.js`  # noqa
-    # perimeters = forms.ModelMultipleChoiceField(
-    #     label="Localisation",
-    #     queryset=Perimeter.objects.all(),
-    #     to_field_name="slug",
-    #     required=False,
-    #     # widget=forms.HiddenInput()
-    # )
     kind = forms.MultipleChoiceField(
         label=Siae._meta.get_field("kind").verbose_name,
         choices=FORM_KIND_CHOICES_GROUPED,
@@ -336,10 +328,6 @@ class TenderSiaeFilterForm(forms.Form):
 
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
-
-        # perimeters = self.cleaned_data.get("perimeters", None)
-        # if perimeters:
-        #     qs = qs.address_in_perimeter_list(perimeters)
 
         kinds = self.cleaned_data.get("kind", None)
         if kinds:

@@ -928,4 +928,4 @@ class TenderSiaeListView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["siaes"]), 3)  # detail_contact_click_date
-        self.assertEqual(response.context["siaes"][0].id, self.tendersiae_1_1.id)
+        self.assertEqual(response.context["siaes"][0].id, self.tendersiae_1_1.siae.id)
