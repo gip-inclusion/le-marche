@@ -122,6 +122,7 @@ class SignupFormTest(StaticLiveServerTestCase):
     def test_siae_submits_signup_form_success(self):
         self._complete_form(user_profile=SIAE.copy(), with_submit=True)
 
+        # should redirect SIAE to dashboard
         messages = self._assert_signup_success(redirect_url=reverse("dashboard:home"))
 
         self.assertTrue("Vous pouvez maintenant ajouter votre structure" in messages.text)
@@ -138,6 +139,7 @@ class SignupFormTest(StaticLiveServerTestCase):
     def test_buyer_submits_signup_form_success(self):
         self._complete_form(user_profile=BUYER, with_submit=True)
 
+        # should redirect BUYER to search
         self._assert_signup_success(redirect_url=reverse("siae:search_results"))
 
     def test_buyer_submits_signup_form_success_extra_data(self):
@@ -219,7 +221,7 @@ class LoginFormTest(StaticLiveServerTestCase):
 
         driver.find_element(By.CSS_SELECTOR, "form button").click()
 
-        # should redirect SIAE to profil
+        # should redirect SIAE to dashboard
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('dashboard:home')}")
 
     def test_non_siae_user_can_sign_in_and_is_redirected_to_home(self):
@@ -232,8 +234,8 @@ class LoginFormTest(StaticLiveServerTestCase):
 
         driver.find_element(By.CSS_SELECTOR, "form button").click()
 
-        # should redirect BUYER to home
-        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('wagtail_serve', args=('',))}")
+        # should redirect BUYER to search
+        self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('siae:search_results')}")
 
     def test_user_can_sign_in_with_email_containing_capital_letters(self):
         UserFactory(email="siae5@example.com", kind=User.KIND_SIAE)
