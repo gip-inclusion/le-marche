@@ -414,6 +414,7 @@ def notify_admin_tender_created(tender: Tender):
             "tender_author_company": tender.author.company_name,
             "tender_scale_marche_useless": tender.get_scale_marche_useless_display(),
             "tender_status": tender.get_status_display(),
+            "tender_source": tender.get_source_display(),
             "tender_admin_url": tender_admin_url,
         },
     )
