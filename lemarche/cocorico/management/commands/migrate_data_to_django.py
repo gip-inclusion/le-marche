@@ -11,7 +11,7 @@ from django.utils.text import slugify
 from lemarche.networks.models import Network
 from lemarche.sectors.models import Sector, SectorGroup
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.models import Siae, SiaeClientReference, SiaeImage, SiaeLabel, SiaeOffer
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeImage, SiaeLabelOld, SiaeOffer
 from lemarche.users.models import User
 from lemarche.utils.data import rename_dict_key, reset_app_sql_sequences
 
@@ -173,7 +173,7 @@ class Command(BaseCommand):
     |directory_network          |M2M between Siae & Network |
     |listing_category & listing_category_translation |Sector|
     |directory_listing_category |M2M between Siae & Sector  |
-    |directory_label            |SiaeLabel ("Labels & certifications") + OneToMany between Siae & Label|
+    |directory_label            |SiaeLabelOld ("Labels & certifications") + OneToMany between Siae & Label|
     |directory_offer            |SiaeOffer ("Prestations proposées") + OneToMany between Siae & Offer|
     |directory_client_image     |SiaeClientReference ("Références clients") + OneToMany between Siae & SiaeClientReference|  # noqa
     |directory_image            |Siae.image_name            |
@@ -485,12 +485,12 @@ class Command(BaseCommand):
 
     def migrate_siae_label(self, cur):
         """
-        Migrate SiaeLabel data
+        Migrate SiaeLabelOld data
         """
         print("-" * 80)
-        print("Migrating SiaeLabel...")
+        print("Migrating SiaeLabelOld...")
 
-        SiaeLabel.objects.all().delete()
+        SiaeLabelOld.objects.all().delete()
 
         cur.execute("SELECT * FROM directory_label")
         resp = cur.fetchall()
@@ -507,9 +507,9 @@ class Command(BaseCommand):
             [elem.pop(key) for key in ["id"]]
 
             # create object
-            SiaeLabel.objects.create(**elem)
+            SiaeLabelOld.objects.create(**elem)
 
-        print(f"Created {SiaeLabel.objects.count()} labels !")
+        print(f"Created {SiaeLabelOld.objects.count()} labels !")
 
     def migrate_siae_client_reference_logo(self, cur):
         """

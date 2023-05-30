@@ -11,7 +11,7 @@ from lemarche.siaes.models import (
     SiaeClientReference,
     SiaeGroup,
     SiaeImage,
-    SiaeLabel,
+    SiaeLabelOld,
     SiaeOffer,
     SiaeUser,
     SiaeUserRequest,
@@ -562,8 +562,8 @@ class SiaeOfferAdmin(admin.ModelAdmin):
     siae_with_link.admin_order_field = "siae"
 
 
-@admin.register(SiaeLabel, site=admin_site)
-class SiaeLabelAdmin(admin.ModelAdmin):
+@admin.register(SiaeLabelOld, site=admin_site)
+class SiaeLabelOldAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
     search_fields = ["id", "name", "siae__id", "siae__name"]
     search_help_text = "Cherche sur les champs : ID, Nom, Structure (ID, Nom)"

@@ -4,7 +4,7 @@ from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.factories import SiaeFactory, SiaeGroupFactory, SiaeLabelFactory, SiaeOfferFactory
+from lemarche.siaes.factories import SiaeFactory, SiaeGroupFactory, SiaeLabelOldFactory, SiaeOfferFactory
 from lemarche.siaes.models import Siae, SiaeGroup, SiaeUser
 from lemarche.users.factories import UserFactory
 
@@ -78,7 +78,7 @@ class SiaeModelTest(TestCase):
         sector = SectorFactory()
         siae_full.sectors.add(sector)
         SiaeOfferFactory(siae=siae_full)
-        SiaeLabelFactory(siae=siae_full)
+        SiaeLabelOldFactory(siae=siae_full)
         siae_full.save()  # to update stats
         self.assertFalse(siae_full.is_missing_content)
         self.assertTrue(score_completion_before < siae_full.completion_percent)
@@ -92,7 +92,7 @@ class SiaeModelTest(TestCase):
         )
         siae_full_2.sectors.add(sector)
         SiaeOfferFactory(siae=siae_full_2)
-        SiaeLabelFactory(siae=siae_full_2)
+        SiaeLabelOldFactory(siae=siae_full_2)
         siae_full_2.save()  # to update stats
         self.assertFalse(siae_full_2.is_missing_content)
 
