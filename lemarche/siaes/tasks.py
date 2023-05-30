@@ -36,15 +36,16 @@ def set_siae_coords(model, siae):
 
 def send_completion_reminder_email_to_siae(siae):
     email_subject = "Vous avez raté des opportunités commerciales !"
-    siae_user_emails = siae.users.values_list("email", flat=True)
+    siae_user_emails = list(siae.users.values_list("email", flat=True))
     recipient_list = whitelist_recipient_list(siae_user_emails)
     if recipient_list:
         for siae_user_email in recipient_list:
-            siae_user = User.objects.get(email=siae_user_email).first_name
+            siae_user = User.objects.get(email=siae_user_email)
             recipient_name = siae_user.full_name
 
             variables = {
                 "SIAE_USER_FIRST_NAME": siae_user.first_name,
+                "SIAE_NAME": siae.name_display,
                 "SIAE_URL": get_share_url_object(siae),
                 "SIAE_EDIT_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard:siae_edit_contact', args=[siae.slug])}",  # noqa
             }

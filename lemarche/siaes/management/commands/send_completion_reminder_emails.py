@@ -1,11 +1,12 @@
 import calendar
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import CommandError
 from django.utils import timezone
 
 from lemarche.siaes.models import Siae
 from lemarche.siaes.tasks import send_completion_reminder_email_to_siae
 from lemarche.utils.apis import api_slack
+from lemarche.utils.commands import BaseCommand
 
 
 class Command(BaseCommand):
