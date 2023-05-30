@@ -76,7 +76,7 @@ class Command(BaseCommand):
             siae_etp_added_count = siae_etp_count_after - siae_etp_count_before
             siae_etp_updated_count = siae_etp_updated - siae_etp_added_count
             msg_success = [
-                "----- Recap: sync C2/C4 -----",
+                "----- Synchronisation C2/C4 -----",
                 f"Siae total: {siae_total}",
                 f"ETP count added: {siae_etp_added_count}",
                 f"ETP count updated: {siae_etp_updated_count}",
