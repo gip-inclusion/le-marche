@@ -629,7 +629,14 @@ class Siae(models.Model):
     )
     networks = models.ManyToManyField("networks.Network", verbose_name="Réseaux", related_name="siaes", blank=True)
     groups = models.ManyToManyField("siaes.SiaeGroup", verbose_name="Groupements", related_name="siaes", blank=True)
-    # ForeignKeys: offers, client_references, labels, images
+    labels = models.ManyToManyField(
+        "labels.Label",
+        through="siaes.SiaeLabel",
+        verbose_name="Labels & certifications",
+        related_name="siaes",
+        blank=True,
+    )
+    # ForeignKeys: offers, client_references, labels_old, images
 
     # C2 (ETP)
     c2_etp_count = models.FloatField("Nombre d'ETP (C2)", blank=True, null=True)
@@ -1129,6 +1136,21 @@ class SiaeClientReference(models.Model):
     #     return f"SiaeClientReference object ({self.id})"
 
 
+class SiaeLabel(models.Model):
+    siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
+    label = models.ForeignKey("labels.Label", verbose_name="Label & certification", on_delete=models.CASCADE)
+
+    logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Label & certification"
+        verbose_name_plural = "Labels & certifications"
+        ordering = ["-created_at"]
+
+
 class SiaeLabelOld(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
 
@@ -1140,8 +1162,8 @@ class SiaeLabelOld(models.Model):
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
     class Meta:
-        verbose_name = "Label & certification"
-        verbose_name_plural = "Labels & certifications"
+        verbose_name = "Label & certification (old)"
+        verbose_name_plural = "Labels & certifications (old)"
         # ordering = ["id"]
 
     def __str__(self):
