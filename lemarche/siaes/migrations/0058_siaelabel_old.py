@@ -14,4 +14,5 @@ class Migration(migrations.Migration):
             old_name="SiaeLabel",
             new_name="SiaeLabelOld",
         ),
+        migrations.RunSQL("ALTER sequence siaes_siaelabel_id_seq RENAME TO siaes_siaelabelold_id_seq;"),
     ]
