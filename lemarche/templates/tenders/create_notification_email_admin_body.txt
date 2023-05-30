@@ -8,5 +8,6 @@ contact : {{ tender_author_full_name|safe }}
 entreprise : {{ tender_author_company|safe }}
 si le Marché n'existait pas, auriez-vous consulté des prestataires inclusifs ? : {{ tender_scale_marche_useless|safe }}
 status : {{ tender_status|safe }}
+source: {{ tender_source|safe }}
 
 Lien dans l'admin : {{ tender_admin_url }}
