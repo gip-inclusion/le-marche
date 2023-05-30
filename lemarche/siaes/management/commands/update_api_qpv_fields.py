@@ -86,7 +86,7 @@ class Command(BaseCommand):
             )
 
         msg_success = [
-            "----- Recap: sync API QPV -----",
+            "----- Synchrnonisation API QPV -----",
             f"Done! Processed {len(siaes_to_update)}/{len(siae_list)} siaes",
             f"success count: {self.success_count['etablissement']}/{len(siaes_to_update)}",
             f"True count: {self.success_count['etablissement_qpv']}/{len(siaes_to_update)}",

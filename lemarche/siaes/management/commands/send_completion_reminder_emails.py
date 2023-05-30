@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from lemarche.siaes.models import Siae
 from lemarche.siaes.tasks import send_completion_reminder_email_to_siae
+from lemarche.utils.apis import api_slack
 
 
 class Command(BaseCommand):
@@ -65,3 +66,9 @@ class Command(BaseCommand):
 
         self.stdout.write("-" * 80)
         self.stdout.write("Done!")
+        msg_success = [
+            "----- Complétion fiches structures (e-mails de rappel) -----",
+            f"Siae contacted: {siae_reminder_list.count()}",
+        ]
+        self.stdout_messages_success(msg_success)
+        api_slack.send_message_to_channel("\n".join(msg_success))
