@@ -32,7 +32,7 @@ from lemarche.www.dashboard.forms import (
     SiaeEditOfferForm,
     SiaeEditSearchForm,
     SiaeImageFormSet,
-    SiaeLabelFormSet,
+    SiaeLabelOldFormSet,
     SiaeOfferFormSet,
     SiaeSearchAdoptConfirmForm,
     SiaeSearchBySiretForm,
@@ -377,9 +377,9 @@ class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView)
         context["s3_form_values_siae_logo"] = s3_upload.form_values
         context["s3_upload_config_siae_logo"] = s3_upload.config
         if self.request.POST:
-            context["label_formset"] = SiaeLabelFormSet(self.request.POST, instance=self.object)
+            context["label_formset"] = SiaeLabelOldFormSet(self.request.POST, instance=self.object)
         else:
-            context["label_formset"] = SiaeLabelFormSet(instance=self.object)
+            context["label_formset"] = SiaeLabelOldFormSet(instance=self.object)
         context["last_3_siae_content_filled_full"] = (
             Siae.objects.with_content_filled_stats()
             .filter(content_filled_full=True)
@@ -392,7 +392,7 @@ class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView)
         self.object = self.get_object()
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        label_formset = SiaeLabelFormSet(self.request.POST, instance=self.object)
+        label_formset = SiaeLabelOldFormSet(self.request.POST, instance=self.object)
         if form.is_valid() and label_formset.is_valid():
             return self.form_valid(form, label_formset)
         else:

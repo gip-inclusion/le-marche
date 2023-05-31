@@ -76,7 +76,6 @@ class TenderCreateMultiStepView(SessionWizardView):
     ]
 
     def get_template_names(self):
-        print("get_template_names")
         return [self.TEMPLATES[self.steps.current]]
 
     def get(self, request, *args, **kwargs):

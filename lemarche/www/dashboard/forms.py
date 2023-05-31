@@ -10,7 +10,7 @@ from lemarche.siaes.models import (
     SiaeClientReference,
     SiaeGroup,
     SiaeImage,
-    SiaeLabel,
+    SiaeLabelOld,
     SiaeOffer,
     SiaeUserRequest,
 )
@@ -130,7 +130,7 @@ class SiaeEditInfoForm(forms.ModelForm):
             "year_constitution",
             "employees_insertion_count",
             "employees_permanent_count",
-            # "labels",  # SiaeLabelFormSet
+            # "labels",  # SiaeLabelOldFormSet
         ]
 
     def __init__(self, *args, **kwargs):
@@ -144,13 +144,13 @@ class SiaeEditInfoForm(forms.ModelForm):
         # self.fields["logo_url"].label = "Importez votre logo"
 
 
-class SiaeLabelForm(forms.ModelForm):
+class SiaeLabelOldForm(forms.ModelForm):
     class Meta:
-        model = SiaeLabel
+        model = SiaeLabelOld
         fields = ["name"]
 
 
-SiaeLabelFormSet = inlineformset_factory(Siae, SiaeLabel, form=SiaeLabelForm, extra=1, can_delete=True)
+SiaeLabelOldFormSet = inlineformset_factory(Siae, SiaeLabelOld, form=SiaeLabelOldForm, extra=1, can_delete=True)
 
 
 class SiaeEditOfferForm(forms.ModelForm):

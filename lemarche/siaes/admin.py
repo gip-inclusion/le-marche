@@ -11,7 +11,7 @@ from lemarche.siaes.models import (
     SiaeClientReference,
     SiaeGroup,
     SiaeImage,
-    SiaeLabel,
+    SiaeLabelOld,
     SiaeOffer,
     SiaeUser,
     SiaeUserRequest,
@@ -407,7 +407,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     offer_count_with_link.admin_order_field = "offer_count"
 
     def label_count_with_link(self, siae):
-        url = reverse("admin:siaes_siaelabel_changelist") + f"?siae__id__exact={siae.id}"
+        url = reverse("admin:siaes_siaelabelold_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.label_count}</a>')
 
     label_count_with_link.short_description = "Nbr de labels"
@@ -562,8 +562,8 @@ class SiaeOfferAdmin(admin.ModelAdmin):
     siae_with_link.admin_order_field = "siae"
 
 
-@admin.register(SiaeLabel, site=admin_site)
-class SiaeLabelAdmin(admin.ModelAdmin):
+@admin.register(SiaeLabelOld, site=admin_site)
+class SiaeLabelOldAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
     search_fields = ["id", "name", "siae__id", "siae__name"]
     search_help_text = "Cherche sur les champs : ID, Nom, Structure (ID, Nom)"

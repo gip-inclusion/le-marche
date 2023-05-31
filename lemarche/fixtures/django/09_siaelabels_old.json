@@ -1,99 +1,99 @@
 [
     {
-        "model": "siaes.siaeoffer",
+        "model": "siaes.siaelabelold",
         "pk": 1,
         "fields": {
-            "name": "Gestion de projet",
+            "name": "ISO 9001",
             "siae": 2653,
             "created_at": "2021-10-28T12:28:42.408Z",
             "updated_at": "2021-10-28T12:28:42.416Z"
         }
     },
     {
-        "model": "siaes.siaeoffer",
+        "model": "siaes.siaelabelold",
         "pk": 2,
         "fields": {
-            "name": "Recyclage économie circulaire",
+            "name": "ISO 9001",
             "siae": 88,
             "created_at": "2021-10-28T12:28:42.408Z",
             "updated_at": "2021-10-28T12:28:42.416Z"
         }
     },
     {
-        "model": "siaes.siaeoffer",
+        "model": "siaes.siaelabelold",
         "pk": 3,
         "fields": {
-            "name": "Agriculture urbaine",
+            "name": "ISO 9001",
             "siae": 90,
             "created_at": "2021-10-28T12:28:42.408Z",
             "updated_at": "2021-10-28T12:28:42.416Z"
         }
     },
     {
-        "model": "siaes.siaeoffer",
+        "model": "siaes.siaelabelold",
         "pk": 4,
         "fields": {
-            "name": "Restauration",
+            "name": "ISO 9001",
             "siae": 3850,
             "created_at": "2021-10-28T12:28:42.408Z",
             "updated_at": "2021-10-28T12:28:42.416Z"
         }
     },
     {
-        "model": "siaes.siaeoffer",
+        "model": "siaes.siaelabelold",
         "pk": 5,
         "fields": {
-            "name": "Nettoyage de locaux",
+            "name": "BIO",
             "siae": 3850,
             "created_at": "2021-10-28T12:28:42.408Z",
             "updated_at": "2021-10-28T12:28:42.416Z"
         }
     },
     {
-        "model": "siaes.siaeoffer",
+        "model": "siaes.siaelabelold",
         "pk": 6,
         "fields": {
-            "name": "Entretien des espaces verts",
+            "name": "HACCP",
             "siae": 3853,
             "created_at": "2021-10-28T12:28:42.408Z",
             "updated_at": "2021-10-28T12:28:42.416Z"
         }
     },
     {
-        "model": "siaes.siaeoffer",
+        "model": "siaes.siaelabelold",
         "pk": 7,
         "fields": {
-            "name": "Numérisation",
+            "name": "ISO 14001",
             "siae": 3853,
             "created_at": "2021-10-28T12:28:42.408Z",
             "updated_at": "2021-10-28T12:28:42.416Z"
         }
     },
     {
-        "model": "siaes.siaeoffer",
+        "model": "siaes.siaelabelold",
         "pk": 8,
         "fields": {
-            "name": "Sous traitance industrielle",
+            "name": "ESUS",
             "siae": 3853,
             "created_at": "2021-10-28T12:28:42.408Z",
             "updated_at": "2021-10-28T12:28:42.416Z"
         }
     },
     {
-        "model": "siaes.siaeoffer",
+        "model": "siaes.siaelabelold",
         "pk": 9,
         "fields": {
-            "name": "Manutention",
+            "name": "ISO 14001",
             "siae": 3854,
             "created_at": "2021-10-28T12:28:42.408Z",
             "updated_at": "2021-10-28T12:28:42.416Z"
         }
     },
     {
-        "model": "siaes.siaeoffer",
+        "model": "siaes.siaelabelold",
         "pk": 10,
         "fields": {
-            "name": "Services logistiques",
+            "name": "ISO 14001",
             "siae": 3852,
             "created_at": "2021-10-28T12:28:42.408Z",
             "updated_at": "2021-10-28T12:28:42.416Z"

@@ -37,7 +37,7 @@ class Command(BaseCommand):
             network_count = siae.networks.count()
             offer_count = siae.offers.count()
             client_reference_count = siae.client_references.count()
-            label_count = siae.labels.count()
+            label_count = siae.labels_old.count()
             image_count = siae.images.count()
 
             # Step 3: update count fields

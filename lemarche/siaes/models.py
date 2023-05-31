@@ -171,7 +171,7 @@ class SiaeQuerySet(models.QuerySet):
         return self.prefetch_related("sectors", "networks")
 
     def prefetch_many_to_one(self):
-        return self.prefetch_related("offers", "client_references", "labels", "images")
+        return self.prefetch_related("offers", "client_references", "labels_old", "images")
 
     def search_query_set(self):
         return self.is_live().exclude(kind="OPCS").prefetch_many_to_many()
@@ -214,8 +214,8 @@ class SiaeQuerySet(models.QuerySet):
         return self.filter(offers__isnull=False).distinct()
 
     def has_label(self):
-        """Only return siaes who have at least 1 SiaeLabel."""
-        return self.filter(labels__isnull=False).distinct()
+        """Only return siaes who have at least 1 SiaeLabelOld."""
+        return self.filter(labels_old__isnull=False).distinct()
 
     def has_client_reference(self):
         """Only return siaes who have at least 1 SiaeClientReference."""
@@ -758,7 +758,7 @@ class Siae(models.Model):
         if self.id:
             self.offer_count = self.offers.count()
             self.client_reference_count = self.client_references.count()
-            self.label_count = self.labels.count()
+            self.label_count = self.labels_old.count()
             self.image_count = self.images.count()
             # user_count, sector_count, network_count? see M2M signals
 
@@ -1129,10 +1129,12 @@ class SiaeClientReference(models.Model):
     #     return f"SiaeClientReference object ({self.id})"
 
 
-class SiaeLabel(models.Model):
+class SiaeLabelOld(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
 
-    siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", related_name="labels", on_delete=models.CASCADE)
+    siae = models.ForeignKey(
+        "siaes.Siae", verbose_name="Structure", related_name="labels_old", on_delete=models.CASCADE
+    )
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
