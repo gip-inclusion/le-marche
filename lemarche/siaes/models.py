@@ -631,7 +631,6 @@ class Siae(models.Model):
     groups = models.ManyToManyField("siaes.SiaeGroup", verbose_name="Groupements", related_name="siaes", blank=True)
     labels = models.ManyToManyField(
         "labels.Label",
-        through="siaes.SiaeLabel",
         verbose_name="Labels & certifications",
         related_name="siaes",
         blank=True,
