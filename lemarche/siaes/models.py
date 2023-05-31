@@ -1129,6 +1129,21 @@ class SiaeClientReference(models.Model):
     #     return f"SiaeClientReference object ({self.id})"
 
 
+class SiaeLabel(models.Model):
+    siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
+    label = models.ForeignKey("labels.Label", verbose_name="Label & certification", on_delete=models.CASCADE)
+
+    logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Label & certification"
+        verbose_name_plural = "Labels & certifications"
+        ordering = ["-created_at"]
+
+
 class SiaeLabelOld(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
 
@@ -1140,8 +1155,8 @@ class SiaeLabelOld(models.Model):
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
     class Meta:
-        verbose_name = "Label & certification"
-        verbose_name_plural = "Labels & certifications"
+        verbose_name = "Label & certification (old)"
+        verbose_name_plural = "Labels & certifications (old)"
         # ordering = ["id"]
 
     def __str__(self):
