@@ -629,7 +629,14 @@ class Siae(models.Model):
     )
     networks = models.ManyToManyField("networks.Network", verbose_name="Réseaux", related_name="siaes", blank=True)
     groups = models.ManyToManyField("siaes.SiaeGroup", verbose_name="Groupements", related_name="siaes", blank=True)
-    # ForeignKeys: offers, client_references, labels, images
+    labels = models.ManyToManyField(
+        "labels.Label",
+        through="siaes.SiaeLabel",
+        verbose_name="Labels & certifications",
+        related_name="siaes",
+        blank=True,
+    )
+    # ForeignKeys: offers, client_references, labels_old, images
 
     # C2 (ETP)
     c2_etp_count = models.FloatField("Nombre d'ETP (C2)", blank=True, null=True)
