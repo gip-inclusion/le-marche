@@ -407,7 +407,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     offer_count_with_link.admin_order_field = "offer_count"
 
     def label_count_with_link(self, siae):
-        url = reverse("admin:siaes_siaelabel_changelist") + f"?siae__id__exact={siae.id}"
+        url = reverse("admin:siaes_siaelabel_changelist") + f"?siae_old__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.label_count}</a>')
 
     label_count_with_link.short_description = "Nbr de labels"
@@ -564,19 +564,19 @@ class SiaeOfferAdmin(admin.ModelAdmin):
 
 @admin.register(SiaeLabelOld, site=admin_site)
 class SiaeLabelOldAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", "siae_with_link", "created_at"]
-    search_fields = ["id", "name", "siae__id", "siae__name"]
+    list_display = ["id", "name", "siae_old_with_link", "created_at"]
+    search_fields = ["id", "name", "siae_old__id", "siae_old__name"]
     search_help_text = "Cherche sur les champs : ID, Nom, Structure (ID, Nom)"
 
-    autocomplete_fields = ["siae"]
+    autocomplete_fields = ["siae_old"]
     readonly_fields = ["created_at", "updated_at"]
 
-    def siae_with_link(self, siae_label):
+    def siae_old_with_link(self, siae_label):
         url = reverse("admin:siaes_siae_change", args=[siae_label.siae_id])
         return format_html(f'<a href="{url}">{siae_label.siae}</a>')
 
-    siae_with_link.short_description = Siae._meta.verbose_name
-    siae_with_link.admin_order_field = "siae"
+    siae_old_with_link.short_description = Siae._meta.verbose_name
+    siae_old_with_link.admin_order_field = "siae_old"
 
 
 @admin.register(SiaeClientReference, site=admin_site)

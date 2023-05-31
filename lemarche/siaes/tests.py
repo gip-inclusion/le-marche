@@ -78,7 +78,7 @@ class SiaeModelTest(TestCase):
         sector = SectorFactory()
         siae_full.sectors.add(sector)
         SiaeOfferFactory(siae=siae_full)
-        SiaeLabelOldFactory(siae=siae_full)
+        SiaeLabelOldFactory(siae_old=siae_full)
         siae_full.save()  # to update stats
         self.assertFalse(siae_full.is_missing_content)
         self.assertTrue(score_completion_before < siae_full.completion_percent)
@@ -92,7 +92,7 @@ class SiaeModelTest(TestCase):
         )
         siae_full_2.sectors.add(sector)
         SiaeOfferFactory(siae=siae_full_2)
-        SiaeLabelOldFactory(siae=siae_full_2)
+        SiaeLabelOldFactory(siae_old=siae_full_2)
         siae_full_2.save()  # to update stats
         self.assertFalse(siae_full_2.is_missing_content)
 

@@ -7,7 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("labels", "0001_initial"),
-        ("siaes", "0059_siaelabel_through_model"),
+        ("siaes", "0060_siaelabel_through_model"),
     ]
 
     operations = [

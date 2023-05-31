@@ -1154,7 +1154,7 @@ class SiaeLabel(models.Model):
 class SiaeLabelOld(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
 
-    siae = models.ForeignKey(
+    siae_old = models.ForeignKey(
         "siaes.Siae", verbose_name="Structure", related_name="labels_old", on_delete=models.CASCADE
     )
 
