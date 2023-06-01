@@ -2,10 +2,9 @@ import time
 
 import requests
 
-# from lemarche.labels.models import Label
-from lemarche.siaes.models import Siae
-
-# from lemarche.utils.apis import api_slack
+from lemarche.labels.models import Label
+from lemarche.siaes.models import Siae, SiaeLabel
+from lemarche.utils.apis import api_slack
 from lemarche.utils.commands import BaseCommand
 
 
@@ -23,7 +22,7 @@ class Command(BaseCommand):
         self.stdout_info("-" * 80)
         self.stdout_info("API ADEME RGE")
 
-        # label_rge = Label.objects.get(name="RGE")
+        label_rge = Label.objects.get(name="RGE")
         siaes = Siae.objects.all()
         self.stdout_info(f"SIAE count: {siaes.count()}")
 
@@ -40,6 +39,7 @@ class Command(BaseCommand):
             # add label to siae
             if len(data):
                 # siae.labels.add(label_rge)
+                SiaeLabel.objects.create(siae=siae, label=label_rge)
                 results["success"] += 1
 
             progress += 1
@@ -55,4 +55,4 @@ class Command(BaseCommand):
             f"success count: {results['success']}/{siaes.count()}",
         ]
         self.stdout_messages_success(msg_success)
-        # api_slack.send_message_to_channel("\n".join(msg_success))
+        api_slack.send_message_to_channel("\n".join(msg_success))
