@@ -47,9 +47,10 @@ class TenderCreateMultiStepView(SessionWizardView):
     instance = None
     success_url = reverse_lazy("siae:search_results")
     success_message = """
-        Votre besoin <strong>{tender_title}</strong> a été publié sur le marché !<br />
-        Les prestataires inclusifs qui correspondent à vos critères seront notifiées
-        dès que votre besoin sera validé par notre équipe.
+        <b>Je suis Sofiane, votre conseiller chargé de vous accompagner sur votre {tender_kind}.</b> <br/>
+        Votre besoin <strong>{tender_title}</strong> est bien pris en compte. <br />
+        Vous recevrez une notification par email dès que des prestataires seront identifiés ! <br />
+        À très vite
     """
 
     success_message_draft = """
@@ -178,9 +179,10 @@ class TenderCreateMultiStepView(SessionWizardView):
         # validation & siae contacted? in tenders/admin.py
         # success message & response
         messages.add_message(
-            self.request,
-            messages.INFO if is_draft else messages.SUCCESS,
-            self.get_success_message(cleaned_data, self.instance, is_draft=is_draft),
+            request=self.request,
+            level=messages.INFO if is_draft else messages.SUCCESS,
+            message=self.get_success_message(cleaned_data, self.instance, is_draft=is_draft),
+            extra_tags="modal_message",
         )
         return redirect(self.get_success_url())
 
@@ -191,7 +193,7 @@ class TenderCreateMultiStepView(SessionWizardView):
 
     def get_success_message(self, cleaned_data, tender, is_draft):
         return mark_safe(
-            self.success_message.format(tender_title=tender.title)
+            self.success_message.format(tender_title=tender.title, tender_kind=tender.get_kind_display())
             if not is_draft
             else self.success_message_draft.format(tender_title=tender.title)
         )
