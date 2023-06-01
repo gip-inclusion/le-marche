@@ -16,6 +16,7 @@ from lemarche.tenders import constants
 from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion
 from lemarche.utils.admin.admin_site import admin_site
+from lemarche.utils.apis import api_hubspot
 from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
 from lemarche.www.tenders.tasks import (
     send_confirmation_published_email_to_author,
@@ -386,6 +387,8 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         if request.POST.get("_validate_tender"):
             update_and_send_tender_task(tender=obj)
             self.message_user(request, "Ce dépôt de besoin a été validé et envoyé aux structures")
+            api_hubspot.create_deal_from_tender(tender=obj)
+
             return HttpResponseRedirect(".")
         elif request.POST.get("_restart_tender"):
             restart_send_tender_task(tender=obj)
