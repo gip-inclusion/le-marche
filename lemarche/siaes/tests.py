@@ -1,12 +1,51 @@
 from django.test import TestCase
 
+from lemarche.labels.factories import LabelFactory
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeFactory, SiaeGroupFactory, SiaeLabelOldFactory, SiaeOfferFactory
-from lemarche.siaes.models import Siae, SiaeGroup, SiaeUser
+from lemarche.siaes.models import Siae, SiaeGroup, SiaeLabel, SiaeUser
 from lemarche.users.factories import UserFactory
+
+
+class SiaeGroupModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae_group = SiaeGroupFactory(name="Mon groupement")
+
+    def test_slug_field(self):
+        self.assertEqual(self.siae_group.slug, "mon-groupement")
+
+    def test_str(self):
+        self.assertEqual(str(self.siae_group), "Mon groupement")
+
+
+class SiaeGroupModelSaveTest(TestCase):
+    def test_update_last_updated_fields(self):
+        siae_group = SiaeGroupFactory()
+        self.assertEqual(siae_group.employees_insertion_count, None)
+        self.assertEqual(siae_group.employees_insertion_count_last_updated, None)
+        # new value: last_updated field will be set
+        siae_group = SiaeGroup.objects.get(id=siae_group.id)  # we need to fetch it again to pass through the __init__
+        siae_group.employees_insertion_count = 10
+        siae_group.save()
+        self.assertEqual(siae_group.employees_insertion_count, 10)
+        self.assertNotEqual(siae_group.employees_insertion_count_last_updated, None)
+        employees_insertion_count_last_updated = siae_group.employees_insertion_count_last_updated
+        # same value: last_updated field will not be updated
+        siae_group = SiaeGroup.objects.get(id=siae_group.id)
+        siae_group.employees_insertion_count = 10
+        siae_group.save()
+        self.assertEqual(siae_group.employees_insertion_count, 10)
+        self.assertEqual(siae_group.employees_insertion_count_last_updated, employees_insertion_count_last_updated)
+        # updated value: last_updated field will be updated
+        siae_group = SiaeGroup.objects.get(id=siae_group.id)
+        siae_group.employees_insertion_count = 15
+        siae_group.save()
+        self.assertEqual(siae_group.employees_insertion_count, 15)
+        self.assertNotEqual(siae_group.employees_insertion_count_last_updated, employees_insertion_count_last_updated)
 
 
 class SiaeModelTest(TestCase):
@@ -360,39 +399,18 @@ class SiaeModelPerimeterQuerysetTest(TestCase):
         )
 
 
-class SiaeGroupModelTest(TestCase):
+class SiaeLabelModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.siae_group = SiaeGroupFactory(name="Mon groupement")
+        cls.label_1 = LabelFactory()
+        cls.label_2 = LabelFactory()
 
-    def test_slug_field(self):
-        self.assertEqual(self.siae_group.slug, "mon-groupement")
+    def test_siae_labels(self):
+        siae = SiaeFactory()
+        siae.labels.add(self.label_1)
+        self.assertEqual(siae.labels.count(), 1)
 
-    def test_str(self):
-        self.assertEqual(str(self.siae_group), "Mon groupement")
-
-
-class SiaeGroupModelSaveTest(TestCase):
-    def test_update_last_updated_fields(self):
-        siae_group = SiaeGroupFactory()
-        self.assertEqual(siae_group.employees_insertion_count, None)
-        self.assertEqual(siae_group.employees_insertion_count_last_updated, None)
-        # new value: last_updated field will be set
-        siae_group = SiaeGroup.objects.get(id=siae_group.id)  # we need to fetch it again to pass through the __init__
-        siae_group.employees_insertion_count = 10
-        siae_group.save()
-        self.assertEqual(siae_group.employees_insertion_count, 10)
-        self.assertNotEqual(siae_group.employees_insertion_count_last_updated, None)
-        employees_insertion_count_last_updated = siae_group.employees_insertion_count_last_updated
-        # same value: last_updated field will not be updated
-        siae_group = SiaeGroup.objects.get(id=siae_group.id)
-        siae_group.employees_insertion_count = 10
-        siae_group.save()
-        self.assertEqual(siae_group.employees_insertion_count, 10)
-        self.assertEqual(siae_group.employees_insertion_count_last_updated, employees_insertion_count_last_updated)
-        # updated value: last_updated field will be updated
-        siae_group = SiaeGroup.objects.get(id=siae_group.id)
-        siae_group.employees_insertion_count = 15
-        siae_group.save()
-        self.assertEqual(siae_group.employees_insertion_count, 15)
-        self.assertNotEqual(siae_group.employees_insertion_count_last_updated, employees_insertion_count_last_updated)
+    def test_siae_labels_through(self):
+        siae = SiaeFactory()
+        SiaeLabel.objects.create(siae=siae, label=self.label_2)
+        self.assertEqual(siae.labels.count(), 1)
