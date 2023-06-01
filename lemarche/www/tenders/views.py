@@ -2,20 +2,24 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, ListView, UpdateView
+from django.views.generic.edit import FormMixin
 from formtools.wizard.views import SessionWizardView
 
+from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils.apis import api_hubspot
 from lemarche.utils.data import get_choice
 from lemarche.utils.mixins import TenderAuthorOrAdminRequiredIfNotValidatedMixin, TenderAuthorOrAdminRequiredMixin
+from lemarche.www.siaes.forms import TenderSiaeFilterForm
 from lemarche.www.tenders.forms import (
     TenderCreateStepConfirmationForm,
     TenderCreateStepContactForm,
@@ -76,7 +80,6 @@ class TenderCreateMultiStepView(SessionWizardView):
     ]
 
     def get_template_names(self):
-        print("get_template_names")
         return [self.TEMPLATES[self.steps.current]]
 
     def get(self, request, *args, **kwargs):
@@ -356,21 +359,26 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
         return f"<strong>{self.object.cta_card_button_text}</strong><br />Pour {self.object.cta_card_button_text.lower()}, vous devez accepter d'être mis en relation avec l'acheteur."  # noqa
 
 
-class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, ListView):
+class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
     template_name = "tenders/siae_interested_list.html"
-    queryset = TenderSiae.objects.select_related("tender", "siae").all()
-    context_object_name = "tendersiaes"
+    form_class = TenderSiaeFilterForm
+    queryset = Siae.objects.prefetch_related("tendersiae_set").all()
+    context_object_name = "siaes"
     status = None
 
     def get_queryset(self):
         qs = super().get_queryset()
-        qs = qs.filter(tender__slug=self.kwargs.get("slug"))
+        # first get the tender's siaes
+        self.tender = Tender.objects.get(slug=self.kwargs.get("slug"))
         if self.status:  # status == "INTERESTED"
-            qs = qs.filter(detail_contact_click_date__isnull=False)
-            qs = qs.order_by("-detail_contact_click_date")
+            qs = qs.filter(Q(tendersiae__tender=self.tender) & Q(tendersiae__detail_contact_click_date__isnull=False))
+            qs = qs.order_by("-tendersiae__detail_contact_click_date")
         else:  # default
-            qs = qs.filter(email_send_date__isnull=False)
-            qs = qs.order_by("-email_send_date")
+            qs = qs.filter(Q(tendersiae__tender=self.tender) & Q(tendersiae__email_send_date__isnull=False))
+            qs = qs.order_by("-tendersiae__email_send_date")
+        # then filter with the form
+        self.filter_form = TenderSiaeFilterForm(data=self.request.GET)
+        qs = self.filter_form.filter_queryset(qs)
         return qs
 
     def get(self, request, status=None, *args, **kwargs):
@@ -384,6 +392,9 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["tender"] = Tender.objects.get(slug=self.kwargs.get("slug"))
+        context["tender"] = self.tender
         context["status"] = self.status
+        siae_search_form = self.filter_form if self.filter_form else TenderSiaeFilterForm(data=self.request.GET)
+        context["form"] = siae_search_form
+        context["current_search_query"] = self.request.GET.urlencode()
         return context
