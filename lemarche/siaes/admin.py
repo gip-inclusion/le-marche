@@ -6,11 +6,13 @@ from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
+from lemarche.labels.models import Label
 from lemarche.siaes.models import (
     Siae,
     SiaeClientReference,
     SiaeGroup,
     SiaeImage,
+    SiaeLabel,
     SiaeLabelOld,
     SiaeOffer,
     SiaeUser,
@@ -56,6 +58,20 @@ class HasUserFilter(admin.SimpleListFilter):
         elif value == "No":
             return queryset.filter(users__isnull=True)
         return queryset
+
+
+class SiaeLabelInline(admin.TabularInline):
+    model = SiaeLabel
+    fields = ["label", "label_with_link", "created_at", "updated_at"]
+    autocomplete_fields = ["label"]
+    readonly_fields = ["label_with_link", "created_at", "updated_at"]
+    extra = 0
+
+    def label_with_link(self, siae_label):
+        url = reverse("admin:labels_label_change", args=[siae_label.label_id])
+        return format_html(f'<a href="{url}">{siae_label.label}</a>')
+
+    label_with_link.short_description = Label._meta.verbose_name
 
 
 class SiaeUserInline(admin.TabularInline):
@@ -197,6 +213,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                 )
             },
         ),
+        SiaeLabelInline,
         (
             "Périmètre d'intervention",
             {
