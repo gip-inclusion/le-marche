@@ -7,10 +7,16 @@
 				}, 1000); // 1000 millisecondes = 1 secondes
 			  });
 			function OpenBootstrapModal() {
-				$("#message{{ forloop.counter }}").modal('show');
+				let loader = document.getElementById("loaderMessage{{ forloop.counter }}");
+                if (loader) {
+                    loader.parentNode.removeChild(loader);
+                }
+                $("#message{{ forloop.counter }}").modal('show');
 			}
-
         </script>
+        <div id="loaderMessage{{ forloop.counter }}" class="loader-in-all-page">
+            <div class="loader-inner"></div>
+        </div>
         <div class="modal fade"
              id="message{{ forloop.counter }}"
              tabindex="-1"
