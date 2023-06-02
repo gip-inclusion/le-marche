@@ -1,0 +1,51 @@
+{% load static %}
+<script type="text/javascript">
+			window.addEventListener('load', function() {
+				setTimeout(function() {
+					OpenBootstrapModal();
+				}, 1000); // 1000 millisecondes = 1 secondes
+			  });
+			function OpenBootstrapModal() {
+				let loader = document.getElementById("loaderMessage{{ index }}");
+                if (loader) {
+                    loader.parentNode.removeChild(loader);
+                }
+                $("#message{{ index }}").modal('show');
+			}
+</script>
+<div id="loaderMessage{{ index }}" class="loader-in-all-page">
+    <div class="loader-inner"></div>
+</div>
+<div class="modal"
+     id="message{{ index }}"
+     tabindex="-1"
+     aria-labelledby="{{ message }}"
+     style="display: none"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Information importante</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4 d-flex align-items-center justify-content-center">
+                        <img src="{% static 'images/bizdev-icon.jpg' %}"
+                             class="img-fluid rounded-circle"
+                             alt="Image du chargé de votre besoin"
+                             loading="lazy"/>
+                    </div>
+                    <div class="col-md-8">{{ message | safe }}</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-sm btn-outline-primary"
+                        data-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>

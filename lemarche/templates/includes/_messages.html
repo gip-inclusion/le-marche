@@ -1,45 +1,7 @@
+{% load static %}
 {% for message in messages %}
-    {% if message.extra_tags and message.extra_tags == "modal_message" %}
-        <script type="text/javascript">
-			window.addEventListener('load', function() {
-				setTimeout(function() {
-					OpenBootstrapModal();
-				}, 1000); // 1000 millisecondes = 1 secondes
-			  });
-			function OpenBootstrapModal() {
-				let loader = document.getElementById("loaderMessage{{ forloop.counter }}");
-                if (loader) {
-                    loader.parentNode.removeChild(loader);
-                }
-                $("#message{{ forloop.counter }}").modal('show');
-			}
-        </script>
-        <div id="loaderMessage{{ forloop.counter }}" class="loader-in-all-page">
-            <div class="loader-inner"></div>
-        </div>
-        <div class="modal fade"
-             id="message{{ forloop.counter }}"
-             tabindex="-1"
-             aria-labelledby="{{ message }}"
-             style="display: none"
-             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title">Information importante</h3>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-                            <i class="ri-close-line"></i>
-                        </button>
-                    </div>
-                    <div class="modal-body">{{ message | safe }}</div>
-                    <div class="modal-footer">
-                        <button type="button"
-                                class="btn btn-sm btn-outline-primary"
-                                data-dismiss="modal">Fermer</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+    {% if message.extra_tags and message.extra_tags == "modal_message_bizdev" %}
+        {% include "includes/_messages_modal_bizdev.html" with index=forloop.counter message=message %}
     {% else %}
         <div class="alert {{ message.tags }} alert-dismissible fade show mt-3"
              role="alert">

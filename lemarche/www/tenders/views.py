@@ -182,7 +182,7 @@ class TenderCreateMultiStepView(SessionWizardView):
             request=self.request,
             level=messages.INFO if is_draft else messages.SUCCESS,
             message=self.get_success_message(cleaned_data, self.instance, is_draft=is_draft),
-            extra_tags="modal_message",
+            extra_tags="modal_message_bizdev",
         )
         return redirect(self.get_success_url())
 

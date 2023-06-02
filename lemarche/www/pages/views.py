@@ -368,7 +368,7 @@ def csrf_failure(request, reason=""):  # noqa C901
             message=TenderCreateMultiStepView.get_success_message(
                 TenderCreateMultiStepView, tender_dict, tender, is_draft=False
             ),
-            extra_tags="modal_message",
+            extra_tags="modal_message_bizdev",
         )
 
         return HttpResponseRedirect(TenderCreateMultiStepView.success_url)
