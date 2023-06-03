@@ -171,7 +171,7 @@ class SiaeQuerySet(models.QuerySet):
         return self.prefetch_related("sectors", "networks")
 
     def prefetch_many_to_one(self):
-        return self.prefetch_related("offers", "client_references", "labels", "images")
+        return self.prefetch_related("offers", "client_references", "labels_old", "images")
 
     def search_query_set(self):
         return self.is_live().exclude(kind="OPCS").prefetch_many_to_many()
@@ -214,8 +214,8 @@ class SiaeQuerySet(models.QuerySet):
         return self.filter(offers__isnull=False).distinct()
 
     def has_label(self):
-        """Only return siaes who have at least 1 SiaeLabel."""
-        return self.filter(labels__isnull=False).distinct()
+        """Only return siaes who have at least 1 SiaeLabelOld."""
+        return self.filter(labels_old__isnull=False).distinct()
 
     def has_client_reference(self):
         """Only return siaes who have at least 1 SiaeClientReference."""
@@ -629,7 +629,14 @@ class Siae(models.Model):
     )
     networks = models.ManyToManyField("networks.Network", verbose_name="Réseaux", related_name="siaes", blank=True)
     groups = models.ManyToManyField("siaes.SiaeGroup", verbose_name="Groupements", related_name="siaes", blank=True)
-    # ForeignKeys: offers, client_references, labels, images
+    labels = models.ManyToManyField(
+        "labels.Label",
+        through="siaes.SiaeLabel",
+        verbose_name="Labels & certifications",
+        related_name="siaes",
+        blank=True,
+    )
+    # ForeignKeys: offers, client_references, labels_old, images
 
     # C2 (ETP)
     c2_etp_count = models.FloatField("Nombre d'ETP (C2)", blank=True, null=True)
@@ -758,7 +765,7 @@ class Siae(models.Model):
         if self.id:
             self.offer_count = self.offers.count()
             self.client_reference_count = self.client_references.count()
-            self.label_count = self.labels.count()
+            self.label_count = self.labels_old.count()
             self.image_count = self.images.count()
             # user_count, sector_count, network_count? see M2M signals
 
@@ -1130,9 +1137,10 @@ class SiaeClientReference(models.Model):
 
 
 class SiaeLabel(models.Model):
-    name = models.CharField(verbose_name="Nom", max_length=255)
+    siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
+    label = models.ForeignKey("labels.Label", verbose_name="Label & certification", on_delete=models.CASCADE)
 
-    siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", related_name="labels", on_delete=models.CASCADE)
+    logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
@@ -1140,6 +1148,22 @@ class SiaeLabel(models.Model):
     class Meta:
         verbose_name = "Label & certification"
         verbose_name_plural = "Labels & certifications"
+        ordering = ["-created_at"]
+
+
+class SiaeLabelOld(models.Model):
+    name = models.CharField(verbose_name="Nom", max_length=255)
+
+    siae = models.ForeignKey(
+        "siaes.Siae", verbose_name="Structure", related_name="labels_old", on_delete=models.CASCADE
+    )
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Label & certification (old)"
+        verbose_name_plural = "Labels & certifications (old)"
         # ordering = ["id"]
 
     def __str__(self):

@@ -4,7 +4,7 @@ import factory.fuzzy
 from factory.django import DjangoModelFactory
 
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.models import Siae, SiaeClientReference, SiaeGroup, SiaeLabel, SiaeOffer
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeGroup, SiaeLabelOld, SiaeOffer
 
 
 class SiaeGroupFactory(DjangoModelFactory):
@@ -63,8 +63,8 @@ class SiaeClientReferenceFactory(DjangoModelFactory):
     name = factory.Faker("name", locale="fr_FR")
 
 
-class SiaeLabelFactory(DjangoModelFactory):
+class SiaeLabelOldFactory(DjangoModelFactory):
     class Meta:
-        model = SiaeLabel
+        model = SiaeLabelOld
 
     name = factory.Faker("name", locale="fr_FR")

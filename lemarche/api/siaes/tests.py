@@ -202,7 +202,7 @@ class SiaeDetailApiTest(TestCase):
         self.assertTrue("networks" in response.data)
         self.assertTrue("offers" in response.data)
         self.assertTrue("client_references" in response.data)
-        self.assertTrue("labels" in response.data)
+        self.assertTrue("labels_old" in response.data)
 
 
 class SiaeRetrieveBySlugApiTest(TestCase):
