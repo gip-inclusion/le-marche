@@ -6,12 +6,14 @@ from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
+from lemarche.labels.models import Label
 from lemarche.siaes.models import (
     Siae,
     SiaeClientReference,
     SiaeGroup,
     SiaeImage,
     SiaeLabel,
+    SiaeLabelOld,
     SiaeOffer,
     SiaeUser,
     SiaeUserRequest,
@@ -56,6 +58,20 @@ class HasUserFilter(admin.SimpleListFilter):
         elif value == "No":
             return queryset.filter(users__isnull=True)
         return queryset
+
+
+class SiaeLabelInline(admin.TabularInline):
+    model = SiaeLabel
+    fields = ["label", "label_with_link", "created_at", "updated_at"]
+    autocomplete_fields = ["label"]
+    readonly_fields = ["label_with_link", "created_at", "updated_at"]
+    extra = 0
+
+    def label_with_link(self, siae_label):
+        url = reverse("admin:labels_label_change", args=[siae_label.label_id])
+        return format_html(f'<a href="{url}">{siae_label.label}</a>')
+
+    label_with_link.short_description = Label._meta.verbose_name
 
 
 class SiaeUserInline(admin.TabularInline):
@@ -197,6 +213,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                 )
             },
         ),
+        SiaeLabelInline,
         (
             "Périmètre d'intervention",
             {
@@ -407,7 +424,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     offer_count_with_link.admin_order_field = "offer_count"
 
     def label_count_with_link(self, siae):
-        url = reverse("admin:siaes_siaelabel_changelist") + f"?siae__id__exact={siae.id}"
+        url = reverse("admin:siaes_siaelabelold_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.label_count}</a>')
 
     label_count_with_link.short_description = "Nbr de labels"
@@ -562,8 +579,8 @@ class SiaeOfferAdmin(admin.ModelAdmin):
     siae_with_link.admin_order_field = "siae"
 
 
-@admin.register(SiaeLabel, site=admin_site)
-class SiaeLabelAdmin(admin.ModelAdmin):
+@admin.register(SiaeLabelOld, site=admin_site)
+class SiaeLabelOldAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "siae_with_link", "created_at"]
     search_fields = ["id", "name", "siae__id", "siae__name"]
     search_help_text = "Cherche sur les champs : ID, Nom, Structure (ID, Nom)"

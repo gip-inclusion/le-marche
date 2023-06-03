@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from lemarche.api.networks.serializers import NetworkSimpleSerializer
 from lemarche.api.sectors.serializers import SectorSimpleSerializer
-from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabel, SiaeOffer
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeLabelOld, SiaeOffer
 
 
 class SiaeOfferSimpleSerializer(serializers.ModelSerializer):
@@ -24,9 +24,9 @@ class SiaeClientReferenceSimpleSerializer(serializers.ModelSerializer):
         ]
 
 
-class SiaeLabelSimpleSerializer(serializers.ModelSerializer):
+class SiaeLabelOldSimpleSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SiaeLabel
+        model = SiaeLabelOld
         fields = [
             "name",
         ]
@@ -37,7 +37,7 @@ class SiaeDetailSerializer(serializers.ModelSerializer):
     networks = NetworkSimpleSerializer(many=True)
     offers = SiaeOfferSimpleSerializer(many=True)
     client_references = SiaeClientReferenceSimpleSerializer(many=True)
-    labels = SiaeLabelSimpleSerializer(many=True)
+    labels_old = SiaeLabelOldSimpleSerializer(many=True)
 
     class Meta:
         model = Siae
@@ -67,7 +67,7 @@ class SiaeDetailSerializer(serializers.ModelSerializer):
             "networks",
             "offers",
             "client_references",
-            "labels",
+            "labels_old",
             # "images",
             "created_at",
             "updated_at",
