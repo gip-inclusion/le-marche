@@ -10,7 +10,7 @@ from lemarche.utils.commands import BaseCommand
 
 LABEL_NAME = "RSEi"
 LABEL_SLUG = "rsei"
-SIRET_COLUMN_NAME = "Numéro de SIRET"
+LABEL_SIRET_COLUMN_NAME = "Numéro de SIRET"
 
 
 def read_csv(file_path):
@@ -43,16 +43,23 @@ class Command(BaseCommand):
 
         label = Label.objects.get(slug=LABEL_SLUG)
         siaes = Siae.objects.all()
+        siae_label = SiaeLabel.objects.filter(label=label)
+        self.stdout_info("-" * 80)
         self.stdout_info(f"SIAE count: {siaes.count()}")
+        self.stdout_info(f"SIAE with {LABEL_NAME} label count: {siae_label.count()}")
+        if not options["dry_run"]:
+            siae_label.delete()
+            self.stdout_info("Deleted...")
 
         progress = 0
         results = {"success": 0, "error": 0}
 
         file_row_list = read_csv(options["file"])
+        self.stdout_info("-" * 80)
         self.stdout_info(f"{LABEL_NAME} file row count: {len(file_row_list)}")
 
         for row_item in file_row_list:
-            row_item_siret = row_item[SIRET_COLUMN_NAME].replace(" ", "")
+            row_item_siret = row_item[LABEL_SIRET_COLUMN_NAME].replace(" ", "")
             qs = Siae.objects.filter(siret=row_item_siret)
             if qs.exists():
                 if qs.count() > 1:
@@ -79,6 +86,7 @@ class Command(BaseCommand):
             label.data_last_sync_date = timezone.now()
             log_item = {
                 "action": "data_sync",
+                "timestamp": timezone.now().isoformat(),
                 "source": options["file"],
                 "results": {"success_count": results["success"], "error_count": results["error"]},
             }
