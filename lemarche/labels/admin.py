@@ -5,6 +5,7 @@ from django.utils.html import format_html, mark_safe
 
 from lemarche.labels.models import Label
 from lemarche.utils.admin.admin_site import admin_site
+from lemarche.utils.fields import pretty_print_readonly_jsonfield
 
 
 @admin.register(Label, site=admin_site)
@@ -13,7 +14,15 @@ class LabelAdmin(admin.ModelAdmin):
     search_fields = ["id", "name", "description"]
     search_help_text = "Cherche sur les champs : ID, Nom, Description"
 
-    readonly_fields = ["nb_siaes", "logo_url", "logo_url_display", "created_at", "updated_at"]
+    readonly_fields = [
+        "nb_siaes",
+        "logo_url",
+        "logo_url_display",
+        "data_last_sync_date",
+        "logs_display",
+        "created_at",
+        "updated_at",
+    ]
 
     fieldsets = (
         (
@@ -24,6 +33,16 @@ class LabelAdmin(admin.ModelAdmin):
         ),
         ("Structures", {"fields": ("nb_siaes",)}),
         ("Logo", {"fields": ("logo_url", "logo_url_display")}),
+        (
+            "Source de données",
+            {
+                "fields": (
+                    "data_description",
+                    "data_last_sync_date",
+                )
+            },
+        ),
+        ("Stats", {"fields": ("logs_display",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
 
@@ -61,3 +80,10 @@ class LabelAdmin(admin.ModelAdmin):
         return mark_safe("<div>-</div>")
 
     logo_url_display.short_description = "Logo"
+
+    def logs_display(self, label=None):
+        if label:
+            return pretty_print_readonly_jsonfield(label.logs)
+        return "-"
+
+    logs_display.short_description = Label._meta.get_field("logs").verbose_name
