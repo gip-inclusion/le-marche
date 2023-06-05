@@ -9,6 +9,12 @@ class Label(models.Model):
     description = models.TextField(verbose_name="Description", blank=True)
     website = models.URLField(verbose_name="Site web", blank=True)
     logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True)
+
+    data_description = models.TextField(verbose_name="Description de la source de données", blank=True)
+    data_last_sync_date = models.DateTimeField("Date de dernière synchronisation", blank=True, null=True)
+
+    logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
+
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
