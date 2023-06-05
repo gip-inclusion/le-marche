@@ -1,5 +1,7 @@
 import csv
 
+from django.utils import timezone
+
 from lemarche.labels.models import Label
 from lemarche.siaes.models import Siae, SiaeLabel
 from lemarche.utils.apis import api_slack
@@ -7,6 +9,7 @@ from lemarche.utils.commands import BaseCommand
 
 
 LABEL_NAME = "RSEi"
+LABEL_SLUG = "rsei"
 SIRET_COLUMN_NAME = "Numéro de SIRET"
 
 
@@ -38,7 +41,7 @@ class Command(BaseCommand):
         self.stdout_info("-" * 80)
         self.stdout_info(f"Import {LABEL_NAME}")
 
-        label = Label.objects.get(name=LABEL_NAME)
+        label = Label.objects.get(slug=LABEL_SLUG)
         siaes = Siae.objects.all()
         self.stdout_info(f"SIAE count: {siaes.count()}")
 
@@ -67,9 +70,19 @@ class Command(BaseCommand):
         msg_success = [
             f"----- Recap: Import {LABEL_NAME} -----",
             f"Done! Processed {siaes.count()} siae",
-            f"success count: {results['success']}/{siaes.count()}",
-            f"error count: {results['error']}/{siaes.count()}",
+            f"Success count: {results['success']}/{siaes.count()}",
+            f"Error count: {results['error']}/{siaes.count()}",
         ]
         self.stdout_messages_success(msg_success)
+
         if not options["dry_run"]:
+            label.data_last_sync_date = timezone.now()
+            log_item = {
+                "action": "data_sync",
+                "source": options["file"],
+                "results": {"success_count": results["success"], "error_count": results["error"]},
+            }
+            label.logs.append(log_item)
+            label.save()
+
             api_slack.send_message_to_channel("\n".join(msg_success))
