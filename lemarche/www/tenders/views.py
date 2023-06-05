@@ -47,9 +47,9 @@ class TenderCreateMultiStepView(SessionWizardView):
     instance = None
     success_url = reverse_lazy("siae:search_results")
     success_message = """
-        <b>Je suis Sofiane, votre conseiller chargé de vous accompagner sur votre {tender_kind}.</b> <br/>
-        Votre besoin <strong>{tender_title}</strong> est bien pris en compte. <br />
-        Vous recevrez une notification par email dès que des prestataires seront identifiés ! <br />
+        <h3>Je suis Sofiane, votre conseiller chargé de vous accompagner sur votre {tender_kind}</h3>
+        Votre besoin <strong>{tender_title}</strong> est bien pris en compte. <br /><br />
+        Vous recevrez une notification par email dès que des prestataires seront identifiés ! <br /><br />
         À très vite
     """
 

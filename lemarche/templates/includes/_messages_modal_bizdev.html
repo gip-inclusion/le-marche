@@ -6,16 +6,9 @@
 				}, 1000); // 1000 millisecondes = 1 secondes
 			  });
 			function OpenBootstrapModal() {
-				let loader = document.getElementById("loaderMessage{{ index }}");
-                if (loader) {
-                    loader.parentNode.removeChild(loader);
-                }
                 $("#message{{ index }}").modal('show');
 			}
 </script>
-<div id="loaderMessage{{ index }}" class="loader-in-all-page">
-    <div class="loader-inner"></div>
-</div>
 <div class="modal"
      id="message{{ index }}"
      tabindex="-1"
@@ -25,7 +18,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Information importante</h3>
+                {% comment %} <h3 class="modal-title">Information importante</h3> {% endcomment %}
                 <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
                     <i class="ri-close-line"></i>
                 </button>
@@ -34,7 +27,7 @@
                 <div class="row">
                     <div class="col-md-4 d-flex align-items-center justify-content-center">
                         <img src="{% static 'images/bizdev-icon.jpg' %}"
-                             class="img-fluid rounded-circle"
+                             class="img-fluid rounded-circle border border-primary shadow"
                              alt="Image du chargé de votre besoin"
                              loading="lazy"/>
                     </div>
