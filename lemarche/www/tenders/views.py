@@ -193,7 +193,7 @@ class TenderCreateMultiStepView(SessionWizardView):
 
     def get_success_message(self, cleaned_data, tender, is_draft):
         return mark_safe(
-            self.success_message.format(tender_title=tender.title, tender_kind=tender.get_kind_display())
+            self.success_message.format(tender_title=tender.title, tender_kind=tender.get_kind_display().lower())
             if not is_draft
             else self.success_message_draft.format(tender_title=tender.title)
         )
