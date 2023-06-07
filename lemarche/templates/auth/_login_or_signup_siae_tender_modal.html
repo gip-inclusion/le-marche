@@ -1,6 +1,5 @@
 {% load static %}
 {% load theme_inclusion %}
-
 <style>
   .remix {
   width: 24px;
@@ -8,35 +7,41 @@
   fill: #333;
 }
 </style>
-<div class="modal fade modal-siae" id="login_or_signup_siae_tender_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="exampleModalLabel">
+<div class="modal fade modal-siae"
+     id="login_or_signup_siae_tender_modal"
+     tabindex="-1"
+     role="dialog"
+     aria-modal="true"
+     data-backdrop="static"
+     data-keyboard="false"
+     aria-labelledby="title_modal_login">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="exampleModalLabel">Cette opportunité commerciale vous intéresse ?</h3>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
                     <i class="ri-close-line"></i>
                 </button>
             </div>
             <div class="modal-body home-content-body">
-                <p class="mb-4">
-                    Inscrivez-vous pour accéder à l'ensemble des demandes publiées par les entreprises et acheteurs publics du Marché de l'inclusion.
-                </p>
-                <p class="mb-4">
-                    Le Marché de l'inclusion est un service public gratuit !
-                </p>
+                <h3 id="title_modal_login" class="text-center mb-4">
+                    {{ title|default:"Connectez-vous pour accédez aux coordonnées du client" }}
+                </h3>
                 <div class="text-center">
-                    <a href="{% url 'auth:signup' %}?next=next-params-to-replace" id="auth-link" class="btn btn-sm btn-primary">Créer un compte</a>
+                    <a href="{% url 'auth:login' %}?next=next-params-to-replace"
+                       id="auth-link"
+                       class="btn btn-primary">Se connecter</a>
                 </div>
                 <hr class="my-5" data-text="ou" />
                 <div class="text-center">
-                    <p class="mb-0">Vous avez déjà un compte ?</p>
-                    <a href="{% url 'auth:login' %}?next=next-params-to-replace" id="auth-link" class="btn btn-sm btn-link">Se connecter</a>
+                    <h4>Vous n'avez pas de compte ?</h4>
+                    <a href="{% url 'auth:signup' %}?next=next-params-to-replace"
+                       id="auth-link"
+                       class="btn btn-sm btn-info">Créer un compte</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
     const MODAL_ID = '#login_or_signup_siae_tender_modal';
