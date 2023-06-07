@@ -1,15 +1,5 @@
 {% load static %}
-<script type="text/javascript">
-			window.addEventListener('load', function() {
-				setTimeout(function() {
-					OpenBootstrapModal();
-				}, 1000); // 1000 millisecondes = 1 secondes
-			  });
-			function OpenBootstrapModal() {
-                $("#message{{ index }}").modal('show');
-			}
-</script>
-<div class="modal"
+<div class="modal modal-message-alert"
      id="message{{ index }}"
      tabindex="-1"
      aria-labelledby="{{ message }}"
