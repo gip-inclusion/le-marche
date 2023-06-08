@@ -45,11 +45,12 @@ class TenderCreateMultiStepView(SessionWizardView):
     """
 
     instance = None
-    success_url = reverse_lazy("tenders:list")
+    success_url = reverse_lazy("siae:search_results")
     success_message = """
-        Votre besoin <strong>{tender_title}</strong> a été publié sur le marché !<br />
-        Les prestataires inclusifs qui correspondent à vos critères seront notifiées
-        dès que votre besoin sera validé par notre équipe.
+        <h3>Je suis Sofiane, votre conseiller chargé de vous accompagner sur votre {tender_kind}</h3>
+        Votre besoin <strong>{tender_title}</strong> est bien pris en compte. <br /><br />
+        Vous recevrez une notification par email dès que des prestataires seront identifiés ! <br /><br />
+        À très vite
     """
 
     success_message_draft = """
@@ -178,20 +179,21 @@ class TenderCreateMultiStepView(SessionWizardView):
         # validation & siae contacted? in tenders/admin.py
         # success message & response
         messages.add_message(
-            self.request,
-            messages.INFO if is_draft else messages.SUCCESS,
-            self.get_success_message(cleaned_data, self.instance, is_draft=is_draft),
+            request=self.request,
+            level=messages.INFO if is_draft else messages.SUCCESS,
+            message=self.get_success_message(cleaned_data, self.instance, is_draft=is_draft),
+            extra_tags="modal_message_bizdev",
         )
         return redirect(self.get_success_url())
 
     def get_success_url(self):
-        if self.request.user.is_authenticated and not self.request.user.kind == User.KIND_SIAE:
-            return reverse_lazy("tenders:list")  # super().get_success_url() doesn't work if called from CSRF error
-        return reverse_lazy("wagtail_serve", args=("",))
+        # if self.request.user.is_authenticated and not self.request.user.kind == User.KIND_SIAE:
+        #     return reverse_lazy("tenders:list")  # super().get_success_url() doesn't work if called from CSRF error
+        return reverse_lazy("siae:search_results")
 
     def get_success_message(self, cleaned_data, tender, is_draft):
         return mark_safe(
-            self.success_message.format(tender_title=tender.title)
+            self.success_message.format(tender_title=tender.title, tender_kind=tender.get_kind_display().lower())
             if not is_draft
             else self.success_message_draft.format(tender_title=tender.title)
         )

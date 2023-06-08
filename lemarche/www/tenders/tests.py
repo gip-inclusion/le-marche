@@ -107,7 +107,7 @@ class TenderCreateViewTest(TestCase):
     def test_tender_wizard_form_all_good_authenticated(self):
         tenders_step_data = self._generate_fake_data_form()
         self.client.force_login(self.user_buyer)
-        self._check_every_step(tenders_step_data, final_redirect_page=reverse("tenders:list"))
+        self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
         tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
@@ -118,11 +118,11 @@ class TenderCreateViewTest(TestCase):
         # remove required field in survey
         tenders_step_data[3].pop("survey-scale_marche_useless")
         with self.assertRaises(AssertionError):
-            self._check_every_step(tenders_step_data, final_redirect_page=reverse("tenders:list"))
+            self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
 
     def test_tender_wizard_form_all_good_anonymous(self):
         tenders_step_data = self._generate_fake_data_form()
-        self._check_every_step(tenders_step_data, final_redirect_page=reverse("wagtail_serve", args=("",)))
+        self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
         tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
@@ -130,7 +130,7 @@ class TenderCreateViewTest(TestCase):
     def test_tender_wizard_form_all_good_perimeters(self):
         self.client.force_login(self.user_buyer)
         tenders_step_data = self._generate_fake_data_form()
-        self._check_every_step(tenders_step_data, final_redirect_page=reverse("tenders:list"))
+        self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
         tender: Tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
