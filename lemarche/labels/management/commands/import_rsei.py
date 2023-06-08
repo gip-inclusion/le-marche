@@ -49,7 +49,7 @@ class Command(BaseCommand):
         self.stdout_info(f"SIAE with {LABEL_NAME} label count: {siae_label.count()}")
         if not options["dry_run"]:
             siae_label.delete()
-            self.stdout_info("Deleted...")
+            self.stdout_info("Deleted!")
 
         progress = 0
         results = {"success": 0, "error": 0}
@@ -57,6 +57,7 @@ class Command(BaseCommand):
         file_row_list = read_csv(options["file"])
         self.stdout_info("-" * 80)
         self.stdout_info(f"{LABEL_NAME} file row count: {len(file_row_list)}")
+        self.stdout_info("Importing...")
 
         for row_item in file_row_list:
             row_item_siret = row_item[LABEL_SIRET_COLUMN_NAME].replace(" ", "")
@@ -67,7 +68,13 @@ class Command(BaseCommand):
                 else:
                     if not options["dry_run"]:
                         # qs.first().labels.add(label)
-                        SiaeLabel.objects.create(siae=qs.first(), label=label)
+                        log_item = {
+                            "action": "create",
+                            "timestamp": timezone.now().isoformat(),
+                            "source": options["file"],
+                            "metadata": row_item,
+                        }
+                        SiaeLabel.objects.create(siae=qs.first(), label=label, logs=[log_item])
                     results["success"] += 1
 
             progress += 1
@@ -88,7 +95,7 @@ class Command(BaseCommand):
                 "action": "data_sync",
                 "timestamp": timezone.now().isoformat(),
                 "source": options["file"],
-                "results": {"success_count": results["success"], "error_count": results["error"]},
+                "metadata": {"success_count": results["success"], "error_count": results["error"]},
             }
             label.logs.append(log_item)
             label.save()
