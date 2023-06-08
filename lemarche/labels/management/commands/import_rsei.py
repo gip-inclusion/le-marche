@@ -28,6 +28,9 @@ class Command(BaseCommand):
     """
     https://certification.afnor.org/developpement-durable-rse/demarches-rse-sectorielles/label-rsei
 
+    Rule:
+    1 SIRET = 1 Siae (error if multiple)
+
     Usage:
     python manage.py import_rsei --file <PATH.csv> --dry-run
     python manage.py import_rsei --file <PATH.csv>

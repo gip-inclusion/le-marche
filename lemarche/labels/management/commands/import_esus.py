@@ -28,6 +28,9 @@ class Command(BaseCommand):
     """
     https://www.tresor.economie.gouv.fr/banque-assurance-finance/finance-sociale-et-solidaire/liste-nationale-agrements-esus
 
+    Rules:
+    1 SIREN = 1 or many Siae
+
     Usage:
     python manage.py import_esus --file <PATH.csv> --dry-run
     python manage.py import_esus --file <PATH.csv>
@@ -63,9 +66,9 @@ class Command(BaseCommand):
             row_item_siren = row_item[LABEL_SIRET_COLUMN_NAME].replace(" ", "")
             qs = Siae.objects.filter(siret__startswith=row_item_siren)
             if qs.exists():
-                if qs.count() > 1:
-                    results["error"] += 1
-                else:
+                # if qs.count() > 1:
+                #     results["error"] += 1
+                for qs_siae in qs.all():
                     if not options["dry_run"]:
                         # qs.first().labels.add(label)
                         log_item = {
@@ -74,7 +77,7 @@ class Command(BaseCommand):
                             "source": options["file"],
                             "metadata": row_item,
                         }
-                        SiaeLabel.objects.create(siae=qs.first(), label=label, logs=[log_item])
+                        SiaeLabel.objects.create(siae=qs_siae, label=label, logs=[log_item])
                     results["success"] += 1
 
             progress += 1
