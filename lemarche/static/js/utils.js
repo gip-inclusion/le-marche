@@ -1,8 +1,8 @@
 // https://github.com/betagouv/itou/blob/master/itou/static/js/utils.js
 
-const rot13 = str =>  str.replace(/[a-z]/gi, letter => String.fromCharCode(letter.charCodeAt(0) + (letter.toLowerCase() <= 'm' ? 13 : -13)));
+const rot13 = str => str.replace(/[a-z]/gi, letter => String.fromCharCode(letter.charCodeAt(0) + (letter.toLowerCase() <= 'm' ? 13 : -13)));
 
-$(document).ready(() => {
+window.addEventListener('DOMContentLoaded', function () {
     // prevent default on click
     $('.js-prevent-default').on('click', (event) => {
         event.preventDefault();
@@ -12,13 +12,15 @@ $(document).ready(() => {
     $('.js-display-if-javascript-enabled').css('display', 'block');
 
     // only way found to select checkbox group titles
-    $('#id_sectors').children('.form-check.checkbox-title').contents().filter(function() {
+    $('#id_sectors').children('.form-check.checkbox-title').contents().filter(function () {
         return this.nodeType == 3;
     }).wrap('<span class="group-title"></span>');
 
-    $('.btn_mail_encrypt').on('click', function(e){
+    $('.btn_mail_encrypt').on('click', function (e) {
         location.href = "mailto:?" + rot13(this.dataset['nextUrl']);
     });
+
+    initModalMessages()
 });
 
 let toggleRequiredClasses = (toggle, element) => {
@@ -42,4 +44,17 @@ let toggleInputElement = (toggle, element, required = undefined) => {
     if (required != undefined) {
         toggleRequiredClasses(required, element);
     }
+}
+
+const initModalMessages = () => {
+    var elements = document.getElementsByClassName('modal-message-alert');
+    for (var i = 0; i < elements.length; i++) {
+        OpenBootstrapModal(elements[i]);
+    }
+}
+
+function OpenBootstrapModal(elmt) {
+    setTimeout(function () {
+        $(elmt).modal('show');
+    }, 1000);
 }

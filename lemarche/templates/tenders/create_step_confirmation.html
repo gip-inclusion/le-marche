@@ -1,39 +1,39 @@
 {% extends "tenders/create_base.html" %}
 {% load static bootstrap4 %}
-
 {% block step_title %}Aperçu du besoin{% endblock %}
 {% block step_title_again %}Aperçu du besoin{% endblock %}
 {% block step_subtitle %}C'est tout bon ! Vérifiez quand même que toutes les informations soient exactes.{% endblock %}
-
 {% block recap_section %}
-<div class="s-section__row row">
-    <div class="s-section__col col-12">
-        {% include "tenders/_detail_card.html" with tender=tender source_form="true" %}
+    <div class="s-section__row row">
+        <div class="s-section__col col-12">
+            {% include "tenders/_detail_card.html" with tender=tender source_form="true" %}
+        </div>
     </div>
-</div>
 {% endblock %}
-
 {% block content_form %}
-{% csrf_token %}
+    {% csrf_token %}
 {% endblock %}
-
 {% block submit_btn %}
-<div class="form-group col-6 col-lg-auto order-1 order-lg-2">
-    <button type="submit" id="tender-create-draft-form-btn" class="btn btn-block btn-ico btn-outline-primary" name="is_draft" >
-      <i class="ri-save-line ri-lg"></i>
-      <span>Enregistrer le brouillon</span>
-    </button>
-</div>
-<div class="form-group col-6 col-lg-auto order-2 order-lg-3">
-    <button type="submit" id="tender-create-form-submit-btn" class="btn btn-primary btn-ico btn-block">
-        <i class="ri-mail-send-line ri-lg"></i>
-       <span>Publier et diffuser</span>
-    </button>
-</div>
+    <div class="form-group col-6 col-lg-auto order-1 order-lg-2">
+        <button type="submit"
+                id="tender-create-draft-form-btn"
+                class="btn btn-block btn-ico btn-outline-primary"
+                name="is_draft">
+            <i class="ri-save-line ri-lg"></i>
+            <span>Enregistrer le brouillon</span>
+        </button>
+    </div>
+    <div class="form-group col-6 col-lg-auto order-2 order-lg-3">
+        <button type="submit"
+                id="tender-create-form-submit-btn"
+                class="btn btn-primary btn-ico btn-block">
+            <i class="ri-mail-send-line ri-lg"></i>
+            <span>Publier et diffuser</span>
+        </button>
+    </div>
 {% endblock submit_btn %}
-
 {% block extra_js %}
-<script>
+    <script>
 document.addEventListener('DOMContentLoaded', function () {
     let formPreviousButton = document.getElementById('tender-create-form-previous-step-btn');
     let formSubmitButton = document.getElementById('tender-create-form-submit-btn');
@@ -41,13 +41,17 @@ document.addEventListener('DOMContentLoaded', function () {
     function submitForm() {
         $(formPreviousButton).prop('disabled', true);
         $(formSubmitButton).prop('disabled', true);
-        formSubmitButton.innerHTML += "&nbsp;<i class='ri-loader-4-line ri-spinner ri-lg'></i>";
-        $('form').submit();
+        const body = document.querySelector('body');
+        let loader = '<div class="loader-in-all-page"><div class="loader-inner"></div></div>'
+        body.innerHTML += loader;
+        setTimeout(function() {
+            $('form').submit();
+        }, 1000);
     }
 
     formSubmitButton.addEventListener('click', function(e) {
         submitForm();
     });
 });
-</script>
+    </script>
 {% endblock %}

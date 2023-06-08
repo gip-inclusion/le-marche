@@ -1,22 +1,23 @@
 // Base
-@import 'base/mixins';
-@import 'base/variables';
-@import 'base/custom';
+@import "base/mixins";
+@import "base/variables";
+@import "base/custom";
 
 // Components
-@import 'components/forms';
-@import 'components/multiselect';
-@import 'components/autocomplete';
-@import 'components/maparea';
-@import 'components/collapse';
+@import "components/forms";
+@import "components/multiselect";
+@import "components/autocomplete";
+@import "components/maparea";
+@import "components/collapse";
 
 // Sections
-@import 'sections/home';
-@import 'sections/inclusion';
-@import 'sections/siae';
-@import 'sections/filiere';
-@import 'sections/partenaires';
-@import 'sections/valoriser';
+@import "sections/home";
+@import "sections/inclusion";
+@import "sections/siae";
+@import "sections/filiere";
+@import "sections/partenaires";
+@import "sections/valoriser";
 
 // Pages
-@import 'layouts/pages';
+@import "layouts/pages";
+@import "utils";
