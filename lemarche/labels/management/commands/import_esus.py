@@ -8,9 +8,9 @@ from lemarche.utils.apis import api_slack
 from lemarche.utils.commands import BaseCommand
 
 
-LABEL_NAME = "RSEi"
-LABEL_SLUG = "rsei"
-LABEL_SIRET_COLUMN_NAME = "Numéro de SIRET"
+LABEL_NAME = "ESUS"
+LABEL_SLUG = "esus"
+LABEL_SIRET_COLUMN_NAME = "numero_siren"
 
 
 def read_csv(file_path):
@@ -26,14 +26,14 @@ def read_csv(file_path):
 
 class Command(BaseCommand):
     """
-    https://certification.afnor.org/developpement-durable-rse/demarches-rse-sectorielles/label-rsei
+    https://www.tresor.economie.gouv.fr/banque-assurance-finance/finance-sociale-et-solidaire/liste-nationale-agrements-esus
 
-    Rule:
-    1 SIRET = 1 Siae (error if multiple)
+    Rules:
+    1 SIREN = 1 or many Siae
 
     Usage:
-    python manage.py import_rsei --file <PATH.csv> --dry-run
-    python manage.py import_rsei --file <PATH.csv>
+    python manage.py import_esus --file <PATH.csv> --dry-run
+    python manage.py import_esus --file <PATH.csv>
     """
 
     def add_arguments(self, parser):
@@ -63,12 +63,12 @@ class Command(BaseCommand):
         self.stdout_info("Importing...")
 
         for row_item in file_row_list:
-            row_item_siret = row_item[LABEL_SIRET_COLUMN_NAME].replace(" ", "")
-            qs = Siae.objects.filter(siret=row_item_siret)
+            row_item_siren = row_item[LABEL_SIRET_COLUMN_NAME].replace(" ", "")
+            qs = Siae.objects.filter(siret__startswith=row_item_siren)
             if qs.exists():
-                if qs.count() > 1:
-                    results["error"] += 1
-                else:
+                # if qs.count() > 1:
+                #     results["error"] += 1
+                for qs_siae in qs.all():
                     if not options["dry_run"]:
                         # qs.first().labels.add(label)
                         log_item = {
@@ -77,7 +77,7 @@ class Command(BaseCommand):
                             "source": options["file"],
                             "metadata": row_item,
                         }
-                        SiaeLabel.objects.create(siae=qs.first(), label=label, logs=[log_item])
+                        SiaeLabel.objects.create(siae=qs_siae, label=label, logs=[log_item])
                     results["success"] += 1
 
             progress += 1
