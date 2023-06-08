@@ -86,7 +86,7 @@ class Command(BaseCommand):
 
         msg_success = [
             f"----- Recap: Import {LABEL_NAME} -----",
-            f"Done! Processed {siaes.count()} siae",
+            f"Done! Processed {len(file_row_list)} rows",
             f"Success count: {results['success']}/{siaes.count()}",
             f"Error count: {results['error']}/{siaes.count()}",
         ]
@@ -98,7 +98,12 @@ class Command(BaseCommand):
                 "action": "data_sync",
                 "timestamp": timezone.now().isoformat(),
                 "source": options["file"],
-                "metadata": {"success_count": results["success"], "error_count": results["error"]},
+                "metadata": {
+                    "siae_count": siaes.count(),
+                    "row_count": len(file_row_list),
+                    "success_count": results["success"],
+                    "error_count": results["error"],
+                },
             }
             label.logs.append(log_item)
             label.save()

@@ -14,7 +14,7 @@ from lemarche.siaes.models import Siae
 logger = logging.getLogger(__name__)
 
 
-API_ENTREPRISE_REASON = "Mise à jour donnéés Marché de la plateforme de l'Inclusion"
+API_ENTREPRISE_REASON = "Mise à jour données Marché de la plateforme de l'Inclusion"
 TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S"  # "2016-12-31T00:00:00+01:00"  # timezone not managed
 
 
