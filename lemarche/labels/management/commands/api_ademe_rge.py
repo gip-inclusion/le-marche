@@ -50,26 +50,27 @@ class Command(BaseCommand):
         self.stdout_info("-" * 80)
         self.stdout_info("Querying the API for each Siae...")
         for siae in siaes:
-            # fetch data
-            url = f"{LABEL_API_ENDPOINT}?qs=siret:{siae.siret}"
-            # url = f"{LABEL_API_ENDPOINT_ALT}?q={siae.siret}"
-            r = requests.get(url)
-            r.raise_for_status()
-            # data = r.json()
-            data = r.json()["results"]
+            if siae.siret:
+                # fetch data
+                url = f"{LABEL_API_ENDPOINT}?qs=siret:{siae.siret}"
+                # url = f"{LABEL_API_ENDPOINT_ALT}?q={siae.siret}"
+                r = requests.get(url)
+                r.raise_for_status()
+                # data = r.json()
+                data = r.json()["results"]
 
-            # add label to siae
-            if len(data):
-                if not options["dry_run"]:
-                    # siae.labels.add(label)
-                    log_item = {
-                        "action": "create",
-                        "timestamp": timezone.now().isoformat(),
-                        "source": LABEL_API_ENDPOINT,
-                        "metadata": data[0],
-                    }
-                    SiaeLabel.objects.create(siae=siae, label=label, logs=[log_item])
-                results["success"] += 1
+                # add label to siae
+                if len(data):
+                    if not options["dry_run"]:
+                        # siae.labels.add(label)
+                        log_item = {
+                            "action": "create",
+                            "timestamp": timezone.now().isoformat(),
+                            "source": LABEL_API_ENDPOINT,
+                            "metadata": data[0],
+                        }
+                        SiaeLabel.objects.create(siae=siae, label=label, logs=[log_item])
+                    results["success"] += 1
 
             progress += 1
             if (progress % 50) == 0:
