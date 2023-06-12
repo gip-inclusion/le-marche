@@ -4,9 +4,6 @@ function clearFormFields(form) {
     // Parcourir tous les éléments du formulaire
     Array.from(form.elements).forEach(element => {
         const elementType = element.type.toLowerCase();
-        // if (element.name == "sectors") {
-        //     debugger
-        // }
         // Effacer la valeur des champs en fonction du type
         switch (elementType) {
             case 'text':
