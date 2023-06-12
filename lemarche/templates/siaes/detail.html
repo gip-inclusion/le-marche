@@ -40,9 +40,9 @@
                         <div class="row mb-2">
                             <div class="col-auto">
                                 {% if siae.logo_url %}
-                                    <img src="{{ siae.logo_url }}" height="75" alt="Logo de {{ siae.name }}" />
+                                    <img src="{{ siae.logo_url }}" width="100" alt="Logo de {{ siae.name }}" />
                                 {% else %}
-                                    <img src="{% static 'img/default-listing.png' %}" height="75" alt="{{ siae.name }}" />
+                                    <img src="{% static 'img/default-listing.png' %}" width="100" alt="{{ siae.name }}" />
                                 {% endif %}
                             </div>
                             <div class="col">

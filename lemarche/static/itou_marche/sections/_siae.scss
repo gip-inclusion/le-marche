@@ -206,17 +206,6 @@
 		text-align: center;
 	}
 
-	#user_profile .gallery-small .img-container {
-		// width: 150px;
-		height: 100px;
-		margin: 0 auto;
-	}
-
-	#user_profile .gallery-small .img-container img {
-		max-height: 100%;
-		max-width: 100%;
-	}
-
 	.active_sectors {
 		list-style-type: none;
 		margin:0;
@@ -292,10 +281,6 @@
 .siae-card {
 	margin-bottom: 1.5rem;
 
-	.sc-img {
-		width: 90px;
-	}
-
 	.sc-profile-type,
 	.sc-profile-sectors {
 		span.ml-1 {
@@ -329,10 +314,6 @@
 }
 
 @media screen and (max-width:576px) {
-	.siae-card .sc-img {
-		display: none !important;
-	}
-
 	.siae-card .card-footer {
 		padding-left: 16px;
 	}
