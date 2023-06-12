@@ -12,7 +12,7 @@
                 {% endif %}
             </div>
             <div class="col">
-                <h2 class="h4 py-2">
+                <h2 class="h4 mb-0">
                     {{ siae.name_display }}
                     {% if not siae.user_count %}
                         <span class="fs-sm font-weight-normal">(bientôt inscrite sur le marché)</span>
@@ -21,7 +21,7 @@
             </div>
         </div>
     </div>
-    <div class="card-body pt-0">
+    <div class="card-body">
         <a href="{% url 'siae:detail' siae.slug %}" target="_blank" id="search-results-siae-card" class="text-decoration-none stretched-link">
             <ul class="list-unstyled m-0 lh-sm row no-gutters">
                 <li class="sc-profile-type col-12 col-lg-6 pr-lg-2 d-flex">
