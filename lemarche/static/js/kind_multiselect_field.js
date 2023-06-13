@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     /**
      * Multiselect dropdown for the kind search form field
      */
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const FORM_ELEMENT = document.querySelector(`#filter-search-form #${FORM_INPUT_ID}`);
     const FORM_PLACEHOLDER = 'Insertion, handicap';
 
-    const buttonTextAndTitle = function(options, select) {
+    const buttonTextAndTitle = function (options, select) {
         if (options.length === 0) {
             return FORM_PLACEHOLDER;
         }
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         else {
             var labels = [];
-            options.each(function() {
+            options.each(function () {
                 if ($(this).attr('label') !== undefined) {
                     labels.push($(this).attr('label'));
                 }
@@ -53,11 +53,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (multiselectSelectedText.innerText === FORM_PLACEHOLDER) {
             multiselectSelectedText.classList.add('fake-placeholder');
         }
-        multiselectSelectedText.addEventListener('DOMSubtreeModified', function () {
-            if (this.innerText === FORM_PLACEHOLDER) {
-                this.classList.add('fake-placeholder');
+        document.addEventListener('DOMSubtreeModified', function () {
+            const multiselectSelectedText = document.querySelector(`#${FORM_MULTISELECT_ID} .multiselect-selected-text`);
+            if (multiselectSelectedText.innerText === FORM_PLACEHOLDER) {
+                multiselectSelectedText.classList.add('fake-placeholder');
             } else {
-                this.classList.remove('fake-placeholder');
+                multiselectSelectedText.classList.remove('fake-placeholder');
             }
         })
     }

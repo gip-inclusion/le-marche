@@ -63,9 +63,21 @@
                                     {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
                                 </div>
                                 <div class="col-12 col-md-12 col-lg-4 d-none d-lg-block">
-                                    <button id="filter-submit" class="btn btn-primary btn-block btn-ico mb-3 mt-5" type="submit">
-                                        Rechercher&nbsp;<i class="ri-search-line ri-lg"></i>
-                                    </button>
+                                    <div class="btn-group d-flex"
+                                             role="group"
+                                             aria-label="Description du groupe de boutons">
+                                        <button id="filter-submit"
+                                                class="btn btn-primary btn-block btn-ico mb-3 mt-5"
+                                                type="submit">
+                                            Rechercher&nbsp;<i class="ri-search-line ri-lg"></i>
+                                        </button>
+                                        <button id="form-reset-btn"
+                                                type="button"
+                                                class="btn btn-info btn-ico mb-3 mt-5">
+                                            <i class="ri-delete-bin-line ri-lg"
+                                                aria-label="Réinitialiser la recherche"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
@@ -228,6 +240,7 @@
 {% block extra_js %}
 {{ current_perimeters|json_script:"current-perimeters" }}
 <script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/search_form.js' %}"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
     let searchFilterTab = document.getElementById('search-filter-tab');
@@ -238,29 +251,18 @@ document.addEventListener("DOMContentLoaded", function() {
     let searchTextTab = document.getElementById('search-text-tab');
     let searchTextContent = document.getElementById('search-text');
     let qInput = document.getElementById('id_q');
+    let resetBtn = document.getElementById('form-reset-btn');
 
-    function showSearchFilterForm() {
-        searchFilterTab.classList.add("active");
-        searchFilterTab.setAttribute("aria-selected", "true");
-        searchFilterContent.classList.add("show", "active");
-    }
-    function hideSearchFilterForm() {
-        searchFilterTab.classList.remove("active");
-        searchFilterTab.setAttribute("aria-selected", "false");
-        searchFilterContent.classList.remove("show", "active");
-    }
-    function showSearchTextForm() {
-        searchTextTab.classList.add("active");
-        searchTextTab.setAttribute("aria-selected", "true");
-        searchTextContent.classList.add("show", "active");
+    if (resetBtn){
+        resetBtn.addEventListener("click", resetForm);
     }
 
     // init
     if (qInput.value) {
-        showSearchTextForm();
-        // hideSearchFilterForm();
+        showSearchTextForm(searchTextTab, searchTextContent);
+        // hideSearchFilterForm(searchFilterTab, searchFilterContent);
     } else {
-        showSearchFilterForm();
+        showSearchFilterForm(searchFilterTab, searchFilterContent);
     }
 });
 </script>
