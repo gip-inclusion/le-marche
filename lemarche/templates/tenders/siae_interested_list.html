@@ -24,8 +24,8 @@
 {% endblock %}
 
 {% block content %}
-<section class="pt-4 pb-6">
-    <div class="container">
+<section class="s-section">
+    <div class="s-section__container container">
         <div class="row">
             <div class="col-12">
                 <div class="card mb-3">
@@ -33,13 +33,13 @@
                         <form method="GET" role="search" id="filter-search-form">
                             {% bootstrap_form_errors form type="all" %}
                             <div class="row align-items-start">
-                                <div class="col-12 col-md-6 col-lg-3">
+                                <div class="col-12 col-md-6 col-lg-4">
                                     {% bootstrap_field form.kind %}
                                 </div>
-                                <div class="col-12 col-md-6 col-lg-3">
+                                <div class="col-12 col-md-6 col-lg-4">
                                     {% bootstrap_field form.territory %}
                                 </div>
-                                <div class="col-12 col-md-6 col-lg-3">
+                                <div class="col-12 col-md-6 col-lg-4">
                                     <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
                                     <button id="text-search-submit" class="btn btn-primary btn-block btn-ico" type="submit">
                                         <span>Filtrer</span>
