@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.gis.geos import Point
+from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -16,6 +17,7 @@ from lemarche.tenders.factories import TenderFactory, TenderQuestionFactory
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
+from lemarche.www.tenders.views import TenderCreateMultiStepView
 
 
 class TenderCreateViewTest(TestCase):
@@ -77,12 +79,12 @@ class TenderCreateViewTest(TestCase):
 
     def _check_every_step(self, tenders_step_data, final_redirect_page: str = reverse("wagtail_serve", args=("",))):
         for step, data_step in enumerate(tenders_step_data, 1):
-            response = self.client.post(reverse("tenders:create"), data=data_step)
+            response = self.client.post(reverse("tenders:create"), data=data_step, follow=True)
             if step == len(tenders_step_data):
                 # make sure that after the create tender we are redirected to ??
-                self.assertEqual(response.status_code, 302)
+                self.assertEqual(response.status_code, 200)
                 self.assertRedirects(response, final_redirect_page)
-                return response, None
+                return response
             else:
                 self.assertEqual(response.status_code, 200)
                 current_errors = response.context_data["form"].errors
@@ -107,10 +109,18 @@ class TenderCreateViewTest(TestCase):
     def test_tender_wizard_form_all_good_authenticated(self):
         tenders_step_data = self._generate_fake_data_form()
         self.client.force_login(self.user_buyer)
-        self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+        final_response = self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
         tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
+        messages = list(get_messages(final_response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(
+            str(messages[0]),
+            TenderCreateMultiStepView.get_success_message(
+                TenderCreateMultiStepView, tenders_step_data, tender, is_draft=False
+            ),
+        )
 
     def test_tender_wizard_form_not_created(self):
         self.client.force_login(self.user_buyer)
@@ -122,11 +132,19 @@ class TenderCreateViewTest(TestCase):
 
     def test_tender_wizard_form_all_good_anonymous(self):
         tenders_step_data = self._generate_fake_data_form()
-        self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+        final_response = self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
         tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
         self.assertEqual(tender.status, Tender.STATUS_PUBLISHED)
+        messages = list(get_messages(final_response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(
+            str(messages[0]),
+            TenderCreateMultiStepView.get_success_message(
+                TenderCreateMultiStepView, tenders_step_data, tender, is_draft=False
+            ),
+        )
 
     def test_tender_wizard_form_all_good_perimeters(self):
         self.client.force_login(self.user_buyer)
@@ -146,11 +164,19 @@ class TenderCreateViewTest(TestCase):
 
     def test_tender_wizard_form_draft(self):
         tenders_step_data = self._generate_fake_data_form(_step_5={"is_draft": "1"})
-        self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+        final_response = self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
         tender: Tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
         self.assertEqual(tender.status, Tender.STATUS_DRAFT)
+        messages = list(get_messages(final_response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(
+            str(messages[0]),
+            TenderCreateMultiStepView.get_success_message(
+                TenderCreateMultiStepView, tenders_step_data, tender, is_draft=True
+            ),
+        )
 
 
 class TenderMatchingTest(TestCase):
