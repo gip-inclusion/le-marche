@@ -1,114 +1,94 @@
 {% load static %}
 {% load theme_inclusion %}
 
-<section class="s-prefooter s-prefooter--marche">
-    <div class="s-prefooter__container container">
-        <div class="s-prefooter__row row">
-            <div class="s-prefooter__col col-12 col-sm-auto d-flex align-items-center">
-                <div class="s-prefooter__logo">
-                    <img src="{% static_theme_images 'logo-marche-inclusion.svg' %}" alt="Le marché de l'inclusion'">
-                </div>
-            </div>
-            <div class="s-prefooter__col col-12 col-sm d-flex align-items-center justify-content-start justify-content-sm-end justify-content-lg-start">
-                <p class="mb-0">
-                    Le service de La plateforme <br class="d-none d-lg-inline">
-                    de l'inclusion dédié au marché,<br class="d-none d-lg-inline">
-                    service en expérimentation
-                </p>
-            </div>
-            <div class="s-prefooter__col col-12 col-lg-6 d-flex align-items-center">
-                <ul class="s-prefooter__gridlist">
-                    <li><a href="{% url 'pages:faq' %}">Comment ça marche&nbsp;?</a></li>
-                    <li><a href="{% url 'pages:decouvrir_inclusion' %}">C'est quoi l'inclusion&nbsp;?</a></li>
-                    <li><a href="{% url 'pages:qui-sommes-nous' %}">Qui sommes-nous&nbsp;?</a></li>
-                    <li><a href="{% url 'api:home' %}">API</a></li>
-                    <li><a href="{% url 'pages:stats' %}">Statistiques</a></li>
-                    <li><a href="https://github.com/betagouv/itou-marche/" target="_blank" rel="noopener" title="Github (lien externe)">Code source</a><i class="ri-external-link-line ml-1 font-weight-bold"></i></li>
+<footer role="contentinfo" id="footer">
+    <section class="s-footer-quick">
+      <div class="s-footer-quick__container container">
+        <div class="s-footer-quick__row row">
+          <div class="s-footer-quick__col col-12 col-md-6 col-lg-auto">
+            <strong>Accès rapides</strong>
+            <div class="s-footer-quick__gridlist">
+                <ul>
+                    <li><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
+                    <li><a href="{% url 'tenders:create' %}">Publier un besoin d'achat</li>
+                    <li><a href="{% url 'siae:search_results' %}">Rechercher un prestataire</a></li>
+                    <li><a href="{% url 'siae:search_results' %}">Moteur de recherche multicritères</a></li>
+                    <li><a href="{% url 'pages:valoriser_achats' %}">Auditer vos achats</a></li>
+                </ul>
+                <ul>
+                    <li><a href="{% url 'pages:impact_calculator' %}">Calibrer vos achats</a></li>
+                    <li><a href="{% url 'pages:buyer_social_impact_calculator' %}">Calculer l'impact social d'un achat inclusif</a></li>
                 </ul>
             </div>
-        </div>
-    </div>
-</section>
-
-<footer class="s-footer" role="contentinfo" id="footer">
-    <section class="s-footer-help">
-        <div class="s-footer-help__container container">
-            <div class="s-footer-help__row row">
-                <div class="s-footer-help__col col-12 col-lg">
-                    <ul>
-                        <!-- <li><a href="#" target="_blank" rel="noopener">Besoin d'aide ?</a><i class="ri-external-link-line ml-1 font-weight-bold"></i></li> -->
-                        <li><a href="{% url 'pages:contact' %}">Nous contacter</a></li>
-                        <!-- <li><a href="#" data-token="0d87cc6eac81c8037144017a95fdecdb" onclick="mjOpenPopin(event, this)" class="btn btn-link pr-0 text-decoration-none {{ custom_class }}" rel="noopener">Newsletter</a></li> -->
-                    </ul>
-                </div>
-                <div class="s-footer-help__col col-12 col-lg-auto">
-                    <ul>
-                        <li><span>Nous suivre</span></li>
-                        <li><a href="https://twitter.com/inclusion_gouv" target="_blank" rel="noopener"><img src="{% static_theme_images 'picto-twitter.svg' %}" height="25" alt="Rejoignez-nous sur Twitter (lien externe)"></a></li>
-                        <li><a href="https://www.linkedin.com/company/inclusion-gouv/" target="_blank" rel="noopener"><img src="{% static_theme_images 'picto-linkedin.svg' %}" height="25" alt="Rejoignez-nous sur Linkedin (lien externe)"></a></li>
-                        <li><a href="https://www.facebook.com/inclusion.gouv/" target="_blank" rel="noopener"><img src="{% static_theme_images 'picto-facebook.svg' %}" height="25" alt="Rejoignez-nous sur Facebook (lien externe)"></a></li>
-                        <li><a href="https://www.instagram.com/inclusion_gouv/" target="_blank" rel="noopener"><img src="{% static_theme_images 'picto-instagram.svg' %}" height="25" alt="Rejoignez-nous sur Instagram (lien externe)"></a></li>
-                        <li><a href="https://www.youtube.com/channel/UC06_yIYfzAiDOMTemH9q3OQ" target="_blank" rel="noopener"><img src="{% static_theme_images 'picto-youtube.svg' %}" height="25" alt="Rejoignez-nous sur Youtube (lien externe)"></a></li>
-                    </ul>
-                </div>
+          </div>
+          <div class="s-footer-quick__col col-12 col-md-6 col-lg-auto">
+            <strong>Documentation</strong>
+            <div class="s-footer-quick__gridlist">
+              <ul>
+                <li><a href="{{ FACILITATOR_LIST }}" target="_blank">Trouver un facilitateur des clauses sociales</a></li>
+                <li><a href="{% url 'pages:faq' %}">Comment ça marche&nbsp;?</a></li>
+                <li><a href="{% url 'pages:decouvrir_inclusion' %}">C'est quoi l'inclusion&nbsp;?</a></li>
+              </ul>
+              <ul>
+                <li><a href="{% url 'pages:qui-sommes-nous' %}">Qui sommes-nous&nbsp;?</a></li>
+                <li><a href="https://github.com/betagouv/itou-marche/" target="_blank" title="Github (lien externe)">Code source</a></li>
+                <li><a href="{% url 'api:home' %}">API</a></li>
+                <li><a href="{% url 'pages:stats' %}">Statistiques</a></li>
+              </ul>
             </div>
+          </div>
+          <div class="s-footer-quick__col col-12 col-lg-auto">
+            <strong>Réseaux sociaux</strong>
+            <ul>
+              <li><a href="https://twitter.com/inclusion_gouv" target="_blank" aria-label="Rejoignez-nous sur Twitter (lien externe)"><i class="ri-twitter-fill text-dark" aria-hidden="true"></i> Twitter</a></li>
+              <li><a href="https://www.linkedin.com/company/inclusion-gouv/" target="_blank" aria-label="Rejoignez-nous sur Linkedin (lien externe)"><i class="ri-linkedin-box-fill text-dark" aria-hidden="true"></i> LinkedIn</a></li>
+              <li><a href="https://www.facebook.com/inclusion.gouv/" target="_blank" aria-label="Rejoignez-nous sur Facebook (lien externe)"><i class="ri-facebook-box-fill text-dark" aria-hidden="true"></i> Facebook</a></li>
+              <li><a href="https://www.instagram.com/inclusion_gouv/" target="_blank" aria-label="Rejoignez-nous sur Instagram (lien externe)"><i class="ri-instagram-fill text-dark" aria-hidden="true"></i> Instagram</a></li>
+              <li><a href="https://www.youtube.com/channel/UC06_yIYfzAiDOMTemH9q3OQ" target="_blank" aria-label="Rejoignez-nous sur Youtube (lien externe)"><i class="ri-youtube-fill text-dark" aria-hidden="true"></i> Youtube</a></li>
+            </ul>
+          </div>
         </div>
+      </div>
     </section>
 
-    <section class="s-footer-nav">
-        <div class="s-footer-nav__container container">
-            <div class="s-footer-nav__row row">
-                <div class="s-footer-nav__col col-5 col-lg-2 d-flex align-items-center">
-                    <div class="s-footer-nav__logo">
-                        <img src="{% static_theme_images 'logo-republique-francaise.svg' %}" alt="République Française" class="img-fluid">
-                    </div>
-                </div>
-                <div class="s-footer-nav__col col-7 col-lg-4 d-flex align-items-center justify-content-end justify-content-lg-start">
-                    <div class="d-inline-block text-center">
-                        <span class="d-block">
-                            <img src="{% static_theme_images 'logo-plateforme-inclusion.svg' %}" height="60" alt="Plateforme de l'inclusion">
-                        </span>
-                        <span class="d-block mt-2">
-                            <img src="{% static_theme_images 'logo-accelere-betagouv.svg' %}" alt="Accéléré par Beta.gouv.fr">
-                        </span>
-                    </div>
-                </div>
-                <div class="s-footer-nav__col col-12 col-lg-6 d-flex align-items-center">
-                    <div>
-                        <p class="mb-3">
-                            Notre mantra issu du Pacte Ambition IAE : Permettre à chacun de trouver sa place.
-                            Libérons notre potentiel d'inclusion pour créer 100&nbsp;000 emplois de plus.
-                        </p>
-                        <ul>
-                            <li><a href="https://emplois.inclusion.beta.gouv.fr" target="_blank" rel="noopener" title="Les emplois (lien externe)">Les emplois</a></li>
-                            <li><a href="https://communaute-experimentation.inclusion.beta.gouv.fr" target="_blank" rel="noopener" title="La communauté (lien externe)">La communauté</a></li>
-                            <li><a href="https://pilotage.inclusion.beta.gouv.fr" target="_blank" rel="noopener" title="Le pilotage (lien externe)">Le pilotage</a></li>
-                            <li><a href="https://lemarche.inclusion.beta.gouv.fr" target="_blank" rel="noopener" title="Le marché (lien externe)">Le marché</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+    <section class="s-footer-gip">
+      <div class="s-footer-gip__container container">
+        <div class="s-footer-gip__row row">
+          <div class="s-footer-gip__col s-footer-gip__col--logo col-12 col-md-6 col-lg-auto">
+            <a href="https://inclusion.beta.gouv.fr/" target="_blank" aria-label="Découvrez les services de la plateforme de l'inclusion (lien externe)">
+              <img src="{% static_theme_images 'logo-plateforme-inclusion.svg' %}" alt="Logo de la Plateforme de l'inclusion" height="80">
+            </a>
+          </div>
+          <div class="s-footer-gip__col col-12 col-md-6 col-lg">
+            <p class="mb-1"><strong>Ce service fait partie de la Plateforme de l’inclusion</strong></p>
+            <p class="m-0">Découvrez les outils qui portent l'inclusion au <br class="d-none d-md-inline">coeur de leur service. A chaque service, son objectif. <br><a href="https://inclusion.beta.gouv.fr/" target="_blank" class="has-external-link" aria-label="Découvrez les services de la plateforme de l'inclusion (lien externe)">Découvrez nos services</a></p>
+          </div>
+          <div class="s-footer-gip__col s-footer-gip__col--links col-12 col-lg-auto">
+            <ul>
+              <li><a href="https://beta.gouv.fr/" target="_blank" aria-label="Incubateur de services publics numériques — beta.gouv.fr (lien externe)">beta.gouv.fr</a></li>
+              <li><a href="https://www.data.gouv.fr/fr/" target="_blank" aria-label="Data.gouv.fr (lien externe)">data.gouv.fr</a></li>
+              <li><a href="https://api.gouv.fr/" target="_blank" aria-label="Simplifiez le partage et la circulation des données administratives grace à api.gouv.fr (lien externe)">api.gouv.fr</a></li>
+            </ul>
+          </div>
         </div>
+      </div>
     </section>
 
     <section class="s-footer-legal">
-        <div class="s-footer-legal__container container">
-            <div class="s-footer-legal__row row">
-                <div class="s-footer-legal__col col-xs-12 col-lg-8">
-                    <ul>
-                        <li><a href="https://doc.inclusion.beta.gouv.fr/mentions" rel="noopener" target="_blank" title="Mentions légales (lien externe)">Mentions légales</a></li>
-                        <li><a href="{% url 'pages:cgu' %}" title="Conditions générales">Conditions générales</a></li>
-                        <li><a href="{% url 'pages:cgu-api' %}" title="Conditions générales de l'API">Conditions générales de l'API</a></li>
-                        <li><a href="{% url 'pages:confidentialite' %}" title="Confidentialité">Confidentialité</a></li>
-                    </ul>
-                    <ul>
-                        <li><a href="{% url 'pages:accessibilite' %}">Accessibilité : non conforme</a></li>
-                    </ul>
-                </div>
-                <div class="s-footer-legal__col col-xs-12 col-lg-4 text-lg-right">
-                    <span>© République Française 2021</span>
-                </div>
-            </div>
+      <div class="s-footer-legal__container container">
+        <div class="s-footer-legal__row row">
+          <div class="s-footer-legal__col col-12">
+            <ul>
+                <li><a href="{% url 'pages:accessibilite' %}">Accessibilité : non conforme</a></li>
+              <li><a href="https://doc.inclusion.beta.gouv.fr/mentions" target="_blank" title="Mentions légales (lien externe)">Mentions légales</a></li>
+              <li><a href="{% url 'pages:cgu' %}" title="Conditions générales">Conditions générales</a></li>
+              <li><a href="{% url 'pages:cgu-api' %}" title="Conditions générales de l'API">Conditions générales de l'API</a></li>
+              <li><a href="{% url 'pages:confidentialite' %}" title="Confidentialité">Confidentialité</a></li>
+              <li><a href="{% url 'pages:contact' %}">Nous contacter</a></li>
+            </ul>
+            <p>Sauf mention contraire, tous les contenus de ce site sont sous licence <a href="https://github.com/etalab/licence-ouverte/blob/master/LO.md" target="_blank" aria-label="Licence ouverte Etalab (lien externe)">etalab-2.0</a></p>
+          </div>
         </div>
+      </div>
     </section>
-</footer>
+  </footer>
