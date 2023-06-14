@@ -1,0 +1,34 @@
+<ul>
+	<li>
+		<a href="{% url 'wagtail_serve' '' %}" class="{% if request.path == '/' %}is-active{% endif %}">Accueil</a>
+	</li>
+	<li>
+		<a href="/ressources/quest-ce-quun-prestataire-inclusif/" id="header-ressource-prestataire" class="{% if request.path == '/ressources/quest-ce-quun-prestataire-inclusif/' %}is-active{% endif %}">
+			Qu'est-ce qu'un prestataire inclusif ?
+		</a>
+	</li>
+	<li>
+		<a href="" class="dropdown-toggle" id="solutionsDropdownMenuButton{% if is_mobile %}Mobile{% endif %}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Solutions</a>
+		<div class="dropdown-menu" aria-labelledby="solutionsDropdownMenuButton{% if is_mobile %}Mobile{% endif %}">
+			<a href="{% url 'siae:search_results' %}" id="header-dropdown-siae-search-btn" class="dropdown-item">
+				Moteur de recherche multicritères
+			</a>
+			<a href="{% url 'tenders:create' %}" id="header-dropdown-tender-create-btn" class="dropdown-item">
+				Sourcing inversé
+			</a>
+			<a href="{% url 'pages:valoriser_achats' %}" id="header-valoriser" class="dropdown-item">
+				Auditer vos achats
+			</a>
+			<a href="{% url 'pages:impact_calculator' %}" id="header-calibrer" class="dropdown-item">
+				Calibrer vos achats
+			</a>
+			<a href="{% url 'pages:buyer_social_impact_calculator' %}" id="header-calculer-impact-social-achat" class="dropdown-item">
+				Calculer l'impact social d'un achat inclusif
+			</a>
+			<a href="{{ FACILITATOR_LIST }}" target="_blank" id="header-facilitator-list" class="dropdown-item">
+				Trouver un facilitateur des clauses sociales
+				<i class="ri-arrow-right-up-line"></i>
+			</a>
+		</div>
+	</li>
+</ul>

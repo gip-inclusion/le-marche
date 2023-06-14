@@ -45,7 +45,7 @@ JS_DEPENDENCIES_THEME = [
     },
     {
         "is_external": True,
-        "src": "https://cdn.jsdelivr.net/npm/tarteaucitronjs@1.9.3/tarteaucitron.min.js",
+        "src": "https://cdn.jsdelivr.net/npm/tarteaucitronjs@1.11.0/tarteaucitron.min.js",
         "integrity": "",
     },
 ]
