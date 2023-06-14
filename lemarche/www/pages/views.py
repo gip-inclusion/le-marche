@@ -362,15 +362,23 @@ def csrf_failure(request, reason=""):  # noqa C901
         if settings.BITOUBI_ENV == "prod":
             notify_admin_tender_created(tender)
 
-        messages.add_message(
-            request=request,
-            level=messages.INFO if tender.status != tender_constants.STATUS_DRAFT else messages.SUCCESS,
-            message=TenderCreateMultiStepView.get_success_message(
-                TenderCreateMultiStepView, tender_dict, tender, is_draft=False
-            ),
-            extra_tags="modal_message_bizdev",
-        )
-
+        if tender.status == tender_constants.STATUS_DRAFT:
+            messages.add_message(
+                request=request,
+                level=messages.INFO,
+                message=TenderCreateMultiStepView.get_success_message(
+                    TenderCreateMultiStepView, tender_dict, tender, is_draft=True
+                ),
+            )
+        else:
+            messages.add_message(
+                request=request,
+                level=messages.SUCCESS,
+                message=TenderCreateMultiStepView.get_success_message(
+                    TenderCreateMultiStepView, tender_dict, tender, is_draft=False
+                ),
+                extra_tags="modal_message_bizdev",
+            )
         return HttpResponseRedirect(TenderCreateMultiStepView.success_url)
 
     # return HttpResponseForbidden()
