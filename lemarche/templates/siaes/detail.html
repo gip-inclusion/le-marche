@@ -144,7 +144,7 @@
                                     <div class="col-12">
                                         <i class="ri-user-add-line"></i>
                                         <strong>Salariés en insertion :</strong>
-                                        <span>{{ siae.employees_insertion_count|default:"non disponible" }}</span>
+                                        <span>{{ siae.etp_count_display|floatformat:0|default:"non disponible" }}</span>
                                     </div>
                                 </div>
                             </div>
