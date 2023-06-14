@@ -79,20 +79,10 @@ a.disabled {
     }
 }
 
-/**
-  In some places we use anchors to scroll the page to a certain id
-  BUT the header (height=115px) hides the top of the div
-  So we need to pass an offset
-  Source: https://stackoverflow.com/a/59253905/4293684
-*/
-*[id] {
-    scroll-margin-top: 100px;
-}
-
 .s-cms .richtext-image.left {
     max-width: 100%;
     height: auto;
-    float: unset!important;
+    float: unset !important;
 }
 
 .responsive-object {
