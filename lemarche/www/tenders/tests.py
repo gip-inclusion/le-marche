@@ -126,6 +126,7 @@ class TenderCreateViewTest(TestCase):
         tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
+        self.assertEqual(tender.status, Tender.STATUS_PUBLISHED)
 
     def test_tender_wizard_form_all_good_perimeters(self):
         self.client.force_login(self.user_buyer)
@@ -142,6 +143,14 @@ class TenderCreateViewTest(TestCase):
         tender_list_sector_slug = [sector.slug for sector in tenders_sectors]
         self.assertEqual(len(tender_list_sector_slug), tenders_sectors.count())
         self.assertEqual(tender_list_sector_slug.sort(), self.sectors.sort())
+
+    def test_tender_wizard_form_draft(self):
+        tenders_step_data = self._generate_fake_data_form(_step_5={"is_draft": "1"})
+        self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+        tender: Tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
+        self.assertIsNotNone(tender)
+        self.assertIsInstance(tender, Tender)
+        self.assertEqual(tender.status, Tender.STATUS_DRAFT)
 
 
 class TenderMatchingTest(TestCase):
