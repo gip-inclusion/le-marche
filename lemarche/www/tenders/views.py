@@ -178,12 +178,19 @@ class TenderCreateMultiStepView(SessionWizardView):
 
         # validation & siae contacted? in tenders/admin.py
         # success message & response
-        messages.add_message(
-            request=self.request,
-            level=messages.INFO if is_draft else messages.SUCCESS,
-            message=self.get_success_message(cleaned_data, self.instance, is_draft=is_draft),
-            extra_tags="modal_message_bizdev",
-        )
+        if is_draft:
+            messages.add_message(
+                request=self.request,
+                level=messages.INFO,
+                message=self.get_success_message(cleaned_data, self.instance, is_draft=is_draft),
+            )
+        else:
+            messages.add_message(
+                request=self.request,
+                level=messages.SUCCESS,
+                message=self.get_success_message(cleaned_data, self.instance, is_draft=is_draft),
+                extra_tags="modal_message_bizdev",
+            )
         return redirect(self.get_success_url())
 
     def get_success_url(self):
