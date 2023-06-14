@@ -1,17 +1,28 @@
+{% load static %}
+
 <div class="card c-card c-card--marche siae-card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-auto">
+                {% if siae.logo_url %}
+                    <img src="{{ siae.logo_url }}" width="50" alt="Logo de {{ siae.name }}" />
+                {% else %}
+                    <img src="{% static 'img/default-listing.png' %}" width="50" alt="{{ siae.name }}" />
+                {% endif %}
+            </div>
+            <div class="col">
+                <h2 class="h4 mb-0">{{ siae.name_display }}</h2>
+            </div>
+        </div>
+    </div>
     <div class="card-body">
         <div class="row">
-            <div class="col-md-8" style="border-right:1px solid">
+            <div class="col-md-8">
                 <!-- <div class="row">
                     <div class="col-12">
                         <span title="{{ siae.tendersiae_set.first.created_at }}">{{ siae.tendersiae_set.first.created_at|date }}</span>
                     </div>
                 </div> -->
-                <div class="row">
-                    <div class="col-12">
-                        <h2 class="py-2">{{ siae.name_display }}</h2>
-                    </div>
-                </div>
                 <div class="row mb-2">
                     <div class="col-md-4">
                         <i class="ri-user-line"></i>
