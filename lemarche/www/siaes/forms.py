@@ -81,7 +81,7 @@ class SiaeFilterForm(forms.Form):
         queryset=Perimeter.objects.all(),
         to_field_name="slug",
         required=False,
-        widget=forms.HiddenInput(),
+        # widget=forms.HiddenInput(),
     )
     favorite_list = forms.ModelChoiceField(
         queryset=FavoriteList.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
@@ -241,7 +241,7 @@ class SiaeDownloadForm(SiaeFilterForm):
     )
     download_source = forms.CharField(required=False, widget=forms.HiddenInput())
     format = forms.ChoiceField(
-        label="Format", widget=forms.RadioSelect, choices=(("XLS", "xls"), ("CLS", "csv")), required=False
+        label="Format", widget=forms.RadioSelect, choices=(("xls", "xls"), ("csv", "csv")), required=False
     )
 
 
