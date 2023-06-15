@@ -17,7 +17,7 @@ from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils.data import get_choice
 from lemarche.utils.mixins import TenderAuthorOrAdminRequiredIfNotValidatedMixin, TenderAuthorOrAdminRequiredMixin
-from lemarche.www.siaes.forms import SiaeSearchForm
+from lemarche.www.siaes.forms import SiaeFilterForm
 from lemarche.www.tenders.forms import (
     TenderCreateStepConfirmationForm,
     TenderCreateStepContactForm,
@@ -367,7 +367,7 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
 
 class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
     template_name = "tenders/siae_interested_list.html"
-    form_class = SiaeSearchForm
+    form_class = SiaeFilterForm
     queryset = Siae.objects.prefetch_related("tendersiae_set").all()
     context_object_name = "siaes"
     status = None
@@ -383,7 +383,7 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
             qs = qs.filter(tendersiae__tender=self.tender, tendersiae__email_send_date__isnull=False)
             qs = qs.order_by("-tendersiae__email_send_date")
         # then filter with the form
-        self.filter_form = SiaeSearchForm(data=self.request.GET)
+        self.filter_form = SiaeFilterForm(data=self.request.GET)
         qs = self.filter_form.filter_queryset(qs)
         return qs
 
@@ -400,7 +400,7 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["tender"] = self.tender
         context["status"] = self.status
-        siae_search_form = self.filter_form if self.filter_form else SiaeSearchForm(data=self.request.GET)
+        siae_search_form = self.filter_form if self.filter_form else SiaeFilterForm(data=self.request.GET)
         context["form"] = siae_search_form
         context["current_search_query"] = self.request.GET.urlencode()
         return context

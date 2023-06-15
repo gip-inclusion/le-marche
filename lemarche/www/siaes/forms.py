@@ -23,7 +23,7 @@ FORM_TERRITORY_CHOICES = (
 )
 
 
-class SiaeSearchForm(forms.Form):
+class SiaeFilterForm(forms.Form):
     q = forms.CharField(
         label="Recherche via le numéro de SIRET ou le nom de votre structure",
         required=False,
@@ -222,7 +222,7 @@ class SiaeFavoriteForm(forms.ModelForm):
         fields = ["favorite_lists"]
 
 
-class SiaeDownloadForm(SiaeSearchForm):
+class SiaeDownloadForm(SiaeFilterForm):
     marche_benefits = forms.MultipleChoiceField(
         label="Pourquoi téléchargez-vous cette liste ?",
         choices=Tender._meta.get_field("marche_benefits").base_field.choices,
@@ -244,7 +244,7 @@ SHARE_PLATEFORM = (
 )
 
 
-class SiaeShareForm(SiaeSearchForm):
+class SiaeShareForm(SiaeFilterForm):
     # global field
     share_with = forms.ChoiceField(
         label="Partager par",
@@ -296,7 +296,7 @@ class NetworkSiaeFilterForm(forms.Form):
     )
 
     def filter_queryset(self, qs=None):
-        if not qs:
+        if qs is None:
             qs = Siae.objects.search_query_set()
 
         if not hasattr(self, "cleaned_data"):

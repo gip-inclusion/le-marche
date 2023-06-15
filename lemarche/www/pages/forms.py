@@ -3,7 +3,7 @@ from django.db.models import Case, Count, F, IntegerField, Sum, When
 
 from lemarche.siaes.models import Siae
 from lemarche.utils.constants import EMPTY_CHOICE
-from lemarche.www.siaes.forms import SiaeSearchForm
+from lemarche.www.siaes.forms import SiaeFilterForm
 
 
 class ContactForm(forms.Form):
@@ -37,7 +37,7 @@ class ContactForm(forms.Form):
     message = forms.CharField(label="Message", widget=forms.Textarea(attrs={"data-expandable": "true"}), required=True)
 
 
-class ImpactCalculatorForm(SiaeSearchForm):
+class ImpactCalculatorForm(SiaeFilterForm):
     class Meta:
         model = Siae
         fields = ["sectors", "perimeters", "presta_type"]
@@ -72,7 +72,7 @@ class SocialImpactBuyersCalculatorForm(forms.Form):
     amount = forms.IntegerField(min_value=100, max_value=10e8, label="Montant de votre achat (en €)")
 
 
-class CompanyReferenceCalculatorForm(SiaeSearchForm):
+class CompanyReferenceCalculatorForm(SiaeFilterForm):
     class Meta:
         model = Siae
         fields = ["company_client_reference"]
