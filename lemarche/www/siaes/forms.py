@@ -23,7 +23,7 @@ FORM_TERRITORY_CHOICES = (
 )
 
 
-class SiaeSearchForm(forms.Form):
+class SiaeFilterForm(forms.Form):
     q = forms.CharField(
         label="Recherche via le numéro de SIRET ou le nom de votre structure",
         required=False,
@@ -85,7 +85,7 @@ class SiaeSearchForm(forms.Form):
         Method to filter the Siaes depending on the search filters.
         We also make sure there are no duplicates.
         """
-        if not qs:
+        if qs is None:
             # we only display live Siae
             qs = Siae.objects.search_query_set()
 
@@ -131,11 +131,12 @@ class SiaeSearchForm(forms.Form):
 
         # un auteur d'un dépôt de besoin peut exporter la liste des prestataires (ciblés ou intéressés)
         tender = self.cleaned_data.get("tender", None)
+        tender_status = self.cleaned_data.get("tender_status", None)
         if tender:
-            qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
-            tender_status = self.cleaned_data.get("tender_status", None)
-            if tender_status:
-                qs = qs.filter(tendersiae__detail_contact_click_date__isnull=False)
+            if tender_status:  # status == "INTERESTED"
+                qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_contact_click_date__isnull=False)
+            else:
+                qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
 
         favorite_list = self.cleaned_data.get("favorite_list", None)
         if favorite_list:
@@ -220,7 +221,7 @@ class SiaeFavoriteForm(forms.ModelForm):
         fields = ["favorite_lists"]
 
 
-class SiaeDownloadForm(SiaeSearchForm):
+class SiaeDownloadForm(SiaeFilterForm):
     marche_benefits = forms.MultipleChoiceField(
         label="Pourquoi téléchargez-vous cette liste ?",
         choices=Tender._meta.get_field("marche_benefits").base_field.choices,
@@ -242,7 +243,7 @@ SHARE_PLATEFORM = (
 )
 
 
-class SiaeShareForm(SiaeSearchForm):
+class SiaeShareForm(SiaeFilterForm):
     # global field
     share_with = forms.ChoiceField(
         label="Partager par",
@@ -294,7 +295,7 @@ class NetworkSiaeFilterForm(forms.Form):
     )
 
     def filter_queryset(self, qs=None):
-        if not qs:
+        if qs is None:
             qs = Siae.objects.search_query_set()
 
         if not hasattr(self, "cleaned_data"):
@@ -303,49 +304,6 @@ class NetworkSiaeFilterForm(forms.Form):
         perimeter = self.cleaned_data.get("perimeter", None)
         if perimeter:
             qs = qs.address_in_perimeter_list([perimeter])
-
-        # avoid duplicates
-        qs = qs.distinct()
-
-        return qs
-
-
-class TenderSiaeFilterForm(forms.Form):
-    kind = forms.MultipleChoiceField(
-        label=Siae._meta.get_field("kind").verbose_name,
-        choices=FORM_KIND_CHOICES_GROUPED,
-        required=False,
-    )
-    territory = forms.MultipleChoiceField(
-        label="Territoire spécifique",
-        choices=FORM_TERRITORY_CHOICES,
-        required=False,
-    )
-
-    def filter_queryset(self, qs=None):  # noqa C901
-        if not qs:
-            qs = Siae.objects.search_query_set()
-
-        if not hasattr(self, "cleaned_data"):
-            self.full_clean()
-
-        kinds = self.cleaned_data.get("kind", None)
-        if kinds:
-            qs = qs.filter(kind__in=kinds)
-
-        presta_types = self.cleaned_data.get("presta_type", None)
-        if presta_types:
-            qs = qs.filter(presta_type__overlap=presta_types)
-
-        territory = self.cleaned_data.get("territory", None)
-        if territory:
-            if len(territory) == 1:
-                if "QPV" in territory:
-                    qs = qs.filter(is_qpv=True)
-                elif "ZRR" in territory:
-                    qs = qs.filter(is_zrr=True)
-            elif len(territory) == 2:
-                qs = qs.filter(Q(is_qpv=True) | Q(is_zrr=True))
 
         # avoid duplicates
         qs = qs.distinct()

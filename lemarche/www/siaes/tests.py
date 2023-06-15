@@ -10,7 +10,7 @@ from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeClientReferenceFactory, SiaeFactory, SiaeOfferFactory
 from lemarche.siaes.models import Siae
 from lemarche.users.factories import UserFactory
-from lemarche.www.siaes.forms import SiaeSearchForm
+from lemarche.www.siaes.forms import SiaeFilterForm
 
 
 class SiaeSearchFilterTest(TestCase):
@@ -360,17 +360,17 @@ class SiaePerimeterSearchFilterTest(TestCase):
         self.assertEqual(Siae.objects.count(), 14)
 
     def test_search_perimeter_empty(self):
-        form = SiaeSearchForm({"perimeters": [""]})
+        form = SiaeFilterForm({"perimeters": [""]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 14)
 
     def test_search_perimeter_region(self):
-        form = SiaeSearchForm({"perimeters": [self.auvergne_rhone_alpes_perimeter.slug]})
+        form = SiaeFilterForm({"perimeters": [self.auvergne_rhone_alpes_perimeter.slug]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 10)
 
     def test_search_perimeter_not_exist(self):
-        form = SiaeSearchForm({"perimeters": ["-1"]})
+        form = SiaeFilterForm({"perimeters": ["-1"]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 14)
         self.assertFalse(form.is_valid())
@@ -378,7 +378,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
         self.assertIn("Sélectionnez un choix valide", form.errors["perimeters"][0])
 
     def test_search_perimeter_department(self):
-        form = SiaeSearchForm({"perimeters": [self.isere_perimeter]})
+        form = SiaeFilterForm({"perimeters": [self.isere_perimeter]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 6)
 
@@ -389,7 +389,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
         + all the Siae in the city's department (except GEO_RANGE_CUSTOM) - Isere (0 new Siae)
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble (1 new Siae: La Tronche. Chamrousse is outside)  # noqa
         """
-        form = SiaeSearchForm({"perimeters": [self.grenoble_perimeter.slug]})
+        form = SiaeFilterForm({"perimeters": [self.grenoble_perimeter.slug]})
         self.assertTrue(form.is_valid())
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 4 + 0 + 1)
@@ -401,7 +401,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
         + all the Siae in the city's department (except GEO_RANGE_CUSTOM) - Isere (3 new Siae)
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble (1 Siae, 0 new: Chamrousse. Grenoble & La Tronche are outside)  # noqa
         """
-        form = SiaeSearchForm({"perimeters": [self.chamrousse_perimeter]})
+        form = SiaeFilterForm({"perimeters": [self.chamrousse_perimeter]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 1 + 3 + 0)
 
@@ -412,7 +412,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
         + all the Siae in the cities departments (except GEO_RANGE_CUSTOM) - Isere (0 new Siae)
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble or Chamrousse (2 Siae, 1 new) # noqa
         """
-        form = SiaeSearchForm({"perimeters": [self.grenoble_perimeter, self.chamrousse_perimeter]})
+        form = SiaeFilterForm({"perimeters": [self.grenoble_perimeter, self.chamrousse_perimeter]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 5 + 0 + 1)
 
@@ -423,7 +423,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
         + all the Siae in the cities departments (except GEO_RANGE_CUSTOM) - Isere & 29 (0 new Siae)
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble or Quimper (1 new Siae) # noqa
         """
-        form = SiaeSearchForm({"perimeters": [self.grenoble_perimeter, self.quimper_perimeter]})
+        form = SiaeFilterForm({"perimeters": [self.grenoble_perimeter, self.quimper_perimeter]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 8 + 0 + 1)
 
@@ -432,7 +432,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
         test one perimeter is good and the other one is not
         We should return the default qs with error
         """
-        form = SiaeSearchForm({"perimeters": [self.grenoble_perimeter, "-1"]})
+        form = SiaeFilterForm({"perimeters": [self.grenoble_perimeter, "-1"]})
         qs = form.filter_queryset()
         self.assertFalse(form.is_valid())
         self.assertIn("perimeters", form.errors.keys())

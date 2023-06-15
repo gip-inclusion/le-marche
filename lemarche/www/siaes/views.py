@@ -22,7 +22,7 @@ from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
 from lemarche.www.auth.tasks import add_to_contact_list
-from lemarche.www.siaes.forms import SiaeDownloadForm, SiaeFavoriteForm, SiaeSearchForm, SiaeShareForm
+from lemarche.www.siaes.forms import SiaeDownloadForm, SiaeFavoriteForm, SiaeFilterForm, SiaeShareForm
 
 
 CURRENT_SEARCH_QUERY_COOKIE_NAME = "current_search"
@@ -42,7 +42,7 @@ SECTOR_GROUP_HYGIERE_SLUG_LIST = [
 
 class SiaeSearchResultsView(FormMixin, ListView):
     template_name = "siaes/search_results.html"
-    form_class = SiaeSearchForm
+    form_class = SiaeFilterForm
     # queryset = Siae.objects.all()
     context_object_name = "siaes"
     paginate_by = 20
@@ -51,10 +51,10 @@ class SiaeSearchResultsView(FormMixin, ListView):
     def get_queryset(self):
         """
         Filter results.
-        - filter and order using the SiaeSearchForm
+        - filter and order using the SiaeFilterForm
         - if the user is authenticated, annotate with favorite info
         """
-        self.filter_form = SiaeSearchForm(data=self.request.GET)
+        self.filter_form = SiaeFilterForm(data=self.request.GET)
         results = self.filter_form.filter_queryset()
         results_ordered = self.filter_form.order_queryset(results)
         if self.request.user.is_authenticated:
@@ -86,7 +86,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         """
         context = super().get_context_data(**kwargs)
         context["position_promote_tenders"] = [5, 15]
-        siae_search_form = self.filter_form if self.filter_form else SiaeSearchForm(data=self.request.GET)
+        siae_search_form = self.filter_form if self.filter_form else SiaeFilterForm(data=self.request.GET)
         context["form"] = siae_search_form
         context["form_download"] = SiaeDownloadForm(data=self.request.GET)
         context["form_share"] = SiaeShareForm(data=self.request.GET, user=self.request.user)

@@ -9,7 +9,7 @@ from django.core.management.base import BaseCommand
 
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
-from lemarche.www.siaes.forms import SiaeSearchForm
+from lemarche.www.siaes.forms import SiaeFilterForm
 
 
 # init S3 config
@@ -36,7 +36,7 @@ class Command(BaseCommand):
     Export all Siae to a file (XLS or CSV)
 
     Steps:
-    1. Use the SiaeSearchForm to get the list of all the Siae available for the user
+    1. Use the SiaeFilterForm to get the list of all the Siae available for the user
     2. Generate the file (.xls or .csv or both)
     3. Upload to S3
     4. Cleanup
@@ -61,7 +61,7 @@ class Command(BaseCommand):
         self.stdout.write("Task: export Siae list...")
 
         self.stdout.write("Step 1: fetching Siae list")
-        filter_form = SiaeSearchForm({})
+        filter_form = SiaeFilterForm({})
         siae_list = filter_form.filter_queryset()
         self.stdout.write(f"Found {len(siae_list)} Siae")
 
