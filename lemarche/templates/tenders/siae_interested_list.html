@@ -33,13 +33,20 @@
                         <form method="GET" role="search" id="filter-search-form">
                             {% bootstrap_form_errors form type="all" %}
                             <div class="row align-items-start">
-                                <div class="col-12 col-md-6 col-lg-4">
+                                <div class="col-12 col-md-6 col-lg-3">
+                                    <div class="form-group">
+                                        <label for="id_perimeters">{{ form.perimeters.label }}</label>
+                                        <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
+                                        <div id="perimeters-selected" class="mt-2"></div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-3">
                                     {% bootstrap_field form.kind %}
                                 </div>
-                                <div class="col-12 col-md-6 col-lg-4">
+                                <div class="col-12 col-md-6 col-lg-3">
                                     {% bootstrap_field form.territory %}
                                 </div>
-                                <div class="col-12 col-md-6 col-lg-4">
+                                <div class="col-12 col-md-6 col-lg-3">
                                     <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
                                     <button id="text-search-submit" class="btn btn-primary btn-block btn-ico" type="submit">
                                         <span>Filtrer</span>
@@ -107,4 +114,10 @@
         {% endblock %}
     </div>
 </section>
+{% endblock %}
+
+
+{% block extra_js %}
+{{ current_perimeters|json_script:"current-perimeters" }}
+<script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
 {% endblock %}
