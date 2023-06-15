@@ -131,11 +131,13 @@ class SiaeSearchForm(forms.Form):
 
         # un auteur d'un dépôt de besoin peut exporter la liste des prestataires (ciblés ou intéressés)
         tender = self.cleaned_data.get("tender", None)
+        tender_status = self.cleaned_data.get("tender_status", None)
         if tender:
-            qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
-            tender_status = self.cleaned_data.get("tender_status", None)
-            if tender_status:
-                qs = qs.filter(tendersiae__detail_contact_click_date__isnull=False)
+            qs = qs.filter(tendersiae__tender=tender)
+            if tender_status:  # status == "INTERESTED"
+                qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_contact_click_date__isnull=False)
+            else:
+                qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
 
         favorite_list = self.cleaned_data.get("favorite_list", None)
         if favorite_list:
