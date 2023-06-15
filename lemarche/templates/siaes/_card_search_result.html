@@ -60,12 +60,14 @@
                 <i class="ri-map-pin-line"></i>
                 <span class="sr-only">Situé à {{ siae.city }}</span>
                 <span>{{ siae.city }}</span>
-                {% if siae.is_qpv %}
-                    <span class="badge badge-sm badge-pill badge-emploi-lightest" title="Quartier prioritaire de la politique de la ville">QPV</span>
-                {% endif %}
-                {% if siae.is_zrr %}
-                    <span class="badge badge-sm badge-pill badge-emploi-lightest" title="Zone de revitalisation rurale">ZRR</span>
-                {% endif %}
+                <span class="badge-group">
+                    {% if siae.is_qpv %}
+                        <span class="badge badge-sm badge-pill badge-emploi-lightest" title="Quartier prioritaire de la politique de la ville">QPV</span>
+                    {% endif %}
+                    {% if siae.is_zrr %}
+                        <span class="badge badge-sm badge-pill badge-emploi-lightest" title="Zone de revitalisation rurale">ZRR</span>
+                    {% endif %}
+                </span>
             </span>
             <span class="ml-3">
                 <i class="ri-map-2-line"></i>
