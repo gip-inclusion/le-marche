@@ -66,18 +66,26 @@ class SiaeFilterForm(forms.Form):
         required=False,
     )
 
-    tender = forms.ModelChoiceField(
-        queryset=Tender.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
-    )
-    tender_status = forms.CharField(required=False, widget=forms.HiddenInput())
-
-    favorite_list = forms.ModelChoiceField(
-        queryset=FavoriteList.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
-    )
     company_client_reference = forms.CharField(
         label="Indiquez le nom de votre entreprise",
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "Votre entreprise…"}),
+    )
+
+    # other hidden filters
+    tender = forms.ModelChoiceField(
+        queryset=Tender.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
+    )
+    tender_status = forms.CharField(required=False, widget=forms.HiddenInput())
+    locations = forms.ModelMultipleChoiceField(
+        label="Localisation",
+        queryset=Perimeter.objects.all(),
+        to_field_name="slug",
+        required=False,
+        widget=forms.HiddenInput(),
+    )
+    favorite_list = forms.ModelChoiceField(
+        queryset=FavoriteList.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
     )
 
     def filter_queryset(self, qs=None):  # noqa C901
@@ -129,7 +137,13 @@ class SiaeFilterForm(forms.Form):
         if networks:
             qs = qs.filter_networks(networks)
 
-        # un auteur d'un dépôt de besoin peut exporter la liste des prestataires (ciblés ou intéressés)
+        company_client_reference = self.cleaned_data.get("company_client_reference", None)
+        if company_client_reference:
+            qs = qs.prefetch_related("client_references").filter(
+                client_references__name__icontains=company_client_reference
+            )
+
+        # a Tender author can export its Siae list
         tender = self.cleaned_data.get("tender", None)
         tender_status = self.cleaned_data.get("tender_status", None)
         if tender:
@@ -138,15 +152,13 @@ class SiaeFilterForm(forms.Form):
             else:
                 qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
 
+        locations = self.cleaned_data.get("locations", None)
+        if locations:
+            qs = qs.address_in_perimeter_list(locations)
+
         favorite_list = self.cleaned_data.get("favorite_list", None)
         if favorite_list:
             qs = qs.filter(favorite_lists__in=[favorite_list])
-
-        company_client_reference = self.cleaned_data.get("company_client_reference", None)
-        if company_client_reference:
-            qs = qs.prefetch_related("client_references").filter(
-                client_references__name__icontains=company_client_reference
-            )
 
         # avoid duplicates
         qs = qs.distinct()
