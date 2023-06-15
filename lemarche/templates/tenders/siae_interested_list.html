@@ -1,7 +1,7 @@
 {% extends BASE_TEMPLATE %}
 {% load bootstrap4 static %}
 
-{% block title %}Prestataires intéressés par mon besoin{{ block.super }}{% endblock %}
+{% block title %}Prestataires ciblés & intéressés par mon besoin{{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
 <section>
@@ -14,7 +14,7 @@
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">Mes besoins</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'tenders:detail' tender.slug %}" title="{{ tender.title }}">{{ tender.title|truncatechars:25 }}</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Prestataires intéressés</li>
+                        <li class="breadcrumb-item active" aria-current="page">Prestataires ciblés & intéressés</li>
                     </ol>
                 </nav>
             </div>
