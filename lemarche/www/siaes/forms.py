@@ -85,7 +85,7 @@ class SiaeSearchForm(forms.Form):
         Method to filter the Siaes depending on the search filters.
         We also make sure there are no duplicates.
         """
-        if not qs:
+        if qs is None:
             # we only display live Siae
             qs = Siae.objects.search_query_set()
 
@@ -305,46 +305,6 @@ class NetworkSiaeFilterForm(forms.Form):
         perimeter = self.cleaned_data.get("perimeter", None)
         if perimeter:
             qs = qs.address_in_perimeter_list([perimeter])
-
-        # avoid duplicates
-        qs = qs.distinct()
-
-        return qs
-
-
-class TenderSiaeFilterForm(forms.Form):
-    kind = forms.MultipleChoiceField(
-        label=Siae._meta.get_field("kind").verbose_name,
-        choices=FORM_KIND_CHOICES_GROUPED,
-        required=False,
-    )
-    territory = forms.MultipleChoiceField(
-        label="Territoire spécifique",
-        choices=FORM_TERRITORY_CHOICES,
-        required=False,
-    )
-
-    def filter_queryset(self, qs):  # noqa C901
-        if not hasattr(self, "cleaned_data"):
-            self.full_clean()
-
-        kinds = self.cleaned_data.get("kind", None)
-        if kinds:
-            qs = qs.filter(kind__in=kinds)
-
-        presta_types = self.cleaned_data.get("presta_type", None)
-        if presta_types:
-            qs = qs.filter(presta_type__overlap=presta_types)
-
-        territory = self.cleaned_data.get("territory", None)
-        if territory:
-            if len(territory) == 1:
-                if "QPV" in territory:
-                    qs = qs.filter(is_qpv=True)
-                elif "ZRR" in territory:
-                    qs = qs.filter(is_zrr=True)
-            elif len(territory) == 2:
-                qs = qs.filter(Q(is_qpv=True) | Q(is_zrr=True))
 
         # avoid duplicates
         qs = qs.distinct()
