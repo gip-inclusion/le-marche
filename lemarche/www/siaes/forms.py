@@ -78,7 +78,6 @@ class SiaeFilterForm(forms.Form):
     )
     tender_status = forms.CharField(required=False, widget=forms.HiddenInput())
     locations = forms.ModelMultipleChoiceField(
-        label="Localisation",
         queryset=Perimeter.objects.all(),
         to_field_name="slug",
         required=False,

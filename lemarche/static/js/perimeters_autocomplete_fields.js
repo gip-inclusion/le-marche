@@ -176,6 +176,6 @@ document.addEventListener("DOMContentLoaded", function() {
   initPerimetersAutoCompleteFields();
 });
 
-document.body.addEventListener('htmx:afterSwap', function() {
-  initPerimetersAutoCompleteFields();
-});
+// document.body.addEventListener('htmx:afterSwap', function() {
+//   initPerimetersAutoCompleteFields();
+// });
