@@ -377,6 +377,7 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
         # first get the tender's siaes
         self.tender = Tender.objects.get(slug=self.kwargs.get("slug"))
         qs = qs.filter(tendersiae__tender=self.tender)
+
         if self.status:  # status == "INTERESTED"
             qs = qs.filter(tendersiae__tender=self.tender, tendersiae__detail_contact_click_date__isnull=False)
             qs = qs.order_by("-tendersiae__detail_contact_click_date")

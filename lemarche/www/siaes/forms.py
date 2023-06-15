@@ -324,10 +324,7 @@ class TenderSiaeFilterForm(forms.Form):
         required=False,
     )
 
-    def filter_queryset(self, qs=None):  # noqa C901
-        if not qs:
-            qs = Siae.objects.search_query_set()
-
+    def filter_queryset(self, qs):  # noqa C901
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
 
