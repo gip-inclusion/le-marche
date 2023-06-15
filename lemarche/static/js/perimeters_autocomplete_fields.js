@@ -151,11 +151,24 @@ function initPerimetersAutoCompleteFields() {
   }
 
 
-  let currentPerimeters = JSON.parse(document.getElementById('current-perimeters').textContent);
-  if (currentPerimeters) {
+  const currentPerimetersElement = document.getElementById('current-perimeters');
+  if (currentPerimetersElement) {
+    let currentPerimeters = JSON.parse(currentPerimetersElement.textContent);
+    if (currentPerimeters) {
       currentPerimeters.forEach(perimeter => {
-          createHiddenInputPerimeter(perimeter['slug'], perimeter['name']);  // parseInt(perimeter['id'])
+        createHiddenInputPerimeter(perimeter['slug'], perimeter['name']);  // parseInt(perimeter['id'])
       });
+    }
+  }
+
+  const currentLocationsElement = document.getElementById('current-locations');
+  if (currentLocationsElement) {
+    let currentLocations = JSON.parse(currentLocationsElement.textContent);
+    if (currentLocations) {
+      currentLocations.forEach(perimeter => {
+        createHiddenInputPerimeter(perimeter['slug'], perimeter['name']);  // parseInt(perimeter['id'])
+      });
+    }
   }
 }
 
@@ -163,6 +176,6 @@ document.addEventListener("DOMContentLoaded", function() {
   initPerimetersAutoCompleteFields();
 });
 
-document.body.addEventListener('htmx:afterSwap', function() {
-  initPerimetersAutoCompleteFields();
-});
+// document.body.addEventListener('htmx:afterSwap', function() {
+//   initPerimetersAutoCompleteFields();
+// });

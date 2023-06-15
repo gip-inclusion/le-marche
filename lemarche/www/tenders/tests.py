@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from lemarche.perimeters.factories import PerimeterFactory
+from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeFactory
@@ -861,8 +862,10 @@ class TenderDetailContactClickStatViewTest(TestCase):
 class TenderSiaeListView(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.siae_1 = SiaeFactory(name="ZZ ESI", kind=siae_constants.KIND_EI, is_qpv=True)
-        cls.siae_2 = SiaeFactory(name="ABC Insertion", kind=siae_constants.KIND_EI)
+        cls.siae_1 = SiaeFactory(
+            name="ZZ ESI", kind=siae_constants.KIND_EI, is_qpv=True, city="Grenoble", post_code="38100"
+        )
+        cls.siae_2 = SiaeFactory(name="ABC Insertion", kind=siae_constants.KIND_EI, city="Grenoble", post_code="38000")
         cls.siae_3 = SiaeFactory(name="Une autre structure", kind=siae_constants.KIND_ETTI)
         cls.siae_4 = SiaeFactory(name="Une dernière structure", kind=siae_constants.KIND_ETTI)
         cls.siae_user_1 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_1, cls.siae_2])
@@ -895,6 +898,15 @@ class TenderSiaeListView(TestCase):
             siae=cls.siae_2,
             email_send_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
+        )
+        cls.perimeter_city = PerimeterFactory(
+            name="Grenoble",
+            kind=Perimeter.KIND_CITY,
+            insee_code="38185",
+            department_code="38",
+            region_code="84",
+            post_codes=["38000", "38100", "38700"],
+            # coords=Point(5.7301, 45.1825),
         )
 
     def test_anonymous_user_cannot_view_tender_siae_interested_list(self):
@@ -933,6 +945,21 @@ class TenderSiaeListView(TestCase):
 
     def test_filter_tender_siae_list(self):
         self.client.force_login(self.user_buyer_1)
+        # filter by location
+        url = (
+            reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
+            + f"?locations={self.perimeter_city.slug}"
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["siaes"]), 2)  # email_send_date & located in Grenoble
+        url = (
+            reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug, "status": "INTERESTED"})
+            + f"?locations={self.perimeter_city.slug}"
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["siaes"]), 1)  # detail_contact_click_date & located in Grenoble
         # filter by kind
         url = (
             reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
