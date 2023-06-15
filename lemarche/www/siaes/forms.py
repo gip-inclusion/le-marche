@@ -133,7 +133,6 @@ class SiaeFilterForm(forms.Form):
         tender = self.cleaned_data.get("tender", None)
         tender_status = self.cleaned_data.get("tender_status", None)
         if tender:
-            qs = qs.filter(tendersiae__tender=tender)
             if tender_status:  # status == "INTERESTED"
                 qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_contact_click_date__isnull=False)
             else:
