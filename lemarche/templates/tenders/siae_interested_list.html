@@ -1,7 +1,7 @@
 {% extends BASE_TEMPLATE %}
 {% load bootstrap4 static %}
 
-{% block title %}Prestataires intéressés par mon besoin{{ block.super }}{% endblock %}
+{% block title %}Prestataires ciblés & intéressés par mon besoin{{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
 <section>
@@ -14,7 +14,7 @@
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">Mes besoins</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'tenders:detail' tender.slug %}" title="{{ tender.title }}">{{ tender.title|truncatechars:25 }}</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Prestataires intéressés</li>
+                        <li class="breadcrumb-item active" aria-current="page">Prestataires ciblés & intéressés</li>
                     </ol>
                 </nav>
             </div>
@@ -61,14 +61,14 @@
 
                 <li class="nav-item">
                     <a role="button" hx-push-url="true" hx-get="{{ TENDER_SIAE_LIST_URL }}?{{ current_search_query }}"
-                        class="nav-link{% if TENDER_SIAE_LIST_URL in request.get_full_path %} active{% endif %}"
+                        class="nav-link{% if request.path == TENDER_SIAE_LIST_URL %} active{% endif %}"
                         hx-target="#tenderSiaeList" hx-swap="outerHTML">
                         Prestataires ciblés
                     </a>
                 </li>
                 <li class="nav-item">
                     <a role="button" hx-push-url="true" hx-get="{{ TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL }}?{{ current_search_query }}"
-                        class="nav-link{% if TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL in request.get_full_path %} active{% endif %}"
+                        class="nav-link{% if request.path == TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL %} active{% endif %}"
                         hx-target="#tenderSiaeList" hx-swap="outerHTML">
                         Prestataires intéressés
                     </a>

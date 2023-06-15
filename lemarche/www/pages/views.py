@@ -148,7 +148,7 @@ class ImpactCalculatorView(FormMixin, ListView):
     def get_queryset(self):
         """
         Filter results.
-        - filter using the SiaeSearchForm
+        - filter using the SiaeFilterForm
         - aggregate on impact values
         """
         self.filter_form = ImpactCalculatorForm(data=self.request.GET)
@@ -229,7 +229,7 @@ class CompanyReferenceCalculatorView(FormMixin, ListView):
     def get_queryset(self):
         """
         Filter results.
-        - filter using the SiaeSearchForm
+        - filter using the SiaeFilterForm
         """
         self.filter_form = CompanyReferenceCalculatorForm(data=self.request.GET)
         if len(self.request.GET.keys()):
