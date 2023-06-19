@@ -20,3 +20,4 @@ fi
 cd $APP_HOME
 
 django-admin send_siae_contacted_reminder_emails --days-since-email-send-date 2
+django-admin send_siae_contacted_reminder_emails --days-since-email-send-date 3
