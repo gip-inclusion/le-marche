@@ -866,6 +866,13 @@ class Siae(models.Model):
         return "non disponible"
 
     @property
+    def etp_count_display(self):
+        if self.employees_insertion_count:
+            return self.employees_insertion_count
+        elif self.c2_etp_count:
+            return self.c2_etp_count
+
+    @property
     def contact_full_name(self):
         return f"{self.contact_first_name} {self.contact_last_name}"
 
