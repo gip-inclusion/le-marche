@@ -18,16 +18,16 @@ class UserQueryset(models.QuerySet):
     Custom queryset with additional filtering methods for users.
     """
 
+    def has_company(self):
+        return self.filter(company__isnull=False).distinct()
+
     def has_siae(self):
-        """Only return users who are linked to Siae(s)."""
         return self.filter(siaes__isnull=False).distinct()
 
     def has_tender(self):
-        """Only return users who have Tender(s)."""
         return self.filter(tenders__isnull=False).distinct()
 
     def has_favorite_list(self):
-        """Only return users who have FavoriteList(s)."""
         return self.filter(favorite_lists__isnull=False).distinct()
 
     def has_partner_network(self):
@@ -73,16 +73,16 @@ class UserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
+    def has_company(self):
+        return self.get_queryset().has_company()
+
     def has_siae(self):
-        """Only return users who are linked to Siae(s)."""
         return self.get_queryset().has_siae()
 
     def has_tender(self):
-        """Only return users who have Tender(s)."""
         return self.get_queryset().has_tender()
 
     def has_favorite_list(self):
-        """Only return users who have FavoriteList(s)."""
         return self.get_queryset().has_favorite_list()
 
     def has_partner_network(self):
