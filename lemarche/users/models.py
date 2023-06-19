@@ -180,7 +180,17 @@ class User(AbstractUser):
         verbose_name="Type", max_length=20, choices=constants.USER_KIND_CHOICES_WITH_ADMIN, blank=True
     )
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True)
+
+    company = models.ForeignKey(
+        "companies.Company",
+        verbose_name="Entreprise",
+        related_name="users",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
     company_name = models.CharField(verbose_name="Nom de l'entreprise", max_length=255, blank=True)
+
     position = models.CharField(verbose_name="Poste", max_length=255, blank=True)
     buyer_kind = models.CharField(
         verbose_name="Type d'acheteur", max_length=20, choices=BUYER_KIND_CHOICES, blank=True
