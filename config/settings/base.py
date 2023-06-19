@@ -126,6 +126,7 @@ LOCAL_APPS = [
     "lemarche.utils",
     "lemarche.cocorico",
     "lemarche.users",
+    "lemarche.companies",
     "lemarche.siaes",
     "lemarche.sectors",
     "lemarche.networks",
