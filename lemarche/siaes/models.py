@@ -464,7 +464,7 @@ class Siae(models.Model):
         "c2_etp_count_date_saisie",
         "c2_etp_count_last_sync_date",
     ]
-    READONLY_FIELDS_FROM_QPV = ["is_qpv", "api_qpv_last_sync_date", "qpv_name", "qpv_code"]
+    READONLY_FIELDS_FROM_QPV = ["is_qpv", "qpv_name", "qpv_code", "api_qpv_last_sync_date"]
     READONLY_FIELDS_FROM_ZRR = ["is_zrr", "zrr_name", "zrr_code", "api_zrr_last_sync_date"]
     READONLY_FIELDS_FROM_API_ENTREPRISE = [
         "api_entreprise_date_constitution",
