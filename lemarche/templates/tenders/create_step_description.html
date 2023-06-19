@@ -1,165 +1,208 @@
 {% extends "tenders/create_base.html" %}
 {% load bootstrap4 static %}
-
 {% block step_title %}Description du besoin{% endblock %}
 {% block step_title_again %}Description du besoin{% endblock %}
-{% block step_subtitle %}Veuillez détailler au maximum votre besoin pour que les prestataires inclusifs puissent se positionner.{% endblock %}
-
+{% block step_subtitle %}
+    Veuillez détailler au maximum votre besoin pour que les prestataires inclusifs puissent se positionner.
+{% endblock %}
 {% block content_form %}
-{% csrf_token %}
-<div class="row">
-    <div class="col-12 col-lg-7">
-        {% bootstrap_field form.description %}
-    </div>
-    <div class="col-12 col-lg-5">
-        <div class="c-form-conseil">
-            <div>
-                <p>
-                    <i class="ri-lightbulb-line ri-lg mr-1"></i><strong>Conseil</strong><br>
-                    Décrivez en détail votre besoin pour permettre aux prestataires inclusifs de vous faire des réponses personnalisées.
-                </p>
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-12 col-lg-7">{% bootstrap_field form.description %}</div>
+        <div class="col-12 col-lg-5">
+            <div class="c-form-conseil">
+                <div>
+                    <p>
+                        <i class="ri-lightbulb-line ri-lg mr-1"></i><strong>Conseil</strong>
+                        <br>
+                        Décrivez en détail votre besoin pour permettre aux prestataires inclusifs de vous faire des réponses personnalisées.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-12 col-lg-7">
-        {% bootstrap_field form.start_working_date %}
+    <div class="row">
+        <div class="col-12 col-lg-7">{% bootstrap_field form.start_working_date %}</div>
     </div>
-</div>
-<div class="row">
-    <div class="col-12 col-lg-7">
-        {% bootstrap_field form.external_link %}
+    <div class="row">
+        <div class="col-12 col-lg-7">{% bootstrap_field form.external_link %}</div>
     </div>
-</div>
-<div class="row">
-    <div class="col-12 col-lg-7">
-        {% bootstrap_field form.constraints %}
+    <div class="row mb-4" x-data="TenderQuestionForm">
+        <div class="col-12 col-lg-7">
+            <h4>Questions</h4>
+            <div x-show="questions.length > 0" x-cloak>
+                <template x-for="(question, index) in questions" :key="index">
+                    <div class="input-group mb-3" :key="index">
+                        <input type="text"
+                               x-model="question.text"
+                               name="alpine-questions_list"
+                               class="form-control"
+                               required/>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary"
+                                    type="button"
+                                    @click="removeQuestion(index)">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                </template>
+                <input type="hidden"
+                       name="description-questions_list"
+                       :value="getValue()"
+                       value="form.questions_list">
+            </div>
+            <button type="button" class="btn btn-info" x-on:click="addQuestion()">Ajouter une question</button>
+        </div>
     </div>
-    <div class="col-12 col-lg-5">
-        <div class="c-form-conseil">
-            <div>
-                <p>
-                    <i class="ri-lightbulb-line ri-lg mr-1"></i><strong>Conseil</strong>
-                    <br />
-                    Les contraintes techniques spécifiques sont les exigences que vous souhaitez porter à la connaissance des prestataires inclusifs.
-                </p>
-                <p>
-                    Plus elles seront précises, plus vous aurez de chances de recevoir des réponses qualitatives des prestataires inclusifs.
-                </p>
+    <div class="row">
+        <div class="col-12 col-lg-7">{% bootstrap_field form.constraints %}</div>
+        <div class="col-12 col-lg-5">
+            <div class="c-form-conseil">
+                <div>
+                    <p>
+                        <i class="ri-lightbulb-line ri-lg mr-1"></i><strong>Conseil</strong>
+                        <br />
+                        Les contraintes techniques spécifiques sont les exigences que vous souhaitez porter à la connaissance des prestataires inclusifs.
+                    </p>
+                    <p>
+                        Plus elles seront précises, plus vous aurez de chances de recevoir des réponses qualitatives des prestataires inclusifs.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-12 col-lg-7">
-        <span x-data="SocialImpactCalculatorComponent">
-            {% bootstrap_field form.amount %}
-            {% bootstrap_field form.why_amount_is_blank class="inline-block" show_label=False %}
-            <div x-show="displayMessage()" >
-                <p class="fs-sm text-success" x-text="getImpactMessage"></p>
-                {% bootstrap_field form.accept_share_amount %}
-            </div>
-        </span>
-    </div>
-    <div class="col-12 col-lg-5">
-        <div class="c-form-conseil">
-            <div>
-                <p>
-                    <i class="ri-lightbulb-line ri-lg mr-1"></i><strong>Conseil</strong>
-                    <br />
-                    Le montant € estimé nous aide à évaluer l'impact de la plateforme du Marché de l'inclusion.
-                </p>
-                <p>
-                    Cette donnée restera confidentielle si vous souhaitez ne pas la partager aux prestataires.
-                </p>
+    <div class="row">
+        <div class="col-12 col-lg-7">
+            <span x-data="SocialImpactCalculatorComponent">
+                {% bootstrap_field form.amount %}
+                {% bootstrap_field form.why_amount_is_blank class="inline-block" show_label=False %}
+                <div x-show="displayMessage()">
+                    <p class="fs-sm text-success" x-text="getImpactMessage"></p>
+                    {% bootstrap_field form.accept_share_amount %}
+                </div>
+            </span>
+        </div>
+        <div class="col-12 col-lg-5">
+            <div class="c-form-conseil">
+                <div>
+                    <p>
+                        <i class="ri-lightbulb-line ri-lg mr-1"></i><strong>Conseil</strong>
+                        <br />
+                        Le montant € estimé nous aide à évaluer l'impact de la plateforme du Marché de l'inclusion.
+                    </p>
+                    <p>Cette donnée restera confidentielle si vous souhaitez ne pas la partager aux prestataires.</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-12 col-lg-7">
-        <label class="fake-label">Co-traitance</label>
-        {% bootstrap_field form.accept_cocontracting %}
+    <div class="row">
+        <div class="col-12 col-lg-7">
+            <label class="fake-label">Co-traitance</label>
+            {% bootstrap_field form.accept_cocontracting %}
+        </div>
     </div>
-</div>
 {% endblock content_form %}
-
 {% block extra_js %}
-<script type="text/javascript" src="{% static 'vendor/alpinejs@3.11.1.min.js'%}" defer></script>
+    <script type="text/javascript"
+            src="{% static 'vendor/alpinejs@3.11.1.min.js'%}"
+            defer></script>
+    <script type="text/javascript" defer>
+    function TenderQuestionForm() {
+        return {
+            questions: [{text:""}],
+            getQuestions() {
+                return this.questions;
+            },
+            addQuestion() {
+                console.log(this.questions);
+                this.questions.push({text:""});
+            },
+            init() {
+                questions = {{ form.questions_list.value|safe }};
+                 if (questions){
+                    this.questions = questions;
+                 }
 
-<script>
-function toggleRadioSelectElement(divToToggle, value) {
-    if(value){
-        divToToggle.classList.add("d-none");
-        divToToggle.querySelectorAll('input[type=radio]').forEach(radio=> {
-            radio.checked = false;
-            radio.required = false;
-        })
-    } else {
-        divToToggle.classList.remove("d-none");
-        divToToggle.querySelectorAll('input[type=radio]').forEach(radio=> {
-            radio.required = true;
-        })
+            },
+            getValue(){
+                return JSON.stringify(
+                    {% comment %} this.questions.map(question => question.text) {% endcomment %}
+                    this.questions
+                );
+            },
+            removeQuestion(index) {
+                this.questions.splice(index, 1);
+            }
+        };
     }
-}
 
-document.addEventListener('alpine:init', () => {
+    function toggleRadioSelectElement(divToToggle, value) {
+        if (value) {
+            divToToggle.classList.add("d-none");
+            divToToggle.querySelectorAll('input[type=radio]').forEach(radio => {
+                radio.checked = false;
+                radio.required = false;
+            })
+        } else {
+            divToToggle.classList.remove("d-none");
+            divToToggle.querySelectorAll('input[type=radio]').forEach(radio => {
+                radio.required = true;
+            })
+        }
+    }
     function SocialImpactCalculatorComponent() {
         return {
-            formData:{
-                amount: "{{form.amount.initial|default_if_none:'null'}}",
+            formData: {
+                amount: "{{ form.amount.initial|default_if_none:'null' }}",
             },
             displayMessage() {
                 return this.formData.amount != "null" && this.formData.amount;
             },
             getImpactMessage() {
-                if ( this.formData.amount=="null"){
+                if (this.formData.amount == "null") {
                     return;
                 }
                 // amount format data is XX-XX<K|M>
                 let completeCount = this.formData.amount.split("-"); // remove first range
                 let count, unity;
-                if(!completeCount[1]){ // manage case when amount is ">1M"
+                if (!completeCount[1]) { // manage case when amount is ">1M"
                     count = 2;
                     unity = "M";
-                } else if (completeCount[0]==0){
+                } else if (completeCount[0] == 0) {
                     count = 0.1;
                     unity = "K";
-                } else if(completeCount[0]=="750K") { // manage special case of 750k-1M
+                } else if (completeCount[0] == "750K") { // manage special case of 750k-1M
                     unity = completeCount[0].substring(completeCount[0].length - 1);
                     count = completeCount[0].slice(0, -1);
-
                 } else {
                     count = completeCount[0];
                     unity = completeCount[1].substring(completeCount[1].length - 1);
                 }
-                let factor = unity == "K" ? 10**3 : 10**6; // "K" or "M"
-
+                let factor = unity == "K" ? 10 ** 3 : 10 ** 6; // "K" or "M"
                 count = count * factor;
-                if(count < 5000){
+                if (count < 5000) {
                     let hours = Math.round(count / 26);
                     return `Bravo ! Votre achat inclusif pourrait contribuer à financer approximativement ${hours} heures de travail sur un mois.`
                 } else {
                     let nbJobs = Math.round(count / 3700);
-                    let strPlurial = nbJobs>1 ? "s":"";
+                    let strPlurial = nbJobs > 1 ? "s" : "";
                     return `Bravo ! Votre achat inclusif pourrait contribuer à financer approximativement ${nbJobs} emploi${strPlurial} inclusif${strPlurial} durant 1 mois.`
                 }
             }
         }
     }
-    Alpine.data('SocialImpactCalculatorComponent', SocialImpactCalculatorComponent);
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-    const selectDesciptionAmount = document.getElementById('id_description-amount');
-    const divWhyIsBlank = document.getElementById('id_description-why_amount_is_blank');
-    toggleRadioSelectElement(divWhyIsBlank, selectDesciptionAmount.value);
-
-    selectDesciptionAmount.addEventListener("change", function() {
-        toggleRadioSelectElement(divWhyIsBlank, this.value);
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('SocialImpactCalculatorComponent', SocialImpactCalculatorComponent);
+        Alpine.data('TenderQuestionForm', TenderQuestionForm);
     });
-
-});
-</script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectDesciptionAmount = document.getElementById('id_description-amount');
+        const divWhyIsBlank = document.getElementById('id_description-why_amount_is_blank');
+        toggleRadioSelectElement(divWhyIsBlank, selectDesciptionAmount.value);
+        selectDesciptionAmount.addEventListener("change", function () {
+            toggleRadioSelectElement(divWhyIsBlank, this.value);
+        });
+    });
+    </script>
 {% endblock %}

@@ -1,8 +1,37 @@
 from django.conf import settings
 
-from lemarche.tenders.models import Tender
+from lemarche.tenders.models import Tender, TenderQuestion
 from lemarche.users.models import User
 from lemarche.www.auth.tasks import send_new_user_password_reset_link
+
+
+def create_questions_list(tender, questions_list):
+    return TenderQuestion.objects.bulk_create(
+        [TenderQuestion(tender=tender, **values) for values in questions_list], batch_size=100
+    )
+
+
+def update_or_create_questions_list(tender, questions_list):
+    if questions_list:
+        questions_to_update = []
+        questions_to_create = []
+        for q in questions_list:
+            if q.get("id"):
+                questions_to_update.append(q)
+            else:
+                # new question
+                questions_to_create.append(q)
+        if questions_to_create:
+            create_questions_list(tender, questions_list=questions_to_create)
+        if questions_to_update:
+            TenderQuestion.objects.bulk_update(
+                [
+                    TenderQuestion(id=values.get("id"), tender=tender, text=values.get("text"))
+                    for values in questions_to_update
+                ],
+                ["text"],
+                batch_size=1000,
+            )
 
 
 def create_tender_from_dict(tender_dict: dict) -> Tender:
@@ -10,12 +39,15 @@ def create_tender_from_dict(tender_dict: dict) -> Tender:
     tender_dict.pop("id_location_name", None)
     location = tender_dict.get("location")
     sectors = tender_dict.pop("sectors", [])
-    tender = Tender(**tender_dict)
+    questions = tender_dict.pop("questions_list")
+    tender: Tender = Tender(**tender_dict)
     tender.save()
     if location:
         tender.perimeters.set([location])
     if sectors:
         tender.sectors.set(sectors)
+    if questions:
+        create_questions_list(tender, questions_list=questions)
     return tender
 
 
