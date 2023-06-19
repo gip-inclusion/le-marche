@@ -13,7 +13,7 @@ class NetworkAdmin(admin.ModelAdmin):
     search_fields = ["id", "name", "brand"]
     search_help_text = "Cherche sur les champs : ID, Nom, Enseigne"
 
-    readonly_fields = ["nb_siaes", "logo_url_display", "nb_user_partners", "created_at", "updated_at"]
+    readonly_fields = ["logo_url_display", "nb_siaes", "nb_user_partners", "created_at", "updated_at"]
 
     fieldsets = (
         (
