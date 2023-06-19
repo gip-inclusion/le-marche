@@ -118,8 +118,8 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "networks",
         "sectors",
     ]
-    search_fields = ["id", "name", "slug", "siret"]
-    search_help_text = "Cherche sur les champs : ID, Raison sociale, Slug, Siret"
+    search_fields = ["id", "name", "brand", "slug", "siret"]
+    search_help_text = "Cherche sur les champs : ID, Raison sociale, Enseigne, Slug, Siret"
 
     autocomplete_fields = ["sectors", "networks", "groups"]
     # prepopulated_fields = {"slug": ("name",)}

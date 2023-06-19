@@ -72,17 +72,19 @@ class SiaeFilterForm(forms.Form):
         widget=forms.TextInput(attrs={"placeholder": "Votre entreprise…"}),
     )
 
+    # TenderSiaeListView
+    locations = forms.ModelMultipleChoiceField(
+        label="Localisation",
+        queryset=Perimeter.objects.all(),
+        to_field_name="slug",
+        required=False,
+    )
+
     # other hidden filters
     tender = forms.ModelChoiceField(
         queryset=Tender.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
     )
     tender_status = forms.CharField(required=False, widget=forms.HiddenInput())
-    locations = forms.ModelMultipleChoiceField(
-        queryset=Perimeter.objects.all(),
-        to_field_name="slug",
-        required=False,
-        # widget=forms.HiddenInput(),
-    )
     favorite_list = forms.ModelChoiceField(
         queryset=FavoriteList.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
     )
