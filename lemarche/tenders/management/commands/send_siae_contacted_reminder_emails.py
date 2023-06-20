@@ -10,7 +10,7 @@ from lemarche.www.tenders.tasks import send_tender_contacted_reminder_email_to_s
 class Command(BaseCommand):
     """
     Daily script to check recently sent emails to Siae. If no email_link_click_date, then send reminder
-    When? J+2 (but doesn't run on weekends!)
+    When? J+2 (but doesn't run on weekends!) & J+3
 
     Usage:
     python manage.py send_siae_contacted_reminder_emails --dry-run
@@ -47,7 +47,7 @@ class Command(BaseCommand):
 
             lt_days_ago = timezone.now() - timedelta(days=options["days_since_email_send_date"])
             gte_days_ago = timezone.now() - timedelta(days=options["days_since_email_send_date"] + 1)
-            # Monday: special case (the script doesn't run during on weekends)
+            # Monday: special case (the script doesn't run on weekends)
             # gte_days_ago = gte_days_ago+2 to account for Saturday & Sunday
             if current_weekday == 0:
                 gte_days_ago = timezone.now() - timedelta(days=options["days_since_email_send_date"] + 1 + 2)

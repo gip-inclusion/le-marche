@@ -149,7 +149,10 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, em
 def send_tender_contacted_reminder_email_to_siaes(
     tender: Tender, days_since_email_send_date=2, send_on_weekends=False
 ):
+    # email subject
     email_subject = f"Un {tender.get_kind_display().lower()} pour vous sur le Marché de l'inclusion"
+    if days_since_email_send_date == 3:
+        email_subject = f"Avez vous consulté le {tender.get_kind_display().lower()} ?"
 
     current_weekday = timezone.now().weekday()
 
@@ -183,6 +186,10 @@ def send_tender_contacted_reminder_email_to_siae(tendersiae: TenderSiae, email_s
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
         recipient_name = tendersiae.tender.author.full_name
+        # template
+        template_id = settings.MAILJET_TENDERS_CONTACTED_REMINDER_2D_TEMPLATE_ID
+        if days_since_email_send_date == 3:
+            template_id = settings.MAILJET_TENDERS_CONTACTED_REMINDER_3D_TEMPLATE_ID
 
         variables = {
             "SIAE_CONTACT_FIRST_NAME": tendersiae.siae.contact_first_name,
@@ -197,7 +204,7 @@ def send_tender_contacted_reminder_email_to_siae(tendersiae: TenderSiae, email_s
         }
 
         api_mailjet.send_transactional_email_with_template(
-            template_id=settings.MAILJET_TENDERS_CONTACTED_REMINDER_2D_TEMPLATE_ID,
+            template_id=template_id,
             subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
