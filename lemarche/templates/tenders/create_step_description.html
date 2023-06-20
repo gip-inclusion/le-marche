@@ -29,7 +29,7 @@
     </div>
     <div class="row mb-4" x-data="TenderQuestionForm">
         <div class="col-12 col-lg-7">
-            <h4>Questions</h4>
+            <h4>Questions à poser aux prestataires ciblés</h4>
             <div x-show="questions.length > 0" x-cloak>
                 <template x-for="(question, index) in questions" :key="index">
                     <div class="input-group mb-3" :key="index">
@@ -37,7 +37,7 @@
                                x-model="question.text"
                                name="alpine-questions_list"
                                class="form-control"
-                               required/>
+                        />
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary"
                                     type="button"

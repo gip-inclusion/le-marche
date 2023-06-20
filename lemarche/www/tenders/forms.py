@@ -120,9 +120,11 @@ class TenderCreateStepDescriptionForm(forms.ModelForm):
             return questions
         elif type(questions) != list:
             raise ValueError("It's not a list")
-        for q in questions:
-            if type(q) != dict or not q.get("text"):
+        for index, question in enumerate(questions):
+            if type(question) != dict:
                 raise ValueError("Bad format")
+            if not question.get("text"):
+                questions.pop(index)
         return questions
 
 
