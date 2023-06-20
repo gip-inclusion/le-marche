@@ -116,7 +116,9 @@ class TenderCreateStepDescriptionForm(forms.ModelForm):
 
     def clean_questions_list(self):
         questions = self.cleaned_data["questions_list"]
-        if type(questions) != list:
+        if questions is None:
+            return questions
+        elif type(questions) != list:
             raise ValueError("It's not a list")
         for q in questions:
             if type(q) != dict or not q.get("text"):
