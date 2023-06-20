@@ -1,214 +1,246 @@
 {% extends "layouts/base.html" %}
 {% load static bootstrap4 wagtailcore_tags advert_cms %}
-
 {% block title %}Trouvez votre prestataire parmi 8600 prestataires inclusifs{{ block.super }}{% endblock %}
 {% block meta_description %}
-    <meta name="description" content="Recherchez en fonction de votre segment d'achats, périmètre géographique et types de prestation afin de trouver le prestataire idéal.">
+    <meta name="description"
+          content="Recherchez en fonction de votre segment d'achats, périmètre géographique et types de prestation afin de trouver le prestataire idéal.">
 {% endblock %}
-
-{% block body_class %}bg-light{% endblock %}"
-
+{% block body_class %}bg-light{% endblock %}
+"
 {% block breadcrumbs %}
-<section>
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Recherche</li>
-                    </ol>
-                </nav>
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'wagtail_serve' '' %}">Accueil</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Recherche</li>
+                        </ol>
+                    </nav>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 {% endblock %}
-
 {% block content %}
-<section class="s-tabs-01 mb-3 mb-lg-5">
-    <div class="s-tabs-01__container container">
-        <div class="s-tabs-01__row row">
-            <div class="s-tabs-01__col col-12">
-                <ul class="s-tabs-01__nav nav nav-tabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="search-filter-tab" data-toggle="tab" href="#search-filter" role="tab" aria-controls="search-filter" aria-selected="false">
-                            Recherche par critères
-                        </a>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="search-text-tab" data-toggle="tab" href="#search-text" role="tab" aria-controls="search-text" aria-selected="false">
-                            Recherche par SIRET / nom
-                            <span class="badge badge-sm badge-pill badge-important ml-2">Nouveauté</span>
-                        </a>
-                    </li>
-                    <li class="nav-item-dropdown dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" id="sTabs01DropdownMoreLink" data-toggle="dropdown" aria-expanded="false">...</a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sTabs01DropdownMoreLink"></div>
-                    </li>
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane fade" id="search-filter" role="tabpanel" aria-labelledby="search-filter-tab">
-                        <form method="GET" action="{% url 'siae:search_results' %}" id="filter-search-form" aria-label="Rechercher des prestataires de l'insertion et du handicap" role="search">
-                            {% bootstrap_form_errors form type="all" %}
-                            <div class="row align-items-start">
-                                <div class="col-12 col-md-6 col-lg-4">
-                                    <div class="form-group">
-                                        <label for="id_perimeters">{{ form.perimeters.label }}</label>
-                                        <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
-                                        <div id="perimeters-selected" class="mt-2"></div>
+    <section class="s-tabs-01">
+        <div class="s-tabs-01__container container">
+            <div class="s-tabs-01__row row">
+                <div class="s-tabs-01__col col-12">
+                    <ul class="s-tabs-01__nav nav nav-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link"
+                               id="search-filter-tab"
+                               data-toggle="tab"
+                               href="#search-filter"
+                               role="tab"
+                               aria-controls="search-filter"
+                               aria-selected="false">
+                                Recherche par critères
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link"
+                               id="search-text-tab"
+                               data-toggle="tab"
+                               href="#search-text"
+                               role="tab"
+                               aria-controls="search-text"
+                               aria-selected="false">
+                                Recherche par SIRET / nom
+                                <span class="badge badge-sm badge-pill badge-important ml-2">Nouveauté</span>
+                            </a>
+                        </li>
+                        <li class="nav-item-dropdown dropdown">
+                            <a class="nav-link dropdown-toggle"
+                               href="#"
+                               role="button"
+                               id="sTabs01DropdownMoreLink"
+                               data-toggle="dropdown"
+                               aria-expanded="false">...</a>
+                            <div class="dropdown-menu dropdown-menu-right"
+                                 aria-labelledby="sTabs01DropdownMoreLink"></div>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade"
+                             id="search-filter"
+                             role="tabpanel"
+                             aria-labelledby="search-filter-tab">
+                            <form method="GET"
+                                  action="{% url 'siae:search_results' %}"
+                                  id="filter-search-form"
+                                  aria-label="Rechercher des prestataires de l'insertion et du handicap"
+                                  role="search">
+                                {% bootstrap_form_errors form type="all" %}
+                                <div class="row align-items-start">
+                                    <div class="col-12 col-md-6 col-lg-4">
+                                        <div class="form-group">
+                                            <label for="id_perimeters">{{ form.perimeters.label }}</label>
+                                            <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
+                                            <div id="perimeters-selected" class="mt-2"></div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-12 col-md-6 col-lg-4">
-                                    {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
-                                </div>
-                                <div class="col-12 col-md-12 col-lg-4 d-none d-lg-block">
-                                    <div class="btn-group d-flex"
+                                    <div class="col-12 col-md-6 col-lg-4">
+                                        {% bootstrap_field form.sectors form_group_class="form-group use-multiselect" %}
+                                    </div>
+                                    <div class="col-12 col-md-12 col-lg-4 d-none d-lg-block">
+                                        <div class="btn-group d-flex"
                                              role="group"
                                              aria-label="Description du groupe de boutons">
-                                        <button id="filter-submit"
-                                                class="btn btn-primary btn-block btn-ico mb-3 mt-5"
-                                                type="submit">
-                                            Rechercher&nbsp;<i class="ri-search-line ri-lg"></i>
-                                        </button>
-                                        <button id="form-reset-btn"
-                                                type="button"
-                                                class="btn btn-info btn-ico mb-3 mt-5">
-                                            <i class="ri-delete-bin-line ri-lg"
-                                                aria-label="Réinitialiser la recherche"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 col-md-6 col-lg-3">
-                                    {% bootstrap_field form.kind %}
-                                </div>
-                                <div class="col-12 col-md-6 col-lg-3">
-                                    {% bootstrap_field form.presta_type form_group_class="form-group use-multiselect" %}
-                                </div>
-                                <div class="col-12 col-md-6 col-lg-3">
-                                    {% bootstrap_field form.territory %}
-                                </div>
-                                <div class="col-12 col-md-6 col-lg-3">
-                                    {% bootstrap_field form.networks form_group_class="form-group use-multiselect" %}
-                                </div>
-                            </div>
-                            <div class="row d-lg-none">
-                                <div class="col-12">
-                                    <button id="filter-submit" class="btn btn-primary btn-block btn-ico" type="submit">
-                                        <span>Rechercher</span>
-                                        <i class="ri-search-line ri-lg"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="tab-pane fade" id="search-text" role="tabpanel" aria-labelledby="search-text-tab">
-                        <form method="GET" action="{% url 'siae:search_results' %}" id="text-search-form" aria-label="Rechercher des prestataires de l'insertion et du handicap" role="search">
-                            {% bootstrap_form_errors form type="all" %}
-                            <div class="row">
-                                <div class="col-12 col-lg-8">
-                                    <div class="row">
-                                        <div class="col-12">
-                                            {% bootstrap_field form.q %}
+                                            <button id="filter-submit"
+                                                    class="btn btn-primary btn-block btn-ico mb-3 mt-5"
+                                                    type="submit">
+                                                Rechercher&nbsp;<i class="ri-search-line ri-lg"></i>
+                                            </button>
+                                            <button id="form-reset-btn"
+                                                    type="button"
+                                                    class="btn btn-info btn-ico mb-3 mt-5">
+                                                <i class="ri-delete-bin-line ri-lg"
+                                                   aria-label="Réinitialiser la recherche"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-12 col-lg-4">
-                                    <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
-                                    <button id="text-search-submit" class="btn btn-primary btn-block btn-ico" type="submit">
-                                        <span>Rechercher</span>
-                                        <i class="ri-search-line ri-lg"></i>
-                                    </button>
+                                <div x-data="{ open: false }">
+                                    <div class="d-flex justify-content-center">
+                                        <button type="button" class="btn btn-link" x-on:click="open = ! open">
+                                            Recherche avancée
+                                            <br />
+                                            <i class="ri-lg"
+                                               :class="open ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"
+                                               :aria-label="open ? 'Descendre' : 'Monter' "></i>
+                                        </button>
+                                    </div>
+                                    <div x-show="open" class="row">
+                                        <div class="col-12 col-md-6 col-lg-3">{% bootstrap_field form.kind %}</div>
+                                        <div class="col-12 col-md-6 col-lg-3">
+                                            {% bootstrap_field form.presta_type form_group_class="form-group use-multiselect" %}
+                                        </div>
+                                        <div class="col-12 col-md-6 col-lg-3">{% bootstrap_field form.territory %}</div>
+                                        <div class="col-12 col-md-6 col-lg-3">
+                                            {% bootstrap_field form.networks form_group_class="form-group use-multiselect" %}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </form>
+                                <div class="row d-lg-none">
+                                    <div class="col-12">
+                                        <button id="filter-submit"
+                                                class="btn btn-primary btn-block btn-ico"
+                                                type="submit">
+                                            <span>Rechercher</span>
+                                            <i class="ri-search-line ri-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade"
+                             id="search-text"
+                             role="tabpanel"
+                             aria-labelledby="search-text-tab">
+                            <form method="GET"
+                                  action="{% url 'siae:search_results' %}"
+                                  id="text-search-form"
+                                  aria-label="Rechercher des prestataires de l'insertion et du handicap"
+                                  role="search">
+                                {% bootstrap_form_errors form type="all" %}
+                                <div class="row">
+                                    <div class="col-12 col-lg-8">
+                                        <div class="row">
+                                            <div class="col-12">{% bootstrap_field form.q %}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-lg-4">
+                                        <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
+                                        <button id="text-search-submit"
+                                                class="btn btn-primary btn-block btn-ico"
+                                                type="submit">
+                                            <span>Rechercher</span>
+                                            <i class="ri-search-line ri-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-
-<section class="s-siae-02">
-    <div class="container">
-        <div id="dir_list">
-            <div id="searchResults" class="row dir_list-row">
-                <div class="col-12 col-lg-8">
-                    <div class="c-box mb-3">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="flex-grow-1">
-                                <h1 class="h4 mb-0">
-                                    {% with paginator.count as siae_count %}
-                                        {% if siae_count > 0 %}
-                                        {{ siae_count }} prestataire{{ siae_count|pluralize }} correspond{{ siae_count|pluralize:"ent" }} à vos critères
-                                        {% else %}
-                                            Oups, aucun prestataire trouvé !
-                                        {% endif %}
-                                    {% endwith %}
-                                </h1>
+    </section>
+    <section class="s-siae-02">
+        <div class="container">
+            <div id="dir_list">
+                <div id="searchResults" class="row dir_list-row">
+                    <div class="col-12 col-lg-8">
+                        <div class="c-box mb-3">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="flex-grow-1">
+                                    <h1 class="h4 mb-0">
+                                        {% with paginator.count as siae_count %}
+                                            {% if siae_count > 0 %}
+                                                {{ siae_count }} prestataire{{ siae_count|pluralize }} correspond{{ siae_count|pluralize:"ent" }} à vos critères
+                                            {% else %}
+                                                Oups, aucun prestataire trouvé !
+                                            {% endif %}
+                                        {% endwith %}
+                                    </h1>
+                                </div>
+                                {% if siaes %}
+                                    <div class="col-12 col-lg-auto">{% include "siaes/_share_search_results.html" %}</div>
+                                {% endif %}
                             </div>
                             {% if siaes %}
-                                <div class="col-12 col-lg-auto">
-                                    {% include "siaes/_share_search_results.html" %}
-                                </div>
+                                {% for siae in siaes %}
+                                    {% include "siaes/_card_search_result.html" with siae=siae %}
+                                    <!-- insert to nudge tender creation -->
+                                    {% if forloop.counter in position_promote_tenders and page_obj.number == 1 %}
+                                        {% include "siaes/_card_suggest_tender.html" %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% include "includes/_pagination.html" %}
+                            {% else %}
+                                <!-- no results -->
+                                <p>Il y a encore de l'espoir ❤️</p>
+                                <p>Publiez votre besoin, et on s'occupe de vous trouver des prestataires inclusifs.</p>
+                                <p>Obtenez des réponses en moins de 24 heures (en moyenne).</p>
+                                <a href="{% url 'tenders:create' %}"
+                                   id="siae-search-empty-demande"
+                                   class="btn btn-primary d-block d-md-inline-block mb-2">
+                                    <i class="ri-mail-send-line ri-lg mr-2"></i>Publier un besoin d'achat
+                                </a>
                             {% endif %}
                         </div>
-                        {% if siaes %}
-                            {% for siae in siaes %}
-                                {% include "siaes/_card_search_result.html" with siae=siae %}
-                                <!-- insert to nudge tender creation -->
-                                {% if forloop.counter in position_promote_tenders and page_obj.number == 1 %}
-                                    {% include "siaes/_card_suggest_tender.html" %}
-                                {% endif %}
-                            {% endfor %}
-                            {% include "includes/_pagination.html" %}
-                        {% else %}
-                            <!-- no results -->
-                            <p>
-                                Il y a encore de l'espoir ❤️
-                            </p>
-                            <p>
-                                Publiez votre besoin, et on s'occupe de vous trouver des prestataires inclusifs.
-                            </p>
-                            <p>
-                                Obtenez des réponses en moins de 24 heures (en moyenne).
-                            </p>
-                            <a href="{% url 'tenders:create' %}" id="siae-search-empty-demande" class="btn btn-primary d-block d-md-inline-block mb-2">
-                                <i class="ri-mail-send-line ri-lg mr-2"></i>Publier un besoin d'achat
-                            </a>
-                        {% endif %}
                     </div>
-                </div>
-                <!-- sidebar -->
-                <div class="col-12 col-lg-4 siae-info mt-6 mt-sm-0">
-                    <div class="map-holder mb-4">
-                        <div id="map-siae-list" class="map-canvas"></div>
-                    </div>
-
-                    {% cms_advert layout="card" %}
-
-                    <div class="siae-info-sticky c-box bg-light mb-3">
-                        <div class="si-ideas">
-                            <h3 class="h4">Idées reçues</h3>
-                            <p>
-                                <span>
-                                    <i class="ri-check-fill ri-xl font-weight-bold"></i>
-                                </span>
-                                <span class="ml-2">
-                                    Le prestataire est trop petit pour répondre à mon besoin…
-                                    <b>Mais il est sûrement ouvert à la co-traitance.</b>
-                                </span>
-                            </p>
-                            <p>
-                                <span>
-                                    <i class="ri-check-fill ri-xl font-weight-bold"></i>
-                                </span>
-                                <span class="ml-2">
-                                    Son chiffre d'affaire est trop bas et je ne veux pas être
-                                    son seul client… <b>Mais Vous pouvez commencer par lui confier
-                                    un marché de plus faible périmètre, sans prendre de risque,
+                    <!-- sidebar -->
+                    <div class="col-12 col-lg-4 siae-info mt-6 mt-sm-0">
+                        <div class="map-holder mb-4">
+                            <div id="map-siae-list" class="map-canvas"></div>
+                        </div>
+                        {% cms_advert layout="card" %}
+                        <div class="siae-info-sticky c-box bg-light mb-3">
+                            <div class="si-ideas">
+                                <h3 class="h4">Idées reçues</h3>
+                                <p>
+                                    <span>
+                                        <i class="ri-check-fill ri-xl font-weight-bold"></i>
+                                    </span>
+                                    <span class="ml-2">
+                                        Le prestataire est trop petit pour répondre à mon besoin…
+                                        <b>Mais il est sûrement ouvert à la co-traitance.</b>
+                                    </span>
+                                </p>
+                                <p>
+                                    <span>
+                                        <i class="ri-check-fill ri-xl font-weight-bold"></i>
+                                    </span>
+                                    <span class="ml-2">
+                                        Son chiffre d'affaire est trop bas et je ne veux pas être
+                                        son seul client… <b>Mais Vous pouvez commencer par lui confier
+                                        un marché de plus faible périmètre, sans prendre de risque,
                                     puis faire grandir ce partenariat si vous en êtes satisfait.</b>
                                 </span>
                             </p>
@@ -230,18 +262,20 @@
     </div>
 </section>
 {% endblock %}
-
 {% block modals %}
     {% include "auth/_login_or_signup_modal.html" %}
     {% include "favorites/_favorite_item_add_modal.html" %}
     {% include "favorites/_favorite_item_remove_modal.html" %}
 {% endblock %}
-
 {% block extra_js %}
-{{ current_perimeters|json_script:"current-perimeters" }}
-<script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/search_form.js' %}"></script>
-<script type="text/javascript">
+    <script type="text/javascript"
+            src="{% static 'vendor/alpinejs@3.11.1.min.js'%}"
+            defer></script>
+    {{ current_perimeters|json_script:"current-perimeters" }}
+    <script type="text/javascript"
+            src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/search_form.js' %}"></script>
+    <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
     let searchFilterTab = document.getElementById('search-filter-tab');
     let searchFilterContent = document.getElementById('search-filter');
@@ -265,8 +299,8 @@ document.addEventListener("DOMContentLoaded", function() {
         showSearchFilterForm(searchFilterTab, searchFilterContent);
     }
 });
-</script>
-<script type="text/javascript">
+    </script>
+    <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
     // Set listings markers on load
     const siaeList = {{ siaes_json|safe }};
@@ -310,10 +344,12 @@ document.addEventListener("DOMContentLoaded", function() {
         map.fitBounds(geoBounds);
     }
 });
-</script>
-<script type="text/javascript" src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
-{% if user.is_authenticated %}
-<script type="text/javascript" src="{% static 'js/favorite_item_add.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/favorite_item_remove.js' %}"></script>
-{% endif %}
+    </script>
+    <script type="text/javascript"
+            src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
+    {% if user.is_authenticated %}
+        <script type="text/javascript" src="{% static 'js/favorite_item_add.js' %}"></script>
+        <script type="text/javascript"
+                src="{% static 'js/favorite_item_remove.js' %}"></script>
+    {% endif %}
 {% endblock %}
