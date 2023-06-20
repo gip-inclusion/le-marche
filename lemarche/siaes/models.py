@@ -768,7 +768,7 @@ class Siae(models.Model):
             self.client_reference_count = self.client_references.count()
             self.label_count = self.labels_old.count()
             self.image_count = self.images.count()
-            # user_count, sector_count, network_count? see M2M signals
+            # user_count, sector_count, network_count, group_count? see M2M signals
 
     def set_content_fill_dates(self):
         """
@@ -1037,6 +1037,13 @@ def siae_sectors_changed(sender, instance, action, **kwargs):
 def siae_networks_changed(sender, instance, action, **kwargs):
     if action in ("post_add", "post_remove", "post_clear"):
         instance.network_count = instance.networks.count()
+        instance.save()
+
+
+@receiver(m2m_changed, sender=Siae.groups.through)
+def siae_groups_changed(sender, instance, action, **kwargs):
+    if action in ("post_add", "post_remove", "post_clear"):
+        instance.group_count = instance.groups.count()
         instance.save()
 
 
