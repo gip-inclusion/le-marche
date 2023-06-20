@@ -699,6 +699,7 @@ class Siae(models.Model):
     user_count = models.IntegerField("Nombre d'utilisateurs", default=0)
     sector_count = models.IntegerField("Nombre de secteurs d'activité", default=0)
     network_count = models.IntegerField("Nombre de réseaux", default=0)
+    group_count = models.IntegerField("Nombre de groupements", default=0)
     offer_count = models.IntegerField("Nombre de prestations", default=0)
     client_reference_count = models.IntegerField("Nombre de références clients", default=0)
     label_count = models.IntegerField("Nombre de labels", default=0)
