@@ -18,6 +18,7 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=255, verbose_name="Nom")),
                 ("slug", models.SlugField(max_length=255, unique=True, verbose_name="Slug")),
                 ("description", models.TextField(blank=True, verbose_name="Description")),
+                ("siret", models.CharField(blank=True, max_length=14, verbose_name="Siret")),
                 ("website", models.URLField(blank=True, verbose_name="Site web")),
                 ("logo_url", models.URLField(blank=True, max_length=500, verbose_name="Lien vers le logo")),
                 (

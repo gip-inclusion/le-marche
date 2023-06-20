@@ -7,6 +7,7 @@ class Company(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
     description = models.TextField(verbose_name="Description", blank=True)
+    siret = models.CharField(verbose_name="Siret", max_length=14, blank=True)
     website = models.URLField(verbose_name="Site web", blank=True)
     logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True)
 
