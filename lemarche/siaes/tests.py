@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from lemarche.labels.factories import LabelFactory
+from lemarche.networks.factories import NetworkFactory
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
@@ -166,42 +167,55 @@ class SiaeModelSaveTest(TestCase):
         self.assertTrue(siae_doublon_11.slug.startswith("structure-doublon-sans-departement--"))  # uuid4 at the end
         self.assertTrue(len(siae_doublon_10.slug) < len(siae_doublon_11.slug))
 
-    def test_update_related_count_on_save(self):
+    def test_update_related_offer_count_on_save(self):
         siae = SiaeFactory()
+        self.assertEqual(siae.offer_count, 0)
         SiaeOfferFactory(siae=siae)
         self.assertEqual(siae.offers.count(), 1)
         # self.assertEqual(siae.offer_count, 1)  # won't work, need to call save() method to update stat fields
         siae.save()
         self.assertEqual(siae.offer_count, 1)
-        self.assertEqual(siae.user_count, 0)
-        self.assertEqual(siae.sector_count, 0)
 
-    def test_update_m2m_count_on_save(self):
+    def test_update_m2m_sector_count_on_save(self):
         siae = SiaeFactory()
         sector = SectorFactory()
+        self.assertEqual(siae.sector_count, 0)
         siae.sectors.add(sector)
         self.assertEqual(siae.sectors.count(), 1)
         # siae.save()  # no need to run save(), m2m_changed signal was triggered above
-        self.assertEqual(siae.offer_count, 0)
         self.assertEqual(siae.sector_count, 1)
-        self.assertEqual(siae.user_count, 0)
 
-    def test_update_m2m_through_count_on_save(self):
+    def test_update_m2m_network_count_on_save(self):
+        siae = SiaeFactory()
+        network = NetworkFactory()
+        self.assertEqual(siae.network_count, 0)
+        siae.networks.add(network)
+        self.assertEqual(siae.networks.count(), 1)
+        # siae.save()  # no need to run save(), m2m_changed signal was triggered above
+        self.assertEqual(siae.network_count, 1)
+
+    def test_update_m2m_group_count_on_save(self):
+        siae = SiaeFactory()
+        group = SiaeGroupFactory()
+        self.assertEqual(siae.group_count, 0)
+        siae.groups.add(group)
+        self.assertEqual(siae.groups.count(), 1)
+        # siae.save()  # no need to run save(), m2m_changed signal was triggered above
+        self.assertEqual(siae.group_count, 1)
+
+    def test_update_m2m_through_user_count_on_save(self):
         siae = SiaeFactory()
         user = UserFactory()
+        self.assertEqual(siae.user_count, 0)
         siae.users.add(user)
         self.assertEqual(siae.users.count(), 1)
         # siae.save()  # no need to run save(), m2m_changed signal was triggered above
-        self.assertEqual(siae.offer_count, 0)
         self.assertEqual(siae.user_count, 1)
-        self.assertEqual(siae.sector_count, 0)
         user_2 = UserFactory()
         siaeuser = SiaeUser(siae=siae, user=user_2)
         siaeuser.save()
         self.assertEqual(siae.users.count(), 1 + 1)
-        self.assertEqual(siae.offer_count, 0)
         self.assertEqual(siae.user_count, 1 + 1)
-        self.assertEqual(siae.sector_count, 0)
         # works also in the opposite direction
         siae_2 = SiaeFactory()
         user_3 = UserFactory()
