@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import Count
 from django.urls import reverse
-from django.utils.html import format_html
+from django.utils.html import format_html, mark_safe
 
 from lemarche.networks.models import Network
 from lemarche.utils.admin.admin_site import admin_site
@@ -13,7 +13,7 @@ class NetworkAdmin(admin.ModelAdmin):
     search_fields = ["id", "name", "brand"]
     search_help_text = "Cherche sur les champs : ID, Nom, Enseigne"
 
-    readonly_fields = ["nb_siaes", "nb_user_partners", "created_at", "updated_at"]
+    readonly_fields = ["logo_url_display", "nb_siaes", "nb_user_partners", "created_at", "updated_at"]
 
     fieldsets = (
         (
@@ -22,6 +22,7 @@ class NetworkAdmin(admin.ModelAdmin):
                 "fields": ("name", "slug", "brand", "website"),
             },
         ),
+        ("Logo", {"fields": ("logo_url", "logo_url_display")}),
         ("Structures", {"fields": ("nb_siaes",)}),
         ("Utilisateurs (partenaires)", {"fields": ("nb_user_partners",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
@@ -48,6 +49,17 @@ class NetworkAdmin(admin.ModelAdmin):
     def nb_siaes(self, network):
         url = reverse("admin:siaes_siae_changelist") + f"?networks__id__exact={network.id}"
         return format_html(f'<a href="{url}">{network.siae_count}</a>')
+
+    def logo_url_display(self, instance):
+        if instance.logo_url:
+            return mark_safe(
+                f'<a href="{instance.logo_url}" target="_blank">'
+                f'<img src="{instance.logo_url}" title="{instance.logo_url}" style="max-height:300px" />'
+                f"</a>"
+            )
+        return mark_safe("<div>-</div>")
+
+    logo_url_display.short_description = "Logo"
 
     nb_siaes.short_description = "Nombre de structures rattachées"
     nb_siaes.admin_order_field = "siae_count"
