@@ -90,7 +90,7 @@ class TenderCreateStepDescriptionForm(forms.ModelForm):
             "amount": forms.Select(attrs={"x-model": "formData.amount", "x-on:change": "getImpactMessage()"}),
         }
 
-    def __init__(self, kind, questions_list, *args, **kwargs):
+    def __init__(self, kind, questions_list=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.kind = kind
         if questions_list:
