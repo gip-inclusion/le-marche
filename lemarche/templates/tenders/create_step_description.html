@@ -52,7 +52,7 @@
                        :value="getValue()"
                        value="form.questions_list">
             </div>
-            <button type="button" class="btn btn-info" x-on:click="addQuestion()">Ajouter une question</button>
+            <button type="button" class="btn btn-info" x-on:click="addNewQuestion()">Ajouter une question</button>
         </div>
     </div>
     <div class="row">
@@ -110,24 +110,24 @@
     <script type="text/javascript" defer>
     function TenderQuestionForm() {
         return {
-            questions: [{text:""}],
+            questions: [],
+            init() {
+                // init component with django context variable (is null or object)
+                const questions_input = {{ form.questions_list.value|safe }};
+                if (questions_input){
+                    this.questions = questions_input;
+                } else {
+                    this.addNewQuestion();
+                }
+            },
             getQuestions() {
                 return this.questions;
             },
-            addQuestion() {
-                console.log(this.questions);
+            addNewQuestion() {
                 this.questions.push({text:""});
-            },
-            init() {
-                questions = {{ form.questions_list.value|safe }};
-                 if (questions){
-                    this.questions = questions;
-                 }
-
             },
             getValue(){
                 return JSON.stringify(
-                    {% comment %} this.questions.map(question => question.text) {% endcomment %}
                     this.questions
                 );
             },
