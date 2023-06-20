@@ -16,7 +16,6 @@ class LabelAdmin(admin.ModelAdmin):
 
     readonly_fields = [
         "nb_siaes",
-        "logo_url",
         "logo_url_display",
         "data_last_sync_date",
         "logs_display",
@@ -31,8 +30,8 @@ class LabelAdmin(admin.ModelAdmin):
                 "fields": ("name", "slug", "description", "website"),
             },
         ),
-        ("Structures", {"fields": ("nb_siaes",)}),
         ("Logo", {"fields": ("logo_url", "logo_url_display")}),
+        ("Structures", {"fields": ("nb_siaes",)}),
         (
             "Source de données",
             {
@@ -63,15 +62,8 @@ class LabelAdmin(admin.ModelAdmin):
             return {"slug": ("name",)}
         return {}
 
-    def nb_siaes(self, label):
-        url = reverse("admin:siaes_siae_changelist") + f"?labels__id__exact={label.id}"
-        return format_html(f'<a href="{url}">{label.siae_count}</a>')
-
-    nb_siaes.short_description = "Nombre de structures"
-    nb_siaes.admin_order_field = "siae_count"
-
     def logo_url_display(self, instance):
-        if instance.image_url:
+        if instance.logo_url:
             return mark_safe(
                 f'<a href="{instance.logo_url}" target="_blank">'
                 f'<img src="{instance.logo_url}" title="{instance.logo_url}" style="max-height:300px" />'
@@ -80,6 +72,13 @@ class LabelAdmin(admin.ModelAdmin):
         return mark_safe("<div>-</div>")
 
     logo_url_display.short_description = "Logo"
+
+    def nb_siaes(self, label):
+        url = reverse("admin:siaes_siae_changelist") + f"?labels__id__exact={label.id}"
+        return format_html(f'<a href="{url}">{label.siae_count}</a>')
+
+    nb_siaes.short_description = "Nombre de structures"
+    nb_siaes.admin_order_field = "siae_count"
 
     def logs_display(self, label=None):
         if label:
