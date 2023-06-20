@@ -10,7 +10,7 @@ from lemarche.www.tenders.tasks import send_tender_contacted_reminder_email_to_s
 class Command(BaseCommand):
     """
     Daily script to check recently sent emails to Siae. If no email_link_click_date, then send reminder
-    When? J+2 (but doesn't run on weekends!) & J+3
+    When? J+2, J+3 & J+4 (but doesn't run on weekends!)
 
     Usage:
     python manage.py send_siae_contacted_reminder_emails --dry-run
