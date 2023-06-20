@@ -149,10 +149,18 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, em
 def send_tender_contacted_reminder_email_to_siaes(
     tender: Tender, days_since_email_send_date=2, send_on_weekends=False
 ):
-    # email subject
-    email_subject = f"Un {tender.get_kind_display().lower()} pour vous sur le Marché de l'inclusion"
-    if days_since_email_send_date == 3:
+    if days_since_email_send_date == 2:
+        email_subject = f"Un {tender.get_kind_display().lower()} pour vous sur le Marché de l'inclusion"
+        template_id = settings.MAILJET_TENDERS_CONTACTED_REMINDER_2D_TEMPLATE_ID
+    elif days_since_email_send_date == 3:
         email_subject = f"Avez vous consulté le {tender.get_kind_display().lower()} ?"
+        template_id = settings.MAILJET_TENDERS_CONTACTED_REMINDER_3D_TEMPLATE_ID
+    elif days_since_email_send_date == 4:
+        email_subject = f"L'opportunité : {tender.get_kind_display().lower()} a besoin de votre réponse !"
+        template_id = settings.MAILJET_TENDERS_CONTACTED_REMINDER_4D_TEMPLATE_ID
+    else:
+        error_message = f"send_tender_contacted_reminder_email_to_siaes: days_since_email_send_date has a non-managed value ({days_since_email_send_date})"  # noqa
+        raise Exception(error_message)
 
     current_weekday = timezone.now().weekday()
 
@@ -168,7 +176,9 @@ def send_tender_contacted_reminder_email_to_siaes(
 
     for tendersiae in tendersiae_contacted_reminder_list:
         # send to siae 'contact_email'
-        send_tender_contacted_reminder_email_to_siae(tendersiae, email_subject, days_since_email_send_date)
+        send_tender_contacted_reminder_email_to_siae(
+            tendersiae, email_subject, template_id, days_since_email_send_date
+        )
 
     # log email batch
     log_item = {
@@ -181,15 +191,13 @@ def send_tender_contacted_reminder_email_to_siaes(
     tender.save()
 
 
-def send_tender_contacted_reminder_email_to_siae(tendersiae: TenderSiae, email_subject, days_since_email_send_date):
+def send_tender_contacted_reminder_email_to_siae(
+    tendersiae: TenderSiae, email_subject, template_id, days_since_email_send_date
+):
     recipient_list = whitelist_recipient_list([tendersiae.siae.contact_email])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
         recipient_name = tendersiae.tender.author.full_name
-        # template
-        template_id = settings.MAILJET_TENDERS_CONTACTED_REMINDER_2D_TEMPLATE_ID
-        if days_since_email_send_date == 3:
-            template_id = settings.MAILJET_TENDERS_CONTACTED_REMINDER_3D_TEMPLATE_ID
 
         variables = {
             "SIAE_CONTACT_FIRST_NAME": tendersiae.siae.contact_first_name,
