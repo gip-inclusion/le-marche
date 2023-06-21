@@ -36,6 +36,7 @@
             "date_joined": "2019-09-30T13:30:45.639Z",
             "email": "acheteur@test.com",
             "phone": "",
+            "company": 1,
             "company_name": "Ville de Grenoble",
             "groups": [],
             "user_permissions": [],

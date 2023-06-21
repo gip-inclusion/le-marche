@@ -11,6 +11,24 @@ from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import admin_site
 
 
+class HasCompanyFilter(admin.SimpleListFilter):
+    """Custom admin filter to target users who are linked to a Company."""
+
+    title = "Rattaché à une entreprise ?"
+    parameter_name = "has_company"
+
+    def lookups(self, request, model_admin):
+        return (("Yes", "Oui"), ("No", "Non"))
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "Yes":
+            return queryset.has_company()
+        elif value == "No":
+            return queryset.filter(company__isnull=True)
+        return queryset
+
+
 class HasSiaeFilter(admin.SimpleListFilter):
     """Custom admin filter to target users who are linked to a Siae."""
 
@@ -126,6 +144,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         "first_name",
         "last_name",
         "kind",
+        "company_name",
         "siae_count_with_link",
         "tender_count_with_link",
         "last_login",
@@ -133,6 +152,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     ]
     list_filter = [
         "kind",
+        HasCompanyFilter,
         HasSiaeFilter,
         HasTenderFilter,
         "buyer_kind",
@@ -148,7 +168,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     search_help_text = "Cherche sur les champs : ID, E-mail, Prénom, Nom"
     ordering = ["-created_at"]
 
-    autocomplete_fields = ["partner_network"]
+    autocomplete_fields = ["company", "partner_network"]
     readonly_fields = (
         [field.name for field in User._meta.fields if field.name.startswith("c4_")]
         + [f"{field}_last_updated" for field in User.TRACK_UPDATE_FIELDS]
@@ -184,6 +204,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
                     "last_name",
                     "kind",
                     "phone",
+                    "company",
                     "company_name",
                     "position",
                     "buyer_kind",
