@@ -5,8 +5,6 @@ from django.conf import settings
 from django.db import IntegrityError, models, transaction
 from django.db.models import BooleanField, Case, Count, ExpressionWrapper, F, IntegerField, Q, Sum, When
 from django.db.models.functions import Greatest
-from django.db.models.signals import m2m_changed, post_save
-from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -383,7 +381,7 @@ class Tender(models.Model):
         Called by Tender signals (and if not self.validated_at)
         """
         siae_found_list = Siae.objects.filter_with_tender(self)
-        self.siaes.set(siae_found_list)
+        self.siaes.set(siae_found_list, clear=True)
 
     def save(self, *args, **kwargs):
         """
@@ -548,20 +546,6 @@ class Tender(models.Model):
         self.logs.append(log_item)
         if with_save:
             self.save()
-
-
-@receiver(post_save, sender=Tender)
-def tender_post_save(sender, instance=Tender, **kwargs):
-    if not instance.validated_at and instance.status == tender_constants.STATUS_PUBLISHED:
-        instance.set_siae_found_list()
-
-
-@receiver(m2m_changed, sender=Tender.sectors.through)
-@receiver(m2m_changed, sender=Tender.perimeters.through)
-def tender_m2m_changed(sender, instance, action, **kwargs):
-    if action in ("post_add", "post_remove", "post_clear"):
-        if not instance.validated_at and instance.status == tender_constants.STATUS_PUBLISHED:
-            instance.set_siae_found_list()
 
 
 class TenderSiaeQuerySet(models.QuerySet):
