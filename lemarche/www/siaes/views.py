@@ -96,7 +96,9 @@ class SiaeSearchResultsView(FormMixin, ListView):
                 current_perimeters = siae_search_form.cleaned_data.get("perimeters")
                 if current_perimeters:
                     context["current_perimeters"] = list(current_perimeters.values("id", "slug", "name"))
-
+                current_locations = siae_search_form.cleaned_data.get("locations")
+                if current_locations:
+                    context["current_locations"] = list(current_locations.values("id", "slug", "name"))
                 current_sectors = siae_search_form.cleaned_data.get("sectors")
                 if current_sectors:
                     context["current_sectors"] = list(current_sectors.values("id", "slug", "name"))
