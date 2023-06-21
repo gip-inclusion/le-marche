@@ -124,15 +124,15 @@
                                         <div class="col-12 col-md-6 col-lg-3">
                                             {% bootstrap_field form.networks form_group_class="form-group use-multiselect" %}
                                         </div>
-                                        <div class="col-12 col-md-6 col-lg-3" title="{{ form.has_client_references.help_text }}">
-                                            {% bootstrap_field form.has_client_references show_help=False %}
-                                        </div>
                                         <div class="col-12 col-md-6 col-lg-3">
                                             <div class="form-group">
                                                 <label for="id_locations">{{ form.locations.label }}</label>
                                                 <div id="dir_form_locations" data-input-name="{{ form.locations.name }}"></div>
                                                 <div id="locations-selected" class="mt-2"></div>
                                             </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-lg-3" title="{{ form.has_client_references.help_text }}">
+                                            {% bootstrap_field form.has_client_references show_help=False %}
                                         </div>
                                     </div>
                                 </div>

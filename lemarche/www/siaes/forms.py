@@ -66,6 +66,13 @@ class SiaeFilterForm(forms.Form):
         required=False,
     )
 
+    locations = forms.ModelMultipleChoiceField(
+        label="Localisation",
+        queryset=Perimeter.objects.all(),
+        to_field_name="slug",
+        required=False,
+    )
+
     has_client_references = forms.ChoiceField(
         label=SiaeClientReference._meta.verbose_name,
         help_text="Le prestataire inclusif a-t-il des références clients ?",
@@ -77,14 +84,6 @@ class SiaeFilterForm(forms.Form):
         label="Indiquez le nom de votre entreprise",
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "Votre entreprise…"}),
-    )
-
-    # TenderSiaeListView
-    locations = forms.ModelMultipleChoiceField(
-        label="Localisation",
-        queryset=Perimeter.objects.all(),
-        to_field_name="slug",
-        required=False,
     )
 
     company_client_reference = forms.CharField(
