@@ -1,5 +1,17 @@
 // need to setup "current-perimeters" div which contains the currents perimeters selected to manage the refresh page
 
+const PERIMETER_AUTOCOMPLETE_ID = 'id_perimeters';
+const PERIMETER_AUTOCOMPLETE_CONTAINER_SELECTOR = '#dir_form_perimeters';
+const PERIMETER_SELECTED_CONTAINER_SELECTOR = '#perimeters-selected';
+const PERIMETER_HIDDEN_INPUT_SELECTOR_PREFIX = 'hiddenPerimeter';
+const PERIMETER_CURRENT_ID = 'current-perimeters';
+var KIND_MAPPING = {
+  'REGION': 'région',
+  'DEPARTMENT': 'département',
+  'CITY': 'commune',
+}
+var API_ENDPOINT = '/api/perimeters/autocomplete/';
+
 function removeInputOnClick() {
   let idRefInput = $(this).data('refinput');
   // remove the input
@@ -8,16 +20,16 @@ function removeInputOnClick() {
 }
 
 function createHiddenInputPerimeter(resultId, resultName) {
-  const perimeterAutocompleteContainer = document.querySelector('#dir_form_perimeters');
-  const perimetersContainer = document.querySelector('#perimeters-selected');
-  const inputName = perimeterAutocompleteContainer.dataset.inputName;
+  let perimeterAutocompleteContainer = document.querySelector(PERIMETER_AUTOCOMPLETE_CONTAINER_SELECTOR);
+  let perimetersContainer = document.querySelector(PERIMETER_SELECTED_CONTAINER_SELECTOR);
+  let perimeterAutocompleteContainerInputName = perimeterAutocompleteContainer.dataset.inputName;
 
   let removeIcon = $('<i>', { class: "ri-close-line font-weight-bold mr-0", "aria-hidden": true });
-  let resultIdString = `hiddenPerimeter-${resultId}`;
+  let resultIdString = `${PERIMETER_HIDDEN_INPUT_SELECTOR_PREFIX}-${resultId}`;
   $('<input>', {
       type: 'hidden',
       id: resultIdString,
-      name: inputName,
+      name: perimeterAutocompleteContainerInputName,
       value: resultId
   }).appendTo(perimetersContainer);
   let button = $('<button>', {
@@ -32,25 +44,17 @@ function createHiddenInputPerimeter(resultId, resultName) {
   button.appendTo(perimetersContainer);
 }
 function cleanPerimeters() {
-  const perimetersContainer = document.querySelector('#perimeters-selected');
+  let perimetersContainer = document.querySelector(PERIMETER_SELECTED_CONTAINER_SELECTOR);
   $(perimetersContainer).empty();
 }
 
+/**
+ * Accessible autocomplete for the perimeter search form field
+ */
 function initPerimetersAutoCompleteFields() {
-     /**
-   * Accessible autocomplete for the perimeter search form field
-   */
+  // let perimeterInput = document.getElementById(PERIMETER_AUTOCOMPLETE_ID);  // hidden
 
-
-
-  // let perimeterInput = document.getElementById('id_perimeters');  // hidden
-
-  const perimeterAutocompleteContainer = document.querySelector('#dir_form_perimeters');
-  const perimeterKindMapping = {
-    'REGION': 'région',
-    'DEPARTMENT': 'département',
-    'CITY': 'commune',
-  }
+  let perimeterAutocompleteContainer = document.querySelector(PERIMETER_AUTOCOMPLETE_CONTAINER_SELECTOR);
 
   // https://www.joshwcomeau.com/snippets/javascript/debounce/
   const debounce = (callback, wait) => {
@@ -70,7 +74,7 @@ function initPerimetersAutoCompleteFields() {
   //     .then(data => populateResults(data))
   // }
   async function fetchSource(query) {
-    const res = await fetch(`/api/perimeters/autocomplete/?q=${query}&results=10`);
+    const res = await fetch(`${API_ENDPOINT}?q=${query}&results=10`);
     const data = await res.json();
     return data;  // data.results
   }
@@ -82,7 +86,7 @@ function initPerimetersAutoCompleteFields() {
     // build resultName & resultKind from the result object
     if (typeof result === 'object') {
       resultName = result.name;
-      resultKind = (result.kind === 'CITY') ? result.department_code : perimeterKindMapping[result.kind];
+      resultKind = (result.kind === 'CITY') ? result.department_code : KIND_MAPPING[result.kind];
     }
 
     // Edge case: if there is an initial value
@@ -120,7 +124,7 @@ function initPerimetersAutoCompleteFields() {
   if (document.body.contains(perimeterAutocompleteContainer)) {
     accessibleAutocomplete({
       element: perimeterAutocompleteContainer,
-      id: 'id_perimeters',
+      id: PERIMETER_AUTOCOMPLETE_ID,
       name: '',  // url GET param name. empty to avoid having the default value appearing ('input-autocomplete')
       placeholder: 'Région, département, ville',  // 'Autour de (Arras, Bobigny, Strasbourg…)',
       minLength: 2,
@@ -150,22 +154,11 @@ function initPerimetersAutoCompleteFields() {
     });
   }
 
-
-  const currentPerimetersElement = document.getElementById('current-perimeters');
+  let currentPerimetersElement = document.getElementById(PERIMETER_CURRENT_ID);
   if (currentPerimetersElement) {
     let currentPerimeters = JSON.parse(currentPerimetersElement.textContent);
     if (currentPerimeters) {
       currentPerimeters.forEach(perimeter => {
-        createHiddenInputPerimeter(perimeter['slug'], perimeter['name']);  // parseInt(perimeter['id'])
-      });
-    }
-  }
-
-  const currentLocationsElement = document.getElementById('current-locations');
-  if (currentLocationsElement) {
-    let currentLocations = JSON.parse(currentLocationsElement.textContent);
-    if (currentLocations) {
-      currentLocations.forEach(perimeter => {
         createHiddenInputPerimeter(perimeter['slug'], perimeter['name']);  // parseInt(perimeter['id'])
       });
     }

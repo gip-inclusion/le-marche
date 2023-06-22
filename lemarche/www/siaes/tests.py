@@ -364,11 +364,6 @@ class SiaePerimeterSearchFilterTest(TestCase):
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 14)
 
-    def test_search_perimeter_region(self):
-        form = SiaeFilterForm({"perimeters": [self.auvergne_rhone_alpes_perimeter.slug]})
-        qs = form.filter_queryset()
-        self.assertEqual(qs.count(), 10)
-
     def test_search_perimeter_not_exist(self):
         form = SiaeFilterForm({"perimeters": ["-1"]})
         qs = form.filter_queryset()
@@ -376,6 +371,11 @@ class SiaePerimeterSearchFilterTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("perimeters", form.errors.keys())
         self.assertIn("Sélectionnez un choix valide", form.errors["perimeters"][0])
+
+    def test_search_perimeter_region(self):
+        form = SiaeFilterForm({"perimeters": [self.auvergne_rhone_alpes_perimeter.slug]})
+        qs = form.filter_queryset()
+        self.assertEqual(qs.count(), 10)
 
     def test_search_perimeter_department(self):
         form = SiaeFilterForm({"perimeters": [self.isere_perimeter]})
@@ -438,6 +438,38 @@ class SiaePerimeterSearchFilterTest(TestCase):
         self.assertIn("perimeters", form.errors.keys())
         self.assertIn("Sélectionnez un choix valide", form.errors["perimeters"][0])
         self.assertEqual(qs.count(), 14)
+
+    def test_search_location_empty(self):
+        form = SiaeFilterForm({"locations": [""]})
+        qs = form.filter_queryset()
+        self.assertEqual(qs.count(), 14)
+
+    def test_search_location_not_exist(self):
+        form = SiaeFilterForm({"locations": ["-1"]})
+        qs = form.filter_queryset()
+        self.assertEqual(qs.count(), 14)
+        self.assertFalse(form.is_valid())
+        self.assertIn("locations", form.errors.keys())
+        self.assertIn("Sélectionnez un choix valide", form.errors["locations"][0])
+
+    def test_search_location_region(self):
+        form = SiaeFilterForm({"locations": [self.auvergne_rhone_alpes_perimeter.slug]})
+        qs = form.filter_queryset()
+        self.assertEqual(qs.count(), 10)
+
+    def test_search_location_department(self):
+        form = SiaeFilterForm({"locations": [self.isere_perimeter]})
+        qs = form.filter_queryset()
+        self.assertEqual(qs.count(), 6)
+
+    def test_search_location_city(self):
+        """
+        We should return all the Siae exactly in the city - Grenoble (4 Siae)
+        """
+        form = SiaeFilterForm({"locations": [self.grenoble_perimeter.slug]})
+        self.assertTrue(form.is_valid())
+        qs = form.filter_queryset()
+        self.assertEqual(qs.count(), 4)
 
 
 class SiaeFullTextSearchTest(TestCase):
