@@ -56,6 +56,7 @@
                                 <small class="form-text text-muted">{{ form.perimeters.help_text }}</small>
                                 <div class="invalid-feedback">Ce champ est obligatoire.</div>
                                 <div id="perimeters-selected" class="mt-2"></div>
+                                {{ current_perimeters|json_script:"current-perimeters" }}
                             </div>
                             {% bootstrap_field form.presta_type form_group_class="form-group use-multiselect" %}
                         </fieldset>
@@ -64,12 +65,12 @@
                             <div class="col-12">
                                 <div class="form-row align-items-center justify-content-end">
                                     {% if results %}
-                                    <div class="form-group col-12 col-lg-auto">
-                                        <button hx-get="{{ request.path }}" hx-target="#calculatorImpact" hx-swap="outerHTML" class="btn btn-block btn-ico btn-outline-primary">
-                                            <i class="ri-close-fill ri-lg"></i>
-                                            <span>Annuler</span>
-                                        </button>
-                                    </div>
+                                        <div class="form-group col-12 col-lg-auto">
+                                            <button hx-get="{{ request.path }}" hx-target="#calculatorImpact" hx-swap="outerHTML" class="btn btn-block btn-ico btn-outline-primary">
+                                                <i class="ri-close-fill ri-lg"></i>
+                                                <span>Annuler</span>
+                                            </button>
+                                        </div>
                                     {% endif %}
                                     <div class="form-group col-12 col-lg-auto">
                                         <button type="submit" id="calibrate-calculator-submit-btn" class="btn btn-ico btn-block btn-primary">
@@ -122,10 +123,13 @@
 {% endblock %}
 
 {% block extra_js %}
-{{ current_perimeters|json_script:"current-perimeters" }}
 <script type="text/javascript" src="{% static 'js/perimeters_autocomplete_field.js' %}"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
+    const perimetersAutoComplete = new PerimetersAutoComplete();
+    perimetersAutoComplete.init();
+});
+document.addEventListener("htmx:afterSwap", function() {
     const perimetersAutoComplete = new PerimetersAutoComplete();
     perimetersAutoComplete.init();
 });
