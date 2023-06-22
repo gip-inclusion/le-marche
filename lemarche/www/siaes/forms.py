@@ -7,7 +7,7 @@ from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.models import Siae
+from lemarche.siaes.models import Siae, SiaeClientReference
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
@@ -63,6 +63,13 @@ class SiaeFilterForm(forms.Form):
         label="Réseau",
         queryset=Network.objects.all().order_by("name"),
         to_field_name="slug",
+        required=False,
+    )
+
+    has_client_references = forms.ChoiceField(
+        label=SiaeClientReference._meta.verbose_name,
+        help_text="Le prestataire inclusif a-t-il des références clients ?",
+        choices=[("", ""), (True, "Oui"), (False, "Non")],
         required=False,
     )
 
@@ -137,6 +144,12 @@ class SiaeFilterForm(forms.Form):
         networks = self.cleaned_data.get("networks", None)
         if networks:
             qs = qs.filter_networks(networks)
+
+        has_client_references = self.cleaned_data.get("has_client_references", None)
+        if has_client_references in (True, "True"):
+            qs = qs.filter(client_reference_count__gte=1)
+        elif has_client_references in (False, "False"):
+            qs = qs.filter(client_reference_count=0)
 
         company_client_reference = self.cleaned_data.get("company_client_reference", None)
         if company_client_reference:
