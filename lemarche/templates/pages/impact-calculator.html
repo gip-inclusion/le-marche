@@ -56,7 +56,6 @@
                                 <small class="form-text text-muted">{{ form.perimeters.help_text }}</small>
                                 <div class="invalid-feedback">Ce champ est obligatoire.</div>
                                 <div id="perimeters-selected" class="mt-2"></div>
-                                {{ current_perimeters|json_script:"current-perimeters" }}
                             </div>
                             {% bootstrap_field form.presta_type form_group_class="form-group use-multiselect" %}
                         </fieldset>
@@ -123,5 +122,12 @@
 {% endblock %}
 
 {% block extra_js %}
+{{ current_perimeters|json_script:"current-perimeters" }}
 <script type="text/javascript" src="{% static 'js/perimeters_autocomplete_field.js' %}"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    const perimetersAutoComplete = new PerimetersAutoComplete();
+    perimetersAutoComplete.init();
+});
+</script>
 {% endblock extra_js %}

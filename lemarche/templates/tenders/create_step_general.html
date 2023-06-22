@@ -73,13 +73,13 @@
 document.addEventListener('DOMContentLoaded', function () {
     let is_in_country_area = document.getElementById('id_general-is_country_area');
 
-    const perimeter_container_name = "dir_form_location_name"
-    const perimeter_input_id = "id_location"
+    const PERIMETER_CONTAINER_NAME = "dir_form_location_name";
+    const PERIMETER_INPUT_ID = "id_location";
 
-    const perimeterAutoComplete = new PerimeterAutoComplete(perimeter_container_name, perimeter_input_id)
+    const perimeterAutoComplete = new PerimeterAutoComplete(PERIMETER_CONTAINER_NAME, PERIMETER_INPUT_ID);
 
     // init of the page
-    perimeterAutoComplete.init()
+    perimeterAutoComplete.init();
     if (is_in_country_area.checked) {
         perimeterAutoComplete.disablePerimeter(disable_it=true);
     }

@@ -300,13 +300,22 @@ document.addEventListener("DOMContentLoaded", function() {
         resetBtn.addEventListener("click", resetForm);
     }
 
-    // init
+    // init search form
     if (qInput.value) {
         showSearchTextForm(searchTextTab, searchTextContent);
         // hideSearchFilterForm(searchFilterTab, searchFilterContent);
     } else {
         showSearchFilterForm(searchFilterTab, searchFilterContent);
     }
+
+    // init perimeters autocomplete
+    // const PERIMETER_AUTOCOMPLETE_ID = 'id_perimeters';
+    // const PERIMETER_AUTOCOMPLETE_CONTAINER_SELECTOR = '#dir_form_perimeters';
+    // const PERIMETER_SELECTED_CONTAINER_SELECTOR = '#perimeters-selected';
+    // const PERIMETER_HIDDEN_INPUT_SELECTOR_PREFIX = 'hiddenPerimeter';
+    // const PERIMETER_CURRENT_ID = 'current-perimeters';
+    const perimetersAutoComplete = new PerimetersAutoComplete();
+    perimetersAutoComplete.init();
 });
     </script>
     <script type="text/javascript">

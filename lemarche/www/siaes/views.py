@@ -57,8 +57,8 @@ class SiaeSearchResultsView(FormMixin, ListView):
         self.filter_form = SiaeFilterForm(data=self.request.GET)
         results = self.filter_form.filter_queryset()
         results_ordered = self.filter_form.order_queryset(results)
-        if self.request.user.is_authenticated:
-            results_ordered = results_ordered.annotate_with_user_favorite_list_count(self.request.user)
+        # if self.request.user.is_authenticated:
+        #     results_ordered = results_ordered.annotate_with_user_favorite_list_count(self.request.user)
         return results_ordered
 
     def get_mailto_share_url(self):
