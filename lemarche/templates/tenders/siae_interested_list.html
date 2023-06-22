@@ -119,5 +119,16 @@
 
 
 {% block extra_js %}
-<script type="text/javascript" src="{% static 'js/locations_autocomplete_field.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/perimeters_autocomplete_field.js' %}"></script>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        const LOCATION_AUTOCOMPLETE_ID = 'id_locations';
+        const LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR = '#dir_form_locations';
+        const LOCATION_SELECTED_CONTAINER_SELECTOR = '#locations-selected';
+        const LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX = 'hiddenLocation';
+        const LOCATION_CURRENT_ID = 'current-locations';
+        const locationsAutoComplete = new PerimetersAutoComplete(LOCATION_AUTOCOMPLETE_ID, LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR, LOCATION_SELECTED_CONTAINER_SELECTOR, LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX, LOCATION_CURRENT_ID);
+        locationsAutoComplete.init();
+    });
+</script>
 {% endblock %}
