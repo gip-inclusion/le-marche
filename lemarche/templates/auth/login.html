@@ -31,20 +31,21 @@
 
 <section class="s-section">
     <div class="s-section__container container">
-        {% if email_exists_password_empty %}
+        {% if new_user_without_password %}
             <div class="s-section__row row">
                 <div class="s-section__col col-12">
-                    <div id="post-migration-login-message" class="alert alert-success fade show" role="status">
+                    <div id="new-user-without-password-login-message" class="alert alert-warning fade show" role="status">
                         <div class="row">
-                        <div class="col-auto pr-0">
-                            <i class="ri-information-line ri-xl text-success"></i>
-                        </div>
-                        <div class="col">
-                            <p class="mb-0">
-                                Le marché de l'inclusion fait peau neuve ! <br>
-                                Pour accompagner les évolutions futures de la plateforme, nous vous invitons à <a href="{% url 'auth:password_reset' %}"><strong>redéfinir un nouveau mot de passe</strong></a>.!
-                            </p>
-                        </div>
+                            <div class="col-auto pr-0">
+                                <i class="ri-information-line ri-xl text-warning"></i>
+                            </div>
+                            <div class="col">
+                                <p class="mb-0">
+                                    Bienvenue sur le marché de l'inclusion !<br />
+                                    Vous n'avez pas encore défini de mot de passe.<br />
+                                    Pour le faire, veuillez cliquer <a href="{% url 'auth:password_reset' %}"><strong>ici</strong></a>.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -56,8 +57,7 @@
                     <form method="POST" action="" id="login-form">
                         {% csrf_token %}
 
-                        <!-- TODO: post-migration -->
-                        {% if not email_exists_password_empty %}
+                        {% if not new_user_without_password %}
                             {% bootstrap_form_errors form type="all" %}
                         {% endif %}
 

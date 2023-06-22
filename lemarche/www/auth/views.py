@@ -40,7 +40,7 @@ class LoginView(auth_views.LoginView):
         if email:
             user = User.objects.filter(email=email.lower()).first()
             if user:
-                context["email_exists_password_empty"] = True if not getattr(user, "password", "") else False
+                context["new_user_without_password"] = True if not getattr(user, "password", "") else False
         next_url = self.request.GET.get("next", None)
         if next_url:
             context["next_param"] = f"?next={next_url}"
