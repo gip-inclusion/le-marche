@@ -318,7 +318,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:login')}")
         # # new-user-without-password-login-message message should be displayed
         messages = driver.find_element(By.CSS_SELECTOR, "div#new-user-without-password-login-message")
-        self.assertTrue("Le marché de l'inclusion fait peau neuve" in messages.text)
+        self.assertTrue("pas encore défini de mot de passe" in messages.text)
 
     @classmethod
     def tearDownClass(cls):
