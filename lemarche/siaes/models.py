@@ -74,14 +74,14 @@ class SiaeGroup(models.Model):
 
     name = models.CharField(verbose_name="Nom", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
-    siret = models.CharField(verbose_name="Siret", max_length=14, blank=True)
+    siret = models.CharField(verbose_name="Siret", max_length=14, blank=True, db_index=True)
 
     contact_first_name = models.CharField(verbose_name="Prénom", max_length=150, blank=True)
     contact_last_name = models.CharField(verbose_name="Nom", max_length=150, blank=True)
     contact_website = models.URLField(
         verbose_name="Site internet", help_text="Doit commencer par http:// ou https://", blank=True
     )
-    contact_email = models.EmailField(verbose_name="E-mail", blank=True)
+    contact_email = models.EmailField(verbose_name="E-mail", blank=True, db_index=True)
     contact_phone = models.CharField(verbose_name="Téléphone", max_length=150, blank=True)
     contact_social_website = models.URLField(
         verbose_name="Réseau social", help_text="Doit commencer par http:// ou https://", blank=True
@@ -531,6 +531,7 @@ class Siae(models.Model):
         max_length=6,
         choices=siae_constants.KIND_CHOICES_WITH_EXTRA,
         default=siae_constants.KIND_EI,
+        db_index=True,
     )
     description = models.TextField(verbose_name="Description", blank=True)
     siret = models.CharField(verbose_name="Siret", validators=[validate_siret], max_length=14, db_index=True)
@@ -542,6 +543,7 @@ class Siae(models.Model):
         base_field=models.CharField(max_length=20, choices=siae_constants.PRESTA_CHOICES),
         blank=True,
         null=True,
+        db_index=True,
     )
 
     website = models.URLField(verbose_name="Site internet", blank=True)
@@ -560,7 +562,11 @@ class Siae(models.Model):
     # https://docs.djangoproject.com/en/2.2/ref/contrib/gis/model-api/#pointfield
     coords = gis_models.PointField(geography=True, blank=True, null=True)
     geo_range = models.CharField(
-        verbose_name="Périmètre d'intervention", max_length=20, choices=siae_constants.GEO_RANGE_CHOICES, blank=True
+        verbose_name="Périmètre d'intervention",
+        max_length=20,
+        choices=siae_constants.GEO_RANGE_CHOICES,
+        blank=True,
+        db_index=True,
     )
     geo_range_custom_distance = models.IntegerField(
         verbose_name="Distance en kilomètres (périmètre d'intervention)", blank=True, null=True
@@ -588,9 +594,14 @@ class Siae(models.Model):
     is_cocontracting = models.BooleanField(verbose_name="Co-traitance", default=False)
 
     asp_id = models.IntegerField(verbose_name="ID ASP", blank=True, null=True)
-    is_active = models.BooleanField(verbose_name="Active", help_text="Convention active (C1) ou import", default=True)
+    is_active = models.BooleanField(
+        verbose_name="Active", help_text="Convention active (C1) ou import", default=True, db_index=True
+    )
     is_delisted = models.BooleanField(
-        verbose_name="Masquée", help_text="La structure n'apparaîtra plus dans les résultats", default=False
+        verbose_name="Masquée",
+        help_text="La structure n'apparaîtra plus dans les résultats",
+        default=False,
+        db_index=True,
     )
     is_first_page = models.BooleanField(
         verbose_name="A la une", help_text="La structure apparaîtra sur la page principale", default=False
@@ -651,6 +662,7 @@ class Siae(models.Model):
         blank=False,
         null=False,
         default=False,
+        db_index=True,
     )
     # To avoid QPV zones synchro problematics, we take the choice to duplicate names and codes of QPV
     qpv_name = models.CharField(verbose_name="Nom de la zone QPV (API QPV)", max_length=255, blank=True)
@@ -660,7 +672,7 @@ class Siae(models.Model):
     # API ZRR
     # To avoid ZRR zones synchro problematics, we take the choice to duplicate names and codes of ZRR
     is_zrr = models.BooleanField(
-        verbose_name="Zone de revitalisation rurale (API ZRR)", blank=False, null=False, default=False
+        verbose_name="Zone de revitalisation rurale (API ZRR)", blank=False, null=False, default=False, db_index=True
     )
     zrr_name = models.CharField(verbose_name="Nom de la zone ZRR (API ZRR)", max_length=255, blank=True)
     zrr_code = models.CharField(verbose_name="Code de la zone ZRR (API ZRR)", max_length=16, blank=True)

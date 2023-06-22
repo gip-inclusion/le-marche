@@ -344,10 +344,10 @@ def csrf_failure(request, reason=""):  # noqa C901
         tender_dict["author"] = user
         # create tender
         if is_adding:
-            tender = create_tender_from_dict(tender_dict)
+            tender: Tender = create_tender_from_dict(tender_dict)
         elif is_update:
             slug = request.path.split("/")[-1]
-            tender = Tender.objects.get(slug=slug)
+            tender: Tender = Tender.objects.get(slug=slug)
             for attribute in tender_dict.keys():
                 if attribute == "sectors":
                     sectors = tender_dict.get("sectors", None)
@@ -359,6 +359,8 @@ def csrf_failure(request, reason=""):  # noqa C901
                 else:
                     setattr(tender, attribute, tender_dict.get(attribute))
             tender.save()
+            tender.set_siae_found_list()
+
         if settings.BITOUBI_ENV == "prod":
             notify_admin_tender_created(tender)
 

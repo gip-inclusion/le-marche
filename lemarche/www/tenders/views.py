@@ -171,6 +171,8 @@ class TenderCreateMultiStepView(SessionWizardView):
         tender_dict = cleaned_data | {"author": user, "source": Tender.SOURCE_FORM}
         is_draft: bool = self.request.POST.get("is_draft", False)
         self.save_instance_tender(tender_dict=tender_dict, form_dict=form_dict, is_draft=is_draft)
+        self.instance.set_siae_found_list()
+
         # we notify the admin team
         if settings.BITOUBI_ENV == "prod":
             notify_admin_tender_created(self.instance)

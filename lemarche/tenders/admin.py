@@ -307,7 +307,8 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     def save_model(self, request, obj: Tender, form, change):
         if not obj.id and not obj.author_id:
             obj.author = request.user
-        super().save_model(request, obj, form, change)
+        obj.save()
+        obj.set_siae_found_list()
 
     def is_validate(self, tender: Tender):
         return tender.validated_at is not None
