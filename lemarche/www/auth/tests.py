@@ -298,11 +298,11 @@ class LoginFormTest(StaticLiveServerTestCase):
 
         # should not submit form
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:login')}")
-        # post-migration message should be displayed
+        # error message should be displayed
         messages = driver.find_element(By.CSS_SELECTOR, "div.alert-danger")
         self.assertTrue("aisissez un Adresse e-mail et un mot de passe valides" in messages.text)
 
-    def test_user_empty_credentials_should_see_post_migration_message(self):
+    def test_user_empty_credentials_should_see_password_reset_message(self):
         existing_user = UserFactory(email="existing-user@example.com", password="")
         # only way to have an empty password field
         User.objects.filter(id=existing_user.id).update(password="")
@@ -316,8 +316,8 @@ class LoginFormTest(StaticLiveServerTestCase):
 
         # should not submit form
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:login')}")
-        # # post-migration message should be displayed
-        messages = driver.find_element(By.CSS_SELECTOR, "div#post-migration-login-message")
+        # # new-user-without-password-login-message message should be displayed
+        messages = driver.find_element(By.CSS_SELECTOR, "div#new-user-without-password-login-message")
         self.assertTrue("Le marché de l'inclusion fait peau neuve" in messages.text)
 
     @classmethod
