@@ -2,7 +2,7 @@
     takes two arguments : fields and form_group_class
 {% endcomment %}
 
-<div class="{% if form_group_class %}{{form_group_class}}{% else %}form-group{% endif %}">
+<div class="{% if form_group_class %}{{ form_group_class }}{% else %}form-group{% endif %}">
     {{ form_field.label_tag }}
     <ul class="list-unstyled mb-1">
         {% for pk, choice in form_field.field.widget.choices %}
@@ -15,7 +15,7 @@
                 {% if forloop.last and form_field.errors %}
                     {% for error in form_field.errors %}
                         <div class="invalid-feedback">{{ error }}</div>
-                    {% endfor %}					
+                    {% endfor %}
                 {% endif %}
             </div>
         </li>
