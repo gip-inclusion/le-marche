@@ -68,7 +68,7 @@ class SiaeFilterForm(forms.Form):
 
     has_client_references = forms.ChoiceField(
         label=SiaeClientReference._meta.verbose_name,
-        # help_text="Le prestataire inclusif a-t-il des références clients ?",
+        help_text="Le prestataire inclusif a-t-il des références clients ?",
         choices=[("", ""), (True, "Oui"), (False, "Non")],
         required=False,
     )
