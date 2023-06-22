@@ -123,8 +123,13 @@ class TenderCreateMultiStepView(SessionWizardView):
         # needed to display the Tender preview template
         if self.steps.current == self.STEP_CONFIRMATION:
             tender_dict = self.get_all_cleaned_data()
-            tender_dict["sectors_list_string"] = ", ".join(tender_dict["sectors"].values_list("name", flat=True))
             tender_dict["get_kind_display"] = get_choice(tender_constants.KIND_CHOICES, tender_dict["kind"])
+            tender_dict["sectors_list_string"] = ", ".join(tender_dict["sectors"].values_list("name", flat=True))
+            tender_dict["location_display"] = (
+                Tender._meta.get_field("is_country_area").verbose_name
+                if tender_dict["is_country_area"]
+                else tender_dict["location"].name
+            )
             tender_dict["get_amount_display"] = get_choice(
                 tender_constants.AMOUNT_RANGE_CHOICES, tender_dict["amount"]
             )
