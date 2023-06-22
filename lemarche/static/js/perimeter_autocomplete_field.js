@@ -1,3 +1,10 @@
+var KIND_MAPPING = {
+  'REGION': 'région',
+  'DEPARTMENT': 'département',
+  'CITY': 'commune',
+}
+var API_ENDPOINT = '/api/perimeters/autocomplete/';
+
 // https://www.joshwcomeau.com/snippets/javascript/debounce/
 const debounce = (callback, wait) => {
   let timeoutId = null;
@@ -10,19 +17,12 @@ const debounce = (callback, wait) => {
 }
 
 async function fetchSource(query) {
-  const res = await fetch(`/api/perimeters/autocomplete/?q=${query}&results=10`);
+  const res = await fetch(`${API_ENDPOINT}?q=${query}&results=10`);
   const data = await res.json();
   return data;  // data.results
 }
 
-perimeterKindMapping = {
-  'REGION': 'région',
-  'DEPARTMENT': 'département',
-  'CITY': 'commune',
-}
-
 class PerimeterAutoComplete {
-
     constructor(perimeter_container_name, perimeter_input_id) {
       this.perimeter_container_name= perimeter_container_name
       this.perimeter_input_id= perimeter_input_id
@@ -85,7 +85,7 @@ class PerimeterAutoComplete {
       // build resultName & resultKind from the result object
       if (typeof result === 'object') {
         resultName = result.name;
-        resultKind = (result.kind === 'CITY') ? result.department_code : perimeterKindMapping[result.kind];
+        resultKind = (result.kind === 'CITY') ? result.department_code : KIND_MAPPING[result.kind];
       }
 
       // Edge case: if there is an initial value
@@ -114,7 +114,6 @@ class PerimeterAutoComplete {
     resetInputValueHiddenField() {
       this.perimeterInput.value = '';
     }
-
 
     cleanPerimeter() {
       this.perimeterInputName.value ='';

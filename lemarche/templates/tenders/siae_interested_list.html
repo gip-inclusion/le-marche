@@ -35,9 +35,9 @@
                             <div class="row align-items-start">
                                 <div class="col-12 col-md-6 col-lg-3">
                                     <div class="form-group">
-                                        <label for="id_perimeters">{{ form.locations.label }}</label>
-                                        <div id="dir_form_perimeters" data-input-name="{{ form.locations.name }}"></div>
-                                        <div id="perimeters-selected" class="mt-2"></div>
+                                        <label for="id_locations">{{ form.locations.label }}</label>
+                                        <div id="dir_form_locations" data-input-name="{{ form.locations.name }}"></div>
+                                        <div id="locations-selected" class="mt-2"></div>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6 col-lg-3">
@@ -119,5 +119,5 @@
 
 {% block extra_js %}
 {{ current_locations|json_script:"current-locations" }}
-<script type="text/javascript" src="{% static 'js/perimeters_autocomplete_fields.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/locations_autocomplete_field.js' %}"></script>
 {% endblock %}
