@@ -6,7 +6,7 @@ async-generator==1.10 ; python_full_version >= "3.10.4" and python_full_version 
 attrs==23.1.0 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 backcall==0.2.0 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 beautifulsoup4==4.11.2 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
-black==23.3.0 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
+black==22.10.0 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 boto3==1.26.158 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 boto==2.49.0 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 botocore==1.29.158 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
