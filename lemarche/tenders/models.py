@@ -378,7 +378,6 @@ class Tender(models.Model):
     def set_siae_found_list(self):
         """
         Where the Tender-Siae matching magic happens!
-        Called by Tender signals (and if not self.validated_at)
         """
         siae_found_list = Siae.objects.filter_with_tender(self)
         self.siaes.set(siae_found_list, clear=False)
