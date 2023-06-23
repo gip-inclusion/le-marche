@@ -536,6 +536,10 @@ class Tender(models.Model):
         if with_save:
             self.save()
 
+    @property
+    def is_validated(self) -> bool:
+        return self.validated_at and self.status == self.STATUS_VALIDATED
+
     def set_validated(self, with_save=True):
         self.validated_at = datetime.now()
         self.status = tender_constants.STATUS_VALIDATED
