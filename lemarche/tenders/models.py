@@ -378,10 +378,9 @@ class Tender(models.Model):
     def set_siae_found_list(self):
         """
         Where the Tender-Siae matching magic happens!
-        Called by Tender signals (and if not self.validated_at)
         """
         siae_found_list = Siae.objects.filter_with_tender(self)
-        self.siaes.set(siae_found_list, clear=True)
+        self.siaes.set(siae_found_list, clear=False)
 
     def save(self, *args, **kwargs):
         """
@@ -535,6 +534,10 @@ class Tender(models.Model):
         self.extra_data.update({"hubspot_deal_id": hubspot_deal_id})
         if with_save:
             self.save()
+
+    @property
+    def is_validated(self) -> bool:
+        return self.validated_at and self.status == self.STATUS_VALIDATED
 
     def set_validated(self, with_save=True):
         self.validated_at = datetime.now()
