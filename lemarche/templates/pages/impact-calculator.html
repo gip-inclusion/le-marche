@@ -123,14 +123,14 @@
 {% endblock %}
 
 {% block extra_js %}
-<script type="text/javascript" src="{% static 'js/perimeters_autocomplete_field.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
-    const perimetersAutoComplete = new PerimetersAutoComplete();
+    const perimetersAutoComplete = new PerimetersMultiAutocomplete();
     perimetersAutoComplete.init();
 });
 document.addEventListener("htmx:afterSwap", function() {
-    const perimetersAutoComplete = new PerimetersAutoComplete();
+    const perimetersAutoComplete = new PerimetersMultiAutocomplete();
     perimetersAutoComplete.init();
 });
 </script>
