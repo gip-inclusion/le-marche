@@ -92,12 +92,6 @@ class SiaeFilterForm(forms.Form):
         widget=forms.TextInput(attrs={"placeholder": "Votre entreprise…"}),
     )
 
-    company_client_reference = forms.CharField(
-        label="Indiquez le nom de votre entreprise",
-        required=False,
-        widget=forms.TextInput(attrs={"placeholder": "Votre entreprise…"}),
-    )
-
     # other hidden filters
     tender = forms.ModelChoiceField(
         queryset=Tender.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
