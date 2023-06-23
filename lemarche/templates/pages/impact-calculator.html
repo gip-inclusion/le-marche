@@ -65,12 +65,12 @@
                             <div class="col-12">
                                 <div class="form-row align-items-center justify-content-end">
                                     {% if results %}
-                                    <div class="form-group col-12 col-lg-auto">
-                                        <button hx-get="{{ request.path }}" hx-target="#calculatorImpact" hx-swap="outerHTML" class="btn btn-block btn-ico btn-outline-primary">
-                                            <i class="ri-close-fill ri-lg"></i>
-                                            <span>Annuler</span>
-                                        </button>
-                                    </div>
+                                        <div class="form-group col-12 col-lg-auto">
+                                            <button hx-get="{{ request.path }}" hx-target="#calculatorImpact" hx-swap="outerHTML" class="btn btn-block btn-ico btn-outline-primary">
+                                                <i class="ri-close-fill ri-lg"></i>
+                                                <span>Annuler</span>
+                                            </button>
+                                        </div>
                                     {% endif %}
                                     <div class="form-group col-12 col-lg-auto">
                                         <button type="submit" id="calibrate-calculator-submit-btn" class="btn btn-ico btn-block btn-primary">
@@ -123,5 +123,15 @@
 {% endblock %}
 
 {% block extra_js %}
-<script type="text/javascript" src="{% static 'js/perimeters_autocomplete_field.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    const perimetersAutoComplete = new PerimetersMultiAutocomplete();
+    perimetersAutoComplete.init();
+});
+document.addEventListener("htmx:afterSwap", function() {
+    const perimetersAutoComplete = new PerimetersMultiAutocomplete();
+    perimetersAutoComplete.init();
+});
+</script>
 {% endblock extra_js %}

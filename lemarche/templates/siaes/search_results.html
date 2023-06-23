@@ -82,6 +82,7 @@
                                             <label for="id_perimeters">{{ form.perimeters.label }}</label>
                                             <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
                                             <div id="perimeters-selected" class="mt-2"></div>
+                                            {{ current_perimeters|json_script:"current-perimeters" }}
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6 col-lg-4">
@@ -129,6 +130,7 @@
                                                 <label for="id_locations">{{ form.locations.label }}</label>
                                                 <div id="dir_form_locations" data-input-name="{{ form.locations.name }}"></div>
                                                 <div id="locations-selected" class="mt-2"></div>
+                                                {{ current_locations|json_script:"current-locations" }}
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6 col-lg-3" title="{{ form.has_client_references.help_text }}">
@@ -279,10 +281,7 @@
 {% endblock %}
 {% block extra_js %}
     <script type="text/javascript" src="{% static 'vendor/alpinejs@3.11.1.min.js'%}" defer></script>
-    {{ current_perimeters|json_script:"current-perimeters" }}
-    {{ current_locations|json_script:"current-locations" }}
-    <script type="text/javascript" src="{% static 'js/perimeters_autocomplete_field.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/locations_autocomplete_field.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/search_form.js' %}"></script>
     <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
@@ -300,13 +299,24 @@ document.addEventListener("DOMContentLoaded", function() {
         resetBtn.addEventListener("click", resetForm);
     }
 
-    // init
+    // init search form
     if (qInput.value) {
         showSearchTextForm(searchTextTab, searchTextContent);
         // hideSearchFilterForm(searchFilterTab, searchFilterContent);
     } else {
         showSearchFilterForm(searchFilterTab, searchFilterContent);
     }
+
+    // init perimeters & locations form fields
+    const perimetersAutoComplete = new PerimetersMultiAutocomplete();
+    perimetersAutoComplete.init();
+    const LOCATION_AUTOCOMPLETE_ID = 'id_locations';
+    const LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR = '#dir_form_locations';
+    const LOCATION_SELECTED_CONTAINER_SELECTOR = '#locations-selected';
+    const LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX = 'hiddenLocation';
+    const LOCATION_CURRENT_ID = 'current-locations';
+    const locationsAutoComplete = new PerimetersMultiAutocomplete(LOCATION_AUTOCOMPLETE_ID, LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR, LOCATION_SELECTED_CONTAINER_SELECTOR, LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX, LOCATION_CURRENT_ID);
+    locationsAutoComplete.init();
 });
     </script>
     <script type="text/javascript">
