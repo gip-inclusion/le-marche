@@ -23,7 +23,7 @@ class Command(BaseCommand):
 
         # Step 1: build Siae queryset
         siae_queryset = Siae.objects.prefetch_related(
-            "users", "sectors", "networks", "offers", "client_references", "labels", "images"
+            "users", "sectors", "networks", "groups", "offers", "client_references", "labels", "images"
         ).all()
         if options["id"]:
             siae_queryset = siae_queryset.filter(id=options["id"])
@@ -32,9 +32,12 @@ class Command(BaseCommand):
         # Step 2: loop on each Siae
         progress = 0
         for index, siae in enumerate(siae_queryset):
+            # M2M
             user_count = siae.users.count()
             sector_count = siae.sectors.count()
             network_count = siae.networks.count()
+            group_count = siae.groups.count()
+            # FK
             offer_count = siae.offers.count()
             client_reference_count = siae.client_references.count()
             label_count = siae.labels_old.count()
@@ -46,6 +49,7 @@ class Command(BaseCommand):
                 user_count=user_count,
                 sector_count=sector_count,
                 network_count=network_count,
+                group_count=group_count,
                 offer_count=offer_count,
                 client_reference_count=client_reference_count,
                 label_count=label_count,

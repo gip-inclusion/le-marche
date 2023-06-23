@@ -1,0 +1,9 @@
+[
+    {
+        "model": "siaes.siae_groups",
+        "fields": {
+            "siaegroup": 1,
+            "siae": 2653
+        }
+    }
+]
