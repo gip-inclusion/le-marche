@@ -38,6 +38,7 @@
                                         <label for="id_locations">{{ form.locations.label }}</label>
                                         <div id="dir_form_locations" data-input-name="{{ form.locations.name }}"></div>
                                         <div id="locations-selected" class="mt-2"></div>
+                                        {{ current_locations|json_script:"current-locations" }}
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6 col-lg-3">
@@ -118,6 +119,16 @@
 
 
 {% block extra_js %}
-{{ current_locations|json_script:"current-locations" }}
-<script type="text/javascript" src="{% static 'js/locations_autocomplete_field.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        const LOCATION_AUTOCOMPLETE_ID = 'id_locations';
+        const LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR = '#dir_form_locations';
+        const LOCATION_SELECTED_CONTAINER_SELECTOR = '#locations-selected';
+        const LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX = 'hiddenLocation';
+        const LOCATION_CURRENT_ID = 'current-locations';
+        const locationsAutoComplete = new PerimetersMultiAutocomplete(LOCATION_AUTOCOMPLETE_ID, LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR, LOCATION_SELECTED_CONTAINER_SELECTOR, LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX, LOCATION_CURRENT_ID);
+        locationsAutoComplete.init();
+    });
+</script>
 {% endblock %}
