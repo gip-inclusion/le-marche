@@ -381,7 +381,7 @@ class Tender(models.Model):
         Called by Tender signals (and if not self.validated_at)
         """
         siae_found_list = Siae.objects.filter_with_tender(self)
-        self.siaes.set(siae_found_list, clear=True)
+        self.siaes.set(siae_found_list, clear=False)
 
     def save(self, *args, **kwargs):
         """
