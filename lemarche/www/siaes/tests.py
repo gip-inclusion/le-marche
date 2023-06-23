@@ -472,6 +472,74 @@ class SiaePerimeterSearchFilterTest(TestCase):
         self.assertEqual(qs.count(), 4)
 
 
+class SiaeHasClientReferencesFilterTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae_with_client_reference = SiaeFactory()
+        SiaeClientReferenceFactory(siae=cls.siae_with_client_reference)
+        cls.siae_with_client_reference.save()  # to set client_reference_count=1
+        cls.siae_without_client_reference = SiaeFactory()  # client_reference_count=0
+
+    def test_search_has_client_references_empty(self):
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+
+    def test_search_has_client_references_empty_string(self):
+        url = reverse("siae:search_results") + "?has_client_references="
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+
+    def test_search_has_client_references_should_filter(self):
+        # True
+        url = reverse("siae:search_results") + "?has_client_references=True"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].id, self.siae_with_client_reference.id)
+        # False
+        url = reverse("siae:search_results") + "?has_client_references=False"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].id, self.siae_without_client_reference.id)
+
+
+class SiaeHasGroupsFilterTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae_with_group = SiaeFactory(group_count=1)
+        cls.siae_without_group = SiaeFactory(group_count=0)
+
+    def test_search_has_groups_empty(self):
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+
+    def test_search_has_groups_empty_string(self):
+        url = reverse("siae:search_results") + "?has_groups="
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+
+    def test_search_has_groups_should_filter(self):
+        # True
+        url = reverse("siae:search_results") + "?has_groups=True"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].id, self.siae_with_group.id)
+        # False
+        url = reverse("siae:search_results") + "?has_groups=False"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].id, self.siae_without_group.id)
+
+
 class SiaeFullTextSearchTest(TestCase):
     @classmethod
     def setUpTestData(cls):
