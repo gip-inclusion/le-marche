@@ -7,7 +7,7 @@ from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.models import Siae, SiaeClientReference
+from lemarche.siaes.models import Siae, SiaeClientReference, SiaeGroup
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
@@ -76,6 +76,12 @@ class SiaeFilterForm(forms.Form):
     has_client_references = forms.ChoiceField(
         label=SiaeClientReference._meta.verbose_name,
         help_text="Le prestataire inclusif a-t-il des références clients ?",
+        choices=[("", ""), (True, "Oui"), (False, "Non")],
+        required=False,
+    )
+    has_groups = forms.ChoiceField(
+        label=SiaeGroup._meta.verbose_name,
+        help_text="Le prestataire inclusif fait-il partie d'un groupement ?",
         choices=[("", ""), (True, "Oui"), (False, "Non")],
         required=False,
     )
@@ -155,6 +161,12 @@ class SiaeFilterForm(forms.Form):
             qs = qs.filter(client_reference_count__gte=1)
         elif has_client_references in (False, "False"):
             qs = qs.filter(client_reference_count=0)
+
+        has_groups = self.cleaned_data.get("has_groups", None)
+        if has_groups in (True, "True"):
+            qs = qs.filter(group_count__gte=1)
+        elif has_groups in (False, "False"):
+            qs = qs.filter(group_count=0)
 
         company_client_reference = self.cleaned_data.get("company_client_reference", None)
         if company_client_reference:
