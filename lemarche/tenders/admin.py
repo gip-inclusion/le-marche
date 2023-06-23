@@ -308,7 +308,9 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         if not obj.id and not obj.author_id:
             obj.author = request.user
         obj.save()
-        obj.set_siae_found_list()
+        # we can add `and obj.status != obj.STATUS_DRAFT` to disable matching when is draft
+        if not obj.is_validated:
+            obj.set_siae_found_list()
 
     def is_validate(self, tender: Tender):
         return tender.validated_at is not None
