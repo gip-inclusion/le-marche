@@ -126,6 +126,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     readonly_fields = [field for field in Siae.READONLY_FIELDS if field not in ("coords")] + [
         "sector_count_with_link",
         "network_count_with_link",
+        "group_count_with_link",
         "offer_count_with_link",
         "label_count_with_link",
         "client_reference_count_with_link",
@@ -205,6 +206,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "sector_count_with_link",
                     "networks",
                     "network_count_with_link",
+                    "group_count_with_link",
                     "offer_count_with_link",
                     "label_count_with_link",
                     "client_reference_count_with_link",
@@ -415,6 +417,13 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
 
     network_count_with_link.short_description = "Nbr de réseaux"
     network_count_with_link.admin_order_field = "network_count"
+
+    def group_count_with_link(self, siae):
+        url = reverse("admin:siaes_siaegroup_changelist") + f"?siaes__in={siae.id}"
+        return format_html(f'<a href="{url}">{siae.group_count}</a>')
+
+    group_count_with_link.short_description = "Nbr de groupements"
+    group_count_with_link.admin_order_field = "group_count"
 
     def offer_count_with_link(self, siae):
         url = reverse("admin:siaes_siaeoffer_changelist") + f"?siae__id__exact={siae.id}"
