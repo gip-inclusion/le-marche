@@ -474,6 +474,9 @@ class Siae(models.Model):
         "api_entreprise_ca",
         "api_entreprise_ca_date_fin_exercice",
         "api_entreprise_exercice_last_sync_date",
+        "api_entreprise_forme_juridique",
+        "api_entreprise_forme_juridique_code",
+        "api_entreprise_entreprise_last_sync_date",
     ]
     READONLY_FIELDS = (
         READONLY_FIELDS_FROM_C1
@@ -697,6 +700,15 @@ class Siae(models.Model):
     )
     api_entreprise_exercice_last_sync_date = models.DateTimeField(
         "Date de dernière synchronisation (API Entreprise /exercices)", blank=True, null=True
+    )
+    api_entreprise_forme_juridique = models.CharField(
+        verbose_name="Forme juridique (API Entreprise)", max_length=255, blank=True
+    )
+    api_entreprise_forme_juridique_code = models.CharField(
+        verbose_name="Code de la forme juridique (API Entreprise)", max_length=5, blank=True
+    )
+    api_entreprise_entreprise_last_sync_date = models.DateTimeField(
+        "Date de dernière synchronisation (API Entreprise /entreprises)", blank=True, null=True
     )
 
     c1_id = models.IntegerField(blank=True, null=True)
