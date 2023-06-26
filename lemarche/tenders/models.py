@@ -436,7 +436,7 @@ class Tender(models.Model):
             return self.perimeters_list_string
 
     def questions_list(self):
-        return self.questions.values_list("text", flat=True)
+        return list(self.questions.values("id", "text"))
 
     @cached_property
     def external_link_title(self) -> str:

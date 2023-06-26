@@ -1,3 +1,4 @@
+import json
 from datetime import timedelta
 
 from django.conf import settings
@@ -178,6 +179,22 @@ class TenderCreateViewTest(TestCase):
                 TenderCreateMultiStepView, tenders_step_data, tender, is_draft=True
             ),
         )
+
+    def test_tender_wizard_form_questions_list(self):
+        initial_data_questions_list = [
+            {"text": "Avez-vous suffisamment d'effectifs ? "},
+            {"text": "Êtes-vous disponible tout l'été ? "},
+        ]
+        tenders_step_data = self._generate_fake_data_form(
+            _step_2={"description-questions_list": json.dumps(initial_data_questions_list)}  # json field
+        )
+
+        self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+        tender: Tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
+        self.assertIsNotNone(tender)
+        self.assertIsInstance(tender, Tender)
+        self.assertEqual(tender.questions.count(), len(initial_data_questions_list))  # count is 2
+        self.assertEqual(tender.questions_list()[0].get("text"), initial_data_questions_list[0].get("text"))
 
 
 class TenderMatchingTest(TestCase):

@@ -70,6 +70,8 @@ class TenderCreateStepDescriptionForm(forms.ModelForm):
     # fields from previous step
     kind = None
 
+    questions_list = forms.JSONField(required=False)
+
     class Meta:
         model = Tender
         fields = [
@@ -88,9 +90,11 @@ class TenderCreateStepDescriptionForm(forms.ModelForm):
             "amount": forms.Select(attrs={"x-model": "formData.amount", "x-on:change": "getImpactMessage()"}),
         }
 
-    def __init__(self, kind, *args, **kwargs):
+    def __init__(self, kind, questions_list=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.kind = kind
+        if questions_list:
+            self.initial["questions_list"] = questions_list
         # to remove blank option
         self.fields["why_amount_is_blank"].choices = self.fields["why_amount_is_blank"].choices[1:]
         if self.instance.start_working_date:
@@ -109,6 +113,19 @@ class TenderCreateStepDescriptionForm(forms.ModelForm):
         self.fields["constraints"].widget.attrs["placeholder"] = "Ex : Déplacements"
         self.fields["accept_share_amount"].help_text = None
         self.fields["accept_cocontracting"].help_text = None
+
+    def clean_questions_list(self):
+        questions = self.cleaned_data["questions_list"]
+        if questions is None:
+            return questions
+        elif type(questions) != list:
+            raise ValueError("It's not a list")
+        for index, question in enumerate(questions):
+            if type(question) != dict:
+                raise ValueError("Bad format")
+            if not question.get("text"):
+                questions.pop(index)
+        return questions
 
 
 class TenderCreateStepContactForm(forms.ModelForm):
