@@ -18,6 +18,65 @@ API_ENTREPRISE_REASON = "Mise à jour données Marché de la plateforme de l'Inc
 TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S"  # "2016-12-31T00:00:00+01:00"  # timezone not managed
 
 
+def entreprise_get_or_error(siren, reason="Inscription au marché de l'inclusion"):
+    """
+    Obtain company data from entreprises.api.gouv.fr
+    documentation: https://doc.entreprise.api.gouv.fr/?json#entreprise-v2
+
+    Format info:
+    - "date_mise_a_jour": 1449183600
+    """
+    data = None
+    entreprise = None
+    error = None
+
+    query_string = urlencode(
+        {
+            "recipient": settings.API_ENTREPRISE_RECIPIENT,
+            "context": settings.API_ENTREPRISE_CONTEXT,
+            "object": reason,
+        }
+    )
+
+    url = f"{settings.API_ENTREPRISE_BASE_URL}/entreprises/{siren}?{query_string}"
+    headers = {"Authorization": f"Bearer {settings.API_ENTREPRISE_TOKEN}"}
+
+    try:
+        r = requests.get(url, headers=headers)
+        r.raise_for_status()
+        data = r.json()
+    except requests.exceptions.HTTPError as e:
+        status_code = e.response.status_code
+
+        if status_code == 422:
+            error = f"SIREN « {siren} » non reconnu."
+        elif status_code == 404:
+            error = f"SIREN « {siren} » 404 ?"
+        else:
+            # logger.error("Error while fetching `%s`: %s", url, e)
+            error = "Problème de connexion à la base Sirene. Essayez ultérieurement."
+        return None, error
+    except requests.ReadTimeout as e:  # noqa
+        # logger.error("Error while fetching `%s`: %s", url, e)
+        error = "The read operation timed out"
+        return None, error
+
+    if data and data.get("errors"):
+        error = data["errors"][0]
+        return None, error
+
+    if not data.get("entreprise") or not data["entreprise"].get("forme_juridique"):
+        # logger.error("Invalid format of response from API Entreprise")
+        error = "Le format de la réponse API Entreprise est non valide."
+        return None, error
+
+    entreprise = {
+        "forme_juridique": data["entreprise"]["forme_juridique"],
+        "forme_juridique_code": data["entreprise"]["forme_juridique_code"],
+    }
+    return entreprise, None
+
+
 def etablissement_get_or_error(siret, reason="Inscription au marché de l'inclusion"):
     """
     Obtain company data from entreprises.api.gouv.fr
@@ -52,9 +111,9 @@ def etablissement_get_or_error(siret, reason="Inscription au marché de l'inclus
         status_code = e.response.status_code
 
         if status_code == 422:
-            error = f"SIRET « {siret} » non reconnu."
+            error = f"SIRET « {siret} » non reconnu."
         elif status_code == 404:
-            error = f"SIRET « {siret} » 404 ?"
+            error = f"SIRET « {siret} » 404 ?"
         else:
             # logger.error("Error while fetching `%s`: %s", url, e)
             error = "Problème de connexion à la base Sirene. Essayez ultérieurement."
