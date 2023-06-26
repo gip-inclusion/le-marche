@@ -467,6 +467,9 @@ class Siae(models.Model):
     READONLY_FIELDS_FROM_QPV = ["is_qpv", "qpv_name", "qpv_code", "api_qpv_last_sync_date"]
     READONLY_FIELDS_FROM_ZRR = ["is_zrr", "zrr_name", "zrr_code", "api_zrr_last_sync_date"]
     READONLY_FIELDS_FROM_API_ENTREPRISE = [
+        "api_entreprise_forme_juridique",
+        "api_entreprise_forme_juridique_code",
+        "api_entreprise_entreprise_last_sync_date",
         "api_entreprise_date_constitution",
         "api_entreprise_employees",
         "api_entreprise_employees_year_reference",
@@ -474,9 +477,6 @@ class Siae(models.Model):
         "api_entreprise_ca",
         "api_entreprise_ca_date_fin_exercice",
         "api_entreprise_exercice_last_sync_date",
-        "api_entreprise_forme_juridique",
-        "api_entreprise_forme_juridique_code",
-        "api_entreprise_entreprise_last_sync_date",
     ]
     READONLY_FIELDS = (
         READONLY_FIELDS_FROM_C1
@@ -682,6 +682,15 @@ class Siae(models.Model):
     api_zrr_last_sync_date = models.DateTimeField("Date de dernière synchronisation (API ZRR)", blank=True, null=True)
 
     # API Entreprise
+    api_entreprise_forme_juridique = models.CharField(
+        verbose_name="Forme juridique (API Entreprise)", max_length=255, blank=True
+    )
+    api_entreprise_forme_juridique_code = models.CharField(
+        verbose_name="Code de la forme juridique (API Entreprise)", max_length=5, blank=True
+    )
+    api_entreprise_entreprise_last_sync_date = models.DateTimeField(
+        "Date de dernière synchronisation (API Entreprise /entreprises)", blank=True, null=True
+    )
     api_entreprise_date_constitution = models.DateField(
         verbose_name="Date de création (API Entreprise)", blank=True, null=True
     )
@@ -700,15 +709,6 @@ class Siae(models.Model):
     )
     api_entreprise_exercice_last_sync_date = models.DateTimeField(
         "Date de dernière synchronisation (API Entreprise /exercices)", blank=True, null=True
-    )
-    api_entreprise_forme_juridique = models.CharField(
-        verbose_name="Forme juridique (API Entreprise)", max_length=255, blank=True
-    )
-    api_entreprise_forme_juridique_code = models.CharField(
-        verbose_name="Code de la forme juridique (API Entreprise)", max_length=5, blank=True
-    )
-    api_entreprise_entreprise_last_sync_date = models.DateTimeField(
-        "Date de dernière synchronisation (API Entreprise /entreprises)", blank=True, null=True
     )
 
     c1_id = models.IntegerField(blank=True, null=True)
