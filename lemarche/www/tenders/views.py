@@ -29,7 +29,7 @@ from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
     notify_admin_tender_created,
     send_siae_interested_email_to_author,
 )
-from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user
+from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user, update_or_create_questions_list
 
 
 TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
@@ -98,6 +98,8 @@ class TenderCreateMultiStepView(SessionWizardView):
         kwargs = super().get_form_kwargs(step)
         if step == self.STEP_DESCRIPTION:
             kwargs["kind"] = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("kind")
+            if self.instance.id:
+                kwargs["questions_list"] = list(self.instance.questions_list())
         if step == self.STEP_CONTACT:
             cleaned_data_description = self.get_cleaned_data_for_step(self.STEP_DESCRIPTION)
             kwargs["max_deadline_date"] = cleaned_data_description.get("start_working_date")
@@ -158,6 +160,10 @@ class TenderCreateMultiStepView(SessionWizardView):
                                 location = tender_dict.get("location")
                                 self.instance.location = location
                                 self.instance.perimeters.set([location])
+                            elif attribute == "questions_list":
+                                update_or_create_questions_list(
+                                    tender=self.instance, questions_list=tender_dict.get("questions_list")
+                                )
                             else:
                                 setattr(self.instance, attribute, tender_dict.get(attribute))
                     elif step == self.STEP_SURVEY:

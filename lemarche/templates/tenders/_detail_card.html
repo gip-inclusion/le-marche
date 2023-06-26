@@ -1,5 +1,4 @@
 {% load bootstrap4 static array_choices_display humanize %}
-
 <div class="card c-card c-card--marche siae-card rounded-lg shadow-lg">
     <p class="text-right text-white bg-tertiary fs-sm rounded-top rounded-lg p-3 mb-0">
         Date limite de réponse : {{ tender.deadline_date|default:"" }}
@@ -7,18 +6,19 @@
             <span class="badge badge-xs badge-base badge-pill badge-pilotage">Clôturé</span>
         {% endif %}
     </p>
-
     <div class="card-body pb-5 px-5">
         <div class="row py-4">
             <div class="col-md-12">
                 <h1>
                     {{ tender.title }}
-                    <span class="fs-sm badge badge-base badge-pill badge-emploi float-right" aria-hidden="true">{{ tender_kind_display|default:tender.get_kind_display }}</span>
+                    <span class="fs-sm badge badge-base badge-pill badge-emploi float-right"
+                          aria-hidden="true">{{ tender_kind_display|default:tender.get_kind_display }}</span>
                 </h1>
             </div>
         </div>
         <div class="row text-bold">
-            <div class="col" title="Secteurs d'activité : {{ tender.sectors_full_list_string|safe }}">
+            <div class="col"
+                 title="Secteurs d'activité : {{ tender.sectors_full_list_string|safe }}">
                 <i class="ri-award-line"></i>
                 {{ tender.sectors_list_string|safe }}
             </div>
@@ -33,7 +33,6 @@
                 </div>
             {% endif %}
         </div>
-
         {% if not source_form %}
             {% if user.is_authenticated %}
                 {% if tender.author == request.user %}
@@ -47,10 +46,8 @@
                 {% endif %}
             {% endif %}
         {% endif %}
-
         <!-- tender description -->
         <hr class="my-5">
-
         <h2>
             Description
             {% if tender.start_working_date %}
@@ -58,11 +55,9 @@
             {% endif %}
         </h2>
         <p>{{ tender.description|safe|linebreaks }}</p>
-
         <!-- tender questions -->
         {% if source_form or not source_form and tender.questions_list|length %}
             <hr class="my-5">
-
             <h2>
                 {% if source_form or tender.author == request.user %}
                     Questions à poser aux prestataires ciblés
@@ -71,24 +66,18 @@
                 {% endif %}
             </h2>
             <ul>
-                {% for question in tender.questions_list %}
-                    <li>{{ question }}</li>
-                {% endfor %}
+                {% for question in tender.questions_list %}<li>{{ question.text }}</li>{% endfor %}
             </ul>
         {% endif %}
-
         <!-- tender constraints -->
         {% if source_form or not source_form and tender.constraints %}
             <hr class="my-5">
-
             <h2>Contraintes techniques spécifiques</h2>
             <p>{{ tender.constraints|default:"-"|safe|linebreaks }}</p>
         {% endif %}
-
         <!-- tender amount -->
         {% if source_form or tender.author == request.user or tender.accept_share_amount %}
             <hr class="my-5">
-
             <h2>
                 {% if source_form or tender.author == request.user %}
                     Montant du marché
@@ -97,9 +86,7 @@
                 {% endif %}
             </h2>
             <p>{{ tender.get_amount_display|default:"-" }}</p>
-            {% if source_form or tender.author == request.user %}
-                <p>{{ tender.accept_share_amount_display }}</p>
-            {% endif %}
+            {% if source_form or tender.author == request.user %}<p>{{ tender.accept_share_amount_display }}</p>{% endif %}
         {% endif %}
     </div>
 </div>

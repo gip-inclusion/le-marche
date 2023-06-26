@@ -96,7 +96,7 @@ class TenderModelPropertyTest(TestCase):
         tender_question_1 = TenderQuestionFactory(tender=tender_with_questions)
         TenderQuestionFactory(tender=tender_with_questions)
         self.assertEqual(len(tender_with_questions.questions_list()), 2)
-        self.assertEqual(tender_with_questions.questions_list()[0], tender_question_1.text)
+        self.assertEqual(tender_with_questions.questions_list()[0].get("text"), tender_question_1.text)
 
 
 class TenderModelSaveTest(TestCase):
