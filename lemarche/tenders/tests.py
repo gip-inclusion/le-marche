@@ -4,19 +4,24 @@ from importlib import import_module
 from random import randint
 
 from django.apps import apps
-from django.test import TestCase
+from django.contrib.gis.geos import Point
+from django.forms.models import model_to_dict
+from django.test import RequestFactory, TestCase
 from django.utils import timezone
 
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory, SectorGroupFactory
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
+from lemarche.tenders.admin import TenderAdmin
 from lemarche.tenders.factories import PartnerShareTenderFactory, TenderFactory, TenderQuestionFactory
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
+from lemarche.utils.admin.admin_site import MarcheAdminSite, get_admin_change_view_url
 
 
 date_tomorrow = timezone.now() + timedelta(days=1)
@@ -520,3 +525,106 @@ class TenderSiaeModelQuerysetTest(TestCase):
             ).count(),
             1,
         )
+
+
+class TenderAdminTest(TestCase):
+    def setUp(cls):
+        cls.factory = RequestFactory()
+        cls.site = MarcheAdminSite()
+        cls.admin = TenderAdmin(Tender, cls.site)
+        cls.user = User.objects.create_superuser(email="admin@example.com", password="admin")
+        cls.sectors = [SectorFactory() for i in range(10)]
+        cls.perimeter_paris = PerimeterFactory(department_code="75", post_codes=["75019", "75018"])
+        cls.perimeter_marseille = PerimeterFactory(coords=Point(43.35101634452076, 5.379616625955892))
+        cls.perimeters = [cls.perimeter_paris, PerimeterFactory()]
+        # by default is Paris
+        coords_paris = Point(48.86385199985207, 2.337071483848432)
+
+        siae_one = SiaeFactory(
+            is_active=True,
+            kind=siae_constants.KIND_AI,
+            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
+            geo_range=siae_constants.GEO_RANGE_CUSTOM,
+            coords=coords_paris,
+            geo_range_custom_distance=100,
+        )
+        siae_two = SiaeFactory(
+            is_active=True,
+            kind=siae_constants.KIND_ESAT,
+            presta_type=[siae_constants.PRESTA_BUILD],
+            geo_range=siae_constants.GEO_RANGE_CUSTOM,
+            coords=coords_paris,
+            geo_range_custom_distance=10,
+        )
+        for i in range(5):
+            siae_one.sectors.add(cls.sectors[i])
+            siae_two.sectors.add(cls.sectors[i + 5])
+
+        cls.tender = TenderFactory(
+            sectors=cls.sectors[6:8], perimeters=[cls.perimeter_paris], status=tender_constants.STATUS_PUBLISHED
+        )
+        cls.form_data = model_to_dict(cls.tender) | {
+            "_continue": "Enregistrer et continuer les modifications",
+            "amount": "",
+            "why_amount_is_blank": "DONT_WANT_TO_SHARE",
+            "location": cls.perimeter_paris.pk,
+            "perimeters": [cls.perimeter_paris.pk],
+            "sectors": [sector.id for sector in cls.sectors[1:8]],
+            "questions-INITIAL_FORMS": "0",
+            "questions-__prefix__-id": "",
+            "initial-response_kind": "TEL",
+            "questions-MIN_NUM_FORMS": "0",
+            "questions-MAX_NUM_FORMS": "1000",
+            "initial-presta_type": "BUILD",
+            "questions-TOTAL_FORMS": "0",
+            "questions-__prefix__-text": "",
+            "questions-__prefix__-tender": cls.tender.pk,
+        }
+        for key, value in cls.form_data.items():
+            if value is None:
+                cls.form_data[key] = ""
+
+    def test_edit_form_matching_on_submission(self):
+        self.client.force_login(self.user)
+        tender_update_post_url = get_admin_change_view_url(self.tender)
+        self.assertEqual(self.tender.tendersiae_set.count(), 0)
+        # create post request to update the model
+        response = self.client.post(
+            tender_update_post_url,
+            self.form_data
+            | {
+                "title": "New title",
+            },
+            follow=True,
+        )
+        tender_response = response.context_data["adminform"].form.instance
+        self.assertEqual(tender_response.id, self.tender.id)
+        self.assertEqual(hasattr(tender_response, "siae_count"), True)
+        self.assertEqual(tender_response.siae_count, 2)
+        self.assertEqual(tender_response.siae_count, self.tender.tendersiae_set.count())
+        # update sectors to have only one match for siaes
+        response = self.client.post(
+            tender_update_post_url,
+            self.form_data
+            | {
+                "title": "New title",
+                "sectors": [sector.id for sector in self.sectors[1:3]],
+            },
+            follow=True,
+        )
+        tender_response = response.context_data["adminform"].form.instance
+        self.assertEqual(tender_response.siae_count, 1)
+        tender_siae_matched = tender_response.tendersiae_set.first()  # only one siae
+        # update for another sectors and check if siaes are not the same
+        response = self.client.post(
+            tender_update_post_url,
+            self.form_data
+            | {
+                "sectors": [sector.id for sector in self.sectors[7:8]],
+            },
+            follow=True,
+        )
+        tender_response = response.context_data["adminform"].form.instance
+        self.assertEqual(tender_response.siae_count, 1)
+        tender_siae_matched_2 = tender_response.tendersiae_set.first()  # only one siae
+        self.assertNotEqual(tender_siae_matched.pk, tender_siae_matched_2.pk)

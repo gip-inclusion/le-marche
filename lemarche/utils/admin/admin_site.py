@@ -3,8 +3,13 @@ from datetime import date
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.sites.models import Site
+from django.urls import reverse
 
 from lemarche.utils.s3 import API_CONNECTION_DICT
+
+
+def get_admin_change_view_url(obj: object) -> str:
+    return reverse("admin:{}_{}_change".format(obj._meta.app_label, type(obj).__name__.lower()), args=(obj.pk,))
 
 
 class MarcheAdminSite(admin.AdminSite):
