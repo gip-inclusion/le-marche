@@ -4,11 +4,11 @@ from django.db.models import Q
 
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis import api_slack
-from lemarche.utils.apis.api_entreprise import siae_update_etablissement, siae_update_exercice
+from lemarche.utils.apis.api_entreprise import siae_update_entreprise, siae_update_etablissement, siae_update_exercice
 from lemarche.utils.commands import BaseCommand
 
 
-SCOPE_ALLOWED_VALUES = ("all", "etablissement", "exercice")
+SCOPE_ALLOWED_VALUES = ("all", "entreprise", "etablissement", "exercice")
 
 
 class Command(BaseCommand):
@@ -27,7 +27,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--scope", type=str, default="all", help="Options are 'etablissement', 'exercice', or 'all'"
+            "--scope", type=str, default="all", help="Options are 'entreprise', 'etablissement', 'exercice', or 'all'"
         )
         parser.add_argument("--siret", type=str, default=None, help="Lancer sur un Siret spécifique")
         parser.add_argument("--limit", type=int, default=None, help="Limiter le nombre de structures à processer")
@@ -43,7 +43,9 @@ class Command(BaseCommand):
             siae_queryset = Siae.objects.filter(siret=options["siret"])
         else:
             siae_queryset = Siae.objects.filter(
-                Q(api_entreprise_etablissement_last_sync_date=None) | Q(api_entreprise_exercice_last_sync_date=None)
+                Q(api_entreprise_entreprise_last_sync_date=None)
+                | Q(api_entreprise_etablissement_last_sync_date=None)
+                | Q(api_entreprise_exercice_last_sync_date=None)
             ).order_by("id")
 
         if options["limit"]:
@@ -51,13 +53,53 @@ class Command(BaseCommand):
 
         # self.stdout_info(f"Found {siae_queryset.count()} Siae")
 
+        if options["scope"] in ("all", "entreprise"):
+            self.update_api_entreprise_entreprise_fields(siae_queryset)
+
         if options["scope"] in ("all", "etablissement"):
             self.update_api_entreprise_etablissement_fields(siae_queryset)
 
         if options["scope"] in ("all", "exercice"):
             self.update_api_entreprise_exercice_fields(siae_queryset)
 
-    # API Entreprise : etablissements
+    # API Entreprise: entreprises
+    def update_api_entreprise_entreprise_fields(self, siae_queryset):
+        progress = 0
+        results = {"success": 0, "error": 0}
+        siae_queryset_entreprise = siae_queryset.filter(api_entreprise_entreprise_last_sync_date=None)
+        self.stdout_info("-" * 80)
+        self.stdout_info(f"Populating 'entreprise' for {siae_queryset_entreprise.count()} Siae...")
+
+        for siae in siae_queryset_entreprise:
+            try:
+                progress += 1
+                if (progress % 50) == 0:
+                    self.stdout_info(f"{progress}...")
+                # self.stdout_info("-" * 80)
+                # self.stdout_info(f"{siae.id} / {siae.name} / {siae.siret}")
+                response, message = siae_update_entreprise(siae)
+                if response:
+                    results["success"] += 1
+                else:
+                    self.stdout_error(str(message))
+                    results["error"] += 1
+                # small delay to avoid going above the API limitation
+                # "max. 250 requêtes/min/jeton cumulées sur tous les endpoints"
+                time.sleep(0.5)
+            except Exception as e:
+                self.stdout_error(str(e))
+                api_slack.send_message_to_channel("Erreur lors de la synchronisation API entreprises: entreprises")
+
+        msg_success = [
+            "----- Synchrnisation API Entreprise (entreprises) -----",
+            f"Done! Processed {siae_queryset_entreprise.count()} siae",
+            f"success count: {results['success']}/{siae_queryset_entreprise.count()}",
+            f"error count: {results['error']}/{siae_queryset_entreprise.count()} (voir les logs)",
+        ]
+        self.stdout_messages_success(msg_success)
+        api_slack.send_message_to_channel("\n".join(msg_success))
+
+    # API Entreprise: etablissements
     def update_api_entreprise_etablissement_fields(self, siae_queryset):
         progress = 0
         results = {"success": 0, "error": 0}
@@ -83,7 +125,7 @@ class Command(BaseCommand):
                 time.sleep(0.5)
             except Exception as e:
                 self.stdout_error(str(e))
-                api_slack.send_message_to_channel("Erreur lors de la synchronisation API entreprises : etablissements")
+                api_slack.send_message_to_channel("Erreur lors de la synchronisation API entreprises: etablissements")
 
         msg_success = [
             "----- Synchrnisation API Entreprise (etablissements) -----",
@@ -94,7 +136,7 @@ class Command(BaseCommand):
         self.stdout_messages_success(msg_success)
         api_slack.send_message_to_channel("\n".join(msg_success))
 
-    # API Entreprise : exercices
+    # API Entreprise: exercices
     def update_api_entreprise_exercice_fields(self, siae_queryset):
         progress = 0
         results = {"success": 0, "error": 0}
@@ -120,7 +162,7 @@ class Command(BaseCommand):
                 time.sleep(0.5)
             except Exception as e:
                 self.stdout_error(str(e))
-                api_slack.send_message_to_channel("Erreur lors de la synchronisation API entreprises : exercices")
+                api_slack.send_message_to_channel("Erreur lors de la synchronisation API entreprises: exercices")
 
         msg_success = [
             "----- Synchronisation API Entreprise (exercices) -----",
