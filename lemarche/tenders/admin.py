@@ -308,9 +308,13 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         if not obj.id and not obj.author_id:
             obj.author = request.user
         obj.save()
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request=request, form=form, formsets=formsets, change=change)
+        tender: Tender = form.instance
         # we can add `and obj.status != obj.STATUS_DRAFT` to disable matching when is draft
-        if not obj.is_validated:
-            obj.set_siae_found_list()
+        if not tender.is_validated:
+            tender.set_siae_found_list()
 
     def is_validate(self, tender: Tender):
         return tender.validated_at is not None
