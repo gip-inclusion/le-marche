@@ -19,10 +19,11 @@ ALLOWED_HOSTS = [
     ".cleverapps.io",
 ]
 
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
+# For Docker env (and debug toolbar in particular)
+import socket
 
+_, _, ips = socket.gethostbyname_ex(socket.gethostname())
+INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1"]
 
 # Authentication.
 # ------------------------------------------------------------------------------
