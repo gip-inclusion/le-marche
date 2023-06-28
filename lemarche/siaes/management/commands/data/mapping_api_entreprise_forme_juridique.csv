@@ -1,16 +1,16 @@
 input_name,input_code,siae_count,output_name
-,,44,Autres
-Association déclarée,9220,5388,Association
-Association déclarée d'insertion par l'économique,9221,251,Association
-"Association déclarée, reconnue d'utilité publique",9230,394,Association
-"Association de droit local (Bas-Rhin, Haut-Rhin et Moselle)",9260,180,Association
-Association intermédiaire,9222,396,Association
-Association syndicale autorisée,7321,1,Association
+,,44,AUTRE
+Association déclarée,9220,5388,ASSOCIATION
+Association déclarée d'insertion par l'économique,9221,251,ASSOCIATION
+"Association déclarée, reconnue d'utilité publique",9230,394,ASSOCIATION
+"Association de droit local (Bas-Rhin, Haut-Rhin et Moselle)",9260,180,ASSOCIATION
+Association intermédiaire,9222,396,ASSOCIATION
+Association syndicale autorisée,7321,1,ASSOCIATION
 Autre personne de droit privé inscrite au registre du commerce et des sociétés,6901,7,
 Autre personne morale de droit privé,9900,3,
-Autre SA coopérative à conseil d'administration,5560,57,SA coopérative
-Autre SA coopérative à directoire,5660,8,SA coopérative
-Autre SARL coopérative,5460,69,SARL coopérative
+Autre SA coopérative à conseil d'administration,5560,57,SA_COOP
+Autre SA coopérative à directoire,5660,8,SA_COOP
+Autre SARL coopérative,5460,69,SARL_COOP
 Autre société civile coopérative,6560,1,
 Centre communal d'action sociale,7361,76,
 Centre Intercommunal d'action sociale (CIAS),7367,14,
@@ -18,39 +18,39 @@ Communauté d'agglomération,7348,32,
 Communauté de communes,7346,72,
 Communauté urbaine,7343,3,
 Commune et commune nouvelle,7210,58,
-Département,7220,29,Autres
-Entrepreneur individuel,1000,7,Autres
+Département,7220,29,AUTRE
+Entrepreneur individuel,1000,7,AUTRE
 Établissement d'hospitalisation,7364,7,
-Établissement public local à caractère industriel ou commercial,4140,4,Autres
+Établissement public local à caractère industriel ou commercial,4140,4,AUTRE
 Établissement public local d'enseignement,7331,12,
 Établissement public local social et médico-social,7366,114,
 Établissement public national à caractère administratif,7389,8,
 Établissement public national à caractère industriel ou commercial doté d'un comptable public,4110,1,
 Établissement public national à caractère industriel ou commercial non doté d'un comptable public,4120,2,
 Exploitation agricole à responsabilité limitée,6598,2,
-Fondation,9300,129,Fondation
-Groupement de coopération sanitaire à gestion privée,9970,1,Autres
+Fondation,9300,129,FONDATION
+Groupement de coopération sanitaire à gestion privée,9970,1,AUTRE
 Groupement de coopération sanitaire à gestion publique,7470,14,
-Groupement d'employeurs,9223,166,Autres
+Groupement d'employeurs,9223,166,AUTRE
 Groupement d'intérêt public (GIP),7410,9,
 Métropole,7344,3,
 Mutuelle,8210,33,
 Pôle d'équilibre territorial et rural (PETR),7357,1,
 Régime général de la Sécurité Sociale,8110,5,
-SA à conseil d'administration (s.a.i.),5599,37,SA (Société anonyme)
-SA à directoire (s.a.i.),5699,10,SA (Société anonyme)
-SA coopérative ouvrière de production (SCOP) à conseil d'administration,5558,49,SA coopérative
+SA à conseil d'administration (s.a.i.),5599,37,SA
+SA à directoire (s.a.i.),5699,10,SA
+SA coopérative ouvrière de production (SCOP) à conseil d'administration,5558,49,SA_COOP
 SA d'économie mixte à conseil d'administration,5515,3,
 SA d'intérêt collectif agricole (SICA) à conseil d'administration,5532,1,
-SARL coopérative artisanale,5453,2,SARL coopérative
-SARL coopérative ouvrière de production (SCOP),5458,38,SARL coopérative
+SARL coopérative artisanale,5453,2,SARL_COOP
+SARL coopérative ouvrière de production (SCOP),5458,38,SARL_COOP
 SARL nationale,5410,1,SARL
-"SAS, société par actions simplifiée",5710,1150,SAS (Société par actions simplifiée)
+"SAS, société par actions simplifiée",5710,1150,SAS
 Service déconcentré à compétence nationale d'un ministère (hors Défense),7160,27,
 Société à responsabilité limitée (sans autre indication),5499,760,SARL
 Société civile d'exploitation agricole,6597,1,
 Société civile immobilière,6540,1,
-Société en nom collectif,5202,127,SNC (Société en nom collectif)
+Société en nom collectif,5202,127,SNC
 Syndicat de copropriété,9110,2,
 Syndicat intercommunal à vocation multiple (SIVOM),7345,4,
 Syndicat mixte fermé,7354,12,

@@ -19,10 +19,11 @@ class Command(BaseCommand):
 
     TODO: filter only on Siae not updated since a certain date?
 
-    Usage: poetry run python manage.py update_api_entreprise_fields
-    Usage: poetry run python manage.py update_api_entreprise_fields --scope etablissement
-    Usage: poetry run python manage.py update_api_entreprise_fields --siret 01234567891011
-    Usage: poetry run python manage.py update_api_entreprise_fields --limit 100
+    Usage:
+    - poetry run python manage.py update_api_entreprise_fields
+    - poetry run python manage.py update_api_entreprise_fields --scope etablissement
+    - poetry run python manage.py update_api_entreprise_fields --siret 01234567891011
+    - poetry run python manage.py update_api_entreprise_fields --limit 100
     """
 
     def add_arguments(self, parser):
