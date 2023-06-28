@@ -91,7 +91,7 @@ class Command(BaseCommand):
                 api_slack.send_message_to_channel("Erreur lors de la synchronisation API entreprises: entreprises")
 
         msg_success = [
-            "----- Synchrnisation API Entreprise (entreprises) -----",
+            "----- Synchronisation API Entreprise (/entreprises) -----",
             f"Done! Processed {siae_queryset_entreprise.count()} siae",
             f"success count: {results['success']}/{siae_queryset_entreprise.count()}",
             f"error count: {results['error']}/{siae_queryset_entreprise.count()} (voir les logs)",
@@ -128,7 +128,7 @@ class Command(BaseCommand):
                 api_slack.send_message_to_channel("Erreur lors de la synchronisation API entreprises: etablissements")
 
         msg_success = [
-            "----- Synchrnisation API Entreprise (etablissements) -----",
+            "----- Synchronisation API Entreprise (/etablissements) -----",
             f"Done! Processed {siae_queryset_etablissement.count()} siae",
             f"success count: {results['success']}/{siae_queryset_etablissement.count()}",
             f"error count: {results['error']}/{siae_queryset_etablissement.count()} (voir les logs)",
@@ -165,7 +165,7 @@ class Command(BaseCommand):
                 api_slack.send_message_to_channel("Erreur lors de la synchronisation API entreprises: exercices")
 
         msg_success = [
-            "----- Synchronisation API Entreprise (exercices) -----",
+            "----- Synchronisation API Entreprise (/exercices) -----",
             f"Done! Processed {siae_queryset_exercice.count()} siae",
             f"success count: {results['success']}/{siae_queryset_exercice.count()}",
             f"error count: {results['error']}/{siae_queryset_exercice.count()} (voir les logs)",
