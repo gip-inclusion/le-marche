@@ -51,6 +51,27 @@ PRESTA_CHOICES = (
     (PRESTA_BUILD, "Fabrication et commercialisation de biens"),  # 1000
 )
 
+LEGAL_FORM_ASSOCIATION = "ASSOCIATION"
+LEGAL_FORM_SARL = "SARL"
+LEGAL_FORM_SARL_COOP = "SARL_COOP"
+LEGAL_FORM_SAS = "SAS"
+LEGAL_FORM_SA = "SA"
+LEGAL_FORM_SA_COOP = "SA_COOP"
+LEGAL_FORM_SNC = "SNC"
+LEGAL_FORM_FONDATION = "FONDATION"
+LEGAL_FORM_AUTRE = "AUTRE"
+
+LEGAL_FORM_CHOICES = (
+    (LEGAL_FORM_ASSOCIATION, "Association"),
+    (LEGAL_FORM_SARL, "SARL"),
+    (LEGAL_FORM_SARL_COOP, "SARL coopérative"),
+    (LEGAL_FORM_SAS, "SAS (Société par actions simplifiée)"),
+    (LEGAL_FORM_SA, "SA (Société anonyme)"),
+    (LEGAL_FORM_SA_COOP, "SA coopérative"),
+    (LEGAL_FORM_SNC, "SNC (Société en nom collectif)"),
+    (LEGAL_FORM_FONDATION, "Fondation"),
+    (LEGAL_FORM_AUTRE, "Autre"),
+)
 
 GEO_RANGE_DEPARTMENT = "DEPARTMENT"
 GEO_RANGE_REGION = "REGION"

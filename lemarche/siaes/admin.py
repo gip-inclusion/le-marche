@@ -298,6 +298,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "kind",
                     "nature",
                     "presta_type",
+                    "legal_form",  # from API Entreprise mapping
                     # "c1_id",
                     # "asp_id",
                     "website",
