@@ -540,6 +540,68 @@ class SiaeHasGroupsFilterTest(TestCase):
         self.assertEqual(siaes[0].id, self.siae_without_group.id)
 
 
+class SiaeCAFilterTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae_without_ca_and_ca_api = SiaeFactory()
+        cls.siae_50k = SiaeFactory(ca=50000)
+        cls.siae_110k = SiaeFactory(ca=110000)
+        cls.siae_120k = SiaeFactory(api_entreprise_ca=120000)
+        cls.siae_550k = SiaeFactory(ca=550000, api_entreprise_ca=80000)
+        cls.siae_2m = SiaeFactory(ca=2000000, api_entreprise_ca=0)
+        cls.siae_7m = SiaeFactory(api_entreprise_ca=7000000)
+        cls.siae_50m = SiaeFactory(ca=0, api_entreprise_ca=50000000)
+
+    def test_search_query_empty(self):
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 8)
+
+    def test_search_ca_less_100k_filter(self):
+        url = reverse("siae:search_results") + "?ca=-100000"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].id, self.siae_50k.id)
+
+    def test_search_ca_more_100k_filter(self):
+        url = reverse("siae:search_results") + "?ca=100000-500000"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+        self.assertEqual(siaes[0].id, self.siae_120k.id)
+        self.assertEqual(siaes[1].id, self.siae_110k.id)
+
+    def test_search_ca_more_500k_filter(self):
+        url = reverse("siae:search_results") + "?ca=500000-1000000"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].id, self.siae_550k.id)
+
+    def test_search_ca_more_1m_filter(self):
+        url = reverse("siae:search_results") + "?ca=1000000-5000000"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].id, self.siae_2m.id)
+
+    def test_search_ca_more_5m_filter(self):
+        url = reverse("siae:search_results") + "?ca=5000000-10000000"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].id, self.siae_7m.id)
+
+    def test_search_ca_more_10m_filter(self):
+        url = reverse("siae:search_results") + "?ca=10000000-"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].id, self.siae_50m.id)
+
+
 class SiaeFullTextSearchTest(TestCase):
     @classmethod
     def setUpTestData(cls):
