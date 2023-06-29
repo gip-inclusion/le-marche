@@ -13,7 +13,7 @@ Autre SA coopérative à directoire,5660,8,SA_COOP
 Autre SARL coopérative,5460,69,SARL_COOP
 Autre société civile coopérative,6560,1, SA_COOP
 Centre communal d'action sociale,7361,76,CCAS
-Centre Intercommunal d'action sociale (CIAS),7367,14,CIAS
+Centre Intercommunal d'action sociale (CIAS),7367,14,CCAS
 Communauté d'agglomération,7348,32,COLLECTIVITE
 Communauté de communes,7346,72,COLLECTIVITE
 Communauté urbaine,7343,3,COLLECTIVITE
@@ -23,7 +23,7 @@ Entrepreneur individuel,1000,7,AUTRE
 Établissement d'hospitalisation,7364,7,AUTRE
 Établissement public local à caractère industriel ou commercial,4140,4,AUTRE
 Établissement public local d'enseignement,7331,12,AUTRE
-Établissement public local social et médico-social,7366,114,ETABLISSEMENT PUBLIC MEDICO-SOCIAL
+Établissement public local social et médico-social,7366,114,EPSMS
 Établissement public national à caractère administratif,7389,8,AUTRE
 Établissement public national à caractère industriel ou commercial doté d'un comptable public,4110,1,AUTRE
 Établissement public national à caractère industriel ou commercial non doté d'un comptable public,4120,2,AUTRE
@@ -31,7 +31,7 @@ Exploitation agricole à responsabilité limitée,6598,2,AUTRE
 Fondation,9300,129,FONDATION
 Groupement de coopération sanitaire à gestion privée,9970,1,AUTRE
 Groupement de coopération sanitaire à gestion publique,7470,14,AUTRE
-Groupement d'employeurs,9223,166,GROUPEMENT D'EMPLOYEUR
+Groupement d'employeurs,9223,166,GROUPEMENT_EMPLOYEUR
 Groupement d'intérêt public (GIP),7410,9,AUTRE
 Métropole,7344,3,COLLECTIVITE
 Mutuelle,8210,33,AUTRE

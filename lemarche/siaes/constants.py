@@ -58,6 +58,10 @@ LEGAL_FORM_SAS = "SAS"
 LEGAL_FORM_SA = "SA"
 LEGAL_FORM_SA_COOP = "SA_COOP"
 LEGAL_FORM_SNC = "SNC"
+LEGAL_FORM_GROUPEMENT_EMPLOYEUR = "GROUPEMENT_EMPLOYEUR"
+LEGAL_FORM_COLLECTIVITE = "COLLECTIVITE"
+LEGAL_FORM_CCAS = "CCAS"
+LEGAL_FORM_EPSMS = "EPSMS"
 LEGAL_FORM_FONDATION = "FONDATION"
 LEGAL_FORM_AUTRE = "AUTRE"
 
@@ -69,6 +73,10 @@ LEGAL_FORM_CHOICES = (
     (LEGAL_FORM_SA, "SA (Société anonyme)"),
     (LEGAL_FORM_SA_COOP, "SA coopérative"),
     (LEGAL_FORM_SNC, "SNC (Société en nom collectif)"),
+    (LEGAL_FORM_GROUPEMENT_EMPLOYEUR, "Groupement d'employeurs"),
+    (LEGAL_FORM_COLLECTIVITE, "Collectivité"),
+    (LEGAL_FORM_CCAS, "CCAS (Centre (inter)communal d'action sociale)"),
+    (LEGAL_FORM_EPSMS, "EPSMS (Établissement public social ou médico-social)"),
     (LEGAL_FORM_FONDATION, "Fondation"),
     (LEGAL_FORM_AUTRE, "Autre"),
 )
