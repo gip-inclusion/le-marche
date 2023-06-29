@@ -10879,7 +10879,9 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:38:13.464Z",
-            "slug": "assoc-amiens-avenir-jeunes-staaj-80"
+            "slug": "assoc-amiens-avenir-jeunes-staaj-80",
+            "ca": 650000,
+            "ca_last_updated": null
         }
     },
     {
@@ -14956,7 +14958,9 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:40:09.990Z",
-            "slug": "assoc-le-relais-pour-lemploi-35"
+            "slug": "assoc-le-relais-pour-lemploi-35",
+            "ca": 900000,
+            "ca_last_updated": null
         }
     },
     {
@@ -33694,7 +33698,11 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:39:28.016Z",
-            "slug": "assoc-recup-tri-62"
+            "slug": "assoc-recup-tri-62",
+            "ca": null,
+            "ca_last_updated": null,
+            "api_entreprise_ca": 562131,
+            "api_entreprise_ca_date_fin_exercice": "2020-12-31"
         }
     },
     {
@@ -53026,7 +53034,9 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:39:14.214Z",
-            "slug": "laser-82-82"
+            "slug": "laser-82-82",
+            "ca": 490000,
+            "ca_last_updated": null
         }
     },
     {
@@ -66067,7 +66077,9 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:39:29.649Z",
-            "slug": "assoc-regie-de-territoire-progress-12"
+            "slug": "assoc-regie-de-territoire-progress-12",
+            "ca": 500000,
+            "ca_last_updated": null
         }
     },
     {
@@ -66283,7 +66295,9 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:39:29.844Z",
-            "slug": "assoc-aude-menage-service-pro-11"
+            "slug": "assoc-aude-menage-service-pro-11",
+            "ca": 106000000,
+            "ca_last_updated": null
         }
     },
     {
@@ -66310,7 +66324,9 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:39:29.875Z",
-            "slug": "association-momon-papa-le-la-974"
+            "slug": "association-momon-papa-le-la-974",
+            "ca": 22000000,
+            "ca_last_updated": null
         }
     },
     {
@@ -66499,7 +66515,9 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:39:30.077Z",
-            "slug": "assoc-alices-60"
+            "slug": "assoc-alices-60",
+            "ca": 6656570,
+            "ca_last_updated": null
         }
     },
     {
@@ -88347,7 +88365,9 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:39:56.022Z",
-            "slug": "sarl-renouer-groupe-scic-06"
+            "slug": "sarl-renouer-groupe-scic-06",
+            "ca": 1150000000,
+            "ca_last_updated": null
         }
     },
     {
@@ -88563,7 +88583,9 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:39:56.288Z",
-            "slug": "intercites-du-grand-ouest-974"
+            "slug": "intercites-du-grand-ouest-974",
+            "ca": 5832000,
+            "ca_last_updated": null
         }
     },
     {
@@ -88698,7 +88720,9 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:39:56.445Z",
-            "slug": "assoc-in-teria-59"
+            "slug": "assoc-in-teria-59",
+            "ca": 0,
+            "ca_last_updated": null
         }
     },
     {
@@ -88752,7 +88776,9 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:39:56.504Z",
-            "slug": "assoc-yon-a-lot-lun-a-lautre-971"
+            "slug": "assoc-yon-a-lot-lun-a-lautre-971",
+            "ca": 393750,
+            "ca_last_updated": null
         }
     },
     {
@@ -88887,7 +88913,9 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:39:56.606Z",
-            "slug": "reemploi-et-compagnie-56"
+            "slug": "reemploi-et-compagnie-56",
+            "ca": 1700000,
+            "ca_last_updated": null
         }
     },
     {
@@ -89049,7 +89077,9 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:39:57.706Z",
-            "slug": "quartier-maro-13"
+            "slug": "quartier-maro-13",
+            "api_entreprise_ca": 1715794,
+            "api_entreprise_ca_date_fin_exercice": "2020-12-31"
         }
     },
     {
@@ -89238,7 +89268,9 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:40:14.439Z",
-            "slug": "agame-insertion-par-l-informatique-974"
+            "slug": "agame-insertion-par-l-informatique-974",
+            "api_entreprise_ca": 562131,
+            "api_entreprise_ca_date_fin_exercice": "2020-12-31"
         }
     },
     {
