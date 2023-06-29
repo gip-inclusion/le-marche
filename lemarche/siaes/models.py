@@ -106,9 +106,9 @@ class SiaeGroup(models.Model):
     employees_permanent_count_last_updated = models.DateTimeField(
         verbose_name="Date de dernière mise à jour du nombre de salariés permanents", blank=True, null=True
     )
-    ca = models.PositiveIntegerField(verbose_name="Chiffre d'affaire", blank=True, null=True)
+    ca = models.PositiveIntegerField(verbose_name="Chiffre d'affaires", blank=True, null=True)
     ca_last_updated = models.DateTimeField(
-        verbose_name="Date de dernière mise à jour du chiffre d'affaire", blank=True, null=True
+        verbose_name="Date de dernière mise à jour du chiffre d'affaires", blank=True, null=True
     )
 
     sectors = models.ManyToManyField(
@@ -626,9 +626,9 @@ class Siae(models.Model):
     employees_permanent_count_last_updated = models.DateTimeField(
         verbose_name="Date de dernière mise à jour du nombre de salariés permanents", blank=True, null=True
     )
-    ca = models.PositiveIntegerField(verbose_name="Chiffre d'affaire", blank=True, null=True)
+    ca = models.PositiveIntegerField(verbose_name="Chiffre d'affaires", blank=True, null=True)
     ca_last_updated = models.DateTimeField(
-        verbose_name="Date de dernière mise à jour du chiffre d'affaire", blank=True, null=True
+        verbose_name="Date de dernière mise à jour du chiffre d'affaires", blank=True, null=True
     )
 
     users = models.ManyToManyField(
@@ -703,7 +703,7 @@ class Siae(models.Model):
     api_entreprise_etablissement_last_sync_date = models.DateTimeField(
         "Date de dernière synchronisation (API Entreprise /etablissements)", blank=True, null=True
     )
-    api_entreprise_ca = models.IntegerField(verbose_name="Chiffre d'affaire (API Entreprise)", blank=True, null=True)
+    api_entreprise_ca = models.IntegerField(verbose_name="Chiffre d'affaires (API Entreprise)", blank=True, null=True)
     api_entreprise_ca_date_fin_exercice = models.DateField(
         verbose_name="Date de fin de l'exercice (API Entreprise)", blank=True, null=True
     )

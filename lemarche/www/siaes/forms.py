@@ -22,6 +22,16 @@ FORM_TERRITORY_CHOICES = (
     ("ZRR", "Zone de revitalisation rurale (ZRR)"),
 )
 
+FORM_CA_CHOICES = (
+    ("", ""),
+    ("-100000", "Moins de 100 K€"),
+    ("100000-500000", "100 K€ à 500 K€"),
+    ("500000-1000000", "500 K€ à 1 M€"),
+    ("1000000-5000000", "1 M€ à 5 M€"),
+    ("5000000-10000000", "5 M€ à 10 M€"),
+    ("10000000-", "Plus de 10 M€"),
+)
+
 
 class SiaeFilterForm(forms.Form):
     q = forms.CharField(
@@ -83,6 +93,12 @@ class SiaeFilterForm(forms.Form):
         label=SiaeGroup._meta.verbose_name,
         help_text="Le prestataire inclusif fait-il partie d'un groupement ?",
         choices=[("", ""), (True, "Oui"), (False, "Non")],
+        required=False,
+    )
+
+    ca = forms.ChoiceField(
+        label=Siae._meta.get_field("ca").verbose_name,
+        choices=FORM_CA_CHOICES,
         required=False,
     )
 
@@ -161,6 +177,21 @@ class SiaeFilterForm(forms.Form):
             qs = qs.filter(group_count__gte=1)
         elif has_groups in (False, "False"):
             qs = qs.filter(group_count=0)
+
+        # for CA, "ca" field is taken first, otherwise "api_entreprise_ca" is taken
+        ca = self.cleaned_data.get("ca", None)
+        if ca:
+            lower_limit, upper_limit = ca.split("-")
+            if lower_limit:
+                qs = qs.filter(
+                    (Q(ca__gt=0) & Q(ca__gte=int(lower_limit)))
+                    | ((Q(ca=None) | Q(ca=0)) & Q(api_entreprise_ca__gte=int(lower_limit)))
+                )
+            if upper_limit:
+                qs = qs.filter(
+                    (Q(ca__gt=0) & Q(ca__lt=int(upper_limit)))
+                    | ((Q(ca=None) | Q(ca=0)) & Q(api_entreprise_ca__gt=0) & Q(api_entreprise_ca__lt=int(upper_limit)))
+                )
 
         company_client_reference = self.cleaned_data.get("company_client_reference", None)
         if company_client_reference:
