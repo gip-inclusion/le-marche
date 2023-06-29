@@ -1,6 +1,7 @@
 import csv
 import os
 
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 from lemarche.utils.commands import BaseCommand
 
@@ -9,6 +10,7 @@ SIAE_LEGAL_FORM_MAPPING_FILE_NAME = "data/mapping_api_entreprise_forme_juridique
 SIAE_LEGAL_FORM_MAPPING_FILE_PATH = (
     os.path.dirname(os.path.realpath(__file__)) + "/" + SIAE_LEGAL_FORM_MAPPING_FILE_NAME
 )
+SIAE_LEGAL_FORM_VALUES = [lf[0] for lf in siae_constants.LEGAL_FORM_CHOICES]
 
 
 def read_csv(file_path):
@@ -37,7 +39,7 @@ class Command(BaseCommand):
         self.stdout_info("Populating legal_form field...")
 
         siaes = Siae.objects.all()
-        siaes_with_legal_form = siaes.exclude(legal_form="").exclude(legal_form="").exclude(legal_form__isnull=True)
+        siaes_with_legal_form = siaes.exclude(legal_form="").exclude(legal_form__isnull=True)
         self.stdout_info("-" * 80)
         self.stdout_info(f"SIAE count: {siaes.count()}")
         self.stdout_info(f"SIAE with legal_form count: {siaes_with_legal_form.count()}")
@@ -63,9 +65,12 @@ class Command(BaseCommand):
                     None,
                 )
                 if siae_mapping_row:
-                    results["success"] += 1
-                    if not options["dry_run"]:
-                        Siae.objects.filter(id=siae.id).update(legal_form=siae_mapping_row["output_name"])
+                    if siae_mapping_row["output_name"] in SIAE_LEGAL_FORM_VALUES:
+                        results["success"] += 1
+                        if not options["dry_run"]:
+                            Siae.objects.filter(id=siae.id).update(legal_form=siae_mapping_row["output_name"])
+                    else:
+                        self.stdout_error(f"unknown output_name {siae_mapping_row['output_name']}")
             progress += 1
             if (progress % 1000) == 0:
                 self.stdout_info(f"{progress}...")
