@@ -548,6 +548,13 @@ class Siae(models.Model):
         null=True,
         db_index=True,
     )
+    legal_form = models.CharField(
+        verbose_name="Forme juridique",
+        max_length=20,
+        choices=siae_constants.LEGAL_FORM_CHOICES,
+        blank=True,
+        db_index=True,
+    )
 
     website = models.URLField(verbose_name="Site internet", blank=True)
     email = models.EmailField(verbose_name="E-mail", blank=True)
