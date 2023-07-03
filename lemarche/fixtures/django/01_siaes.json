@@ -14,6 +14,7 @@
                 "DISP"
             ],
             "kind": "EI",
+            "legal_form": "SARL",
             "name": "BALUCHON A TABLE CITOYENS",
             "brand": "Baluchon-À table citoyens",
             "phone": "+33 8 03 42 98 29",
@@ -42,6 +43,7 @@
                 "DISP"
             ],
             "kind": "ACI",
+            "legal_form": "SARL",
             "name": "LA COLLECTERIE",
             "brand": "La Collecterie",
             "phone": "05 33 28 71 15",
@@ -70,6 +72,7 @@
                 "DISP"
             ],
             "kind": "ACI",
+            "legal_form": "SARL",
             "name": "INITIATIVES SOLIDAIRES",
             "brand": "Initiatives solidaires",
             "phone": "04 71 48 41 85",
@@ -97,6 +100,7 @@
                 "DISP"
             ],
             "kind": "AI",
+            "legal_form": "SA",
             "name": "ASSOC ESPOIR",
             "brand": "Association Espoir",
             "phone": "02 83 98 94 71",
@@ -124,6 +128,7 @@
                 "DISP"
             ],
             "kind": "ACI",
+            "legal_form": "SA",
             "name": "ACTIV CITES",
             "brand": "ACTIV'CITÉS",
             "phone": "0365934232",
@@ -151,6 +156,7 @@
                 "DISP"
             ],
             "kind": "ACI",
+            "legal_form": "SA",
             "name": "ASSOC RIVAGES PROPRES",
             "brand": "Rivages Propres",
             "phone": "+33 (0)1 47 11 22 01",
@@ -178,6 +184,7 @@
                 "DISP"
             ],
             "kind": "ACI",
+            "legal_form": "AUTRE",
             "name": "CCAS DE BELLEGARDE",
             "brand": "",
             "phone": "04 86 84 83 39",
@@ -205,6 +212,7 @@
                 "DISP"
             ],
             "kind": "AI",
+            "legal_form": "AUTRE",
             "name": "ASSOC RELAIS EMPLOI ALFA",
             "brand": "",
             "phone": "02 69 47 75 15",
@@ -232,6 +240,7 @@
                 "DISP"
             ],
             "kind": "ACI",
+            "legal_form": "AUTRE",
             "name": "VESTALI",
             "brand": "VESTALI",
             "phone": "0379533041",
@@ -259,6 +268,7 @@
                 "DISP"
             ],
             "kind": "ETTI",
+            "legal_form": "",
             "name": "CAP INTERIM 62 ARRAS",
             "brand": "CAP INTERIM France - ARRAS",
             "phone": "0652560123",
