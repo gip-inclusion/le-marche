@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("siaes", "0063_siae_api_entreprise_forme_juridique"),
+        ("siaes", "0064_alter_siae_api_entreprise_ca_alter_siae_ca_and_more"),
     ]
 
     operations = [
