@@ -95,6 +95,11 @@ class SiaeFilterForm(forms.Form):
         choices=[("", ""), (True, "Oui"), (False, "Non")],
         required=False,
     )
+    legal_form = forms.MultipleChoiceField(
+        label=Siae._meta.get_field("legal_form").verbose_name,
+        choices=siae_constants.LEGAL_FORM_CHOICES,
+        required=False,
+    )
 
     ca = forms.ChoiceField(
         label=Siae._meta.get_field("ca").verbose_name,
@@ -192,6 +197,10 @@ class SiaeFilterForm(forms.Form):
                     (Q(ca__gt=0) & Q(ca__lt=int(upper_limit)))
                     | ((Q(ca=None) | Q(ca=0)) & Q(api_entreprise_ca__gt=0) & Q(api_entreprise_ca__lt=int(upper_limit)))
                 )
+
+        legal_forms = self.cleaned_data.get("legal_form", None)
+        if legal_forms:
+            qs = qs.filter(legal_form__in=legal_forms)
 
         company_client_reference = self.cleaned_data.get("company_client_reference", None)
         if company_client_reference:

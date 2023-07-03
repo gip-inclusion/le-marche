@@ -602,6 +602,40 @@ class SiaeCAFilterTest(TestCase):
         self.assertEqual(siaes[0].id, self.siae_50m.id)
 
 
+class SiaeLegalFormFilterTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae_legal_form_sarl = SiaeFactory(legal_form="SARL")
+        cls.siae_legal_form_sa = SiaeFactory(legal_form="SA")
+        cls.siae_legal_form_empty = SiaeFactory(legal_form="")
+
+    def test_search_legal_form_empty(self):
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 3)
+
+    def test_search_legal_form_empty_string(self):
+        url = reverse("siae:search_results") + "?legal_form="
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 3)
+
+    def test_search_legal_form_should_filter(self):
+        # single
+        url = reverse("siae:search_results") + "?legal_form=SARL"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].id, self.siae_legal_form_sarl.id)
+
+    def test_search_legal_form_multiple_should_filter(self):
+        url = reverse("siae:search_results") + "?legal_form=SARL&legal_form=SA"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1 + 1)
+
+
 class SiaeFullTextSearchTest(TestCase):
     @classmethod
     def setUpTestData(cls):
