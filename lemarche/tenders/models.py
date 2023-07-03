@@ -631,8 +631,8 @@ class PartnerShareTenderQuerySet(models.QuerySet):
         if tender.amount:
             conditions |= Q(amount_in__isnull=True)
             try:
-                amount_index = tender_constants.AMOUNT_RANGE_LIST.index(tender.amount)
-                conditions |= Q(amount_in__in=tender_constants.AMOUNT_RANGE_LIST[amount_index:])
+                amount_index = tender_constants.AMOUNT_RANGE_CHOICE_LIST.index(tender.amount)
+                conditions |= Q(amount_in__in=tender_constants.AMOUNT_RANGE_CHOICE_LIST[amount_index:])
             except ValueError:
                 pass
         return self.filter(conditions)

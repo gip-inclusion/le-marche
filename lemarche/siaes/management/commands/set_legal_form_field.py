@@ -10,7 +10,6 @@ SIAE_LEGAL_FORM_MAPPING_FILE_NAME = "data/mapping_api_entreprise_forme_juridique
 SIAE_LEGAL_FORM_MAPPING_FILE_PATH = (
     os.path.dirname(os.path.realpath(__file__)) + "/" + SIAE_LEGAL_FORM_MAPPING_FILE_NAME
 )
-SIAE_LEGAL_FORM_VALUES = [lf[0] for lf in siae_constants.LEGAL_FORM_CHOICES]
 
 
 def read_csv(file_path):
@@ -65,12 +64,16 @@ class Command(BaseCommand):
                     None,
                 )
                 if siae_mapping_row:
-                    if siae_mapping_row["output_name"] in SIAE_LEGAL_FORM_VALUES:
+                    if siae_mapping_row["output_name"] in siae_constants.SIAE_LEGAL_FORM_CHOICE_LIST:
                         results["success"] += 1
                         if not options["dry_run"]:
                             Siae.objects.filter(id=siae.id).update(legal_form=siae_mapping_row["output_name"])
                     else:
+                        results["error"] += 1
                         self.stdout_error(f"unknown output_name {siae_mapping_row['output_name']}")
+                else:
+                    results["error"] += 1
+                    self.stdout_error(f"unknown input_name {siae.api_entreprise_forme_juridique}")
             progress += 1
             if (progress % 1000) == 0:
                 self.stdout_info(f"{progress}...")
@@ -79,3 +82,4 @@ class Command(BaseCommand):
         self.stdout_info("RECAP")
         self.stdout_info(f"SIAE count: {siaes.count()}")
         self.stdout_info(f"Success count: {results['success']}")
+        self.stdout_info(f"Error count: {results['error']}")
