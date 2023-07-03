@@ -789,3 +789,12 @@ WAGTAIL_RICHTEXT_FIELD_FEATURES = [
 WAGTAILEMBEDS_RESPONSIVE_HTML = True
 
 WAGTAILADMIN_BASE_URL = DEPLOY_URL or "http://localhost/"
+
+
+# Shell Plus (django-extensions)
+# ------------------------------------------------------------------------------
+
+SHELL_PLUS_POST_IMPORTS = [
+    "from lemarche.siaes import constants as siae_constants",
+    "from lemarche.tenders import constants as tender_constants",
+]

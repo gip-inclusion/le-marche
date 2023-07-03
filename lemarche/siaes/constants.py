@@ -51,6 +51,36 @@ PRESTA_CHOICES = (
     (PRESTA_BUILD, "Fabrication et commercialisation de biens"),  # 1000
 )
 
+LEGAL_FORM_SARL = "SARL"
+LEGAL_FORM_SARL_COOP = "SARL_COOP"
+LEGAL_FORM_SAS = "SAS"
+LEGAL_FORM_SA = "SA"
+LEGAL_FORM_SA_COOP = "SA_COOP"
+LEGAL_FORM_SNC = "SNC"
+LEGAL_FORM_ASSOCIATION = "ASSOCIATION"
+LEGAL_FORM_GROUPEMENT_EMPLOYEUR = "GROUPEMENT_EMPLOYEUR"
+LEGAL_FORM_COLLECTIVITE = "COLLECTIVITE"
+LEGAL_FORM_CCAS = "CCAS"
+LEGAL_FORM_EPSMS = "EPSMS"
+LEGAL_FORM_FONDATION = "FONDATION"
+LEGAL_FORM_AUTRE = "AUTRE"
+
+LEGAL_FORM_CHOICES = (
+    (LEGAL_FORM_SARL, "SARL"),
+    (LEGAL_FORM_SARL_COOP, "SARL coopérative"),
+    (LEGAL_FORM_SAS, "SAS (Société par actions simplifiée)"),
+    (LEGAL_FORM_SA, "SA (Société anonyme)"),
+    (LEGAL_FORM_SA_COOP, "SA coopérative"),
+    (LEGAL_FORM_SNC, "SNC (Société en nom collectif)"),
+    (LEGAL_FORM_ASSOCIATION, "Association"),
+    (LEGAL_FORM_GROUPEMENT_EMPLOYEUR, "Groupement d'employeurs"),
+    (LEGAL_FORM_COLLECTIVITE, "Collectivité"),
+    (LEGAL_FORM_CCAS, "CCAS (Centre (inter)communal d'action sociale)"),
+    (LEGAL_FORM_EPSMS, "EPSMS (Établissement public social ou médico-social)"),
+    (LEGAL_FORM_FONDATION, "Fondation"),
+    (LEGAL_FORM_AUTRE, "Autre"),
+)
+SIAE_LEGAL_FORM_CHOICE_LIST = [lf[0] for lf in LEGAL_FORM_CHOICES]
 
 GEO_RANGE_DEPARTMENT = "DEPARTMENT"
 GEO_RANGE_REGION = "REGION"
