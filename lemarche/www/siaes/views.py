@@ -54,7 +54,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         - filter and order using the SiaeFilterForm
         - if the user is authenticated, annotate with favorite info
         """
-        self.filter_form = SiaeFilterForm(data=self.request.GET)
+        self.filter_form = SiaeFilterForm(data=self.request.GET, user=self.request.user)
         results = self.filter_form.filter_queryset()
         results_ordered = self.filter_form.order_queryset(results)
         if self.request.user.is_authenticated:
@@ -86,7 +86,9 @@ class SiaeSearchResultsView(FormMixin, ListView):
         """
         context = super().get_context_data(**kwargs)
         context["position_promote_tenders"] = [5, 15]
-        siae_search_form = self.filter_form if self.filter_form else SiaeFilterForm(data=self.request.GET)
+        siae_search_form = (
+            self.filter_form if self.filter_form else SiaeFilterForm(data=self.request.GET, request=self.request)
+        )
         context["form"] = siae_search_form
         context["form_download"] = SiaeDownloadForm(data=self.request.GET)
         context["form_share"] = SiaeShareForm(data=self.request.GET, user=self.request.user)

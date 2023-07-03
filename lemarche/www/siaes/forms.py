@@ -11,6 +11,7 @@ from lemarche.siaes.models import Siae, SiaeClientReference, SiaeGroup
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
+from lemarche.www.siaes.widgets import CustomLocationWidget
 
 
 FORM_KIND_CHOICES_GROUPED = (
@@ -81,6 +82,11 @@ class SiaeFilterForm(forms.Form):
         queryset=Perimeter.objects.all(),
         to_field_name="slug",
         required=False,
+        widget=CustomLocationWidget(
+            attrs={
+                "placeholder": "Région, département, ville",
+            }
+        ),
     )
 
     has_client_references = forms.ChoiceField(
@@ -121,6 +127,22 @@ class SiaeFilterForm(forms.Form):
     favorite_list = forms.ModelChoiceField(
         queryset=FavoriteList.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
     )
+    DISABLED_FOR_ANONYMOUS = [
+        "kind",
+        "presta_type",
+        "territory",
+        "networks",
+        "locations",
+        "has_client_references",
+        "has_groups",
+    ]
+
+    def __init__(self, user=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not user or not user.is_authenticated:
+            for item in self.DISABLED_FOR_ANONYMOUS:
+                self.fields[item].disabled = True
+                self.fields[item].widget.attrs["disabled"] = True
 
     def filter_queryset(self, qs=None):  # noqa C901
         """
