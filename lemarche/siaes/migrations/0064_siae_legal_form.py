@@ -16,13 +16,13 @@ class Migration(migrations.Migration):
             field=models.CharField(
                 blank=True,
                 choices=[
-                    ("ASSOCIATION", "Association"),
                     ("SARL", "SARL"),
                     ("SARL_COOP", "SARL coopérative"),
                     ("SAS", "SAS (Société par actions simplifiée)"),
                     ("SA", "SA (Société anonyme)"),
                     ("SA_COOP", "SA coopérative"),
                     ("SNC", "SNC (Société en nom collectif)"),
+                    ("ASSOCIATION", "Association"),
                     ("GROUPEMENT_EMPLOYEUR", "Groupement d'employeurs"),
                     ("COLLECTIVITE", "Collectivité"),
                     ("CCAS", "CCAS (Centre (inter)communal d'action sociale)"),
