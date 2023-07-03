@@ -135,6 +135,8 @@ class SiaeFilterForm(forms.Form):
         "locations",
         "has_client_references",
         "has_groups",
+        "ca",
+        "legal_form",
     ]
 
     def __init__(self, user=None, *args, **kwargs):
