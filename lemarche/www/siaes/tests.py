@@ -636,6 +636,78 @@ class SiaeLegalFormFilterTest(TestCase):
         self.assertEqual(len(siaes), 1 + 1)
 
 
+class SiaeEmployeesFilterTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae_without_employees = SiaeFactory()
+        cls.siae_3 = SiaeFactory(employees_insertion_count=3)
+        cls.siae_9 = SiaeFactory(employees_permanent_count=9)
+        cls.siae_10 = SiaeFactory(c2_etp_count=9, employees_permanent_count=1)
+        cls.siae_49 = SiaeFactory(employees_insertion_count=40, employees_permanent_count=9)
+        cls.siae_50 = SiaeFactory(c2_etp_count=49.5)
+        cls.siae_100 = SiaeFactory(api_entreprise_employees="100 à 199 salariés")
+        cls.siae_150 = SiaeFactory(employees_insertion_count=150, api_entreprise_employees="200 à 249 salariés")
+        cls.siae_252 = SiaeFactory(
+            employees_insertion_count=150,
+            employees_permanent_count=102,
+            api_entreprise_employees="1 000 à 1 999 salariés",
+        )
+        cls.siae_550 = SiaeFactory(employees_insertion_count=550, c2_etp_count=490)
+        cls.siae_3000 = SiaeFactory(api_entreprise_employees="2 000 à 4 999 salariés")
+
+    def test_search_query_empty(self):
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 11)
+
+    def test_search_employees_1_to_9_filter(self):
+        url = reverse("siae:search_results") + "?employees=1-9"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+        self.assertEqual(siaes[0].id, self.siae_9.id)
+        self.assertEqual(siaes[1].id, self.siae_3.id)
+
+    def test_search_employees_10_to_49_filter(self):
+        url = reverse("siae:search_results") + "?employees=10-49"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+        self.assertEqual(siaes[0].id, self.siae_49.id)
+        self.assertEqual(siaes[1].id, self.siae_10.id)
+
+    def test_search_employees_50_to_99_filter(self):
+        url = reverse("siae:search_results") + "?employees=50-99"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].id, self.siae_50.id)
+
+    def test_search_employees_100_to_249_filter(self):
+        url = reverse("siae:search_results") + "?employees=100-249"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+        self.assertEqual(siaes[0].id, self.siae_150.id)
+        self.assertEqual(siaes[1].id, self.siae_100.id)
+
+    def test_search_employees_250_to_499_filter(self):
+        url = reverse("siae:search_results") + "?employees=250-499"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 1)
+        self.assertEqual(siaes[0].id, self.siae_252.id)
+
+    def test_search_employees_more_500_filter(self):
+        url = reverse("siae:search_results") + "?employees=500-"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+        self.assertEqual(siaes[0].id, self.siae_3000.id)
+        self.assertEqual(siaes[1].id, self.siae_550.id)
+
+
 class SiaeFullTextSearchTest(TestCase):
     @classmethod
     def setUpTestData(cls):
