@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Count
 from django.db.models.functions import Lower
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -35,6 +36,9 @@ class UserQueryset(models.QuerySet):
 
     def has_api_key(self):
         return self.filter(api_key__isnull=False)
+
+    def with_siae_stats(self):
+        return self.prefetch_related("siaes").annotate(siae_count=Count("siaes", distinct=True))
 
 
 class UserManager(BaseUserManager):
@@ -90,6 +94,9 @@ class UserManager(BaseUserManager):
 
     def has_api_key(self):
         return self.get_queryset().has_api_key()
+
+    def with_siae_stats(self):
+        return self.get_queryset().with_siae_stats()
 
 
 class User(AbstractUser):
