@@ -81,6 +81,22 @@ class UserModelQuerysetTest(TestCase):
         self.assertEqual(User.objects.with_siae_stats().filter(id=self.user.id).first().siae_count, 0)
         self.assertEqual(User.objects.with_siae_stats().filter(id=user_2.id).first().siae_count, 1)
 
+    def test_with_tender_stats_queryset(self):
+        user_2 = UserFactory()
+        TenderFactory(author=user_2)
+        self.assertEqual(User.objects.count(), 1 + 1)
+        self.assertEqual(User.objects.with_tender_stats().filter(id=self.user.id).first().tender_count, 0)
+        self.assertEqual(User.objects.with_tender_stats().filter(id=user_2.id).first().tender_count, 1)
+
+    def test_with_favorite_list_stats_queryset(self):
+        user_2 = UserFactory()
+        FavoriteListFactory(user=user_2)
+        self.assertEqual(User.objects.count(), 1 + 1)
+        self.assertEqual(
+            User.objects.with_favorite_list_stats().filter(id=self.user.id).first().favorite_list_count, 0
+        )
+        self.assertEqual(User.objects.with_favorite_list_stats().filter(id=user_2.id).first().favorite_list_count, 1)
+
     def test_chain_querysets(self):
         user_2 = UserFactory(api_key="chain")
         siae = SiaeFactory()

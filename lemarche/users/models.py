@@ -40,6 +40,14 @@ class UserQueryset(models.QuerySet):
     def with_siae_stats(self):
         return self.prefetch_related("siaes").annotate(siae_count=Count("siaes", distinct=True))
 
+    def with_tender_stats(self):
+        return self.prefetch_related("tenders").annotate(tender_count=Count("tenders", distinct=True))
+
+    def with_favorite_list_stats(self):
+        return self.prefetch_related("favorite_lists").annotate(
+            favorite_list_count=Count("favorite_lists", distinct=True)
+        )
+
 
 class UserManager(BaseUserManager):
     """
@@ -97,6 +105,12 @@ class UserManager(BaseUserManager):
 
     def with_siae_stats(self):
         return self.get_queryset().with_siae_stats()
+
+    def with_tender_stats(self):
+        return self.get_queryset().with_tender_stats()
+
+    def with_favorite_list_stats(self):
+        return self.get_queryset().with_favorite_list_stats()
 
 
 class User(AbstractUser):
