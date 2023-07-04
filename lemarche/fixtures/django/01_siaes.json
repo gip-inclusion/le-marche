@@ -25,7 +25,8 @@
             "is_first_page": true,
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:40:16.387Z",
-            "slug": "baluchon-a-table-citoyens-93"
+            "slug": "baluchon-a-table-citoyens-93",
+            "api_entreprise_employees": "50 à 99 salariés"
         }
     },
     {
@@ -82,7 +83,8 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:40:08.840Z",
-            "slug": "initiatives-solidaires-93"
+            "slug": "initiatives-solidaires-93",
+            "api_entreprise_employees": "Non renseigné"
         }
     },
     {
@@ -2546,7 +2548,8 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:39:37.601Z",
-            "slug": "commune-de-dunkerque-59"
+            "slug": "commune-de-dunkerque-59",
+            "api_entreprise_employees": "1 000 à 1 999 salariés"
         }
     },
     {
@@ -5138,7 +5141,8 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:38:04.734Z",
-            "slug": "commune-de-nancy-54"
+            "slug": "commune-de-nancy-54",
+            "api_entreprise_employees": "1 000 à 1 999 salariés"
         }
     },
     {
@@ -5894,7 +5898,8 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:38:06.218Z",
-            "slug": "departement-des-deux-sevres-79"
+            "slug": "departement-des-deux-sevres-79",
+            "api_entreprise_employees": "1 000 à 1 999 salariés"
         }
     },
     {
@@ -8027,7 +8032,9 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:38:10.225Z",
-            "slug": "ccas-paris-75"
+            "slug": "ccas-paris-75",
+            "c2_etp_count": 41.2,
+            "api_entreprise_employees": "1 000 à 1 999 salariés"
         }
     },
     {
@@ -9404,7 +9411,10 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:38:11.942Z",
-            "slug": "ass-lutte-contre-le-gaspillage-39"
+            "slug": "ass-lutte-contre-le-gaspillage-39",
+            "employees_insertion_count": 25,
+            "employees_permanent_count": 4,
+            "api_entreprise_employees": "20 à 49 salariés"
         }
     },
     {
@@ -38059,7 +38069,9 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:38:55.619Z",
-            "slug": "assoc-germa-ai-67"
+            "slug": "assoc-germa-ai-67",
+            "c2_etp_count": 10.0,
+            "api_entreprise_employees": "20 à 49 salariés"
         }
     },
     {
@@ -42973,7 +42985,10 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:39:02.226Z",
-            "slug": "agate-paysages-39"
+            "slug": "agate-paysages-39",
+            "employees_insertion_count": 180,
+            "employees_permanent_count": 23,
+            "api_entreprise_employees": "20 à 49 salariés"
         }
     },
     {
@@ -50047,7 +50062,8 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:39:10.686Z",
-            "slug": "assoc-haut-doubs-repassage-25"
+            "slug": "assoc-haut-doubs-repassage-25",
+            "api_entreprise_employees": "20 à 49 salariés"
         }
     },
     {
@@ -66251,7 +66267,8 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:40:07.981Z",
-            "slug": "resilience-93"
+            "slug": "resilience-93",
+            "api_entreprise_employees": "6 à 9 salariés"
         }
     },
     {
@@ -96165,7 +96182,8 @@
             "source": "ASP",
             "created_at": "2019-12-05T14:37:56.609Z",
             "updated_at": "2020-12-18T10:40:04.581Z",
-            "slug": "envie-autonomie-champagne-ardenne-51"
+            "slug": "envie-autonomie-champagne-ardenne-51",
+            "c2_etp_count": 3.0
         }
     },
     {
@@ -103374,7 +103392,11 @@
             "source": "ASP",
             "created_at": "2020-01-24T09:34:30.036Z",
             "updated_at": "2020-12-18T10:40:08.084Z",
-            "slug": "interinser-62"
+            "slug": "interinser-62",
+            "c2_etp_count": 112.62,
+            "employees_insertion_count": 764,
+            "employees_permanent_count": 28,
+            "api_entreprise_employees": "10 à 19 salariés"
         }
     },
     {
