@@ -35,7 +35,8 @@ apt-get -y install --no-install-recommends \
     libproj-dev \
     libsass1 \
     postgresql-client \
-    vim-tiny
+    vim-tiny \
+    firefox-esr
 
 # Delete cached files we don't need anymore:
 apt-get clean

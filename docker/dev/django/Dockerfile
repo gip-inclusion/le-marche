@@ -71,18 +71,18 @@ ENV DJANGO_SETTINGS_MODULE="config.settings.dev" \
 RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && cat /etc/issue && cat /etc/motd' \
     >> /etc/bash.bashrc \
     ; echo "\
-===================================================================\n\
-= Bitoubi Dev Docker container                                =\n\
-===================================================================\n\
-\n\
-(c) plateforme de l'Inclusion\n\
-\n\
-Source directory is /app \n\
+    ===================================================================\n\
+    = Bitoubi Dev Docker container                                =\n\
+    ===================================================================\n\
+    \n\
+    (c) plateforme de l'Inclusion\n\
+    \n\
+    Source directory is /app \n\
 
-Run App with :\n\
-> python ./manage.py runserver \$HOST:\$PORT\n\
-\n\
-"\
+    Run App with :\n\
+    > python ./manage.py runserver \$HOST:\$PORT\n\
+    \n\
+    "\
     > /etc/motd
 
 CMD ["bash"]
