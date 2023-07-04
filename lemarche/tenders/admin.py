@@ -90,7 +90,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "kind",
         "deadline_date",
         "start_working_date",
-        "question_count_with_link",
         "siae_count_with_link",
         # "siae_email_send_count_with_link",
         "siae_email_link_click_count_with_link",
@@ -273,7 +272,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.with_question_stats()
         qs = qs.with_siae_stats()
         return qs
 
