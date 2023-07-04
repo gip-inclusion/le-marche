@@ -34,7 +34,6 @@ RUN ./install-packages.sh
 FROM common-base AS dependencies
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
-ENV GECKODRIVER_URL=https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux32.tar.gz
 
 RUN pip install poetry==$POETRY_VERSION
 RUN pip install -I uwsgi
@@ -45,9 +44,6 @@ COPY poetry.lock pyproject.toml /app/
 RUN poetry config virtualenvs.create false && \
     poetry config virtualenvs.path /opt/venv && \
     poetry install $(test $ENV == "prod" && echo "--no-dev") --no-interaction --no-ansi
-
-# Needed for selenium test
-RUN wget -qO- $GECKODRIVER_URL | tar xvz -C /usr/bin/
 
 # ----------------------------------------------------
 # Build project
