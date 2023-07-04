@@ -96,7 +96,6 @@ class TenderQuerySet(models.QuerySet):
             siae_count=Count("siaes", distinct=True),
             siae_email_send_count=Sum(
                 Case(When(tendersiae__email_send_date__isnull=False, then=1), default=0, output_field=IntegerField()),
-                distinct=True,
             ),
             siae_email_link_click_count=Sum(
                 Case(
@@ -104,13 +103,11 @@ class TenderQuerySet(models.QuerySet):
                     default=0,
                     output_field=IntegerField(),
                 ),
-                distinct=True,
             ),
             siae_detail_display_count=Sum(
                 Case(
                     When(tendersiae__detail_display_date__isnull=False, then=1), default=0, output_field=IntegerField()
                 ),
-                distinct=True,
             ),
             siae_detail_contact_click_count=Sum(
                 Case(
@@ -118,7 +115,6 @@ class TenderQuerySet(models.QuerySet):
                     default=0,
                     output_field=IntegerField(),
                 ),
-                distinct=True,
             ),
             siae_detail_contact_click_since_last_seen_date_count=Sum(
                 Case(
@@ -131,7 +127,6 @@ class TenderQuerySet(models.QuerySet):
                     default=0,
                     output_field=IntegerField(),
                 ),
-                distinct=True,
             ),
         )
 
@@ -143,7 +138,6 @@ class TenderQuerySet(models.QuerySet):
                     default=0,
                     output_field=IntegerField(),
                 ),
-                distinct=True,
             ),
             network_siae_detail_contact_click_count=Sum(
                 Case(
@@ -154,7 +148,6 @@ class TenderQuerySet(models.QuerySet):
                     default=0,
                     output_field=IntegerField(),
                 ),
-                distinct=True,
             ),
         )
 
