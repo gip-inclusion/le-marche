@@ -95,7 +95,11 @@ class TenderQuerySet(models.QuerySet):
         return self.annotate(
             siae_count=Count("siaes", distinct=True),
             siae_email_send_count=Sum(
-                Case(When(tendersiae__email_send_date__isnull=False, then=1), default=0, output_field=IntegerField()),
+                Case(
+                    When(Q(tendersiae__tender_id=F("id")) & Q(tendersiae__email_send_date__isnull=False), then=1),
+                    default=0,
+                    output_field=IntegerField(),
+                ),
             ),
             siae_email_link_click_count=Sum(
                 Case(
