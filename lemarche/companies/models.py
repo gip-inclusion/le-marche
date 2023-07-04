@@ -1,6 +1,7 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils import timezone
+from django_better_admin_arrayfield.models.fields import ArrayField
 
 
 class Company(models.Model):
@@ -10,6 +11,14 @@ class Company(models.Model):
     siret = models.CharField(verbose_name="Siret", max_length=14, blank=True)
     website = models.URLField(verbose_name="Site web", blank=True)
     logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True)
+
+    email_domain_list = ArrayField(
+        verbose_name="Liste d'e-mails",
+        help_text="@entreprise.fr (sans le @)",
+        base_field=models.CharField(max_length=255),
+        blank=True,
+        default=list,
+    )
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
