@@ -139,9 +139,9 @@ class SiaeFilterForm(forms.Form):
         "legal_form",
     ]
 
-    def __init__(self, user=None, *args, **kwargs):
+    def __init__(self, user=None, advanced_search=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not user or not user.is_authenticated:
+        if not advanced_search:
             for item in self.DISABLED_FOR_ANONYMOUS:
                 self.fields[item].disabled = True
                 self.fields[item].widget.attrs["disabled"] = True
