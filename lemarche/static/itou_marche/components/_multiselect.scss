@@ -37,6 +37,10 @@ button.multiselect {
     button.multiselect {
         background: none;
 
+        &:disabled {
+            background: #e6e6eb;
+        }
+
         &::after {
             display: inline-block;
             font-family: remixicon !important;
