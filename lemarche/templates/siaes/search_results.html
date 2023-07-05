@@ -106,7 +106,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div x-data="{ open: false }">
+                                <div x-data="{ open: {{is_advanced_search|yesno:"true,false"}} }">
                                     <div class="d-flex justify-content-center">
                                         <button type="button" class="btn btn-link" x-on:click="open = ! open">
                                             Recherche avancée

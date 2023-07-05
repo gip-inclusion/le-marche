@@ -362,6 +362,12 @@ class SiaeFilterForm(forms.Form):
         qs = qs.order_by(*ORDER_BY_FIELDS)
         return qs
 
+    def is_advanced_search(self) -> bool:
+        for _field in self.DISABLED_FOR_ANONYMOUS:
+            if self.cleaned_data[_field]:
+                return True
+        return False
+
 
 class SiaeFavoriteForm(forms.ModelForm):
     favorite_lists = forms.ModelChoiceField(
