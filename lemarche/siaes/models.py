@@ -7,8 +7,8 @@ from django.contrib.gis.measure import D
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.contrib.postgres.search import TrigramSimilarity  # SearchVector
 from django.db import IntegrityError, models, transaction
-from django.db.models import BooleanField, Case, CharField, Count, F, IntegerField, Q, Sum, When
-from django.db.models.functions import Greatest
+from django.db.models import BooleanField, Case, CharField, Count, F, IntegerField, PositiveIntegerField, Q, Sum, When
+from django.db.models.functions import Greatest, Round
 from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
 from django.urls import reverse
@@ -429,6 +429,26 @@ class SiaeQuerySet(models.QuerySet):
 
     def content_not_filled(self):
         return self.filter(Q(sector_count=0) | Q(contact_email=""))
+
+    def with_employees_count(self):
+        """
+        Enrich each Siae with count of employees
+        Annotate first to use the field "c2_etp_count" if employees_insertion_count is null
+        Next, the sum of an integer and a null value is null, so we check if fields are not null before make sum
+        """
+        return self.annotate(
+            employees_insertion_count_with_c2_etp=Case(
+                When(employees_insertion_count=None, then=Round(F("c2_etp_count"))),
+                default=F("employees_insertion_count"),
+                output_field=PositiveIntegerField(),
+            )
+        ).annotate(
+            employees_count=Case(
+                When(employees_insertion_count_with_c2_etp=None, then=F("employees_permanent_count")),
+                When(employees_permanent_count=None, then=F("employees_insertion_count_with_c2_etp")),
+                default=F("employees_insertion_count_with_c2_etp") + F("employees_permanent_count"),
+            )
+        )
 
 
 class Siae(models.Model):
