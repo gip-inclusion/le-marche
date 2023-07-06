@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from django.db import models
 
+from lemarche.siaes import constants as siae_constants
 from lemarche.utils import constants
 
 
@@ -43,6 +44,8 @@ class Tracker(models.Model):
     isadmin = models.BooleanField(default=False)  # user.kind == User.KIND_ADMIN
 
     siae_id = models.IntegerField(blank=True, null=True)
+    siae_kind = models.CharField(max_length=6, choices=siae_constants.KIND_CHOICES_WITH_EXTRA, blank=True)
+    siae_contact_email = models.EmailField(blank=True)
 
     objects = models.Manager.from_queryset(TrackerQuerySet)()
 

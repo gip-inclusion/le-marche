@@ -60,6 +60,8 @@ def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
         siae_id = meta.get("siae_id", None)
         if siae_id:
             siae_id = int(siae_id[0]) if (type(siae_id) == list) else int(siae_id)
+        siae_kind = meta.get("siae_kind") if meta.get("siae_kind", "") else ""
+        siae_contact_email = meta.get("siae_contact_email") if meta.get("siae_contact_email", "") else ""
 
         set_payload = {
             "date_created": date_created,
@@ -74,6 +76,8 @@ def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
             "user_kind": user_kind,
             "isadmin": meta.get("is_admin", False),
             "siae_id": siae_id,
+            "siae_kind": siae_kind,
+            "siae_contact_email": siae_contact_email,
         }
         payload = DEFAULT_PAYLOAD | set_payload
 
@@ -154,6 +158,8 @@ class TrackerMiddleware:
             "user_type": user.kind if user.is_authenticated else "",
             "is_admin": user.is_authenticated and user.kind == User.KIND_ADMIN,
             "siae_id": siae.id if siae else None,
+            "siae_kind": siae.kind if siae else "",
+            "siae_contact_email": siae.contact_email if siae else "",
         }
 
     def get_context_data(self, response: HttpResponse):
