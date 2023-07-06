@@ -329,10 +329,10 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     def question_count_with_link(self, tender):
         url = reverse("admin:tenders_tenderquestion_changelist") + f"?tender__in={tender.id}"
-        return format_html(f'<a href="{url}">{getattr(tender, "question_count", 0)}</a>')
+        return format_html(f'<a href="{url}">{getattr(tender, "questions_count", 0)}</a>')
 
     question_count_with_link.short_description = TenderQuestion._meta.verbose_name_plural
-    question_count_with_link.admin_order_field = "question_count"
+    question_count_with_link.admin_order_field = "questions_count"
 
     def siae_count_with_link(self, tender):
         url = reverse("admin:siaes_siae_changelist") + f"?tenders__in={tender.id}"
