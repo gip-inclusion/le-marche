@@ -19,7 +19,7 @@ class CompanyAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": ("name", "slug", "description", "siret", "website"),
+                "fields": ("name", "slug", "description", "siret", "website", "email_domain_list"),
             },
         ),
         ("Logo", {"fields": ("logo_url", "logo_url_display")}),
