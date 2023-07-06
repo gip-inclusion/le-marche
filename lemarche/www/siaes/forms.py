@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib.gis.db.models.functions import Distance
-from django.db.models import BooleanField, Case, F, PositiveIntegerField, Q, Value, When
-from django.db.models.functions import Round
+from django.db.models import BooleanField, Case, Q, Value, When
 
 from lemarche.favorites.models import FavoriteList
 from lemarche.networks.models import Network
@@ -238,26 +237,8 @@ class SiaeFilterForm(forms.Form):
         if employees:
             lower_limit, upper_limit = employees.split("-")
 
-            # Annotate to use the field "c2_etp_count" if employees_insertion_count is null
-            qs = qs.annotate(
-                employees_insertion_count_with_c2_etp=Case(
-                    When(employees_insertion_count=None, then=Round(F("c2_etp_count"))),
-                    default=F("employees_insertion_count"),
-                    output_field=PositiveIntegerField(),
-                )
-            )
-
-            # The sum of an integer and a null value is null, so we check if fields are not null before make sum
-            qs = qs.annotate(
-                employees_count=Case(
-                    When(employees_insertion_count_with_c2_etp=None, then=F("employees_permanent_count")),
-                    When(employees_permanent_count=None, then=F("employees_insertion_count_with_c2_etp")),
-                    default=F("employees_insertion_count_with_c2_etp") + F("employees_permanent_count"),
-                )
-            )
-
             # Check lower limitation, it always exists when employees filter is used
-            qs = qs.filter(
+            qs = qs.with_employees_count().filter(
                 (Q(employees_count__isnull=False) & Q(employees_count__gte=int(lower_limit)))
                 | (
                     Q(employees_count=None)
