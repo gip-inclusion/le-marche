@@ -106,9 +106,9 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div x-data="{ open: {{is_advanced_search|yesno:"true,false"}} }">
+                                <div x-data="AdvancedSearchComponent">
                                     <div class="d-flex justify-content-center">
-                                        <button type="button" class="btn btn-link" x-on:click="open = ! open">
+                                        <button type="button" class="btn btn-link" @click="toggle()">
                                             Recherche avancée
                                             <br />
                                             <i class="ri-lg"
@@ -289,12 +289,86 @@
     {% include "auth/_login_or_signup_modal.html" %}
     {% include "favorites/_favorite_item_add_modal.html" %}
     {% include "favorites/_favorite_item_remove_modal.html" %}
+    <div class="modal fade modal-siae" id="modal_login_to_access_advanced_search" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Pour accéder à la recherche avancée multicritères, inscrivez-vous, c’est gratuit !</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="modal-body home-content-body">
+
+                    <p class="mb-4">
+                        Vous pourrez filtrer selon les critères suivants :
+                    </p>
+                    <ul class="list-unstyled mb-5">
+                        <li class="d-flex mb-2">
+                            <span class="font-weight-bold ml-2">Type de structure</span>
+                        </li>
+                        <li class="d-flex mb-2">
+                            <span class="font-weight-bold ml-2">Certification (Qualibat, RGE, Ecocert, Imprim’vert, Bio, ESS…)</span>
+                        </li>
+                        <li class="d-flex mb-2">
+                            <span class="font-weight-bold ml-2">Taille d’entreprise</span>
+                        </li>
+                        <li class="d-flex mb-2">
+                            <span class="font-weight-bold ml-2">Chiffre d’affaires</span>
+                        </li>
+                        <li class="d-flex mb-2">
+                            <span class="font-weight-bold ml-2">Localisation</span>
+                        </li>
+                        <li class="d-flex mb-2">
+                            <span class="font-weight-bold ml-2">Référence client</span>
+                        </li>
+                        <li class="d-flex mb-2">
+                            <span class="font-weight-bold ml-2">Groupement</span>
+                        </li>
+                        <li class="d-flex mb-2">
+                            <span class="font-weight-bold ml-2">QPV/ZRR</span>
+                        </li>
+                        <li class="d-flex mb-2">
+                            <span class="font-weight-bold ml-2">Forme juridique</span>
+                        </li>
+                    </ul>
+                    <div class="text-center">
+                        <a href="{% url 'auth:signup' %}?next=next-params-to-replace" id="auth-link" class="btn btn-sm btn-primary">Créer un compte</a>
+                    </div>
+                    <hr class="my-5" data-text="ou" />
+                    <div class="text-center">
+                        <p class="mb-0">Vous avez déjà un compte ?</p>
+                        <a href="{% url 'auth:login' %}?next=next-params-to-replace" id="auth-link" class="btn btn-sm btn-link">Se connecter</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
 {% block extra_js %}
     <script type="text/javascript" src="{% static 'vendor/alpinejs@3.11.1.min.js'%}" defer></script>
     <script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/search_form.js' %}"></script>
     <script type="text/javascript">
+
+document.addEventListener('alpine:init', function() {
+    Alpine.data('AdvancedSearchComponent', () => (
+        {
+            open: {{is_advanced_search|yesno:"true,false"}},
+            is_authenticated: {{is_authenticated|yesno:"true,false"}},
+            is_already_opened:false,
+            toggle() {
+                if(!this.is_authenticated && !this.is_already_opened){
+                    this.is_already_opened=true;
+                    OpenBootstrapModal("#modal_login_to_access_advanced_search");
+                }
+                this.open = !this.open;
+            },
+        }
+    ));
+});
+
 document.addEventListener("DOMContentLoaded", function() {
     let searchFilterTab = document.getElementById('search-filter-tab');
     let searchFilterContent = document.getElementById('search-filter');

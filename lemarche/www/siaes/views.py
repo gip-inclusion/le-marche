@@ -101,6 +101,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         context["form_download"] = SiaeDownloadForm(data=self.request.GET)
         context["form_share"] = SiaeShareForm(data=self.request.GET, user=self.request.user)
         context["url_share_list"] = self.get_mailto_share_url()
+        context["is_authenticated"] = self.request.user.is_authenticated
         if len(self.request.GET.keys()):
             context["is_advanced_search"] = siae_search_form.is_advanced_search()
             if siae_search_form.is_valid():
@@ -127,7 +128,6 @@ class SiaeSearchResultsView(FormMixin, ListView):
         context["siaes_json"] = serialize(
             "geojson", context["siaes"], geometry_field="coords", fields=("id", "name", "brand", "slug")
         )
-
         return context
 
     def get(self, request, *args, **kwargs):
