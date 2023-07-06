@@ -49,7 +49,13 @@ EMPLOYEES_API_ENTREPRISE_MAPPING = {
     "50-99": ["50 à 99 salariés"],
     "100-249": ["100 à 199 salariés", "200 à 249 salariés"],
     "250-499": ["250 à 499 salariés"],
-    "500-": ["500 à 999 salariés", "1 000 à 1 999 salariés", "2 000 à 4 999 salariés", "5 000 à 9 999 salariés"],
+    "500-": [
+        "500 à 999 salariés",
+        "1 000 à 1 999 salariés",
+        "2 000 à 4 999 salariés",
+        "5 000 à 9 999 salariés",
+        "10 000 salariés et plus",
+    ],
 }
 
 
