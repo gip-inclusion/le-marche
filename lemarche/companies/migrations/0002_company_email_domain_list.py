@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 default=list,
                 help_text="@entreprise.fr (sans le @)",
                 size=None,
-                verbose_name="Liste d'e-mails",
+                verbose_name="Liste des noms de domaine d'e-mails",
             ),
         ),
     ]

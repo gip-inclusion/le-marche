@@ -13,7 +13,7 @@ class Company(models.Model):
     logo_url = models.URLField(verbose_name="Lien vers le logo", max_length=500, blank=True)
 
     email_domain_list = ArrayField(
-        verbose_name="Liste d'e-mails",
+        verbose_name="Liste des noms de domaine d'e-mails",
         help_text="@entreprise.fr (sans le @)",
         base_field=models.CharField(max_length=255),
         blank=True,
