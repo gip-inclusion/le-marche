@@ -86,7 +86,7 @@ class TenderQuerySet(models.QuerySet):
         )
 
     def with_question_stats(self):
-        return self.prefetch_related("questions").annotate(question_count=Count("questions", distinct=True))
+        return self.annotate(question_count=Count("questions", distinct=True))
 
     def with_siae_stats(self):
         """
@@ -126,7 +126,7 @@ class TenderQuerySet(models.QuerySet):
                     ),
                     default=0,
                     output_field=IntegerField(),
-                )
+                ),
             ),
         )
 
@@ -137,7 +137,7 @@ class TenderQuerySet(models.QuerySet):
                     When(Q(tendersiae__email_send_date__isnull=False) & Q(tendersiae__siae__in=network_siaes), then=1),
                     default=0,
                     output_field=IntegerField(),
-                )
+                ),
             ),
             network_siae_detail_contact_click_count=Sum(
                 Case(
@@ -147,7 +147,7 @@ class TenderQuerySet(models.QuerySet):
                     ),
                     default=0,
                     output_field=IntegerField(),
-                )
+                ),
             ),
         )
 
@@ -437,6 +437,10 @@ class Tender(models.Model):
 
     def questions_list(self):
         return list(self.questions.values("id", "text"))
+
+    @property
+    def questions_count(self):
+        return self.questions.count()
 
     @cached_property
     def external_link_title(self) -> str:

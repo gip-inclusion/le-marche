@@ -18,7 +18,7 @@ from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.admin import TenderAdmin
 from lemarche.tenders.factories import PartnerShareTenderFactory, TenderFactory, TenderQuestionFactory
-from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
+from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderSiae
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import MarcheAdminSite, get_admin_change_view_url
@@ -284,6 +284,8 @@ class TenderModelQuerysetStatsTest(TestCase):
             detail_contact_click_date=timezone.now(),
         )
         cls.tender_without_siae = TenderFactory(deadline_date=date_tomorrow)
+        TenderQuestionFactory(tender=cls.tender_with_siae_1)
+        TenderQuestionFactory(tender=cls.tender_with_siae_1)
 
     def test_filter_with_siaes_queryset(self):
         self.tender_with_siae_2.validated_at = None
@@ -331,6 +333,12 @@ class TenderModelQuerysetStatsTest(TestCase):
         self.assertEqual(siae_without_tender.tender_detail_display_count, 0)
         self.assertEqual(siae_without_tender.tender_detail_contact_click_count, 0)
 
+    def test_with_question_stats(self):
+        self.assertEqual(TenderQuestion.objects.count(), 2)
+        tender_with_siae_1 = Tender.objects.with_question_stats().filter(id=self.tender_with_siae_1.id).first()
+        self.assertEqual(tender_with_siae_1.questions.count(), 2)
+        self.assertEqual(tender_with_siae_1.question_count, 2)
+
     def test_with_deadline_date_is_outdated_queryset(self):
         TenderFactory(deadline_date=date_last_week)
         tender_queryset = Tender.objects.with_deadline_date_is_outdated()
@@ -339,6 +347,19 @@ class TenderModelQuerysetStatsTest(TestCase):
         tender_with_siae_1 = tender_queryset.last()
         self.assertEqual(tender_with_siae_1.id, self.tender_with_siae_1.id)
         self.assertFalse(tender_with_siae_1.deadline_date_is_outdated)
+
+    # doesn't work when chaining these 2 querysets: adds duplicates...
+    # def test_chain_querysets(self):
+    #     tender_with_siae_1 = (
+    #         Tender.objects.with_question_stats().with_siae_stats().filter(id=self.tender_with_siae_1.id).first()
+    #     )
+    #     self.assertEqual(tender_with_siae_1.siaes.count(), 6)
+    #     self.assertEqual(tender_with_siae_1.siae_count, 6)
+    #     self.assertEqual(tender_with_siae_1.siae_email_send_count, 4)
+    #     self.assertEqual(tender_with_siae_1.siae_email_link_click_count, 3)
+    #     self.assertEqual(tender_with_siae_1.siae_detail_display_count, 2)
+    #     self.assertEqual(tender_with_siae_1.siae_detail_contact_click_count, 1)
+    #     self.assertEqual(tender_with_siae_1.siae_detail_contact_click_since_last_seen_date_count, 1)
 
 
 class TenderMigrationToSelectTest(TestCase):
