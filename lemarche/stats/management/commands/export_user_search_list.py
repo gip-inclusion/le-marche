@@ -5,7 +5,6 @@ from datetime import date, timedelta
 
 import boto3
 from django.conf import settings
-from django.db.models import Count
 
 from lemarche.stats.models import Tracker
 from lemarche.users.models import User
@@ -90,7 +89,7 @@ class Command(BaseCommand):
         # init
         search_list_enriched = list()
         # we store the users in a list to avoid querying the DB on every iteration
-        user_list = User.objects.prefetch_related("siaes").annotate(siae_count=Count("siaes")).values()
+        user_list = User.objects.with_siae_stats().values()
 
         for item in search_list:
             search_item = {}

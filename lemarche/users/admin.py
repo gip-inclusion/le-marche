@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
@@ -301,11 +300,9 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.annotate(
-            siae_count=Count("siaes", distinct=True),
-            tender_count=Count("tenders", distinct=True),
-            favorite_list_count=Count("favorite_lists", distinct=True),
-        )
+        qs = qs.with_siae_stats()
+        qs = qs.with_tender_stats()
+        qs = qs.with_favorite_list_stats()
         return qs
 
     def siae_count_with_link(self, user):
