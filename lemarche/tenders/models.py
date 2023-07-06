@@ -313,20 +313,6 @@ class Tender(models.Model):
         blank=True,
     )
 
-    siae_transactioned = models.BooleanField(
-        verbose_name="Abouti à une transaction avec une structure",
-        default=False,
-    )
-
-    # validation
-    status = models.CharField(
-        verbose_name="Statut",
-        max_length=10,
-        choices=tender_constants.STATUS_CHOICES,
-        default=tender_constants.STATUS_DRAFT,
-    )
-    validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
-
     # survey
     scale_marche_useless = models.CharField(
         verbose_name="Utilité du marché de l'inclusion",
@@ -342,6 +328,25 @@ class Tender(models.Model):
         base_field=models.CharField(max_length=20, choices=constants.MARCHE_BENEFIT_CHOICES),
         blank=True,
         default=list,
+    )
+
+    # validation
+    status = models.CharField(
+        verbose_name="Statut",
+        max_length=10,
+        choices=tender_constants.STATUS_CHOICES,
+        default=tender_constants.STATUS_DRAFT,
+    )
+    validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
+
+    # admin
+    siae_transactioned = models.BooleanField(
+        verbose_name="Abouti à une transaction avec une structure",
+        help_text="Champ renseigné par un ADMIN",
+        default=False,
+    )
+    amount_exact = models.PositiveIntegerField(
+        verbose_name="Montant exact du besoin", help_text="Champ renseigné par un ADMIN", blank=True, null=True
     )
 
     # stats
