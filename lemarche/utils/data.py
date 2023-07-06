@@ -34,3 +34,14 @@ def get_choice(choices, key):
 
 def round_by_base(x, base=5):
     return base * round(x / base)
+
+
+def date_to_string(date, format="%d/%m/%Y"):
+    """
+    datetime.date(2022, 3, 30) --> 30/03/2022
+    datetime.datetime(2022, 3, 24, 15, 8, 5, 965163, tzinfo=datetime.timezone.utc) --> 24/03/2022
+    None, '' --> ''
+    """
+    if date:
+        return date.strftime(format)
+    return ""
