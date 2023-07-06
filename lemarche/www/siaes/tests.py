@@ -488,6 +488,8 @@ class SiaePerimeterSearchFilterTest(TestCase):
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 4)
 
+
+class SiaeFilterFormAvancedSearchTest(TestCase):
     def test_disabled_fields_activated(self):
         form = SiaeFilterForm(advanced_search=False)
         for _field in form.DISABLED_FOR_ANONYMOUS:
@@ -497,6 +499,20 @@ class SiaePerimeterSearchFilterTest(TestCase):
         form = SiaeFilterForm()
         for _field in form.DISABLED_FOR_ANONYMOUS:
             self.assertFalse(form.fields.get(_field).disabled)
+
+    def test_is_advanced_search_true(self):
+        form = SiaeFilterForm(data={"kind": ["ETTI"]})
+        self.assertTrue(form.is_advanced_search())
+
+    def test_is_advanced_search_false(self):
+        form_1 = SiaeFilterForm(data={})
+        self.assertFalse(form_1.is_advanced_search())
+
+        form_2 = SiaeFilterForm(data={"perimeters": ["paris-75"]})
+        self.assertFalse(form_2.is_advanced_search())
+
+        form_3 = SiaeFilterForm(data={"kind": []})
+        self.assertFalse(form_3.is_advanced_search())
 
 
 class SiaeHasClientReferencesFilterTest(TestCase):

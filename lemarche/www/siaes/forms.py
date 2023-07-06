@@ -363,8 +363,10 @@ class SiaeFilterForm(forms.Form):
         return qs
 
     def is_advanced_search(self) -> bool:
+        if not hasattr(self, "cleaned_data"):
+            self.full_clean()
         for _field in self.DISABLED_FOR_ANONYMOUS:
-            if self.cleaned_data[_field]:
+            if self.cleaned_data.get(_field):
                 return True
         return False
 
