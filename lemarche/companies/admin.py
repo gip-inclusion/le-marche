@@ -8,9 +8,26 @@ from lemarche.companies.models import Company
 from lemarche.utils.admin.admin_site import admin_site
 
 
+class HasUserFilter(admin.SimpleListFilter):
+    title = "Avec des utilisateurs ?"
+    parameter_name = "has_user"
+
+    def lookups(self, request, model_admin):
+        return (("Yes", "Oui"), ("No", "Non"))
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "Yes":
+            return queryset.has_user()
+        elif value == "No":
+            return queryset.filter(users__isnull=True)
+        return queryset
+
+
 @admin.register(Company, site=admin_site)
 class CompanyAdmin(admin.ModelAdmin, DynamicArrayMixin):
     list_display = ["id", "name", "nb_users", "created_at"]
+    list_filter = [HasUserFilter]
     search_fields = ["id", "name"]
     search_help_text = "Cherche sur les champs : ID, Nom"
 

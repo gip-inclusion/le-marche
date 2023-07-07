@@ -4,6 +4,11 @@ from django.utils import timezone
 from django_better_admin_arrayfield.models.fields import ArrayField
 
 
+class CompanyQuerySet(models.QuerySet):
+    def has_user(self):
+        return self.filter(users__isnull=False).distinct()
+
+
 class Company(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
@@ -22,6 +27,8 @@ class Company(models.Model):
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(CompanyQuerySet)()
 
     class Meta:
         verbose_name = "Entreprise"
