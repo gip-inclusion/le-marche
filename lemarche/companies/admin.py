@@ -2,13 +2,14 @@ from django.contrib import admin
 from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
+from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 
 from lemarche.companies.models import Company
 from lemarche.utils.admin.admin_site import admin_site
 
 
 @admin.register(Company, site=admin_site)
-class CompanyAdmin(admin.ModelAdmin):
+class CompanyAdmin(admin.ModelAdmin, DynamicArrayMixin):
     list_display = ["id", "name", "nb_users", "created_at"]
     search_fields = ["id", "name"]
     search_help_text = "Cherche sur les champs : ID, Nom"
