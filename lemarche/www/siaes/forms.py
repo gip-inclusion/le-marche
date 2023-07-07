@@ -32,6 +32,31 @@ FORM_CA_CHOICES = (
     ("10000000-", "Plus de 10 M€"),
 )
 
+FORM_EMPLOYEES_CHOICES = (
+    ("", ""),
+    ("1-9", "1 à 9 salariés"),
+    ("10-49", "10 à 49 salariés"),
+    ("50-99", "50 à 99 salariés"),
+    ("100-249", "100 à 249 salariés"),
+    ("250-499", "250 à 499 salariés"),
+    ("500-", "Plus de 500 salariés"),
+)
+
+EMPLOYEES_API_ENTREPRISE_MAPPING = {
+    "1-9": ["1 ou 2 salariés", "3 à 5 salariés", "6 à 9 salariés"],
+    "10-49": ["10 à 19 salariés", "20 à 49 salariés"],
+    "50-99": ["50 à 99 salariés"],
+    "100-249": ["100 à 199 salariés", "200 à 249 salariés"],
+    "250-499": ["250 à 499 salariés"],
+    "500-": [
+        "500 à 999 salariés",
+        "1 000 à 1 999 salariés",
+        "2 000 à 4 999 salariés",
+        "5 000 à 9 999 salariés",
+        "10 000 salariés et plus",
+    ],
+}
+
 
 class SiaeFilterForm(forms.Form):
     q = forms.CharField(
@@ -104,6 +129,12 @@ class SiaeFilterForm(forms.Form):
     ca = forms.ChoiceField(
         label=Siae._meta.get_field("ca").verbose_name,
         choices=FORM_CA_CHOICES,
+        required=False,
+    )
+
+    employees = forms.ChoiceField(
+        label="Effectifs",
+        choices=FORM_EMPLOYEES_CHOICES,
         required=False,
     )
 
@@ -201,6 +232,29 @@ class SiaeFilterForm(forms.Form):
         legal_forms = self.cleaned_data.get("legal_form", None)
         if legal_forms:
             qs = qs.filter(legal_form__in=legal_forms)
+
+        employees = self.cleaned_data.get("employees", None)
+        if employees:
+            lower_limit, upper_limit = employees.split("-")
+
+            # Check lower limitation, it always exists when employees filter is used
+            qs = qs.with_employees_count().filter(
+                (Q(employees_count__isnull=False) & Q(employees_count__gte=int(lower_limit)))
+                | (
+                    Q(employees_count=None)
+                    & Q(api_entreprise_employees__in=EMPLOYEES_API_ENTREPRISE_MAPPING[employees])
+                )
+            )
+
+            # Upper limitation
+            if upper_limit:
+                qs = qs.filter(
+                    (Q(employees_count__isnull=False) & Q(employees_count__lte=int(upper_limit)))
+                    | (
+                        Q(employees_count=None)
+                        & Q(api_entreprise_employees__in=EMPLOYEES_API_ENTREPRISE_MAPPING[employees])
+                    )
+                )
 
         company_client_reference = self.cleaned_data.get("company_client_reference", None)
         if company_client_reference:
