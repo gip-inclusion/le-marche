@@ -24,10 +24,26 @@ class HasUserFilter(admin.SimpleListFilter):
         return queryset
 
 
+class HasEmailDomainFilter(admin.SimpleListFilter):
+    title = "Avec des noms de domaine d'e-mails ?"
+    parameter_name = "has_email_domain"
+
+    def lookups(self, request, model_admin):
+        return (("Yes", "Oui"), ("No", "Non"))
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "Yes":
+            return queryset.has_email_domain()
+        elif value == "No":
+            return queryset.filter(email_domain_list=[])
+        return queryset
+
+
 @admin.register(Company, site=admin_site)
 class CompanyAdmin(admin.ModelAdmin, DynamicArrayMixin):
     list_display = ["id", "name", "nb_users", "created_at"]
-    list_filter = [HasUserFilter]
+    list_filter = [HasUserFilter, HasEmailDomainFilter]
     search_fields = ["id", "name"]
     search_help_text = "Cherche sur les champs : ID, Nom"
 

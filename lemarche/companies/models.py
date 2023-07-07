@@ -8,6 +8,9 @@ class CompanyQuerySet(models.QuerySet):
     def has_user(self):
         return self.filter(users__isnull=False).distinct()
 
+    def has_email_domain(self):
+        return self.exclude(email_domain_list=[])
+
 
 class Company(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
