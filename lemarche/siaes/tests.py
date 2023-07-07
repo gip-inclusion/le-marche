@@ -350,6 +350,41 @@ class SiaeModelQuerysetTest(TestCase):
         self.assertEqual(siae_queryset.get(id=siae_empty.id).content_filled_basic, False)
         self.assertEqual(siae_queryset.get(id=siae_filled_basic.id).content_filled_basic, True)
 
+    def test_with_employees_count(self):
+        siae_1 = SiaeFactory()
+        siae_2 = SiaeFactory(employees_insertion_count=10)
+        siae_3 = SiaeFactory(c2_etp_count=19.5)
+        siae_4 = SiaeFactory(employees_permanent_count=155)
+        siae_5 = SiaeFactory(employees_insertion_count=22, c2_etp_count=55)
+        siae_6 = SiaeFactory(employees_insertion_count=280, employees_permanent_count=105)
+        siae_7 = SiaeFactory(c2_etp_count=2550, employees_permanent_count=1500)
+        siae_8 = SiaeFactory(employees_insertion_count=125, c2_etp_count=158, employees_permanent_count=88)
+
+        siae_queryset = Siae.objects.with_employees_count()
+        self.assertEqual(siae_queryset.get(id=siae_1.id).employees_insertion_count_with_c2_etp, None)
+        self.assertEqual(siae_queryset.get(id=siae_1.id).employees_count, None)
+
+        self.assertEqual(siae_queryset.get(id=siae_2.id).employees_insertion_count_with_c2_etp, 10)
+        self.assertEqual(siae_queryset.get(id=siae_2.id).employees_count, 10)
+
+        self.assertEqual(siae_queryset.get(id=siae_3.id).employees_insertion_count_with_c2_etp, 20)
+        self.assertEqual(siae_queryset.get(id=siae_3.id).employees_count, 20)
+
+        self.assertEqual(siae_queryset.get(id=siae_4.id).employees_insertion_count_with_c2_etp, None)
+        self.assertEqual(siae_queryset.get(id=siae_4.id).employees_count, 155)
+
+        self.assertEqual(siae_queryset.get(id=siae_5.id).employees_insertion_count_with_c2_etp, 22)
+        self.assertEqual(siae_queryset.get(id=siae_5.id).employees_count, 22)
+
+        self.assertEqual(siae_queryset.get(id=siae_6.id).employees_insertion_count_with_c2_etp, 280)
+        self.assertEqual(siae_queryset.get(id=siae_6.id).employees_count, 280 + 105)
+
+        self.assertEqual(siae_queryset.get(id=siae_7.id).employees_insertion_count_with_c2_etp, 2550)
+        self.assertEqual(siae_queryset.get(id=siae_7.id).employees_count, 2550 + 1500)
+
+        self.assertEqual(siae_queryset.get(id=siae_8.id).employees_insertion_count_with_c2_etp, 125)
+        self.assertEqual(siae_queryset.get(id=siae_8.id).employees_count, 125 + 88)
+
 
 class SiaeModelPerimeterQuerysetTest(TestCase):
     @classmethod
