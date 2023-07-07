@@ -31,6 +31,7 @@ class CompanyAdmin(admin.ModelAdmin, DynamicArrayMixin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.annotate(user_count=Count("users", distinct=True))
+        qs = qs.order_by("name")
         return qs
 
     def get_readonly_fields(self, request, obj=None):
