@@ -880,10 +880,17 @@ class TenderSiaeListView(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.siae_1 = SiaeFactory(
-            name="ZZ ESI", kind=siae_constants.KIND_EI, is_qpv=True, city="Grenoble", post_code="38100"
+            name="ZZ ESI",
+            kind=siae_constants.KIND_EI,
+            is_qpv=True,
+            city="Grenoble",
+            post_code="38100",
+            employees_insertion_count=103,
         )
         cls.siae_2 = SiaeFactory(name="ABC Insertion", kind=siae_constants.KIND_EI, city="Grenoble", post_code="38000")
-        cls.siae_3 = SiaeFactory(name="Une autre structure", kind=siae_constants.KIND_ETTI)
+        cls.siae_3 = SiaeFactory(
+            name="Une autre structure", kind=siae_constants.KIND_ETTI, employees_insertion_count=53
+        )
         cls.siae_4 = SiaeFactory(name="Une dernière structure", kind=siae_constants.KIND_ETTI)
         cls.siae_user_1 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_1, cls.siae_2])
         cls.siae_user_2 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_3])
@@ -997,6 +1004,12 @@ class TenderSiaeListView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["siaes"]), 1)  # email_send_date & QPV
+        # filter by count of employees
+        url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug}) + "?employees=50-99"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["siaes"]), 1)
+        self.assertEqual(response.context["siaes"][0].id, self.siae_3.id)
 
     def test_order_tender_siae_by_last_detail_contact_click_date(self):
         # TenderSiae are ordered by -created_at by default
