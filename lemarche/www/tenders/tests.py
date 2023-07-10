@@ -887,7 +887,9 @@ class TenderSiaeListView(TestCase):
             post_code="38100",
             employees_insertion_count=103,
         )
-        cls.siae_2 = SiaeFactory(name="ABC Insertion", kind=siae_constants.KIND_EI, city="Grenoble", post_code="38000")
+        cls.siae_2 = SiaeFactory(
+            name="ABC Insertion", kind=siae_constants.KIND_EI, city="Grenoble", post_code="38000", ca=276000
+        )
         cls.siae_3 = SiaeFactory(
             name="Une autre structure", kind=siae_constants.KIND_ETTI, employees_insertion_count=53
         )
@@ -1010,6 +1012,12 @@ class TenderSiaeListView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["siaes"]), 1)
         self.assertEqual(response.context["siaes"][0].id, self.siae_3.id)
+        # filter by ca
+        url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug}) + "?ca=100000-500000"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["siaes"]), 1)
+        self.assertEqual(response.context["siaes"][0].id, self.siae_2.id)
 
     def test_order_tender_siae_by_last_detail_contact_click_date(self):
         # TenderSiae are ordered by -created_at by default
