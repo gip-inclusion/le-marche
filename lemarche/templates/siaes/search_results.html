@@ -318,13 +318,15 @@ document.addEventListener("DOMContentLoaded", function() {
     // init perimeters & locations form fields
     const perimetersAutoComplete = new PerimetersMultiAutocomplete();
     perimetersAutoComplete.init();
-    const LOCATION_AUTOCOMPLETE_ID = 'id_locations';
-    const LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR = '#dir_form_locations';
-    const LOCATION_SELECTED_CONTAINER_SELECTOR = '#locations-selected';
-    const LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX = 'hiddenLocation';
-    const LOCATION_CURRENT_ID = 'current-locations';
-    const locationsAutoComplete = new PerimetersMultiAutocomplete(LOCATION_AUTOCOMPLETE_ID, LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR, LOCATION_SELECTED_CONTAINER_SELECTOR, LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX, LOCATION_CURRENT_ID);
-    locationsAutoComplete.init();
+    {% if not form.locations.field.disabled %}
+        const LOCATION_AUTOCOMPLETE_ID = 'id_locations';
+        const LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR = '#dir_form_locations';
+        const LOCATION_SELECTED_CONTAINER_SELECTOR = '#locations-selected';
+        const LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX = 'hiddenLocation';
+        const LOCATION_CURRENT_ID = 'current-locations';
+        const locationsAutoComplete = new PerimetersMultiAutocomplete(LOCATION_AUTOCOMPLETE_ID, LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR, LOCATION_SELECTED_CONTAINER_SELECTOR, LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX, LOCATION_CURRENT_ID);
+        locationsAutoComplete.init();
+    {% endif %}
 });
     </script>
     <script type="text/javascript">
