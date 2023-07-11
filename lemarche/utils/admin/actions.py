@@ -6,10 +6,7 @@ from django.http import HttpResponse
 from xlwt import Workbook, Worksheet, XFStyle
 
 from lemarche.utils.admin.export_excel import ExportAction
-
-
-def convert_data_date(value):
-    return value.strftime("%d/%m/%Y")
+from lemarche.utils.data import date_to_string
 
 
 def convert_boolean_field(value):
@@ -45,7 +42,7 @@ def export_as_xls(self, request, queryset):
             else:
                 value = getattr(obj, field)
                 if isinstance(value, datetime) or isinstance(value, date):
-                    value = convert_data_date(value)
+                    value = date_to_string(value)
                 elif isinstance(value, bool):
                     value = convert_boolean_field(value)
             find_content_link = re.search(pattern_link, str(value))
