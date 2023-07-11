@@ -6,6 +6,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404, HttpResponsePermanentRedirect, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import DetailView, FormView, ListView, TemplateView, View
 from django.views.generic.edit import FormMixin
 
@@ -291,9 +292,11 @@ def csrf_failure(request, reason=""):  # noqa C901
         tender_status = (
             tender_constants.STATUS_DRAFT if request.POST.get("is_draft") else tender_constants.STATUS_PUBLISHED
         )
+        tender_published_at = None if request.POST.get("is_draft") else timezone.now()
         tender_dict = dict(
             extra_data={},
             status=tender_status,
+            published_at=tender_published_at,
             source=Tender.SOURCE_FORM_CSRF,
         )
         formtools_session_step_data = request.session.get("wizard_tender_create_multi_step_view", {}).get(

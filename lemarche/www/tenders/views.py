@@ -145,9 +145,11 @@ class TenderCreateMultiStepView(SessionWizardView):
 
     def save_instance_tender(self, tender_dict: dict, form_dict: dict, is_draft: bool):
         tender_status = tender_constants.STATUS_DRAFT if is_draft else tender_constants.STATUS_PUBLISHED
+        tender_published_at = None if is_draft else timezone.now()
         if self.instance.id:
             # update
             self.instance.status = tender_status
+            self.instance.published_at = tender_published_at
             sectors = None
             for step, model_form in form_dict.items():
                 if model_form.has_changed():
@@ -171,7 +173,7 @@ class TenderCreateMultiStepView(SessionWizardView):
                         self.instance.extra_data.update(tender_dict.get("extra_data"))
             self.instance.save()
         else:
-            tender_dict |= {"status": tender_status}
+            tender_dict |= {"status": tender_status, "published_at": tender_published_at}
             self.instance = create_tender_from_dict(tender_dict)
 
     def done(self, _, form_dict, **kwargs):
