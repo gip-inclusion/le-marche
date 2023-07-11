@@ -6,7 +6,7 @@ from lemarche.cms.models import HomePage
 
 def create_homepage():
     root = Page.get_first_root_node()
-    homepage = HomePage(title="Page d'accueil", slug="accueil")
+    homepage = HomePage(title="Accueil", slug="accueil")
     root.add_child(instance=homepage)
 
 
