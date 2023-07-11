@@ -6,7 +6,7 @@
 <meta name="description" content="{{ page.search_description }}">
 {% endblock %}
 
-{% block title %}{{ page.title }} | {{ block.super }}{% endblock %}
+{% block title %}{{ page.title }} {{ block.super }}{% endblock %}
 {% block body_class %}p-ressources{{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
