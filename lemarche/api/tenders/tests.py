@@ -116,6 +116,17 @@ class TenderCreateApiTest(TestCase):
         self.assertEqual(response.status_code, 400)
 
 
+def test_create_tender_with_tally_source(self):
+    url = reverse("api:tenders-list") + "?token=admin"
+    tender_data = TENDER_JSON.copy()
+    tender_data["title"] = "Test tally"
+    tender_data["extra_data"] = {"source": "TALLY"}
+    response = self.client.post(url, data=tender_data)
+    self.assertEqual(response.status_code, 201)
+    tender = Tender.objects.get(title="Test tally")
+    self.assertEqual(tender.source, Tender.SOURCE_TALLY)
+
+
 class TenderChoicesApiTest(TestCase):
     def test_should_return_tender_kinds_list(self):
         url = reverse("api:tender-kinds-list")  # anonymous user
