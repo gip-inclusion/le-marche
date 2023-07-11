@@ -497,8 +497,8 @@
             "live": true,
             "first_published_at": "2023-03-28T11:33:31.399Z",
             "last_published_at": "2023-04-26T09:03:37.088Z",
-            "title": "Page d'accueil",
-            "draft_title": "Page d'accueil",
+            "title": "Accueil",
+            "draft_title": "Accueil",
             "slug": "accueil",
             "content_type": [
                 "cms",
