@@ -2,14 +2,48 @@ from django.contrib import admin
 from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
+from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 
 from lemarche.companies.models import Company
 from lemarche.utils.admin.admin_site import admin_site
 
 
+class HasUserFilter(admin.SimpleListFilter):
+    title = "Avec des utilisateurs ?"
+    parameter_name = "has_user"
+
+    def lookups(self, request, model_admin):
+        return (("Yes", "Oui"), ("No", "Non"))
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "Yes":
+            return queryset.has_user()
+        elif value == "No":
+            return queryset.filter(users__isnull=True)
+        return queryset
+
+
+class HasEmailDomainFilter(admin.SimpleListFilter):
+    title = "Avec des noms de domaine d'e-mails ?"
+    parameter_name = "has_email_domain"
+
+    def lookups(self, request, model_admin):
+        return (("Yes", "Oui"), ("No", "Non"))
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "Yes":
+            return queryset.has_email_domain()
+        elif value == "No":
+            return queryset.filter(email_domain_list=[])
+        return queryset
+
+
 @admin.register(Company, site=admin_site)
-class CompanyAdmin(admin.ModelAdmin):
+class CompanyAdmin(admin.ModelAdmin, DynamicArrayMixin):
     list_display = ["id", "name", "nb_users", "created_at"]
+    list_filter = [HasUserFilter, HasEmailDomainFilter]
     search_fields = ["id", "name"]
     search_help_text = "Cherche sur les champs : ID, Nom"
 
@@ -30,6 +64,7 @@ class CompanyAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.annotate(user_count=Count("users", distinct=True))
+        qs = qs.order_by("name")
         return qs
 
     def get_readonly_fields(self, request, obj=None):
