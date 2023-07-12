@@ -72,7 +72,7 @@ class SiaeFilterForm(forms.Form):
         to_field_name="slug",
         required=False,
     )
-    # The hidden `perimeters` field is populated by the JS autocomplete library, see `perimeter_autocomplete_field.js`
+    # The `perimeters` field is displayed with a JS autocomplete library (see `perimeter_autocomplete_field.js`)
     perimeters = forms.ModelMultipleChoiceField(
         label=Perimeter._meta.verbose_name_plural,
         queryset=Perimeter.objects.all(),
@@ -102,6 +102,7 @@ class SiaeFilterForm(forms.Form):
         required=False,
     )
 
+    # The `locations` field is displayed with a JS autocomplete library (see `perimeter_autocomplete_field.js`)
     locations = forms.ModelMultipleChoiceField(
         label="Localisation",
         queryset=Perimeter.objects.all(),
@@ -367,8 +368,8 @@ class SiaeFilterForm(forms.Form):
     def is_advanced_search(self) -> bool:
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
-        for _field in self.ADVANCED_SEARCH_FIELDS:
-            if self.cleaned_data.get(_field):
+        for field in self.ADVANCED_SEARCH_FIELDS:
+            if self.cleaned_data.get(field):
                 return True
         return False
 
