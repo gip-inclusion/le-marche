@@ -713,6 +713,10 @@ class SiaeEmployeesFilterTest(TestCase):
         )
         cls.siae_550 = SiaeFactory(employees_insertion_count=550, c2_etp_count=490)
         cls.siae_3000 = SiaeFactory(api_entreprise_employees="2 000 à 4 999 salariés")
+        cls.user = UserFactory()
+
+    def setUp(self):
+        self.client.force_login(self.user)
 
     def test_search_query_empty(self):
         url = reverse("siae:search_results")
