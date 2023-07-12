@@ -488,15 +488,31 @@ class SiaePerimeterSearchFilterTest(TestCase):
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 4)
 
+
+class SiaeFilterFormAvancedSearchTest(TestCase):
     def test_disabled_fields_activated(self):
         form = SiaeFilterForm(advanced_search=False)
-        for _field in form.DISABLED_FOR_ANONYMOUS:
+        for _field in form.ADVANCED_SEARCH_FIELDS:
             self.assertTrue(form.fields.get(_field).disabled)
 
     def test_disabled_fields_deactivated(self):
         form = SiaeFilterForm()
-        for _field in form.DISABLED_FOR_ANONYMOUS:
+        for _field in form.ADVANCED_SEARCH_FIELDS:
             self.assertFalse(form.fields.get(_field).disabled)
+
+    def test_is_advanced_search_true(self):
+        form = SiaeFilterForm(data={"kind": ["ETTI"]})
+        self.assertTrue(form.is_advanced_search())
+
+    def test_is_advanced_search_false(self):
+        form_1 = SiaeFilterForm(data={})
+        self.assertFalse(form_1.is_advanced_search())
+
+        form_2 = SiaeFilterForm(data={"perimeters": ["paris-75"]})
+        self.assertFalse(form_2.is_advanced_search())
+
+        form_3 = SiaeFilterForm(data={"kind": []})
+        self.assertFalse(form_3.is_advanced_search())
 
 
 class SiaeHasClientReferencesFilterTest(TestCase):
@@ -697,6 +713,10 @@ class SiaeEmployeesFilterTest(TestCase):
         )
         cls.siae_550 = SiaeFactory(employees_insertion_count=550, c2_etp_count=490)
         cls.siae_3000 = SiaeFactory(api_entreprise_employees="2 000 à 4 999 salariés")
+        cls.user = UserFactory()
+
+    def setUp(self):
+        self.client.force_login(self.user)
 
     def test_search_query_empty(self):
         url = reverse("siae:search_results")
