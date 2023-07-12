@@ -24,11 +24,16 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         return super().create(request, args, kwargs)
 
     def perform_create(self, serializer: TenderSerializer):
+        source = (
+            Tender.SOURCE_TALLY
+            if serializer.validated_data.get("extra_data", {}).get("source") == Tender.SOURCE_TALLY
+            else Tender.SOURCE_API
+        )
         user = get_or_create_user_from_anonymous_content(serializer.validated_data)
         serializer.save(
             author=user,
             status=Tender.STATUS_PUBLISHED,
-            source=Tender.SOURCE_API,
+            source=source,
             import_raw_object=self.request.data,
         )
 
