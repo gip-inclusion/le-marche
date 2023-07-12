@@ -158,7 +158,7 @@ class SiaeFilterForm(forms.Form):
     favorite_list = forms.ModelChoiceField(
         queryset=FavoriteList.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
     )
-    DISABLED_FOR_ANONYMOUS = [
+    ADVANCED_SEARCH_FIELDS = [
         "kind",
         "presta_type",
         "territory",
@@ -168,12 +168,13 @@ class SiaeFilterForm(forms.Form):
         "has_groups",
         "ca",
         "legal_form",
+        "employees",
     ]
 
     def __init__(self, user=None, advanced_search=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not advanced_search:
-            for item in self.DISABLED_FOR_ANONYMOUS:
+            for item in self.ADVANCED_SEARCH_FIELDS:
                 self.fields[item].disabled = True
                 self.fields[item].widget.attrs["disabled"] = True
 
@@ -361,6 +362,14 @@ class SiaeFilterForm(forms.Form):
         # final ordering
         qs = qs.order_by(*ORDER_BY_FIELDS)
         return qs
+
+    def is_advanced_search(self) -> bool:
+        if not hasattr(self, "cleaned_data"):
+            self.full_clean()
+        for _field in self.ADVANCED_SEARCH_FIELDS:
+            if self.cleaned_data.get(_field):
+                return True
+        return False
 
 
 class SiaeFavoriteForm(forms.ModelForm):

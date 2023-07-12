@@ -102,6 +102,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         context["form_share"] = SiaeShareForm(data=self.request.GET, user=self.request.user)
         context["url_share_list"] = self.get_mailto_share_url()
         if len(self.request.GET.keys()):
+            context["is_advanced_search"] = siae_search_form.is_advanced_search()
             if siae_search_form.is_valid():
                 current_perimeters = siae_search_form.cleaned_data.get("perimeters")
                 if current_perimeters:
