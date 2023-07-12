@@ -148,7 +148,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         (
             None,
             {
-                "fields": ("title", "slug", "kind"),
+                "fields": ("title", "slug", "kind", "notes"),
             },
         ),
         (
