@@ -492,12 +492,12 @@ class SiaePerimeterSearchFilterTest(TestCase):
 class SiaeFilterFormAvancedSearchTest(TestCase):
     def test_disabled_fields_activated(self):
         form = SiaeFilterForm(advanced_search=False)
-        for _field in form.DISABLED_FOR_ANONYMOUS:
+        for _field in form.ADVANCED_SEARCH_FIELDS:
             self.assertTrue(form.fields.get(_field).disabled)
 
     def test_disabled_fields_deactivated(self):
         form = SiaeFilterForm()
-        for _field in form.DISABLED_FOR_ANONYMOUS:
+        for _field in form.ADVANCED_SEARCH_FIELDS:
             self.assertFalse(form.fields.get(_field).disabled)
 
     def test_is_advanced_search_true(self):
