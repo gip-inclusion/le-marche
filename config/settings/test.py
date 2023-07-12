@@ -27,3 +27,10 @@ HUEY |= {
     "results": True,
     "store_none": True,
 }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+        "LOCATION": "django_cache",
+    }
+}
