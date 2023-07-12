@@ -43,10 +43,20 @@ SECTOR_GROUP_HYGIERE_SLUG_LIST = [
 class SiaeSearchResultsView(FormMixin, ListView):
     template_name = "siaes/search_results.html"
     form_class = SiaeFilterForm
+    filter_form = None
     # queryset = Siae.objects.all()
     context_object_name = "siaes"
     paginate_by = 20
     paginator_class = Paginator
+
+    def get_filter_form(self):
+        user = self.request.user
+        self.filter_form = (
+            self.filter_form
+            if self.filter_form
+            else SiaeFilterForm(data=self.request.GET, advanced_search=user.is_authenticated)
+        )
+        return self.filter_form
 
     def get_queryset(self):
         """
@@ -54,9 +64,9 @@ class SiaeSearchResultsView(FormMixin, ListView):
         - filter and order using the SiaeFilterForm
         - if the user is authenticated, annotate with favorite info
         """
-        self.filter_form = SiaeFilterForm(data=self.request.GET)
-        results = self.filter_form.filter_queryset()
-        results_ordered = self.filter_form.order_queryset(results)
+        filter_form = self.get_filter_form()
+        results = filter_form.filter_queryset()
+        results_ordered = filter_form.order_queryset(results)
         if self.request.user.is_authenticated:
             results_ordered = results_ordered.annotate_with_user_favorite_list_count(self.request.user)
         return results_ordered
@@ -86,7 +96,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         """
         context = super().get_context_data(**kwargs)
         context["position_promote_tenders"] = [5, 15]
-        siae_search_form = self.filter_form if self.filter_form else SiaeFilterForm(data=self.request.GET)
+        siae_search_form = self.get_filter_form()
         context["form"] = siae_search_form
         context["form_download"] = SiaeDownloadForm(data=self.request.GET)
         context["form_share"] = SiaeShareForm(data=self.request.GET, user=self.request.user)

@@ -31,6 +31,10 @@ class SiaeKindSearchFilterTest(TestCase):
     def setUpTestData(cls):
         SiaeFactory(kind=siae_constants.KIND_EI)
         SiaeFactory(kind=siae_constants.KIND_AI)
+        cls.user = UserFactory()
+
+    def setUp(self):
+        self.client.force_login(self.user)
 
     def test_search_kind_empty(self):
         url = reverse("siae:search_results")
@@ -62,6 +66,10 @@ class SiaePrestaTypeSearchFilterTest(TestCase):
     def setUpTestData(cls):
         SiaeFactory(presta_type=[siae_constants.PRESTA_DISP])
         SiaeFactory(presta_type=[siae_constants.PRESTA_DISP, siae_constants.PRESTA_BUILD])
+        cls.user = UserFactory()
+
+    def setUp(self):
+        self.client.force_login(self.user)
 
     def test_search_presta_type_empty(self):
         url = reverse("siae:search_results")
@@ -91,6 +99,10 @@ class SiaeTerritorySearchFilterTest(TestCase):
     def setUpTestData(cls):
         SiaeFactory(is_qpv=True)
         SiaeFactory(is_zrr=True)
+        cls.user = UserFactory()
+
+    def setUp(self):
+        self.client.force_login(self.user)
 
     def test_search_territory_empty(self):
         url = reverse("siae:search_results")
@@ -186,6 +198,10 @@ class SiaeNetworkSearchFilterTest(TestCase):
         SiaeFactory()
         siae_with_network = SiaeFactory()
         siae_with_network.networks.add(cls.network)
+        cls.user = UserFactory()
+
+    def setUp(self):
+        self.client.force_login(self.user)
 
     def test_search_network_empty(self):
         url = reverse("siae:search_results")
@@ -215,6 +231,7 @@ class SiaeNetworkSearchFilterTest(TestCase):
 class SiaePerimeterSearchFilterTest(TestCase):
     @classmethod
     def setUpTestData(cls):
+        cls.user = UserFactory()
         # create the Perimeters
         cls.auvergne_rhone_alpes_perimeter = PerimeterFactory(
             name="Auvergne-Rhône-Alpes", kind=Perimeter.KIND_REGION, insee_code="R84"
@@ -360,12 +377,12 @@ class SiaePerimeterSearchFilterTest(TestCase):
         self.assertEqual(Siae.objects.count(), 14)
 
     def test_search_perimeter_empty(self):
-        form = SiaeFilterForm({"perimeters": [""]})
+        form = SiaeFilterForm(data={"perimeters": [""]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 14)
 
     def test_search_perimeter_not_exist(self):
-        form = SiaeFilterForm({"perimeters": ["-1"]})
+        form = SiaeFilterForm(data={"perimeters": ["-1"]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 14)
         self.assertFalse(form.is_valid())
@@ -373,12 +390,12 @@ class SiaePerimeterSearchFilterTest(TestCase):
         self.assertIn("Sélectionnez un choix valide", form.errors["perimeters"][0])
 
     def test_search_perimeter_region(self):
-        form = SiaeFilterForm({"perimeters": [self.auvergne_rhone_alpes_perimeter.slug]})
+        form = SiaeFilterForm(data={"perimeters": [self.auvergne_rhone_alpes_perimeter.slug]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 10)
 
     def test_search_perimeter_department(self):
-        form = SiaeFilterForm({"perimeters": [self.isere_perimeter]})
+        form = SiaeFilterForm(data={"perimeters": [self.isere_perimeter]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 6)
 
@@ -389,7 +406,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
         + all the Siae in the city's department (except GEO_RANGE_CUSTOM) - Isere (0 new Siae)
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble (1 new Siae: La Tronche. Chamrousse is outside)  # noqa
         """
-        form = SiaeFilterForm({"perimeters": [self.grenoble_perimeter.slug]})
+        form = SiaeFilterForm(data={"perimeters": [self.grenoble_perimeter.slug]})
         self.assertTrue(form.is_valid())
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 4 + 0 + 1)
@@ -401,7 +418,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
         + all the Siae in the city's department (except GEO_RANGE_CUSTOM) - Isere (3 new Siae)
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble (1 Siae, 0 new: Chamrousse. Grenoble & La Tronche are outside)  # noqa
         """
-        form = SiaeFilterForm({"perimeters": [self.chamrousse_perimeter]})
+        form = SiaeFilterForm(data={"perimeters": [self.chamrousse_perimeter]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 1 + 3 + 0)
 
@@ -412,7 +429,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
         + all the Siae in the cities departments (except GEO_RANGE_CUSTOM) - Isere (0 new Siae)
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble or Chamrousse (2 Siae, 1 new) # noqa
         """
-        form = SiaeFilterForm({"perimeters": [self.grenoble_perimeter, self.chamrousse_perimeter]})
+        form = SiaeFilterForm(data={"perimeters": [self.grenoble_perimeter, self.chamrousse_perimeter]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 5 + 0 + 1)
 
@@ -423,7 +440,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
         + all the Siae in the cities departments (except GEO_RANGE_CUSTOM) - Isere & 29 (0 new Siae)
         + all the Siae with geo_range=GEO_RANGE_CUSTOM + coords in the geo_range_custom_distance range of Grenoble or Quimper (1 new Siae) # noqa
         """
-        form = SiaeFilterForm({"perimeters": [self.grenoble_perimeter, self.quimper_perimeter]})
+        form = SiaeFilterForm(data={"perimeters": [self.grenoble_perimeter, self.quimper_perimeter]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 8 + 0 + 1)
 
@@ -432,7 +449,7 @@ class SiaePerimeterSearchFilterTest(TestCase):
         test one perimeter is good and the other one is not
         We should return the default qs with error
         """
-        form = SiaeFilterForm({"perimeters": [self.grenoble_perimeter, "-1"]})
+        form = SiaeFilterForm(data={"perimeters": [self.grenoble_perimeter, "-1"]})
         qs = form.filter_queryset()
         self.assertFalse(form.is_valid())
         self.assertIn("perimeters", form.errors.keys())
@@ -440,12 +457,12 @@ class SiaePerimeterSearchFilterTest(TestCase):
         self.assertEqual(qs.count(), 14)
 
     def test_search_location_empty(self):
-        form = SiaeFilterForm({"locations": [""]})
+        form = SiaeFilterForm(data={"locations": [""]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 14)
 
     def test_search_location_not_exist(self):
-        form = SiaeFilterForm({"locations": ["-1"]})
+        form = SiaeFilterForm(data={"locations": ["-1"]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 14)
         self.assertFalse(form.is_valid())
@@ -453,12 +470,12 @@ class SiaePerimeterSearchFilterTest(TestCase):
         self.assertIn("Sélectionnez un choix valide", form.errors["locations"][0])
 
     def test_search_location_region(self):
-        form = SiaeFilterForm({"locations": [self.auvergne_rhone_alpes_perimeter.slug]})
+        form = SiaeFilterForm(data={"locations": [self.auvergne_rhone_alpes_perimeter.slug]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 10)
 
     def test_search_location_department(self):
-        form = SiaeFilterForm({"locations": [self.isere_perimeter]})
+        form = SiaeFilterForm(data={"locations": [self.isere_perimeter]})
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 6)
 
@@ -466,10 +483,20 @@ class SiaePerimeterSearchFilterTest(TestCase):
         """
         We should return all the Siae exactly in the city - Grenoble (4 Siae)
         """
-        form = SiaeFilterForm({"locations": [self.grenoble_perimeter.slug]})
+        form = SiaeFilterForm(data={"locations": [self.grenoble_perimeter.slug]})
         self.assertTrue(form.is_valid())
         qs = form.filter_queryset()
         self.assertEqual(qs.count(), 4)
+
+    def test_disabled_fields_activated(self):
+        form = SiaeFilterForm(advanced_search=False)
+        for _field in form.DISABLED_FOR_ANONYMOUS:
+            self.assertTrue(form.fields.get(_field).disabled)
+
+    def test_disabled_fields_deactivated(self):
+        form = SiaeFilterForm()
+        for _field in form.DISABLED_FOR_ANONYMOUS:
+            self.assertFalse(form.fields.get(_field).disabled)
 
 
 class SiaeHasClientReferencesFilterTest(TestCase):
@@ -479,6 +506,10 @@ class SiaeHasClientReferencesFilterTest(TestCase):
         SiaeClientReferenceFactory(siae=cls.siae_with_client_reference)
         cls.siae_with_client_reference.save()  # to set client_reference_count=1
         cls.siae_without_client_reference = SiaeFactory()  # client_reference_count=0
+        cls.user = UserFactory()
+
+    def setUp(self):
+        self.client.force_login(self.user)
 
     def test_search_has_client_references_empty(self):
         url = reverse("siae:search_results")
@@ -512,6 +543,10 @@ class SiaeHasGroupsFilterTest(TestCase):
     def setUpTestData(cls):
         cls.siae_with_group = SiaeFactory(group_count=1)
         cls.siae_without_group = SiaeFactory(group_count=0)
+        cls.user = UserFactory()
+
+    def setUp(self):
+        self.client.force_login(self.user)
 
     def test_search_has_groups_empty(self):
         url = reverse("siae:search_results")
@@ -551,6 +586,10 @@ class SiaeCAFilterTest(TestCase):
         cls.siae_2m = SiaeFactory(ca=2000000, api_entreprise_ca=0)
         cls.siae_7m = SiaeFactory(api_entreprise_ca=7000000)
         cls.siae_50m = SiaeFactory(ca=0, api_entreprise_ca=50000000)
+        cls.user = UserFactory()
+
+    def setUp(self):
+        self.client.force_login(self.user)
 
     def test_search_query_empty(self):
         url = reverse("siae:search_results")
@@ -608,6 +647,10 @@ class SiaeLegalFormFilterTest(TestCase):
         cls.siae_legal_form_sarl = SiaeFactory(legal_form="SARL")
         cls.siae_legal_form_sa = SiaeFactory(legal_form="SA")
         cls.siae_legal_form_empty = SiaeFactory(legal_form="")
+        cls.user = UserFactory()
+
+    def setUp(self):
+        self.client.force_login(self.user)
 
     def test_search_legal_form_empty(self):
         url = reverse("siae:search_results")
@@ -715,6 +758,10 @@ class SiaeFullTextSearchTest(TestCase):
         cls.siae_2 = SiaeFactory(name="Une autre activité", siret="22222222222222")
         cls.siae_3 = SiaeFactory(name="ABC Insertion", siret="33333333344444")
         cls.siae_4 = SiaeFactory(name="Empty", brand="ETHICOFIL", siret="55555555555555")
+        cls.user = UserFactory()
+
+    def setUp(self):
+        self.client.force_login(self.user)
 
     def test_search_query_empty(self):
         url = reverse("siae:search_results")
@@ -870,6 +917,10 @@ class SiaeSearchOrderTest(TestCase):
             # post_codes=["38000", "38100", "38700"],
             coords=Point(5.7301, 45.1825),
         )
+        cls.user = UserFactory()
+
+    def setUp(self):
+        self.client.force_login(self.user)
 
     def test_should_order_by_last_updated(self):
         url = reverse("siae:search_results", kwargs={})

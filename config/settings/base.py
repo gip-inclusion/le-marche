@@ -101,6 +101,7 @@ DJANGO_APPS = [
     "django.contrib.flatpages",
     "django.contrib.gis",
     "django.contrib.humanize",
+    "django.forms",
 ]
 
 THIRD_PARTY_APPS = [
@@ -798,3 +799,4 @@ SHELL_PLUS_POST_IMPORTS = [
     "from lemarche.siaes import constants as siae_constants",
     "from lemarche.tenders import constants as tender_constants",
 ]
+FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
