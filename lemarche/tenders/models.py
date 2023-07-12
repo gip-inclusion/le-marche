@@ -342,6 +342,9 @@ class Tender(models.Model):
     validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
 
     # admin
+    notes = models.TextField(
+        verbose_name="Notes à propos du besoin", help_text="Champ renseigné par un ADMIN", blank=True
+    )
     siae_transactioned = models.BooleanField(
         verbose_name="Abouti à une transaction avec une structure",
         help_text="Champ renseigné par un ADMIN",
