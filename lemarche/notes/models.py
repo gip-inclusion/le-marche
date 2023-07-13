@@ -15,6 +15,15 @@ class Note(models.Model):
         blank=True,
     )
 
+    tender = models.ForeignKey(
+        "tenders.Tender",
+        verbose_name="Besoin d'achat",
+        related_name="notes",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 
