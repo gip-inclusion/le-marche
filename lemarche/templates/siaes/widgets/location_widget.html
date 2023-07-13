@@ -1,10 +1,9 @@
 
 {% if is_disabled %}
-<select name="has_groups" disabled="" class="form-control" title="" id="{{ widget.attrs.id }}" placeholder="{{widget.attrs.placeholder}}">
-    <option value="" disabled selected>{{widget.attrs.placeholder}}</option>
-    {% comment %} <option value="" selected=""></option> {% endcomment %}
-</select>
+    <select name="{{ widget.name }}" id="{{ widget.attrs.id }}" class="form-control" placeholder="{{ widget.attrs.placeholder }}" disabled>
+        <option value="" disabled selected>{{ widget.attrs.placeholder }}</option>
+    </select>
 {% else %}
-<div id="dir_form_locations" data-input-name="{{ widget.name }}"></div>
-<div id="locations-selected" class="mt-2"></div>
+    <div id="dir_form_locations" data-input-name="{{ widget.name }}"></div>
+    <div id="locations-selected" class="mt-2"></div>
 {% endif %}

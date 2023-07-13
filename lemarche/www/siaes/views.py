@@ -50,12 +50,9 @@ class SiaeSearchResultsView(FormMixin, ListView):
     paginator_class = Paginator
 
     def get_filter_form(self):
-        user = self.request.user
-        self.filter_form = (
-            self.filter_form
-            if self.filter_form
-            else SiaeFilterForm(data=self.request.GET, advanced_search=user.is_authenticated)
-        )
+        if not self.filter_form:
+            user = self.request.user
+            self.filter_form = SiaeFilterForm(data=self.request.GET, advanced_search=user.is_authenticated)
         return self.filter_form
 
     def get_queryset(self):
@@ -64,20 +61,20 @@ class SiaeSearchResultsView(FormMixin, ListView):
         - filter and order using the SiaeFilterForm
         - if the user is authenticated, annotate with favorite info
         """
+        user = self.request.user
         filter_form = self.get_filter_form()
         results = filter_form.filter_queryset()
         results_ordered = filter_form.order_queryset(results)
-        if self.request.user.is_authenticated:
-            results_ordered = results_ordered.annotate_with_user_favorite_list_count(self.request.user)
+        if user.is_authenticated:
+            results_ordered = results_ordered.annotate_with_user_favorite_list_count(user)
         return results_ordered
 
     def get_mailto_share_url(self):
-        """Function to generate url for share search with url
-
-        Returns:
-            _type_: _description_
         """
-        user_full_name = "" if not self.request.user.is_authenticated else self.request.user.full_name
+        Function to generate url for share search with url
+        """
+        user = self.request.user
+        user_full_name = "" if not user.is_authenticated else user.full_name
         params = {
             "subject": "Voici une liste de prestataires inclusifs",
             "bcc": settings.CONTACT_EMAIL,
@@ -101,7 +98,6 @@ class SiaeSearchResultsView(FormMixin, ListView):
         context["form_download"] = SiaeDownloadForm(data=self.request.GET)
         context["form_share"] = SiaeShareForm(data=self.request.GET, user=self.request.user)
         context["url_share_list"] = self.get_mailto_share_url()
-        context["is_authenticated"] = self.request.user.is_authenticated
         if len(self.request.GET.keys()):
             context["is_advanced_search"] = siae_search_form.is_advanced_search()
             if siae_search_form.is_valid():
