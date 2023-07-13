@@ -1,4 +1,4 @@
-{% load wagtailimages_tags wagtailcore_tags advert_cms %}
+{% load wagtailcore_tags wagtailimages_tags advert_cms %}
 
 {% if user_kind == "BUYER" %}
     {% cms_advert layout="card" %}
@@ -12,7 +12,7 @@
                 M'informer sur les achats inclusifs
             {% endif %}
         </p>
-        {% for ressource in last_3_ressources %}
+        {% for ressource in ressources %}
             <ul class="list-group list-group-flush list-group-link">
                 <li class="list-group-item list-group-item-action">
                     <div class="d-flex align-items-center">
@@ -26,7 +26,7 @@
                         </picture>
                         <div>
                             <time class="fs-sm d-block" aria-label="Date de publication">{{ ressource.last_published_at }}</time>
-                            <a href="{{ ressource.url_path }}" class="d-block font-weight-bold stretched-link">{{ ressource.title }}</a>
+                            <a href="{% pageurl ressource %}" class="d-block font-weight-bold stretched-link">{{ ressource.title }}</a>
                         </div>
                     </div>
                 </li>
@@ -34,7 +34,7 @@
         {% endfor %}
     </div>
     <div class="card-footer pt-0 bg-white text-right">
-        <a href="/ressources/{% if current_slug_cat %}categories/{{current_slug_cat}}/{% endif %}" class="btn btn-link btn-ico">
+        <a href="/ressources/{% if category_slug %}categories/{{ category_slug }}/{% endif %}" class="btn btn-link btn-ico">
             <span>Voir toutes les ressources</span>
             <i class="ri-arrow-right-s-line ri-xl"></i>
         </a>
