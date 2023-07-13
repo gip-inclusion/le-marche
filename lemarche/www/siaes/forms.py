@@ -72,7 +72,7 @@ class SiaeFilterForm(forms.Form):
         to_field_name="slug",
         required=False,
     )
-    # The hidden `perimeters` field is populated by the JS autocomplete library, see `perimeter_autocomplete_field.js`
+    # The `perimeters` field is displayed with a JS autocomplete library (see `perimeter_autocomplete_field.js`)
     perimeters = forms.ModelMultipleChoiceField(
         label=Perimeter._meta.verbose_name_plural,
         queryset=Perimeter.objects.all(),
@@ -102,6 +102,7 @@ class SiaeFilterForm(forms.Form):
         required=False,
     )
 
+    # The `locations` field is displayed with a JS autocomplete library (see `perimeter_autocomplete_field.js`)
     locations = forms.ModelMultipleChoiceField(
         label="Localisation",
         queryset=Perimeter.objects.all(),
@@ -173,10 +174,14 @@ class SiaeFilterForm(forms.Form):
 
     def __init__(self, user=None, advanced_search=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # these fields are autocompletes
+        self.fields["perimeters"].choices = []
+        self.fields["locations"].choices = []
+        # manage disabled fields
         if not advanced_search:
-            for item in self.ADVANCED_SEARCH_FIELDS:
-                self.fields[item].disabled = True
-                self.fields[item].widget.attrs["disabled"] = True
+            for field in self.ADVANCED_SEARCH_FIELDS:
+                self.fields[field].disabled = True
+                self.fields[field].widget.attrs["disabled"] = True
 
     def filter_queryset(self, qs=None):  # noqa C901
         """
@@ -366,8 +371,8 @@ class SiaeFilterForm(forms.Form):
     def is_advanced_search(self) -> bool:
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
-        for _field in self.ADVANCED_SEARCH_FIELDS:
-            if self.cleaned_data.get(_field):
+        for field in self.ADVANCED_SEARCH_FIELDS:
+            if self.cleaned_data.get(field):
                 return True
         return False
 

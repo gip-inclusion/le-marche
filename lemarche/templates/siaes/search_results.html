@@ -356,7 +356,7 @@ document.addEventListener('alpine:init', function() {
     Alpine.data('AdvancedSearchComponent', () => (
         {
             open: {{is_advanced_search|yesno:"true,false"}},
-            is_authenticated: {{is_authenticated|yesno:"true,false"}},
+            is_authenticated: {{user.is_authenticated|yesno:"true,false"}},
             is_already_opened:false,
             toggle() {
                 if(!this.is_authenticated && !this.is_already_opened){
@@ -451,11 +451,9 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
     </script>
-    <script type="text/javascript"
-            src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
     {% if user.is_authenticated %}
         <script type="text/javascript" src="{% static 'js/favorite_item_add.js' %}"></script>
-        <script type="text/javascript"
-                src="{% static 'js/favorite_item_remove.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/favorite_item_remove.js' %}"></script>
     {% endif %}
 {% endblock %}
