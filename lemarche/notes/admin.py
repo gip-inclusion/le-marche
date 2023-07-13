@@ -18,6 +18,9 @@ class NoteAdmin(admin.ModelAdmin):
     ]
 
     def save_model(self, request, obj: Note, form, change):
+        """
+        Set Note author on create
+        """
         if not obj.id and not obj.author_id:
             obj.author = request.user
         obj.save()

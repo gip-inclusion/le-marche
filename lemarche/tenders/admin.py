@@ -11,6 +11,7 @@ from django_admin_filters import MultiChoice
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
+from lemarche.notes.models import Note
 from lemarche.perimeters.admin import PerimeterRegionFilter
 from lemarche.tenders import constants
 from lemarche.tenders.forms import TenderAdminForm
@@ -54,6 +55,18 @@ class TenderQuestionInline(admin.TabularInline):
     fields = ["text", "created_at", "updated_at"]
     readonly_fields = ["created_at", "updated_at"]
     extra = 0
+
+
+class TenderNoteInline(admin.TabularInline):
+    model = Note
+    fields = ["text", "author", "created_at", "updated_at"]
+    readonly_fields = ["author", "created_at", "updated_at"]
+    extra = 1
+
+    formfield_overrides = {
+        # models.TextField: {"widget": CKEditorWidget(config_name="tender_note_text")},
+        models.TextField: {"widget": forms.Textarea(attrs={"rows": 2})},
+    }
 
 
 def update_and_send_tender_task(tender: Tender):
@@ -152,6 +165,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                 "fields": ("title", "slug", "kind"),
             },
         ),
+        TenderNoteInline,
         (
             "Détails",
             {
@@ -306,9 +320,22 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         return readonly_fields
 
     def save_model(self, request, obj: Tender, form, change):
+        """
+        Set Tender author on create
+        """
         if not obj.id and not obj.author_id:
             obj.author = request.user
         obj.save()
+
+    def save_formset(self, request, form, formset, change):
+        """
+        Set Note author on create
+        """
+        for form in formset:
+            if type(form.instance) == Note:
+                if not form.instance.id and form.instance.text and change:
+                    form.instance.author = request.user
+        super().save_formset(request, form, formset, change)
 
     def save_related(self, request, form, formsets, change):
         super().save_related(request=request, form=form, formsets=formsets, change=change)

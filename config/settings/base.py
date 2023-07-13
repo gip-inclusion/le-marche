@@ -717,23 +717,26 @@ LOGGING = {
 # https://django-ckeditor.readthedocs.io/en/latest/#optional-customizing-ckeditor-editor
 # ------------------------------------------------------------------------------
 
+DEFAULT_CKEDITOR_CONFIG = {
+    "toolbar": "Custom",
+    "toolbar_Custom": [
+        ["Format", "Bold", "Italic", "Underline"],
+        ["NumberedList", "BulletedList"],
+        ["Link", "Unlink"],
+        ["SpecialChar"],
+        # ['HorizontalRule', 'Smiley'],
+        ["Undo", "Redo"],
+        ["Image", "Flash", "Table", "HorizontalRule", "Smiley", "SpecialChar", "Iframe"],
+        ["RemoveFormat", "Source"],
+    ],
+    # avoid special characters encoding
+    "basicEntities": False,
+    "entities": False,
+}
+
 CKEDITOR_CONFIGS = {
-    "default": {
-        "toolbar": "Custom",
-        "toolbar_Custom": [
-            ["Format", "Bold", "Italic", "Underline"],
-            ["NumberedList", "BulletedList"],
-            ["Link", "Unlink"],
-            ["SpecialChar"],
-            # ['HorizontalRule', 'Smiley'],
-            ["Undo", "Redo"],
-            ["Image", "Flash", "Table", "HorizontalRule", "Smiley", "SpecialChar", "Iframe"],
-            ["RemoveFormat", "Source"],
-        ],
-        # avoid special characters encoding
-        "basicEntities": False,
-        "entities": False,
-    }
+    "default": DEFAULT_CKEDITOR_CONFIG,
+    "tender_note_text": DEFAULT_CKEDITOR_CONFIG | {"height": 100},
 }
 
 
