@@ -42,6 +42,12 @@ function resetForm() {
         perimetersSelectedDiv.firstChild.remove();
     }
 
+    // Supprimer les boutons de la div #locations-selected
+    const locationsSelectedDiv = document.getElementById("locations-selected");
+    while (locationsSelectedDiv.firstChild) {
+        locationsSelectedDiv.firstChild.remove();
+    }
+
     // Réinitialiser les plugins jQuery multiselect
     clearFormFields(form);
     for (let i = 0; i < MULTI_SELECT_TO_CLEAR.length; i++) {
