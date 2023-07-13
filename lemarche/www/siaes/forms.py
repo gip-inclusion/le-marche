@@ -174,11 +174,14 @@ class SiaeFilterForm(forms.Form):
 
     def __init__(self, user=None, advanced_search=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # these fields are autocompletes
+        self.fields["perimeters"].choices = []
+        self.fields["locations"].choices = []
+        # manage disabled fields
         if not advanced_search:
             for field in self.ADVANCED_SEARCH_FIELDS:
                 self.fields[field].disabled = True
                 self.fields[field].widget.attrs["disabled"] = True
-                self.fields[field].choices = []
 
     def filter_queryset(self, qs=None):  # noqa C901
         """
