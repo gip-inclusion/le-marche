@@ -2,6 +2,7 @@ from django.contrib.gis.geos import Point
 from django.test import TestCase
 from django.urls import reverse
 
+from lemarche.labels.factories import LabelFactory
 from lemarche.networks.factories import NetworkFactory
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
@@ -769,6 +770,58 @@ class SiaeEmployeesFilterTest(TestCase):
         self.assertEqual(len(siaes), 2)
         self.assertEqual(siaes[0].id, self.siae_3000.id)
         self.assertEqual(siaes[1].id, self.siae_550.id)
+
+
+class SiaeLabelsFilterTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = UserFactory()
+        cls.first_label = LabelFactory()
+        cls.second_label = LabelFactory()
+
+        cls.siae_without_label = SiaeFactory()
+
+        cls.siae_with_first_label = SiaeFactory()
+        cls.siae_with_first_label.labels.add(cls.first_label)
+
+        cls.siae_with_second_label = SiaeFactory()
+        cls.siae_with_second_label.labels.add(cls.second_label)
+
+        cls.siae_with_labels = SiaeFactory()
+        cls.siae_with_labels.labels.add(cls.first_label)
+        cls.siae_with_labels.labels.add(cls.second_label)
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_search_labels_empty(self):
+        url = reverse("siae:search_results")
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 4)
+
+    def test_search_labels_empty_string(self):
+        url = f"{reverse('siae:search_results')}?labels="
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 4)
+
+    def test_search_first_label_should_filter(self):
+        url = f"{reverse('siae:search_results')}?labels={self.first_label.slug}"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 2)
+        self.assertEqual(siaes[0].id, self.siae_with_labels.id)
+        self.assertEqual(siaes[1].id, self.siae_with_first_label.id)
+
+    def test_search_labels_multiple_should_filter(self):
+        url = f"{reverse('siae:search_results')}?labels={self.first_label.slug}&labels={self.second_label.slug}"
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 3)
+        self.assertEqual(siaes[0].id, self.siae_with_labels.id)
+        self.assertEqual(siaes[1].id, self.siae_with_second_label.id)
+        self.assertEqual(siaes[2].id, self.siae_with_first_label.id)
 
 
 class SiaeFullTextSearchTest(TestCase):
