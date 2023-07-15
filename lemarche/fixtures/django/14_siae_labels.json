@@ -1,0 +1,272 @@
+[
+    {
+        "model": "siaes.siaelabel",
+        "pk": 1,
+        "fields": {
+            "siae": 2583,
+            "label": 2,
+            "logs": [
+                {
+                    "action": "create",
+                    "source": "agrements-esus.csv",
+                    "metadata": {},
+                    "timestamp": "2023-06-08T15:21:49.604132+00:00"
+                }
+            ],
+            "created_at": "2023-06-08T15:21:49.604Z",
+            "updated_at": "2023-06-08T15:21:49.604Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 2,
+        "fields": {
+            "siae": 1784,
+            "label": 2,
+            "logs": [
+                {
+                    "action": "create",
+                    "source": "agrements-esus.csv",
+                    "metadata": {},
+                    "timestamp": "2023-06-08T15:21:49.635794+00:00"
+                }
+            ],
+            "created_at": "2023-06-08T15:21:49.635Z",
+            "updated_at": "2023-06-08T15:21:49.636Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 3,
+        "fields": {
+            "siae": 2826,
+            "label": 2,
+            "logs": [
+                {
+                    "action": "create",
+                    "source": "agrements-esus.csv",
+                    "metadata": {},
+                    "timestamp": "2023-06-08T15:21:49.657507+00:00"
+                }
+            ],
+            "created_at": "2023-06-08T15:21:49.657Z",
+            "updated_at": "2023-06-08T15:21:49.657Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 4,
+        "fields": {
+            "siae": 1466,
+            "label": 2,
+            "logs": [
+                {
+                    "action": "create",
+                    "source": "agrements-esus.csv",
+                    "metadata": {},
+                    "timestamp": "2023-06-08T15:21:49.679457+00:00"
+                }
+            ],
+            "created_at": "2023-06-08T15:21:49.679Z",
+            "updated_at": "2023-06-08T15:21:49.679Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 5,
+        "fields": {
+            "siae": 1613,
+            "label": 2,
+            "logs": [
+                {
+                    "action": "create",
+                    "source": "agrements-esus.csv",
+                    "metadata": {},
+                    "timestamp": "2023-06-08T15:21:49.710266+00:00"
+                }
+            ],
+            "created_at": "2023-06-08T15:21:49.710Z",
+            "updated_at": "2023-06-08T15:21:49.710Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 6,
+        "fields": {
+            "siae": 1782,
+            "label": 3,
+            "logs": [
+                {
+                    "action": "create",
+                    "source": "Entreprises-labellis%C3%A9es-RSEi.csv",
+                    "metadata": {},
+                    "timestamp": "2023-06-08T15:24:49.784329+00:00"
+                }
+            ],
+            "created_at": "2023-06-08T15:24:49.788Z",
+            "updated_at": "2023-06-08T15:24:49.789Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 7,
+        "fields": {
+            "siae": 1783,
+            "label": 3,
+            "logs": [
+                {
+                    "action": "create",
+                    "source": "Entreprises-labellis%C3%A9es-RSEi.csv",
+                    "metadata": {},
+                    "timestamp": "2023-06-08T15:24:49.816813+00:00"
+                }
+            ],
+            "created_at": "2023-06-08T15:24:49.821Z",
+            "updated_at": "2023-06-08T15:24:49.821Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 8,
+        "fields": {
+            "siae": 1784,
+            "label": 3,
+            "logs": [
+                {
+                    "action": "create",
+                    "source": "Entreprises-labellis%C3%A9es-RSEi.csv",
+                    "metadata": {},
+                    "timestamp": "2023-06-08T15:24:49.849324+00:00"
+                }
+            ],
+            "created_at": "2023-06-08T15:24:49.853Z",
+            "updated_at": "2023-06-08T15:24:49.854Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 9,
+        "fields": {
+            "siae": 1785,
+            "label": 3,
+            "logs": [
+                {
+                    "action": "create",
+                    "source": "Entreprises-labellis%C3%A9es-RSEi.csv",
+                    "metadata": {},
+                    "timestamp": "2023-06-08T15:24:49.870849+00:00"
+                }
+            ],
+            "created_at": "2023-06-08T15:24:49.875Z",
+            "updated_at": "2023-06-08T15:24:49.875Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 10,
+        "fields": {
+            "siae": 1785,
+            "label": 1,
+            "logs": [
+                {
+                    "action": "create",
+                    "source": "https://data.ademe.fr/data-fair/api/v1/datasets/liste-des-entreprises-rge-2/lines",
+                    "metadata": {},
+                    "timestamp": "2023-06-08T15:52:27.914429+00:00"
+                }
+            ],
+            "created_at": "2023-06-08T15:52:27.914Z",
+            "updated_at": "2023-06-08T15:52:27.914Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 11,
+        "fields": {
+            "siae": 3560,
+            "label": 1,
+            "logs": [
+                {
+                    "action": "create",
+                    "source": "https://data.ademe.fr/data-fair/api/v1/datasets/liste-des-entreprises-rge-2/lines",
+                    "metadata": {},
+                    "timestamp": "2023-06-08T15:52:28.033575+00:00"
+                }
+            ],
+            "created_at": "2023-06-08T15:52:28.033Z",
+            "updated_at": "2023-06-08T15:52:28.034Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 12,
+        "fields": {
+            "siae": 2249,
+            "label": 1,
+            "logs": [
+                {
+                    "action": "create",
+                    "source": "https://data.ademe.fr/data-fair/api/v1/datasets/liste-des-entreprises-rge-2/lines",
+                    "metadata": {},
+                    "timestamp": "2023-06-08T15:52:31.369504+00:00"
+                }
+            ],
+            "created_at": "2023-06-08T15:52:31.369Z",
+            "updated_at": "2023-06-08T15:52:31.370Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 13,
+        "fields": {
+            "siae": 1152,
+            "label": 1,
+            "logs": [
+                {
+                    "action": "create",
+                    "source": "https://data.ademe.fr/data-fair/api/v1/datasets/liste-des-entreprises-rge-2/lines",
+                    "metadata": {},
+                    "timestamp": "2023-06-08T15:52:42.505359+00:00"
+                }
+            ],
+            "created_at": "2023-06-08T15:52:42.505Z",
+            "updated_at": "2023-06-08T15:52:42.505Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 14,
+        "fields": {
+            "siae": 643,
+            "label": 1,
+            "logs": [
+                {
+                    "action": "create",
+                    "source": "https://data.ademe.fr/data-fair/api/v1/datasets/liste-des-entreprises-rge-2/lines",
+                    "metadata": {},
+                    "timestamp": "2023-06-08T15:52:43.558920+00:00"
+                }
+            ],
+            "created_at": "2023-06-08T15:52:43.559Z",
+            "updated_at": "2023-06-08T15:52:43.559Z"
+        }
+    },
+    {
+        "model": "siaes.siaelabel",
+        "pk": 15,
+        "fields": {
+            "siae": 1784,
+            "label": 1,
+            "logs": [
+                {
+                    "action": "create",
+                    "source": "https://data.ademe.fr/data-fair/api/v1/datasets/liste-des-entreprises-rge-2/lines",
+                    "metadata": {},
+                    "timestamp": "2023-06-08T15:52:52.731363+00:00"
+                }
+            ],
+            "created_at": "2023-06-08T15:52:52.731Z",
+            "updated_at": "2023-06-08T15:52:52.731Z"
+        }
+    }
+]
