@@ -582,7 +582,10 @@ class TenderAdminTest(TestCase):
             siae_two.sectors.add(cls.sectors[i + 5])
 
         cls.tender = TenderFactory(
-            sectors=cls.sectors[6:8], perimeters=[cls.perimeter_paris], status=tender_constants.STATUS_PUBLISHED
+            sectors=cls.sectors[6:8],
+            perimeters=[cls.perimeter_paris],
+            status=tender_constants.STATUS_PUBLISHED,
+            published_at=timezone.now(),
         )
         cls.form_data = model_to_dict(cls.tender) | {
             "_continue": "Enregistrer et continuer les modifications",

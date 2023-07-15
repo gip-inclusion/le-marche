@@ -1,3 +1,4 @@
+from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import mixins, viewsets
 
@@ -33,6 +34,7 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         serializer.save(
             author=user,
             status=Tender.STATUS_PUBLISHED,
+            published_at=timezone.now(),
             source=source,
             import_raw_object=self.request.data,
         )
