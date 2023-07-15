@@ -337,6 +337,7 @@ def csrf_failure(request, reason=""):  # noqa C901
                             tender_dict[key_cleaned] = value[0]
                     elif key_cleaned == "is_draft":
                         tender_dict["status"] = tender_constants.STATUS_DRAFT
+                        tender_dict["published_at"] = None
                     else:  # presta_type, response_kind, marche_benefits
                         tender_dict[key_cleaned] = list() if value[0] == "" else value
         # get user
