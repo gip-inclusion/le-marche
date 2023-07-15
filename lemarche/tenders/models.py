@@ -352,6 +352,7 @@ class Tender(models.Model):
     )
 
     # stats
+    published_at = models.DateTimeField("Date de publication", blank=True, null=True)
     siae_list_last_seen_date = models.DateTimeField(
         "Date de dernière visite de l'auteur sur la page 'structures intéressées'", blank=True, null=True
     )

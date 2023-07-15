@@ -139,6 +139,7 @@ class TenderCreateViewTest(TestCase):
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
         self.assertEqual(tender.status, Tender.STATUS_PUBLISHED)
+        self.assertIsNotNone(tender.published_at)
         messages = list(get_messages(final_response.wsgi_request))
         self.assertEqual(len(messages), 1)
         self.assertEqual(
@@ -171,6 +172,7 @@ class TenderCreateViewTest(TestCase):
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
         self.assertEqual(tender.status, Tender.STATUS_DRAFT)
+        self.assertIsNone(tender.published_at)
         messages = list(get_messages(final_response.wsgi_request))
         self.assertEqual(len(messages), 1)
         self.assertEqual(
@@ -447,7 +449,9 @@ class TenderDetailViewTest(TestCase):
 
     def test_only_author_or_admin_can_view_non_validated_tender(self):
         tender_draft = TenderFactory(author=self.user_buyer_1, status=tender_constants.STATUS_DRAFT)
-        tender_published = TenderFactory(author=self.user_buyer_1, status=tender_constants.STATUS_PUBLISHED)
+        tender_published = TenderFactory(
+            author=self.user_buyer_1, status=tender_constants.STATUS_PUBLISHED, published_at=timezone.now()
+        )
         for tender in [tender_draft, tender_published]:
             # anonymous
             url = reverse("tenders:detail", kwargs={"slug": tender.slug})

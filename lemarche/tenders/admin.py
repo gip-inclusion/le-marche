@@ -137,6 +137,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         # "import_raw_object",
         "import_raw_object_display",
         "created_at",
+        "published_at",
         "updated_at",
     ]
     formfield_overrides = {
@@ -250,6 +251,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             {
                 "fields": (
                     "status",
+                    "published_at",
                     "validated_at",
                 )
             },
