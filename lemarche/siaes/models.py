@@ -197,6 +197,9 @@ class SiaeQuerySet(models.QuerySet):
     def filter_networks(self, networks):
         return self.filter(networks__in=networks)
 
+    def filter_labels(self, labels):
+        return self.filter(labels__in=labels)
+
     def has_user(self):
         """Only return siaes who have at least 1 User."""
         return self.filter(users__isnull=False).distinct()

@@ -3,6 +3,7 @@ from django.contrib.gis.db.models.functions import Distance
 from django.db.models import BooleanField, Case, Q, Value, When
 
 from lemarche.favorites.models import FavoriteList
+from lemarche.labels.models import Label
 from lemarche.networks.models import Network
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
@@ -145,6 +146,13 @@ class SiaeFilterForm(forms.Form):
         required=False,
     )
 
+    labels = forms.ModelMultipleChoiceField(
+        label="Certifications",
+        queryset=Label.objects.all().order_by("name"),
+        to_field_name="slug",
+        required=False,
+    )
+
     company_client_reference = forms.CharField(
         label="Indiquez le nom de votre entreprise",
         required=False,
@@ -170,6 +178,7 @@ class SiaeFilterForm(forms.Form):
         "ca",
         "legal_form",
         "employees",
+        "labels",
     ]
 
     def __init__(self, user=None, advanced_search=True, *args, **kwargs):
@@ -285,6 +294,10 @@ class SiaeFilterForm(forms.Form):
                         & Q(api_entreprise_employees__in=EMPLOYEES_API_ENTREPRISE_MAPPING[employees])
                     )
                 )
+
+        labels = self.cleaned_data.get("labels", None)
+        if labels:
+            qs = qs.filter_labels(labels)
 
         company_client_reference = self.cleaned_data.get("company_client_reference", None)
         if company_client_reference:

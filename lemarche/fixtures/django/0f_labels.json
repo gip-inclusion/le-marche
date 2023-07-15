@@ -1,0 +1,84 @@
+[
+    {
+        "model": "labels.label",
+        "pk": 1,
+        "fields": {
+            "name": "RGE",
+            "slug": "rge",
+            "description": "ADEME RGE",
+            "website": "https://france-renov.gouv.fr/annuaire-rge",
+            "logo_url": "",
+            "data_description": "API : https://api.gouv.fr/les-api/api_professionnels_rge",
+            "data_last_sync_date": "2023-06-08T15:53:59.026Z",
+            "logs": [
+                {
+                    "action": "data_sync",
+                    "source": "https://data.ademe.fr/data-fair/api/v1/datasets/liste-des-entreprises-rge-2/lines",
+                    "metadata": {
+                        "siae_count": 6,
+                        "success_count": 22
+                    },
+                    "timestamp": "2023-06-08T15:53:59.026156+00:00"
+                }
+            ],
+            "created_at": "2023-06-05T07:27:10.579Z",
+            "updated_at": "2023-06-08T15:53:59.026Z"
+        }
+    },
+    {
+        "model": "labels.label",
+        "pk": 2,
+        "fields": {
+            "name": "ESUS",
+            "slug": "esus",
+            "description": "Liste nationale des agréments \"Entreprise Solidaire d’Utilité Sociale\" (ESUS)",
+            "website": "https://www.tresor.economie.gouv.fr/banque-assurance-finance/finance-sociale-et-solidaire/liste-nationale-agrements-esus",
+            "logo_url": "",
+            "data_description": "API ? Non, un fichier Excel",
+            "data_last_sync_date": "2023-06-08T15:22:25.608Z",
+            "logs": [
+                {
+                    "action": "data_sync",
+                    "source": "agrements-esus.csv",
+                    "metadata": {
+                        "row_count": 1709,
+                        "siae_count": 5,
+                        "error_count": 0,
+                        "success_count": 1780
+                    },
+                    "timestamp": "2023-06-08T15:22:25.608141+00:00"
+                }
+            ],
+            "created_at": "2023-06-05T07:27:52.944Z",
+            "updated_at": "2023-06-08T15:22:25.613Z"
+        }
+    },
+    {
+        "model": "labels.label",
+        "pk": 3,
+        "fields": {
+            "name": "RSEi",
+            "slug": "rsei",
+            "description": "Label Responsabilité Sociétale des Entreprises Inclusives\r\n\r\nAFNOR : https://certification.afnor.org/developpement-durable-rse/demarches-rse-sectorielles/label-rsei",
+            "website": "http://www.lesentreprisesdinsertion.org/france/label-rsei",
+            "logo_url": "",
+            "data_description": "API ? Non, un fichier Excel",
+            "data_last_sync_date": "2023-06-08T15:24:51.987Z",
+            "logs": [
+                {
+                    "action": "data_sync",
+                    "source": "Entreprises-labellis%C3%A9es-RSEi.csv",
+                    "metadata": {
+                        "row_count": 94,
+                        "siae_count": 4,
+                        "error_count": 0,
+                        "success_count": 58
+                    },
+                    "timestamp": "2023-06-08T15:24:51.987016+00:00"
+                }
+            ],
+            "created_at": "2023-06-05T07:29:20.926Z",
+            "updated_at": "2023-06-08T15:24:51.994Z"
+        }
+    }
+]
