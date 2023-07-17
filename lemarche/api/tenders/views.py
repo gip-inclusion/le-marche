@@ -30,7 +30,7 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             if serializer.validated_data.get("extra_data", {}).get("source") == Tender.SOURCE_TALLY
             else Tender.SOURCE_API
         )
-        user = get_or_create_user_from_anonymous_content(serializer.validated_data)
+        user = get_or_create_user_from_anonymous_content(serializer.validated_data, source=source)
         serializer.save(
             author=user,
             status=Tender.STATUS_PUBLISHED,

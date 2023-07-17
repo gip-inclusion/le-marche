@@ -62,11 +62,16 @@ def send_new_user_password_reset_link(user: User):
         )
 
 
-def get_mailjet_cl_on_signup(user: User):
+def get_mailjet_cl_on_signup(user: User, _from: str = "FORM"):
     if user.kind == user.KIND_SIAE:
         return settings.MAILJET_NL_CL_SIAE_ID
     elif user.kind == user.KIND_BUYER:
-        return settings.MAILJET_NL_CL_BUYER_ID
+        if _from == "FORM":
+            return settings.MAILJET_NL_CL_BUYER_ID
+        elif _from == "TALLY":
+            return settings.MAILJET_NL_CL_BUYER_TALLY_ID
+        elif _from == "TENDER":
+            return settings.MAILJET_NL_CL_BUYER_TENDER_ID
     elif user.kind == user.KIND_PARTNER:
         if user.partner_kind == user.PARTNER_KIND_FACILITATOR:
             return settings.MAILJET_NL_CL_PARTNER_FACILITATORS_ID
@@ -76,7 +81,7 @@ def get_mailjet_cl_on_signup(user: User):
             return settings.MAILJET_NL_CL_PARTNER_DREETS_ID
 
 
-def add_to_contact_list(user: User, type: str):
+def add_to_contact_list(user: User, type: str, _from: str = "FORM"):
     """Add user to contactlist
 
     Args:
@@ -84,7 +89,7 @@ def add_to_contact_list(user: User, type: str):
         type (String): "signup", OR "buyer_download" or "buyer_search" else raise ValueError
     """
     if type == "signup":
-        contact_list_id = get_mailjet_cl_on_signup(user)
+        contact_list_id = get_mailjet_cl_on_signup(user, _from)
         if user.kind == user.KIND_BUYER:
             api_hubspot.add_user_to_crm(user)
     elif type == "buyer_search":
