@@ -62,15 +62,15 @@ def send_new_user_password_reset_link(user: User):
         )
 
 
-def get_mailjet_cl_on_signup(user: User, _from: str = "FORM"):
+def get_mailjet_cl_on_signup(user: User, _from: str = User.SOURCE_SIGNUP_FORM):
     if user.kind == user.KIND_SIAE:
         return settings.MAILJET_NL_CL_SIAE_ID
     elif user.kind == user.KIND_BUYER:
-        if _from == "FORM":
+        if _from == User.SOURCE_SIGNUP_FORM:
             return settings.MAILJET_NL_CL_BUYER_ID
-        elif _from == "TALLY":
+        elif _from == User.SOURCE_TALLY_FORM:
             return settings.MAILJET_NL_CL_BUYER_TALLY_ID
-        elif _from == "TENDER":
+        elif _from == User.SOURCE_TENDER_FORM:
             return settings.MAILJET_NL_CL_BUYER_TENDER_ID
     elif user.kind == user.KIND_PARTNER:
         if user.partner_kind == user.PARTNER_KIND_FACILITATOR:

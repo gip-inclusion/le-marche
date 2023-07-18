@@ -72,10 +72,10 @@ def get_or_create_user_from_anonymous_content(tender_dict: dict, source: str = U
     return user
 
 
-def get_or_create_user(request_user, tender_dict: dict):
+def get_or_create_user(request_user, tender_dict: dict, _from=User.SOURCE_TENDER_FORM):
     user: User = None
     if not request_user.is_authenticated:
-        user = get_or_create_user_from_anonymous_content(tender_dict, source="TENDER")
+        user = get_or_create_user_from_anonymous_content(tender_dict, source=_from)
     else:
         user = request_user
         need_to_be_saved = False
