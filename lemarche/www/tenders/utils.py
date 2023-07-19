@@ -68,14 +68,14 @@ def get_or_create_user_from_anonymous_content(tender_dict: dict, source: str = U
     )
     if created and settings.BITOUBI_ENV == "prod":
         send_new_user_password_reset_link(user)
-        add_to_contact_list(user=user, type="signup", _from=source)
+        add_to_contact_list(user=user, type="signup", source=source)
     return user
 
 
-def get_or_create_user(request_user, tender_dict: dict, _from=User.SOURCE_TENDER_FORM):
+def get_or_create_user(request_user, tender_dict: dict, source=User.SOURCE_TENDER_FORM):
     user: User = None
     if not request_user.is_authenticated:
-        user = get_or_create_user_from_anonymous_content(tender_dict, source=_from)
+        user = get_or_create_user_from_anonymous_content(tender_dict, source=source)
     else:
         user = request_user
         need_to_be_saved = False

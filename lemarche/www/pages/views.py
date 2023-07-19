@@ -342,7 +342,7 @@ def csrf_failure(request, reason=""):  # noqa C901
                         tender_dict[key_cleaned] = list() if value[0] == "" else value
         # get user
         if not request.user.is_authenticated:
-            user = get_or_create_user_from_anonymous_content(tender_dict, source="TENDER")
+            user = get_or_create_user_from_anonymous_content(tender_dict, source=User.SOURCE_TENDER_FORM)
         else:
             user = request.user
         tender_dict["author"] = user
