@@ -61,7 +61,7 @@ class Command(BaseCommand):
         self.stdout.write("Task: export Siae list...")
 
         self.stdout.write("Step 1: fetching Siae list")
-        filter_form = SiaeFilterForm({})
+        filter_form = SiaeFilterForm(data={})
         siae_list = filter_form.filter_queryset()
         self.stdout.write(f"Found {len(siae_list)} Siae")
 
