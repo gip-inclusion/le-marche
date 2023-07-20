@@ -13,6 +13,7 @@ import locale
 import os
 
 import environ
+import sib_api_v3_sdk
 from django.contrib.messages import constants as messages
 
 
@@ -365,6 +366,14 @@ MAILJET_TENDERS_AUTHOR_INCREMENTAL_2D_TEMPLATE_ID = env.int(
     "MAILJET_TENDERS_AUTHOR_INCREMENTAL_2D_TEMPLATE_ID", 4585824
 )
 MAILJET_TENDERS_AUTHOR_FEEDBACK_30D_TEMPLATE_ID = env.int("MAILJET_TENDERS_AUTHOR_FEEDBACK_30D_TEMPLATE_ID", 4017446)
+
+
+# -- Sendinblue (BREVO)
+
+BREVO_API_KEY = env.str("BREVO_API_KEY", "set-it")
+brevo_configuration = sib_api_v3_sdk.Configuration()
+brevo_configuration.api_key["api-key"] = BREVO_API_KEY
+
 # -- hubspot
 HUBSPOT_API_KEY = env.str("HUBSPOT_API_KEY", "set-it")
 HUBSPOT_IS_ACTIVATED = env.bool("HUBSPOT_IS_ACTIVATED", False)
