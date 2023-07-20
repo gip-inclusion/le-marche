@@ -10,7 +10,6 @@ from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae, SiaeClientReference, SiaeGroup
 from lemarche.tenders.models import Tender
-from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.www.siaes.widgets import CustomLocationWidget
 
@@ -181,7 +180,7 @@ class SiaeFilterForm(forms.Form):
         "labels",
     ]
 
-    def __init__(self, user=None, advanced_search=True, *args, **kwargs):
+    def __init__(self, advanced_search=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # these fields are autocompletes
         self.fields["perimeters"].choices = []
@@ -379,14 +378,17 @@ class SiaeFilterForm(forms.Form):
 
         # final ordering
         qs = qs.order_by(*ORDER_BY_FIELDS)
+
         return qs
 
     def is_advanced_search(self) -> bool:
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
+
         for field in self.ADVANCED_SEARCH_FIELDS:
             if self.cleaned_data.get(field):
                 return True
+
         return False
 
 
@@ -455,9 +457,9 @@ class SiaeShareForm(SiaeFilterForm):
         label="Format", widget=forms.RadioSelect, choices=(("XLS", "xls"), ("CLS", "csv")), required=False
     )
 
-    def __init__(self, user: User, *args, **kwargs):
+    def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if user.is_authenticated:
+        if user and user.is_authenticated:
             subject = self.fields.get("subject")
             message = self.fields.get("message")
             subject.initial = f"{user.full_name} vous envoie une liste de prestataires inclusifs"
