@@ -25,13 +25,23 @@ from lemarche.www.tenders.tasks import (
 )
 
 
-class ScaleMarcheUselessFilter(MultiChoice):
-    FILTER_LABEL = "Utilité du marché de l'inclusion"
+class KindFilter(MultiChoice):
+    FILTER_LABEL = Tender._meta.get_field("kind").verbose_name
     BUTTON_LABEL = "Appliquer"
 
 
-class KindFilter(MultiChoice):
-    FILTER_LABEL = "Type de besoin"
+class ScaleMarcheUselessFilter(MultiChoice):
+    FILTER_LABEL = Tender._meta.get_field("scale_marche_useless").verbose_name
+    BUTTON_LABEL = "Appliquer"
+
+
+class SourceFilter(MultiChoice):
+    FILTER_LABEL = Tender._meta.get_field("source").verbose_name
+    BUTTON_LABEL = "Appliquer"
+
+
+class AmountFilter(MultiChoice):
+    FILTER_LABEL = Tender._meta.get_field("amount").verbose_name
     BUTTON_LABEL = "Appliquer"
 
 
@@ -104,8 +114,8 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         ("kind", KindFilter),
         "status",
         ("scale_marche_useless", ScaleMarcheUselessFilter),
-        "source",
-        "amount",
+        ("source", SourceFilter),
+        ("amount", AmountFilter),
         "deadline_date",
         "start_working_date",
         ResponseKindFilter,
