@@ -104,6 +104,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         ("kind", KindFilter),
         "status",
         ("scale_marche_useless", ScaleMarcheUselessFilter),
+        "source",
         "deadline_date",
         "start_working_date",
         ResponseKindFilter,
