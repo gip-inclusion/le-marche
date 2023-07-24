@@ -179,7 +179,7 @@ class TenderCreateMultiStepView(SessionWizardView):
     def done(self, _, form_dict, **kwargs):
         cleaned_data = self.get_all_cleaned_data()
         # anonymous user? create user (or get an existing user by email)
-        user = get_or_create_user(self.request.user, tender_dict=cleaned_data)
+        user = get_or_create_user(self.request.user, tender_dict=cleaned_data, source=User.SOURCE_TENDER_FORM)
         # when it's done we save the tender
         tender_dict = cleaned_data | {"author": user, "source": Tender.SOURCE_FORM}
         is_draft: bool = self.request.POST.get("is_draft", False)
