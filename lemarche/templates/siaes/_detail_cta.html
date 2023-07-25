@@ -7,7 +7,7 @@
             afin de prendre contact avec leur responsable commerciale.
         </p>
 
-        {% if user.is_authenticated %}
+        {% comment %} {% if user.is_authenticated %}
             <button type="button" id="show_data" class="btn btn-primary btn-block btn-ico" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
                 <i class="ri-mail-send-line"></i>
                 <span>Accéder aux coordonnées&nbsp;</span>
@@ -60,11 +60,11 @@
                     </li>
                 </ul>
             </div>
-        {% else %}
-            <a href="#" id="show_data-modal-btn" class="btn btn-primary btn-block btn-ico" style="justify-content:center;" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}">
+        {% else %} {% endcomment %}
+            <a href="#" id="show_data-modal-btn" class="btn btn-primary btn-block btn-ico" style="justify-content:center;" data-toggle="modal" data-target="#form_contact_modal" data-next-params="{% url 'siae:detail' siae.slug %}">
                 <i class="ri-mail-send-line"></i>
-                <span>Accéder aux coordonnées</span>
+                <span>Contacter la structure</span>
             </a>
-        {% endif %}
+        {% comment %} {% endif %} {% endcomment %}
     </div>
 </div>

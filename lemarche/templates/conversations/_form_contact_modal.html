@@ -1,0 +1,36 @@
+{% load static bootstrap4 %}
+
+<div class="modal fade modal-siae" id="form_contact_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="form_contact_modal_title">Contactez {{siae.name_display}}</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="modal-body home-content-body">
+                <form method="POST" action="" id="contact-form">
+                    {% csrf_token %}
+                    {% bootstrap_form_errors form type="all" %}
+                    <fieldset>
+                        {% bootstrap_field form.email %}
+                        {% bootstrap_field form.subject %}
+                        {% bootstrap_field form.body_message %}
+                    </fieldset>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-row justify-content-end align-items-center">
+                                <div class="form-group col-12 col-lg-auto">
+                                    <button type="submit" id="login-submit-btn" class="btn btn-block btn-primary">
+                                        <span>Envoyer</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
