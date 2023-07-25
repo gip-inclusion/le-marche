@@ -3,6 +3,7 @@ from datetime import datetime
 from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib import admin
+from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db import models
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -11,6 +12,7 @@ from django_admin_filters import MultiChoice
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
+from lemarche.notes.models import Note
 from lemarche.perimeters.admin import PerimeterRegionFilter
 from lemarche.tenders import constants
 from lemarche.tenders.forms import TenderAdminForm
@@ -57,6 +59,17 @@ class ResponseKindFilter(admin.SimpleListFilter):
         if lookup_value:
             queryset = queryset.filter(response_kind__contains=[lookup_value])
         return queryset
+
+
+class TenderNoteInline(GenericTabularInline):
+    model = Note
+    fields = ["text", "author", "created_at", "updated_at"]
+    readonly_fields = ["author", "created_at", "updated_at"]
+    extra = 1
+
+    formfield_overrides = {
+        models.TextField: {"widget": forms.Textarea(attrs={"rows": 2})},
+    }
 
 
 class TenderQuestionInline(admin.TabularInline):
@@ -164,6 +177,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                 "fields": ("title", "slug", "kind"),
             },
         ),
+        TenderNoteInline,
         (
             "Détails",
             {
@@ -318,6 +332,9 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         return readonly_fields
 
     def save_model(self, request, obj: Tender, form, change):
+        """
+        Set Tender author on create
+        """
         if not obj.id and not obj.author_id:
             obj.author = request.user
         obj.save()
@@ -328,6 +345,16 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         # we can add `and obj.status != obj.STATUS_DRAFT` to disable matching when is draft
         if not tender.is_validated:
             tender.set_siae_found_list()
+
+    def save_formset(self, request, form, formset, change):
+        """
+        Set Note author on create
+        """
+        for form in formset:
+            if type(form.instance) == Note:
+                if not form.instance.id and form.instance.text and change:
+                    form.instance.author = request.user
+        super().save_formset(request, form, formset, change)
 
     def is_validate(self, tender: Tender):
         return tender.validated_at is not None
