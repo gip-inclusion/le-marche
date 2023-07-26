@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
@@ -746,8 +747,8 @@ class Siae(models.Model):
     c1_last_sync_date = models.DateTimeField(blank=True, null=True)
     c1_sync_skip = models.BooleanField(blank=False, null=False, default=False)
 
-    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default=SOURCE_STAFF_C4_CREATED)
-    import_raw_object = models.JSONField(verbose_name="Donnée JSON brute", editable=False, null=True)
+    # admin
+    notes = GenericRelation("notes.Note", related_query_name="siae")
 
     # stats
     user_count = models.IntegerField("Nombre d'utilisateurs", default=0)
@@ -764,8 +765,9 @@ class Siae(models.Model):
     content_filled_basic_date = models.DateTimeField(
         "Date de remplissage (basique) de la fiche", blank=True, null=True
     )
-
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
+    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default=SOURCE_STAFF_C4_CREATED)
+    import_raw_object = models.JSONField(verbose_name="Donnée JSON brute", editable=False, null=True)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
