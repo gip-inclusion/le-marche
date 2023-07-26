@@ -23,7 +23,7 @@ class NoteAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
     ]
-    formfield_overrides = {models.TextField: {"widget": CKEditorWidget}}
+    formfield_overrides = {models.TextField: {"widget": CKEditorWidget(config_name="admin_note_text")}}
 
     fieldsets = (
         (
