@@ -173,11 +173,25 @@ def get_all_contacts(client: Client = None):
     return client.crm.contacts.get_all()
 
 
+def get_contact(contact_id, client: Client = None):
+    if not client:
+        client = get_default_client()
+
+    return client.crm.contacts.basic_api.get_by_id(contact_id).to_dict()
+
+
 def get_all_deals(client: Client = None):
     if not client:
         client = get_default_client()
 
     return client.crm.deals.get_all()
+
+
+def get_deal(deal_id, client: Client = None):
+    if not client:
+        client = get_default_client()
+
+    return client.crm.deals.basic_api.get_by_id(deal_id).to_dict()
 
 
 def get_all_companies(client: Client = None):
@@ -220,5 +234,6 @@ def cleanup_note_html(note_html):
             del p.attrs["style"]
     # final cleanups
     output = str(soup)
-    output.replace(" </p>", "</p>")
+    output = output.replace(" </p>", "</p>")
+
     return output
