@@ -332,28 +332,22 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         super().save_formset(request, form, formset, change)
 
     def siae_count_with_link(self, user):
-        if user.siae_count:
-            url = reverse("admin:siaes_siae_changelist") + f"?users__in={user.id}"
-            return format_html(f'<a href="{url}">{user.siae_count}</a>')
-        return "-"
+        url = reverse("admin:siaes_siae_changelist") + f"?users__in={user.id}"
+        return format_html(f'<a href="{url}">{getattr(user, "siae_count", 0)}</a>')
 
     siae_count_with_link.short_description = "Nombre de structures"
     siae_count_with_link.admin_order_field = "siae_count"
 
     def tender_count_with_link(self, user):
-        if user.tender_count:
-            url = reverse("admin:tenders_tender_changelist") + f"?author__id__exact={user.id}"
-            return format_html(f'<a href="{url}">{user.tender_count}</a>')
-        return "-"
+        url = reverse("admin:tenders_tender_changelist") + f"?author__id__exact={user.id}"
+        return format_html(f'<a href="{url}">{getattr(user, "tender_count", 0)}</a>')
 
     tender_count_with_link.short_description = "Nombre de besoins déposés"
     tender_count_with_link.admin_order_field = "tender_count"
 
     def favorite_list_count_with_link(self, user):
-        if user.favorite_list_count:
-            url = reverse("admin:favorites_favoritelist_changelist") + f"?users__in={user.id}"
-            return format_html(f'<a href="{url}">{user.favorite_list_count}</a>')
-        return "-"
+        url = reverse("admin:favorites_favoritelist_changelist") + f"?users__in={user.id}"
+        return format_html(f'<a href="{url}">{getattr(user, "favorite_list_count", 0)}</a>')
 
     favorite_list_count_with_link.short_description = "Nombre de listes d'achats"
     favorite_list_count_with_link.admin_order_field = "favorite_list_count"
