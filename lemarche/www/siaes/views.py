@@ -258,7 +258,7 @@ class SiaeDetailView(FormMixin, DetailView):
         messages.add_message(
             self.request,
             messages.SUCCESS,
-            f'Votre demande "${conv.title}" a bien été envoyé, vous receverez bientôt un retour du prestataire',
+            f'Votre demande "{conv.title}" a bien été envoyé, vous receverez bientôt un retour du prestataire',
         )
         return HttpResponseRedirect(self.get_success_url())
 
