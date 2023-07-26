@@ -18,7 +18,7 @@ class NoteModelTest(TestCase):
     def test_count(self):
         self.assertEqual(Note.objects.count(), 2)
 
-    def test_create_note_with_generic_relation(self):
+    def test_create_tender_note_with_generic_relation(self):
         tender = TenderFactory()
         NoteFactory(author=self.user, content_object=tender)
         self.assertEqual(Note.objects.count(), 2 + 1)
@@ -39,3 +39,14 @@ class NoteModelTest(TestCase):
         # reverse
         self.assertEqual(Note.objects.filter(siae__name=siae.name).count(), 2)
         self.assertEqual(siae.notes.count(), 2)
+
+    def test_create_user_note_with_generic_relation(self):
+        user_siae = UserFactory(kind=constants.USER_KIND_SIAE)
+        NoteFactory(author=self.user, content_object=user_siae)
+        self.assertEqual(Note.objects.count(), 2 + 1)
+        # can create multiple notes for the same object
+        NoteFactory(author=self.user, content_object=user_siae)
+        self.assertEqual(Note.objects.count(), 2 + 1 + 1)
+        # reverse
+        self.assertEqual(Note.objects.filter(user__email=user_siae.email).count(), 2)
+        self.assertEqual(user_siae.notes.count(), 2)
