@@ -9,6 +9,7 @@ from lemarche.utils.admin.admin_site import admin_site
 @admin.register(Note, site=admin_site)
 class NoteAdmin(admin.ModelAdmin):
     list_display = ["id", "author", "text", "content_type", "created_at"]
+    list_filter = [("content_type", admin.RelatedOnlyFieldListFilter)]
     search_fields = ["id", "text"]
     search_help_text = "Cherche sur les champs : ID, Contenu"
 
