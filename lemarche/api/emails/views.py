@@ -21,9 +21,15 @@ class InboundParsingEmailView(APIView):
             logger.info("To : ", inboundEmail["To"])
             logger.info("Content Email Text : ", inboundEmail["RawTextBody"])
             logger.info("Content Email Html : ", inboundEmail["RawHtmlBody"])
+            address_mail = inboundEmail["To"][0]["Address"]
+
+            conv_uuid, kind = address_mail.split("@")[0].split("_")
+            conv: Conversation = Conversation.objects.get(uuid=conv_uuid)
+            conv.data.append(serializer.data)
+            conv.save()
             conv: Conversation = Conversation.objects.create(data=serializer.data)
             logger.info(conv)
 
-            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+            return Response(conv.uuid, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
