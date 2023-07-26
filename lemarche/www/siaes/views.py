@@ -16,6 +16,7 @@ from django.views import View
 from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
+from lemarche.conversations.models import Conversation
 from lemarche.favorites.models import FavoriteList
 from lemarche.siaes.models import Siae
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
@@ -23,6 +24,7 @@ from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
 from lemarche.www.auth.tasks import add_to_contact_list
 from lemarche.www.conversations.forms import ContactForm
+from lemarche.www.conversations.tasks import send_first_email_from_conversation
 from lemarche.www.siaes.forms import SiaeDownloadForm, SiaeFavoriteForm, SiaeFilterForm, SiaeShareForm
 
 
@@ -240,18 +242,23 @@ class SiaeDetailView(FormMixin, DetailView):
         # user = self.request.user
         form = self.get_form()
         if form.is_valid():
-            return self.form_valid(form=form)
+            return self.form_valid(form=form, siae=self.object)
 
     def get_success_url(self) -> str:
         success_url = reverse_lazy("siae:detail", args=[self.get_object().slug])
         return success_url
 
-    def form_valid(self, form):
+    def form_valid(self, form: ContactForm, siae: Siae):
         """If the form is valid, redirect to the supplied URL."""
+        cleaned_data = form.cleaned_data
+        conv = Conversation.objects.create(
+            title=cleaned_data.get("subject"), email_sender=cleaned_data.get("email"), siae=siae, data=[cleaned_data]
+        )
+        send_first_email_from_conversation(conv)
         messages.add_message(
             self.request,
             messages.SUCCESS,
-            "Votre message a bien été envoyé, vous receverez bientôt un retour du prestataire",
+            f'Votre demande "${conv.title}" a bien été envoyé, vous receverez bientôt un retour du prestataire',
         )
         return HttpResponseRedirect(self.get_success_url())
 
