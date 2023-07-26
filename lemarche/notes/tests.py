@@ -24,3 +24,6 @@ class NoteModelTest(TestCase):
         # can create multiple notes for the same object
         NoteFactory(author=self.user, content_object=tender)
         self.assertEqual(Note.objects.count(), 2 + 1 + 1)
+        # reverse
+        self.assertEqual(Note.objects.filter(tender__title=tender.title).count(), 2)
+        self.assertEqual(tender.notes.count(), 2)

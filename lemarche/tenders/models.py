@@ -2,6 +2,7 @@ from datetime import datetime
 from uuid import uuid4
 
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import IntegrityError, models, transaction
 from django.db.models import BooleanField, Case, Count, ExpressionWrapper, F, IntegerField, Q, Sum, When
 from django.db.models.functions import Greatest
@@ -342,6 +343,7 @@ class Tender(models.Model):
     validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
 
     # admin
+    notes = GenericRelation("notes.Note", related_query_name="tender")
     siae_transactioned = models.BooleanField(
         verbose_name="Abouti à une transaction avec une structure",
         help_text="Champ renseigné par un ADMIN",
