@@ -1,6 +1,7 @@
 import logging
 import re
 
+from bs4 import BeautifulSoup
 from django.conf import settings
 from hubspot import Client
 from hubspot.crm.contacts import ApiException, SimplePublicObject, SimplePublicObjectInput
@@ -163,3 +164,61 @@ def create_deal(
                 logger.error("Exception when calling hubspot_api->create: %s\n" % e)
     else:
         logger.info("Hubspot: not add contact to the crm (STAGING or TEST environment detected)")
+
+
+def get_all_contacts(client: Client = None):
+    if not client:
+        client = get_default_client()
+
+    return client.crm.contacts.get_all()
+
+
+def get_all_deals(client: Client = None):
+    if not client:
+        client = get_default_client()
+
+    return client.crm.deals.get_all()
+
+
+def get_all_companies(client: Client = None):
+    if not client:
+        client = get_default_client()
+
+    return client.crm.companies.get_all()
+
+
+def get_all_notes(client: Client = None):
+    if not client:
+        client = get_default_client()
+    notes = list()
+    after = 0
+
+    while after is not None:
+        response = client.crm.objects.basic_api.get_page(
+            object_type="notes",
+            properties=["hs_note_body", "hubspot_owner_id"],
+            associations=["contact", "deal", "companies"],
+            limit=100,
+            after=after,
+        ).to_dict()
+        if len(response["results"]):
+            notes += response["results"]
+            after = response["paging"]["next"]["after"] if response["paging"] else None
+
+    return notes
+
+
+def cleanup_note_html(note_html):
+    soup = BeautifulSoup(note_html, "html.parser")
+    # remove outer 'div'
+    soup.div.unwrap()
+    # remove 'class' & 'style'
+    for p in soup.find_all("p"):
+        if "class" in p.attrs:
+            del p.attrs["class"]
+        if "style" in p.attrs:
+            del p.attrs["style"]
+    # final cleanups
+    output = str(soup)
+    output.replace(" </p>", "</p>")
+    return output
