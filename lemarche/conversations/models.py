@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
@@ -37,3 +38,7 @@ class Conversation(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def email_sender_encoded(self):
+        return f"{self.uuid}_b@{settings.INBOUND_PARSING_DOMAIN_EMAIL}"
