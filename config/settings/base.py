@@ -802,6 +802,7 @@ WAGTAILADMIN_BASE_URL = DEPLOY_URL or "http://localhost/"
 # ------------------------------------------------------------------------------
 
 SHELL_PLUS_POST_IMPORTS = [
+    "from lemarche.utils import constants",
     "from lemarche.siaes import constants as siae_constants",
     "from lemarche.tenders import constants as tender_constants",
 ]
