@@ -158,7 +158,11 @@
                 <aside id="sidebar">
                     <div class="profile mb-4">
                         <div class="profile_capsule">
-                            {% include "siaes/_detail_cta.html" with siae=siae %}
+                            {% if inbound_email_is_activated %}
+                                {% include "siaes/_detail_cta_v2.html" with siae=siae %}
+                            {% else %}
+                                {% include "siaes/_detail_cta.html" with siae=siae %}
+                            {% endif %}
                             <br />
                             <div class="map-holder mb-3">
                                 <div id="map-siae" class="map-canvas"></div>

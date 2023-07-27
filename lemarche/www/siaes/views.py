@@ -286,6 +286,7 @@ class SiaeDetailView(FormMixin, DetailView):
         """
         context = super().get_context_data(**kwargs)
         context["current_search_query"] = self.request.session.get(CURRENT_SEARCH_QUERY_COOKIE_NAME, "")
+        context["inbound_email_is_activated"] = self.request.user.is_authenticated and self.request.user.is_admin
         # context["form_contact"] = ContactForm()
         return context
 
