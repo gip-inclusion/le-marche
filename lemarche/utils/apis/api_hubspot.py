@@ -191,7 +191,7 @@ def get_deal(deal_id, client: Client = None):
     if not client:
         client = get_default_client()
 
-    return client.crm.deals.basic_api.get_by_id(deal_id).to_dict()
+    return client.crm.deals.basic_api.get_by_id(deal_id, associations=["contact"]).to_dict()
 
 
 def get_all_companies(client: Client = None):
