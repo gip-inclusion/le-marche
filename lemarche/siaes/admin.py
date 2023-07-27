@@ -1,12 +1,15 @@
 from django import forms
 from django.contrib import admin
+from django.contrib.contenttypes.admin import GenericTabularInline
 from django.contrib.gis import admin as gis_admin
+from django.db import models
 from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
 from lemarche.labels.models import Label
+from lemarche.notes.models import Note
 from lemarche.siaes.models import (
     Siae,
     SiaeClientReference,
@@ -72,6 +75,17 @@ class SiaeLabelInline(admin.TabularInline):
         return format_html(f'<a href="{url}">{siae_label.label}</a>')
 
     label_with_link.short_description = Label._meta.verbose_name
+
+
+class SiaeNoteInline(GenericTabularInline):
+    model = Note
+    fields = ["text", "author", "created_at", "updated_at"]
+    readonly_fields = ["author", "created_at", "updated_at"]
+    extra = 1
+
+    formfield_overrides = {
+        models.TextField: {"widget": forms.Textarea(attrs={"rows": 2})},
+    }
 
 
 class SiaeUserInline(admin.TabularInline):
@@ -239,6 +253,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                 )
             },
         ),
+        SiaeNoteInline,
         SiaeUserInline,
         (
             "Logo",
@@ -397,6 +412,16 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         ]:
             return True
         return super().lookup_allowed(lookup, *args, **kwargs)
+
+    def save_formset(self, request, form, formset, change):
+        """
+        Set Note author on create
+        """
+        for form in formset:
+            if type(form.instance) == Note:
+                if not form.instance.id and form.instance.text and change:
+                    form.instance.author = request.user
+        super().save_formset(request, form, formset, change)
 
     def user_count_with_link(self, siae):
         url = reverse("admin:users_user_changelist") + f"?siaes__in={siae.id}"
