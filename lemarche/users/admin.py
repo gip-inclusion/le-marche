@@ -1,9 +1,13 @@
+from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.contenttypes.admin import GenericTabularInline
+from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
+from lemarche.notes.models import Note
 from lemarche.siaes.models import Siae, SiaeUser
 from lemarche.users.forms import UserChangeForm, UserCreationForm
 from lemarche.users.models import User
@@ -118,6 +122,17 @@ class HasApiKeyFilter(admin.SimpleListFilter):
         return queryset
 
 
+class UserNoteInline(GenericTabularInline):
+    model = Note
+    fields = ["text", "author", "created_at", "updated_at"]
+    readonly_fields = ["author", "created_at", "updated_at"]
+    extra = 1
+
+    formfield_overrides = {
+        models.TextField: {"widget": forms.Textarea(attrs={"rows": 2})},
+    }
+
+
 class SiaeUserInline(admin.TabularInline):
     model = SiaeUser
     fields = ["siae", "siae_with_link", "created_at", "updated_at"]
@@ -213,6 +228,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
                 )
             },
         ),
+        UserNoteInline,
         SiaeUserInline,
         (
             "Dépôt de besoin",
@@ -305,29 +321,33 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         qs = qs.with_favorite_list_stats()
         return qs
 
+    def save_formset(self, request, form, formset, change):
+        """
+        Set Note author on create
+        """
+        for form in formset:
+            if type(form.instance) == Note:
+                if not form.instance.id and form.instance.text and change:
+                    form.instance.author = request.user
+        super().save_formset(request, form, formset, change)
+
     def siae_count_with_link(self, user):
-        if user.siae_count:
-            url = reverse("admin:siaes_siae_changelist") + f"?users__in={user.id}"
-            return format_html(f'<a href="{url}">{user.siae_count}</a>')
-        return "-"
+        url = reverse("admin:siaes_siae_changelist") + f"?users__in={user.id}"
+        return format_html(f'<a href="{url}">{getattr(user, "siae_count", 0)}</a>')
 
     siae_count_with_link.short_description = "Nombre de structures"
     siae_count_with_link.admin_order_field = "siae_count"
 
     def tender_count_with_link(self, user):
-        if user.tender_count:
-            url = reverse("admin:tenders_tender_changelist") + f"?author__id__exact={user.id}"
-            return format_html(f'<a href="{url}">{user.tender_count}</a>')
-        return "-"
+        url = reverse("admin:tenders_tender_changelist") + f"?author__id__exact={user.id}"
+        return format_html(f'<a href="{url}">{getattr(user, "tender_count", 0)}</a>')
 
     tender_count_with_link.short_description = "Nombre de besoins déposés"
     tender_count_with_link.admin_order_field = "tender_count"
 
     def favorite_list_count_with_link(self, user):
-        if user.favorite_list_count:
-            url = reverse("admin:favorites_favoritelist_changelist") + f"?users__in={user.id}"
-            return format_html(f'<a href="{url}">{user.favorite_list_count}</a>')
-        return "-"
+        url = reverse("admin:favorites_favoritelist_changelist") + f"?users__in={user.id}"
+        return format_html(f'<a href="{url}">{getattr(user, "favorite_list_count", 0)}</a>')
 
     favorite_list_count_with_link.short_description = "Nombre de listes d'achats"
     favorite_list_count_with_link.admin_order_field = "favorite_list_count"

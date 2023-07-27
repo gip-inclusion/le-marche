@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.db.models import Count
 from django.db.models.functions import Lower
@@ -278,6 +279,9 @@ class User(AbstractUser):
     c4_phone_verified = models.BooleanField(default=False)
     c4_email_verified = models.BooleanField(default=False)
     c4_id_card_verified = models.BooleanField(default=False)
+
+    # admin
+    notes = GenericRelation("notes.Note", related_query_name="user")
 
     # stats
     dashboard_last_seen_date = models.DateTimeField(
