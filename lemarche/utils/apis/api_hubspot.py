@@ -1,6 +1,7 @@
 import logging
 import re
 
+from bs4 import BeautifulSoup
 from django.conf import settings
 from hubspot import Client
 from hubspot.crm.contacts import ApiException, SimplePublicObject, SimplePublicObjectInput
@@ -163,3 +164,77 @@ def create_deal(
                 logger.error("Exception when calling hubspot_api->create: %s\n" % e)
     else:
         logger.info("Hubspot: not add contact to the crm (STAGING or TEST environment detected)")
+
+
+def get_all_contacts(client: Client = None):
+    if not client:
+        client = get_default_client()
+
+    return client.crm.contacts.get_all()
+
+
+def get_contact(contact_id, client: Client = None):
+    if not client:
+        client = get_default_client()
+
+    return client.crm.contacts.basic_api.get_by_id(contact_id).to_dict()
+
+
+def get_all_deals(client: Client = None):
+    if not client:
+        client = get_default_client()
+
+    return client.crm.deals.get_all()
+
+
+def get_deal(deal_id, client: Client = None):
+    if not client:
+        client = get_default_client()
+
+    return client.crm.deals.basic_api.get_by_id(deal_id, associations=["contact"]).to_dict()
+
+
+def get_all_companies(client: Client = None):
+    if not client:
+        client = get_default_client()
+
+    return client.crm.companies.get_all()
+
+
+def get_all_notes(client: Client = None):
+    if not client:
+        client = get_default_client()
+    notes = list()
+    after = 0
+
+    while after is not None:
+        response = client.crm.objects.basic_api.get_page(
+            object_type="notes",
+            properties=["hs_note_body", "hubspot_owner_id"],
+            associations=["contact", "deal", "companies"],
+            limit=100,
+            after=after,
+        ).to_dict()
+        if len(response["results"]):
+            notes += response["results"]
+            after = response["paging"]["next"]["after"] if response["paging"] else None
+
+    return notes
+
+
+def cleanup_note_html(note_html):
+    soup = BeautifulSoup(note_html, "html.parser")
+    # remove outer 'div'
+    soup.div.unwrap()
+    # remove 'class' & 'style'
+    for elem in soup.find_all(["p", "span"]):
+        if "class" in elem.attrs:
+            del elem.attrs["class"]
+        if "style" in elem.attrs:
+            del elem.attrs["style"]
+    # final cleanups
+    output = str(soup)
+    output = output.replace(" </p>", "</p>")
+    output = output.replace("<br/>", "")
+
+    return output
