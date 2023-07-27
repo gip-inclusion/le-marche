@@ -227,13 +227,14 @@ def cleanup_note_html(note_html):
     # remove outer 'div'
     soup.div.unwrap()
     # remove 'class' & 'style'
-    for p in soup.find_all("p"):
-        if "class" in p.attrs:
-            del p.attrs["class"]
-        if "style" in p.attrs:
-            del p.attrs["style"]
+    for elem in soup.find_all(["p", "span"]):
+        if "class" in elem.attrs:
+            del elem.attrs["class"]
+        if "style" in elem.attrs:
+            del elem.attrs["style"]
     # final cleanups
     output = str(soup)
     output = output.replace(" </p>", "</p>")
+    output = output.replace("<br/>", "")
 
     return output

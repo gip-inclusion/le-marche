@@ -23,7 +23,7 @@ class Command(BaseCommand):
     python manage.py import_notes_from_hubspot
     """
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # noqa C901
         # contacts
         contacts = api_hubspot.get_all_contacts()
         print("contacts count", len(contacts))
@@ -108,12 +108,12 @@ class Command(BaseCommand):
                         hubspot_contact_dict = api_hubspot.get_contact(contact_id)
                         users = User.objects.filter(email=hubspot_contact_dict["properties"]["email"])
                         if users.count() == 0:
-                            results["deal_user_not_found"] += 1
+                            results["contact_user_not_found"] += 1
                         elif users.count() == 2:
-                            results["deal_user_multiple"] += 1
+                            results["contact_user_multiple"] += 1
                         else:
                             note_dict["content_object"] = users.first()
-                            results["deal_user_ok"] += 1
+                            results["contact_user_ok"] += 1
                     else:
                         results["empty_deal_or_contact"] += 1
                 else:
