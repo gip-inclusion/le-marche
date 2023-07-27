@@ -1,4 +1,4 @@
-from django import forms
+from ckeditor.widgets import CKEditorWidget
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.contenttypes.admin import GenericTabularInline
@@ -129,7 +129,7 @@ class UserNoteInline(GenericTabularInline):
     extra = 1
 
     formfield_overrides = {
-        models.TextField: {"widget": forms.Textarea(attrs={"rows": 2})},
+        models.TextField: {"widget": CKEditorWidget(config_name="admin_note_text")},
     }
 
 

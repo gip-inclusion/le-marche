@@ -1,3 +1,4 @@
+from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
@@ -84,7 +85,7 @@ class SiaeNoteInline(GenericTabularInline):
     extra = 1
 
     formfield_overrides = {
-        models.TextField: {"widget": forms.Textarea(attrs={"rows": 2})},
+        models.TextField: {"widget": CKEditorWidget(config_name="admin_note_text")},
     }
 
 

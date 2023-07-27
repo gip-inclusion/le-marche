@@ -68,7 +68,7 @@ class TenderNoteInline(GenericTabularInline):
     extra = 1
 
     formfield_overrides = {
-        models.TextField: {"widget": forms.Textarea(attrs={"rows": 2})},
+        models.TextField: {"widget": CKEditorWidget(config_name="admin_note_text")},
     }
 
 
