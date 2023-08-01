@@ -6,22 +6,7 @@ from huey.contrib.djhuey import task
 from sib_api_v3_sdk.rest import ApiException
 
 
-# from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX
-
-
 logger = logging.getLogger(__name__)
-
-
-BASE_URL = "https://api.mailjet.com/v3/REST/"
-SEND_URL = "https://api.mailjet.com/v3.1/send"
-
-
-def contact_list_endpoint(contact_list_id):
-    return f"{BASE_URL}contactslist/{contact_list_id}/managecontact"
-
-
-def get_default_params():
-    return {}
 
 
 def get_api_instance():

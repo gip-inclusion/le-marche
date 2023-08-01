@@ -239,7 +239,6 @@ class SiaeDetailView(FormMixin, DetailView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        # user = self.request.user
         form = self.get_form()
         if form.is_valid():
             return self.form_valid(form=form, siae=self.object)
@@ -258,7 +257,7 @@ class SiaeDetailView(FormMixin, DetailView):
         messages.add_message(
             self.request,
             messages.SUCCESS,
-            f'Votre demande "{conv.title}" a bien été envoyé, vous receverez bientôt un retour du prestataire',
+            f'Votre demande "{conv.title}" a bien été envoyée, vous recevrez bientôt un retour du prestataire',
         )
         return HttpResponseRedirect(self.get_success_url())
 
@@ -287,7 +286,6 @@ class SiaeDetailView(FormMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["current_search_query"] = self.request.session.get(CURRENT_SEARCH_QUERY_COOKIE_NAME, "")
         context["inbound_email_is_activated"] = self.request.user.is_authenticated and self.request.user.is_admin
-        # context["form_contact"] = ContactForm()
         return context
 
 
