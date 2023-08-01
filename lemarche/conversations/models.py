@@ -26,11 +26,12 @@ class Conversation(models.Model):
     kind = models.CharField(
         verbose_name="Type de conversation", default=KIND_SEARCH, choices=KIND_CHOICES, max_length=10, db_index=True
     )
+    email_sender = models.EmailField(verbose_name="Email de l'initiateur de la conversation", null=True)
     title = models.CharField(verbose_name="Objet de la première demande", max_length=200)
+    initial_body_message = models.TextField(verbose_name="Message initial", blank=True)
     siae = models.ForeignKey(
         "siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE, null=True, related_name="conversations"
     )
-    email_sender = models.EmailField(verbose_name="Email de l'initiateur de la conversation", null=True)
 
     data = models.JSONField(default=list)
 

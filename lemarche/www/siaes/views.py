@@ -251,7 +251,10 @@ class SiaeDetailView(FormMixin, DetailView):
         """If the form is valid, redirect to the supplied URL."""
         cleaned_data = form.cleaned_data
         conv = Conversation.objects.create(
-            title=cleaned_data.get("subject"), email_sender=cleaned_data.get("email"), siae=siae, data=[cleaned_data]
+            title=cleaned_data.get("subject"),
+            email_sender=cleaned_data.get("email"),
+            siae=siae,
+            initial_body_message=cleaned_data.get("body_message"),
         )
         send_first_email_from_conversation(conv)
         messages.add_message(

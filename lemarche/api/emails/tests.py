@@ -28,13 +28,13 @@ class InboundEmailParsingApiTest(TestCase):
 
     def test_inbound_emails_refresh_data_json(self):
         # assert that we have initial message in data
-        self.assertEqual(len(self.conversation.data), 1)
+        self.assertEqual(len(self.conversation.data), 0)
 
         response = self.client.post(self.url, data=self.email_data, content_type="application/json")
 
         # refresh conversation data field and check if update
         self.conversation.refresh_from_db()
-        self.assertEqual(len(self.conversation.data), 2)
+        self.assertEqual(len(self.conversation.data), 1)
         self.assertEqual(response.status_code, 201)
 
     def test_inbound_emails_send_to_buyer(self):

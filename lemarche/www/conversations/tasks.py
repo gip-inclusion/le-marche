@@ -8,7 +8,7 @@ def send_first_email_from_conversation(conv: Conversation):
     send_mail_async(
         recipient_list=[siae.contact_email],
         email_subject=conv.title,
-        email_body=conv.data[0].get("body_message"),
+        email_body=conv.initial_body_message,
         from_email=conv.email_sender_buyer_encoded,
     )
 
