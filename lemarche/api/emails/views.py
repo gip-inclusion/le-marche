@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 
 from lemarche.api.emails.serializers import EmailsSerializer
 from lemarche.conversations.models import Conversation
+from lemarche.www.conversations.tasks import send_email_from_conversation
 
 
 logger = logging.getLogger(__name__)
@@ -21,9 +22,19 @@ class InboundParsingEmailView(APIView):
             logger.info("To : ", inboundEmail["To"])
             logger.info("Content Email Text : ", inboundEmail["RawTextBody"])
             logger.info("Content Email Html : ", inboundEmail["RawHtmlBody"])
-            conv: Conversation = Conversation.objects.create(data=serializer.data)
-            logger.info(conv)
+            address_mail = inboundEmail["To"][0]["Address"]
 
-            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+            conv_uuid, user_kind = Conversation.get_email_info_from_address(address_mail)
+            conv: Conversation = Conversation.objects.get(uuid=conv_uuid)
+            conv.data.append(serializer.data)
+            conv.save()
+            send_email_from_conversation(
+                conv=conv,
+                user_kind=user_kind,
+                email_subject=inboundEmail.get("Subject", conv.title),
+                email_body=inboundEmail.get("RawHtmlBody"),
+            )
+            logger.info(conv)
+            return Response(conv.uuid, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

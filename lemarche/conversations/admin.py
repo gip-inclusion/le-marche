@@ -7,11 +7,11 @@ from lemarche.utils.fields import pretty_print_readonly_jsonfield
 
 @admin.register(Conversation, site=admin_site)
 class ConversationAdmin(admin.ModelAdmin):
-    list_display = ["id", "uuid", "kind", "created_at"]
+    list_display = ["id", "title", "uuid", "kind", "created_at"]
     search_fields = ["id", "uuid"]
     search_help_text = "Cherche sur les champs : ID, UUID"
     exclude = ["data"]
-    readonly_fields = ["created_at", "data_display"]
+    readonly_fields = ["id", "uuid", "title", "version", "siae", "email_sender", "created_at", "data_display"]
 
     def data_display(self, conversation: Conversation = None):
         if conversation:
