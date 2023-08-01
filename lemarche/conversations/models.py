@@ -30,7 +30,7 @@ class Conversation(models.Model):
     siae = models.ForeignKey(
         "siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE, null=True, related_name="conversations"
     )
-    email_sender = models.EmailField(verbose_name="Email de l'intitiateur de la conversation", null=True)
+    email_sender = models.EmailField(verbose_name="Email de l'initiateur de la conversation", null=True)
 
     data = models.JSONField(default=list)
 
