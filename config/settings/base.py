@@ -375,6 +375,7 @@ MAILJET_TENDERS_AUTHOR_FEEDBACK_30D_TEMPLATE_ID = env.int("MAILJET_TENDERS_AUTHO
 BREVO_API_KEY = env.str("BREVO_API_KEY", "set-it")
 brevo_configuration = sib_api_v3_sdk.Configuration()
 brevo_configuration.api_key["api-key"] = BREVO_API_KEY
+INBOUND_PARSING_DOMAIN_EMAIL = env.str("INBOUND_PARSING_DOMAIN_EMAIL", "reply.staging.lemarche.inclusion.beta.gouv.fr")
 
 # -- hubspot
 HUBSPOT_API_KEY = env.str("HUBSPOT_API_KEY", "set-it")

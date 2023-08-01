@@ -375,6 +375,10 @@ class User(AbstractUser):
     def has_siae(self):
         return self.siaes.exists()
 
+    @property
+    def is_admin(self) -> bool:
+        return self.kind == self.KIND_ADMIN
+
     def has_tender_siae(self, tender=None):
         from lemarche.tenders.models import TenderSiae
 

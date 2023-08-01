@@ -16,12 +16,15 @@ from django.views import View
 from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
+from lemarche.conversations.models import Conversation
 from lemarche.favorites.models import FavoriteList
 from lemarche.siaes.models import Siae
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
 from lemarche.www.auth.tasks import add_to_contact_list
+from lemarche.www.conversations.forms import ContactForm
+from lemarche.www.conversations.tasks import send_first_email_from_conversation
 from lemarche.www.siaes.forms import SiaeDownloadForm, SiaeFavoriteForm, SiaeFilterForm, SiaeShareForm
 
 
@@ -214,9 +217,11 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         return response
 
 
-class SiaeDetailView(DetailView):
+class SiaeDetailView(FormMixin, DetailView):
     template_name = "siaes/detail.html"
     context_object_name = "siae"
+    form_class = ContactForm
+    success_url = reverse_lazy("siae:detail")
     queryset = Siae.objects.prefetch_many_to_many().prefetch_many_to_one().prefetch_related("sectors__group")
 
     def get(self, request, *args, **kwargs):
@@ -231,6 +236,42 @@ class SiaeDetailView(DetailView):
                 return redirect(reverse_lazy("siae:detail", args=[siae.slug]))
             except:  # noqa
                 raise Http404
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form=form, siae=self.object)
+
+    def get_success_url(self) -> str:
+        success_url = reverse_lazy("siae:detail", args=[self.get_object().slug])
+        return success_url
+
+    def form_valid(self, form: ContactForm, siae: Siae):
+        """If the form is valid, redirect to the supplied URL."""
+        cleaned_data = form.cleaned_data
+        conv = Conversation.objects.create(
+            title=cleaned_data.get("subject"),
+            email_sender=cleaned_data.get("email"),
+            siae=siae,
+            initial_body_message=cleaned_data.get("body_message"),
+        )
+        send_first_email_from_conversation(conv)
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            f'Votre demande "{conv.title}" a bien été envoyée, vous recevrez bientôt un retour du prestataire',
+        )
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_initial(self):
+        initial = super().get_initial()
+        user = self.request.user
+
+        if user.is_authenticated:
+            initial["email"] = user.email
+
+        return initial
 
     def get_queryset(self):
         """
@@ -247,6 +288,7 @@ class SiaeDetailView(DetailView):
         """
         context = super().get_context_data(**kwargs)
         context["current_search_query"] = self.request.session.get(CURRENT_SEARCH_QUERY_COOKIE_NAME, "")
+        context["inbound_email_is_activated"] = self.request.user.is_authenticated and self.request.user.is_admin
         return context
 
 
