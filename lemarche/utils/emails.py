@@ -44,6 +44,7 @@ def send_mail_async(
 
 @task()
 def send_email_html(email_subject, from_email, recipient_list, html_email=None, email_body=None):
+    email_subject = f"{EMAIL_SUBJECT_PREFIX}{email_subject}"
     email_message = EmailMultiAlternatives(email_subject, email_body, from_email, recipient_list)
     if html_email:
         email_message.attach_alternative(html_email, "text/html")
