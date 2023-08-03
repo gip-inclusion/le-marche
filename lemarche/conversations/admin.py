@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from lemarche.conversations.models import Conversation
 from lemarche.utils.admin.admin_site import admin_site
-from lemarche.utils.fields import pretty_print_readonly_jsonfield
+from lemarche.utils.fields import print_readonly_jsonfield
 
 
 @admin.register(Conversation, site=admin_site)
@@ -15,7 +15,10 @@ class ConversationAdmin(admin.ModelAdmin):
 
     def data_display(self, conversation: Conversation = None):
         if conversation:
-            return pretty_print_readonly_jsonfield(conversation.data)
+            return print_readonly_jsonfield(conversation.data, id_table="table_filter_data_message")
         return "-"
 
-    data_display.short_description = Conversation._meta.get_field("data").verbose_name
+    class Media:
+        js = ("js/filter_data_message.js",)
+
+    data_display.short_description = "Messages de la conversation"

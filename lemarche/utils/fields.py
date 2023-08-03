@@ -77,6 +77,20 @@ def pretty_print_readonly_jsonfield(jsonfield_data):
     return result
 
 
+def print_readonly_jsonfield(jsonfield_data, id_table="id-table-body"):
+    """
+    Display a pretty readonly version of a JSONField
+    https://stackoverflow.com/a/60219265
+    """
+    result = ""
+
+    if jsonfield_data:
+        result = json.dumps(jsonfield_data, ensure_ascii=False)
+        result = mark_safe(f'<table id="{id_table}" data-data="{escape(result)}"></table>')
+
+    return result
+
+
 class BooleanNotEmptyField(forms.BooleanField):
     def to_python(self, value):
         if isinstance(value, str) and value.lower() in ("false", "0"):
