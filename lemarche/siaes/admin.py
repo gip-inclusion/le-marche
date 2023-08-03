@@ -221,12 +221,12 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "sector_count_with_link",
                     "networks",
                     "network_count_with_link",
+                    "groups",
                     "group_count_with_link",
                     "offer_count_with_link",
                     "label_count_with_link",
                     "client_reference_count_with_link",
                     "image_count_with_link",
-                    "groups",
                 )
             },
         ),

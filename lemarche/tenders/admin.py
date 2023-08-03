@@ -159,6 +159,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "siae_detail_contact_click_count_with_link",
         "logs_display",
         "extra_data_display",
+        "source",
         # "import_raw_object",
         "import_raw_object_display",
         "created_at",
@@ -283,7 +284,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             },
         ),
         (
-            "Stats et autres",
+            "Stats",
             {
                 "fields": (
                     "siae_list_last_seen_date",
