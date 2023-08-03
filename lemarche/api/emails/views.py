@@ -29,7 +29,7 @@ class InboundParsingEmailView(APIView):
                 user_kind=user_kind,
                 email_subject=inboundEmail.get("Subject", conv.title),
                 email_body=inboundEmail.get("RawTextBody"),
-                html_email=inboundEmail.get("RawHtmlBody"),
+                email_body_html=inboundEmail.get("RawHtmlBody"),
             )
             return Response(conv.uuid, status=status.HTTP_201_CREATED)
         else:

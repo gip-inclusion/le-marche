@@ -1,7 +1,7 @@
 import re
 
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives, send_mail
+from django.core.mail import send_mail
 from huey.contrib.djhuey import task
 
 
@@ -31,21 +31,14 @@ def send_mail_async(
     email_body,
     recipient_list,
     from_email=settings.DEFAULT_FROM_EMAIL,
+    email_body_html=None,
     fail_silently=False,
 ):
     send_mail(
         subject=f"{EMAIL_SUBJECT_PREFIX}{email_subject}",
         message=email_body,
+        html_message=email_body_html,
         from_email=from_email,
         recipient_list=recipient_list,
         fail_silently=fail_silently,
     )
-
-
-@task()
-def send_email_html(email_subject, from_email, recipient_list, html_email=None, email_body=None):
-    email_subject = f"{EMAIL_SUBJECT_PREFIX}{email_subject}"
-    email_message = EmailMultiAlternatives(email_subject, email_body, from_email, recipient_list)
-    if html_email:
-        email_message.attach_alternative(html_email, "text/html")
-    return email_message.send()
