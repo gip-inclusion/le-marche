@@ -23,7 +23,7 @@ def send_email_from_conversation(
         send_mail(
             subject=email_subject,
             message=email_body,
-            html_message=email_body_html if email_body_html else None,
+            html_message=email_body_html,
             from_email=conv.email_sender_buyer_encoded,
             recipient_list=whitelist_recipient_list([conv.email_sender_siae]),
             fail_silently=False,
@@ -32,7 +32,7 @@ def send_email_from_conversation(
         send_mail(
             subject=email_subject,
             message=email_body,
-            html_message=email_body_html if email_body_html else None,
+            html_message=email_body_html,
             from_email=conv.email_sender_siae_encoded,
             recipient_list=whitelist_recipient_list([conv.email_sender_buyer]),
             fail_silently=False,
