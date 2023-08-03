@@ -25,6 +25,16 @@ class ConversationAdmin(admin.ModelAdmin):
         "updated_at",
     ]
 
+    fieldsets = (
+        (
+            None,
+            {"fields": ("uuid", "title", "initial_body_message")},
+        ),
+        ("From / To", {"fields": ("email_sender", "siae")}),
+        ("Echanges d'e-mail", {"fields": ("data_display",)}),
+        ("Dates", {"fields": ("created_at", "updated_at")}),
+    )
+
     class Media:
         js = ("js/filter_data_message.js",)
 
