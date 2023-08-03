@@ -13,19 +13,23 @@ def send_first_email_from_conversation(conv: Conversation):
     )
 
 
-def send_email_from_conversation(conv: Conversation, user_kind: str, email_subject: str, email_body: str):
+def send_email_from_conversation(
+    conv: Conversation, user_kind: str, email_subject: str, email_body: str, html_email: str
+):
     if user_kind == Conversation.USER_KIND_SENDER_TO_SIAE:
         send_email_html(
             recipient_list=whitelist_recipient_list([conv.email_sender_siae]),
             email_subject=email_subject,
-            html_email=email_body,
+            email_body=email_body,
+            html_email=html_email,
             from_email=conv.email_sender_buyer_encoded,
         )
     elif user_kind == Conversation.USER_KIND_SENDER_TO_BUYER:
         send_email_html(
             recipient_list=whitelist_recipient_list([conv.email_sender_buyer]),
             email_subject=email_subject,
-            html_email=email_body,
+            email_body=email_body,
+            html_email=html_email,
             from_email=conv.email_sender_siae_encoded,
         )
     # api_brevo.send_transactionnel_email(
