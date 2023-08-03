@@ -18,10 +18,6 @@ class InboundParsingEmailView(APIView):
         if serializer.is_valid():
             # TODO make transfert
             inboundEmail = serializer.validated_data.get("items")[0]
-            logger.info("Transfert email from : ", inboundEmail["From"])
-            logger.info("To : ", inboundEmail["To"])
-            logger.info("Content Email Text : ", inboundEmail["RawTextBody"])
-            logger.info("Content Email Html : ", inboundEmail["RawHtmlBody"])
             address_mail = inboundEmail["To"][0]["Address"]
 
             conv_uuid, user_kind = Conversation.get_email_info_from_address(address_mail)
@@ -32,9 +28,9 @@ class InboundParsingEmailView(APIView):
                 conv=conv,
                 user_kind=user_kind,
                 email_subject=inboundEmail.get("Subject", conv.title),
-                email_body=inboundEmail.get("RawHtmlBody"),
+                email_body=inboundEmail.get("RawTextBody"),
+                html_email=inboundEmail.get("RawHtmlBody"),
             )
-            logger.info(conv)
             return Response(conv.uuid, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

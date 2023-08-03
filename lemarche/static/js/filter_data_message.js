@@ -13,7 +13,7 @@ function generateTableRows(filteredData) {
     const rows = filteredData.map(item => {
         const sendAt = new Date(item.items[0].SentAtDate).strftime('%d/%m/%Y %Hh%M');
         const from = `${item.items[0].From.Name} - ${item.items[0].From.Address}`;
-        const RawHtmlBody = item.items[0].RawHtmlBody;
+        const RawHtmlBody = item.items[0].RawHtmlBody ? item.items[0].RawHtmlBody : item.items[0].RawTextBody;
 
         return `<tr>
                     <td>${sendAt}</td>
