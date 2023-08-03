@@ -1,8 +1,8 @@
-from uuid import uuid4
-
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django_extensions.db.fields import ShortUUIDField
+from shortuuid import uuid
 
 
 class ConversationQuerySet(models.QuerySet):
@@ -20,7 +20,15 @@ class Conversation(models.Model):
     USER_KIND_SENDER_TO_BUYER = "b"
     USER_KIND_SENDER_TO_SIAE = "s"
 
-    uuid = models.UUIDField(verbose_name="Identifiant UUID", default=uuid4, editable=False, unique=True, db_index=True)
+    uuid = ShortUUIDField(
+        verbose_name="Identifiant UUID",
+        default=uuid,
+        editable=False,
+        unique=True,
+        db_index=True,
+        auto_created=True,
+    )
+
     version = models.PositiveIntegerField(verbose_name="Version", default=0)
 
     kind = models.CharField(
