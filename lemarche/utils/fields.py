@@ -77,10 +77,9 @@ def pretty_print_readonly_jsonfield(jsonfield_data):
     return result
 
 
-def print_readonly_jsonfield(jsonfield_data, id_table="id-table-body"):
+def pretty_print_readonly_jsonfield_to_table(jsonfield_data, id_table="id-table-body"):
     """
-    Display a pretty readonly version of a JSONField
-    https://stackoverflow.com/a/60219265
+    Display a pretty readonly version of a JSONField, as a table
     """
     result = ""
 
