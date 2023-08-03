@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
-from django_extensions.db.fields import ShortUUIDField, shortuuid
+from django_extensions.db.fields import ShortUUIDField
+from shortuuid import uuid
 
 
 class ConversationQuerySet(models.QuerySet):
@@ -21,7 +22,7 @@ class Conversation(models.Model):
 
     uuid = ShortUUIDField(
         verbose_name="Identifiant UUID",
-        default=shortuuid.uuid,
+        default=uuid,
         editable=False,
         unique=True,
         db_index=True,
