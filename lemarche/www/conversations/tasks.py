@@ -9,7 +9,7 @@ def send_first_email_from_conversation(conv: Conversation):
         email_subject=conv.title,
         email_body=conv.initial_body_message,
         recipient_list=whitelist_recipient_list([siae.contact_email]),
-        from_email=conv.email_sender_buyer_encoded,
+        from_email=conv.sender_email_buyer_encoded,
     )
 
 
@@ -20,21 +20,21 @@ def send_email_from_conversation(
         send_mail_async(
             email_subject=email_subject,
             email_body=email_body,
-            recipient_list=whitelist_recipient_list([conv.email_sender_siae]),
-            from_email=conv.email_sender_buyer_encoded,
+            recipient_list=whitelist_recipient_list([conv.sender_email_siae]),
+            from_email=conv.sender_email_buyer_encoded,
             email_body_html=email_body_html,
         )
     elif user_kind == Conversation.USER_KIND_SENDER_TO_BUYER:
         send_mail_async(
             email_subject=email_subject,
             email_body=email_body,
-            recipient_list=whitelist_recipient_list([conv.email_sender_buyer]),
-            from_email=conv.email_sender_siae_encoded,
+            recipient_list=whitelist_recipient_list([conv.sender_email_buyer]),
+            from_email=conv.sender_email_siae_encoded,
             email_body_html=email_body_html,
         )
     # api_brevo.send_transactionnel_email(
     #     to={"email": siae.contact_email, "name": siae.contact_full_name},
-    #     sender={"email": conv.email_sender, "name": "John Doe"},
+    #     sender={"email": conv.sender_email, "name": "John Doe"},
     #     template_id=1,
     #     params_template={"body_message": conv.data[0].get("body_message")},
     # )

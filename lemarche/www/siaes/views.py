@@ -252,7 +252,7 @@ class SiaeDetailView(FormMixin, DetailView):
         cleaned_data = form.cleaned_data
         conv = Conversation.objects.create(
             title=cleaned_data.get("subject"),
-            email_sender=cleaned_data.get("email"),
+            sender_email=cleaned_data.get("email"),
             siae=siae,
             initial_body_message=cleaned_data.get("body_message"),
         )

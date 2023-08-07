@@ -34,7 +34,10 @@ class Conversation(models.Model):
     kind = models.CharField(
         verbose_name="Type de conversation", default=KIND_SEARCH, choices=KIND_CHOICES, max_length=10, db_index=True
     )
-    email_sender = models.EmailField(verbose_name="Email de l'initiateur de la conversation", null=True)
+    sender_email = models.EmailField(verbose_name="Email de l'initiateur de la conversation", null=True)
+    # sender_first_name = models.CharField(verbose_name="Prénom", max_length=150)
+    # sender_last_name = models.CharField(verbose_name="Nom", max_length=150)
+
     title = models.CharField(verbose_name="Objet de la première demande", max_length=200)
     initial_body_message = models.TextField(verbose_name="Message initial", blank=True)
     siae = models.ForeignKey(
@@ -55,19 +58,19 @@ class Conversation(models.Model):
         return self.title
 
     @property
-    def email_sender_buyer(self):
-        return self.email_sender
+    def sender_email_buyer(self):
+        return self.sender_email
 
     @property
-    def email_sender_buyer_encoded(self):
+    def sender_email_buyer_encoded(self):
         return f"{self.uuid}_{self.USER_KIND_SENDER_TO_BUYER}@{settings.INBOUND_PARSING_DOMAIN_EMAIL}"
 
     @property
-    def email_sender_siae_encoded(self):
+    def sender_email_siae_encoded(self):
         return f"{self.uuid}_{self.USER_KIND_SENDER_TO_SIAE}@{settings.INBOUND_PARSING_DOMAIN_EMAIL}"
 
     @property
-    def email_sender_siae(self):
+    def sender_email_siae(self):
         return self.siae.contact_email
 
     @staticmethod

@@ -19,7 +19,7 @@ class InboundEmailParsingApiTest(TestCase):
             email_data = json.load(file)
             cls.email_data = email_data.copy()
         cls.item_email_data = cls.email_data["items"][0]
-        cls.item_email_data["To"][0]["Address"] = cls.conversation.email_sender_buyer_encoded
+        cls.item_email_data["To"][0]["Address"] = cls.conversation.sender_email_buyer_encoded
         cls.url = reverse("api:inbound-email-parsing")
 
     def test_inbound_serializer_parse_emails(self):
@@ -39,8 +39,8 @@ class InboundEmailParsingApiTest(TestCase):
 
     def test_inbound_emails_send_to_buyer(self):
         mail_subject = "test send from siae to buyer"
-        self.item_email_data["To"][0]["Address"] = self.conversation.email_sender_buyer_encoded
-        self.item_email_data["From"]["Address"] = self.conversation.email_sender_siae
+        self.item_email_data["To"][0]["Address"] = self.conversation.sender_email_buyer_encoded
+        self.item_email_data["From"]["Address"] = self.conversation.sender_email_siae
         self.item_email_data["Subject"] = mail_subject
 
         response = self.client.post(self.url, data=self.email_data, content_type="application/json")
@@ -49,13 +49,13 @@ class InboundEmailParsingApiTest(TestCase):
         # assert that we send one email
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, f"[DEV] {mail_subject}")
-        self.assertEqual(mail.outbox[0].from_email, self.conversation.email_sender_siae_encoded)
-        self.assertEqual(mail.outbox[0].to, [self.conversation.email_sender_buyer])
+        self.assertEqual(mail.outbox[0].from_email, self.conversation.sender_email_siae_encoded)
+        self.assertEqual(mail.outbox[0].to, [self.conversation.sender_email_buyer])
 
     def test_inbound_emails_send_to_siae(self):
         mail_subject = "test send from buyer to siae"
-        self.item_email_data["To"][0]["Address"] = self.conversation.email_sender_siae_encoded
-        self.item_email_data["From"]["Address"] = self.conversation.email_sender_buyer
+        self.item_email_data["To"][0]["Address"] = self.conversation.sender_email_siae_encoded
+        self.item_email_data["From"]["Address"] = self.conversation.sender_email_buyer
         self.item_email_data["Subject"] = mail_subject
 
         response = self.client.post(self.url, data=self.email_data, content_type="application/json")
@@ -64,5 +64,5 @@ class InboundEmailParsingApiTest(TestCase):
         # assert that we send one email
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, f"[DEV] {mail_subject}")
-        self.assertEqual(mail.outbox[0].from_email, self.conversation.email_sender_buyer_encoded)
-        self.assertEqual(mail.outbox[0].to, [self.conversation.email_sender_siae])
+        self.assertEqual(mail.outbox[0].from_email, self.conversation.sender_email_buyer_encoded)
+        self.assertEqual(mail.outbox[0].to, [self.conversation.sender_email_siae])
