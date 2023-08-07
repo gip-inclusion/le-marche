@@ -226,6 +226,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "why_amount_is_blank",
                     "accept_share_amount",
                     "amount_exact",
+                    "incremental_custom",
                 ),
             },
         ),
