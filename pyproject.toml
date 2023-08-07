@@ -57,6 +57,7 @@ pre-commit = "2.20.0"
 pyproject-flake8 = "0.0.1a2"
 pytest-django = "4.5.2"
 selenium = "^4.10.0"
+tblib = "^2.0.0"
 
 [tool.poetry.scripts]
 
