@@ -102,3 +102,17 @@ STATUS_CHOICES = (
     (STATUS_PUBLISHED, "Publié"),
     (STATUS_VALIDATED, "Validé"),
 )
+
+# incrementality percentages
+INCREMENTAL_0 = 0
+INCREMENTAL_15 = 15
+INCREMENTAL_75 = 75
+INCREMENTAL_100 = 100
+
+INCREMENTAL_CHOICES = (
+    (None, "Par défaut"),
+    (INCREMENTAL_0, "0%"),
+    (INCREMENTAL_15, "15%"),
+    (INCREMENTAL_75, "75%"),
+    (INCREMENTAL_100, "100%"),
+)
