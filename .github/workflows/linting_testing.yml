@@ -78,6 +78,7 @@ jobs:
 
       - name: Install System dependencies
         run: |
+          sudo apt-get update
           sudo apt-get -y install gdal-bin
 
       #----------------------------------------------
