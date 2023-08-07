@@ -20,6 +20,8 @@ class ConversationAdmin(admin.ModelAdmin):
         "version",
         "siae",
         "sender_email",
+        "sender_first_name",
+        "sender_last_name",
         "data_display",
         "created_at",
         "updated_at",
@@ -30,7 +32,7 @@ class ConversationAdmin(admin.ModelAdmin):
             None,
             {"fields": ("uuid", "title", "initial_body_message")},
         ),
-        ("Interlocuteurs", {"fields": ("sender_email", "siae")}),
+        ("Interlocuteurs", {"fields": ("sender_first_name", "sender_last_name", "sender_email", "siae")}),
         ("Contenu de la conversation", {"fields": ("data_display",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
