@@ -29,17 +29,11 @@ def send_email_from_conversation(
     elif user_kind == Conversation.USER_KIND_SENDER_TO_BUYER:
         # from the siae to the buyer
         siae: Siae = conv.siae
-        from_email = f"{siae.contact_full_name} <{conv.sender_email_buyer_encoded}>"
+        from_email = f"{siae.contact_full_name} <{conv.sender_email_siae_encoded}>"
         send_mail_async(
             email_subject=email_subject,
             email_body=email_body,
             recipient_list=whitelist_recipient_list([conv.sender_email_buyer]),
-            from_email=conv.sender_email_siae_encoded,
+            from_email=from_email,
             email_body_html=email_body_html,
         )
-    # api_brevo.send_transactionnel_email(
-    #     to={"email": siae.contact_email, "name": siae.contact_full_name},
-    #     sender={"email": conv.sender_email, "name": "John Doe"},
-    #     template_id=1,
-    #     params_template={"body_message": conv.data[0].get("body_message")},
-    # )

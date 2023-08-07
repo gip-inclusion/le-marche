@@ -10,6 +10,8 @@ class ConversationFactory(DjangoModelFactory):
         model = Conversation
 
     title = factory.Faker("name", locale="fr_FR")
+    sender_first_name = factory.Faker("name", locale="fr_FR")
+    sender_last_name = factory.Faker("name", locale="fr_FR")
     sender_email = factory.Sequence("email{0}@beta.gouv.fr".format)
     siae = factory.SubFactory(SiaeFactory)
     initial_body_message = factory.Faker("name", locale="fr_FR")
