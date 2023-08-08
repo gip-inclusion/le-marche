@@ -477,8 +477,19 @@ class TenderQuestionAdmin(admin.ModelAdmin):
     tender_with_link.admin_order_field = "tender"
 
 
+class PartnerShareTenderNoteInline(GenericTabularInline):
+    model = Note
+    fields = ["text", "author", "created_at", "updated_at"]
+    readonly_fields = ["author", "created_at", "updated_at"]
+    extra = 1
+
+    formfield_overrides = {
+        models.TextField: {"widget": CKEditorWidget(config_name="admin_note_text")},
+    }
+
+
 @admin.register(PartnerShareTender, site=admin_site)
-class PartnerShareTenderAdmin(admin.ModelAdmin, DynamicArrayMixin):
+class PartnerShareTenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin, DynamicArrayMixin):
     form = TenderAdminForm
     list_display = ["id", "name", "perimeters_string", "amount_in", "created_at"]
     list_filter = [PerimeterRegionFilter, "amount_in"]
@@ -488,10 +499,37 @@ class PartnerShareTenderAdmin(admin.ModelAdmin, DynamicArrayMixin):
     readonly_fields = ["perimeters_string", "logs_display", "created_at", "updated_at"]
     autocomplete_fields = ["perimeters"]
 
+    fieldsets_with_inlines = [
+        (
+            None,
+            {
+                "fields": ("name", "perimeters", "amount_in", "contact_email_list"),
+            },
+        ),
+        TenderNoteInline,
+        (
+            "Stats",
+            {
+                "fields": ("logs_display",),
+            },
+        ),
+        ("Dates", {"fields": ("created_at", "updated_at")}),
+    ]
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.prefetch_related("perimeters")
         return qs
+
+    def save_formset(self, request, form, formset, change):
+        """
+        Set Note author on create
+        """
+        for form in formset:
+            if type(form.instance) == Note:
+                if not form.instance.id and form.instance.text and change:
+                    form.instance.author = request.user
+        super().save_formset(request, form, formset, change)
 
     def perimeters_string(self, partnersharetender):
         return partnersharetender.perimeters_list_string
