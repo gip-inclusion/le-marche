@@ -5,7 +5,7 @@ Avoid conflict between fieldset_with_inlines & custom button
 --> add blocks "field_sets" & "inline_field_sets" from django-fieldsets-with-inlines
 
 Extra info
-- https://github.com/robertkovac/django-fieldsets-with-inlines
+- https://github.com/robertkovac/django-fieldsets-with-inlines > PR #6
 - https://github.com/django/django/blob/main/django/contrib/admin/templates/admin/change_form.html
 {% endcomment %}
 
@@ -19,7 +19,7 @@ Extra info
         {% endfor %}
     {% endwith %}
 
-    {% include "fieldsets_with_inlines/fieldset.html" %}
+    {% include "admin/includes/fieldset.html" %}
 {% endfor %}
 {% endblock %}
 
