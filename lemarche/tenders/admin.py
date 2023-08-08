@@ -493,8 +493,8 @@ class PartnerShareTenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin, DynamicArr
     form = TenderAdminForm
     list_display = ["id", "name", "perimeters_string", "amount_in", "created_at"]
     list_filter = [PerimeterRegionFilter, "amount_in"]
-    search_fields = ["id", "name"]
-    search_help_text = "Cherche sur les champs : ID, Nom"
+    search_fields = ["id", "name", "contact_email_list"]
+    search_help_text = "Cherche sur les champs : ID, Nom, Contact (E-mail)"
 
     readonly_fields = ["perimeters_string", "logs_display", "created_at", "updated_at"]
     autocomplete_fields = ["perimeters"]
