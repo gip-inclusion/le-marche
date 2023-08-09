@@ -18,7 +18,7 @@ django-compressor = "4.1"
 django-cors-headers = "3.13.0"
 django-environ = "0.9.0"
 django-extensions = "^3.2.0"
-django-fieldsets-with-inlines = { git = "https://github.com/raphodn/django-fieldsets-with-inlines" }
+django-fieldsets-with-inlines = { git = "https://github.com/raphodn/django-fieldsets-with-inlines.git", branch = "master" }
 django-filter = "21.1"
 django-formtools = "^2.3"
 django-htmx = "^1.12.2"
@@ -44,7 +44,7 @@ xlwt = "1.3.0"
 sib-api-v3-sdk = "^7.6.0"
 shortuuid = "^1.0.11"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 black = "22.10.0"
 coverage = "7.2.0"
 django-debug-toolbar = "^3.8.1"
