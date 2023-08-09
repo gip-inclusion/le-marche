@@ -75,7 +75,7 @@ def get_offers_list(client=None):
             ).date()
 
             # filter on inclusion?
-            # "clause d’insertion" ; "réservé à une structure d'insertion" ; "SIAE" ; "entreprises adaptées" ; "entreprise adaptée"  # noqa
+            # "clause d'insertion" ; "réservé à une structure d'insertion" ; "SIAE" ; "entreprises adaptées" ; "entreprise adaptée"  # noqa
             offer_list.append(offer)
 
     except requests.exceptions.HTTPError as e:

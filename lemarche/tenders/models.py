@@ -352,6 +352,13 @@ class Tender(models.Model):
     amount_exact = models.PositiveIntegerField(
         verbose_name="Montant exact du besoin", help_text="Champ renseigné par un ADMIN", blank=True, null=True
     )
+    incremental_custom = models.PositiveSmallIntegerField(
+        verbose_name="Modification de l'incrémental (%)",
+        help_text="Champ renseigné par un ADMIN",
+        blank=True,
+        null=True,
+        default=None,
+    )
 
     # stats
     published_at = models.DateTimeField("Date de publication", blank=True, null=True)

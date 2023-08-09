@@ -47,7 +47,7 @@ class SignupForm(UserCreationForm):
     # help_text="Nous enverrons un e-mail de confirmation à cette adresse avant de valider le compte.")
     nb_of_inclusive_provider_2022 = forms.ChoiceField(
         # flake8: noqa E501
-        label="En 2022, avec combien de prestataires inclusifs relevant du secteur de l’Insertion avez-vous déjà travaillé ?",
+        label="En 2022, avec combien de prestataires inclusifs relevant du secteur de l'Insertion avez-vous déjà travaillé ?",
         choices=HOW_MANY_CHOICES,
         widget=forms.RadioSelect(),
         required=False,
