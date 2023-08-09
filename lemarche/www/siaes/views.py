@@ -268,7 +268,7 @@ class SiaeDetailView(FormMixin, DetailView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["is_authenticated"] = self.request.user.is_authenticated
+        kwargs["user"] = self.request.user
         return kwargs
 
     def get_initial(self):
