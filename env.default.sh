@@ -13,3 +13,8 @@ export POSTGRESQL_ADDON_DB=""
 export SECRET_KEY="coucou"
 export DJANGO_SETTINGS_MODULE="config.settings.dev"
 export TRACKER_HOST="https://example.com"
+
+# MTCAPTCHA
+# ########################
+export MTCAPTCHA_PRIVATE_KEY=""
+export MTCAPTCHA_PUBLIC_KEY=""
