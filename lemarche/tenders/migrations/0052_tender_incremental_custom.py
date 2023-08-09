@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 default=None,
                 help_text="Champ renseigné par un ADMIN",
                 null=True,
-                verbose_name="Modification de l’incrémental (%)",
+                verbose_name="Modification de l'incrémental (%)",
             ),
         ),
     ]

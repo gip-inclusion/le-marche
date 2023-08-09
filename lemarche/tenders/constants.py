@@ -89,7 +89,7 @@ SURVEY_NOT_ENCOURAGED_ONLY_BY_US = "+"
 
 SURVEY_ENCOURAGED_BY_US_CHOICES = (
     (SURVEY_NO, "Non"),
-    (SURVEY_NOT_ENCOURAGED_ONLY_BY_US, "Un outil parmi d’autres"),
+    (SURVEY_NOT_ENCOURAGED_ONLY_BY_US, "Un outil parmi d'autres"),
     (SURVEY_YES, "Oui"),
 )
 

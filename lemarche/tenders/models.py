@@ -353,7 +353,7 @@ class Tender(models.Model):
         verbose_name="Montant exact du besoin", help_text="Champ renseigné par un ADMIN", blank=True, null=True
     )
     incremental_custom = models.PositiveSmallIntegerField(
-        verbose_name="Modification de l’incrémental (%)",
+        verbose_name="Modification de l'incrémental (%)",
         help_text="Champ renseigné par un ADMIN",
         blank=True,
         null=True,
