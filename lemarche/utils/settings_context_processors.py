@@ -29,4 +29,5 @@ def expose_settings(request):
         "TYPEFORM_GROUPEMENT_AJOUT": settings.TYPEFORM_GROUPEMENT_AJOUT,
         "FORM_PARTENAIRES": settings.FORM_PARTENAIRES,
         "TALLY_NPS_FORM_ID": settings.TALLY_NPS_FORM_ID,
+        "MTCAPTCHA_PUBLIC_KEY": settings.MTCAPTCHA_PUBLIC_KEY,
     }
