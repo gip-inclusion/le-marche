@@ -377,6 +377,8 @@ brevo_configuration = sib_api_v3_sdk.Configuration()
 brevo_configuration.api_key["api-key"] = BREVO_API_KEY
 INBOUND_PARSING_DOMAIN_EMAIL = env.str("INBOUND_PARSING_DOMAIN_EMAIL", "reply.staging.lemarche.inclusion.beta.gouv.fr")
 
+INBOUND_EMAIL_IS_ACTIVATED = env.bool("INBOUND_EMAIL_IS_ACTIVATED", True)
+
 # -- hubspot
 HUBSPOT_API_KEY = env.str("HUBSPOT_API_KEY", "set-it")
 HUBSPOT_IS_ACTIVATED = env.bool("HUBSPOT_IS_ACTIVATED", False)
