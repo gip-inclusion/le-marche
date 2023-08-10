@@ -113,6 +113,7 @@ class ConversationsInline(admin.TabularInline):
     # autocomplete_fields = ["user"]
     readonly_fields = ["id", "title_with_link", "nb_message_with_link", "kind", "created_at"]
     extra = 0
+    max_num = 0
 
     def title_with_link(self, conversation: Conversation):
         url = reverse("admin:conversations_conversation_change", args=[conversation.id])
