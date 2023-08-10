@@ -73,6 +73,15 @@ class Conversation(models.Model):
     def sender_email_siae(self):
         return self.siae.contact_email
 
+    @property
+    def nb_messages(self):
+        """Number of messages is the len of data item + the initial message
+
+        Returns:
+            int: Number of all messages
+        """
+        return len(self.data) + 1
+
     @staticmethod
     def get_email_info_from_address(address_mail: str) -> list:
         """Extract info from address mail managed by this class
