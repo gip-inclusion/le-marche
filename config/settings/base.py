@@ -818,3 +818,8 @@ SHELL_PLUS_POST_IMPORTS = [
     "from lemarche.tenders import constants as tender_constants",
 ]
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
+
+# MTCAPTCHA
+# ------------------------------------------------------------------------------
+MTCAPTCHA_PRIVATE_KEY = env.str("MTCAPTCHA_PRIVATE_KEY", "")
+MTCAPTCHA_PUBLIC_KEY = env.str("MTCAPTCHA_PUBLIC_KEY", "")

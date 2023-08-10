@@ -242,6 +242,8 @@ class SiaeDetailView(FormMixin, DetailView):
         form = self.get_form()
         if form.is_valid():
             return self.form_valid(form=form, siae=self.object)
+        else:
+            return self.form_invalid(form=form, siae=self.object)
 
     def get_success_url(self) -> str:
         success_url = reverse_lazy("siae:detail", args=[self.get_object().slug])
@@ -265,6 +267,9 @@ class SiaeDetailView(FormMixin, DetailView):
             f'Votre demande "{conv.title}" a bien été envoyée, vous recevrez bientôt un retour du prestataire',
         )
         return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form: ContactForm, siae: Siae):
+        return self.render_to_response(self.get_context_data())
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

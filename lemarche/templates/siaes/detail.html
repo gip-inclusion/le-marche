@@ -449,8 +449,22 @@ document.addEventListener("DOMContentLoaded", function() {
     L.marker([siaeLongitudeFloat, siaeLatitudeFloat], {icon: customLeafletIcon})
     .bindPopup(`<p class="h6">${siaeDisplayName}</p></a>`)
     .addTo(map);
+
+    {% if form.errors %}
+        $('#form_contact_modal').modal('show');
+    {% endif %}
 });
 </script>
+{% if MTCAPTCHA_PUBLIC_KEY %}
+    <script type="text/javascript">
+        // add captcha to contact form
+        var mtcaptchaConfig = {
+            "sitekey": "{{ MTCAPTCHA_PUBLIC_KEY }}",
+            "lang": "fr"
+        };
+    </script>
+    <script type="text/javascript" src="{% static 'js/mtcaptcha.js' %}"></script>
+{% endif %}
 {% if user.is_authenticated %}
 <script type="text/javascript" src="{% static 'js/favorite_item_remove.js' %}"></script>
 {% endif %}
