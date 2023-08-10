@@ -1,0 +1,82 @@
+{% load array_choices_display %}
+<div class="row">
+    <div class="col-12 col-md-6">
+        <ul class="list-unstyled">
+            <li class="mb-2">
+                <i class="ri-calendar-2-fill"></i>
+                <strong>Année de création :</strong>
+                <span>{{ siae.year_constitution_display }}</span>
+            </li>
+            <li class="mb-2">
+                <i class="ri-bill-line"></i>
+                <strong>SIRET :</strong>
+                <span>{{ siae.siret_display }}</span>
+            </li>
+            <li class="mb-2">
+                <i class="ri-money-euro-circle-line"></i>
+                <strong>Chiffre d'affaires :</strong>
+                <span>{{ siae.ca_display }}</span>
+            </li>
+            <li class="mb-2">
+                {% if siae.presta_type %}
+                <i class="ri-briefcase-4-line"></i>
+                <strong>{% array_choices_display siae 'presta_type' %}</strong>
+                {% endif %}
+            </li>
+            <li class="mb-2">
+                <i class="ri-group-line"></i>
+                <strong>Salariés permanents :</strong>
+                <span>{{ siae.employees_permanent_count|default:"non disponible" }}</span>
+            </li>
+            <li class="mb-2">
+                {% include "siaes/_annuaire_entreprises_button.html" with siret=siae.siret %}
+            </li>
+        </ul>
+    </div>
+    <div class="col-12 col-md-6">
+        <ul class="list-unstyled mb-0">
+            {% if siae.is_missing_contact %}
+                <li class="mb-2">
+                    <i class="ri-search-line"></i>
+                    <a href="https://www.google.fr/search?q={{ siae.name_display }}" id="company_google" target="_blank" rel="noopener">Google</a>
+                </li>
+            {% endif %}
+            {% if siae.user_count %}
+                {% if siae.contact_short_name %}
+                    <li class="mb-2">
+                        <i class="ri-user-line"></i>
+                        <span>{{ siae.contact_short_name }}</span>
+                    </li>
+                {% endif %}
+            {% endif %}
+            {% comment %} {% if siae.contact_email %}
+                <li class="mb-2">
+                    <i class="ri-at-line"></i>
+                    <a href="mailto:{{ siae.contact_email }}" id="company_email">{{ siae.contact_email }}</a>
+                </li>
+            {% endif %} {% endcomment %}
+            {% if is_admin and siae.contact_phone %}
+                <li class="mb-2">
+                    <i class="ri-phone-line"></i>
+                    <a href="tel:{{ siae.contact_phone }}" id="company_phone">{{ siae.contact_phone }}</a>
+                </li>
+            {% endif %}
+            {% if siae.contact_website %}
+                <li class="mb-2">
+                    <i class="ri-window-2-line"></i>
+                    <a href="{{ siae.contact_website }}" id="company_website" target="_blank" rel="noopener">Site internet</a>
+                </li>
+            {% endif %}
+            {% if siae.contact_social_website %}
+                <li class="mb-2">
+                    <i class="ri-earth-line"></i>
+                    <a href="{{ siae.contact_social_website }}" id="company_social_website" target="_blank" rel="noopener">Réseau social</a>
+                </li>
+            {% endif %}
+            <li>
+                <i class="ri-map-pin-line"></i>
+                <span>{{ siae.address }} {{ siae.post_code }} {{ siae.city }}</span>
+            </li>
+        </ul>
+    </div>
+</div>

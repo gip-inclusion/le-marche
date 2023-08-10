@@ -1073,10 +1073,4 @@ class SiaeDetailTest(TestCase):
         self.client.force_login(self.user)
         url = reverse("siae:detail", args=[siae.slug])
         response = self.client.get(url)
-        self.assertContains(response, siae.contact_email)
-
-    def test_should_not_display_contact_fields_to_anonymous_users(self):
-        siae = SiaeFactory(name="Ma boite", contact_email="contact@example.com")
-        url = reverse("siae:detail", args=[siae.slug])
-        response = self.client.get(url)
-        self.assertNotContains(response, siae.contact_email)
+        self.assertContains(response, "Contacter la structure")
