@@ -22,4 +22,4 @@ class ContactForm(forms.Form):
     def clean(self):
         super().clean()
         if not check_captcha_token(self.data):
-            raise forms.ValidationError("Formulaire invalide. Veuillez vérifier vos réponses.")
+            raise forms.ValidationError("Le code de protection est incorrect. Veuillez réessayer.")
