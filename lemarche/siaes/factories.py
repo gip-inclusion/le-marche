@@ -32,6 +32,8 @@ class SiaeFactory(DjangoModelFactory):
     department = factory.fuzzy.FuzzyChoice([key for (key, value) in Siae.DEPARTMENT_CHOICES])
     region = factory.fuzzy.FuzzyChoice([key for (key, value) in Siae.REGION_CHOICES])
     contact_email = factory.Sequence("siae_contact_email{0}@beta.gouv.fr".format)
+    contact_first_name = factory.Faker("name", locale="fr_FR")
+    contact_last_name = factory.Faker("name", locale="fr_FR")
 
     @factory.post_generation
     def users(self, create, extracted, **kwargs):

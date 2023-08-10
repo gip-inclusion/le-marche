@@ -16,14 +16,15 @@ class InboundParsingEmailView(APIView):
     def post(self, request):
         serializer = EmailsSerializer(data=request.data)
         if serializer.is_valid():
-            # TODO make transfert
             inboundEmail = serializer.validated_data.get("items")[0]
             address_mail = inboundEmail["To"][0]["Address"]
-
+            # get conversation object
             conv_uuid, user_kind = Conversation.get_email_info_from_address(address_mail)
             conv: Conversation = Conversation.objects.get(uuid=conv_uuid)
+            # save the input data
             conv.data.append(serializer.data)
             conv.save()
+            # make the transfert of emails
             send_email_from_conversation(
                 conv=conv,
                 user_kind=user_kind,
@@ -33,4 +34,6 @@ class InboundParsingEmailView(APIView):
             )
             return Response(conv.uuid, status=status.HTTP_201_CREATED)
         else:
+            logger.error(f"[INBOUND_PARSING_WEBHOOK_ERROR] {str(serializer.errors)}")
+            logger.error(f"[INBOUND_PARSING_WEBHOOK_ERROR] {str(serializer.data)}")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

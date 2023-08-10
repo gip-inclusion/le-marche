@@ -15,6 +15,8 @@
                     {% bootstrap_form_errors form type="all" %}
                     <fieldset>
                         {% bootstrap_field form.email %}
+                        {% bootstrap_field form.first_name %}
+                        {% bootstrap_field form.last_name %}
                         {% bootstrap_field form.subject %}
                         {% bootstrap_field form.body_message %}
                     </fieldset>

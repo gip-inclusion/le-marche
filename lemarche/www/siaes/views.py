@@ -252,7 +252,9 @@ class SiaeDetailView(FormMixin, DetailView):
         cleaned_data = form.cleaned_data
         conv = Conversation.objects.create(
             title=cleaned_data.get("subject"),
-            email_sender=cleaned_data.get("email"),
+            sender_email=cleaned_data.get("email"),
+            sender_first_name=cleaned_data.get("first_name"),
+            sender_last_name=cleaned_data.get("last_name"),
             siae=siae,
             initial_body_message=cleaned_data.get("body_message"),
         )
@@ -264,12 +266,19 @@ class SiaeDetailView(FormMixin, DetailView):
         )
         return HttpResponseRedirect(self.get_success_url())
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
     def get_initial(self):
         initial = super().get_initial()
         user = self.request.user
 
         if user.is_authenticated:
             initial["email"] = user.email
+            initial["first_name"] = user.first_name
+            initial["last_name"] = user.last_name
 
         return initial
 
