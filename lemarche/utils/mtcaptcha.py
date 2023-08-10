@@ -18,7 +18,7 @@ def check_captcha_token(form_data):
     if not private_key:
         logger.exception("MTCAPTCHA_PRIVATE_KEY has not been set.")
         return False
-    mtcaptcha_url = "https://service.mtcaptcha.com/mtcv1/api/checktoken?privatekey=" + private_key + "&token=" + token
+    mtcaptcha_url = f"https://service.mtcaptcha.com/mtcv1/api/checktoken?privatekey={private_key}&token={token}"
     try:
         response = requests.get(mtcaptcha_url)
         if response.status_code == 200:
