@@ -9,8 +9,8 @@ from lemarche.utils.fields import pretty_print_readonly_jsonfield_to_table
 class ConversationAdmin(admin.ModelAdmin):
     list_display = ["id", "uuid", "title", "kind", "created_at"]
     list_filter = ["kind"]
-    search_fields = ["id", "uuid"]
-    search_help_text = "Cherche sur les champs : ID, UUID"
+    search_fields = ["id", "uuid", "sender_email"]
+    search_help_text = "Cherche sur les champs : ID, UUID, Initiateur (E-mail)"
 
     exclude = ["data"]
     readonly_fields = [
