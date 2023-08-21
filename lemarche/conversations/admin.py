@@ -7,7 +7,7 @@ from lemarche.utils.fields import pretty_print_readonly_jsonfield_to_table
 
 @admin.register(Conversation, site=admin_site)
 class ConversationAdmin(admin.ModelAdmin):
-    list_display = ["id", "title", "uuid", "kind", "created_at"]
+    list_display = ["id", "uuid", "title", "kind", "created_at"]
     list_filter = ["kind"]
     search_fields = ["id", "uuid"]
     search_help_text = "Cherche sur les champs : ID, UUID"
