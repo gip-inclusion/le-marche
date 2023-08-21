@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.db.models import Q
 
 from lemarche.tenders.models import Tender
-from lemarche.www.tenders.tasks import send_tenders_author_feedback_30_days
+from lemarche.www.tenders.tasks import send_tenders_author_30_days
 
 
 class Command(BaseCommand):
@@ -47,7 +47,7 @@ class Command(BaseCommand):
 
         if not dry_run:
             for tender in tenders_for_feedbacks:
-                send_tenders_author_feedback_30_days(tender)
+                send_tenders_author_30_days(tender, kind="transactioned_question")
             self.stdout.write(f"Sent {tenders_for_feedbacks.count()} J+30 feedbacks")
 
         self.stdout.write("-" * 80)
