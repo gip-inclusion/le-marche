@@ -1,12 +1,14 @@
 from django.conf import settings
 from django.db import models
+from django.db.models import Func, IntegerField
 from django.utils import timezone
 from django_extensions.db.fields import ShortUUIDField
 from shortuuid import uuid
 
 
 class ConversationQuerySet(models.QuerySet):
-    pass
+    def with_answer_count(self):
+        return self.annotate(answer_count=Func("data", function="jsonb_array_length", output_field=IntegerField()))
 
 
 class Conversation(models.Model):
