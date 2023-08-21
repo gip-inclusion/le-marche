@@ -9,12 +9,12 @@ from lemarche.www.tenders.tasks import send_tenders_author_feedback_30_days
 
 class Command(BaseCommand):
     """
-    Daily script to send email feedback for tenders
+    Daily script to send an email to tender authors
     When? J+30 after validation of tenders
 
     Usage:
-    python manage.py send_user_tenders_feedback --dry-run
-    python manage.py send_user_tenders_feedback
+    python manage.py send_author_transactioned_question_emails --dry-run
+    python manage.py send_author_transactioned_question_emails
     """
 
     def add_arguments(self, parser):
