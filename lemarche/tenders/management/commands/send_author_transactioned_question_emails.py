@@ -14,10 +14,13 @@ class Command(BaseCommand):
 
     Usage:
     python manage.py send_author_transactioned_question_emails --dry-run
+    python manage.py send_author_transactioned_question_emails --all
+    python manage.py send_author_transactioned_question_emails --kind QUOTE
     python manage.py send_author_transactioned_question_emails
     """
 
     def add_arguments(self, parser):
+        parser.add_argument("--kind", type=str, dest="kind")
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Dry run, no sends")
         parser.add_argument(
             "--all",
@@ -26,13 +29,15 @@ class Command(BaseCommand):
             help="Send to all tenders validated 30 days ago or more",
         )
 
-    def handle(self, dry_run=False, is_all_tenders=False, **options):
+    def handle(self, kind=None, dry_run=False, is_all_tenders=False, **options):
         self.stdout.write("-" * 80)
         self.stdout.write("Script to send email feedback for tenders...")
 
         self.stdout.write("-" * 80)
         thirty_days_ago = datetime.today().date() - timedelta(days=30)
         tenders_validated = Tender.objects.validated()
+        if kind:
+            tenders_validated = tenders_validated.filter(kind=kind)
         if is_all_tenders:
             #  all tenders validated 30 days ago or more
             tenders_for_feedbacks = tenders_validated.filter(validated_at__date__lte=thirty_days_ago)

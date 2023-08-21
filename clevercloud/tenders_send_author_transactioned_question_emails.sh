@@ -3,8 +3,8 @@
 # Send email for tender transactioned question to author
 
 # Do not run if this env var is not set:
-if [[ -z "$CRON_SEND_TENDER_AUTHOR_TRANSACTIONED_QUESTION_ENABLED" ]]; then
-    echo "CRON_SEND_TENDER_AUTHOR_TRANSACTIONED_QUESTION_ENABLED not set. Exiting..."
+if [[ -z "$CRON_TENDER_SEND_AUTHOR_TRANSACTIONED_QUESTION_ENABLED" ]]; then
+    echo "CRON_TENDER_SEND_AUTHOR_TRANSACTIONED_QUESTION_ENABLED not set. Exiting..."
     exit 0
 fi
 
@@ -19,4 +19,4 @@ fi
 # $APP_HOME is set by default by clever cloud.
 cd $APP_HOME
 
-django-admin send_author_transactioned_question_emails
+django-admin send_author_transactioned_question_emails --kind QUOTE
