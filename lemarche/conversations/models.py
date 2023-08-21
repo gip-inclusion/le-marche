@@ -7,6 +7,9 @@ from shortuuid import uuid
 
 
 class ConversationQuerySet(models.QuerySet):
+    def has_answer(self):
+        return self.exclude(data=[])
+
     def with_answer_count(self):
         return self.annotate(answer_count=Func("data", function="jsonb_array_length", output_field=IntegerField()))
 

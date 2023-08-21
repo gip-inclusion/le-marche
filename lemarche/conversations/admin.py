@@ -5,10 +5,28 @@ from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.fields import pretty_print_readonly_jsonfield_to_table
 
 
+class HasAnswerFilter(admin.SimpleListFilter):
+    """Custom admin filter to target conversations who have an answer."""
+
+    title = "Avec réponse ?"
+    parameter_name = "has_answer"
+
+    def lookups(self, request, model_admin):
+        return (("Yes", "Oui"), ("No", "Non"))
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "Yes":
+            return queryset.has_answer()
+        elif value == "No":
+            return queryset.filter(data=[])
+        return queryset
+
+
 @admin.register(Conversation, site=admin_site)
 class ConversationAdmin(admin.ModelAdmin):
     list_display = ["id", "uuid", "title", "kind", "answer_count", "created_at"]
-    list_filter = ["kind"]
+    list_filter = ["kind", HasAnswerFilter]
     search_fields = ["id", "uuid", "sender_email"]
     search_help_text = "Cherche sur les champs : ID, UUID, Initiateur (E-mail)"
 
