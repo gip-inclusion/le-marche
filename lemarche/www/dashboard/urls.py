@@ -4,12 +4,6 @@ from django.views.generic.base import RedirectView
 from lemarche.www.dashboard.views import (
     DashboardHomeView,
     ProfileEditView,
-    ProfileNetworkDetailView,
-    ProfileNetworkSiaeListView,
-    ProfileNetworkSiaeTenderListView,
-    ProfileNetworkTenderDetailView,
-    ProfileNetworkTenderListView,
-    ProfileNetworkTenderSiaeListView,
     SiaeEditContactView,
     SiaeEditInfoView,
     SiaeEditLinksView,
@@ -32,34 +26,7 @@ urlpatterns = [
     # FavoriteList
     # see dashboard_favorites/urls.py
     # Network
-    path("reseaux/<str:slug>/", ProfileNetworkDetailView.as_view(), name="profile_network_detail"),
-    path("reseaux/<str:slug>/prestataires/", ProfileNetworkSiaeListView.as_view(), name="profile_network_siae_list"),
-    path(
-        "reseaux/<str:slug>/prestataires/<slug:siae_slug>/besoins/<status>",
-        ProfileNetworkSiaeTenderListView.as_view(),
-        name="profile_network_siae_tender_list",
-    ),
-    path(
-        "reseaux/<str:slug>/prestataires/<slug:siae_slug>/besoins/",
-        ProfileNetworkSiaeTenderListView.as_view(),
-        name="profile_network_siae_tender_list",
-    ),
-    path("reseaux/<str:slug>/besoins/", ProfileNetworkTenderListView.as_view(), name="profile_network_tender_list"),
-    path(
-        "reseaux/<str:slug>/besoins/<slug:tender_slug>/prestataires/<status>",
-        ProfileNetworkTenderSiaeListView.as_view(),
-        name="profile_network_tender_siae_list",
-    ),
-    path(
-        "reseaux/<str:slug>/besoins/<slug:tender_slug>/prestataires/",
-        ProfileNetworkTenderSiaeListView.as_view(),
-        name="profile_network_tender_siae_list",
-    ),
-    path(
-        "reseaux/<str:slug>/besoins/<slug:tender_slug>/",
-        ProfileNetworkTenderDetailView.as_view(),
-        name="profile_network_tender_detail",
-    ),
+    # see dashboard_networks/urls.py
     # Adopt Siae
     path("prestataires/rechercher/", SiaeSearchBySiretView.as_view(), name="siae_search_by_siret"),
     path("prestataires/<str:slug>/adopter/", SiaeSearchAdoptConfirmView.as_view(), name="siae_search_adopt_confirm"),
