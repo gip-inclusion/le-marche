@@ -326,7 +326,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         Set Note author on create
         """
         for form in formset:
-            if type(form.instance) == Note:
+            if type(form.instance) is Note:
                 if not form.instance.id and form.instance.text and change:
                     form.instance.author = request.user
         super().save_formset(request, form, formset, change)
