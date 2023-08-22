@@ -15,6 +15,7 @@ urlpatterns = [
     path("besoins/", include("lemarche.www.tenders.urls")),
     path("prestataires/", include("lemarche.www.siaes.urls")),
     path("profil/", include("lemarche.www.dashboard.urls")),
+    path("profil/reseaux/", include("lemarche.www.dashboard_networks.urls")),
     path("profil/listes-dachats/", include("lemarche.www.dashboard_favorites.urls")),
     path("select2/", include("django_select2.urls")),
     # admin blog

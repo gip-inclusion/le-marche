@@ -12,9 +12,9 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_detail' network.slug %}">Mon réseau</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_tender_list' network.slug %}">Opportunités commerciales</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_tender_detail' network.slug tender.slug %}" title="{{ tender.title }}">{{ tender.title|truncatechars:25 }}</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard_networks:detail' network.slug %}">Mon réseau</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard_networks:tender_list' network.slug %}">Opportunités commerciales</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard_networks:tender_detail' network.slug tender.slug %}" title="{{ tender.title }}">{{ tender.title|truncatechars:25 }}</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Adhérents notifiés</li>
                     </ol>
                 </nav>
@@ -38,8 +38,8 @@
                 {% block htmx %}
                 <div id="siaeTenderList">
                     <ul role="navigation" class="nav nav-tabs nav-tabs--marche">
-                        {% url 'dashboard:profile_network_tender_siae_list' network.slug tender.slug as NETWORK_TENDER_SIAE_LIST_URL %}
-                        {% url 'dashboard:profile_network_tender_siae_list' network.slug tender.slug "CONTACT-CLICK" as NETWORK_TENDER_SIAE_CONTACT_CLICK_LIST_URL %}
+                        {% url 'dashboard_networks:tender_siae_list' network.slug tender.slug as NETWORK_TENDER_SIAE_LIST_URL %}
+                        {% url 'dashboard_networks:tender_siae_list' network.slug tender.slug "CONTACT-CLICK" as NETWORK_TENDER_SIAE_CONTACT_CLICK_LIST_URL %}
                         <li class="nav-item">
                             <a role="button" hx-push-url="true" hx-get="{{ NETWORK_TENDER_SIAE_LIST_URL }}"
                                 class="nav-link{% if request.get_full_path == NETWORK_TENDER_SIAE_LIST_URL %} active{% endif %}"
