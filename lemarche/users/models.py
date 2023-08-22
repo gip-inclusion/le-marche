@@ -44,11 +44,6 @@ class UserQueryset(models.QuerySet):
     def with_tender_stats(self):
         return self.prefetch_related("tenders").annotate(tender_count=Count("tenders", distinct=True))
 
-    def with_favorite_list_stats(self):
-        return self.prefetch_related("favorite_lists").annotate(
-            favorite_list_count=Count("favorite_lists", distinct=True)
-        )
-
 
 class UserManager(BaseUserManager):
     """
@@ -109,9 +104,6 @@ class UserManager(BaseUserManager):
 
     def with_tender_stats(self):
         return self.get_queryset().with_tender_stats()
-
-    def with_favorite_list_stats(self):
-        return self.get_queryset().with_favorite_list_stats()
 
 
 class User(AbstractUser):
@@ -284,6 +276,7 @@ class User(AbstractUser):
     notes = GenericRelation("notes.Note", related_query_name="user")
 
     # stats
+    favorite_list_count = models.IntegerField("Nombre de listes de favoris", default=0)
     dashboard_last_seen_date = models.DateTimeField(
         "Date de dernière visite sur la page 'tableau de bord'", blank=True, null=True
     )

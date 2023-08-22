@@ -318,7 +318,6 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         qs = super().get_queryset(request)
         qs = qs.with_siae_stats()
         qs = qs.with_tender_stats()
-        qs = qs.with_favorite_list_stats()
         return qs
 
     def save_formset(self, request, form, formset, change):
@@ -347,9 +346,9 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
 
     def favorite_list_count_with_link(self, user):
         url = reverse("admin:favorites_favoritelist_changelist") + f"?users__in={user.id}"
-        return format_html(f'<a href="{url}">{getattr(user, "favorite_list_count", 0)}</a>')
+        return format_html(f'<a href="{url}">{user.favorite_list_count}</a>')
 
-    favorite_list_count_with_link.short_description = "Nombre de listes d'achats"
+    favorite_list_count_with_link.short_description = "Nombre de listes de favoris"
     favorite_list_count_with_link.admin_order_field = "favorite_list_count"
 
     def image_url_display(self, user):

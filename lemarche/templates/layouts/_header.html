@@ -37,7 +37,7 @@
                                         </a>
                                         <a href="{% url 'dashboard_favorites:list' %}" id="header-favorites" class="dropdown-item">
                                             <i class="ri-star-line"></i>
-                                            Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_lists.count }}</span>
+                                            Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_list_count }}</span>
                                         </a>
                                         <a href="{% url 'dashboard:profile_edit' %}" class="dropdown-item">
                                             <i class="ri-user-line"></i>
