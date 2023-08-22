@@ -30,33 +30,33 @@
                                     Afficher les {{ perimeters_length|add:"-2" }} autres lieux d'interventions
                                 </a>
                                 <div id="perimetersSearchHidden" class="collapse">
-                                {% endif %}
-                                {% if forloop.counter == perimeters_length and perimeters_length > 2 %}</div>{% endif %}
-                            {% endfor %}
-                        {% endwith %}
-                    {% endif %}
-                    {% if current_sectors %}
-                        {% with sectors_length=current_sectors|length %}
-                            <h5 class="{% if current_perimeters %}mt-4{% endif %} mb-2">Secteur{{ sectors_length|pluralize }} d'activité</h5>
-                            {% for sector in current_sectors %}
-                                <span class="badge badge-base badge-outline-primary ml-0 mb-1">{{ sector.name|truncatechars:42 }}</span>
-                                <br>
-                                {% if forloop.counter == 2 and sectors_length > 2 %}
-                                    <a class="w-100 d-block text-decoration-none has-collapse-caret collapsed"
-                                       data-toggle="collapse"
-                                       href="#sectorsSearchHidden"
-                                       role="button"
-                                       aria-expanded="false"
-                                       aria-controls="sectorsSearchHidden">
-                                        Afficher les {{ sectors_length|add:"-2" }} autres secteurs
-                                    </a>
-                                    <div id="sectorsSearchHidden" class="collapse">
-                                    {% endif %}
-                                    {% if forloop.counter == sectors_length and sectors_length > 2  %}</div>{% endif %}
-                                {% endfor %}
-                            {% endwith %}
-                        {% endif %}
-                    </div>
+                            {% endif %}
+                            {% if forloop.counter == perimeters_length and perimeters_length > 2 %}</div>{% endif %}
+                        {% endfor %}
+                    {% endwith %}
+                {% endif %}
+                {% if current_sectors %}
+                    {% with sectors_length=current_sectors|length %}
+                        <h5 class="{% if current_perimeters %}mt-4{% endif %} mb-2">Secteur{{ sectors_length|pluralize }} d'activité</h5>
+                        {% for sector in current_sectors %}
+                            <span class="badge badge-base badge-outline-primary ml-0 mb-1">{{ sector.name|truncatechars:42 }}</span>
+                            <br />
+                            {% if forloop.counter == 2 and sectors_length > 2 %}
+                                <a class="w-100 d-block text-decoration-none has-collapse-caret collapsed"
+                                    data-toggle="collapse"
+                                    href="#sectorsSearchHidden"
+                                    role="button"
+                                    aria-expanded="false"
+                                    aria-controls="sectorsSearchHidden">
+                                    Afficher les {{ sectors_length|add:"-2" }} autres secteurs
+                                </a>
+                                <div id="sectorsSearchHidden" class="collapse">
+                            {% endif %}
+                            {% if forloop.counter == sectors_length and sectors_length > 2  %}</div>{% endif %}
+                        {% endfor %}
+                    {% endwith %}
                 {% endif %}
             </div>
-        </div>
+        {% endif %}
+    </div>
+</div>
