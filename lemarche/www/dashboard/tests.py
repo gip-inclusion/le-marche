@@ -268,11 +268,11 @@ class DashboardNetworkViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.DASHBOARD_NETWORK_URLS = [
-            "dashboard:profile_network_detail",
-            "dashboard:profile_network_siae_list",
-            "dashboard:profile_network_tender_list",
-            # "dashboard:profile_network_tender_detail"
-            # "dashboard:profile_network_siae_tender_list"
+            "dashboard_networks:detail",
+            "dashboard_networks:siae_list",
+            "dashboard_networks:tender_list",
+            # "dashboard_networks:tender_detail"
+            # "dashboard_networks:siae_tender_list"
         ]
         cls.network_1 = NetworkFactory(name="Liste 1")
         cls.network_2 = NetworkFactory(name="Liste 2")
@@ -321,27 +321,27 @@ class DashboardNetworkViewTest(TestCase):
 
     def test_siae_list_in_network_siae_list(self):
         self.client.force_login(self.user_network_1)
-        url = reverse("dashboard:profile_network_siae_list", args=[self.network_1.slug])
+        url = reverse("dashboard_networks:siae_list", args=[self.network_1.slug])
         response = self.client.get(url)
         self.assertContains(response, self.siae_1.name_display)
         self.assertNotContains(response, self.siae_2.name_display)
 
     def test_only_network_siaes_can_display_network_siae_tender_list(self):
         self.client.force_login(self.user_network_1)
-        url = reverse("dashboard:profile_network_siae_tender_list", args=[self.network_1.slug, self.siae_1.slug])
+        url = reverse("dashboard_networks:siae_tender_list", args=[self.network_1.slug, self.siae_1.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.tender_1.title)
         # siae_2 not linked to network
         self.client.force_login(self.user_network_1)
-        url = reverse("dashboard:profile_network_siae_tender_list", args=[self.network_1.slug, self.siae_2.slug])
+        url = reverse("dashboard_networks:siae_tender_list", args=[self.network_1.slug, self.siae_2.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, f"/profil/reseaux/{self.network_1.slug}/prestataires/")
 
     def test_tender_list_in_network_tender_list(self):
         self.client.force_login(self.user_network_1)
-        url = reverse("dashboard:profile_network_tender_list", args=[self.network_1.slug])
+        url = reverse("dashboard_networks:tender_list", args=[self.network_1.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.tender_1.title)
@@ -350,7 +350,7 @@ class DashboardNetworkViewTest(TestCase):
 
     def test_tender_detail_in_network_tender_detail(self):
         self.client.force_login(self.user_network_1)
-        url = reverse("dashboard:profile_network_tender_detail", args=[self.network_1.slug, self.tender_1.slug])
+        url = reverse("dashboard_networks:tender_detail", args=[self.network_1.slug, self.tender_1.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.tender_1.title)
@@ -360,7 +360,7 @@ class DashboardNetworkViewTest(TestCase):
 
     def test_network_siae_list_in_network_tender_siae_list(self):
         self.client.force_login(self.user_network_1)
-        url = reverse("dashboard:profile_network_tender_siae_list", args=[self.network_1.slug, self.tender_1.slug])
+        url = reverse("dashboard_networks:tender_siae_list", args=[self.network_1.slug, self.tender_1.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.siae_1.name_display)

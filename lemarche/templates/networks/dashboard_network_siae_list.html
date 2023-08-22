@@ -12,7 +12,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:profile_network_detail' network.slug %}">Mon réseau</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard_networks:detail' network.slug %}">Mon réseau</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Mes adhérents</li>
                     </ol>
                 </nav>
@@ -86,21 +86,21 @@
                                 </td>
                                 <td>
                                     {% if siae.tender_email_send_count > 0 %}
-                                        <a href="{% url 'dashboard:profile_network_siae_tender_list' network.slug siae.slug %}" title="Voir les demandes reçues" id="dashboard-network-siae-show-tender-email-send-list-btn">{{ siae.tender_email_send_count }}</a>
+                                        <a href="{% url 'dashboard_networks:siae_tender_list' network.slug siae.slug %}" title="Voir les demandes reçues" id="dashboard-network-siae-show-tender-email-send-list-btn">{{ siae.tender_email_send_count }}</a>
                                     {% else %}
                                         0
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if siae.tender_detail_display_count > 0 %}
-                                        <a href="{% url 'dashboard:profile_network_siae_tender_list' network.slug siae.slug "DISPLAY" %}" title="Voir les demandes vues" id="dashboard-network-siae-show-tender-detail-display-list-btn">{{ siae.tender_detail_display_count }}</a>
+                                        <a href="{% url 'dashboard_networks:siae_tender_list' network.slug siae.slug "DISPLAY" %}" title="Voir les demandes vues" id="dashboard-network-siae-show-tender-detail-display-list-btn">{{ siae.tender_detail_display_count }}</a>
                                     {% else %}
                                         0
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if siae.tender_detail_contact_click_count > 0 %}
-                                        <a href="{% url 'dashboard:profile_network_siae_tender_list' network.slug siae.slug "CONTACT-CLICK" %}" title="Voir les demandes intéressées" id="dashboard-network-siae-show-tender-detail-contact-click-list-btn">{{ siae.tender_detail_contact_click_count }}</a>
+                                        <a href="{% url 'dashboard_networks:siae_tender_list' network.slug siae.slug "CONTACT-CLICK" %}" title="Voir les demandes intéressées" id="dashboard-network-siae-show-tender-detail-contact-click-list-btn">{{ siae.tender_detail_contact_click_count }}</a>
                                     {% else %}
                                         0
                                     {% endif %}
