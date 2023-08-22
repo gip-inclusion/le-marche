@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
+from lemarche.conversations.models import Conversation
 from lemarche.labels.models import Label
 from lemarche.notes.models import Note
 from lemarche.siaes.models import (
@@ -101,6 +102,30 @@ class SiaeUserInline(admin.TabularInline):
         return format_html(f'<a href="{url}">{siae_user.user}</a>')
 
     user_with_link.short_description = User._meta.verbose_name
+
+
+class ConversationsInline(admin.TabularInline):
+    model = Conversation
+    can_delete = False
+
+    fields = ["id", "title_with_link", "nb_message_with_link", "kind", "created_at"]
+
+    # autocomplete_fields = ["user"]
+    readonly_fields = ["id", "title_with_link", "nb_message_with_link", "kind", "created_at"]
+    extra = 0
+    max_num = 0
+
+    def title_with_link(self, conversation: Conversation):
+        url = reverse("admin:conversations_conversation_change", args=[conversation.id])
+        return format_html(f'<a href="{url}">{conversation.title}</a>')
+
+    title_with_link.short_description = "Titre"
+
+    def nb_message_with_link(self, conversation: Conversation):
+        url = reverse("admin:conversations_conversation_change", args=[conversation.id])
+        return format_html(f'<a href="{url}">{conversation.nb_messages}</a>')
+
+    nb_message_with_link.short_description = "Nombre de messages"
 
 
 @admin.register(Siae, site=admin_site)
@@ -255,6 +280,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
             },
         ),
         SiaeNoteInline,
+        ConversationsInline,
         SiaeUserInline,
         (
             "Logo",
@@ -419,7 +445,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         Set Note author on create
         """
         for form in formset:
-            if type(form.instance) == Note:
+            if type(form.instance) is Note:
                 if not form.instance.id and form.instance.text and change:
                     form.instance.author = request.user
         super().save_formset(request, form, formset, change)
