@@ -414,7 +414,7 @@ class SiaeModelPerimeterQuerysetTest(TestCase):
             post_codes=["38410"],
             # coords=Point(5.8862, 45.1106),
         )
-        SiaeFactory()
+        SiaeFactory(region="Centre-Val de Loire")
         SiaeFactory(region="Guadeloupe")
         SiaeFactory(region="Bretagne", department="29")
         SiaeFactory(
@@ -431,14 +431,13 @@ class SiaeModelPerimeterQuerysetTest(TestCase):
             geo_range=siae_constants.GEO_RANGE_DEPARTMENT,
         )
 
-    # TODO : fix the flaky test
-    # def test_address_in_perimeter_list(self):
-    #     self.assertEqual(Siae.objects.address_in_perimeter_list([]).count(), 5)
-    #     self.assertEqual(Siae.objects.address_in_perimeter_list([self.guadeloupe_perimeter]).count(), 1)
-    #     self.assertEqual(Siae.objects.address_in_perimeter_list([self.grenoble_perimeter]).count(), 1)
-    #     self.assertEqual(
-    #         Siae.objects.address_in_perimeter_list([self.guadeloupe_perimeter, self.finistere_perimeter]).count(), 2
-    #     )
+    def test_address_in_perimeter_list(self):
+        self.assertEqual(Siae.objects.address_in_perimeter_list([]).count(), 5)
+        self.assertEqual(Siae.objects.address_in_perimeter_list([self.guadeloupe_perimeter]).count(), 1)
+        self.assertEqual(Siae.objects.address_in_perimeter_list([self.grenoble_perimeter]).count(), 1)
+        self.assertEqual(
+            Siae.objects.address_in_perimeter_list([self.guadeloupe_perimeter, self.finistere_perimeter]).count(), 2
+        )
 
     def test_geo_range_in_perimeter_list(self):
         self.assertEqual(Siae.objects.geo_range_in_perimeter_list([]).count(), 5)
