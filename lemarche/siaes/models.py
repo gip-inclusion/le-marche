@@ -841,6 +841,7 @@ class Siae(models.Model):
 
     def save(self, *args, **kwargs):
         """
+        - update the "last_updated" fields
         - update the object stats
         - update the object content_fill_dates
         - generate the slug field

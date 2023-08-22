@@ -326,8 +326,21 @@ class User(AbstractUser):
                 except AttributeError:  # TRACK_UPDATE_FIELDS without last_updated fields
                     pass
 
+    def set_related_counts(self):
+        """
+        Works only for related fields.
+        For M2M, see m2m_changed signal.
+        """
+        if self.id:
+            self.favorite_list_count = self.favorite_lists.count()
+
     def save(self, *args, **kwargs):
+        """
+        - update the "last_updated" fields
+        - update the object stats
+        """
         self.set_last_updated_fields()
+        self.set_related_counts()
         super().save(*args, **kwargs)
 
     def set_hubspot_id(self, hubspot_contact_id, with_save=True):

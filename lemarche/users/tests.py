@@ -122,3 +122,12 @@ class UserModelSaveTest(TestCase):
         user.save()
         self.assertEqual(user.api_key, "QWERTY")
         self.assertNotEqual(user.api_key_last_updated, api_key_last_updated)
+
+    def test_update_related_favorite_list_count_on_save(self):
+        user = UserFactory()
+        self.assertEqual(user.favorite_list_count, 0)
+        FavoriteListFactory(user=user)
+        self.assertEqual(user.favorite_lists.count(), 1)
+        # self.assertEqual(user.favorite_list_count, 1)  # won't work, need to call save() method to update stat fields
+        user.save()
+        self.assertEqual(user.favorite_list_count, 1)
