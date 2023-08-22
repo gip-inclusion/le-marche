@@ -873,7 +873,7 @@ class TenderDetailContactClickStatViewTest(TestCase):
 
 #     def test_send_email_for_feedbacks_set_log(self):
 #         self.assertEqual(len(self.tender.logs), 0)
-#         send_tenders_author_feedback_30_days(self.tender)
+#         send_tenders_author_30_days(self.tender, kind="feedback")
 #         # fetch tender to be sure to have the last version of tender
 #         tender: Tender = Tender.objects.get(pk=self.tender.pk)
 #         self.assertEqual(len(tender.logs), 1)
