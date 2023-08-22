@@ -484,7 +484,7 @@ def send_author_incremental_2_days_email(tender: Tender):
         tender.save()
 
 
-def send_tenders_author_feedback_30_days(tender: Tender):
+def send_tenders_author_30_days(tender: Tender, kind="feedback"):
     email_subject = f"Concernant votre {tender.get_kind_display()} sur le Marché de l'inclusion"
     recipient_list = whitelist_recipient_list([tender.author.email])
     if recipient_list:
@@ -498,8 +498,13 @@ def send_tenders_author_feedback_30_days(tender: Tender):
             "TENDER_KIND": tender.get_kind_display(),
         }
 
+        if kind == "transactioned_question":
+            template_id = settings.MAILJET_TENDERS_AUTHOR_TRANSACTIONED_QUESTION_30D_TEMPLATE_ID
+        else:
+            template_id = settings.MAILJET_TENDERS_AUTHOR_FEEDBACK_30D_TEMPLATE_ID
+
         api_mailjet.send_transactional_email_with_template(
-            template_id=settings.MAILJET_TENDERS_AUTHOR_FEEDBACK_30D_TEMPLATE_ID,
+            template_id=template_id,
             subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
@@ -508,7 +513,7 @@ def send_tenders_author_feedback_30_days(tender: Tender):
 
         # log email
         log_item = {
-            "action": "email_feedback_30d_sent",
+            "action": f"email_{kind}_30d_sent",
             "email_to": recipient_email,
             "email_subject": email_subject,
             # "email_body": email_body,

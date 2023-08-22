@@ -9,6 +9,7 @@
     "40 7 * * 1 $ROOT/clevercloud/siaes_update_api_zrr_fields.sh",
     "0 7 * * 2 $ROOT/clevercloud/siaes_send_completion_reminder_emails.sh",
     "0 8 * * * $ROOT/clevercloud/siaes_send_user_request_reminder_emails.sh",
+    "30 8 * * * $ROOT/clevercloud/tenders_send_author_transactioned_question_emails.sh",
     "0 9 * * * $ROOT/clevercloud/tenders_send_siae_contacted_reminder_emails.sh",
     "10 9 * * * $ROOT/clevercloud/tenders_send_siae_interested_reminder_emails.sh",
     "20 9 * * * $ROOT/clevercloud/tenders_send_author_incremental.sh"
