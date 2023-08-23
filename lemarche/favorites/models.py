@@ -2,6 +2,8 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_delete, post_save
+from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 
@@ -49,6 +51,16 @@ class FavoriteList(models.Model):
         """Generate the slug field before saving."""
         self.set_slug()
         super().save(*args, **kwargs)
+
+
+@receiver(post_save, sender=FavoriteList)
+@receiver(post_delete, sender=FavoriteList)
+def favorite_list_changed(sender, instance, **kwargs):
+    """
+    Will be called when we create, update or delete a Favorite List
+    """
+    instance.user.favorite_list_count = instance.user.favorite_lists.count()
+    instance.user.save()
 
 
 class FavoriteItem(models.Model):
