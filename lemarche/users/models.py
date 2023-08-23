@@ -329,7 +329,6 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         """
         - update the "last_updated" fields
-        - update the object stats
         """
         self.set_last_updated_fields()
         super().save(*args, **kwargs)
