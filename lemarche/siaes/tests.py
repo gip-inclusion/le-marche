@@ -414,9 +414,9 @@ class SiaeModelPerimeterQuerysetTest(TestCase):
             post_codes=["38410"],
             # coords=Point(5.8862, 45.1106),
         )
-        SiaeFactory(region="Centre-Val de Loire")
-        SiaeFactory(region="Guadeloupe")
-        SiaeFactory(region="Bretagne", department="29")
+        SiaeFactory(city="Tours", department="37", region="Centre-Val de Loire", post_code="37000")
+        SiaeFactory(city="Pointe-à-Pitre", department="971", region="Guadeloupe", post_code="97110")
+        SiaeFactory(city="Brest", department="29", region="Bretagne", post_code="29200")
         SiaeFactory(
             city=cls.grenoble_perimeter.name,
             department=cls.grenoble_perimeter.department_code,
