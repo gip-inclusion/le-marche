@@ -222,7 +222,7 @@ class SiaeDetailView(FormMixin, DetailView):
     context_object_name = "siae"
     form_class = ContactForm
     success_url = reverse_lazy("siae:detail")
-    queryset = Siae.objects.prefetch_many_to_many().prefetch_many_to_one().prefetch_related("sectors__group")
+    queryset = Siae.objects.prefetch_many_to_many().prefetch_many_to_one().prefetch_related("groups")
 
     def get(self, request, *args, **kwargs):
         """
