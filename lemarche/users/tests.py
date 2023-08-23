@@ -126,8 +126,12 @@ class UserModelSaveTest(TestCase):
     def test_update_related_favorite_list_count_on_save(self):
         user = UserFactory()
         self.assertEqual(user.favorite_list_count, 0)
+        # create 2 lists
         FavoriteListFactory(user=user)
+        FavoriteListFactory(user=user)
+        self.assertEqual(user.favorite_lists.count(), 2)
+        self.assertEqual(user.favorite_list_count, 2)
+        # delete 1 list
+        user.favorite_lists.first().delete()
         self.assertEqual(user.favorite_lists.count(), 1)
-        # self.assertEqual(user.favorite_list_count, 1)  # won't work, need to call save() method to update stat fields
-        user.save()
         self.assertEqual(user.favorite_list_count, 1)
