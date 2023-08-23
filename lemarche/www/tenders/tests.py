@@ -808,6 +808,7 @@ class TenderDetailContactClickStatViewTest(TestCase):
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
+        cls.user_admin = UserFactory(kind=User.KIND_ADMIN)
         cls.tender = TenderFactory(kind=tender_constants.KIND_TENDER, author=cls.user_buyer_1, siaes=[cls.siae])
 
     def test_anonymous_user_cannot_call_tender_contact_click(self):
@@ -824,7 +825,7 @@ class TenderDetailContactClickStatViewTest(TestCase):
             response = self.client.post(url, data={"detail_contact_click_confirm": "false"})
             self.assertEqual(response.status_code, 302)  # redirect
         # forbidden
-        for user in [self.user_buyer_1, self.user_buyer_2, self.user_partner]:
+        for user in [self.user_buyer_1, self.user_buyer_2, self.user_partner, self.user_admin]:
             self.client.force_login(user)
             url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
             response = self.client.post(url, data={"detail_contact_click_confirm": "false"})
@@ -1033,3 +1034,59 @@ class TenderSiaeListView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["siaes"]), 3)  # detail_contact_click_date
         self.assertEqual(response.context["siaes"][0].id, self.tendersiae_1_1.siae.id)
+
+
+class TenderDetailSurveyTransactionedViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae = SiaeFactory(name="ZZ ESI")
+        cls.siae_user_1 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae])
+        cls.siae_user_2 = UserFactory(kind=User.KIND_SIAE)
+        cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
+        cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
+        cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
+        cls.user_admin = UserFactory(kind=User.KIND_ADMIN)
+        cls.tender = TenderFactory(kind=tender_constants.KIND_TENDER, author=cls.user_buyer_1, siaes=[cls.siae])
+
+    def test_anonymous_user_cannot_call_tender_survey_transactioned(self):
+        url = reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith("/accounts/login/"))
+
+    def test_only_tender_author_can_call_tender_survey_transactioned(self):
+        # authorized
+        self.client.force_login(self.user_buyer_1)
+        url = reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)  # redirect
+        # forbidden
+        for user in [self.siae_user_1, self.siae_user_2, self.user_buyer_2, self.user_partner, self.user_admin]:
+            self.client.force_login(user)
+            url = reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 403)
+
+    def test_update_tender_stats_on_tender_survey_transactioned(self):
+        self.assertEqual(self.tender.survey_transactioned_answer, None)
+        # load without answer
+        self.client.force_login(self.user_buyer_1)
+        url = reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)  # redirect
+        self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_answer, None)
+        # self.assertNotContains(response, "Merci pour vote réponse")
+        # load with answer
+        self.client.force_login(self.user_buyer_1)
+        url = reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug}) + "?answer=True"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)  # redirect
+        self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_answer, True)
+        # self.assertContains(response, "Merci pour vote réponse")
+        # reload with answer, ignore changes
+        self.client.force_login(self.user_buyer_1)
+        url = reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug}) + "?answer=False"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)  # redirect
+        self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_answer, True)
+        # self.assertContains(response, "Votre réponse a déjà été prise en compte")
