@@ -447,7 +447,7 @@ class TenderDetailSurveyTransactionedView(TenderAuthorRequiredMixin, UpdateView)
                 # update survey_transactioned_answer
                 Tender.objects.filter(id=self.object.id).update(
                     survey_transactioned_answer=survey_transactioned_answer,
-                    survey_transactioned_date=timezone.now(),
+                    survey_transactioned_answer_date=timezone.now(),
                     updated_at=timezone.now(),
                 )
                 messages.add_message(

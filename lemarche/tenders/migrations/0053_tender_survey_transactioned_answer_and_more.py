@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name="tender",
-            name="survey_transactioned_date",
+            name="survey_transactioned_answer_date",
             field=models.DateTimeField(
                 blank=True, null=True, verbose_name="Sondage transaction J+30 : date de réponse"
             ),

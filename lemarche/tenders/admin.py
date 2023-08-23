@@ -269,7 +269,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             {
                 "fields": (
                     "survey_transactioned_answer",
-                    "survey_transactioned_date",
+                    "survey_transactioned_answer_date",
                     "siae_transactioned",
                 )
             },
