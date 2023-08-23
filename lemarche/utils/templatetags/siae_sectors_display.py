@@ -10,10 +10,9 @@ register = template.Library()
 def siae_sectors_display(siae, display_max=5, current_search_query="", output_format="string"):
     """Pretty rendering of M2M fields."""
 
-    qs = siae.sectors.values()
-
-    # get values
-    values = list(qs)
+    values = []
+    for sector in siae.sectors.all():
+        values.append({"slug": sector.slug, "name": sector.name})
 
     # if the search query contains sectors, filter values on these sectors
     if "sectors=" in current_search_query:
