@@ -27,6 +27,19 @@ class SiaeSearchFilterTest(TestCase):
         self.assertEqual(len(siaes), 1)
 
 
+class SiaeSearchNumQueriesTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        SiaeFactory.create_batch(30)
+
+    def test_search_num_queries(self):
+        url = reverse("siae:search_results")
+        with self.assertNumQueries(8):
+            response = self.client.get(url)
+            siaes = list(response.context["siaes"])
+            self.assertEqual(len(siaes), 20)
+
+
 class SiaeKindSearchFilterTest(TestCase):
     @classmethod
     def setUpTestData(cls):
