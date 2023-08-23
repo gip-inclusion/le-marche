@@ -16,7 +16,11 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils.data import get_choice
-from lemarche.utils.mixins import TenderAuthorOrAdminRequiredIfNotValidatedMixin, TenderAuthorOrAdminRequiredMixin
+from lemarche.utils.mixins import (
+    TenderAuthorOrAdminRequiredIfNotValidatedMixin,
+    TenderAuthorOrAdminRequiredMixin,
+    TenderAuthorRequiredMixin,
+)
 from lemarche.www.siaes.forms import SiaeFilterForm
 from lemarche.www.tenders.forms import (
     TenderCreateStepConfirmationForm,
@@ -356,7 +360,6 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
                 ).update(detail_contact_click_date=timezone.now(), updated_at=timezone.now())
                 # notify the tender author
                 send_siae_interested_email_to_author(self.object)
-                # redirect
                 messages.add_message(
                     self.request, messages.SUCCESS, self.get_success_message(detail_contact_click_confirm)
                 )
@@ -364,6 +367,7 @@ class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
                 messages.add_message(
                     self.request, messages.WARNING, self.get_success_message(detail_contact_click_confirm)
                 )
+            # redirect
             return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm))
         else:
             return HttpResponseForbidden()
@@ -424,3 +428,42 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
                 if current_locations:
                     context["current_locations"] = list(current_locations.values("id", "slug", "name"))
         return context
+
+
+class TenderDetailSurveyTransactionedView(TenderAuthorRequiredMixin, UpdateView):
+    """
+    Endpoint to store the tender author J+30 survey answer
+    """
+
+    model = Tender
+
+    def get(self, request, *args, **kwargs):
+        """ """
+        self.object = self.get_object()
+        survey_transactioned_answer = request.GET.get("answer", None)
+        # first time answering
+        if self.object.survey_transactioned_answer is None:
+            if survey_transactioned_answer:
+                # update survey_transactioned_answer
+                Tender.objects.filter(id=self.object.id).update(
+                    survey_transactioned_answer=survey_transactioned_answer,
+                    survey_transactioned_date=timezone.now(),
+                    updated_at=timezone.now(),
+                )
+                messages.add_message(
+                    self.request, messages.SUCCESS, self.get_success_message(survey_transactioned_answer)
+                )
+        # already answered
+        else:
+            messages.add_message(self.request, messages.WARNING, self.get_success_message())
+        # redirect
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        success_url = reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
+        return success_url
+
+    def get_success_message(self, survey_transactioned_answer=None):
+        if survey_transactioned_answer is None:
+            return "Votre réponse a déjà été prise en compte."
+        return "Merci pour vote réponse !"
