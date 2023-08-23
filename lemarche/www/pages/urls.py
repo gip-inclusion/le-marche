@@ -79,6 +79,7 @@ urlpatterns = [
         {"url": "/2021-10-06-le-marche-fait-peau-neuve/"},
         name="2021-10-06-le-marche-fait-peau-neuve",
     ),
+    path("mentions-legales/", PageView.as_view(), {"url": "/mentions-legales/"}, name="mentions-legales"),
     path("cgu/", PageView.as_view(), {"url": "/cgu/"}, name="cgu"),
     path("cgu-api/", PageView.as_view(), {"url": "/cgu-api/"}, name="cgu-api"),
     path("confidentialite/", PageView.as_view(), {"url": "/confidentialite/"}, name="confidentialite"),
