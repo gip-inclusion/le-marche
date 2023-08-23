@@ -88,15 +88,6 @@ class UserModelQuerysetTest(TestCase):
         self.assertEqual(User.objects.with_tender_stats().filter(id=self.user.id).first().tender_count, 0)
         self.assertEqual(User.objects.with_tender_stats().filter(id=user_2.id).first().tender_count, 1)
 
-    def test_with_favorite_list_stats_queryset(self):
-        user_2 = UserFactory()
-        FavoriteListFactory(user=user_2)
-        self.assertEqual(User.objects.count(), 1 + 1)
-        self.assertEqual(
-            User.objects.with_favorite_list_stats().filter(id=self.user.id).first().favorite_list_count, 0
-        )
-        self.assertEqual(User.objects.with_favorite_list_stats().filter(id=user_2.id).first().favorite_list_count, 1)
-
     def test_chain_querysets(self):
         user_2 = UserFactory(api_key="chain")
         siae = SiaeFactory()
@@ -131,3 +122,16 @@ class UserModelSaveTest(TestCase):
         user.save()
         self.assertEqual(user.api_key, "QWERTY")
         self.assertNotEqual(user.api_key_last_updated, api_key_last_updated)
+
+    def test_update_related_favorite_list_count_on_save(self):
+        user = UserFactory()
+        self.assertEqual(user.favorite_list_count, 0)
+        # create 2 lists
+        FavoriteListFactory(user=user)
+        FavoriteListFactory(user=user)
+        self.assertEqual(user.favorite_lists.count(), 2)
+        self.assertEqual(user.favorite_list_count, 2)
+        # delete 1 list
+        user.favorite_lists.first().delete()
+        self.assertEqual(user.favorite_lists.count(), 1)
+        self.assertEqual(user.favorite_list_count, 1)
