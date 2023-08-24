@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
+from django.db.models import Prefetch
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -242,7 +243,11 @@ class TenderListView(LoginRequiredMixin, ListView):
         if user.kind == User.KIND_SIAE and user.siaes:
             siaes = user.siaes.all()
             if siaes:
-                qs = Tender.objects.filter_with_siaes(siaes)
+                # filtered prefetch to get detail_display_date on tendersiae_set related to user's siaes
+                tendersiae_qs = TenderSiae.objects.filter(siae__in=siaes)
+                qs = Tender.objects.filter_with_siaes(siaes).prefetch_related(
+                    Prefetch("tendersiae_set", queryset=tendersiae_qs)
+                )
         else:
             qs = Tender.objects.by_user(user).with_siae_stats()
             if self.status:
