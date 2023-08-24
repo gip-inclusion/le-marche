@@ -1,5 +1,12 @@
 <ul>
 	{% if user.is_authenticated %}
+		{% if user.kind == user.KIND_SIAE %}
+			<li>
+				<a href="{% url 'tenders:list' %}" class="btn btn-link">
+					Demandes reçues <span class="badge badge-pill badge-danger fs-xs">{{ user.unread_tender_siae_count }}</span>
+				</a>
+			</li>
+		{% endif %}
 		<li>
 			<a href="{% url 'tenders:create' %}" id="header-demande" class="btn btn-primary btn-ico">
 				<i class="ri-mail-send-line ri-lg"></i>

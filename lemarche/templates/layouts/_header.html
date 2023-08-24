@@ -19,57 +19,64 @@
                     <nav role="navigation" id="nav-primary" aria-label="Navigation principale">
                         <ul>
                             {% if user.is_authenticated %}
-                            <li>
-                                <a href="{% url 'tenders:create' %}" id="header-demande" class="btn btn-primary btn-ico">
-                                    <i class="ri-mail-send-line ri-lg"></i>
-                                    <span>Publier un besoin d'achat</span>
-                                </a>
-                            </li>
-                            <li>
-                                <div class="dropdown">
-                                    <button class="btn btn-outline-primary dropdown-toggle" id="userDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Mon espace
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="userDropdownMenuButton">
-                                        <a href="{% url 'dashboard:home' %}" class="dropdown-item">
-                                            <i class="ri-dashboard-line"></i>
-                                            Tableau de bord
+                                {% if user.kind == user.KIND_SIAE %}
+                                    <li>
+                                        <a href="{% url 'tenders:list' %}" class="btn btn-link">
+                                            Demandes reçues <span class="badge badge-pill badge-danger fs-xs">{{ user.unread_tender_siae_count }}</span>
                                         </a>
-                                        <a href="{% url 'dashboard_favorites:list' %}" id="header-favorites" class="dropdown-item">
-                                            <i class="ri-star-line"></i>
-                                            Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_list_count }}</span>
-                                        </a>
-                                        <a href="{% url 'dashboard:profile_edit' %}" class="dropdown-item">
-                                            <i class="ri-user-line"></i>
-                                            Mon profil
-                                        </a>
-                                        <div class="dropdown-divider"></div>
-                                        <a href="{% url 'auth:logout' %}" class="dropdown-item">
-                                            <i class="ri-logout-box-line"></i>
-                                            Déconnexion
-                                        </a>
+                                    </li>
+                                {% endif %}
+                                <li>
+                                    <a href="{% url 'tenders:create' %}" id="header-demande" class="btn btn-primary btn-ico">
+                                        <i class="ri-mail-send-line ri-lg"></i>
+                                        <span>Publier un besoin d'achat</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-primary dropdown-toggle" id="userDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Mon espace
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="userDropdownMenuButton">
+                                            <a href="{% url 'dashboard:home' %}" class="dropdown-item">
+                                                <i class="ri-dashboard-line"></i>
+                                                Tableau de bord
+                                            </a>
+                                            <a href="{% url 'dashboard_favorites:list' %}" id="header-favorites" class="dropdown-item">
+                                                <i class="ri-star-line"></i>
+                                                Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_list_count }}</span>
+                                            </a>
+                                            <a href="{% url 'dashboard:profile_edit' %}" class="dropdown-item">
+                                                <i class="ri-user-line"></i>
+                                                Mon profil
+                                            </a>
+                                            <div class="dropdown-divider"></div>
+                                            <a href="{% url 'auth:logout' %}" class="dropdown-item">
+                                                <i class="ri-logout-box-line"></i>
+                                                Déconnexion
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                            </li>
+                                </li>
                             {% else %}
-                            <li>
-                                <a href="{% url 'tenders:create' %}" id="header-demande" class="btn btn-link btn-ico">
-                                    <i class="ri-mail-send-line ri-lg"></i>
-                                    <span>Publier un besoin d'achat</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'auth:signup' %}" id="h_signup" class="btn btn-outline-primary btn-ico">
-                                    <i class="ri-user-add-line ri-lg"></i>
-                                    <span>S'inscrire</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'auth:login' %}" id="h_login" class="btn btn-primary btn-ico">
-                                    <i class="ri-login-box-line ri-lg"></i>
-                                    <span>Se connecter</span>
-                                </a>
-                            </li>
+                                <li>
+                                    <a href="{% url 'tenders:create' %}" id="header-demande" class="btn btn-link btn-ico">
+                                        <i class="ri-mail-send-line ri-lg"></i>
+                                        <span>Publier un besoin d'achat</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'auth:signup' %}" id="h_signup" class="btn btn-outline-primary btn-ico">
+                                        <i class="ri-user-add-line ri-lg"></i>
+                                        <span>S'inscrire</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'auth:login' %}" id="h_login" class="btn btn-primary btn-ico">
+                                        <i class="ri-login-box-line ri-lg"></i>
+                                        <span>Se connecter</span>
+                                    </a>
+                                </li>
                             {% endif %}
                         </ul>
                     </nav>
