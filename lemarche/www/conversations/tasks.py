@@ -5,11 +5,12 @@ from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
 
 def send_first_email_from_conversation(conv: Conversation):
     siae: Siae = conv.siae
+    from_email = f"{conv.sender_first_name} {conv.sender_last_name} <{conv.sender_email_buyer_encoded}>"
     send_mail_async(
         email_subject=conv.title,
         email_body=conv.initial_body_message,
         recipient_list=whitelist_recipient_list([siae.contact_email]),
-        from_email=conv.sender_email_buyer_encoded,
+        from_email=from_email,
     )
 
 
