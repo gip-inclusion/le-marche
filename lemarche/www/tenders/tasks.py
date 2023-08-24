@@ -2,7 +2,9 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils import timezone
+from sesame.utils import get_query_string as sesame_get_query_string
 
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
@@ -500,6 +502,12 @@ def send_tenders_author_30_days(tender: Tender, kind="feedback"):
 
         if kind == "transactioned_question":
             template_id = settings.MAILJET_TENDERS_AUTHOR_TRANSACTIONED_QUESTION_30D_TEMPLATE_ID
+            user_sesame_query_string = sesame_get_query_string(tender.author)
+            answer_url_with_sesame_token = (
+                reverse("detail-survey-transactioned", args=[tender.slug]) + user_sesame_query_string
+            )
+            variables["ANSWER_YES_URL"] = answer_url_with_sesame_token + "&answer=true"
+            variables["ANSWER_NO_URL"] = answer_url_with_sesame_token + "&answer=false"
         else:
             template_id = settings.MAILJET_TENDERS_AUTHOR_FEEDBACK_30D_TEMPLATE_ID
 

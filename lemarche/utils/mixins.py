@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import redirect_to_login
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse_lazy
+from sesame.utils import get_user as sesame_get_user
 
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender
@@ -136,20 +137,6 @@ class NetworkMemberRequiredMixin(LoginRequiredUserPassesTestMixin):
         return HttpResponseRedirect(reverse_lazy("dashboard:home"))
 
 
-class TenderAuthorRequiredMixin(LoginRequiredUserPassesTestMixin):
-    """
-    Restrict access to the Tender's author
-    """
-
-    def test_func(self):
-        user = self.request.user
-        tender_slug = self.kwargs.get("slug")
-        return user.is_authenticated and (tender_slug in user.tenders.values_list("slug", flat=True))
-
-    def handle_no_permission(self):
-        return HttpResponseForbidden()
-
-
 class TenderAuthorOrAdminRequiredMixin(LoginRequiredUserPassesTestMixin):
     """
     Restrict access to the Tender's author (or Admin)
@@ -182,3 +169,17 @@ class TenderAuthorOrAdminRequiredIfNotValidatedMixin(UserPassesTestMixin):
     def handle_no_permission(self):
         messages.add_message(self.request, messages.WARNING, "Vous n'avez pas accès à cette page.")
         return HttpResponseRedirect(reverse_lazy("wagtail_serve", args=("",)))
+
+
+class SesameTenderAuthorRequiredMixin(UserPassesTestMixin):
+    """
+    Restrict access to the Tender's author
+    """
+
+    def test_func(self):
+        user = sesame_get_user(self.request)
+        tender_slug = self.kwargs.get("slug")
+        return user and (tender_slug in user.tenders.values_list("slug", flat=True))
+
+    def handle_no_permission(self):
+        return HttpResponseForbidden()

@@ -17,9 +17,9 @@ from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils.data import get_choice
 from lemarche.utils.mixins import (
+    SesameTenderAuthorRequiredMixin,
     TenderAuthorOrAdminRequiredIfNotValidatedMixin,
     TenderAuthorOrAdminRequiredMixin,
-    TenderAuthorRequiredMixin,
 )
 from lemarche.www.siaes.forms import SiaeFilterForm
 from lemarche.www.tenders.forms import (
@@ -430,7 +430,7 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
         return context
 
 
-class TenderDetailSurveyTransactionedView(TenderAuthorRequiredMixin, UpdateView):
+class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, UpdateView):
     """
     Endpoint to store the tender author J+30 survey answer
     """
@@ -438,12 +438,19 @@ class TenderDetailSurveyTransactionedView(TenderAuthorRequiredMixin, UpdateView)
     model = Tender
 
     def get(self, request, *args, **kwargs):
-        """ """
+        """
+        Tender.survey_transactioned_answer field is updated only if:
+        - the user should be the tender author (thanks to SesameTenderAuthorRequiredMixin)
+        - the field is None in the database (first time answering)
+        - the GET parameter 'answer' is passed
+        """
         self.object = self.get_object()
         survey_transactioned_answer = request.GET.get("answer", None)
         # first time answering
         if self.object.survey_transactioned_answer is None:
-            if survey_transactioned_answer:
+            if survey_transactioned_answer in ["True", "False"]:
+                # transform survey_transactioned_answer into bool
+                survey_transactioned_answer = survey_transactioned_answer == "True"
                 # update survey_transactioned_answer
                 Tender.objects.filter(id=self.object.id).update(
                     survey_transactioned_answer=survey_transactioned_answer,
