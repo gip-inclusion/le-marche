@@ -29,6 +29,11 @@
                 <span>{{ siae.employees_permanent_count|default:"non disponible" }}</span>
             </li>
             <li class="mb-2">
+                <i class="ri-user-add-line"></i>
+                <strong>Salariés en insertion :</strong>
+                <span>{{ siae.etp_count_display|floatformat:0|default:"non disponible" }}</span>
+            </li>
+            <li class="mb-2">
                 {% include "siaes/_annuaire_entreprises_button.html" with siret=siae.siret %}
             </li>
         </ul>
