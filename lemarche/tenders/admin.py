@@ -261,6 +261,15 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "siae_email_link_click_count_with_link",
                     "siae_detail_display_count_with_link",
                     "siae_detail_contact_click_count_with_link",
+                )
+            },
+        ),
+        (
+            "Transaction ?",
+            {
+                "fields": (
+                    "survey_transactioned_answer",
+                    "survey_transactioned_answer_date",
                     "siae_transactioned",
                 )
             },

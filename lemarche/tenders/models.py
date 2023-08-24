@@ -332,6 +332,12 @@ class Tender(models.Model):
         blank=True,
         default=list,
     )
+    survey_transactioned_answer = models.BooleanField(
+        verbose_name="Sondage transaction J+30 : réponse", blank=True, null=True
+    )
+    survey_transactioned_answer_date = models.DateTimeField(
+        "Sondage transaction J+30 : date de réponse", blank=True, null=True
+    )
 
     # validation
     status = models.CharField(

@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import redirect_to_login
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse_lazy
 
 from lemarche.tenders import constants as tender_constants
@@ -136,9 +136,23 @@ class NetworkMemberRequiredMixin(LoginRequiredUserPassesTestMixin):
         return HttpResponseRedirect(reverse_lazy("dashboard:home"))
 
 
-class TenderAuthorOrAdminRequiredMixin(LoginRequiredUserPassesTestMixin):
+class TenderAuthorRequiredMixin(LoginRequiredUserPassesTestMixin):
     """
     Restrict access to the Tender's author
+    """
+
+    def test_func(self):
+        user = self.request.user
+        tender_slug = self.kwargs.get("slug")
+        return user.is_authenticated and (tender_slug in user.tenders.values_list("slug", flat=True))
+
+    def handle_no_permission(self):
+        return HttpResponseForbidden()
+
+
+class TenderAuthorOrAdminRequiredMixin(LoginRequiredUserPassesTestMixin):
+    """
+    Restrict access to the Tender's author (or Admin)
     """
 
     def test_func(self):
