@@ -383,6 +383,15 @@ class User(AbstractUser):
             qs = qs.filter(tender=tender)
         return qs.exists()
 
+    @property
+    def unread_tender_siae_count(self, tender=None):
+        from lemarche.tenders.models import TenderSiae
+
+        qs = TenderSiae.objects.filter(siae__in=self.siaes.all(), tender__validated_at__isnull=False).filter(
+            detail_display_date__isnull=True
+        )
+        return qs.count()
+
 
 @receiver(post_save, sender=User)
 def user_post_save(sender, instance, **kwargs):
