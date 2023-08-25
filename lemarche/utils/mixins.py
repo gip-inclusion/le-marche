@@ -171,15 +171,28 @@ class TenderAuthorOrAdminRequiredIfNotValidatedMixin(UserPassesTestMixin):
         return HttpResponseRedirect(reverse_lazy("wagtail_serve", args=("",)))
 
 
-class SesameTenderAuthorRequiredMixin(UserPassesTestMixin):
+class SesameTokenRequiredUserPassesTestMixin(UserPassesTestMixin):
+    """
+    Custom mixin that checks that a valid django-sesame token is passed
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        user = sesame_get_user(self.request)
+        if not user:
+            return HttpResponseForbidden()
+        # add user to request
+        request.user = user
+        return super().dispatch(request, *args, **kwargs)
+
+
+class SesameTenderAuthorRequiredMixin(SesameTokenRequiredUserPassesTestMixin):
     """
     Restrict access to the Tender's author
     """
 
     def test_func(self):
-        user = sesame_get_user(self.request)
         tender_slug = self.kwargs.get("slug")
-        return user and (tender_slug in user.tenders.values_list("slug", flat=True))
+        return tender_slug in self.request.user.tenders.values_list("slug", flat=True)
 
     def handle_no_permission(self):
-        return HttpResponseForbidden()
+        return HttpResponseRedirect(reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")]))
