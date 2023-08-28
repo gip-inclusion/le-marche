@@ -2,49 +2,376 @@
 
 Ressources :
 - [Calendar Versioning](https://calver.org/)
-- [CHANGELOG recommendations](https://keepachangelog.com/).
+- [CHANGELOG recommendations](https://keepachangelog.com/)
+
+## 2023.08.25
+
+### Ajouté
+
+- Recherche / Fiche
+    - Admin : Affichage des conversations d'une structure (#863)
+    - Inbound parsing : Ajout du nom et prénom au formulaire de contact des structures (#858)
+    - Inbound parsing : Ajout d'un formulaire de contact (#843)
+    - Inbound parsing : Enregistrer les records d'inbound parsing (#842)
+- Dépôt de besoin
+    - envoyer un e-mail à J+30 aux auteurs pour savoir si il y a eu une transaction (#865)
+    - CTA sur les fiches structures (#864)
+    - Admin : possibilité d'ajuster l’incrémentalité d'un besoin (#859)
+    - stocker les résultats du sondage J+30 (#873)
+- Home
+    - Nouveau champ User.favorite_list_count pour éviter des requêtes (#870)
+- Tech
+    - captcha : log error only if the user is not responsible (#868)
+    - Initialiser l'Email inbound Parsing (#840)
+
+### Modifié
+
+- Recherche / Fiche
+    - Inbound parsing : améliorer l'affichage admin (#866)
+    - Inbound parsing : Migrer vers ShortUUIDField (#854)
+    - Inbound parsing : Mise à jour des infos pratique des structures (#861)
+    - Inbound parsing : fix sender for the first message (#878)
+    - Inbound parsing : fix serializer for incoming data. ref #842
+    - Inbound parsing : jout de MTCaptcha sur le formulaire de contact des structures (#862)
+    - Inbound parsing : utiliser send_mail au lieu de EmailMultiAlternatives (#857)
+    - Inbound parsing : améliorer l'affichage dans l'admin (#856)
+    - display pretty messages of conversation (#855)
+    - fix html display. ref #854
+    - Fix: Affichage du nombre d'employées en insertion par structure (#877)
+- Dépôt de besoin
+    - Partenaires besoins : admin : pouvoir chercher par e-mail (#852)
+    - Partenaires besoins : pouvoir indiquer des notes dans l'admin (#851)
+- Home
+    - Footer : répare le lien vers les mentions légales (#872)
+- Tech
+    - fix geo perimeter flacky test (#869, #876)
+    - Refactoring : séparer Dashboard & Networks (#867)
+    - Dépendances : mettre à jour le repo pointant vers raphodn (#860)
+    - Admin : répare l'affichage des vues avec fieldset (#823)
+    - Affichage des erreurs dans les tests, même en parallèle (#853)
+    - Suppression des requêtes N+1 sur la recherche de partenaires (#874)
+    - Fiche structure : petite optimisation de la queryset (#875)
+
+### Supprimé
+
+## 2023.07.28
+
+### Ajouté
+
+- Recherche / Fiche
+    - ajout du filtre sur les certifications (#837)
+    - filtre avancé sur l'effectif (#816)
+    - filtre sur la forme juridique (#812)
+- Dépôt de besoin
+    - pouvoir indiquer des notes dans l'admin (#845)
+    - tender siaes : add ca filter to list (#827)
+    - tender siaes : add employees count filter (#826)
+    - nouveau champ pour indiquer le montant exact (#821)
+- Tech
+    - Améliorations des requêtes "annotate" (#818)
+    - Ajout du driver gecko dans l'image Docker pour les tests selenium (#814)
+- Autres
+    - Note : importer depuis Hubspot (#848)
+    - Note : utiliser CKEditor dans l'admin (#849)
+    - Note : afficher et filtrer par content_type dans l'admin (#850)
+    - Utilisateurs : pouvoir indiquer des notes dans l'admin (#846)
+    - Structures : pouvoir indiquer des notes dans l'admin (#847)
+    - Note : ajout du champ generic foreign key (#844)
+    - Nouveau modèle pour indiquer des notes (#836)
+    - Entreprise : script pour rattacher les utilisateurs en fonction de leur e-mail (#830)
+    - Tracker : enrichir les infos des Siae (#820)
+    - Entreprise : nouveau champ pour lister les nom de domaines des e-mails (#817)
+    - Créer et remplir le nouveau champ Siae.legal_form (#811)
+
+### Modifié
+
+- Tableau de bord
+    - Tableau de bord : répare les URLs des ressources (#835)
+    - Distinguer les besoins provenant de Tally vs le reste de l’API (#828)
+- Recherche / Fiche
+    - Recherche avancée : réparer les lenteurs (#833)
+    - Laisser ouvert la recherche avancée si un champs est saisi (#819)
+    - Activer les filtres avancées uniquement quand l'utilisateur est connecté (#815)
+- Dépôt de besoin
+    - Admin : filtres par source et par montant (#841)
+    - définir une date de publication (#829)
+    - Dépôt de besoin : envoyer la date de clôture dans certains e-mails (#822)
+- Tech
+    - Hotfix: remove unused perimeters_autocomplete_field.js (#800)
+    - try fix tests with dummy cache in test settings (#831)
+    - Fix migration file name. ref #811
+- Autres
+    - [Mailing listes] Segmenter l’onboarding des acheteurs selon l’inscription (#839)
+    - Hotfix: Siae export command (using SiaeFilterForm). ref #815
+    - Fix stuff on company email_domain_list script. ref #830
+    - Affichage de la modal pour s'inscrire ou se connecter pour les utilisateurs anonymes (#825)
+    - Wagtail : répare l'affichage des title (#809)
+    - Entreprise : améliorations dans l'admin (#824)
+
+### Supprimé
+
+- Tech
+    - remove useless mailjet js script (#832)
+
+## 2023.06.30
+
+### Ajouté
+
+- Recherche / Fiche
+    - Ajout du critère chiffre d'affaire à la recherche de partenaire (#810)
+    - filtre sur les prestataires avec (ou sans) groupement (#805)
+    - deux petites modifications (#799)
+    - filtre sur la localisation (#793)
+    - filtre sur les prestataires avec (ou sans) référence client (#791)
+    - Etape 1 de la recherche avancé (#782)
+    - Recherche : Ajout d'un bouton pour réinitialiser le formulaire (#773)
+    - add proprety to display etp count (#778)
+    - Structures : améliorer l'affichage de leur "card" (#775)
+- Dépôt de besoin
+    - formulaire : nouvelle étape pour poser des questions (#786)
+    - fix de l'écrasement des SiaeTenders par l'admin (#804)
+    - Admin : pouvoir filtrer les besoins par slug (#803)
+    - e-mail de rappel aux prestataires qui n'ont pas cliqué (J+4) (#785)
+    - e-mail de rappel aux prestataires qui n'ont pas cliqué (J+3) (#784)
+    - filtre géo sur les prestataires concernés & intéressés (#779)
+    - Fix du bouton sauvegardé en brouillon (#777)
+    - ajout du logo du prestataire (#774)
+    - filtre sur les prestataires concernés & intéressés (#747)
+- API
+    - API Entreprise : récupérer les formes juridiques (brutes) (#806)
+    - add siae_kind to TenderSerializer. ref #695
+- Tech
+    - Maj du theme itou vers la v0.7.1 et du footer (#776)
+    - Maj du theme itou vers la v0.6.8, du header et de tarte au citron (#760)
+- Autres
+    - Nouveau champ Siae.group_count (#792)
+    - Connexion : améliorer le message pour les nouveaux utilisateurs sans mot de passe (#797)
+    - Réseaux : nouveau champ pour stocker un logo (#788)
+    - Nouveau modèle pour stocker les Entreprises (#787)
+    - Labels : récupérer les données de l'API ADEME RGE (#761)
+    - Labels : récupérer les données d'ESUS (#767)
+    - Labels : récupérer les données de RSEi (#768)
+    - Labels : nouveaux champs data & logs (#769)
+    - Pouvoir rattacher des labels aux structures (v2) (#763)
+    - create hubspot deal on admin validation (#766)
+
+
+### Modifié
+
+- Recherche / Fiche
+    - reformuler l’encart "Pas de temps à perdre" (#771)
+- Dépôt de besoin
+    - Fix de sauvegarde deux fois un dépôt de besoin pour mettre à jour le nombre de structures (#808)
+    - ajouter le champ 'source' dans l'e-mail de notification (#757)
+    - bugfix sur la liste des prestataires concernés & intéressés (#781)
+    - Dépôt de besoin : formulaire : répare l'affichage de la localisation sur l'aperçu (#798)
+    - Personnaliser l'expérience après le dépôt de besoin (#764)
+    - Optimisation des requêtes de sauvegarde des dépôts de besoins (#794)
+- Tech
+    - Mise à jour de l'environnement Docker (#807)
+    - Django 4.2 (#801)
+    - Maj du theme itou vers la v0.7.2 (#780)
+    - Mise à jour des dépendances (#802)
+    - update dependencies for security (#790)
+    - Tâches automatisées : améliorer les messages Slack (#758)
+    - fix wagtails indexes with depencies fix (#795)
+    - Fix migration naming. ref #792
+- Autres
+    - Utiliser un seul fichier d'initialisation pour le filtre autocomplete par périmètre (#800)
+    - Pouvoir rattacher une entreprise à un utilisateur (#789)
+    - Structures : quelques petites modifications (#783)
+    - Hotfix: move link in footer. ref #776
+    - Hotfix: fix display & padding after new theme. ref #760
+    - Hotfix: Header button margin. ref #760
+    - Hotfix cases Siae without siret. ref #761
+    - Admin : Fix de l'erreur 500 à la validation des besoins( hubspot api call) (#772)
+    - Mise à jour de la popup d'authentification (#770)
+    - Hotfix: siae_user.full_name in Siae completion reminder task. Other fixes. ref #753
+    - Connexion : rediriger les acheteurs vers le moteur de recherche (#759)
+
+### Supprimé
+
+## 2023.05.26
+
+### Ajouté
+
+- Dépôt de besoin
+    - afficher les questions dans la page détail d'un besoin (#749)
+    - cleanup du formulaire (#743)
+    - nouveau modèle TenderQuestion (#742)
+    - envoyer un e-mail de rappel aux prestataires qui se sont montrés intéressés (#732)
+    - modification du CTA (#734)
+    - nouveau champ pour stocker les données venant de l'API (#730)
+    - add extra data to the tender serializers
+    - make email lower on tender save (#741)
+    - Création d'un utilisateur dans l'appel d'api pour la création du dépôt de besoin (#740)
+- Autres
+    - Structures : envoyer un e-mail de rappel aux prestataires qui ont une fiche incomplète (#753)
+    - Structures : nouveau champ pour logger certaines informations (#752)
+    - Structures : alternative pour filtrer plus simplement par périmètre (#751)
+    - Header : ajout d'un lien vers la recherche (#748)
+    - Nouveau modèle pour stocker les labels (#746)
+    - Admin : améliorer le rendu des CheckboxSelectMultiple (#736)
+    - Ajout de la section "pourquoi faire appel à un prestataire inclusif" dans wagtail (#737)
+
+### Modifié
+
+- Recherche / Fiche
+    - Fiche structure : modification du CTA (#756)
+- Dépôt de besoin
+    - Renommer le bouton d'action de la dernière étape du dépôt de besoin (#754)
+    - Dépôt de besoin : afficher le nom de l'entreprise de l'acheteur (#733)
+- Tech
+    - Refactoring : déplacer les constants géographiques (#739)
+    - Move common stuff to utils folder (#738)
+- Autres
+    - Inscription : rediriger les acheteurs vers le moteur de recherche (#755)
+    - Header : renommer la solution Valoriser en Auditer (#750)
+
+### Supprimé
+
+## 2023.04.28
+
+### Ajouté
+
+- Tableau de bord
+    - Réseaux : page intermédiaire avec le détail du besoin (#718)
+    - Réseaux : page détaillée avec la liste des adhérents notifiés par une opportunité donnée (#710)
+    - Réseaux : page avec la liste des opportunités commerciales de ses adhérents (#709)
+- Dépôt de besoin
+    - envoyer un e-mail de rappel aux prestataires qui n'ont pas cliqué (#723)
+    - afficher dans certains cas l'email de Sofiane dans les coordonnées de contact (#728)
+    - TenderSiae: add email_click_reminder queryset. add tests. ref #723
+- Home
+    - Ajout d'une section "Nos fonctionnalités" sur la page d'accueil (#713)
+- Tech
+    - Pouvoir anonymiser des emails (#724)
+
+### Modifié
+
+- Tableau de bord
+    - améliore l'UX du formulaire de modification de sa structure (#714)
+    - Reseaux: add badge Nouveauté. ref #709
+- Dépôt de besoin
+    - élargir la liste des structures intéressées (#712)
+    - répare l'envoi d'e-mails aux auteurs des besoins incrémentaux (#722)
+    - légère modification de l'objet de l'email envoyé aux structures (#721)
+    - changer le CTA en fonction du type de besoin (#717)
+    - rendre certains champs facultatifs (#729)
+    - afficher un WYSIWYG pour les champs text (#716)
+- Home
+    - maj du bandeau "impact" (#719)
+    - modifier le message du bandeau "impact" (#715)
+- Recherche / Fiche
+    - Mise à jour de l'ui de la page de résultat (#563)
+- API
+    - petite amélioration de la documentation (#731)
+- Tech
+    - Accessibilité : ajout des title sur les breadcrumbs (#727)
+    - Mise à jour des dépendances (#726)
+    - Refactoring : séparer Dashboard & Favorites (#720)
+- Autres
+    - Hotfix task name in Tendersiae contact click reminder #732
+    - Fix parameter name in Tendersiae contact click reminder workflow. Update cron. ref #732
+    - Rename tendersiae_reminders to tendersiae_contacted_reminders for clarification. ref #723
+    - Additional fixes on tendersiae contacted reminder workflow. ref #723
+    - Fix Tender.import_raw_object set in api create. ref #730
+    - Hotfix: mismatch in cron commands. ref #723
+    - Hotfix: remove Newsletter link in footer (modal not working). ref #725
+    - Header : remplacer Newsletter par un lien vers une ressource (#725)
+    - Fix: escape html tags in tender detail. v2. ref #716
+    - Fix: escape html tags in tender detail. ref #716
+    - Fix map z-index. Also fix form autocomplete height. ref #653
+
+### Supprimé
+
+## 2023.03.31
+
+### Ajouté
+
+- Tableau de bord
+    - ajout d'illustrations (#708)
+    - créer une nouvelle section "Favoris" (#703)
+- API
+    - endpoint pour récupérer la liste des montants des besoins (#701)
+    - endpoint pour récupérer la liste des types de besoins (#700)
+    - pouvoir déposer un besoin d'achat via l'API (#695)
+- Tech
+    - Ajout d'un script de génération de automatique changelog (#678)
+- Autres
+    - Fiche : nouveau bouton vers Annuaire Entreprises (#704)
+    - Header : bouger le bouton "Favoris" dans le menu "Mon espace" (#702)
+    - Ajout de la possibilité d'ajouter de la publicité modifiable depuis le backoffice (#690)
+
+### Modifié
+
+- API
+    - indiquer la source et le status lors d'un dépôt de besoin (#699)
+    - déposer un besoin avec une localisation et des secteurs (#697)
+- Home
+    - Migrer la homepage sur wagtail (#696)
+    - Etape 2 de la migration de la page d'accueil vers le cms (#706)
+    - homepage: changer le text du hero
+    - hotfix stats of homepage
+    - hotfix homepage sections and display alert
+- Tech
+    - Flatpages : expliciter les urls pour éviter les conflits avec Wagtail (#711)
+    - Maj du theme itou vers la v0.6.1 (#692)
+- Autres
+    - Réseau : page d'accueil via son tableau de bord (#705)
+    - Correction du poste qui n'était pas enregistré à l'inscription pour les acheteurs (#698)
+
+### Supprimé
 
 ## 2023.03.10
 
 ### Ajouté
 
- - [#edcc4]: Après une recherche 'nettoyage', ajouter les acheteurs à une list (#675)
- - [#1b92e]: Tracking : ajout d'IDs sur certains éléments (#687)
- - [#2fe5e]: Petits adjustements des stats des siaes dans le dépôt de besoin. (#683)
- - [#a74f4]: Stats : nouvelles Custom Dimension Matomo (#676)
- - [#d3262]: Mise à jour supplémentaire de textes (#673)
- - [#94e2b]: Mise à jours de textes à destination des utilisateurs  (#672)
- - [#6d36d]: Ajout d'un bouton pour inciter les utilisateurs à déposer un besoin dans la liste de favoris (#671)
- - [#602da]: Simplification du partage de liste de structures (#669)
- - [#2a8a2]: Formulaire de modification d'un Siae : ajouter un encart pour s'inspirer des structures complètes (#667)
- - [#d1a4b]: Réseaux : afficher les stats à coté des onglets (#665)
- - [#f48b6]: Après une recherche 'traiteur', ajouter les acheteurs à une list (#658)
- - [#6abcb]: Scroll à la liste de recherche suite à une calibration (#656)
- - [#f5f17]: Stats : ajout du formulaire NPS après une mise en relation (#685)
- - Dépôt de besoin :
-    - [#25ded]: Calcul d'impact à la création d'un besoin (#653)
-    - [#380d9]: Dépôt de besoin : envoi d'un e-mail aux auteurs des besoins incrémentaux (#657)
-    - [#bd446]: Dépôt de besoin : fix de l'url généré après une mise en relation (#688)
-    - [#51c6c]: Ajout d'un conseil dans l'étape générale (#655)
-    - [#16df1]: envoyer le mail aux utilisateurs des structures (#674)
-    - [#93595]: renommer la stat siae_interested_list_last_seen_date (#684)
-    - [#b73cb]: séparer les prestataires ciblés & intéressés (#683)
-    - [#e351f]: mettre en vert le bouton "Répondre à cette opportunité" (#682)
-    - [#ab8c2]: cleanup de l'affichage d'un besoin (#681)
-    - [#34685]: renommer l'URL de la liste des structures intéressées (#680)
-    - [#010c6]: Dépôt de besoin : optimisations sur certaines pages / requêtes (#663)
-    - [#31edc]: Dépôt de besoin : logger lorsque le besoin est validé (#660)
+- Tableau de bord
+    - Formulaire de modification d'un Siae : ajouter un encart pour s'inspirer des structures complètes (#667)
+    - Après une recherche 'traiteur', ajouter les acheteurs à une list (#658)
+- Recherche / Fiche
+    - Après une recherche 'nettoyage', ajouter les acheteurs à une list (#675)
+    - Réseaux : afficher les stats à coté des onglets (#665)
+- Dépôt de besoin
+    - Calcul d'impact à la création d'un besoin (#653)
+    - envoi d'un e-mail aux auteurs des besoins incrémentaux (#657)
+    - fix de l'url généré après une mise en relation (#688)
+    - Ajout d'un conseil dans l'étape générale (#655)
+    - envoyer le mail aux utilisateurs des structures (#674)
+    - renommer la stat siae_interested_list_last_seen_date (#684)
+    - séparer les prestataires ciblés & intéressés (#683)
+    - mettre en vert le bouton "Répondre à cette opportunité" (#682)
+    - cleanup de l'affichage d'un besoin (#681)
+    - renommer l'URL de la liste des structures intéressées (#680)
+    - optimisations sur certaines pages / requêtes (#663)
+    - logger lorsque le besoin est validé (#660)
+- Tech
+    - Tracking : ajout d'IDs sur certains éléments (#687)
+- Autres
+    - Petits adjustements des stats des siaes dans le dépôt de besoin. (#683)
+    - Stats : nouvelles Custom Dimension Matomo (#676)
+    - Mise à jour supplémentaire de textes (#673)
+    - Mise à jours de textes à destination des utilisateurs (#672)
+    - Ajout d'un bouton pour inciter les utilisateurs à déposer un besoin dans la liste de favoris (#671)
+    - Simplification du partage de liste de structures (#669)
+    - Scroll à la liste de recherche suite à une calibration (#656)
+    - Stats : ajout du formulaire NPS après une mise en relation (#685)
 
 ### Modifié
 
-- [#09cdf]: Mise à jour des dépendances (#664)
-- [#6e085]: Fix line-break on Tender siae stats. (#683)
-- [#e3601]: TDB: fix Siae stat display again. (#512)
-- [#ba566]: Fix du bug du calcul de l'impact social à la création de dépôt de besoin (gestion du cas 750k-1M) (#679)
-- [#76996]: fix amount required (#670)
-- [#23195]: Fix typo in Tender set_validated. (#660)
-- API:
-    - [#c3233]: ajouter le champ Siae.logo_url (#689)
+- Tableau de bord
+    - fix Siae stat display again. (#512)
+- Dépôt de besoin
+    - Fix line-break on Tender siae stats. (#683)
+    - Fix typo in Tender set_validated. (#660)
+    - fix amount required (#670)
+- API
+    - ajouter le champ Siae.logo_url (#689)
+- Tech
+    - Mise à jour des dépendances (#664)
+- Autres
+    - Fix du bug du calcul de l'impact social à la création de dépôt de besoin (gestion du cas 750k-1M) (#679)
 
 ### Supprimé
 
@@ -70,7 +397,7 @@ Ressources :
 
 - Recherche / Fiche
     - Partage d'une liste de structure par un mailto
-- Espace utilisateur
+- Tableau de bord
     - Page "animer mon réseau" : ordonner les structures par nom ; filtre par région
 - Contenu / Blog
     - Nouvelles pages "Conditions générales d’utilisation" & "Conditions générales d’utilisation de l'API" & "Politique de confidentialité"
@@ -96,7 +423,7 @@ Ressources :
 
 ### Ajouté
 
-- Espace utilisateur
+- Tableau de bord
     - Nouvelle page pour les partenaires liés à un réseau : afficher la liste de leur structures, et les statistiques correspondantes
 - Contenu / Blog
     - Nouvelle page "calculateur d'impact social"
@@ -117,7 +444,7 @@ Ressources :
 
 ### Supprimé
 
-- Espace utilisateur
+- Tableau de bord
     - Favoris : enlever le bouton "Demande groupée"
 
 ## 2023.01.16
@@ -157,7 +484,7 @@ Ressources :
 
 ### Ajouté
 
-- Espace utilisateur
+- Tableau de bord
     - Ajouter le calculateur “calibrer” dans le TDB acheteur
 - Dépôt de besoin
     - différencier le lieu d'intervention des périmètres ciblés
@@ -197,7 +524,7 @@ Ressources :
 
 - Recherche / Fiche
     - Fix la vitesse du téléchargement lorsque l'utilisateur souhaite télécharger toutes les structures
-- Espace utilisateur
+- Tableau de bord
     - Fix l'affichage de "type de prestation" dans le formulaire d'édition de sa structure
 - Dépôt de besoin
     - Formulaire : maj des labels et des message d'aide autour du montant et des moyens de réponse
@@ -225,7 +552,7 @@ Ressources :
 
 - Recherche / Fiche
     - Téléchargement : modale pour demander à l'utilisateur les bénéfices du marché
-- Espace utilisateur
+- Tableau de bord
     - Acheteur : afficher un message incitant à déposer un besoin si l'utilisateur ne l'a pas encore fait
     - Structure : afficher 2 stats pour chacune des structure de l'utilisateur
 - Contenu / Blog
@@ -350,7 +677,7 @@ Ressources :
     - ajout d'une case à cocher pour demander à l'acheteur si il souhaite partager le montant de son besoin
     - demander le nom de l'entreprise aux utilisateurs anonymes
     - Admin : indiquer pour chaque utilisateur le nombre de dépôt de besoins déposés
-- Espace utilisateur
+- Tableau de bord
     - nouveau bandeau pour les utilisateurs "SIAE" qui ne sont pas encore rattachés à une structure
 - Inscription
     - Admin : indiquer la source de la création de compte utilisateur (formulaire d'inscription ou formulaire de dépôt de besoin)
@@ -395,7 +722,7 @@ Ressources :
 
 ### Ajouté
 
-- Espace utilisateur
+- Tableau de bord
     - Ressources : ajout des images
     - Ajout du nombre de collaborateurs par structure
 - Données
@@ -405,7 +732,7 @@ Ressources :
 
 - Dépôt de besoin
     - fix de l'erreur d'envoi de mail des feedback à j+30
-- Espace utilisateur
+- Tableau de bord
     - Ressources : affichage par types d'utilisateurs ; redirection sur chaque catégorie en fonction du type d'utilisateurs
 - Tech
     - Mise à jour de la version de wagtail (petits changement dans l'interface CMS)
@@ -433,7 +760,7 @@ Ressources :
 - Dépôt de besoin
     - mise à jour du style du bouton "Télécharger la liste" sur la page des structures intéressées
     - mettre les notifications de nouveaux besoins dans un canal Slack séparé
-- Espace utilisateur
+- Tableau de bord
     - Tableau de bord : v2 pour les utilisateurs "structures"
     - Tableau de bord : v2 pour les utilisateurs acheteurs/partenaires (sans la recherche)
 - Tech
@@ -454,7 +781,7 @@ Ressources :
     - notifier dans un canal Slack à chaque échec du formulaire (erreur CSRF)
     - indiquer dans l'email aux structures les secteurs d'activité & périmètre qu'elles ont sélectionnés
     - garder une trace des envois effectués aux partenaires
-- Espace utilisateur
+- Tableau de bord
     - barre de complétion affichée sur la carte de sa structure
     - afficher le logo à coté du nom de la structure
 
@@ -474,7 +801,7 @@ Ressources :
 
 ### Supprimé
 
-- Espace utilisateur
+- Tableau de bord
     - retirer la section "Mon profil", la rendre accessible depuis le header
 
 ## 2022.07.04
@@ -541,7 +868,7 @@ Ressources :
     - Fix de l'erreur d'affichage du dépôt de besoin (un utilisateur avec plusieurs SIAES)
 - Recherche / Fiche
     - Fiche structure : bouton "Afficher les coordonnées" en vert
-- Espace utilisateur
+- Tableau de bord
     - Adopter d'une structure : rediriger vers le formulaire de modification de la fiche
 - Contenu / Blog
     - Ajustement de la home page, changer le wording, le style des boutons, l'espacement
@@ -659,7 +986,7 @@ Ressources :
 - Tableau de bord
     - Pouvoir se rattacher à un groupement dans le formulaire de modification de sa structure
     - Afficher l'Enseigne plutôt que la Raison sociale si l'information est remplie (comme sur les pages recherche & fiche)
-- Espace utilisateur
+- Tableau de bord
     - Ajout d'un nouveau champ "Réseau social" pour les structures (formulaire de modification + fiche)
 - Inscription / Connexion
     - Cacher le bouton "Newsletter achat" pour les utilisateurs connectés
@@ -680,7 +1007,7 @@ Ressources :
 
 ### Modifié
 
-- Espace utilisateur
+- Tableau de bord
     - Collaborateurs : pouvoir supprimer un autre utilisateur
     - Pouvoir modifier les champs provenant des API dans le formulaire de modification de sa structure
     - Meilleure gestion des authorizations (et des redirections lorsque l'utilisateur n'est pas connecté)
@@ -695,7 +1022,7 @@ Ressources :
 
 ### Ajouté
 
-- Espace utilisateur
+- Tableau de bord
     - Permettre à un utilisateur de faire une demande de rattachement à une structure déjà inscrite
     - Permettre à l'utilisateur d'une structure de gérer les demandes de rattachements à sa structure
 - Données
@@ -709,7 +1036,7 @@ Ressources :
     - Mise à jour du thème itou (icons css)
 -  Recherche / Fiche
     - Renommé le terme QPV
-- Espace utilisateur
+- Tableau de bord
     - Remonté la section "Mes structures" tout en haut
     - Refonte de la carte "Structure"
     - Séparé la page "Collaborateurs" du formulaire de modification de sa structure
@@ -728,7 +1055,7 @@ Ressources :
 -  Recherche / Fiche
     - Mise en avant de la fonctionnalité d'envoi groupé (encart + modale + vidéo)
     - Proposer une recherche Google sur les fiches sans coordonnées
-- Espace utilisateur
+- Tableau de bord
     - Nouveau typeform pour les demandes groupées
     - Nouvel onglet "Collaborateurs" dans le formulaire de modification de sa structure
 - Données
@@ -757,7 +1084,7 @@ Ressources :
     - Les utilisateurs structures sont automatiquement ajoutés à notre liste contact Mailjet
 -  Recherche / Fiche
     - Ajout du filtre "Territoire spécifique" (QPV & ZRR)
-- Espace utilisateur
+- Tableau de bord
     - Ajout d'un bandeau Aides-territoires pour pour les utilisateurs structures
 - Données
     - Champs & API pour les données ZRR
@@ -771,7 +1098,7 @@ Ressources :
     - Afficher aussi Multisectoriel dans les résultats de recherche (pour les ETTI avec beaucoup de secteurs d'activité)
     - Favoris : refonte des modales, amélioration de la vue liste sur son profil
     - Modale "freemium" : indiquer la notion de gratuité
-- Espace utilisateur
+- Tableau de bord
     - Renommer "Mon espace" en "Tableau de bord"
 - Admin
     - Pouvoir afficher & modifier les structures d'un utilisateur directement sur sa page
@@ -879,7 +1206,7 @@ Ressources :
 - Recherche / Fiche
     - Rendre les numéro de téléphone cliquable (`href="tel:`)
     - Afficher les images des "réalisations" des structures
-- Espace utilisateur
+- Tableau de bord
     - Permettre de rajouter des "réalisations" à sa structure
 - Données
     - Réparé la mise à jour en temps réel des champs `_count` de chaque structure
@@ -899,7 +1226,7 @@ Ressources :
 
 - Pages
     - Ajout de la page /partenaires/
-- Espace utilisateur
+- Tableau de bord
     - Indiquer à l'utilisateur la "complétude" de sa fiche
 - Inscription / Connexion
     - Ajout d'un champ "Votre poste" pour les acheteurs
@@ -918,7 +1245,7 @@ Ressources :
     - Reduction des espacements et nouvelle "card" sur la page de résultats
     - Rendre les ESAT visibles
     - Renommé "Conventionné avec la Direccte" par "Conventionné par la DREETS"
-- Espace utilisateur
+- Tableau de bord
     - Réparé le formulaire de modification de sa structure (lorsqu'un champ readonly était manquant ; sur les références clients ; sur certains départements & régions mal importés)
     - Afficher une petite carte à coté des de l'adresse de la structure (formulaire de modification)
     - Afficher en lecture seule les données d'API Entreprise (formulaire de modification)
