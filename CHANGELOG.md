@@ -10,14 +10,16 @@ Ressources :
 
 - Recherche / Fiche
     - Admin : Affichage des conversations d'une structure (#863)
-    - [Inbound parsing] Ajout du nom et prénom au formulaire de contact des structures (#858)
-    - [Inbound parsing 3] Ajout d'un formulaire de contact (#843)
-    - Inbound Parsing : fix serializer for incoming data #842
-    - [Inbound Parsing 2]Enregistrer les records d'inbound parsing (#842)
+    - Inbound parsing : Ajout du nom et prénom au formulaire de contact des structures (#858)
+    - Inbound parsing : Ajout d'un formulaire de contact (#843)
+    - Inbound parsing : Enregistrer les records d'inbound parsing (#842)
 - Dépôt de besoin
     - envoyer un e-mail à J+30 aux auteurs pour savoir si il y a eu une transaction (#865)
     - CTA sur les fiches structures (#864)
     - Admin : possibilité d'ajuster l’incrémentalité d'un besoin (#859)
+    - stocker les résultats du sondage J+30 (#873)
+- Home
+    - Nouveau champ User.favorite_list_count pour éviter des requêtes (#870)
 - Tech
     - captcha : log error only if the user is not responsible (#868)
     - Initialiser l'Email inbound Parsing (#840)
@@ -25,23 +27,30 @@ Ressources :
 ### Modifié
 
 - Recherche / Fiche
-    - Conversations : améliorer l'affichage admin (#866)
-    - [Inbound Parsing] Mise à jour des infos pratique des structures (#861)
-    - Ajout de MTCaptcha sur le formulaire de contact des structures (#862)
-    - Conversations : utiliser send_mail au lieu de EmailMultiAlternatives (#857)
-    - Conversations : améliorer l'affichage dans l'admin (#856)
-    - fix html display #854
-    - [Inbound Parsing 4] Migrer vers ShortUUIDField (#854)
+    - Inbound parsing : améliorer l'affichage admin (#866)
+    - Inbound parsing : Migrer vers ShortUUIDField (#854)
+    - Inbound parsing : Mise à jour des infos pratique des structures (#861)
+    - Inbound parsing : fix sender for the first message (#878)
+    - Inbound parsing : fix serializer for incoming data. ref #842
+    - Inbound parsing : jout de MTCaptcha sur le formulaire de contact des structures (#862)
+    - Inbound parsing : utiliser send_mail au lieu de EmailMultiAlternatives (#857)
+    - Inbound parsing : améliorer l'affichage dans l'admin (#856)
     - display pretty messages of conversation (#855)
+    - fix html display. ref #854
+    - Fix: Affichage du nombre d'employées en insertion par structure (#877)
 - Dépôt de besoin
     - Partenaires besoins : admin : pouvoir chercher par e-mail (#852)
     - Partenaires besoins : pouvoir indiquer des notes dans l'admin (#851)
+- Home
+    - Footer : répare le lien vers les mentions légales (#872)
 - Tech
-    - fix geo perimeter flacky test (#869)
+    - fix geo perimeter flacky test (#869, #876)
     - Refactoring : séparer Dashboard & Networks (#867)
     - Dépendances : mettre à jour le repo pointant vers raphodn (#860)
     - Admin : répare l'affichage des vues avec fieldset (#823)
     - Affichage des erreurs dans les tests, même en parallèle (#853)
+    - Suppression des requêtes N+1 sur la recherche de partenaires (#874)
+    - Fiche structure : petite optimisation de la queryset (#875)
 
 ### Supprimé
 
@@ -88,7 +97,7 @@ Ressources :
     - définir une date de publication (#829)
     - Dépôt de besoin : envoyer la date de clôture dans certains e-mails (#822)
 - Tech
-    - Hotfix: remove unused perimeters_autocomplete_field.js #800
+    - Hotfix: remove unused perimeters_autocomplete_field.js (#800)
     - try fix tests with dummy cache in test settings (#831)
     - Fix migration file name. ref #811
 - Autres
@@ -130,7 +139,7 @@ Ressources :
     - filtre sur les prestataires concernés & intéressés (#747)
 - API
     - API Entreprise : récupérer les formes juridiques (brutes) (#806)
-    - add siae_kind to TenderSerializer #695
+    - add siae_kind to TenderSerializer. ref #695
 - Tech
     - Maj du theme itou vers la v0.7.1 et du footer (#776)
     - Maj du theme itou vers la v0.6.8, du header et de tarte au citron (#760)
