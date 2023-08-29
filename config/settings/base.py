@@ -252,6 +252,11 @@ BATCH_SIZE_BULK_UPDATE = env.int("BATCH_SIZE_BULK_UPDATE", 200)
 # Authentication
 # ------------------------------------------------------------------------------
 
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "sesame.backends.ModelBackend",
+]
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -266,6 +271,13 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGIN_URL = "auth:login"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
+
+# Django Sesame
+# https://django-sesame.readthedocs.io/en/stable/index.html
+# ------------------------------------------------------------------------------
+
+SESAME_TOKEN_NAME = "token"
 
 
 # Internationalization

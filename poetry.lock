@@ -835,6 +835,23 @@ selenium = ["selenium"]
 test = ["pytest", "pytest-cov", "pytest-django", "selenium"]
 
 [[package]]
+name = "django-sesame"
+version = "3.2.1"
+description = "Frictionless authentication with \"Magic Links\" for your Django project."
+optional = false
+python-versions = ">=3.6.2"
+files = [
+    {file = "django_sesame-3.2.1-py3-none-any.whl", hash = "sha256:b7a8466ba34b6f6910e3b7287d4762fefc27e75809c7ffecd17cb5f2261450a4"},
+    {file = "django_sesame-3.2.1.tar.gz", hash = "sha256:86ccfce17d0520289f62df0ea4ce97d72239f89b87a215d9d09aeeb83e05d4fe"},
+]
+
+[package.dependencies]
+django = ">=3.2"
+
+[package.extras]
+ua = ["ua-parser (>=0.15)"]
+
+[[package]]
 name = "django-storages"
 version = "1.13.2"
 description = "Support for many storage backends in Django"
@@ -2846,4 +2863,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10.4"
-content-hash = "e0b0bcd520e1144c44d6c1715ac6c99dbf4aaaea26a5962f03bff757fb100b50"
+content-hash = "c2524f95489e2409ba2de3108de689c11f6b33abae468e0a68c3a5dbb32945ca"
