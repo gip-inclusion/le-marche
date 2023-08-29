@@ -388,9 +388,7 @@ class TenderListViewTest(TestCase):
         self.assertContains(response, "2 prestataires ciblés")  # tender_3
         self.assertContains(response, "1 prestataire intéressé")  # tender_3
         self.assertNotContains(response, "Demandes reçues")
-        self.assertNotContains(
-            response, '<span class="float-right badge badge-base badge-pill badge-danger">Nouveau</span>'
-        )
+        self.assertNotContains(response, '<span class="badge badge-sm badge-pill badge-important">Nouveau</span>')
 
     def test_other_user_without_tender_should_not_see_any_tenders(self):
         self.client.force_login(self.user_partner)
@@ -414,11 +412,9 @@ class TenderListViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["tenders"]), 1)
         # The badge in header
-        self.assertContains(response, 'Demandes reçues <span class="badge badge-pill badge-danger fs-xs">1</span>')
+        self.assertContains(response, 'Demandes reçues <span class="badge badge-pill badge-important fs-xs">1</span>')
         # The badge in tender list
-        self.assertContains(
-            response, '<span class="float-right badge badge-base badge-pill badge-danger">Nouveau</span>'
-        )
+        self.assertContains(response, '<span class="badge badge-sm badge-pill badge-important">Nouveau</span>')
 
         # Open tender detail page
         detail_url = reverse("tenders:detail", kwargs={"slug": self.tender_3.slug})
@@ -426,10 +422,10 @@ class TenderListViewTest(TestCase):
 
         # The badges have disappeared
         response = self.client.get(url)
-        self.assertNotContains(response, 'Demandes reçues <span class="badge badge-pill badge-danger fs-xs">1</span>')
         self.assertNotContains(
-            response, '<span class="float-right badge badge-base badge-pill badge-danger">Nouveau</span>'
+            response, 'Demandes reçues <span class="badge badge-pill badge-important fs-xs">1</span>'
         )
+        self.assertNotContains(response, '<span class="badge badge-sm badge-pill badge-important">Nouveau</span>')
 
 
 class TenderDetailViewTest(TestCase):

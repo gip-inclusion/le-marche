@@ -3,7 +3,7 @@
 		{% if user.kind == user.KIND_SIAE %}
 			<li>
 				<a href="{% url 'tenders:list' %}" class="btn btn-link">
-					Demandes reçues{% if user.unread_tender_siae_count %} <span class="badge badge-pill badge-danger fs-xs">{{ user.unread_tender_siae_count }}</span>{% endif %}
+					Demandes reçues{% if tender_siae_unread_count %} <span class="badge badge-pill badge-important fs-xs">{{ tender_siae_unread_count }}</span>{% endif %}
 				</a>
 			</li>
 		{% endif %}
@@ -15,7 +15,7 @@
 		</li>
 		<li>
 			<div class="dropdown">
-				<button class="btn btn-outline-primary dropdown-toggle mb-3" type="button"
+				<button class="btn btn-outline-primary dropdown-toggle{% if is_mobile %} mb-3" type="button{% endif %}"
 					id="userDropdownMenuButton{% if is_mobile %}Mobile{% endif %}" data-toggle="dropdown"
 					aria-haspopup="true" aria-expanded="false">
 					Mon espace
