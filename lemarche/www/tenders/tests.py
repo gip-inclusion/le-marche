@@ -800,7 +800,7 @@ class TenderDetailViewTest(TestCase):
         self.assertContains(response, "Lien partagé")
 
 
-class TenderDetailContactClickStatViewTest(TestCase):
+class TenderDetailContactClickStatViewViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.siae = SiaeFactory(name="ZZ ESI")
