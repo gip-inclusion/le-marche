@@ -384,7 +384,7 @@ class User(AbstractUser):
         return qs.exists()
 
     @property
-    def unread_tender_siae_count(self, tender=None):
+    def tender_siae_unread_count(self):
         from lemarche.tenders.models import TenderSiae
 
         qs = TenderSiae.objects.filter(siae__in=self.siaes.all(), tender__validated_at__isnull=False).filter(
