@@ -502,7 +502,7 @@ def send_tenders_author_30_days(tender: Tender, kind="feedback"):
 
         if kind == "transactioned_question":
             template_id = settings.MAILJET_TENDERS_AUTHOR_TRANSACTIONED_QUESTION_30D_TEMPLATE_ID
-            user_sesame_query_string = sesame_get_query_string(tender.author)
+            user_sesame_query_string = sesame_get_query_string(tender.author)  # TODO: sesame scope parameter
             answer_url_with_sesame_token = (
                 reverse("detail-survey-transactioned", args=[tender.slug]) + user_sesame_query_string
             )

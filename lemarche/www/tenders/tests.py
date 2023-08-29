@@ -819,18 +819,18 @@ class TenderDetailContactClickStatViewTest(TestCase):
         self.assertTrue(response.url.startswith("/accounts/login/"))
 
     def test_only_siae_user_can_call_tender_contact_click(self):
-        # authorized
-        for user in [self.siae_user_1, self.siae_user_2]:
-            self.client.force_login(user)
-            url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
-            response = self.client.post(url, data={"detail_contact_click_confirm": "false"})
-            self.assertEqual(response.status_code, 302)
         # forbidden
         for user in [self.user_buyer_1, self.user_buyer_2, self.user_partner, self.user_admin]:
             self.client.force_login(user)
             url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
             response = self.client.post(url, data={"detail_contact_click_confirm": "false"})
             self.assertEqual(response.status_code, 403)
+        # authorized
+        for user in [self.siae_user_1, self.siae_user_2]:
+            self.client.force_login(user)
+            url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
+            response = self.client.post(url, data={"detail_contact_click_confirm": "false"})
+            self.assertEqual(response.status_code, 302)
 
     def test_update_tendersiae_stats_on_tender_contact_click(self):
         siae_2 = SiaeFactory(name="ABC Insertion")
@@ -948,6 +948,13 @@ class TenderSiaeListView(TestCase):
         self.assertTrue(response.url.startswith("/accounts/login/"))
 
     def test_only_tender_author_can_view_tender_1_siae_interested_list(self):
+        # forbidden
+        for user in [self.user_buyer_2, self.user_partner, self.siae_user_1, self.siae_user_2]:
+            self.client.force_login(user)
+            url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 302)
+            self.assertEqual(response.url, "/besoins/")
         # authorized
         self.client.force_login(self.user_buyer_1)
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
@@ -958,13 +965,6 @@ class TenderSiaeListView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["siaes"]), 3)  # detail_contact_click_date
-        # forbidden
-        for user in [self.user_buyer_2, self.user_partner, self.siae_user_1, self.siae_user_2]:
-            self.client.force_login(user)
-            url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug})
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, 302)
-            self.assertEqual(response.url, "/besoins/")
 
     def test_viewing_tender_siae_interested_list_should_update_stats(self):
         self.assertIsNone(self.tender_1.siae_list_last_seen_date)
@@ -1055,15 +1055,6 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_only_tender_author_with_sesame_token_can_call_tender_survey_transactioned(self):
-        # authorized
-        user_sesame_query_string = sesame_get_query_string(self.user_buyer_1)
-        url = (
-            reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
-            + user_sesame_query_string
-        )
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
         # forbidden
         for user in [
             self.siae_user_1,
@@ -1077,6 +1068,22 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
             url = reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
             response = self.client.get(url)
             self.assertEqual(response.status_code, 403)
+        # logout the last user to be sure
+        self.client.logout()
+        # authorized
+        user_sesame_query_string = sesame_get_query_string(self.user_buyer_1)
+        url = (
+            reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
+            + user_sesame_query_string
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
+        # but the user is not logged in !
+        url = reverse("dashboard:home")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/accounts/login/?next=/profil/")
 
     def test_update_tender_stats_on_tender_survey_transactioned_answer_true(self):
         user_sesame_query_string = sesame_get_query_string(self.user_buyer_1)
