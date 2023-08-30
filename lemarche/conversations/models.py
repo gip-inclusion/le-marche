@@ -39,6 +39,9 @@ class Conversation(models.Model):
     kind = models.CharField(
         verbose_name="Type de conversation", default=KIND_SEARCH, choices=KIND_CHOICES, max_length=10, db_index=True
     )
+    sender_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, verbose_name="Utilisateur à l'initiative", on_delete=models.CASCADE, null=True
+    )
     sender_email = models.EmailField(verbose_name="Email de l'initiateur de la conversation", null=True)
     sender_first_name = models.CharField(verbose_name="Prénom", max_length=150)
     sender_last_name = models.CharField(verbose_name="Nom", max_length=150)

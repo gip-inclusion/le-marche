@@ -254,6 +254,7 @@ class SiaeDetailView(FormMixin, DetailView):
         cleaned_data = form.cleaned_data
         conv = Conversation.objects.create(
             title=cleaned_data.get("subject"),
+            sender_user=self.request.user if self.request.user.is_authenticated else None,
             sender_email=cleaned_data.get("email"),
             sender_first_name=cleaned_data.get("first_name"),
             sender_last_name=cleaned_data.get("last_name"),
