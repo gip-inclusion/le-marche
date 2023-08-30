@@ -6,9 +6,18 @@ from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
 def send_first_email_from_conversation(conv: Conversation):
     siae: Siae = conv.siae
     from_email = f"{conv.sender_first_name} {conv.sender_last_name} <{conv.sender_email_buyer_encoded}>"
+
+    siae_name = f"{conv.siae.name}\n" if conv.siae else ""
+    disclaimer = (
+        f"{conv.sender_first_name} {conv.sender_last_name}\n"
+        f"{siae_name}"
+        f"Ce client vous a contacté via le Marché de l'inclusion. "
+        "Pour échanger avec lui, répondez simplement à cet e-mail.\n"
+    )
+
     send_mail_async(
         email_subject=conv.title,
-        email_body=conv.initial_body_message,
+        email_body=conv.initial_body_message + disclaimer,
         recipient_list=whitelist_recipient_list([siae.contact_email]),
         from_email=from_email,
     )
