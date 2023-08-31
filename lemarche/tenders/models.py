@@ -53,6 +53,9 @@ class TenderQuerySet(models.QuerySet):
     def is_live(self):
         return self.validated().filter(deadline_date__gte=datetime.today())
 
+    def has_amount(self):
+        return self.filter(Q(amount__isnull=False) | Q(amount_exact__isnull=False))
+
     def in_perimeters(self, post_code, department, region):
         filters = (
             Q(perimeters__post_codes__contains=[post_code])
