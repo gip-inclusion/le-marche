@@ -24,7 +24,6 @@ from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
 from lemarche.www.auth.tasks import add_to_contact_list
 from lemarche.www.conversations.forms import ContactForm
-from lemarche.www.conversations.tasks import send_first_email_from_conversation
 from lemarche.www.siaes.forms import SiaeDownloadForm, SiaeFavoriteForm, SiaeFilterForm, SiaeShareForm
 
 
@@ -261,7 +260,6 @@ class SiaeDetailView(FormMixin, DetailView):
             siae=siae,
             initial_body_message=cleaned_data.get("body_message"),
         )
-        send_first_email_from_conversation(conv)
         messages.add_message(
             self.request,
             messages.SUCCESS,

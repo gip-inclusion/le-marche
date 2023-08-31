@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("conversations", "0007_conversation_sender_first_name_and_more"),
+        ("conversations", "0008_conversation_sender_user"),
     ]
 
     operations = [
