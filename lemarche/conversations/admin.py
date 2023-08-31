@@ -1,8 +1,10 @@
 from django.contrib import admin
+from django.http import HttpResponseRedirect
 
 from lemarche.conversations.models import Conversation
 from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.fields import pretty_print_readonly_jsonfield_to_table
+from lemarche.www.conversations.tasks import send_first_email_from_conversation
 
 
 class HasAnswerFilter(admin.SimpleListFilter):
@@ -64,6 +66,8 @@ class ConversationAdmin(admin.ModelAdmin):
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
 
+    change_form_template = "conversations/admin_change_form.html"
+
     class Media:
         js = ("js/filter_data_message.js",)
 
@@ -77,6 +81,14 @@ class ConversationAdmin(admin.ModelAdmin):
 
     answer_count.short_description = "Nombre de réponses"
     answer_count.admin_order_field = "answer_count"
+
+    def response_change(self, request, obj: Conversation):
+        if request.POST.get("_validate_conversation"):
+            obj.set_validated()
+            send_first_email_from_conversation(obj)
+            self.message_user(request, "La conversation a été validé et envoyé à la structure")
+            return HttpResponseRedirect(".")
+        return super().response_change(request, obj)
 
     def data_display(self, conversation: Conversation = None):
         if conversation:
