@@ -9,6 +9,9 @@
                     {% if tender.deadline_date_is_outdated %}
                         <span class="badge badge-sm badge-base badge-pill badge-pilotage">Clôturé</span>
                     {% endif %}
+                    {% if not tender.tendersiae_set.first.detail_display_date %}
+                        <span class="badge badge-sm badge-pill badge-important">Nouveau</span>
+                    {% endif %}
                     <span class="float-right badge badge-base badge-pill badge-emploi">
                         {% if tender.kind == "PROJ" %}
                             {{ title_kind_sourcing_siae|default:tender.get_kind_display }}

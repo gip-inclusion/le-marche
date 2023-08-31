@@ -388,6 +388,8 @@ class TenderListViewTest(TestCase):
         self.assertEqual(len(response.context["tenders"]), 3)
         self.assertContains(response, "2 prestataires ciblés")  # tender_3
         self.assertContains(response, "1 prestataire intéressé")  # tender_3
+        self.assertNotContains(response, "Demandes reçues")
+        self.assertNotContains(response, '<span class="badge badge-sm badge-pill badge-important">Nouveau</span>')
 
     def test_other_user_without_tender_should_not_see_any_tenders(self):
         self.client.force_login(self.user_partner)
@@ -403,6 +405,28 @@ class TenderListViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(User.objects.get(id=self.siae_user_1.id).tender_list_last_seen_date)
+
+    def test_siae_user_should_see_unread_badge(self):
+        self.client.force_login(self.siae_user_2)
+        url = reverse("tenders:list")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["tenders"]), 1)
+        # The badge in header
+        self.assertContains(response, 'Demandes reçues <span class="badge badge-pill badge-important fs-xs">1</span>')
+        # The badge in tender list
+        self.assertContains(response, '<span class="badge badge-sm badge-pill badge-important">Nouveau</span>')
+
+        # Open tender detail page
+        detail_url = reverse("tenders:detail", kwargs={"slug": self.tender_3.slug})
+        self.client.get(detail_url)
+
+        # The badges have disappeared
+        response = self.client.get(url)
+        self.assertNotContains(
+            response, 'Demandes reçues <span class="badge badge-pill badge-important fs-xs">1</span>'
+        )
+        self.assertNotContains(response, '<span class="badge badge-sm badge-pill badge-important">Nouveau</span>')
 
 
 class TenderDetailViewTest(TestCase):
