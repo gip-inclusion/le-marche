@@ -116,7 +116,7 @@ class SignupView(SuccessMessageMixin, CreateView):
         if cleaned_data["kind"] == User.KIND_SIAE:
             success_message += mark_safe(
                 "<br />Vous pouvez maintenant ajouter votre structure en cliquant sur "
-                f"<a href=\"{reverse_lazy('dashboard:siae_search_by_siret')}\">Ajouter une structure</a>."
+                f"<a href=\"{reverse_lazy('dashboard_siaes:siae_search_by_siret')}\">Ajouter une structure</a>."
             )
         return success_message
 

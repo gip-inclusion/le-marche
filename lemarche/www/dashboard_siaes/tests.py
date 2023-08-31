@@ -20,7 +20,7 @@ class DashboardSiaeSearchAdoptViewTest(TestCase):
         cls.siae_without_user = SiaeFactory()
 
     def test_anonymous_user_cannot_adopt_siae(self):
-        url = reverse("dashboard:siae_search_by_siret")
+        url = reverse("dashboard_siaes:siae_search_by_siret")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         # self.assertTrue(response.url.startswith("/accounts/login/"))
@@ -29,14 +29,14 @@ class DashboardSiaeSearchAdoptViewTest(TestCase):
         ALLOWED_USERS = [self.user_siae, self.user_admin]
         for user in ALLOWED_USERS:
             self.client.force_login(user)
-            url = reverse("dashboard:siae_search_by_siret")
+            url = reverse("dashboard_siaes:siae_search_by_siret")
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
 
         NOT_ALLOWED_USERS = [self.user_buyer, self.user_partner]
         for user in NOT_ALLOWED_USERS:
             self.client.force_login(user)
-            url = reverse("dashboard:siae_search_by_siret")
+            url = reverse("dashboard_siaes:siae_search_by_siret")
             response = self.client.get(url)
             self.assertEqual(response.status_code, 302)
             self.assertEqual(response.url, "/profil/")
@@ -44,11 +44,11 @@ class DashboardSiaeSearchAdoptViewTest(TestCase):
     def test_only_siaes_without_users_can_be_adopted(self):
         self.client.force_login(self.user_siae)
 
-        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_without_user.slug])
+        url = reverse("dashboard_siaes:siae_search_adopt_confirm", args=[self.siae_without_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_with_user.slug])
+        url = reverse("dashboard_siaes:siae_search_adopt_confirm", args=[self.siae_with_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/profil/")
@@ -58,7 +58,7 @@ class DashboardSiaeSearchAdoptViewTest(TestCase):
         self.assertEqual(self.siae_with_user.users.count(), 1)
         self.assertEqual(self.user_siae.siaes.count(), 1)  # setUpTestData
 
-        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_with_user.slug])
+        url = reverse("dashboard_siaes:siae_search_adopt_confirm", args=[self.siae_with_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/profil/")
@@ -68,12 +68,12 @@ class DashboardSiaeSearchAdoptViewTest(TestCase):
         self.assertEqual(self.siae_without_user.users.count(), 0)
         self.assertEqual(self.user_siae.siaes.count(), 1)  # setUpTestData
 
-        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_without_user.slug])
+        url = reverse("dashboard_siaes:siae_search_adopt_confirm", args=[self.siae_without_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Je confirme")
 
-        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_without_user.slug])
+        url = reverse("dashboard_siaes:siae_search_adopt_confirm", args=[self.siae_without_user.slug])
         response = self.client.post(url)  # data={}
         self.assertEqual(response.status_code, 302)  # redirect to success_url
         self.assertEqual(response.url, f"/profil/prestataires/{self.siae_without_user.slug}/modifier/")
@@ -85,12 +85,12 @@ class DashboardSiaeSearchAdoptViewTest(TestCase):
         self.assertEqual(self.siae_with_user.users.count(), 1)
         self.assertEqual(self.user_siae_2.siaes.count(), 0)  # setUpTestData
 
-        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_with_user.slug])
+        url = reverse("dashboard_siaes:siae_search_adopt_confirm", args=[self.siae_with_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Demander le rattachement")
 
-        url = reverse("dashboard:siae_search_adopt_confirm", args=[self.siae_with_user.slug])
+        url = reverse("dashboard_siaes:siae_search_adopt_confirm", args=[self.siae_with_user.slug])
         response = self.client.post(url)  # data={}
         self.assertEqual(response.status_code, 302)  # redirect to success_url
         self.assertEqual(response.url, "/profil/")
@@ -108,31 +108,31 @@ class DashboardSiaeEditViewTest(TestCase):
         cls.siae_without_user = SiaeFactory()
 
     def test_anonymous_user_cannot_edit_siae(self):
-        url = reverse("dashboard:siae_search_by_siret")
+        url = reverse("dashboard_siaes:siae_search_by_siret")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.startswith("/accounts/login/"))
 
     def test_only_siae_user_can_edit_siae(self):
         self.client.force_login(self.user_siae)
-        url = reverse("dashboard:siae_edit", args=[self.siae_with_user.slug])
+        url = reverse("dashboard_siaes:siae_edit", args=[self.siae_with_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, f"/profil/prestataires/{self.siae_with_user.slug}/modifier/contact/")
 
         self.client.force_login(self.other_user_siae)
-        url = reverse("dashboard:siae_edit", args=[self.siae_with_user.slug])
+        url = reverse("dashboard_siaes:siae_edit", args=[self.siae_with_user.slug])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         # self.assertEqual(response.url, "/profil/")  # redirects first to siae_edit_search
 
     def test_only_siae_user_can_access_siae_edit_tabs(self):
         SIAE_EDIT_URLS = [
-            "dashboard:siae_edit_search",
-            "dashboard:siae_edit_info",
-            "dashboard:siae_edit_offer",
-            "dashboard:siae_edit_links",
-            "dashboard:siae_edit_contact",
+            "dashboard_siaes:siae_edit_search",
+            "dashboard_siaes:siae_edit_info",
+            "dashboard_siaes:siae_edit_offer",
+            "dashboard_siaes:siae_edit_links",
+            "dashboard_siaes:siae_edit_contact",
         ]
         self.client.force_login(self.user_siae)
         for siae_edit_url in SIAE_EDIT_URLS:
@@ -161,7 +161,7 @@ class DashboardSiaeUserViewTest(TestCase):
 
     def test_only_siae_user_can_access_siae_users(self):
         SIAE_USER_URLS = [
-            "dashboard:siae_users",
+            "dashboard_siaes:siae_users",
         ]
         self.client.force_login(self.user_siae)
         for siae_edit_url in SIAE_USER_URLS:
@@ -181,16 +181,16 @@ class DashboardSiaeUserViewTest(TestCase):
 
         self.client.force_login(self.other_user_siae)
         siaeuser = SiaeUser.objects.get(siae=self.siae_with_users, user=self.user_siae)
-        url = reverse("dashboard:siae_user_delete", args=[self.siae_with_users.slug, siaeuser.id])
+        url = reverse("dashboard_siaes:siae_user_delete", args=[self.siae_with_users.slug, siaeuser.id])
         response = self.client.delete(url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/profil/")
 
         self.client.force_login(self.user_siae)
         siaeuser = SiaeUser.objects.get(siae=self.siae_with_users, user=self.user_siae_2)
-        url = reverse("dashboard:siae_user_delete", args=[self.siae_with_users.slug, siaeuser.id])
+        url = reverse("dashboard_siaes:siae_user_delete", args=[self.siae_with_users.slug, siaeuser.id])
         response = self.client.delete(url)
-        self.assertEqual(response.status_code, 302)  # 200? normal because redirects to dashboard:siae_users
-        self.assertEqual(response.url, reverse("dashboard:siae_users", args=[self.siae_with_users.slug]))
+        self.assertEqual(response.status_code, 302)  # 200? normal because redirects to dashboard_siaes:siae_users
+        self.assertEqual(response.url, reverse("dashboard_siaes:siae_users", args=[self.siae_with_users.slug]))
         self.assertEqual(self.siae_with_users.users.count(), 1)
         # TODO: user should not be able to delete itself

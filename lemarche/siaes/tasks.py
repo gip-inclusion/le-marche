@@ -47,7 +47,7 @@ def send_completion_reminder_email_to_siae(siae):
                 "SIAE_USER_FIRST_NAME": siae_user.first_name,
                 "SIAE_NAME": siae.name_display,
                 "SIAE_URL": get_share_url_object(siae),
-                "SIAE_EDIT_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard:siae_edit_contact', args=[siae.slug])}",  # noqa
+                "SIAE_EDIT_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard_siaes:siae_edit_contact', args=[siae.slug])}",  # noqa
             }
 
             api_mailjet.send_transactional_email_with_template(

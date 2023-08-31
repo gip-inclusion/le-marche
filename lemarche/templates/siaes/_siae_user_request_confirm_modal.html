@@ -7,7 +7,7 @@
                     <i class="ri-close-line"></i>
                 </button>
             </div>
-            <form method="POST" action="{% url 'dashboard:siae_user_request_confirm' 'siae-slug-to-replace' 'siae-user-request-id-to-replace' %}">
+            <form method="POST" action="{% url 'dashboard_siaes:siae_user_request_confirm' 'siae-slug-to-replace' 'siae-user-request-id-to-replace' %}">
                 {% csrf_token %}
                 <div class="modal-body home-content-body">
                     <p>

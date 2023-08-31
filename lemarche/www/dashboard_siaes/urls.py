@@ -28,7 +28,7 @@ urlpatterns = [
             [
                 path(
                     "",
-                    RedirectView.as_view(pattern_name="dashboard:siae_edit_contact", permanent=False),
+                    RedirectView.as_view(pattern_name="dashboard_siaes:siae_edit_contact", permanent=False),
                     name="siae_edit",
                 ),
                 path("contact/", SiaeEditContactView.as_view(), name="siae_edit_contact"),
@@ -42,17 +42,17 @@ urlpatterns = [
     # Edit Siae (old urls: redirect)
     path(
         "<str:slug>/modifier/info-contact/",
-        RedirectView.as_view(pattern_name="dashboard:siae_edit_search", permanent=True),
+        RedirectView.as_view(pattern_name="dashboard_siaes:siae_edit_search", permanent=True),
         name="siae_edit_info_contact_old",
     ),
     path(
         "<str:slug>/modifier/prestations/",
-        RedirectView.as_view(pattern_name="dashboard:siae_edit_search", permanent=True),
+        RedirectView.as_view(pattern_name="dashboard_siaes:siae_edit_search", permanent=True),
         name="siae_edit_info_presta_old",
     ),
     path(
         "<str:slug>/modifier/autre/",
-        RedirectView.as_view(pattern_name="dashboard:siae_edit_search", permanent=True),
+        RedirectView.as_view(pattern_name="dashboard_siaes:siae_edit_search", permanent=True),
         name="siae_edit_other_old",
     ),
     # Siae Users (& Requests)
@@ -79,12 +79,12 @@ urlpatterns = [
     # Redirects
     path(
         "<str:slug>/",
-        RedirectView.as_view(pattern_name="dashboard:siae_users", permanent=False),
+        RedirectView.as_view(pattern_name="dashboard_siaes:siae_users", permanent=False),
         name="siae",
     ),
     path(
         "",
-        RedirectView.as_view(pattern_name="dashboard:siae_search_by_siret", permanent=False),
+        RedirectView.as_view(pattern_name="dashboard_siaes:siae_search_by_siret", permanent=False),
         name="siae_search",
     ),
 ]

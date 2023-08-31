@@ -12,7 +12,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:siae_search_by_siret' %}">Rechercher ma structure</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard_siaes:siae_search_by_siret' %}">Rechercher ma structure</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Vérifier ma structure</li>
                     </ol>
                 </nav>
@@ -92,7 +92,7 @@
                     {% csrf_token %}
                     <div class="row justify-content-end">
                         <div class="col-12 col-md-auto pr-lg-2">
-                            <a href="{% url 'dashboard:siae_search_by_siret' %}" class="btn btn-outline-primary btn-block">
+                            <a href="{% url 'dashboard_siaes:siae_search_by_siret' %}" class="btn btn-outline-primary btn-block">
                                 Non, refaire une recherche
                             </a>
                         </div>

@@ -88,13 +88,13 @@ class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, SuccessMessa
             send_siae_user_request_email_to_assignee(siae_user_request)
             success_message = (
                 f"La demande a été envoyée à {self.object.users.first().full_name}.<br />"
-                f"<i>Cet utilisateur ne fait plus partie de la structure ? <a href=\"{reverse_lazy('dashboard:siae_search_by_siret')}?siret={self.object.siret}\">Contactez le support</a></i>"  # noqa
+                f"<i>Cet utilisateur ne fait plus partie de la structure ? <a href=\"{reverse_lazy('dashboard_siaes:siae_search_by_siret')}?siret={self.object.siret}\">Contactez le support</a></i>"  # noqa
             )
             messages.add_message(self.request, messages.SUCCESS, success_message)
             return HttpResponseRedirect(reverse_lazy("dashboard:home"))
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit", args=[self.kwargs.get("slug")])
+        return reverse_lazy("dashboard_siaes:siae_edit", args=[self.kwargs.get("slug")])
 
 
 class SiaeUsersView(SiaeMemberRequiredMixin, DetailView):
@@ -120,7 +120,7 @@ class SiaeEditSearchView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateVie
     success_message = "Vos modifications ont bien été prises en compte."
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_search", args=[self.kwargs.get("slug")])
+        return reverse_lazy("dashboard_siaes:siae_edit_search", args=[self.kwargs.get("slug")])
 
 
 class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -171,7 +171,7 @@ class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView)
         return self.render_to_response(self.get_context_data())
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_info", args=[self.kwargs.get("slug")])
+        return reverse_lazy("dashboard_siaes:siae_edit_info", args=[self.kwargs.get("slug")])
 
 
 class SiaeEditOfferView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -234,7 +234,7 @@ class SiaeEditOfferView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView
         return self.render_to_response(self.get_context_data())
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_offer", args=[self.kwargs.get("slug")])
+        return reverse_lazy("dashboard_siaes:siae_edit_offer", args=[self.kwargs.get("slug")])
 
 
 class SiaeEditLinksView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -245,7 +245,7 @@ class SiaeEditLinksView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView
     success_message = "Vos modifications ont bien été prises en compte."
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_links", args=[self.kwargs.get("slug")])
+        return reverse_lazy("dashboard_siaes:siae_edit_links", args=[self.kwargs.get("slug")])
 
 
 class SiaeEditContactView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -256,7 +256,7 @@ class SiaeEditContactView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateVi
     success_message = "Vos modifications ont bien été prises en compte."
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_edit_contact", args=[self.kwargs.get("slug")])
+        return reverse_lazy("dashboard_siaes:siae_edit_contact", args=[self.kwargs.get("slug")])
 
 
 class SiaeUserRequestConfirmView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -265,7 +265,7 @@ class SiaeUserRequestConfirmView(SiaeMemberRequiredMixin, SuccessMessageMixin, U
     context_object_name = "siaeuserrequest"
     queryset = SiaeUserRequest.objects.all()
     success_message = "L'utilisateur a été rattaché à votre structure."
-    # success_url = reverse_lazy("dashboard:siae_users")
+    # success_url = reverse_lazy("dashboard_siaes:siae_users")
 
     def get_object(self):
         return get_object_or_404(SiaeUserRequest, id=self.kwargs.get("siaeuserrequest_id"))
@@ -285,7 +285,7 @@ class SiaeUserRequestConfirmView(SiaeMemberRequiredMixin, SuccessMessageMixin, U
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_users", args=[self.kwargs.get("slug")])
+        return reverse_lazy("dashboard_siaes:siae_users", args=[self.kwargs.get("slug")])
 
 
 class SiaeUserRequestCancelView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -294,7 +294,7 @@ class SiaeUserRequestCancelView(SiaeMemberRequiredMixin, SuccessMessageMixin, Up
     context_object_name = "siaeuserrequest"
     queryset = SiaeUserRequest.objects.all()
     success_message = "L'utilisateur sera informé de votre refus."
-    # success_url = reverse_lazy("dashboard:siae_users")
+    # success_url = reverse_lazy("dashboard_siaes:siae_users")
 
     def get_object(self):
         return get_object_or_404(SiaeUserRequest, id=self.kwargs.get("siaeuserrequest_id"))
@@ -312,21 +312,21 @@ class SiaeUserRequestCancelView(SiaeMemberRequiredMixin, SuccessMessageMixin, Up
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_users", args=[self.kwargs.get("slug")])
+        return reverse_lazy("dashboard_siaes:siae_users", args=[self.kwargs.get("slug")])
 
 
 class SiaeUserDeleteView(SiaeMemberRequiredMixin, SuccessMessageMixin, DeleteView):
     template_name = "siaes/_siae_user_delete_modal.html"
     model = SiaeUser
     # success_message = "L'utilisateur a été supprimé de votre structure."
-    # success_url = reverse_lazy("dashboard:siae_users")
+    # success_url = reverse_lazy("dashboard_siaes:siae_users")
 
     def get_object(self):
         siae = Siae.objects.get(slug=self.kwargs.get("slug"))
         return get_object_or_404(SiaeUser, siae=siae, id=self.kwargs.get("siaeuser_id"))
 
     def get_success_url(self):
-        return reverse_lazy("dashboard:siae_users", args=[self.kwargs.get("slug")])
+        return reverse_lazy("dashboard_siaes:siae_users", args=[self.kwargs.get("slug")])
 
     def get_success_message(self, cleaned_data):
         return mark_safe(
