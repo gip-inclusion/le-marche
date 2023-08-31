@@ -7,15 +7,13 @@ def send_first_email_from_conversation(conv: Conversation):
     siae: Siae = conv.siae
     from_email = f"{conv.sender_first_name} {conv.sender_last_name} <{conv.sender_email_buyer_encoded}>"
 
-    sender_siae_name = ""
-    if conv.sender_user:
-        sender_siae = conv.sender_user.siaes.first()
-        if sender_siae:
-            sender_siae_name = f"{sender_siae.name}\n"
+    sender_company_name = ""
+    if conv.sender_user and conv.sender_user.company_name:
+        sender_company_name = f"{conv.sender_user.company_name}\n"
 
     disclaimer = (
         f"\n\n{conv.sender_first_name} {conv.sender_last_name}\n"
-        f"{sender_siae_name}"
+        f"{sender_company_name}"
         f"Ce client vous a contacté via le Marché de l'inclusion. "
         "Pour échanger avec lui, répondez simplement à cet e-mail.\n"
     )
