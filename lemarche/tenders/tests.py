@@ -174,6 +174,15 @@ class TenderModelQuerysetTest(TestCase):
         # TenderFactory(deadline_date=None)  # cannot be None
         self.assertEqual(Tender.objects.is_live().count(), 1)
 
+    def test_has_amount_queryset(self):
+        TenderFactory()
+        TenderFactory(amount=tender_constants.AMOUNT_RANGE_0_1)
+        TenderFactory(amount_exact=1000)
+        TenderFactory(amount=tender_constants.AMOUNT_RANGE_0_1, amount_exact=1000)
+        self.assertEqual(Tender.objects.count(), 4)
+        self.assertEqual(Tender.objects.has_amount().count(), 3)
+        self.assertEqual(Tender.objects.filter(amount__isnull=True, amount_exact__isnull=True).count(), 1)
+
     def test_in_sectors_queryset(self):
         sector_1 = SectorFactory(name="Un secteur")
         sector_2 = SectorFactory(name="Un deuxieme secteur")

@@ -42,6 +42,22 @@ class SourceFilter(MultiChoice):
     BUTTON_LABEL = "Appliquer"
 
 
+class HasAmountFilter(admin.SimpleListFilter):
+    title = "Montant renseigné ?"
+    parameter_name = "has_amount"
+
+    def lookups(self, request, model_admin):
+        return (("Yes", "Oui"), ("No", "Non"))
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "Yes":
+            return queryset.has_amount()
+        elif value == "No":
+            return queryset.filter(amount__isnull=True, amount_exact__isnull=True)
+        return queryset
+
+
 class AmountFilter(MultiChoice):
     FILTER_LABEL = Tender._meta.get_field("amount").verbose_name
     BUTTON_LABEL = "Appliquer"
@@ -128,6 +144,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "status",
         ("scale_marche_useless", ScaleMarcheUselessFilter),
         ("source", SourceFilter),
+        HasAmountFilter,
         ("amount", AmountFilter),
         "deadline_date",
         "start_working_date",
