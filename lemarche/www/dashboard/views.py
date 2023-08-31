@@ -337,7 +337,7 @@ class SiaeEditContactView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateVi
         return reverse_lazy("dashboard:siae_edit_contact", args=[self.kwargs.get("slug")])
 
 
-class SiaeUserRequestConfirm(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeUserRequestConfirmView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeUserRequestForm
     template_name = "siaes/_siae_user_request_confirm_modal.html"
     context_object_name = "siaeuserrequest"
@@ -366,7 +366,7 @@ class SiaeUserRequestConfirm(SiaeMemberRequiredMixin, SuccessMessageMixin, Updat
         return reverse_lazy("dashboard:siae_users", args=[self.kwargs.get("slug")])
 
 
-class SiaeUserRequestCancel(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
+class SiaeUserRequestCancelView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeUserRequestForm
     template_name = "siaes/_siae_user_request_cancel_modal.html"
     context_object_name = "siaeuserrequest"
@@ -393,7 +393,7 @@ class SiaeUserRequestCancel(SiaeMemberRequiredMixin, SuccessMessageMixin, Update
         return reverse_lazy("dashboard:siae_users", args=[self.kwargs.get("slug")])
 
 
-class SiaeUserDelete(SiaeMemberRequiredMixin, SuccessMessageMixin, DeleteView):
+class SiaeUserDeleteView(SiaeMemberRequiredMixin, SuccessMessageMixin, DeleteView):
     template_name = "siaes/_siae_user_delete_modal.html"
     model = SiaeUser
     # success_message = "L'utilisateur a été supprimé de votre structure."

@@ -11,9 +11,9 @@ from lemarche.www.dashboard.views import (
     SiaeEditSearchView,
     SiaeSearchAdoptConfirmView,
     SiaeSearchBySiretView,
-    SiaeUserDelete,
-    SiaeUserRequestCancel,
-    SiaeUserRequestConfirm,
+    SiaeUserDeleteView,
+    SiaeUserRequestCancelView,
+    SiaeUserRequestConfirmView,
     SiaeUsersView,
 )
 
@@ -72,17 +72,17 @@ urlpatterns = [
     ),
     path(
         "prestataires/<str:slug>/collaborateurs/<str:siaeuserrequest_id>/accepter",
-        SiaeUserRequestConfirm.as_view(),
+        SiaeUserRequestConfirmView.as_view(),
         name="siae_user_request_confirm",
     ),
     path(
         "prestataires/<str:slug>/collaborateurs/<str:siaeuserrequest_id>/refuser",
-        SiaeUserRequestCancel.as_view(),
+        SiaeUserRequestCancelView.as_view(),
         name="siae_user_request_cancel",
     ),
     path(
         "prestataires/<str:slug>/collaborateurs/<str:siaeuser_id>/supprimer",
-        SiaeUserDelete.as_view(),
+        SiaeUserDeleteView.as_view(),
         name="siae_user_delete",
     ),
     # Redirects

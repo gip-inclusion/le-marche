@@ -336,7 +336,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
         return context
 
 
-class TenderDetailContactClickStat(LoginRequiredMixin, UpdateView):
+class TenderDetailContactClickStatView(LoginRequiredMixin, UpdateView):
     """
     Endpoint to track contact_clicks by interested Siaes
     We might also send a notification to the buyer
