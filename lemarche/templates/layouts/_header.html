@@ -6,87 +6,35 @@
 {% endif %}
 
 <header role="banner" id="header">
-    <section class="s-header">
-        <div class="s-header__container container">
-            <div class="s-header__row row">
-                <div class="s-header__col s-header__col--logo-ministere col col-md-auto d-flex align-items-center pr-0">
-                    <a href="{% url 'wagtail_serve' '' %}" class="s-header__logo-ministere"><img src="{% static_theme_images 'logo-republique-francaise.svg' %}" alt="Rébublique Française"></a>
-                </div>
-                <div class="s-header__col s-header__col--logo-service col-auto d-flex align-items-center px-0">
-                    <a href="{% url 'wagtail_serve' '' %}"><img src="{% static_theme_images 'logo-marche-inclusion.svg' %}" alt="Le marché de l'inclusion"></a>
-                </div>
-                <div class="s-header__col s-header__col--nav col d-none d-xl-inline-flex d-xl-flex align-items-center justify-content-end">
-                    <nav role="navigation" id="nav-primary" aria-label="Navigation principale">
-                        <ul>
-                            {% if user.is_authenticated %}
-                            <li>
-                                <a href="{% url 'tenders:create' %}" id="header-demande" class="btn btn-primary btn-ico">
-                                    <i class="ri-mail-send-line ri-lg"></i>
-                                    <span>Publier un besoin d'achat</span>
-                                </a>
-                            </li>
-                            <li>
-                                <div class="dropdown">
-                                    <button class="btn btn-outline-primary dropdown-toggle" id="userDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Mon espace
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="userDropdownMenuButton">
-                                        <a href="{% url 'dashboard:home' %}" class="dropdown-item">
-                                            <i class="ri-dashboard-line"></i>
-                                            Tableau de bord
-                                        </a>
-                                        <a href="{% url 'dashboard_favorites:list' %}" id="header-favorites" class="dropdown-item">
-                                            <i class="ri-star-line"></i>
-                                            Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_list_count }}</span>
-                                        </a>
-                                        <a href="{% url 'dashboard:profile_edit' %}" class="dropdown-item">
-                                            <i class="ri-user-line"></i>
-                                            Mon profil
-                                        </a>
-                                        <div class="dropdown-divider"></div>
-                                        <a href="{% url 'auth:logout' %}" class="dropdown-item">
-                                            <i class="ri-logout-box-line"></i>
-                                            Déconnexion
-                                        </a>
-                                    </div>
-                                </div>
-                            </li>
-                            {% else %}
-                            <li>
-                                <a href="{% url 'tenders:create' %}" id="header-demande" class="btn btn-link btn-ico">
-                                    <i class="ri-mail-send-line ri-lg"></i>
-                                    <span>Publier un besoin d'achat</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'auth:signup' %}" id="h_signup" class="btn btn-outline-primary btn-ico">
-                                    <i class="ri-user-add-line ri-lg"></i>
-                                    <span>S'inscrire</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'auth:login' %}" id="h_login" class="btn btn-primary btn-ico">
-                                    <i class="ri-login-box-line ri-lg"></i>
-                                    <span>Se connecter</span>
-                                </a>
-                            </li>
-                            {% endif %}
-                        </ul>
-                    </nav>
-                </div>
-                <div class="s-header__col s-header__col--burger col d-flex align-items-center justify-content-end d-xl-none" data-toggle="burger">
-                    <i class="ri-menu-line" id="open" role="button" tabindex="0" aria-label="Ouverture du menu de navigation principale pour mobile"></i>
-                    <i class="ri-close-line" id="close" role="button" tabindex="0" aria-label="Fermeture du menu de navigation principale pour mobile"></i>
-                </div>
-                <div id="burgerNav">
-                    <nav role="navigation" aria-label="Navigation principale pour mobile">
-                        {% include 'layouts/_header_nav_primary_items.html' with is_mobile=True %}
-                        {% include 'layouts/_header_nav_secondary_items.html' with is_mobile=True %}
-                    </nav>
+    {% with tender_siae_unread_count=user.tender_siae_unread_count %}
+        <section class="s-header">
+            <div class="s-header__container container">
+                <div class="s-header__row row">
+                    <div class="s-header__col s-header__col--logo-ministere col col-md-auto d-flex align-items-center pr-0">
+                        <a href="{% url 'wagtail_serve' '' %}" class="s-header__logo-ministere"><img src="{% static_theme_images 'logo-republique-francaise.svg' %}" alt="Rébublique Française"></a>
+                    </div>
+                    <div class="s-header__col s-header__col--logo-service col-auto d-flex align-items-center px-0">
+                        <a href="{% url 'wagtail_serve' '' %}"><img src="{% static_theme_images 'logo-marche-inclusion.svg' %}" alt="Le marché de l'inclusion"></a>
+                    </div>
+                    <div class="s-header__col s-header__col--nav col d-none d-xl-inline-flex d-xl-flex align-items-center justify-content-end">
+                        <nav role="navigation" id="nav-primary" aria-label="Navigation principale">
+                            {% include 'layouts/_header_nav_primary_items.html' %}
+                        </nav>
+                    </div>
+                    <div class="s-header__col s-header__col--burger col d-flex align-items-center justify-content-end d-xl-none" data-toggle="burger">
+                        <i class="ri-menu-line" id="open" role="button" tabindex="0" aria-label="Ouverture du menu de navigation principale pour mobile"></i>
+                        <i class="ri-close-line" id="close" role="button" tabindex="0" aria-label="Fermeture du menu de navigation principale pour mobile"></i>
+                    </div>
+                    <div id="burgerNav">
+                        <nav role="navigation" aria-label="Navigation principale pour mobile">
+                            {% include 'layouts/_header_nav_primary_items.html' with is_mobile=True %}
+                            {% include 'layouts/_header_nav_secondary_items.html' with is_mobile=True %}
+                        </nav>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    {% endwith %}
     <section class="s-postheader d-none d-xl-block">
         <div class="s-postheader__container container">
             <div class="s-postheader__row row">
