@@ -18,6 +18,7 @@ from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils.data import get_choice
 from lemarche.utils.mixins import (
+    LoginRequiredOrSiaeIdParamMixin,
     SesameTenderAuthorRequiredMixin,
     TenderAuthorOrAdminRequiredIfNotValidatedMixin,
     TenderAuthorOrAdminRequiredMixin,
@@ -288,10 +289,10 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
         """
         self.object = self.get_object()
         user = self.request.user
-        siae_id = request.GET.get("siae_id", None)
+        self.siae_id = request.GET.get("siae_id", None)
         # update 'email_link_click_date'
-        if siae_id:
-            TenderSiae.objects.filter(tender=self.object, siae_id=siae_id, email_link_click_date=None).update(
+        if self.siae_id:
+            TenderSiae.objects.filter(tender=self.object, siae_id=self.siae_id, email_link_click_date=None).update(
                 email_link_click_date=timezone.now(), updated_at=timezone.now()
             )
         # update 'detail_display_date'
@@ -323,6 +324,11 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
             if user_kind == User.KIND_SIAE and self.object.kind == tender_constants.KIND_PROJECT
             else self.object.get_kind_display()
         )
+        if self.siae_id:
+            context["siae_id"] = self.siae_id
+            context["siae_has_detail_contact_click_date"] = TenderSiae.objects.filter(
+                tender=self.object, siae_id=int(self.siae_id), detail_contact_click_date__isnull=False
+            ).exists()
         if user.is_authenticated:
             if self.object.author == user:
                 context["is_draft"] = self.object.status == tender_constants.STATUS_DRAFT
@@ -341,7 +347,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
         return context
 
 
-class TenderDetailContactClickStatView(LoginRequiredMixin, UpdateView):
+class TenderDetailContactClickStatView(LoginRequiredOrSiaeIdParamMixin, UpdateView):
     """
     Endpoint to track contact_clicks by interested Siaes
     We might also send a notification to the buyer
@@ -357,12 +363,19 @@ class TenderDetailContactClickStatView(LoginRequiredMixin, UpdateView):
         self.object = self.get_object()
         user = self.request.user
         detail_contact_click_confirm = self.request.POST.get("detail_contact_click_confirm", False) == "true"
-        if user.kind == User.KIND_SIAE:
+        siae_id = request.GET.get("siae_id", None)
+        print("TenderDetailContactClickStatView post", siae_id)
+        if (user.is_authenticated and user.kind == User.KIND_SIAE) or siae_id:
             if detail_contact_click_confirm:
                 # update detail_contact_click_date
-                TenderSiae.objects.filter(
-                    tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=True
-                ).update(detail_contact_click_date=timezone.now(), updated_at=timezone.now())
+                if user.is_authenticated:
+                    TenderSiae.objects.filter(
+                        tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=True
+                    ).update(detail_contact_click_date=timezone.now(), updated_at=timezone.now())
+                else:
+                    TenderSiae.objects.filter(
+                        tender=self.object, siae_id=int(siae_id), detail_contact_click_date__isnull=True
+                    ).update(detail_contact_click_date=timezone.now(), updated_at=timezone.now())
                 # notify the tender author
                 send_siae_interested_email_to_author(self.object)
                 messages.add_message(
@@ -373,14 +386,16 @@ class TenderDetailContactClickStatView(LoginRequiredMixin, UpdateView):
                     self.request, messages.WARNING, self.get_success_message(detail_contact_click_confirm)
                 )
             # redirect
-            return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm))
+            return HttpResponseRedirect(self.get_success_url(detail_contact_click_confirm, siae_id))
         else:
             return HttpResponseForbidden()
 
-    def get_success_url(self, detail_contact_click_confirm):
+    def get_success_url(self, detail_contact_click_confirm, siae_id=None):
         success_url = reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
         if detail_contact_click_confirm:
             success_url += "?nps=true"
+            if siae_id:
+                success_url += "&siae_id=true"
         return success_url
 
     def get_success_message(self, detail_contact_click_confirm):

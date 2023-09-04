@@ -7,7 +7,7 @@
                     <i class="ri-close-line"></i>
                 </button>
             </div>
-            <form method="POST" action="{% url 'tenders:detail-contact-click-stat' tender.slug %}">
+            <form method="POST" action="{% url 'tenders:detail-contact-click-stat' tender.slug %}?siae_id=siae-id-params-to-replace">
                 {% csrf_token %}
                 <div class="modal-body home-content-body">
                     <p>
@@ -22,3 +22,25 @@
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    const MODAL_ID = '#detail_contact_click_confirm_modal';
+    $(MODAL_ID).on('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        var button = $(event.relatedTarget);
+
+        // Extract info from data-* attributes
+        var siaeIdParams = button.data('siae-id');
+
+        // Update the modal's content
+        if (siaeIdParams) {
+            var modal = document.querySelector(MODAL_ID);
+            modal.querySelectorAll('#auth-link').forEach(link => {
+                var linkUrl = link.getAttribute('href');
+                link.setAttribute('href', linkUrl.replace('siae-id-params-to-replace', siaeIdParams));
+            });
+        }
+    });
+});
+</script>
