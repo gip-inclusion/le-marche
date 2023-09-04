@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from lemarche.siaes.models import SiaeUserRequest
-from lemarche.www.dashboard.tasks import (
+from lemarche.www.dashboard_siaes.tasks import (
     send_siae_user_request_reminder_3_days_emails,
     send_siae_user_request_reminder_8_days_emails,
 )

@@ -21,7 +21,7 @@ def send_siae_user_request_email_to_assignee(siae_user_request):
             "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
             "INITIATOR_FULL_NAME": siae_user_request.initiator.full_name,
             "SIAE_NAME": siae_user_request.siae.name_display,
-            "SIAE_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard:siae_users', args=[siae_user_request.siae.slug])}",  # noqa
+            "SIAE_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard_siaes:siae_users', args=[siae_user_request.siae.slug])}",  # noqa
         }
 
         api_mailjet.send_transactional_email_with_template(
@@ -107,7 +107,7 @@ def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
             "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
             "INITIATOR_FULL_NAME": siae_user_request.initiator.full_name,
             "SIAE_NAME": siae_user_request.siae.name_display,
-            "SIAE_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard:siae_users', args=[siae_user_request.siae.slug])}",  # noqa
+            "SIAE_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard_siaes:siae_users', args=[siae_user_request.siae.slug])}",  # noqa
         }
 
         api_mailjet.send_transactional_email_with_template(
@@ -184,7 +184,7 @@ def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
             "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
             "INITIATOR_FULL_NAME": siae_user_request.initiator.full_name,
             "SIAE_NAME": siae_user_request.siae.name_display,
-            "SIAE_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard:siae_users', args=[siae_user_request.siae.slug])}",  # noqa
+            "SIAE_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard_siaes:siae_users', args=[siae_user_request.siae.slug])}",  # noqa
         }
 
         api_mailjet.send_transactional_email_with_template(
