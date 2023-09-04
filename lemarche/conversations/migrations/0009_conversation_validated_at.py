@@ -3,7 +3,7 @@
 from django.db import migrations, models
 
 
-def populate_validated_at_for_already_sended_conversations(apps, schema_editor):
+def populate_validated_at_for_already_sent_conversations(apps, schema_editor):
     Conversation = apps.get_model("conversations", "Conversation")
 
     for conversation in Conversation.objects.filter(validated_at__isnull=True):
@@ -22,5 +22,5 @@ class Migration(migrations.Migration):
             name="validated_at",
             field=models.DateTimeField(blank=True, null=True, verbose_name="Date de validation"),
         ),
-        migrations.RunPython(populate_validated_at_for_already_sended_conversations),
+        migrations.RunPython(populate_validated_at_for_already_sent_conversations),
     ]
