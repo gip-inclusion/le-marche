@@ -25,10 +25,28 @@ class HasAnswerFilter(admin.SimpleListFilter):
         return queryset
 
 
+class IsValidatedFilter(admin.SimpleListFilter):
+    """Custom admin filter to target conversations who is validated."""
+
+    title = "Validée ?"
+    parameter_name = "is_validate"
+
+    def lookups(self, request, model_admin):
+        return (("Yes", "Oui"), ("No", "Non"))
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "Yes":
+            return queryset.filter(validated_at__isnull=False)
+        elif value == "No":
+            return queryset.filter(validated_at__isnull=True)
+        return queryset
+
+
 @admin.register(Conversation, site=admin_site)
 class ConversationAdmin(admin.ModelAdmin):
-    list_display = ["id", "uuid", "title", "kind", "answer_count", "created_at"]
-    list_filter = ["kind", HasAnswerFilter]
+    list_display = ["id", "uuid", "is_validate", "title", "kind", "answer_count", "created_at"]
+    list_filter = ["kind", HasAnswerFilter, IsValidatedFilter]
     search_fields = ["id", "uuid", "sender_email"]
     search_help_text = "Cherche sur les champs : ID, UUID, Initiateur (E-mail)"
 
@@ -75,6 +93,12 @@ class ConversationAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         qs = qs.with_answer_count()
         return qs
+
+    def is_validate(self, conversation: Conversation):
+        return conversation.validated_at is not None
+
+    is_validate.boolean = True
+    is_validate.short_description = "Validé"
 
     def answer_count(self, conversation):
         return getattr(conversation, "answer_count", 0)
