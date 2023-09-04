@@ -34,13 +34,11 @@ document.addEventListener("DOMContentLoaded", function() {
         var siaeIdParams = button.data('siae-id');
 
         // Update the modal's content
-        if (siaeIdParams) {
-            var modal = document.querySelector(MODAL_ID);
-            modal.querySelectorAll('#auth-link').forEach(link => {
-                var linkUrl = link.getAttribute('href');
-                link.setAttribute('href', linkUrl.replace('siae-id-params-to-replace', siaeIdParams));
-            });
-        }
+        var modal = document.querySelector(MODAL_ID);
+        modal.querySelectorAll('#auth-link').forEach(link => {
+            var linkUrl = link.getAttribute('href');
+            link.setAttribute('href', linkUrl.replace('siae-id-params-to-replace', siaeIdParams));
+        });
     });
 });
 </script>
