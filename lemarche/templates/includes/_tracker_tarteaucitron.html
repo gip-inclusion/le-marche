@@ -35,7 +35,9 @@ tarteaucitron.init({
     "forceLanguage": "fr",
 });
 
-// Google fonts
+// Google Tag Manager
+tarteaucitron.user.googletagmanagerId = "{{ GOOGLE_TAG_MANAGER_ID }}";
+(tarteaucitron.job = tarteaucitron.job || []).push('googletagmanager');
 
 // Hotjar
 tarteaucitron.user.hotjarId = {{ HOTJAR_ID }};
