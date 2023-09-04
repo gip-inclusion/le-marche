@@ -60,6 +60,7 @@ class Conversation(models.Model):
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+    validated_at = models.DateTimeField(verbose_name="Date de validation", blank=True, null=True)
 
     objects = models.Manager.from_queryset(ConversationQuerySet)()
 
@@ -104,3 +105,11 @@ class Conversation(models.Model):
             [UUID, KIND_SENDER]
         """
         return address_mail.split("@")[0].split("_")
+
+    @property
+    def is_validated(self) -> bool:
+        return self.validated_at is not None
+
+    def set_validated(self):
+        self.validated_at = timezone.now()
+        self.save()
