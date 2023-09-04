@@ -59,7 +59,7 @@ def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
         user_kind = meta.get("user_type") if meta.get("user_type", "") else ""
         siae_id = meta.get("siae_id", None)
         if siae_id:
-            siae_id = int(siae_id[0]) if (type(siae_id) == list) else int(siae_id)
+            siae_id = int(siae_id[0]) if (type(siae_id) is list) else int(siae_id)
         siae_kind = meta.get("siae_kind") if meta.get("siae_kind", "") else ""
         siae_contact_email = meta.get("siae_contact_email") if meta.get("siae_contact_email", "") else ""
 
@@ -131,7 +131,7 @@ class TrackerMiddleware:
                     else None
                 )
 
-            elif page == reverse("dashboard:siae_search_by_siret"):  # adopted search action
+            elif page == reverse("dashboard_siaes:siae_search_by_siret"):  # adopted search action
                 action = "adopt_search"
 
             elif page in (reverse("pages:impact_calculator"),):

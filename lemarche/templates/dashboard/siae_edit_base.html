@@ -41,16 +41,16 @@
                         </p>
                         <ol class="mb-0">
                             {% if not siae.sector_count %}
-                                <li><a href="{% url 'dashboard:siae_edit_search' siae.slug %}">Ajoutez un ou plusieurs secteurs d'activité</a></li>
+                                <li><a href="{% url 'dashboard_siaes:siae_edit_search' siae.slug %}">Ajoutez un ou plusieurs secteurs d'activité</a></li>
                             {% endif %}
                             {% if not siae.description and not siae.logo_url %}
-                                <li><a href="{% url 'dashboard:siae_edit_info' siae.slug %}">Ajoutez une description & votre logo</a></li>
+                                <li><a href="{% url 'dashboard_siaes:siae_edit_info' siae.slug %}">Ajoutez une description & votre logo</a></li>
                             {% endif %}
                             {% if not siae.offer_count and not siae.client_reference_count %}
-                                <li><a href="{% url 'dashboard:siae_edit_offer' siae.slug %}">Détaillez vos offres & vos références clients</a></li>
+                                <li><a href="{% url 'dashboard_siaes:siae_edit_offer' siae.slug %}">Détaillez vos offres & vos références clients</a></li>
                             {% endif %}
                             {% if siae.is_missing_contact %}
-                                <li><a href="{% url 'dashboard:siae_edit_contact' siae.slug %}">Complétez vos informations de contact</a></li>
+                                <li><a href="{% url 'dashboard_siaes:siae_edit_contact' siae.slug %}">Complétez vos informations de contact</a></li>
                             {% endif %}
                         </ol>
                     </div>
@@ -70,27 +70,27 @@
             <div class="s-tabs-01__col col-12">
                 <ul class="s-tabs-01__nav nav nav-tabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <a href="{% url 'dashboard:siae_edit_contact' siae.slug %}#editTabs" id="siae-edit-contact-tab" class="nav-link {% if 'siae_edit_contact' in request.resolver_match.url_name %}active{% endif %}" aria-selected="{% if 'siae_edit_contact' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
+                        <a href="{% url 'dashboard_siaes:siae_edit_contact' siae.slug %}#editTabs" id="siae-edit-contact-tab" class="nav-link {% if 'siae_edit_contact' in request.resolver_match.url_name %}active{% endif %}" aria-selected="{% if 'siae_edit_contact' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
                             Votre contact commercial
                         </a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a href="{% url 'dashboard:siae_edit_search' siae.slug %}#editTabs" id="siae-edit-search-tab" class="nav-link {% if 'siae_edit_search' in request.resolver_match.url_name %}active{% endif %}" aria-selected="{% if 'siae_edit_search' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
+                        <a href="{% url 'dashboard_siaes:siae_edit_search' siae.slug %}#editTabs" id="siae-edit-search-tab" class="nav-link {% if 'siae_edit_search' in request.resolver_match.url_name %}active{% endif %}" aria-selected="{% if 'siae_edit_search' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
                             Votre référencement
                         </a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a href="{% url 'dashboard:siae_edit_info' siae.slug %}#editTabs" id="siae-edit-info-tab" class="nav-link {% if 'siae_edit_info' in request.resolver_match.url_name %}active{% endif %}" aria-selected="{% if 'siae_edit_info' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
+                        <a href="{% url 'dashboard_siaes:siae_edit_info' siae.slug %}#editTabs" id="siae-edit-info-tab" class="nav-link {% if 'siae_edit_info' in request.resolver_match.url_name %}active{% endif %}" aria-selected="{% if 'siae_edit_info' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
                             Votre structure
                         </a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a href="{% url 'dashboard:siae_edit_offer' siae.slug %}#editTabs" id="siae-edit-offer-tab" class="nav-link {% if 'siae_edit_offer' in request.resolver_match.url_name %}active{% endif %}" aria-selected="{% if 'siae_edit_offer' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
+                        <a href="{% url 'dashboard_siaes:siae_edit_offer' siae.slug %}#editTabs" id="siae-edit-offer-tab" class="nav-link {% if 'siae_edit_offer' in request.resolver_match.url_name %}active{% endif %}" aria-selected="{% if 'siae_edit_offer' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
                             Vos offres commerciales
                         </a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a href="{% url 'dashboard:siae_edit_links' siae.slug %}#editTabs" id="siae-edit-links-tab" class="nav-link {% if 'siae_edit_links' in request.resolver_match.url_name %}active{% endif %}" aria-selected="{% if 'siae_edit_links' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
+                        <a href="{% url 'dashboard_siaes:siae_edit_links' siae.slug %}#editTabs" id="siae-edit-links-tab" class="nav-link {% if 'siae_edit_links' in request.resolver_match.url_name %}active{% endif %}" aria-selected="{% if 'siae_edit_links' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
                             Groupements
                         </a>
                     </li>
