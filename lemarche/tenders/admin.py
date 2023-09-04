@@ -167,6 +167,9 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     readonly_fields = [field.name for field in Tender._meta.fields if field.name.endswith("_last_seen_date")] + [
         # slug
         # status
+        "survey_transactioned_send_date",
+        "survey_transactioned_answer",
+        "survey_transactioned_answer_date",
         "validated_at",
         "question_count_with_link",
         "siae_count_with_link",
@@ -285,6 +288,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             "Transaction ?",
             {
                 "fields": (
+                    "survey_transactioned_send_date",
                     "survey_transactioned_answer",
                     "survey_transactioned_answer_date",
                     "siae_transactioned",
