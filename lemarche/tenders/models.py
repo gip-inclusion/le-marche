@@ -335,6 +335,9 @@ class Tender(models.Model):
         blank=True,
         default=list,
     )
+    survey_transactioned_send_date = models.DateTimeField(
+        verbose_name="Sondage transaction J+30 : date d'envoi de l'e-mail", blank=True, null=True
+    )
     survey_transactioned_answer = models.BooleanField(
         verbose_name="Sondage transaction J+30 : réponse", blank=True, null=True
     )
