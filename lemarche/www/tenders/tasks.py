@@ -508,6 +508,8 @@ def send_tenders_author_30_days(tender: Tender, kind="feedback"):
             )
             variables["ANSWER_YES_URL"] = answer_url_with_sesame_token + "&answer=true"
             variables["ANSWER_NO_URL"] = answer_url_with_sesame_token + "&answer=false"
+            # add timestamp
+            tender.survey_transactioned_send_date = timezone.now()
         else:
             template_id = settings.MAILJET_TENDERS_AUTHOR_FEEDBACK_30D_TEMPLATE_ID
 
