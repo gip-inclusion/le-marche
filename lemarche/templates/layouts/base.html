@@ -51,7 +51,7 @@
     {% block extra_head %}{% endblock %}
 </head>
 
-<body id="top" class="{% block body_class %}{% endblock %}">
+<body id="top" class="{% block body_class %}{% endblock %}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     <!-- allow a user to go to the main content of the page -->
     <noscript>
         <div class="alert alert-danger" role="status">
