@@ -26,8 +26,9 @@ def check_captcha_token(form_data):
                 return True
             else:
                 # Log event only if the user is not responsible, see https://www.mtcaptcha.com/dev-guide
-                if response.json()["fail_codes"] not in ["token-expired", "invalid-token"]:
-                    logger.exception("Token failed : %s", response.json()["fail_codes"])
+                fail_codes = response.json()["fail_codes"]
+                if not fail_codes or fail_codes[0] not in ["token-expired", "invalid-token"]:
+                    logger.exception("Token failed : %s", fail_codes)
         else:
             logger.exception("Bad status code when calling Mtcaptcha API-> check-token: %s", response)
     except Exception as e:
