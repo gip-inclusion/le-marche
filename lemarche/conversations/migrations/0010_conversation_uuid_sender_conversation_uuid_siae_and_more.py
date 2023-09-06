@@ -18,7 +18,7 @@ def set_uuids(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("conversations", "0007_conversation_sender_first_name_and_more"),
+        ("conversations", "0009_conversation_validated_at"),
     ]
 
     operations = [

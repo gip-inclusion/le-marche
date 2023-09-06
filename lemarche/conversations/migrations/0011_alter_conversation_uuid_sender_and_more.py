@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("conversations", "0008_conversation_uuid_sender_conversation_uuid_siae_and_more"),
+        ("conversations", "0010_conversation_uuid_sender_conversation_uuid_siae_and_more"),
     ]
 
     operations = [
