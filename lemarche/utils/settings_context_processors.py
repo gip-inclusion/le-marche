@@ -12,6 +12,7 @@ def expose_settings(request):
         "BASE_TEMPLATE": base_template,
         "BITOUBI_ENV": settings.BITOUBI_ENV,
         "BITOUBI_ENV_COLOR": settings.BITOUBI_ENV_COLOR,
+        "GOOGLE_TAG_MANAGER_ID": settings.GOOGLE_TAG_MANAGER_ID,
         "HOTJAR_ID": settings.HOTJAR_ID,
         "MATOMO_SITE_ID": settings.MATOMO_SITE_ID,
         "MATOMO_HOST": settings.MATOMO_HOST,
