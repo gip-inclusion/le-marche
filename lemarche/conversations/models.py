@@ -16,6 +16,19 @@ class ConversationQuerySet(models.QuerySet):
     def with_answer_count(self):
         return self.annotate(answer_count=Func("data", function="jsonb_array_length", output_field=IntegerField()))
 
+    def get_conv_from_uuid(self, conv_uuid: str, version=1):
+        """get conv form
+        Args:
+            conv_uuid (str): _description_
+
+        Returns:
+            [VERSION, UUID, KIND_SENDER]
+        """
+        if version == 0:
+            return self.get(uuid=conv_uuid)
+        else:
+            return self.get(models.Q(uuid_sender=conv_uuid) | models.Q(uuid_siae=conv_uuid))
+
 
 class Conversation(models.Model):
     KIND_SEARCH = "SEARCH"
@@ -89,7 +102,7 @@ class Conversation(models.Model):
         """
         if not self.uuid_siae:
             siae_slug_full_name = slugify(self.siae.contact_full_name).replace("-", "_")
-            self.uuid_new = f"{siae_slug_full_name}_{str(uuid4())[:4]}"
+            self.uuid_siae = f"{siae_slug_full_name}_{str(uuid4())[:4]}"
 
     def save(self, *args, **kwargs):
         """
@@ -111,6 +124,13 @@ class Conversation(models.Model):
             else:
                 raise e
 
+    def get_user_kind(self, conv_uuid):
+        # method only available in version >= 1
+        if conv_uuid == self.uuid_sender:
+            return self.USER_KIND_SENDER_TO_BUYER
+        elif conv_uuid == self.uuid_siae:
+            return self.USER_KIND_SENDER_TO_SIAE
+
     @property
     def sender_email_buyer(self):
         return self.sender_email
@@ -121,11 +141,19 @@ class Conversation(models.Model):
 
     @property
     def sender_email_buyer_encoded(self):
-        return f"{self.uuid}_{self.USER_KIND_SENDER_TO_BUYER}@{settings.INBOUND_PARSING_DOMAIN_EMAIL}"
+        if self.version == 0:
+            # for legacy
+            return f"{self.uuid}_{self.USER_KIND_SENDER_TO_BUYER}@{settings.INBOUND_PARSING_DOMAIN_EMAIL}"
+        if self.version == 1:
+            return f"{self.uuid_sender}@{settings.INBOUND_PARSING_DOMAIN_EMAIL}"
 
     @property
     def sender_email_siae_encoded(self):
-        return f"{self.uuid}_{self.USER_KIND_SENDER_TO_SIAE}@{settings.INBOUND_PARSING_DOMAIN_EMAIL}"
+        if self.version == 0:
+            # for legacy
+            return f"{self.uuid}_{self.USER_KIND_SENDER_TO_SIAE}@{settings.INBOUND_PARSING_DOMAIN_EMAIL}"
+        if self.version == 1:
+            return f"{self.uuid_siae}@{settings.INBOUND_PARSING_DOMAIN_EMAIL}"
 
     @property
     def sender_email_siae(self):
@@ -141,15 +169,22 @@ class Conversation(models.Model):
         return len(self.data) + 1
 
     @staticmethod
-    def get_email_info_from_address(address_mail: str) -> list:
+    def get_email_info_from_address(address_mail_label: str) -> list:
         """Extract info from address mail managed by this class
         Args:
-            address_mail (str): _description_
+            address_mail_label (str): _description_
 
         Returns:
-            [UUID, KIND_SENDER]
+            [VERSION, UUID, KIND_SENDER]
         """
-        return address_mail.split("@")[0].split("_")
+        email_infos = address_mail_label.split("_")
+        # version is 0 email is like "uuid_kind"
+        # version is 1 email is like "full_name_can_be_long_short_uuid"
+        version = 0 if len(email_infos) == 2 else 1
+        # in version 1 kind sender is not usefull
+        uuid = email_infos[0] if version == 0 else email_infos
+        kind_sender = email_infos[1] if version == 0 else None
+        return version, uuid, kind_sender
 
     @property
     def is_validated(self) -> bool:
