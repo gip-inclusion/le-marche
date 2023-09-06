@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db.models import Prefetch
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -32,6 +32,7 @@ from lemarche.www.tenders.forms import (
     TenderCreateStepSurveyForm,
 )
 from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
+    notify_admin_siae_wants_cocontracting,
     notify_admin_tender_created,
     send_siae_interested_email_to_author,
 )
@@ -401,6 +402,27 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
         if detail_contact_click_confirm:
             return "<strong>Bravo !</strong><br />Vos coordonnées, ainsi que le lien vers votre fiche commerciale ont été transmis à l'acheteur. Assurez-vous d'avoir une fiche commerciale bien renseignée."  # noqa
         return f"<strong>{self.object.cta_card_button_text}</strong><br />Pour {self.object.cta_card_button_text.lower()}, vous devez accepter d'être mis en relation avec l'acheteur."  # noqa
+
+
+class TenderDetailCocontractingClickView(LoginRequiredMixin, DetailView):
+    """
+    Endpoint to handle cocontracting button click
+    """
+
+    template_name = "tenders/_detail_cocontracting_click_confirm.html"
+    model = Tender
+
+    def get_object(self):
+        return get_object_or_404(Tender, slug=self.kwargs.get("slug"))
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        user = self.request.user
+
+        if settings.BITOUBI_ENV == "prod":
+            notify_admin_siae_wants_cocontracting(self.object, user.siaes.first())
+
+        return self.get(request)
 
 
 class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
