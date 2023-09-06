@@ -11,12 +11,12 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterField(
             model_name="conversation",
-            name="uuid_sender",
+            name="sender_encoded",
             field=models.CharField(db_index=True, max_length=255, unique=True, verbose_name="Identifiant initiateur"),
         ),
         migrations.AlterField(
             model_name="conversation",
-            name="uuid_siae",
+            name="siae_encoded",
             field=models.CharField(db_index=True, max_length=255, unique=True, verbose_name="Identifiant structure"),
         ),
     ]

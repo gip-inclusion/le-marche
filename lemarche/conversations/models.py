@@ -27,7 +27,7 @@ class ConversationQuerySet(models.QuerySet):
         if version == 0:
             return self.get(uuid=conv_uuid)
         else:
-            return self.get(models.Q(uuid_sender=conv_uuid) | models.Q(uuid_siae=conv_uuid))
+            return self.get(models.Q(sender_encoded=conv_uuid) | models.Q(siae_encoded=conv_uuid))
 
 
 class Conversation(models.Model):
@@ -50,8 +50,10 @@ class Conversation(models.Model):
         auto_created=True,
     )
 
-    uuid_sender = models.CharField(verbose_name="Identifiant initiateur", unique=True, db_index=True, max_length=255)
-    uuid_siae = models.CharField(verbose_name="Identifiant structure", unique=True, db_index=True, max_length=255)
+    sender_encoded = models.CharField(
+        verbose_name="Identifiant initiateur", unique=True, db_index=True, max_length=255
+    )
+    siae_encoded = models.CharField(verbose_name="Identifiant structure", unique=True, db_index=True, max_length=255)
     version = models.PositiveIntegerField(verbose_name="Version", default=1)
 
     kind = models.CharField(
@@ -88,47 +90,47 @@ class Conversation(models.Model):
     def __str__(self):
         return self.title
 
-    def set_uuid_sender(self):
+    def set_sender_encoded(self):
         """
         The UUID of sender.
         """
-        if not self.uuid_sender:
+        if not self.sender_encoded:
             slug_sender_full_name = slugify(self.sender_full_name).replace("-", "_")
-            self.uuid_sender = f"{slug_sender_full_name}_{str(uuid4())[:4]}"
+            self.sender_encoded = f"{slug_sender_full_name}_{str(uuid4())[:4]}"
 
-    def set_uuid_siae(self):
+    def set_siae_encoded(self):
         """
         The UUID of siae.
         """
-        if not self.uuid_siae:
+        if not self.siae_encoded:
             siae_slug_full_name = slugify(self.siae.contact_full_name).replace("-", "_")
-            self.uuid_siae = f"{siae_slug_full_name}_{str(uuid4())[:4]}"
+            self.siae_encoded = f"{siae_slug_full_name}_{str(uuid4())[:4]}"
 
     def save(self, *args, **kwargs):
         """
         - generate the uuid field
         """
         try:
-            self.set_uuid_sender()
-            self.set_uuid_siae()
+            self.set_sender_encoded()
+            self.set_siae_encoded()
             super().save(*args, **kwargs)
         except IntegrityError as e:
             # check that it's a new UUID conflict
-            # Full message expected: duplicate key value violates unique constraint "conversations_conversation_uuid_sender_0f0b821f_uniq" DETAIL:  Key (uuid_sender)=(...) already exists.  # noqa
-            if "conversations_conversation_uuid_sender" in str(e):
-                self.set_uuid_sender()
+            # Full message expected: duplicate key value violates unique constraint "conversations_conversation_sender_encoded_0f0b821f_uniq" DETAIL:  Key (sender_encoded)=(...) already exists.  # noqa
+            if "conversations_conversation_sender_encoded" in str(e):
+                self.set_sender_encoded()
                 super().save(*args, **kwargs)
-            if "conversations_conversation_uuid_siae" in str(e):
-                self.set_uuid_siae()
+            if "conversations_conversation_siae_encoded" in str(e):
+                self.set_siae_encoded()
                 super().save(*args, **kwargs)
             else:
                 raise e
 
     def get_user_kind(self, conv_uuid):
         # method only available in version >= 1
-        if conv_uuid == self.uuid_sender:
+        if conv_uuid == self.sender_encoded:
             return self.USER_KIND_SENDER_TO_BUYER
-        elif conv_uuid == self.uuid_siae:
+        elif conv_uuid == self.siae_encoded:
             return self.USER_KIND_SENDER_TO_SIAE
 
     @property
@@ -145,7 +147,7 @@ class Conversation(models.Model):
             # for legacy
             return f"{self.uuid}_{self.USER_KIND_SENDER_TO_BUYER}@{settings.INBOUND_PARSING_DOMAIN_EMAIL}"
         if self.version == 1:
-            return f"{self.uuid_sender}@{settings.INBOUND_PARSING_DOMAIN_EMAIL}"
+            return f"{self.sender_encoded}@{settings.INBOUND_PARSING_DOMAIN_EMAIL}"
 
     @property
     def sender_email_siae_encoded(self):
@@ -153,7 +155,7 @@ class Conversation(models.Model):
             # for legacy
             return f"{self.uuid}_{self.USER_KIND_SENDER_TO_SIAE}@{settings.INBOUND_PARSING_DOMAIN_EMAIL}"
         if self.version == 1:
-            return f"{self.uuid_siae}@{settings.INBOUND_PARSING_DOMAIN_EMAIL}"
+            return f"{self.siae_encoded}@{settings.INBOUND_PARSING_DOMAIN_EMAIL}"
 
     @property
     def sender_email_siae(self):
@@ -182,7 +184,7 @@ class Conversation(models.Model):
         # version is 1 email is like "full_name_can_be_long_short_uuid"
         version = 0 if len(email_infos) == 2 else 1
         # in version 1 kind sender is not usefull
-        uuid = email_infos[0] if version == 0 else email_infos
+        uuid = email_infos[0] if version == 0 else "_".join(email_infos)
         kind_sender = email_infos[1] if version == 0 else None
         return version, uuid, kind_sender
 

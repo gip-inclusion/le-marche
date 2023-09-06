@@ -9,10 +9,10 @@ def set_uuids(apps, schema_editor):
     Conversation = apps.get_model("conversations", "Conversation")
     for conversation in Conversation.objects.all():
         siae = conversation.siae
-        conversation.uuid_sender = (
+        conversation.sender_encoded = (
             f"{conversation.sender_first_name}_{conversation.sender_last_name}_{random.randint(100, 10000)}"
         )
-        conversation.uuid_siae = f"{siae.contact_first_name}_{siae.contact_last_name}_{random.randint(100, 10000)}"
+        conversation.siae_encoded = f"{siae.contact_first_name}_{siae.contact_last_name}_{random.randint(100, 10000)}"
         conversation.save()
 
 
@@ -24,13 +24,13 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name="conversation",
-            name="uuid_sender",
+            name="sender_encoded",
             field=models.CharField(db_index=True, default="", max_length=255, verbose_name="Identifiant initiateur"),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name="conversation",
-            name="uuid_siae",
+            name="siae_encoded",
             field=models.CharField(db_index=True, default="", max_length=255, verbose_name="Identifiant structure"),
             preserve_default=False,
         ),

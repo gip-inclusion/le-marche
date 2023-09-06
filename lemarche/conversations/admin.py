@@ -45,7 +45,7 @@ class IsValidatedFilter(admin.SimpleListFilter):
 
 @admin.register(Conversation, site=admin_site)
 class ConversationAdmin(admin.ModelAdmin):
-    list_display = ["id", "uuid", "uuid_sender", "is_validate", "title", "kind", "answer_count", "created_at"]
+    list_display = ["id", "uuid", "sender_encoded", "is_validate", "title", "kind", "answer_count", "created_at"]
     list_filter = ["kind", HasAnswerFilter, IsValidatedFilter]
     search_fields = ["id", "uuid", "sender_email"]
     search_help_text = "Cherche sur les champs : ID, UUID, Initiateur (E-mail)"
@@ -54,7 +54,7 @@ class ConversationAdmin(admin.ModelAdmin):
     readonly_fields = [
         "id",
         "uuid",
-        "uuid_sender",
+        "sender_encoded",
         "title",
         "version",
         "siae",
@@ -70,7 +70,7 @@ class ConversationAdmin(admin.ModelAdmin):
     fieldsets = (
         (
             None,
-            {"fields": ("uuid", "uuid_sender", "title", "initial_body_message")},
+            {"fields": ("uuid", "sender_encoded", "title", "initial_body_message")},
         ),
         ("Interlocuteurs", {"fields": ("sender_first_name", "sender_last_name", "sender_email", "siae")}),
         (
