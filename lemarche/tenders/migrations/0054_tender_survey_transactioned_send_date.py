@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="tender",
             name="survey_transactioned_send_date",
-            field=models.BooleanField(
+            field=models.DateTimeField(
                 blank=True, null=True, verbose_name="Sondage transaction J+30 : date d'envoi de l'e-mail"
             ),
         ),
