@@ -364,7 +364,6 @@ class TenderDetailContactClickStatView(LoginRequiredOrSiaeIdParamMixin, UpdateVi
         user = self.request.user
         detail_contact_click_confirm = self.request.POST.get("detail_contact_click_confirm", False) == "true"
         siae_id = request.GET.get("siae_id", None)
-        print("TenderDetailContactClickStatView post", siae_id)
         if (user.is_authenticated and user.kind == User.KIND_SIAE) or siae_id:
             if detail_contact_click_confirm:
                 # update detail_contact_click_date
@@ -395,7 +394,7 @@ class TenderDetailContactClickStatView(LoginRequiredOrSiaeIdParamMixin, UpdateVi
         if detail_contact_click_confirm:
             success_url += "?nps=true"
             if siae_id:
-                success_url += "&siae_id=true"
+                success_url += f"&siae_id={siae_id}"
         return success_url
 
     def get_success_message(self, detail_contact_click_confirm):
