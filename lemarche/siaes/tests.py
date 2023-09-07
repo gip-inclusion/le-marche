@@ -136,13 +136,14 @@ class SiaeModelTest(TestCase):
         siae_full_2.save()  # to update stats
         self.assertFalse(siae_full_2.is_missing_content)
 
-    def test_kind_is_esat_or_ea_property(self):
+    def test_kind_is_esat_or_ea_or_eatt_property(self):
         siae_esat = SiaeFactory(kind=siae_constants.KIND_ESAT)
-        self.assertTrue(siae_esat.kind_is_esat_or_ea)
         siae_ea = SiaeFactory(kind=siae_constants.KIND_EA)
-        self.assertTrue(siae_ea.kind_is_esat_or_ea)
+        siae_eatt = SiaeFactory(kind=siae_constants.KIND_EATT)
         siae_ei = SiaeFactory(kind=siae_constants.KIND_EI)
-        self.assertFalse(siae_ei.kind_is_esat_or_ea)
+        for siae in [siae_esat, siae_ea, siae_eatt]:
+            self.assertTrue(siae.kind_is_esat_or_ea_or_eatt)
+        self.assertFalse(siae_ei.kind_is_esat_or_ea_or_eatt)
 
 
 class SiaeModelSaveTest(TestCase):

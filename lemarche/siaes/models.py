@@ -998,8 +998,8 @@ class Siae(models.Model):
             return "l'ASP"
 
     @property
-    def kind_is_esat_or_ea(self):
-        return self.kind in [siae_constants.KIND_ESAT, siae_constants.KIND_EA]
+    def kind_is_esat_or_ea_or_eatt(self):
+        return self.kind in [siae_constants.KIND_ESAT, siae_constants.KIND_EA, siae_constants.KIND_EATT]
 
     @property
     def completion_percent(self):
