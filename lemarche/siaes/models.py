@@ -924,6 +924,12 @@ class Siae(models.Model):
         return "non disponible"
 
     @property
+    def etp_count_label_display(self):
+        if self.kind_is_esat_or_ea_or_eatt:
+            return "Travailleurs en situation de handicap"
+        return "Salariés en insertion"
+
+    @property
     def etp_count_display(self):
         if self.employees_insertion_count:
             return self.employees_insertion_count
