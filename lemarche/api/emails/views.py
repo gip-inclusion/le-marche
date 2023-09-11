@@ -17,13 +17,14 @@ class InboundParsingEmailView(APIView):
         serializer = EmailsSerializer(data=request.data)
         if serializer.is_valid():
             inboundEmail = serializer.validated_data.get("items")[0]
-            address_mail = inboundEmail["To"][0]["Address"]
+            address_mail_label = inboundEmail["To"][0]["Address"].split("@")[0]
             # get conversation object
-            conv_uuid, user_kind = Conversation.get_email_info_from_address(address_mail)
-            conv: Conversation = Conversation.objects.get(uuid=conv_uuid)
+            version, conv_uuid, user_kind = Conversation.get_email_info_from_address(address_mail_label)
+            conv: Conversation = Conversation.objects.get_conv_from_uuid(conv_uuid=conv_uuid, version=version)
             # save the input data
             conv.data.append(serializer.data)
             conv.save()
+            user_kind = user_kind if version == 0 else conv.get_user_kind(conv_uuid)
             # make the transfert of emails
             send_email_from_conversation(
                 conv=conv,
