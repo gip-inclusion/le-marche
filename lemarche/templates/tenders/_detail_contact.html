@@ -14,10 +14,10 @@
             {{ tender.contact_full_name|safe }}
         </div>
     {% endif %}
-    {% if tender.author.company_name %}
+    {% if tender.contact_company_name_display %}
         <div class="col-md-6">
             <i class="ri-building-4-line"></i>
-            {{ tender.author.company_name }}
+            {{ tender.contact_company_name_display }}
         </div>
     {% endif %}
     {% if tender.can_display_contact_email or source == "alert" and not tender.response_kind_is_only_external %}

@@ -441,12 +441,24 @@ class TenderDetailViewTest(TestCase):
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
         cls.user_admin = UserFactory(kind=User.KIND_ADMIN)
+        sector_1 = SectorFactory(name="Bricolage")
+        grenoble_perimeter = PerimeterFactory(
+            name="Grenoble",
+            kind=Perimeter.KIND_CITY,
+            insee_code="38185",
+            department_code="38",
+            region_code="84",
+            post_codes=["38000", "38100", "38700"],
+            # coords=Point(5.7301, 45.1825),
+        )
         cls.tender_1 = TenderFactory(
             kind=tender_constants.KIND_TENDER,
             author=cls.user_buyer_1,
             amount=tender_constants.AMOUNT_RANGE_100_150,
             accept_share_amount=True,
             response_kind=[Tender.RESPONSE_KIND_EMAIL],
+            sectors=[sector_1],
+            location=grenoble_perimeter,
         )
         cls.tendersiae_1_1 = TenderSiae.objects.create(
             tender=cls.tender_1,
@@ -458,6 +470,7 @@ class TenderDetailViewTest(TestCase):
             detail_contact_click_date=timezone.now(),
         )
         TenderQuestionFactory(tender=cls.tender_1)
+        cls.tender_2 = TenderFactory(author=cls.user_buyer_1, contact_company_name="Another company")
 
     def test_anyone_can_view_validated_tenders(self):
         # anonymous
@@ -501,8 +514,16 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        # tender.author.company_name
-        self.assertContains(response, "Entreprise Buyer")
+        # sector
+        self.assertContains(response, "Bricolage")
+        # localisation
+        self.assertContains(response, "Grenoble")
+        # company_name
+        self.assertContains(response, "Entreprise Buyer")  # tender.author.company_name
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_2.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Another company")  # tender.contact_company_name
 
     def test_tender_questions_display(self):
         # tender with questions: section should be visible

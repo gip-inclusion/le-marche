@@ -263,6 +263,12 @@ class Tender(models.Model):
         max_length=20,
         blank=True,
     )
+    contact_company_name = models.CharField(
+        verbose_name="Nom de l'entreprise du contact",
+        help_text="Laisser vide pour afficher le nom de l'entreprise de l'auteur",
+        max_length=255,
+        blank=True,
+    )
 
     sectors = models.ManyToManyField(
         "sectors.Sector",
@@ -433,6 +439,13 @@ class Tender(models.Model):
     @cached_property
     def contact_full_name(self) -> str:
         return f"{self.contact_first_name} {self.contact_last_name}"
+
+    def contact_company_name_display(self) -> str:
+        if self.contact_company_name:
+            return self.contact_company_name
+        elif self.author.company_name:
+            return self.author.company_name
+        return ""
 
     def sectors_list(self):
         return self.sectors.form_filter_queryset().values_list("name", flat=True)
