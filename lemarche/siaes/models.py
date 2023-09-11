@@ -924,6 +924,12 @@ class Siae(models.Model):
         return "non disponible"
 
     @property
+    def etp_count_label_display(self):
+        if self.kind_is_esat_or_ea_or_eatt:
+            return "Travailleurs en situation de handicap"
+        return "Salariés en insertion"
+
+    @property
     def etp_count_display(self):
         if self.employees_insertion_count:
             return self.employees_insertion_count
@@ -998,8 +1004,8 @@ class Siae(models.Model):
             return "l'ASP"
 
     @property
-    def kind_is_esat_or_ea(self):
-        return self.kind in [siae_constants.KIND_ESAT, siae_constants.KIND_EA]
+    def kind_is_esat_or_ea_or_eatt(self):
+        return self.kind in [siae_constants.KIND_ESAT, siae_constants.KIND_EA, siae_constants.KIND_EATT]
 
     @property
     def completion_percent(self):
