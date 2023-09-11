@@ -74,8 +74,18 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6">
-                                <i class="ri-building-4-line"></i>
-                                <span>{{ siae.get_kind_display }}</span>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2">
+                                        <i class="ri-building-4-line"></i>
+                                        <span>{{ siae.get_kind_display }}</span>
+                                    </li>
+                                    {% if siae.legal_form %}
+                                        <li class="mb-2">
+                                            <i class="ri-building-4-fill"></i>
+                                            <span>{{ siae.get_legal_form_display }}</span>
+                                        </li>
+                                    {% endif %}
+                                </ul>
                             </div>
                             <div class="col-md-6">
                                 <div class="badge-group">
