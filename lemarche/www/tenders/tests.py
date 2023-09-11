@@ -849,8 +849,43 @@ class TenderDetailViewTest(TestCase):
         self.assertNotContains(response, "Voir l'appel d'offres")
         self.assertContains(response, "Lien partagé")
 
+    def test_tender_cocontracting_display(self):
+        # anonymous
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertNotContains(response, "Répondre en co-traitance ?")
 
-class TenderDetailContactClickStatViewViewTest(TestCase):
+        # siae user interested but has a detail_contact_click_date
+        self.client.force_login(self.siae_user_1)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertNotContains(response, "Répondre en co-traitance ?")
+        # siae user not concerned
+        self.client.force_login(self.siae_user_2)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "Répondre en co-traitance ?")
+        # siae user interested
+        cls.tendersiae_1_2 = TenderSiae.objects.create(
+            tender=self.tender_1, siae=self.siae_2, email_send_date=timezone.now()
+        )
+        self.client.force_login(self.siae_user_2)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "Répondre en co-traitance ?")
+        # siae user without siae
+        self.client.force_login(self.siae_user_3)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertNotContains(response, "Répondre en co-traitance ?")
+        # author
+        self.client.force_login(self.user_buyer_1)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertNotContains(response, "Répondre en co-traitance ?")
+
+
+class TenderDetailContactClickStatViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.siae = SiaeFactory(name="ZZ ESI")
@@ -960,6 +995,37 @@ class TenderDetailContactClickStatViewViewTest(TestCase):
         self.assertEqual(
             self.tender.tendersiae_set.first().detail_contact_click_date, siae_2_detail_contact_click_date
         )
+
+
+class TenderDetailCocontractingClickView(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae = SiaeFactory(name="ZZ ESI")
+        cls.siae_user = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae])
+        cls.user_buyer = UserFactory(kind=User.KIND_BUYER, company_name="Entreprise Buyer")
+        cls.tender = TenderFactory(
+            kind=tender_constants.KIND_TENDER,
+            author=cls.user_buyer,
+            amount=tender_constants.AMOUNT_RANGE_100_150,
+            accept_share_amount=True,
+            response_kind=[Tender.RESPONSE_KIND_EMAIL],
+        )
+        cls.tendersiae = TenderSiae.objects.create(
+            tender=cls.tender,
+            siae=cls.siae,
+            source="EMAIL",
+            email_send_date=timezone.now(),
+            email_link_click_date=timezone.now(),
+            detail_display_date=timezone.now(),
+            detail_contact_click_date=timezone.now(),
+        )
+        TenderQuestionFactory(tender=cls.tender)
+
+    def test_user_can_notify_cocontracting_wish(self):
+        url = reverse("tenders:detail-cocontracting-click", kwargs={"slug": self.tender.slug})
+        self.client.force_login(self.siae_user)
+        response = self.client.post(url, data={})
+        self.assertContains(response, "Nous avons bien pris en compte votre demande de mise en relation")
 
 
 # TODO: this test doesn't work anymore. find a way to test logging post-email in non-prod environments?
