@@ -263,6 +263,12 @@ class Tender(models.Model):
         max_length=20,
         blank=True,
     )
+    contact_company_name = models.CharField(
+        verbose_name="Nom de l'entreprise du contact",
+        help_text="Laisser vide pour afficher le nom de l'entreprise de l'auteur",
+        max_length=255,
+        blank=True,
+    )
 
     sectors = models.ManyToManyField(
         "sectors.Sector",
