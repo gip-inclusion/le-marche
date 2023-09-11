@@ -440,6 +440,13 @@ class Tender(models.Model):
     def contact_full_name(self) -> str:
         return f"{self.contact_first_name} {self.contact_last_name}"
 
+    def contact_company_name_display(self) -> str:
+        if self.contact_company_name:
+            return self.contact_company_name
+        elif self.author.company_name:
+            return self.author.company_name
+        return ""
+
     def sectors_list(self):
         return self.sectors.form_filter_queryset().values_list("name", flat=True)
 
