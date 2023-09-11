@@ -266,6 +266,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "author",
                     "contact_first_name",
                     "contact_last_name",
+                    "contact_company_name",
                     "contact_email",
                     "contact_phone",
                     "response_kind",
