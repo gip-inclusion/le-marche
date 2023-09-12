@@ -487,7 +487,7 @@ def send_author_incremental_2_days_email(tender: Tender):
 
 
 def send_tenders_author_30_days(tender: Tender, kind="feedback"):
-    email_subject = f"Concernant votre {tender.get_kind_display()} sur le Marché de l'inclusion"
+    email_subject = f"Concernant votre {tender.get_kind_display().lower()} sur le Marché de l'inclusion"
     recipient_list = whitelist_recipient_list([tender.author.email])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
@@ -508,8 +508,8 @@ def send_tenders_author_30_days(tender: Tender, kind="feedback"):
                 + reverse("tenders:detail-survey-transactioned", args=[tender.slug])
                 + user_sesame_query_string
             )
-            variables["ANSWER_YES_URL"] = answer_url_with_sesame_token + "&answer=true"
-            variables["ANSWER_NO_URL"] = answer_url_with_sesame_token + "&answer=false"
+            variables["ANSWER_YES_URL"] = answer_url_with_sesame_token + "&answer=True"
+            variables["ANSWER_NO_URL"] = answer_url_with_sesame_token + "&answer=False"
             # add timestamp
             tender.survey_transactioned_send_date = timezone.now()
         else:
