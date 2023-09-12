@@ -1,74 +1,22 @@
 
-{% load static bootstrap4 %}
+{% load static bootstrap4 wagtailcore_tags wagtailimages_tags %}
 
 <section class="s-hp-slider-partners">
     <div class="s-hp-slider-partners__container container">
         <div class="s-hp-slider-partners__row row">
             <div class="s-hp-slider-partners__col col-12">
-                <h2 class="h2 mb-3 mb-lg-5">Les partenaires du marché</h2>
+                <h2 class="h2 mb-3 mb-lg-5 text-center">{{self.title}}</h2>
             </div>
         </div>
-        <div class="s-hp-slider-partners__row row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6">
-            <div class="s-hp-slider-partners__col col pb-3 d-flex align-items-center">
-                <a href="https://group.bnpparibas/" target="_blank" rel="noopener">
-                    <img src="{% static 'images/logo-partners-bnp.svg' %}" class="img-fluid" alt="Banque BNP Paribas | La banque d'un monde qui change" loading="lazy" />
-                </a>
-            </div>
-            <div class="s-hp-slider-partners__col col pb-3 d-flex align-items-center">
-                <a href="https://www.laposte.fr/" target="_blank" rel="noopener">
-                    <img src="{% static 'images/logo-partners-la-poste.jpg' %}" class="img-fluid" alt="Achetez des Timbres, Envoyez Courrier, Colis - La Poste" loading="lazy" />
-                </a>
-            </div>
-            <div class="s-hp-slider-partners__col col pb-3 d-flex align-items-center">
-                <a href="https://www.servier.fr/" target="_blank" rel="noopener">
-                    <img src="{% static 'images/logo-partners-servier.min.png' %}" class="img-fluid" alt="Groupe pharmaceutique Servier" loading="lazy" />
-                </a>
-            </div>
-            <div class="s-hp-slider-partners__col col pb-3 d-flex align-items-center">
-                <a href="https://www.lesentreprises-sengagent.gouv.fr" target="_blank" rel="noopener">
-                    <img src="{% static 'images/logo-partners-les-entreprises-sengagent.svg' %}" class="img-fluid" alt="Les entreprises s'engagent" loading="lazy" />
-                </a>
-            </div>
-            <div class="s-hp-slider-partners__col col pb-3 d-flex align-items-center">
-                <a href="https://www.cna-asso.fr/" target="_blank" rel="noopener">
-                    <img src="{% static 'images/logo-partners-cna.min.png' %}" class="img-fluid" alt="Conseil National des Achats" loading="lazy" />
-                </a>
-            </div>
-            <div class="s-hp-slider-partners__col col pb-3 d-flex align-items-center">
-                <a href="https://www.reseau-gesat.com" target="_blank" rel="noopener">
-                    <img src="{% static 'images/logo-partners-reseau-gesat-square.min.png' %}" class="img-fluid" alt="Développer vos achats responsables auprès du STPA (ESAT & EA)" loading="lazy" />
-                </a>
-            </div>
-            <div class="s-hp-slider-partners__col col pb-3 d-flex align-items-center">
-                <a href="https://handeco.org" target="_blank" rel="noopener">
-                    <img src="{% static 'images/logo-partners-handeco.min.png' %}" class="img-fluid" alt="Handeco - Le partenaire économique des acteurs solidaires" loading="lazy" />
-                </a>
-            </div>
-            <div class="s-hp-slider-partners__col col pb-3 d-flex align-items-center">
-                <a href="https://ess2024.org" target="_blank" rel="noopener">
-                    <img src="{% static 'images/logo-partners-ess-2024.min.png' %}" class="img-fluid" alt="ESS 2024 La plateforme solidaire" loading="lazy" />
-                </a>
-            </div>
-            <div class="s-hp-slider-partners__col col pb-3 d-flex align-items-center">
-                <a href="https://campus-inclusion.fr" target="_blank" rel="noopener">
-                    <img src="{% static 'images/logo-partners-le-campus-de-linclusion.min.png' %}" class="img-fluid" alt="Campus de l'inclusion : Dirigeants, passez à l'action !" loading="lazy" />
-                </a>
-            </div>
-            <div class="s-hp-slider-partners__col col pb-3 d-flex align-items-center">
-                <a href="https://www.linkedin.com/company/economies-solidaires/" target="_blank" rel="noopener">
-                    <img src="{% static 'images/logo-partners-agence-des-economies-solidaires.min.jpg' %}" class="img-fluid" alt="Agence des Economies Solidaires" loading="lazy" />
-                </a>
-            </div>
-            <div class="s-hp-slider-partners__col col pb-3 d-flex align-items-center">
-                <a href="http://www.lesentreprisesdinsertion.org/" target="_blank" rel="noopener">
-                    <img src="{% static 'images/logo-partners-fei.min.png' %}" class="img-fluid" alt="Fédération des Entreprises d'Insertion" loading="lazy" />
-                </a>
-            </div>
-            <div class="s-hp-slider-partners__col col pb-3 d-flex align-items-center">
-                <a href="https://up.coop/home" target="_blank" rel="noopener">
-                    <img src="{% static 'images/logo-partners-up.min.jpg' %}" class="img-fluid" alt="Up France" loading="lazy" />
-                </a>
-            </div>
+        <div class="s-hp-slider-partners__row row">
+            {% for image_with_link in self.images_with_link  %}
+                <div class="s-hp-slider-partners__col s-hp-slider-partners__col-image">
+                    {% include_block image_with_link %}
+                    {% comment %} <a href="https://group.bnpparibas/" target="_blank" rel="noopener">
+                        <img src="{% static 'images/logo-partners-bnp.svg' %}" class="img-fluid" alt="Banque BNP Paribas | La banque d'un monde qui change" loading="lazy" />
+                    </a> {% endcomment %}
+                </div>
+            {% endfor %}
         </div>
     </div>
 </section>

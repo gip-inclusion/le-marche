@@ -17,7 +17,6 @@ class StatsWebsite(blocks.StructBlock):
 
 
 class TendersTestimonialsSection(blocks.StructBlock):
-
     title = blocks.CharBlock(default="Ils ont publié un besoin sur le marché", required=True, max_length=120)
 
     class Meta:
@@ -27,7 +26,6 @@ class TendersTestimonialsSection(blocks.StructBlock):
 
 
 class TendersStudiesCasesSection(blocks.StructBlock):
-
     title = blocks.CharBlock(default="100% des besoins ont reçu des réponses en 24h", required=True, max_length=120)
     subtitle = blocks.CharBlock(default="Gagnez du temps en utilisant le marché.", required=True, max_length=120)
 
@@ -70,7 +68,6 @@ class OurSiaesSection(blocks.StructBlock):
 
 
 class OurRessourcesSection(blocks.StructBlock):
-
     title = blocks.CharBlock(default="Nos ressources", required=True, max_length=120)
 
     class Meta:
@@ -80,7 +77,6 @@ class OurRessourcesSection(blocks.StructBlock):
 
 
 class WhatFindHereSection(blocks.StructBlock):
-
     title = blocks.CharBlock(default="Sur le marché", required=True, max_length=120)
 
     class Meta:
@@ -89,9 +85,18 @@ class WhatFindHereSection(blocks.StructBlock):
         label = "Avantages marché"
 
 
-class OurPartnersSection(blocks.StructBlock):
+class ImageWithLink(blocks.StructBlock):
+    image = ImageChooserBlock(required=True)
+    external_link = blocks.URLBlock(required=True)
 
+    class Meta:
+        template = "cms/streams/image_with_link.html"
+        label = "Image avec lien externe"
+
+
+class OurPartnersSection(blocks.StructBlock):
     title = blocks.CharBlock(default="Les partenaires du marché", required=True, max_length=120)
+    images_with_link = blocks.StreamBlock([("images", ImageWithLink())], min_num=8, max_num=8)
 
     class Meta:
         template = "cms/streams/section_our_partners.html"
