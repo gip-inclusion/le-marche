@@ -171,6 +171,15 @@ class TenderAuthorOrAdminRequiredIfNotValidatedMixin(UserPassesTestMixin):
         return HttpResponseRedirect(reverse_lazy("wagtail_serve", args=("",)))
 
 
+class SiaeUserRequiredOrSiaeIdParamMixin(UserPassesTestMixin):
+    def test_func(self):
+        siae_id = self.request.GET.get("siae_id", None)
+        return SiaeUserRequiredMixin.test_func(self) or (siae_id and siae_id.isnumeric())
+
+    def handle_no_permission(self):
+        return HttpResponseForbidden()
+
+
 class SesameTokenRequiredUserPassesTestMixin(UserPassesTestMixin):
     """
     Custom mixin that checks that a valid django-sesame token is passed

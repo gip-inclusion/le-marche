@@ -4,8 +4,8 @@
         
         <p>{{ tender.cta_card_paragraph_text|safe }}</p>
 
-        {% if user.is_authenticated %}
-            <button type="button" id="show-tender-contact-modal-btn" class="btn btn-primary btn-block" data-toggle="modal" data-target="#detail_contact_click_confirm_modal" title="{{ tender.cta_card_button_text|safe }}">
+        {% if user_can_click %}
+            <button type="button" id="show-tender-contact-modal-btn" class="btn btn-primary btn-block" data-toggle="modal" data-target="#detail_contact_click_confirm_modal" data-siae-id="{{ siae_id }}" title="{{ tender.cta_card_button_text|safe }}">
                 {{ tender.cta_card_button_text|safe }}
             </button>
         {% else %}

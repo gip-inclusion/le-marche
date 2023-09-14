@@ -34,7 +34,7 @@
         </div>
         {% if not source_form %}
             {% if user.is_authenticated %}
-                {% if tender.author == request.user %}
+                {% if user == tender.author %}
                     <hr class="my-5">
                     {% include "tenders/_detail_contact.html" with tender=tender %}
                 {% elif user_partner_can_display_tender_contact_details %}
@@ -58,7 +58,7 @@
         {% if source_form or not source_form and tender.questions_list|length %}
             <hr class="my-5">
             <h2>
-                {% if source_form or tender.author == request.user %}
+                {% if source_form or user == tender.author %}
                     Questions à poser aux prestataires ciblés
                 {% else %}
                     Questions du client
@@ -75,17 +75,17 @@
             <p>{{ tender.constraints|default:"-"|safe|linebreaks }}</p>
         {% endif %}
         <!-- tender amount -->
-        {% if source_form or tender.author == request.user or tender.accept_share_amount %}
+        {% if source_form or user == tender.author or tender.accept_share_amount %}
             <hr class="my-5">
             <h2>
-                {% if source_form or tender.author == request.user %}
+                {% if source_form or user == tender.author %}
                     Montant du marché
                 {% else %}
                     Budget du client
                 {% endif %}
             </h2>
             <p>{{ tender.get_amount_display|default:"-" }}</p>
-            {% if source_form or tender.author == request.user %}<p>{{ tender.accept_share_amount_display }}</p>{% endif %}
+            {% if source_form or user == tender.author %}<p>{{ tender.accept_share_amount_display }}</p>{% endif %}
         {% endif %}
     </div>
 </div>
