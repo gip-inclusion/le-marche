@@ -66,9 +66,6 @@ class TenderCreateViewTest(TestCase):
         step_4 = {
             "tender_create_multi_step_view-current_step": "survey",
             "survey-scale_marche_useless": tender_constants.SURVEY_SCALE_QUESTION_0,
-            "survey-worked_with_inclusif_siae_this_kind_tender": tender_constants.SURVEY_DONT_KNOW,
-            "survey-is_encouraged_by_le_marche": tender_constants.SURVEY_NOT_ENCOURAGED_ONLY_BY_US,
-            "survey-providers_out_of_insertion": tender_constants.SURVEY_SCALE_QUESTION_2,
             "survey-le_marche_doesnt_exist_how_to_find_siae": "TEST",
         } | _step_4
 

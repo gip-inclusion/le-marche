@@ -223,29 +223,8 @@ class TenderCreateStepSurveyForm(forms.ModelForm):
         required=True,
     )
 
-    worked_with_inclusif_siae_this_kind_tender = forms.ChoiceField(
-        label="Q°2. Avez-vous déjà travaillé avec des prestataires inclusifs sur ce type de prestation ?",
-        choices=tender_constants.SURVEY_YES_NO_DONT_KNOW_CHOICES,
-        widget=forms.RadioSelect,
-        required=True,
-    )
-    # hidden if worked_with_inclusif_siae_this_kind_tender is no or don't know
-    is_encouraged_by_le_marche = forms.ChoiceField(
-        label="Q°3. Est-ce la plateforme du Marché de l'inclusion qui vous a encouragé à consulter des prestataires inclusifs pour ce besoin ?",  # noqa
-        choices=tender_constants.SURVEY_ENCOURAGED_BY_US_CHOICES,
-        widget=forms.RadioSelect,
-        required=False,
-    )
-
-    providers_out_of_insertion = forms.ChoiceField(
-        label="Q°4. Comptez-vous consulter d'autres prestataires en dehors de l'Insertion et du Handicap ?",
-        choices=tender_constants.SURVEY_SCALE_QUESTION_CHOICES,
-        widget=forms.RadioSelect,
-        required=True,
-    )
-
     le_marche_doesnt_exist_how_to_find_siae = forms.CharField(
-        label="Q°5. Si le Marché de l'inclusion n'existait pas, comment auriez-vous fait pour trouver un prestataire inclusif ?",  # noqa
+        label="Si le Marché de l'inclusion n'existait pas, comment auriez-vous fait pour trouver un prestataire inclusif ?",  # noqa
         required=False,
         widget=forms.Textarea(attrs={"rows": 2, "cols": 15, "data-expandable": "true"}),
     )
@@ -259,11 +238,6 @@ class TenderCreateStepSurveyForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance.id:
-            self.initial["worked_with_inclusif_siae_this_kind_tender"] = self.instance.extra_data.get(
-                "worked_with_inclusif_siae_this_kind_tender"
-            )
-            self.initial["is_encouraged_by_le_marche"] = self.instance.extra_data.get("is_encouraged_by_le_marche")
-            self.initial["providers_out_of_insertion"] = self.instance.extra_data.get("providers_out_of_insertion")
             self.initial["le_marche_doesnt_exist_how_to_find_siae"] = self.instance.extra_data.get(
                 "le_marche_doesnt_exist_how_to_find_siae"
             )
