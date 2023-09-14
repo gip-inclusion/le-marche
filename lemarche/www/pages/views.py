@@ -320,25 +320,22 @@ def csrf_failure(request, reason=""):  # noqa C901
                     elif key_cleaned in [
                         "is_country_area",
                         "accept_share_amount",
-                        "accept_cocontracting",
                     ]:
                         tender_dict[key_cleaned] = value[0] == "on"
 
                     elif key_cleaned == "sectors":
                         tender_dict[key_cleaned] = Sector.objects.filter(slug__in=value)
                     elif key_cleaned not in [
-                        "presta_type",
                         "response_kind",
                         "is_country_area",
                         "accept_share_amount",
-                        "accept_cocontracting",
                     ]:
                         if value[0]:
                             tender_dict[key_cleaned] = value[0]
                     elif key_cleaned == "is_draft":
                         tender_dict["status"] = tender_constants.STATUS_DRAFT
                         tender_dict["published_at"] = None
-                    else:  # presta_type, response_kind, marche_benefits
+                    else:  # response_kind, marche_benefits
                         tender_dict[key_cleaned] = list() if value[0] == "" else value
         # get user
         if not request.user.is_authenticated:

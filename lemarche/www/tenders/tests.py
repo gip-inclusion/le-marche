@@ -43,7 +43,6 @@ class TenderCreateViewTest(TestCase):
             "general-kind": tender_not_saved.kind,
             "general-title": tender_not_saved.title,
             "general-sectors": cls.sectors,
-            "general-presta_type": siae_constants.PRESTA_BUILD,
             "general-location": cls.location_slug,
             "general-is_country_area": tender_not_saved.is_country_area,
         } | _step_1
@@ -52,7 +51,6 @@ class TenderCreateViewTest(TestCase):
             "description-description": tender_not_saved.description,
             "description-start_working_date": tender_not_saved.start_working_date,
             "description-external_link": tender_not_saved.external_link,
-            "description-constraints": tender_not_saved.constraints,
             "description-amount": tender_constants.AMOUNT_RANGE_1000_MORE,
         } | _step_2
         step_3 = {

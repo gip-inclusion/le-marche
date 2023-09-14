@@ -49,11 +49,6 @@
 </div>
 <div class="row">
     <div class="col-12 col-lg-7">
-        {% bootstrap_field form.presta_type %}
-    </div>
-</div>
-<div class="row">
-    <div class="col-12 col-lg-7">
         <div class="form-group form-group-required {% if form.location.errors %}is-invalid{% endif %}">
             <label for="id_location">{{ form.location.label }}</label>
             <input id="id_location" name="general-location" value="{{ form.location.value }}" type="text" class="d-none">
