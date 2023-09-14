@@ -1,6 +1,6 @@
 
 <h2>
-    {% if tender.author == request.user %}
+    {% if user == tender.author %}
         Coordonnées
     {% else %}
         Contactez le client dès maintenant
