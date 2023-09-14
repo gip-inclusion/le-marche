@@ -1,17 +1,31 @@
 {% extends "tenders/create_base.html" %}
 {% load static bootstrap4 %}
+
 {% block step_title %}Aperçu du besoin{% endblock %}
 {% block step_title_again %}Aperçu du besoin{% endblock %}
 {% block step_subtitle %}C'est tout bon ! Vérifiez quand même que toutes les informations soient exactes.{% endblock %}
-{% block recap_section %}
-    <div class="s-section__row row">
-        <div class="s-section__col col-12">
-            {% include "tenders/_detail_card.html" with tender=tender source_form="true" %}
-        </div>
-    </div>
-{% endblock %}
 {% block content_form %}
     {% csrf_token %}
+{% endblock %}
+{% block recap_section %}
+<div class="row">
+    <div class="col-12 col-lg-7 order-2 order-lg-1">
+        {% include "tenders/_detail_card.html" with tender=tender source_form="true" %}
+    </div>
+    <div class="col-12 col-lg-5 order-1 order-lg-2">
+        <button type="submit" id="tender-create-form-submit-above-btn" class="btn btn-primary btn-ico">
+            <i class="ri-mail-send-line ri-lg"></i>
+            <span>Publier et diffuser</span>
+        </button>
+        <div class="c-form-conseil">
+            <div>
+                <p>
+                    Dès que votre besoin sera publié et diffusé, vous aurez accès à un tableau de bord pour suivre les prestataires concernés et intéressés.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 {% block submit_btn %}
     <div class="form-group col-6 col-lg-auto order-1 order-lg-2">
@@ -34,25 +48,32 @@
     </div>
 {% endblock submit_btn %}
 {% block extra_js %}
-    <script>
+<script>
 document.addEventListener('DOMContentLoaded', function () {
     let formPreviousButton = document.getElementById('tender-create-form-previous-step-btn');
+    let formDraftButton = document.getElementById('tender-create-draft-form-btn');
     let formSubmitButton = document.getElementById('tender-create-form-submit-btn');
+    let formSubmitAboveButton = document.getElementById('tender-create-form-submit-above-btn');
 
     function submitForm() {
         $(formPreviousButton).prop('disabled', true);
+        $(formDraftButton).prop('disabled', true);
         $(formSubmitButton).prop('disabled', true);
+        $(formSubmitAboveButton).prop('disabled', true);
         const body = document.querySelector('body');
         let loader = '<div class="loader-in-all-page"><div class="loader-inner"></div></div>'
         body.innerHTML += loader;
         setTimeout(function() {
             $('form').submit();
         }, 1000);
-    }
+    };
 
     formSubmitButton.addEventListener('click', function(e) {
         submitForm();
     });
+    formSubmitAboveButton.addEventListener('click', function(e) {
+        submitForm();
+    });
 });
-    </script>
+</script>
 {% endblock %}
