@@ -870,7 +870,7 @@ class TenderDetailContactClickStatViewViewTest(TestCase):
     def test_anonymous_user_cannot_call_tender_contact_click(self):
         url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug})
         response = self.client.post(url)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 403)
 
     def test_only_siae_user_or_with_siae_id_param_can_call_tender_contact_click(self):
         # forbidden
@@ -893,6 +893,11 @@ class TenderDetailContactClickStatViewViewTest(TestCase):
         )
         response = self.client.post(url, data={"detail_contact_click_confirm": "false"})
         self.assertEqual(response.status_code, 302)
+        # forbidden because wrong siae_id parameter
+        self.client.logout()
+        url = reverse("tenders:detail-contact-click-stat", kwargs={"slug": self.tender.slug}) + "?siae_id=test"
+        response = self.client.post(url, data={"detail_contact_click_confirm": "false"})
+        self.assertEqual(response.status_code, 403)
 
     def test_update_tendersiae_stats_on_tender_contact_click(self):
         siae_2 = SiaeFactory(name="ABC Insertion")

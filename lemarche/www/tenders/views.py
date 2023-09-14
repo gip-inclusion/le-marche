@@ -18,8 +18,8 @@ from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils.data import get_choice
 from lemarche.utils.mixins import (
-    LoginRequiredOrSiaeIdParamMixin,
     SesameTenderAuthorRequiredMixin,
+    SiaeUserRequiredOrSiaeIdParamMixin,
     TenderAuthorOrAdminRequiredIfNotValidatedMixin,
     TenderAuthorOrAdminRequiredMixin,
 )
@@ -347,7 +347,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
         return context
 
 
-class TenderDetailContactClickStatView(LoginRequiredOrSiaeIdParamMixin, UpdateView):
+class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, UpdateView):
     """
     Endpoint to track contact_clicks by interested Siaes
     We might also send a notification to the buyer

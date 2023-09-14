@@ -171,13 +171,13 @@ class TenderAuthorOrAdminRequiredIfNotValidatedMixin(UserPassesTestMixin):
         return HttpResponseRedirect(reverse_lazy("wagtail_serve", args=("",)))
 
 
-class LoginRequiredOrSiaeIdParamMixin(UserPassesTestMixin):
+class SiaeUserRequiredOrSiaeIdParamMixin(UserPassesTestMixin):
     def test_func(self):
         siae_id = self.request.GET.get("siae_id", None)
-        return self.request.user.is_authenticated or siae_id
+        return SiaeUserRequiredMixin.test_func(self) or (siae_id and siae_id.isnumeric())
 
     def handle_no_permission(self):
-        return LoginRequiredUserPassesTestMixin.dispatch(self, self.request)
+        return HttpResponseForbidden()
 
 
 class SesameTokenRequiredUserPassesTestMixin(UserPassesTestMixin):
