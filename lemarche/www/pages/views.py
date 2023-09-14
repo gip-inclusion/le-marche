@@ -307,12 +307,7 @@ def csrf_failure(request, reason=""):  # noqa C901
                 if not key.startswith(("csrfmiddlewaretoken", "tender_create_multi_step_view")):
                     value = formtools_session_step_data.get(step).get(key)
                     key_cleaned = key.replace(f"{step}-", "")
-                    if key_cleaned in [
-                        "le_marche_doesnt_exist_how_to_find_siae",
-                        "providers_out_of_insertion",
-                        "worked_with_inclusif_siae_this_kind_tender",
-                        "is_encouraged_by_le_marche",
-                    ]:
+                    if key_cleaned == "le_marche_doesnt_exist_how_to_find_siae":
                         tender_dict["extra_data"] |= {key_cleaned: value[0]}
                     elif key_cleaned == "location":
                         tender_dict[key_cleaned] = Perimeter.objects.get(slug=value[0])
