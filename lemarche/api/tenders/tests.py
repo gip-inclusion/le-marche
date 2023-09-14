@@ -5,6 +5,7 @@ from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.sectors.factories import SectorFactory
 from lemarche.tenders.models import Tender
 from lemarche.users.factories import UserFactory
+from lemarche.users.models import User
 
 
 USER_CONTACT_EMAIL = "prenom.nom@example.com"
@@ -30,48 +31,65 @@ TENDER_JSON = {
     "contact_phone": "string",
     "response_kind": ["EMAIL"],
     "deadline_date": "2023-03-14",
+    # "extra_data": {}
 }
 
 
 class TenderCreateApiTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        UserFactory()
-        cls.user_with_token = UserFactory(api_key="admin")
+        cls.user = UserFactory()
+        cls.user_with_token = UserFactory(email="admin@example.com", api_key="admin")
         cls.perimeter = PerimeterFactory()
         cls.sector_1 = SectorFactory()
         cls.sector_2 = SectorFactory()
 
     def test_anonymous_user_cannot_create_tender(self):
         url = reverse("api:tenders-list")
-        response = self.client.post(url, data=TENDER_JSON)
+        response = self.client.post(url, data=TENDER_JSON, content_type="application/json")
         self.assertEqual(response.status_code, 401)
 
     def test_user_with_unknown_api_key_cannot_create_tender(self):
         url = reverse("api:tenders-list") + "?token=test"
-        response = self.client.post(url, data=TENDER_JSON)
+        response = self.client.post(url, data=TENDER_JSON, content_type="application/json")
         self.assertEqual(response.status_code, 401)
 
     def test_user_with_valid_api_key_can_create_tender(self):
         url = reverse("api:tenders-list") + "?token=admin"
+        # test with other email
         tender_data = TENDER_JSON.copy()
-        tender_data["title"] = "Test author"
-        response = self.client.post(url, data=tender_data)
+        tender_data["title"] = "Test author 1"
+        response = self.client.post(url, data=tender_data, content_type="application/json")
         self.assertEqual(response.status_code, 201)
         self.assertIn("slug", response.data.keys())
-        tender = Tender.objects.get(title="Test author")
+        tender = Tender.objects.get(title="Test author 1")
+        self.assertEqual(User.objects.count(), 2 + 1)  # created a new user
         self.assertEqual(tender.author.email, USER_CONTACT_EMAIL)
         self.assertEqual(tender.status, Tender.STATUS_PUBLISHED)
         self.assertEqual(tender.source, Tender.SOURCE_API)
         self.assertNotEqual(tender.import_raw_object, None)
-        self.assertEqual(tender.import_raw_object["title"], "Test author")
+        self.assertEqual(tender.import_raw_object["title"], "Test author 1")
+        # test with own email
+        tender_data = TENDER_JSON.copy()
+        tender_data["title"] = "Test author 2"
+        tender_data["contact_email"] = self.user_with_token.email
+        response = self.client.post(url, data=tender_data, content_type="application/json")
+        self.assertEqual(response.status_code, 201)
+        self.assertIn("slug", response.data.keys())
+        tender = Tender.objects.get(title="Test author 2")
+        self.assertEqual(User.objects.count(), 3)  # did not create a new user
+        self.assertEqual(tender.author, self.user_with_token)
+        self.assertEqual(tender.status, Tender.STATUS_PUBLISHED)
+        self.assertEqual(tender.source, Tender.SOURCE_API)
+        self.assertNotEqual(tender.import_raw_object, None)
+        self.assertEqual(tender.import_raw_object["title"], "Test author 2")
 
     def test_create_tender_with_location(self):
         url = reverse("api:tenders-list") + "?token=admin"
         tender_data = TENDER_JSON.copy()
         tender_data["title"] = "Test location"
         tender_data["location"] = self.perimeter.slug
-        response = self.client.post(url, data=tender_data)
+        response = self.client.post(url, data=tender_data, content_type="application/json")
         self.assertEqual(response.status_code, 201)
         tender = Tender.objects.get(title="Test location")
         self.assertEqual(tender.location, self.perimeter)
@@ -79,13 +97,13 @@ class TenderCreateApiTest(TestCase):
         tender_data = TENDER_JSON.copy()
         tender_data["title"] = "Test empty location"
         tender_data["location"] = ""
-        response = self.client.post(url, data=tender_data)
+        response = self.client.post(url, data=tender_data, content_type="application/json")
         self.assertEqual(response.status_code, 201)
         # location must be valid
         tender_data = TENDER_JSON.copy()
         tender_data["title"] = "Test wrong location"
         tender_data["location"] = self.perimeter.slug + "wrong"
-        response = self.client.post(url, data=tender_data)
+        response = self.client.post(url, data=tender_data, content_type="application/json")
         self.assertEqual(response.status_code, 400)
 
     def test_create_tender_with_sectors(self):
@@ -93,7 +111,7 @@ class TenderCreateApiTest(TestCase):
         tender_data = TENDER_JSON.copy()
         tender_data["title"] = "Test sectors"
         tender_data["sectors"] = [self.sector_1.slug, self.sector_2.slug]
-        response = self.client.post(url, data=tender_data)
+        response = self.client.post(url, data=tender_data, content_type="application/json")
         self.assertEqual(response.status_code, 201)
         tender = Tender.objects.get(title="Test sectors")
         self.assertEqual(tender.sectors.count(), 2)
@@ -101,13 +119,13 @@ class TenderCreateApiTest(TestCase):
         tender_data = TENDER_JSON.copy()
         tender_data["title"] = "Test empty sectors"
         tender_data["sectors"] = []
-        response = self.client.post(url, data=tender_data)
+        response = self.client.post(url, data=tender_data, content_type="application/json")
         self.assertEqual(response.status_code, 201)
         # sectors must be valid
         tender_data = TENDER_JSON.copy()
         tender_data["title"] = "Test wrong sectors"
         tender_data["sectors"] = [self.sector_1.slug + "wrong"]
-        response = self.client.post(url, data=tender_data)
+        response = self.client.post(url, data=tender_data, content_type="application/json")
         self.assertEqual(response.status_code, 400)
         tender_data = TENDER_JSON.copy()
         tender_data["title"] = "Test wrong empty sectors"
@@ -115,16 +133,15 @@ class TenderCreateApiTest(TestCase):
         response = self.client.post(url, data=tender_data)
         self.assertEqual(response.status_code, 400)
 
-
-def test_create_tender_with_tally_source(self):
-    url = reverse("api:tenders-list") + "?token=admin"
-    tender_data = TENDER_JSON.copy()
-    tender_data["title"] = "Test tally"
-    tender_data["extra_data"] = {"source": "TALLY"}
-    response = self.client.post(url, data=tender_data)
-    self.assertEqual(response.status_code, 201)
-    tender = Tender.objects.get(title="Test tally")
-    self.assertEqual(tender.source, Tender.SOURCE_TALLY)
+    def test_create_tender_with_tally_source(self):
+        url = reverse("api:tenders-list") + "?token=admin"
+        tender_data = TENDER_JSON.copy()
+        tender_data["title"] = "Test tally"
+        tender_data["extra_data"] = {"source": "TALLY"}
+        response = self.client.post(url, data=tender_data, content_type="application/json")
+        self.assertEqual(response.status_code, 201)
+        tender = Tender.objects.get(title="Test tally")
+        self.assertEqual(tender.source, Tender.SOURCE_TALLY)
 
 
 class TenderChoicesApiTest(TestCase):
