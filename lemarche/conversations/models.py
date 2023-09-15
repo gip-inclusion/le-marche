@@ -171,21 +171,28 @@ class Conversation(models.Model):
         return len(self.data) + 1
 
     @staticmethod
-    def get_email_info_from_address(address_mail_label: str) -> list:
-        """Extract info from address mail managed by this class
+    def get_info_from_email_prefix(email_prefix: str) -> list:
+        """
+        Extract info from email_prefix
+        version 0 format: uuid_b, uuid_s (long uuid)
+        vesion 1 format: prenom_nom_uuid (short uuid)
+
         Args:
-            address_mail_label (str): _description_
+            email_prefix (str): _description_
 
         Returns:
             [VERSION, UUID, KIND_SENDER]
         """
-        email_infos = address_mail_label.split("_")
-        # version is 0 email is like "uuid_kind"
-        # version is 1 email is like "full_name_can_be_long_short_uuid"
-        version = 0 if len(email_infos) == 2 else 1
-        # in version 1 kind sender is not usefull
-        uuid = email_infos[0] if version == 0 else "_".join(email_infos)
-        kind_sender = email_infos[1] if version == 0 else None
+        email_prefix_infos = email_prefix.split("_")
+        # specificity of version 0: only 1 char at the end
+        if len(email_prefix_infos[-1]) == 1:
+            version = 0
+            uuid = email_prefix_infos[0]
+            kind_sender = email_prefix_infos[1]
+        else:  # version 1
+            version = 1
+            uuid = email_prefix
+            kind_sender = None  # not useful
         return version, uuid, kind_sender
 
     @property

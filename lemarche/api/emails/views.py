@@ -16,10 +16,10 @@ class InboundParsingEmailView(APIView):
     def post(self, request):
         serializer = EmailsSerializer(data=request.data)
         if serializer.is_valid():
-            inboundEmail = serializer.validated_data.get("items")[0]
-            address_mail_label = inboundEmail["To"][0]["Address"].split("@")[0]
+            inbound_email = serializer.validated_data.get("items")[0]
+            inbound_email_prefix = inbound_email["To"][0]["Address"].split("@")[0]
             # get conversation object
-            version, conv_uuid, user_kind = Conversation.get_email_info_from_address(address_mail_label)
+            version, conv_uuid, user_kind = Conversation.get_info_from_email_prefix(inbound_email_prefix)
             conv: Conversation = Conversation.objects.get_conv_from_uuid(conv_uuid=conv_uuid, version=version)
             # save the input data
             conv.data.append(serializer.data)
@@ -29,9 +29,9 @@ class InboundParsingEmailView(APIView):
             send_email_from_conversation(
                 conv=conv,
                 user_kind=user_kind,
-                email_subject=inboundEmail.get("Subject", conv.title),
-                email_body=inboundEmail.get("RawTextBody"),
-                email_body_html=inboundEmail.get("RawHtmlBody"),
+                email_subject=inbound_email.get("Subject", conv.title),
+                email_body=inbound_email.get("RawTextBody"),
+                email_body_html=inbound_email.get("RawHtmlBody"),
             )
             return Response(conv.uuid, status=status.HTTP_201_CREATED)
         else:
