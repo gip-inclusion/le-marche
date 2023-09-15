@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.db import IntegrityError, models
-from django.db.models import Func, IntegerField
+from django.db.models import Func, IntegerField, Q
 from django.utils import timezone
 from django.utils.text import slugify
 from django_extensions.db.fields import ShortUUIDField
@@ -27,7 +27,7 @@ class ConversationQuerySet(models.QuerySet):
         if version == 0:
             return self.get(uuid=conv_uuid)
         else:
-            return self.get(models.Q(sender_encoded=conv_uuid) | models.Q(siae_encoded=conv_uuid))
+            return self.get(Q(sender_encoded__endswith=conv_uuid) | Q(siae_encoded__endswith=conv_uuid))
 
 
 class Conversation(models.Model):
@@ -128,9 +128,9 @@ class Conversation(models.Model):
 
     def get_user_kind(self, conv_uuid):
         # method only available in version >= 1
-        if conv_uuid == self.sender_encoded:
+        if self.sender_encoded.endswith(conv_uuid):
             return self.USER_KIND_SENDER_TO_BUYER
-        elif conv_uuid == self.siae_encoded:
+        elif self.siae_encoded.endswith(conv_uuid):
             return self.USER_KIND_SENDER_TO_SIAE
 
     @property
@@ -169,31 +169,6 @@ class Conversation(models.Model):
             int: Number of all messages
         """
         return len(self.data) + 1
-
-    @staticmethod
-    def get_info_from_email_prefix(email_prefix: str) -> list:
-        """
-        Extract info from email_prefix
-        version 0 format: uuid_b, uuid_s (long uuid)
-        vesion 1 format: prenom_nom_uuid (short uuid)
-
-        Args:
-            email_prefix (str): _description_
-
-        Returns:
-            [VERSION, UUID, KIND_SENDER]
-        """
-        email_prefix_infos = email_prefix.split("_")
-        # specificity of version 0: only 1 char at the end
-        if len(email_prefix_infos[-1]) == 1:
-            version = 0
-            uuid = email_prefix_infos[0]
-            kind_sender = email_prefix_infos[1]
-        else:  # version 1
-            version = 1
-            uuid = email_prefix
-            kind_sender = None  # not useful
-        return version, uuid, kind_sender
 
     @property
     def is_validated(self) -> bool:

@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 
 from lemarche.api.emails.serializers import EmailsSerializer
 from lemarche.conversations.models import Conversation
+from lemarche.conversations.utils import get_info_from_email_prefix
 from lemarche.www.conversations.tasks import send_email_from_conversation
 
 
@@ -19,13 +20,15 @@ class InboundParsingEmailView(APIView):
             inbound_email = serializer.validated_data.get("items")[0]
             inbound_email_prefix = inbound_email["To"][0]["Address"].split("@")[0]
             # get conversation object
-            version, conv_uuid, user_kind = Conversation.get_info_from_email_prefix(inbound_email_prefix)
+            version, conv_uuid, user_kind = get_info_from_email_prefix(inbound_email_prefix)
             conv: Conversation = Conversation.objects.get_conv_from_uuid(conv_uuid=conv_uuid, version=version)
             # save the input data
             conv.data.append(serializer.data)
             conv.save()
-            user_kind = user_kind if version == 0 else conv.get_user_kind(conv_uuid)
-            # make the transfert of emails
+            # find user_kind
+            if version >= 1:
+                user_kind = conv.get_user_kind(conv_uuid)
+            # make the transfer of emails
             send_email_from_conversation(
                 conv=conv,
                 user_kind=user_kind,
