@@ -128,36 +128,6 @@ class SiaeSearchResultsView(FormMixin, ListView):
         )
         return context
 
-    def get(self, request, *args, **kwargs):
-        """
-        Additional actions:
-        - add buyer to contact list
-        - add buyer who searched for sector 'traiteur' to contact list
-        - add buyer who searched for sector 'nettoyage' to contact list
-        """
-        self.object_list = self.get_queryset()
-        user = request.user
-        context = self.get_context_data()
-        if user.is_authenticated:
-            if user.kind == user.KIND_BUYER:
-                add_to_contact_list(user, "buyer_search")
-                if "current_sectors" in context:
-                    if next(
-                        (sector for sector in context["current_sectors"] if sector["slug"] == SECTOR_TRAITEUR_SLUG),
-                        False,
-                    ):
-                        add_to_contact_list(user, "buyer_search_traiteur")
-                    if next(
-                        (
-                            sector
-                            for sector in context["current_sectors"]
-                            if sector["slug"] in SECTOR_GROUP_HYGIERE_SLUG_LIST
-                        ),
-                        False,
-                    ):
-                        add_to_contact_list(user, "buyer_search_nettoyage")
-        return self.render_to_response(context)
-
 
 class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
     http_method_names = ["get"]
