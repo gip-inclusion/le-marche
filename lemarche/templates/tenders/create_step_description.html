@@ -56,23 +56,6 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-12 col-lg-7">{% bootstrap_field form.constraints %}</div>
-        <div class="col-12 col-lg-5">
-            <div class="c-form-conseil">
-                <div>
-                    <p>
-                        <i class="ri-lightbulb-line ri-lg mr-1"></i><strong>Conseil</strong>
-                        <br />
-                        Les contraintes techniques spécifiques sont les exigences que vous souhaitez porter à la connaissance des prestataires inclusifs.
-                    </p>
-                    <p>
-                        Plus elles seront précises, plus vous aurez de chances de recevoir des réponses qualitatives des prestataires inclusifs.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
         <div class="col-12 col-lg-7">
             <span x-data="SocialImpactCalculatorComponent">
                 {% bootstrap_field form.amount %}
@@ -94,12 +77,6 @@
                     <p>Cette donnée restera confidentielle si vous souhaitez ne pas la partager aux prestataires.</p>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12 col-lg-7">
-            <label class="fake-label">Co-traitance</label>
-            {% bootstrap_field form.accept_cocontracting %}
         </div>
     </div>
 {% endblock content_form %}

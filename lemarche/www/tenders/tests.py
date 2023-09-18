@@ -43,7 +43,6 @@ class TenderCreateViewTest(TestCase):
             "general-kind": tender_not_saved.kind,
             "general-title": tender_not_saved.title,
             "general-sectors": cls.sectors,
-            "general-presta_type": siae_constants.PRESTA_BUILD,
             "general-location": cls.location_slug,
             "general-is_country_area": tender_not_saved.is_country_area,
         } | _step_1
@@ -52,7 +51,6 @@ class TenderCreateViewTest(TestCase):
             "description-description": tender_not_saved.description,
             "description-start_working_date": tender_not_saved.start_working_date,
             "description-external_link": tender_not_saved.external_link,
-            "description-constraints": tender_not_saved.constraints,
             "description-amount": tender_constants.AMOUNT_RANGE_1000_MORE,
         } | _step_2
         step_3 = {
@@ -68,9 +66,6 @@ class TenderCreateViewTest(TestCase):
         step_4 = {
             "tender_create_multi_step_view-current_step": "survey",
             "survey-scale_marche_useless": tender_constants.SURVEY_SCALE_QUESTION_0,
-            "survey-worked_with_inclusif_siae_this_kind_tender": tender_constants.SURVEY_DONT_KNOW,
-            "survey-is_encouraged_by_le_marche": tender_constants.SURVEY_NOT_ENCOURAGED_ONLY_BY_US,
-            "survey-providers_out_of_insertion": tender_constants.SURVEY_SCALE_QUESTION_2,
             "survey-le_marche_doesnt_exist_how_to_find_siae": "TEST",
         } | _step_4
 
