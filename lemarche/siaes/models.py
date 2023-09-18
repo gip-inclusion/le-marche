@@ -938,7 +938,9 @@ class Siae(models.Model):
 
     @property
     def contact_full_name(self):
-        return f"{self.contact_first_name} {self.contact_last_name}"
+        if self.contact_first_name and self.contact_last_name:
+            return f"{self.contact_first_name} {self.contact_last_name}"
+        return ""
 
     @property
     def contact_short_name(self):

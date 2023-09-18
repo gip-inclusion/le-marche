@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 
 from lemarche.api.emails.serializers import EmailsSerializer
 from lemarche.conversations.models import Conversation
+from lemarche.conversations.utils import get_info_from_email_prefix
 from lemarche.www.conversations.tasks import send_email_from_conversation
 
 
@@ -16,22 +17,24 @@ class InboundParsingEmailView(APIView):
     def post(self, request):
         serializer = EmailsSerializer(data=request.data)
         if serializer.is_valid():
-            inboundEmail = serializer.validated_data.get("items")[0]
-            address_mail_label = inboundEmail["To"][0]["Address"].split("@")[0]
+            inbound_email = serializer.validated_data.get("items")[0]
+            inbound_email_prefix = inbound_email["To"][0]["Address"].split("@")[0]
             # get conversation object
-            version, conv_uuid, user_kind = Conversation.get_email_info_from_address(address_mail_label)
+            version, conv_uuid, user_kind = get_info_from_email_prefix(inbound_email_prefix)
             conv: Conversation = Conversation.objects.get_conv_from_uuid(conv_uuid=conv_uuid, version=version)
             # save the input data
             conv.data.append(serializer.data)
             conv.save()
-            user_kind = user_kind if version == 0 else conv.get_user_kind(conv_uuid)
-            # make the transfert of emails
+            # find user_kind
+            if version >= 1:
+                user_kind = conv.get_user_kind(conv_uuid)
+            # make the transfer of emails
             send_email_from_conversation(
                 conv=conv,
                 user_kind=user_kind,
-                email_subject=inboundEmail.get("Subject", conv.title),
-                email_body=inboundEmail.get("RawTextBody"),
-                email_body_html=inboundEmail.get("RawHtmlBody"),
+                email_subject=inbound_email.get("Subject", conv.title),
+                email_body=inbound_email.get("RawTextBody"),
+                email_body_html=inbound_email.get("RawHtmlBody"),
             )
             return Response(conv.uuid, status=status.HTTP_201_CREATED)
         else:
