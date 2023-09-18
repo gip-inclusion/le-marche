@@ -1,11 +1,11 @@
 {% load bootstrap4 static array_choices_display humanize %}
 <div class="card c-card c-card--marche siae-card rounded-lg shadow-lg">
-    <p class="text-right text-white bg-tertiary fs-sm rounded-top rounded-lg p-3 mb-0">
+    <div class="card-header text-right bg-marche text-white fs-sm rounded-top rounded-lg p-3 mb-0">
         Date limite de réponse : {{ tender.deadline_date|default:"" }}
         {% if not source_form and tender.deadline_date_outdated %}
             <span class="badge badge-xs badge-base badge-pill badge-pilotage">Clôturé</span>
         {% endif %}
-    </p>
+    </div>
     <div class="card-body pb-5 px-5">
         <div class="row py-4">
             <div class="col-md-12">
