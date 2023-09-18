@@ -414,9 +414,12 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
         qs = super().get_queryset()
         # first get the tender's siaes
         self.tender = Tender.objects.get(slug=self.kwargs.get("slug"))
-        if self.status:  # status == "INTERESTED"
+        if self.status == "INTERESTED":  # status == "INTERESTED"
             qs = qs.filter(tendersiae__tender=self.tender, tendersiae__detail_contact_click_date__isnull=False)
             qs = qs.order_by("-tendersiae__detail_contact_click_date")
+        elif self.status == "VIEW":  # status == "INTERESTED"
+            qs = qs.filter(tendersiae__tender=self.tender, tendersiae__email_link_click_date__isnull=False)
+            qs = qs.order_by("-tendersiae__email_link_click_date")
         else:  # default
             qs = qs.filter(tendersiae__tender=self.tender, tendersiae__email_send_date__isnull=False)
             qs = qs.order_by("-tendersiae__email_send_date")
