@@ -103,7 +103,10 @@ class Conversation(models.Model):
         The UUID of siae.
         """
         if not self.siae_encoded:
-            siae_slug_full_name = slugify(self.siae.contact_full_name).replace("-", "_")
+            if self.siae.contact_full_name:
+                siae_slug_full_name = slugify(self.siae.contact_full_name).replace("-", "_")
+            else:
+                siae_slug_full_name = self.siae.slug.replace("-", "_")
             self.siae_encoded = f"{siae_slug_full_name}_{str(uuid4())[:4]}"
 
     def save(self, *args, **kwargs):
