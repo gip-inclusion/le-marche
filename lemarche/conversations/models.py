@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.db import IntegrityError, models
-from django.db.models import Func, IntegerField
+from django.db.models import Func, IntegerField, Q
 from django.utils import timezone
 from django.utils.text import slugify
 from django_extensions.db.fields import ShortUUIDField
@@ -27,7 +27,7 @@ class ConversationQuerySet(models.QuerySet):
         if version == 0:
             return self.get(uuid=conv_uuid)
         else:
-            return self.get(models.Q(sender_encoded=conv_uuid) | models.Q(siae_encoded=conv_uuid))
+            return self.get(Q(sender_encoded__endswith=conv_uuid) | Q(siae_encoded__endswith=conv_uuid))
 
 
 class Conversation(models.Model):
@@ -103,7 +103,10 @@ class Conversation(models.Model):
         The UUID of siae.
         """
         if not self.siae_encoded:
-            siae_slug_full_name = slugify(self.siae.contact_full_name).replace("-", "_")
+            if self.siae.contact_full_name:
+                siae_slug_full_name = slugify(self.siae.contact_full_name).replace("-", "_")
+            else:
+                siae_slug_full_name = self.siae.slug.replace("-", "_")
             self.siae_encoded = f"{siae_slug_full_name}_{str(uuid4())[:4]}"
 
     def save(self, *args, **kwargs):
@@ -128,9 +131,9 @@ class Conversation(models.Model):
 
     def get_user_kind(self, conv_uuid):
         # method only available in version >= 1
-        if conv_uuid == self.sender_encoded:
+        if self.sender_encoded.endswith(conv_uuid):
             return self.USER_KIND_SENDER_TO_BUYER
-        elif conv_uuid == self.siae_encoded:
+        elif self.siae_encoded.endswith(conv_uuid):
             return self.USER_KIND_SENDER_TO_SIAE
 
     @property
@@ -169,24 +172,6 @@ class Conversation(models.Model):
             int: Number of all messages
         """
         return len(self.data) + 1
-
-    @staticmethod
-    def get_email_info_from_address(address_mail_label: str) -> list:
-        """Extract info from address mail managed by this class
-        Args:
-            address_mail_label (str): _description_
-
-        Returns:
-            [VERSION, UUID, KIND_SENDER]
-        """
-        email_infos = address_mail_label.split("_")
-        # version is 0 email is like "uuid_kind"
-        # version is 1 email is like "full_name_can_be_long_short_uuid"
-        version = 0 if len(email_infos) == 2 else 1
-        # in version 1 kind sender is not usefull
-        uuid = email_infos[0] if version == 0 else "_".join(email_infos)
-        kind_sender = email_infos[1] if version == 0 else None
-        return version, uuid, kind_sender
 
     @property
     def is_validated(self) -> bool:
