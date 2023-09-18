@@ -102,6 +102,10 @@
                             <i class="ri-focus-2-line"></i>
                             {{ tender.siae_email_send_date_count }} prestataire{{ tender.siae_email_send_date_count|pluralize }} ciblé{{ tender.siae_email_send_date_count|pluralize }}
                         </a>
+                        <a href="{% url 'tenders:detail-siae-list' tender.slug "VIEW" %}" id="show-tender-siae-list-from-detail-btn" class="btn btn-primary mb-3">
+                            <i class="ri-focus-2-line"></i>
+                            {{ tender.siae_detail_display_date_count_all }} prestataire{{ tender.siae_email_send_date_count|pluralize }} qui {{ tender.siae_email_send_date_count|pluralize:'a,ont' }} vu
+                        </a>
                         <a href="{% url 'tenders:detail-siae-list' tender.slug "INTERESTED" %}" id="show-tender-siae-interested-list-from-detail-btn" class="btn btn-primary mb-3">
                             <i class="ri-thumb-up-line"></i>
                             {{ tender.siae_detail_contact_click_date_count }} prestataire{{ tender.siae_detail_contact_click_date_count|pluralize }} intéressé{{ tender.siae_detail_contact_click_date_count|pluralize }}
