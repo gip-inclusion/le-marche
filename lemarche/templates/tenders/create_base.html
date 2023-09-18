@@ -90,12 +90,12 @@
                                 {% block action_form %}
                                     {% block recap_section %}{% endblock %}
                                     <div class="row">
-                                        <div class="col-12 {% if wizard.steps.current != wizard.steps.last %}col-lg-7{% endif %}">
+                                        <div class="col-12 col-lg-7">
                                             <hr />
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-12 {% if wizard.steps.current != wizard.steps.last %}col-lg-7{% endif %}">
+                                        <div class="col-12 col-lg-7">
                                             <div class="form-row align-items-center {% if wizard.steps.prev %}justify-content-between{% else %}justify-content-end{% endif %}">
                                                 {% if wizard.steps.prev %}
                                                     <div class="form-group col-12 col-lg order-3 order-lg-1">
