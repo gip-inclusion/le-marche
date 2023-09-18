@@ -3,7 +3,7 @@
 {% block step_title %}Evaluation de l’impact{% endblock %}
 {% block step_title_again %}Evaluation de l’impact{% endblock %}
 {% block step_subtitle %}
-    Aidez-nous à évaluer l'impact de la plateforme du Marché de l’inclusion en répondant à ces quelques questions.
+    Aidez-nous à évaluer l'impact de la plateforme du Marché de l’inclusion en répondant à ces deux questions.
     <br />
     <i class="fs-sm"> ⚠️ Ces informations sont anonymisées et exploitées à des fins statistiques. Elles resteront strictement confidentielles.</i>
 {% endblock %}
@@ -29,12 +29,6 @@
         </div>
         <div class="row">
             <div class="col-12 col-lg-7">
-                {% bootstrap_field form.worked_with_inclusif_siae_this_kind_tender form_group_class="form-group mb-lg-5" %}
-                <div id="div_is_encouraged_by_le_marche"
-                     class="{% if form.worked_with_inclusif_siae_this_kind_tender.value == '1' %}d-none{% endif %}">
-                    {% bootstrap_field form.is_encouraged_by_le_marche form_group_class="form-group form-group-required mb-lg-5" %}
-                </div>
-                {% bootstrap_field form.providers_out_of_insertion form_group_class="form-group mb-lg-5" %}
                 {% bootstrap_field form.le_marche_doesnt_exist_how_to_find_siae form_group_class="form-group" %}
             </div>
         </div>
@@ -50,29 +44,3 @@
         </button>
     </div>
 {% endblock submit_btn %}
-{% block extra_js %}
-    <script>
-document.addEventListener('DOMContentLoaded', function () {
-    {% comment %} div of the question 3 {% endcomment %}
-    let divIsEncouragedByLeMarche = document.getElementById('div_is_encouraged_by_le_marche');
-
-    let kindRadios = document.querySelectorAll('input[type=radio][name="survey-worked_with_inclusif_siae_this_kind_tender"]');
-    kindRadios.forEach(radio => radio.addEventListener('change', () => {
-        let displayQuestion3 = ["0", "?"].includes(radio.value)
-        if (displayQuestion3) {
-            divIsEncouragedByLeMarche.classList.remove('d-none');
-            question3Response = divIsEncouragedByLeMarche.querySelector('input')
-            question3Response.required = true;
-        } else {
-            divIsEncouragedByLeMarche.classList.add('d-none');
-            question3Response = divIsEncouragedByLeMarche.querySelector('input')
-            question3Response.required = false;
-            question3ResponseChecked = divIsEncouragedByLeMarche.querySelector('input:checked')
-            if(question3ResponseChecked){
-                question3ResponseChecked.checked = false;
-            }
-        }
-    }));
-});
-    </script>
-{% endblock %}
