@@ -148,11 +148,13 @@
                                     </div>
                                 {% elif not user_siae_has_detail_contact_click_date %}
                                     {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True %}
+                                    {% include "tenders/_detail_cta_cocontracting.html" with tender=tender %}
                                 {% endif %}
                             {% endif %}
                         {% elif siae_id %}
                             {% if not siae_has_detail_contact_click_date %}
                                 {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True siae_id=siae_id %}
+                                {% include "tenders/_detail_cta_cocontracting.html" with tender=tender siae_id=siae_id %}
                             {% else %}
                                 {% include "tenders/_detail_contact.html" with tender=tender %}
                             {% endif %}

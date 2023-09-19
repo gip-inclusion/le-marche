@@ -555,4 +555,5 @@ def notify_admin_siae_wants_cocontracting(tender: Tender, siae: Siae):
         recipient_list=[settings.NOTIFY_EMAIL],
     )
 
-    # api_slack.send_message_to_channel(text=email_body, service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL)
+    if settings.BITOUBI_ENV == "prod":
+        api_slack.send_message_to_channel(text=email_body, service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL)
