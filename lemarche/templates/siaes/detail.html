@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load static array_choices_display siae_sectors_display %}
+{% load static siae_sectors_display %}
 {% load theme_inclusion %}
 
 {% block title %}{{ siae.name_display }} est sur le marché de l'inclusion{% endblock %}
@@ -46,22 +46,6 @@
                             {% else %}
                                 {% include "siaes/_detail_cta.html" with siae=siae %}
                             {% endif %}
-                            <br />
-                            <div class="map-holder mb-3">
-                                <div id="map-siae" class="map-canvas"></div>
-                            </div>
-                            <div class="map_details">
-                                <ul class="list-unstyled m-0 fs-sm">
-                                    <li class="mb-1">
-                                        <i class="ri-map-pin-line"></i>
-                                        <span>Situé à {{ siae.city }}</span>
-                                    </li>
-                                    <li>
-                                        <i class="ri-map-2-line"></i>
-                                        <span>Intervient sur : {{ siae.geo_range_pretty_display }}</span>
-                                    </li>
-                                </ul>
-                            </div>
                         </div>
                         <hr class="mt-5 d-block d-lg-none">
                     </div>
