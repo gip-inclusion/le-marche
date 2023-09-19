@@ -5,15 +5,15 @@
         <div class="row">
             <div class="col-auto">
                 {% if siae.logo_url %}
-                    <img src="{{ siae.logo_url }}" width="50" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
+                    <img src="{{ siae.logo_url }}" width="100" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
                 {% else %}
-                    <img src="{% static 'img/default-listing.png' %}" width="50" alt="{{ siae.name }}" loading="lazy" />
+                    <img src="{% static 'img/default-listing.png' %}" width="100" alt="{{ siae.name }}" loading="lazy" />
                 {% endif %}
             </div>
             <div class="col">
                 <div class="row">
                     <div class="col-sm-12">
-                        <h1 class="h2">
+                        <h1 class="h2 mb-2">
                             {{ siae.name_display }}
                             <br />
                             <small>(profil mis à jour il y a {{ siae.updated_at|timesince }})</small>
@@ -35,37 +35,37 @@
                         {% endif %}
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <ul class="list-unstyled mb-0">
-                    <li class="mb-2">
-                        <i class="ri-building-4-line"></i>
-                        <span>{{ siae.get_kind_display }}</span>
-                    </li>
-                    {% if siae.legal_form %}
-                        <li class="mb-2">
-                            <i class="ri-building-4-fill"></i>
-                            <span>{{ siae.get_legal_form_display }}</span>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-            <div class="col-md-6">
-                <div class="badge-group">
-                    {% if siae.is_qpv %}
-                        <span class="badge badge-pill badge-emploi-lightest" title="Quartier prioritaire de la politique de la ville">QPV</span>
-                    {% endif %}
-                    {% if siae.is_zrr %}
-                        <span class="badge badge-pill badge-emploi-lightest" title="Zone de revitalisation rurale">ZRR</span>
-                    {% endif %}
-                    {% for group in siae.groups.all %}
-                        <span class="badge badge-pill badge-emploi-light">{{ group.name }}</span>
-                    {% endfor %}
-                    {% if siae.is_cocontracting %}
-                        <span class="badge badge-pill badge-success-light">Ouvert à la co-traitance</span>
-                    {% endif %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <i class="ri-building-4-line"></i>
+                                <span>{{ siae.get_kind_display }}</span>
+                            </li>
+                            {% if siae.legal_form %}
+                                <li class="mb-2">
+                                    <i class="ri-building-4-fill"></i>
+                                    <span>{{ siae.get_legal_form_display }}</span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="badge-group">
+                            {% if siae.is_qpv %}
+                                <span class="badge badge-pill badge-emploi-lightest" title="Quartier prioritaire de la politique de la ville">QPV</span>
+                            {% endif %}
+                            {% if siae.is_zrr %}
+                                <span class="badge badge-pill badge-emploi-lightest" title="Zone de revitalisation rurale">ZRR</span>
+                            {% endif %}
+                            {% for group in siae.groups.all %}
+                                <span class="badge badge-pill badge-emploi-light">{{ group.name }}</span>
+                            {% endfor %}
+                            {% if siae.is_cocontracting %}
+                                <span class="badge badge-pill badge-success-light">Ouvert à la co-traitance</span>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
