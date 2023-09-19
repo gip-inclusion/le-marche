@@ -177,9 +177,22 @@ class TenderCreateMultiStepView(SessionWizardView):
                     elif step == self.STEP_SURVEY:
                         setattr(self.instance, "scale_marche_useless", tender_dict.get("scale_marche_useless"))
                         self.instance.extra_data.update(tender_dict.get("extra_data"))
+            if self.request.user.is_authenticated:
+                self.instance.contact_first_name = self.request.user.first_name
+                self.instance.contact_last_name = self.request.user.last_name
+                self.instance.contact_email = self.request.user.email
+                self.instance.contact_phone = self.request.user.phone
+
             self.instance.save()
         else:
             tender_dict |= {"status": tender_status, "published_at": tender_published_at}
+            if self.request.user.is_authenticated:
+                tender_dict |= {
+                    "contact_first_name": self.request.user.first_name,
+                    "contact_last_name": self.request.user.last_name,
+                    "contact_email": self.request.user.email,
+                    "contact_phone": self.request.user.phone,
+                }
             self.instance = create_tender_from_dict(tender_dict)
 
     def done(self, _, form_dict, **kwargs):
