@@ -1,0 +1,80 @@
+{% load static %}
+
+<div id="user_profile" class="card c-card c-card--hovershadow siae-card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-auto">
+                {% if siae.logo_url %}
+                    <img src="{{ siae.logo_url }}" width="50" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
+                {% else %}
+                    <img src="{% static 'img/default-listing.png' %}" width="50" alt="{{ siae.name }}" loading="lazy" />
+                {% endif %}
+            </div>
+            <div class="col">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h1 class="h2">
+                            {{ siae.name_display }}
+                            <br />
+                            <small>(profil mis à jour il y a {{ siae.updated_at|timesince }})</small>
+                        </h1>
+                        {% if user.is_authenticated %}
+                            {% if siae.in_user_favorite_list_count %}
+                                <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_remove_modal" title="Dans votre liste d'achat">
+                                    <i class="ri-star-fill ri-xl"></i>
+                                </a>
+                                {% else %}
+                                <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_add_modal" title="Ajouter à votre liste d'achat" >
+                                    <i class="ri-star-line ri-xl"></i>
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <a href="#" id="favorite-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}" title="Ajouter à votre liste d'achat">
+                                <i class="ri-star-line ri-xl"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="ri-building-4-line"></i>
+                        <span>{{ siae.get_kind_display }}</span>
+                    </li>
+                    {% if siae.legal_form %}
+                        <li class="mb-2">
+                            <i class="ri-building-4-fill"></i>
+                            <span>{{ siae.get_legal_form_display }}</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <div class="badge-group">
+                    {% if siae.is_qpv %}
+                        <span class="badge badge-pill badge-emploi-lightest" title="Quartier prioritaire de la politique de la ville">QPV</span>
+                    {% endif %}
+                    {% if siae.is_zrr %}
+                        <span class="badge badge-pill badge-emploi-lightest" title="Zone de revitalisation rurale">ZRR</span>
+                    {% endif %}
+                    {% for group in siae.groups.all %}
+                        <span class="badge badge-pill badge-emploi-light">{{ group.name }}</span>
+                    {% endfor %}
+                    {% if siae.is_cocontracting %}
+                        <span class="badge badge-pill badge-success-light">Ouvert à la co-traitance</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body" style="border-top:1px solid #e6e6eb">
+        {% if inbound_email_is_activated %}
+            {% include "siaes/_useful_infos_siae_v2.html" with siae=siae %}
+        {% else %}
+            {% include "siaes/_useful_infos_siae.html" with siae=siae %}
+        {% endif %}
+    </div>
+</div>
