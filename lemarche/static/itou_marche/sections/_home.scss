@@ -54,6 +54,7 @@
 	padding-top: 3rem;
 	padding-bottom: 3rem;
 }
+
 .s-hp-slider-partners {
 	padding-top: 1.5rem;
 	padding-bottom: 1.5rem;
@@ -80,6 +81,19 @@
 					filter: grayscale(0);
 				}
 			}
+		}
+	}
+
+	&__col-image {
+		img {
+			display: block;
+			margin: auto;
+		}
+		@media (max-width: 992px) {
+			width: 25%;
+		}
+		@media (min-width: 992px) {
+			width: 12.5%;
 		}
 	}
 }
