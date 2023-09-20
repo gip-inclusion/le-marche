@@ -417,7 +417,7 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
         if self.status == "INTERESTED":  # status == "INTERESTED"
             qs = qs.filter(tendersiae__tender=self.tender, tendersiae__detail_contact_click_date__isnull=False)
             qs = qs.order_by("-tendersiae__detail_contact_click_date")
-        elif self.status == "VIEW":  # status == "INTERESTED"
+        elif self.status == "VIEWED":  # status == "INTERESTED"
             qs = qs.filter(
                 Q(tendersiae__tender=self.tender)
                 & (

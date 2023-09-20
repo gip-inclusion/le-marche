@@ -71,7 +71,7 @@
         <div id="tenderSiaeList">
             <ul role="navigation" class="nav nav-tabs nav-tabs--marche" style="border-bottom:0;">
                 {% url 'tenders:detail-siae-list' slug=tender.slug as TENDER_SIAE_LIST_URL %}
-                {% url 'tenders:detail-siae-list' slug=tender.slug status="VIEW" as TENDER_SIAE_DETAIL_CONTACT_VIEW_LIST_URL %}
+                {% url 'tenders:detail-siae-list' slug=tender.slug status="VIEWED" as TENDER_SIAE_DETAIL_CONTACT_VIEW_LIST_URL %}
                 {% url 'tenders:detail-siae-list' slug=tender.slug status="INTERESTED" as TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL %}
 
                 <li class="nav-item">
