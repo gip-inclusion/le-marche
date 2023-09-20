@@ -1016,7 +1016,7 @@ class SiaeSearchOrderTest(TestCase):
         self.assertEqual(siaes[0].name, "ABC Insertion")
 
     def test_should_bring_the_siae_with_users_to_the_top(self):
-        siae_with_user = SiaeFactory(name="ZZ ESI")
+        siae_with_user = SiaeFactory(name="ZZ ESI user")
         user = UserFactory()
         siae_with_user.users.add(user)
         url = reverse("siae:search_results", kwargs={})
@@ -1024,19 +1024,28 @@ class SiaeSearchOrderTest(TestCase):
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 3 + 1)
         self.assertEqual(siaes[0].has_user, True)
-        self.assertEqual(siaes[0].name, "ZZ ESI")
+        self.assertEqual(siaes[0].name, "ZZ ESI user")
+
+    def test_should_bring_the_siae_with_logos_to_the_top(self):
+        SiaeFactory(name="ZZ ESI logo", logo_url="https://logo.png")
+        url = reverse("siae:search_results", kwargs={})
+        response = self.client.get(url)
+        siaes = list(response.context["siaes"])
+        self.assertEqual(len(siaes), 3 + 1)
+        self.assertEqual(siaes[0].has_logo, True)
+        self.assertEqual(siaes[0].name, "ZZ ESI logo")
 
     def test_should_bring_the_siae_with_descriptions_to_the_top(self):
-        SiaeFactory(name="ZZ ESI 2", description="coucou")
+        SiaeFactory(name="ZZ ESI description", description="coucou")
         url = reverse("siae:search_results", kwargs={})
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 3 + 1)
         self.assertEqual(siaes[0].has_description, True)
-        self.assertEqual(siaes[0].name, "ZZ ESI 2")
+        self.assertEqual(siaes[0].name, "ZZ ESI description")
 
     def test_should_bring_the_siae_with_offers_to_the_top(self):
-        siae_with_offer = SiaeFactory(name="ZZ ESI 3")
+        siae_with_offer = SiaeFactory(name="ZZ ESI offer")
         SiaeOfferFactory(siae=siae_with_offer)
         siae_with_offer.save()  # to update the siae count fields
         url = reverse("siae:search_results", kwargs={})
@@ -1044,7 +1053,7 @@ class SiaeSearchOrderTest(TestCase):
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 3 + 1)
         self.assertEqual(siaes[0].has_offer, True)
-        self.assertEqual(siaes[0].name, "ZZ ESI 3")
+        self.assertEqual(siaes[0].name, "ZZ ESI offer")
 
     def test_should_bring_the_siae_closer_to_the_city_to_the_top(self):
         SiaeFactory(

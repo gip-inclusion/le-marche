@@ -335,23 +335,26 @@ class SiaeFilterForm(forms.Form):
         - push siae to update their profile, and have the freshest data at the top
         - we tried random order ("?"), but it had some bugs with pagination
         **BUT**
-        - if a Siae has a a SiaeOffer, or a description, or a User, then it is "boosted"
+        - if a Siae has a a SiaeOffer, or a description, or a logo, or a User, then it is "boosted"
         - if the search is on a CITY perimeter, we order by coordinates first
         - if the search is by keyword, order by "similarity" only
         """
         DEFAULT_ORDERING = ["-updated_at"]
-        ORDER_BY_FIELDS = ["-has_offer", "-has_description", "-has_user"] + DEFAULT_ORDERING
+        ORDER_BY_FIELDS = ["-has_offer", "-has_description", "-has_logo", "-has_user"] + DEFAULT_ORDERING
         # annotate on description presence: https://stackoverflow.com/a/65014409/4293684
         # qs = qs.annotate(has_description=Exists(F("description")))  # doesn't work
+        qs = qs.annotate(
+            has_offer=Case(
+                When(offer_count__gte=1, then=Value(True)), default=Value(False), output_field=BooleanField()
+            )
+        )
         qs = qs.annotate(
             has_description=Case(
                 When(description__gte=1, then=Value(True)), default=Value(False), output_field=BooleanField()
             )
         )
         qs = qs.annotate(
-            has_offer=Case(
-                When(offer_count__gte=1, then=Value(True)), default=Value(False), output_field=BooleanField()
-            )
+            has_logo=Case(When(logo_url__gte=1, then=Value(True)), default=Value(False), output_field=BooleanField())
         )
         qs = qs.annotate(
             has_user=Case(When(user_count__gte=1, then=Value(True)), default=Value(False), output_field=BooleanField())
