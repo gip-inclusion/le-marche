@@ -1,6 +1,7 @@
 {% load array_choices_display %}
 
 <div class="row">
+    <!-- First column -->
     <div class="col-12 col-md-6">
         <ul class="list-unstyled mb-0">
             <li class="mb-2">
@@ -34,39 +35,6 @@
                 <strong>{{ siae.etp_count_label_display }} :</strong>
                 <span>{{ siae.etp_count_display|floatformat:0|default:"non disponible" }}</span>
             </li>
-            <li class="mb-2">
-                {% include "siaes/_annuaire_entreprises_button.html" with siret=siae.siret %}
-            </li>
-        </ul>
-    </div>
-    <div class="col-12 col-md-6">
-        <ul class="list-unstyled mb-0">
-            {% if siae.is_missing_contact %}
-                <li class="mb-2">
-                    <i class="ri-search-line"></i>
-                    <a href="https://www.google.fr/search?q={{ siae.name_display }}" id="company_google" target="_blank" rel="noopener">Google</a>
-                </li>
-            {% endif %}
-            {% if siae.user_count %}
-                {% if siae.contact_short_name %}
-                    <li class="mb-2">
-                        <i class="ri-user-line"></i>
-                        <span>{{ siae.contact_short_name }}</span>
-                    </li>
-                {% endif %}
-            {% endif %}
-            {% comment %} {% if siae.contact_email %}
-                <li class="mb-2">
-                    <i class="ri-at-line"></i>
-                    <a href="mailto:{{ siae.contact_email }}" id="company_email">{{ siae.contact_email }}</a>
-                </li>
-            {% endif %} {% endcomment %}
-            {% if is_admin and siae.contact_phone %}
-                <li class="mb-2">
-                    <i class="ri-phone-line"></i>
-                    <a href="tel:{{ siae.contact_phone }}" id="company_phone">{{ siae.contact_phone }}</a>
-                </li>
-            {% endif %}
             {% if siae.contact_website %}
                 <li class="mb-2">
                     <i class="ri-window-2-line"></i>
@@ -79,10 +47,65 @@
                     <a href="{{ siae.contact_social_website }}" id="company_social_website" target="_blank" rel="noopener">Réseau social</a>
                 </li>
             {% endif %}
-            <li>
-                <i class="ri-map-pin-line"></i>
-                <span>{{ siae.address }} {{ siae.post_code }} {{ siae.city }}</span>
+            {% if siae.is_missing_contact %}
+                <li class="mb-2">
+                    <i class="ri-search-line"></i>
+                    <a href="https://www.google.fr/search?q={{ siae.name_display }}" id="company_google" target="_blank" rel="noopener">Google</a>
+                </li>
+            {% endif %}
+            <li class="mb-2">
+                {% include "siaes/_annuaire_entreprises_button.html" with siret=siae.siret %}
             </li>
         </ul>
+    </div>
+
+    <!-- Second column -->
+    <div class="col-12 col-md-6">
+        <ul class="list-unstyled mb-0">
+            {% if is_admin %}
+                {% if siae.user_count %}
+                    {% if siae.contact_short_name %}
+                        <li class="mb-2">
+                            <i class="ri-user-line"></i>
+                            <span>{{ siae.contact_short_name }}</span>
+                        </li>
+                    {% endif %}
+                {% endif %}
+                {% if siae.contact_email %}
+                    <li class="mb-2">
+                        <i class="ri-at-line"></i>
+                        <a href="mailto:{{ siae.contact_email }}" id="company_email">{{ siae.contact_email }}</a>
+                    </li>
+                {% endif %}
+                {% if siae.contact_phone %}
+                    <li class="mb-2">
+                        <i class="ri-phone-line"></i>
+                        <a href="tel:{{ siae.contact_phone }}" id="company_phone">{{ siae.contact_phone }}</a>
+                    </li>
+                {% endif %}
+            {% endif %}
+        </ul>
+        <div class="map-holder mb-3">
+            <div id="map-siae" class="map-canvas"></div>
+        </div>
+        <div class="map_details">
+            <ul class="list-unstyled m-0">
+                <li class="mb-2">
+                    <i class="ri-map-2-line"></i>
+                    <strong>Situé à :</strong>
+                    <span>{{ siae.city }}</span>
+                </li>
+                <li class="mb-2">
+                    <i class="ri-map-pin-line"></i>
+                    <strong>Adresse :</strong>
+                    <span>{{ siae.address }} {{ siae.post_code }} {{ siae.city }}</span>
+                </li>
+                <li class="mb-2">
+                    <i class="ri-focus-2-line"></i>
+                    <strong>Intervient sur :</strong>
+                    <span>{{ siae.geo_range_pretty_display }}</span>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
