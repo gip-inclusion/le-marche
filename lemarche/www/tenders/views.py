@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -414,9 +414,18 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
         qs = super().get_queryset()
         # first get the tender's siaes
         self.tender = Tender.objects.get(slug=self.kwargs.get("slug"))
-        if self.status:  # status == "INTERESTED"
+        if self.status == "INTERESTED":  # status == "INTERESTED"
             qs = qs.filter(tendersiae__tender=self.tender, tendersiae__detail_contact_click_date__isnull=False)
             qs = qs.order_by("-tendersiae__detail_contact_click_date")
+        elif self.status == "VIEWED":  # status == "INTERESTED"
+            qs = qs.filter(
+                Q(tendersiae__tender=self.tender)
+                & (
+                    Q(tendersiae__email_link_click_date__isnull=False)
+                    | Q(tendersiae__detail_display_date__isnull=False)
+                )
+            ).distinct()
+            qs = qs.order_by("-tendersiae__email_link_click_date")
         else:  # default
             qs = qs.filter(tendersiae__tender=self.tender, tendersiae__email_send_date__isnull=False)
             qs = qs.order_by("-tendersiae__email_send_date")
