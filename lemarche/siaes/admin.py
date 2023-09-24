@@ -186,6 +186,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
             "tender_email_link_click_count_annotated_with_link",
             "tender_detail_display_count_annotated_with_link",
             "tender_detail_contact_click_count_annotated_with_link",
+            "search_vector",
             "logs_display",
             "import_raw_object_display",
         ]
@@ -317,6 +318,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                 )
             },
         ),
+        ("Recherche", {"classes": ["collapse"], "fields": ("search_vector",)}),
         (
             "Stats",
             {

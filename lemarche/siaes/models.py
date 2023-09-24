@@ -5,8 +5,9 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
+from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import TrigramSimilarity  # SearchVector
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector, SearchVectorField
 from django.db import IntegrityError, models, transaction
 from django.db.models import BooleanField, Case, CharField, Count, F, IntegerField, PositiveIntegerField, Q, Sum, When
 from django.db.models.functions import Greatest, Round
@@ -822,6 +823,8 @@ class Siae(models.Model):
     c1_last_sync_date = models.DateTimeField(blank=True, null=True)
     c1_sync_skip = models.BooleanField(blank=False, null=False, default=False)
 
+    search_vector = SearchVectorField("Search vector", null=True)
+
     # admin
     notes = GenericRelation("notes.Note", related_query_name="siae")
 
@@ -871,6 +874,9 @@ class Siae(models.Model):
     class Meta:
         verbose_name = "Structure"
         verbose_name_plural = "Structures"
+        indexes = [
+            GinIndex(fields=["search_vector"]),
+        ]
         ordering = ["name"]
 
     def __str__(self):
