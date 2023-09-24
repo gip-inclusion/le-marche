@@ -55,13 +55,25 @@
                         </li>
                         <li class="nav-item" role="presentation">
                             <a class="nav-link"
-                                id="search-full-text-tab"
+                                id="search-full-text-1-tab"
                                 data-toggle="tab"
-                                href="#search-full-text"
+                                href="#search-full-text-1"
                                 role="tab"
-                                aria-controls="search-full-text"
+                                aria-controls="search-full-text-1"
                                 aria-selected="false">
-                                Recherche naturelle
+                                Recherche naturelle (v1)
+                                <span class="badge badge-sm badge-pill badge-important ml-2">Beta</span>
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link"
+                               id="search-full-text-2-tab"
+                               data-toggle="tab"
+                               href="#search-full-text-2"
+                               role="tab"
+                               aria-controls="search-full-text-2"
+                               aria-selected="false">
+                                Recherche naturelle (v2)
                                 <span class="badge badge-sm badge-pill badge-important ml-2">Beta</span>
                             </a>
                         </li>
@@ -217,9 +229,9 @@
                             </form>
                         </div>
                         <div class="tab-pane fade"
-                            id="search-full-text"
+                            id="search-full-text-1"
                             role="tabpanel"
-                            aria-labelledby="search-full-text-tab">
+                            aria-labelledby="search-full-text-1-tab">
                             <form method="GET"
                                   action="{% url 'siae:search_results' %}"
                                   id="text-search-form"
@@ -229,7 +241,35 @@
                                 <div class="row">
                                     <div class="col-12 col-lg-8">
                                         <div class="row">
-                                            <div class="col-12">{% bootstrap_field form.search %}</div>
+                                            <div class="col-12">{% bootstrap_field form.search_1 %}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-lg-4">
+                                        <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
+                                        <button id="text-search-submit"
+                                                class="btn btn-primary btn-block btn-ico"
+                                                type="submit">
+                                            <span>Rechercher</span>
+                                            <i class="ri-search-line ri-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade"
+                             id="search-full-text-2"
+                             role="tabpanel"
+                             aria-labelledby="search-full-text-2-tab">
+                            <form method="GET"
+                                  action="{% url 'siae:search_results' %}"
+                                  id="text-search-form"
+                                  aria-label="Rechercher des prestataires de l'insertion et du handicap"
+                                  role="search">
+                                {% bootstrap_form_errors form type="all" %}
+                                <div class="row">
+                                    <div class="col-12 col-lg-8">
+                                        <div class="row">
+                                            <div class="col-12">{% bootstrap_field form.search_2 %}</div>
                                         </div>
                                     </div>
                                     <div class="col-12 col-lg-4">
@@ -381,9 +421,13 @@ document.addEventListener("DOMContentLoaded", function() {
     let searchTextContent = document.getElementById('search-text');
     let qInput = document.getElementById('id_q');
     // third tab
-    let searchFullTextTab = document.getElementById('search-full-text-tab');
-    let searchFullTextContent = document.getElementById('search-full-text');
-    let searchInput = document.getElementById('id_search');
+    let searchFullText1Tab = document.getElementById('search-full-text-1-tab');
+    let searchFullText1Content = document.getElementById('search-full-text-1');
+    let search1Input = document.getElementById('id_search_1');
+    // fourth tab
+    let searchFullText2Tab = document.getElementById('search-full-text-2-tab');
+    let searchFullText2Content = document.getElementById('search-full-text-2');
+    let search2Input = document.getElementById('id_search_2');
     // other form elements
     let resetBtn = document.getElementById('form-reset-btn');
 
@@ -392,8 +436,11 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // init search form
-    if (searchInput.value) {
-        showSearchTextForm(searchFullTextTab, searchFullTextContent);
+    if (search1Input.value) {
+        showSearchTextForm(searchFullText1Tab, searchFullText1Content);
+    }
+    else if (search2Input.value) {
+        showSearchTextForm(searchFullText2Tab, searchFullText2Content);
     }
     else if (qInput.value) {
         showSearchTextForm(searchTextTab, searchTextContent);

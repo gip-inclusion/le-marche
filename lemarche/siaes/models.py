@@ -6,8 +6,7 @@ from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django.contrib.postgres.indexes import GinIndex
-from django.contrib.postgres.search import TrigramSimilarity  # SearchVector
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector, SearchVectorField
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector, SearchVectorField, TrigramSimilarity
 from django.db import IntegrityError, models, transaction
 from django.db.models import BooleanField, Case, CharField, Count, F, IntegerField, PositiveIntegerField, Q, Sum, When
 from django.db.models.functions import Greatest, Round
@@ -201,12 +200,25 @@ class SiaeQuerySet(models.QuerySet):
 
     def filter_full_text(self, search_string):
         search_vector = (
-            SearchVector("offers__name", config="french")
+            SearchVector("name")
+            + SearchVector("brand")
             + SearchVector("description", config="french")
+            + SearchVector("offers__name", config="french")
             + SearchVector("labels__name", config="french")
         )
-        search_query = SearchQuery(search_string)
-        return self.annotate(rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.3)
+        search_query = SearchQuery(search_string, config="french")
+
+        return self.annotate(rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.01)
+
+    def filter_full_text_on_search_vector_field(self, search_string):
+        # SearchQuery uses 'AND' by default. Change to 'OR'.
+        search_string_list = search_string.split(" ")
+        filters = SearchQuery(search_string_list[0], config="french")
+        if len(search_string_list) > 1:
+            for search_term in search_string_list[1:]:
+                filters |= SearchQuery(search_term, config="french")
+
+        return self.filter(search_vector=filters).annotate(rank=SearchRank(F("search_vector"), filters))
 
     def filter_sectors(self, sectors):
         return self.filter(sectors__in=sectors)

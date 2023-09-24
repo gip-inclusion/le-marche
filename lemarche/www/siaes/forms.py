@@ -65,8 +65,13 @@ class SiaeFilterForm(forms.Form):
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "Votre recherche…"}),
     )
-    search = forms.CharField(
-        label="Recherche via mots-clés ou une phrase",
+    search_1 = forms.CharField(
+        label="Recherche via mots-clés ou une phrase (v1)",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Votre recherche…"}),
+    )
+    search_2 = forms.CharField(
+        label="Recherche via mots-clés ou une phrase (v2)",
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "Votre recherche…"}),
     )
@@ -217,9 +222,12 @@ class SiaeFilterForm(forms.Form):
             qs = qs.filter_on_siret_or_name_or_brand(q_string)
 
         # "search": full text search
-        search_string = self.cleaned_data.get("search", None)
-        if search_string:
-            qs = qs.filter_full_text(search_string)
+        search_1_string = self.cleaned_data.get("search_1", None)
+        if search_1_string:
+            qs = qs.filter_full_text(search_1_string)
+        search_2_string = self.cleaned_data.get("search_2", None)
+        if search_2_string:
+            qs = qs.filter_full_text_on_search_vector_field(search_2_string)
 
         sectors = self.cleaned_data.get("sectors", None)
         if sectors:
@@ -387,8 +395,9 @@ class SiaeFilterForm(forms.Form):
         if q_string:
             ORDER_BY_FIELDS = ["-similarity"]
 
-        search_string = self.cleaned_data.get("search", None)
-        if search_string:
+        search_1_string = self.cleaned_data.get("search_1", None)
+        search_2_string = self.cleaned_data.get("search_2", None)
+        if search_1_string or search_2_string:
             ORDER_BY_FIELDS = ["-rank"]
 
         # final ordering
