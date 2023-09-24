@@ -6,6 +6,7 @@ from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django.contrib.postgres.search import TrigramSimilarity  # SearchVector
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db import IntegrityError, models, transaction
 from django.db.models import BooleanField, Case, CharField, Count, F, IntegerField, PositiveIntegerField, Q, Sum, When
 from django.db.models.functions import Greatest, Round
@@ -187,17 +188,24 @@ class SiaeQuerySet(models.QuerySet):
     def filter_siret_startswith(self, siret):
         return self.filter(siret__startswith=siret)
 
-    def filter_full_text(self, full_text_string):
+    def filter_on_siret_or_name_or_brand(self, search_string):
         # Simple method 1: SearchVectors
         #     return self.annotate(
         #         search=SearchVector("name", config="french") + SearchVector("brand", config="french")
-        #     ).filter(Q(search=full_text_string) | Q(siret__startswith=full_text_string))
+        #     ).filter(Q(search=search_string) | Q(siret__startswith=search_string))
         # Simple method 2: TrigramSimilarity
         return self.annotate(
-            similarity=Greatest(
-                TrigramSimilarity("name", full_text_string), TrigramSimilarity("brand", full_text_string)
-            )
-        ).filter(Q(similarity__gt=0.2) | Q(siret__startswith=full_text_string))
+            similarity=Greatest(TrigramSimilarity("name", search_string), TrigramSimilarity("brand", search_string))
+        ).filter(Q(similarity__gt=0.2) | Q(siret__startswith=search_string))
+
+    def filter_full_text(self, search_string):
+        search_vector = (
+            SearchVector("offers__name", config="french")
+            + SearchVector("description", config="french")
+            + SearchVector("labels__name", config="french")
+        )
+        search_query = SearchQuery(search_string)
+        return self.annotate(rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.3)
 
     def filter_sectors(self, sectors):
         return self.filter(sectors__in=sectors)

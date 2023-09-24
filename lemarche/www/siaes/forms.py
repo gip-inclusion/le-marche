@@ -65,6 +65,11 @@ class SiaeFilterForm(forms.Form):
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "Votre recherche…"}),
     )
+    search = forms.CharField(
+        label="Recherche via mots-clés ou une phrase",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Votre recherche…"}),
+    )
     sectors = GroupedModelMultipleChoiceField(
         label=Sector._meta.verbose_name_plural,
         queryset=Sector.objects.form_filter_queryset(),
@@ -203,12 +208,18 @@ class SiaeFilterForm(forms.Form):
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
 
-        full_text_string = self.cleaned_data.get("q", None)
-        if full_text_string:
-            # case where a siret search was done, strip all spaces
-            if full_text_string.replace(" ", "").isdigit():
-                full_text_string = full_text_string.replace(" ", "")
-            qs = qs.filter_full_text(full_text_string)
+        # "q": search by siret or name
+        q_string = self.cleaned_data.get("q", None)
+        if q_string:
+            # if the user is searching by siret, strip all spaces
+            if q_string.replace(" ", "").isdigit():
+                q_string = q_string.replace(" ", "")
+            qs = qs.filter_on_siret_or_name_or_brand(q_string)
+
+        # "search": full text search
+        search_string = self.cleaned_data.get("search", None)
+        if search_string:
+            qs = qs.filter_full_text(search_string)
 
         sectors = self.cleaned_data.get("sectors", None)
         if sectors:
@@ -372,9 +383,13 @@ class SiaeFilterForm(forms.Form):
                 )
                 ORDER_BY_FIELDS = ["distance"] + ORDER_BY_FIELDS
 
-        full_text_string = self.cleaned_data.get("q", None)
-        if full_text_string:
+        q_string = self.cleaned_data.get("q", None)
+        if q_string:
             ORDER_BY_FIELDS = ["-similarity"]
+
+        search_string = self.cleaned_data.get("search", None)
+        if search_string:
+            ORDER_BY_FIELDS = ["-rank"]
 
         # final ordering
         qs = qs.order_by(*ORDER_BY_FIELDS)
