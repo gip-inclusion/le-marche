@@ -56,8 +56,8 @@ def get_or_create_user_from_anonymous_content(tender_dict: dict, source: str = U
     user, created = User.objects.get_or_create(
         email=email,
         defaults={
-            "first_name": "",
-            "last_name": "",
+            "first_name": tender_dict.get("contact_first_name"),
+            "last_name": tender_dict.get("contact_last_name"),
             "phone": tender_dict.get("contact_phone"),
             "company_name": tender_dict.pop("contact_company_name")
             if tender_dict.get("contact_company_name")

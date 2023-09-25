@@ -135,6 +135,8 @@ class TenderCreateStepContactForm(forms.ModelForm):
     class Meta:
         model = Tender
         fields = [
+            "contact_first_name",
+            "contact_last_name",
             "contact_email",
             "contact_phone",
             "response_kind",
@@ -157,9 +159,13 @@ class TenderCreateStepContactForm(forms.ModelForm):
         self.fields["response_kind"].required = True
         self.fields["deadline_date"].required = True
         if self.user_is_anonymous:
+            self.fields["contact_first_name"].required = True
+            self.fields["contact_last_name"].required = True
             self.fields["contact_email"].required = True
             self.fields["contact_phone"].required = True
         else:
+            del self.fields["contact_first_name"]
+            del self.fields["contact_last_name"]
             del self.fields["contact_email"]
             del self.fields["contact_phone"]
 

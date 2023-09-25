@@ -55,6 +55,8 @@ class TenderCreateViewTest(TestCase):
         } | _step_2
         step_3 = {
             "tender_create_multi_step_view-current_step": "contact",
+            "contact-contact_first_name": tender_not_saved.contact_first_name,
+            "contact-contact_last_name": tender_not_saved.contact_last_name,
             "contact-contact_email": tender_not_saved.contact_email,
             "contact-contact_phone": "0123456789",
             "contact-contact_company_name": "TEST",

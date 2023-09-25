@@ -9,6 +9,12 @@
 {% csrf_token %}
 <div class="row">
     <div class="col-12 col-lg-7">
+        {% if not user.is_authenticated %}
+            <div class="form-row">
+                {% bootstrap_field form.contact_first_name form_group_class="form-group col-12 col-md-6" %}
+                {% bootstrap_field form.contact_last_name form_group_class="form-group col-12 col-md-6" %}
+            </div>
+        {% endif %}
         {% bootstrap_field form.contact_company_name %}
         {% if not user.is_authenticated %}
             <div class="form-row">
