@@ -145,6 +145,12 @@ class TenderCreateStepContactForm(forms.ModelForm):
         widgets = {
             "deadline_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
         }
+        labels = {
+            "contact_first_name": "Prénom",
+            "contact_last_name": "Nom",
+            "contact_email": "E-mail",
+            "contact_phone": "Téléphone",
+        }
 
     def __init__(self, max_deadline_date, external_link, user: User, *args, **kwargs):
         super().__init__(*args, **kwargs)
