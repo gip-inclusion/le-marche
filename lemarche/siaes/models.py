@@ -202,7 +202,13 @@ class SiaeQuerySet(models.QuerySet):
         search_vector = (
             SearchVector("name")
             + SearchVector("brand")
+            + SearchVector("siret")
+            + SearchVector("city")
+            + SearchVector("department")
+            + SearchVector("region")
+            + SearchVector("kind")
             + SearchVector("description", config="french")
+            + SearchVector("sectors__name", config="french")
             + SearchVector("offers__name", config="french")
             + SearchVector("labels__name", config="french")
         )
@@ -211,14 +217,18 @@ class SiaeQuerySet(models.QuerySet):
         return self.annotate(rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.01)
 
     def filter_full_text_on_search_vector_field(self, search_string):
-        # SearchQuery uses 'AND' by default. Change to 'OR'.
+        # SearchQuery uses 'AND' by default. Change to 'OR' (and add full search_string as default)
         search_string_list = search_string.split(" ")
-        filters = SearchQuery(search_string_list[0], config="french")
+        filters = SearchQuery(search_string, config="french")
         if len(search_string_list) > 1:
-            for search_term in search_string_list[1:]:
+            for search_term in search_string_list:
                 filters |= SearchQuery(search_term, config="french")
 
-        return self.filter(search_vector=filters).annotate(rank=SearchRank(F("search_vector"), filters))
+        return (
+            self.filter(search_vector=filters)
+            .annotate(rank=SearchRank(F("search_vector"), filters))
+            .filter(rank__gte=0.01)
+        )
 
     def filter_sectors(self, sectors):
         return self.filter(sectors__in=sectors)

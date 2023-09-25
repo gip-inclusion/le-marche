@@ -16,7 +16,7 @@ class Command(BaseCommand):
         self.stdout_info("-" * 80)
         self.stdout_info("Reseting search_vector field...")
         progress = 0
-        for siae in Siae.objects.prefetch_related("offers", "labels").all():
+        for siae in Siae.objects.prefetch_related("sectors", "offers", "labels").all():
             siae_search_vector = (
                 SearchVector(
                     Value(siae.name, output_field=models.CharField()),
@@ -25,6 +25,26 @@ class Command(BaseCommand):
                 )
                 + SearchVector(
                     Value(siae.brand, output_field=models.CharField()),
+                    # weight="A",
+                    # config="french",
+                )
+                + SearchVector(
+                    Value(siae.siret, output_field=models.CharField()),
+                    # weight="A",
+                    # config="french",
+                )
+                + SearchVector(
+                    Value(siae.city, output_field=models.CharField()),
+                    # weight="A",
+                    # config="french",
+                )
+                + SearchVector(
+                    Value(siae.department, output_field=models.CharField()),
+                    # weight="A",
+                    # config="french",
+                )
+                + SearchVector(
+                    Value(siae.region, output_field=models.CharField()),
                     # weight="A",
                     # config="french",
                 )
@@ -39,6 +59,14 @@ class Command(BaseCommand):
                     config="french",
                 )
             )
+            if siae.sectors:
+                siae_search_vector += SearchVector(
+                    Value(
+                        " ".join(str(sector.name) for sector in siae.sectors.all()),
+                    ),
+                    # weight="A",
+                    config="french",
+                )
             if siae.offers:
                 siae_search_vector += SearchVector(
                     Value(

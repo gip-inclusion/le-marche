@@ -61,7 +61,7 @@
                                 role="tab"
                                 aria-controls="search-full-text-1"
                                 aria-selected="false">
-                                Recherche naturelle (v1)
+                                Recherche texte (v1)
                                 <span class="badge badge-sm badge-pill badge-important ml-2">Beta</span>
                             </a>
                         </li>
@@ -73,7 +73,7 @@
                                role="tab"
                                aria-controls="search-full-text-2"
                                aria-selected="false">
-                                Recherche naturelle (v2)
+                                Recherche texte (v2)
                                 <span class="badge badge-sm badge-pill badge-important ml-2">Beta</span>
                             </a>
                         </li>
@@ -201,9 +201,9 @@
                             </form>
                         </div>
                         <div class="tab-pane fade"
-                             id="search-text"
+                             id="search-full-text-1"
                              role="tabpanel"
-                             aria-labelledby="search-text-tab">
+                             aria-labelledby="search-full-text-1-tab">
                             <form method="GET"
                                   action="{% url 'siae:search_results' %}"
                                   id="text-search-form"
@@ -243,6 +243,13 @@
                                         <div class="row">
                                             <div class="col-12">{% bootstrap_field form.search_1 %}</div>
                                         </div>
+                                        <div class="alert alert-info">
+                                            <ul class="mb-0">
+                                                <li>Recherche effectuée en "live" (indéxation des champs à chaque recherche)</li>
+                                                <li>Recherche effectuée sur les champs suivants : name, brand, siret, address (city, department, region), kind, description, sectors (name), offers (name), labels (name)</li>
+                                                <li>Recherche "AND" ; pas de poids ; filtre rank > 0.01</li>
+                                            </ul>
+                                        </div>
                                     </div>
                                     <div class="col-12 col-lg-4">
                                         <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
@@ -270,6 +277,13 @@
                                     <div class="col-12 col-lg-8">
                                         <div class="row">
                                             <div class="col-12">{% bootstrap_field form.search_2 %}</div>
+                                        </div>
+                                        <div class="alert alert-info">
+                                            <ul class="mb-0">
+                                                <li>Recherche effectuée sur le champ "search_vector" (indéxé de façon asynchrone)</li>
+                                                <li>Recherche effectuée sur les champs suivants : name, brand, siret,  address (city, department, region), kind, description, sectors (name), offers (name), labels (name)</li>
+                                                <li>Recherche "OR" ; pas de poids ; filtre rank > 0.01</li>
+                                            </ul>
                                         </div>
                                     </div>
                                     <div class="col-12 col-lg-4">
@@ -416,10 +430,6 @@ document.addEventListener("DOMContentLoaded", function() {
     // first tab
     let searchFilterTab = document.getElementById('search-filter-tab');
     let searchFilterContent = document.getElementById('search-filter');
-    // second tab
-    let searchTextTab = document.getElementById('search-text-tab');
-    let searchTextContent = document.getElementById('search-text');
-    let qInput = document.getElementById('id_q');
     // third tab
     let searchFullText1Tab = document.getElementById('search-full-text-1-tab');
     let searchFullText1Content = document.getElementById('search-full-text-1');
@@ -438,13 +448,8 @@ document.addEventListener("DOMContentLoaded", function() {
     // init search form
     if (search1Input.value) {
         showSearchTextForm(searchFullText1Tab, searchFullText1Content);
-    }
-    else if (search2Input.value) {
+    } else if (search2Input.value) {
         showSearchTextForm(searchFullText2Tab, searchFullText2Content);
-    }
-    else if (qInput.value) {
-        showSearchTextForm(searchTextTab, searchTextContent);
-        // hideSearchFilterForm(searchFilterTab, searchFilterContent);
     } else {
         showSearchFilterForm(searchFilterTab, searchFilterContent);
     }
