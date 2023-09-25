@@ -533,3 +533,27 @@ def send_tenders_author_30_days(tender: Tender, kind="feedback"):
         }
         tender.logs.append(log_item)
         tender.save()
+
+
+def notify_admin_siae_wants_cocontracting(tender: Tender, siae: Siae):
+    email_subject = f"Marché de l'inclusion : la structure {siae.name} souhaite répondre en co-traitance"
+    tender_admin_url = get_admin_url_object(tender)
+    email_body = render_to_string(
+        "tenders/cocontracting_notification_email_admin_body.txt",
+        {
+            "tender_title": tender.title,
+            "tender_kind": tender.get_kind_display(),
+            "tender_admin_url": tender_admin_url,
+            "siae_name": siae.name,
+            "siae_contact_email": siae.contact_email,
+            "siae_siret": siae.siret,
+        },
+    )
+    send_mail_async(
+        email_subject=email_subject,
+        email_body=email_body,
+        recipient_list=[settings.NOTIFY_EMAIL],
+    )
+
+    if settings.BITOUBI_ENV == "prod":
+        api_slack.send_message_to_channel(text=email_body, service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL)
