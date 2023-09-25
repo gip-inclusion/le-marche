@@ -156,7 +156,8 @@ class TenderCreateStepContactForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.max_deadline_date = max_deadline_date
         self.external_link = external_link
-        self.user_is_anonymous = not user.is_authenticated
+        self.user = user
+        user_is_anonymous = not user.is_authenticated
 
         if self.instance.deadline_date:
             self.initial["deadline_date"] = self.instance.deadline_date.isoformat()
@@ -164,7 +165,7 @@ class TenderCreateStepContactForm(forms.ModelForm):
         # required fields
         self.fields["response_kind"].required = True
         self.fields["deadline_date"].required = True
-        if self.user_is_anonymous:
+        if user_is_anonymous:
             self.fields["contact_first_name"].required = True
             self.fields["contact_last_name"].required = True
             self.fields["contact_email"].required = True
@@ -175,7 +176,7 @@ class TenderCreateStepContactForm(forms.ModelForm):
             del self.fields["contact_email"]
             del self.fields["contact_phone"]
 
-        user_does_not_have_company_name = self.user_is_anonymous or not user.company_name
+        user_does_not_have_company_name = user_is_anonymous or not user.company_name
         if user_does_not_have_company_name:
             self.fields["contact_company_name"].widget = forms.TextInput()  # HiddenInput() by default
             self.fields["contact_company_name"].required = True
@@ -201,7 +202,7 @@ class TenderCreateStepContactForm(forms.ModelForm):
                 "deadline_date", "La date de clôture des réponses ne doit pas être antérieure à aujourd'hui."
             )
 
-        if self.user_is_anonymous:
+        if not self.user.is_authenticated:
             # contact_email must be filled if RESPONSE_KIND_EMAIL
             if self.cleaned_data.get("response_kind") and (
                 Tender.RESPONSE_KIND_EMAIL in self.cleaned_data.get("response_kind")
@@ -214,6 +215,14 @@ class TenderCreateStepContactForm(forms.ModelForm):
                 and not self.cleaned_data.get("contact_phone")
             ):
                 self.add_error("response_kind", "Téléphone sélectionné mais aucun téléphone renseigné.")
+        elif not self.user.phone:
+            if self.cleaned_data.get("response_kind") and (
+                Tender.RESPONSE_KIND_TEL in self.cleaned_data.get("response_kind")
+            ):
+                self.add_error(
+                    "response_kind", "Téléphone sélectionné mais aucun téléphone renseigné dans votre profil."
+                )
+
         # external_link must be filled if RESPONSE_KIND_EXTERNAL
         if self.cleaned_data.get("response_kind") and (
             Tender.RESPONSE_KIND_EXTERNAL in self.cleaned_data.get("response_kind") and not self.external_link
