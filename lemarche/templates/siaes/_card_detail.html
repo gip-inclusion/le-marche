@@ -1,6 +1,6 @@
 {% load static %}
 
-<div id="user_profile" class="card c-card c-card--hovershadow siae-card">
+<div class="card c-card c-card--hovershadow siae-card">
     <div class="card-header">
         <div class="row">
             <div class="col-auto">
@@ -20,16 +20,16 @@
                         </h1>
                         {% if user.is_authenticated %}
                             {% if siae.in_user_favorite_list_count %}
-                                <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_remove_modal" title="Dans votre liste d'achat">
+                                <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_remove_modal" title="Dans votre liste d'achat">
                                     <i class="ri-star-fill ri-xl"></i>
                                 </a>
                                 {% else %}
-                                <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#favorite_item_add_modal" title="Ajouter à votre liste d'achat" >
+                                <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_add_modal" title="Ajouter à votre liste d'achat" >
                                     <i class="ri-star-line ri-xl"></i>
                                 </a>
                             {% endif %}
                         {% else %}
-                            <a href="#" id="favorite-modal-btn" class="btn btn-favorite p-0" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}" title="Ajouter à votre liste d'achat">
+                            <a href="#" id="favorite-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}" title="Ajouter à votre liste d'achat">
                                 <i class="ri-star-line ri-xl"></i>
                             </a>
                         {% endif %}

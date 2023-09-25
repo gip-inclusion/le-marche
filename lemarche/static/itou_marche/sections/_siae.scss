@@ -186,24 +186,8 @@
 		flex-wrap: wrap;
 	}
 
-	#user_profile {
+	#user_profile > .card {
 		background-color: $gray-400;
-		padding: 1rem;
-		margin: 0;
-		border-radius: 0.5rem;
-	}
-
-	#user_profile h3 {
-		margin-top: 0;
-		margin-bottom: 1rem;
-	}
-
-	#user_profile .gallery-small {
-		// margin: 0 0 20px;
-		overflow: hidden;
-		border-radius: 0.25rem;
-		position: relative;
-		text-align: center;
 	}
 
 	.active_sectors {
