@@ -1,5 +1,6 @@
 import json
 from datetime import timedelta
+from unittest import mock
 
 from django.conf import settings
 from django.contrib.gis.geos import Point
@@ -849,8 +850,44 @@ class TenderDetailViewTest(TestCase):
         self.assertNotContains(response, "Voir l'appel d'offres")
         self.assertContains(response, "Lien partagé")
 
+    def test_tender_cocontracting_display(self):
+        # anonymous
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertNotContains(response, "Répondre en co-traitance ?")
+        # anonymous but with siae_id in url
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(f"{url}?siae_id=15")
+        self.assertContains(response, "Répondre en co-traitance ?")
+        # siae user interested but has a detail_contact_click_date
+        self.client.force_login(self.siae_user_1)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertNotContains(response, "Répondre en co-traitance ?")
+        # siae user not concerned
+        self.client.force_login(self.siae_user_2)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "Répondre en co-traitance ?")
+        # siae user interested
+        TenderSiae.objects.create(tender=self.tender_1, siae=self.siae_2, email_send_date=timezone.now())
+        self.client.force_login(self.siae_user_2)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "Répondre en co-traitance ?")
+        # siae user without siae
+        self.client.force_login(self.siae_user_3)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertNotContains(response, "Répondre en co-traitance ?")
+        # author
+        self.client.force_login(self.user_buyer_1)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertNotContains(response, "Répondre en co-traitance ?")
 
-class TenderDetailContactClickStatViewViewTest(TestCase):
+
+class TenderDetailContactClickStatViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.siae = SiaeFactory(name="ZZ ESI")
@@ -960,6 +997,65 @@ class TenderDetailContactClickStatViewViewTest(TestCase):
         self.assertEqual(
             self.tender.tendersiae_set.first().detail_contact_click_date, siae_2_detail_contact_click_date
         )
+
+
+class TenderDetailCocontractingClickView(TestCase):
+    @classmethod
+    def setUpTestData(self):
+        self.siae = SiaeFactory(name="ZZ ESI")
+        self.siae_user = UserFactory(kind=User.KIND_SIAE, siaes=[self.siae])
+        self.user_buyer = UserFactory(kind=User.KIND_BUYER, company_name="Entreprise Buyer")
+        self.tender = TenderFactory(
+            kind=tender_constants.KIND_TENDER,
+            author=self.user_buyer,
+            amount=tender_constants.AMOUNT_RANGE_100_150,
+            accept_share_amount=True,
+            response_kind=[Tender.RESPONSE_KIND_EMAIL],
+        )
+        self.tendersiae = TenderSiae.objects.create(
+            tender=self.tender,
+            siae=self.siae,
+            source="EMAIL",
+            email_send_date=timezone.now(),
+            email_link_click_date=timezone.now(),
+            detail_display_date=timezone.now(),
+            detail_contact_click_date=timezone.now(),
+        )
+        TenderQuestionFactory(tender=self.tender)
+
+    def test_user_can_notify_cocontracting_wish(self):
+        url = reverse("tenders:detail-cocontracting-click", kwargs={"slug": self.tender.slug})
+        with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
+            response = self.client.post(url, data={})
+        self.assertEqual(response.status_code, 403)
+        mock_send_mail_async.assert_not_called()
+
+        with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
+            response = self.client.post(f"{url}?siae_id=999999", data={})
+        self.assertContains(response, "nous n'avons pas pu prendre en compte votre demande de mise en relation")
+        mock_send_mail_async.assert_not_called()
+
+        with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
+            response = self.client.post(f"{url}?siae_id={self.siae.id}", data={})
+        self.assertContains(response, "Nous avons bien pris en compte votre demande de mise en relation")
+        mock_send_mail_async.assert_called_once()
+        email_body = mock_send_mail_async.call_args[1]["email_body"]
+        self.assertTrue(f"La structure {self.siae.name } souhaite répondre en co-traitance" in email_body)
+
+        self.client.force_login(self.siae_user)
+        with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
+            response = self.client.post(url, data={})
+        self.assertContains(response, "Nous avons bien pris en compte votre demande de mise en relation")
+        mock_send_mail_async.assert_called_once()
+        email_body = mock_send_mail_async.call_args[1]["email_body"]
+        self.assertTrue(f"La structure {self.siae.name } souhaite répondre en co-traitance" in email_body)
+
+        user_without_siae = UserFactory(kind=User.KIND_SIAE)
+        self.client.force_login(user_without_siae)
+        with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
+            response = self.client.post(url, data={})
+        self.assertContains(response, "nous n'avons pas pu prendre en compte votre demande de mise en relation")
+        mock_send_mail_async.assert_not_called()
 
 
 # TODO: this test doesn't work anymore. find a way to test logging post-email in non-prod environments?
