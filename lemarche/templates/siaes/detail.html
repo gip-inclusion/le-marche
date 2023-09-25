@@ -37,15 +37,15 @@
                 <!-- profile-detail basic info -->
                 <div id="user_profile">
                     {% include "siaes/_card_detail.html" with siae=siae %}
-                    {% if is_admin %}
-                        {% include "siaes/_detail_admin_extra_info.html" with siae=siae %}
-                    {% endif %}
                 </div>
 
                 <!-- profile-detail sidebar -->
                 <aside id="sidebar">
                     <div class="profile mb-4">
                         <div class="profile_capsule">
+                            {% if is_admin %}
+                                {% include "siaes/_detail_admin_extra_info.html" with siae=siae %}
+                            {% endif %}
                             {% if inbound_email_is_activated %}
                                 {% include "siaes/_detail_cta_v2.html" with siae=siae %}
                             {% else %}
