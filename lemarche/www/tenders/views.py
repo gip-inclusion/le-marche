@@ -522,6 +522,7 @@ class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, Updat
                 Tender.objects.filter(id=self.object.id).update(
                     survey_transactioned_answer=survey_transactioned_answer,
                     survey_transactioned_answer_date=timezone.now(),
+                    siae_transactioned=survey_transactioned_answer,
                     updated_at=timezone.now(),
                 )
                 messages.add_message(
