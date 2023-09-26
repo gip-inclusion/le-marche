@@ -35,12 +35,17 @@
         <div id="dir-profile" class="dir-profile-row row">
             <div id="content" class="col-12 listing-area">
                 <!-- profile-detail basic info -->
-                {% include "siaes/_card_detail.html" with siae=siae %}
+                <div id="user_profile">
+                    {% include "siaes/_card_detail.html" with siae=siae %}
+                </div>
 
                 <!-- profile-detail sidebar -->
                 <aside id="sidebar">
                     <div class="profile mb-4">
                         <div class="profile_capsule">
+                            {% if is_admin %}
+                                {% include "siaes/_detail_admin_extra_info.html" with siae=siae %}
+                            {% endif %}
                             {% if inbound_email_is_activated %}
                                 {% include "siaes/_detail_cta_v2.html" with siae=siae %}
                             {% else %}
