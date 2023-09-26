@@ -365,7 +365,8 @@ class Tender(models.Model):
     siae_transactioned = models.BooleanField(
         verbose_name="Abouti à une transaction avec une structure",
         help_text="Champ renseigné par un ADMIN",
-        default=False,
+        blank=True,
+        null=True,
     )
     amount_exact = models.PositiveIntegerField(
         verbose_name="Montant exact du besoin", help_text="Champ renseigné par un ADMIN", blank=True, null=True
