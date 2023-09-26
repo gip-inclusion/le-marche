@@ -3,6 +3,13 @@
 from django.db import migrations, models
 
 
+def set_siae_transactioned_false_to_null(apps, schema_editor):
+    Tender = apps.get_model("tenders", "Tender")
+    for tender in Tender.objects.filter(siae_transactioned=False, survey_transactioned_answer=None):
+        tender.siae_transactioned = None
+        tender.save(update_fields=["siae_transactioned"])
+
+
 class Migration(migrations.Migration):
     dependencies = [
         ("tenders", "0056_alter_tender_scale_marche_useless"),
@@ -19,4 +26,5 @@ class Migration(migrations.Migration):
                 verbose_name="Abouti à une transaction avec une structure",
             ),
         ),
+        migrations.RunPython(code=set_siae_transactioned_false_to_null),
     ]
