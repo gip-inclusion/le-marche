@@ -61,30 +61,6 @@
 
     <!-- Second column -->
     <div class="col-12 col-md-6">
-        <ul class="list-unstyled mb-0">
-            {% if is_admin %}
-                {% if siae.user_count %}
-                    {% if siae.contact_short_name %}
-                        <li class="mb-2">
-                            <i class="ri-user-line"></i>
-                            <span>{{ siae.contact_short_name }}</span>
-                        </li>
-                    {% endif %}
-                {% endif %}
-                {% if siae.contact_email %}
-                    <li class="mb-2">
-                        <i class="ri-at-line"></i>
-                        <a href="mailto:{{ siae.contact_email }}" id="company_email">{{ siae.contact_email }}</a>
-                    </li>
-                {% endif %}
-                {% if siae.contact_phone %}
-                    <li class="mb-2">
-                        <i class="ri-phone-line"></i>
-                        <a href="tel:{{ siae.contact_phone }}" id="company_phone">{{ siae.contact_phone }}</a>
-                    </li>
-                {% endif %}
-            {% endif %}
-        </ul>
         <div class="map-holder mb-3">
             <div id="map-siae" class="map-canvas"></div>
         </div>
