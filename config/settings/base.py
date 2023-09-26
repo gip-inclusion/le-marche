@@ -398,6 +398,7 @@ INBOUND_EMAIL_IS_ACTIVATED = env.bool("INBOUND_EMAIL_IS_ACTIVATED", True)
 HUBSPOT_API_KEY = env.str("HUBSPOT_API_KEY", "set-it")
 HUBSPOT_IS_ACTIVATED = env.bool("HUBSPOT_IS_ACTIVATED", False)
 
+
 # Security
 # ------------------------------------------------------------------------------
 
@@ -771,7 +772,7 @@ CKEDITOR_CONFIGS = {
 }
 
 
-# External URLs
+# Internal & external
 # (if you need these settings in the template, add them to settings_context_processor.expose_settings)
 # ------------------------------------------------------------------------------
 
@@ -784,6 +785,7 @@ FORM_PARTENAIRES = (
     "https://docs.google.com/forms/d/e/1FAIpQLScx1k-UJ-962_rSgPJGabc327gGjFUho6ypgcZHCubuwTl7Lg/viewform"
 )
 TALLY_NPS_FORM_ID = env.str("TALLY_NPS_FORM_ID", "")
+APPROCH_USER_ID = env.str("APPROCH_USER_ID", "")
 
 
 # Misc
@@ -836,6 +838,7 @@ SHELL_PLUS_POST_IMPORTS = [
     "from lemarche.tenders import constants as tender_constants",
 ]
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
+
 
 # MTCAPTCHA
 # ------------------------------------------------------------------------------
