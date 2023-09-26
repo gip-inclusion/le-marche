@@ -120,6 +120,10 @@ class TenderCreateViewTest(TestCase):
                 TenderCreateMultiStepView, tenders_step_data, tender, is_draft=False
             ),
         )
+        self.assertEqual(tender.contact_first_name, self.user_buyer.first_name)
+        self.assertEqual(tender.contact_last_name, self.user_buyer.last_name)
+        self.assertEqual(tender.contact_email, self.user_buyer.email)
+        self.assertEqual(tender.contact_phone, self.user_buyer.phone)
 
     def test_tender_wizard_form_not_created(self):
         self.client.force_login(self.user_buyer)
