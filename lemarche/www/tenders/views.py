@@ -27,7 +27,7 @@ from lemarche.www.siaes.forms import SiaeFilterForm
 from lemarche.www.tenders.forms import (
     TenderCreateStepConfirmationForm,
     TenderCreateStepContactForm,
-    TenderCreateStepDescriptionForm,
+    TenderCreateStepDetailForm,
     TenderCreateStepGeneralForm,
     TenderCreateStepSurveyForm,
 )
@@ -64,14 +64,14 @@ class TenderCreateMultiStepView(SessionWizardView):
         Vous pourrez revenir plus tard pour le publier. Vous le retrouverez dans votre tableau de bord.
     """
     STEP_GENERAL = "general"
-    STEP_DESCRIPTION = "description"
+    STEP_DETAIL = "detail"
     STEP_CONTACT = "contact"
     STEP_SURVEY = "survey"
     STEP_CONFIRMATION = "confirmation"
 
     TEMPLATES = {
         STEP_GENERAL: "tenders/create_step_general.html",
-        STEP_DESCRIPTION: "tenders/create_step_description.html",
+        STEP_DETAIL: "tenders/create_step_detail.html",
         STEP_CONTACT: "tenders/create_step_contact.html",
         STEP_SURVEY: "tenders/create_step_survey.html",
         STEP_CONFIRMATION: "tenders/create_step_confirmation.html",
@@ -79,7 +79,7 @@ class TenderCreateMultiStepView(SessionWizardView):
 
     form_list = [
         (STEP_GENERAL, TenderCreateStepGeneralForm),
-        (STEP_DESCRIPTION, TenderCreateStepDescriptionForm),
+        (STEP_DETAIL, TenderCreateStepDetailForm),
         (STEP_CONTACT, TenderCreateStepContactForm),
         (STEP_SURVEY, TenderCreateStepSurveyForm),
         (STEP_CONFIRMATION, TenderCreateStepConfirmationForm),
@@ -103,14 +103,15 @@ class TenderCreateMultiStepView(SessionWizardView):
         Initial data
         """
         kwargs = super().get_form_kwargs(step)
-        if step == self.STEP_DESCRIPTION:
-            kwargs["kind"] = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("kind")
+        if step == self.STEP_DETAIL:
+            cleaned_data_general = self.get_cleaned_data_for_step(self.STEP_GENERAL)
+            kwargs["max_deadline_date"] = cleaned_data_general.get("start_working_date")
+            kwargs["kind"] = cleaned_data_general.get("kind")
             if self.instance.id:
                 kwargs["questions_list"] = list(self.instance.questions_list())
         if step == self.STEP_CONTACT:
-            cleaned_data_description = self.get_cleaned_data_for_step(self.STEP_DESCRIPTION)
-            kwargs["max_deadline_date"] = cleaned_data_description.get("start_working_date")
-            kwargs["external_link"] = cleaned_data_description.get("external_link")
+            cleaned_data_detail = self.get_cleaned_data_for_step(self.STEP_DETAIL)
+            kwargs["external_link"] = cleaned_data_detail.get("external_link")
             kwargs["user"] = self.request.user
         return kwargs
 

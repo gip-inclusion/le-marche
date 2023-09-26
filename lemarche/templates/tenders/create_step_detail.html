@@ -1,28 +1,17 @@
 {% extends "tenders/create_base.html" %}
 {% load bootstrap4 static %}
-{% block step_title %}Description du besoin{% endblock %}
-{% block step_title_again %}Description du besoin{% endblock %}
+{% block step_title %}Détail du besoin{% endblock %}
+{% block step_title_again %}Détail du besoin{% endblock %}
 {% block step_subtitle %}
     Veuillez détailler au maximum votre besoin pour que les prestataires inclusifs puissent se positionner.
 {% endblock %}
 {% block content_form %}
     {% csrf_token %}
     <div class="row">
-        <div class="col-12 col-lg-7">{% bootstrap_field form.description %}</div>
-        <div class="col-12 col-lg-5">
-            <div class="c-form-conseil">
-                <div>
-                    <p>
-                        <i class="ri-lightbulb-line ri-lg mr-1"></i><strong>Conseil</strong>
-                        <br>
-                        Décrivez en détail votre besoin pour permettre aux prestataires inclusifs de vous faire des réponses personnalisées.
-                    </p>
-                </div>
-            </div>
-        </div>
+        <div class="col-12 col-lg-7">{% bootstrap_field form.start_working_date %}</div>
     </div>
     <div class="row">
-        <div class="col-12 col-lg-7">{% bootstrap_field form.start_working_date %}</div>
+        <div class="col-12 col-lg-7">{% bootstrap_field form.deadline_date %}</div>
     </div>
     <div class="row">
         <div class="col-12 col-lg-7">{% bootstrap_field form.external_link %}</div>
@@ -48,7 +37,7 @@
                     </div>
                 </template>
                 <input type="hidden"
-                       name="description-questions_list"
+                       name="detail-questions_list"
                        :value="getValue()"
                        value="form.questions_list">
             </div>
@@ -174,10 +163,10 @@
         Alpine.data('TenderQuestionForm', TenderQuestionForm);
     });
     document.addEventListener('DOMContentLoaded', function () {
-        const selectDesciptionAmount = document.getElementById('id_description-amount');
-        const divWhyIsBlank = document.getElementById('id_description-why_amount_is_blank');
-        toggleRadioSelectElement(divWhyIsBlank, selectDesciptionAmount.value);
-        selectDesciptionAmount.addEventListener("change", function () {
+        const selectDetailAmount = document.getElementById('id_detail-amount');
+        const divWhyIsBlank = document.getElementById('id_detail-why_amount_is_blank');
+        toggleRadioSelectElement(divWhyIsBlank, selectDetailAmount.value);
+        selectDetailAmount.addEventListener("change", function () {
             toggleRadioSelectElement(divWhyIsBlank, this.value);
         });
     });
