@@ -69,7 +69,7 @@
             </ul>
         {% endif %}
         <!-- tender constraints -->
-        {% if source_form or not source_form and tender.constraints %}
+        {% if tender.constraints %}
             <hr class="my-5">
             <h2>Contraintes techniques spécifiques</h2>
             <p>{{ tender.constraints|default:"-"|safe|linebreaks }}</p>
