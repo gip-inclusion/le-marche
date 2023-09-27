@@ -88,10 +88,14 @@
 		img {
 			display: block;
 			margin: auto;
+			max-width: 100%;
+			height: auto;
 		}
+
 		@media (max-width: 992px) {
 			width: 25%;
 		}
+
 		@media (min-width: 992px) {
 			width: 12.5%;
 		}
@@ -105,14 +109,17 @@
 	width: 100%;
 	position: relative;
 }
+
 .multiCarousel .multiCarousel-inner {
 	transition: 1s ease all;
 	float: left;
 }
+
 .multiCarousel .multiCarousel-inner .item {
 	float: left;
 }
-.multiCarousel .multiCarousel-inner .item > div {
+
+.multiCarousel .multiCarousel-inner .item>div {
 	text-align: center;
 	padding: 10px;
 	margin: 10px;
