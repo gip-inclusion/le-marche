@@ -10,7 +10,7 @@
         </div>
         <div class="s-hp-slider-partners__row row">
             {% for image_with_link in self.images_with_link  %}
-                <div class="s-hp-slider-partners__col s-hp-slider-partners__col-image">
+                <div class="s-hp-slider-partners__col s-hp-slider-partners__col-image d-flex align-items-center col-md col-xs-6">
                     {% include_block image_with_link %}
                     {% comment %} <a href="https://group.bnpparibas/" target="_blank" rel="noopener">
                         <img src="{% static 'images/logo-partners-bnp.svg' %}" class="img-fluid" alt="Banque BNP Paribas | La banque d'un monde qui change" loading="lazy" />
