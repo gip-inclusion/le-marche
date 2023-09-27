@@ -84,9 +84,8 @@ class TenderCreateStepDetailForm(forms.ModelForm):
             "amount": forms.Select(attrs={"x-model": "formData.amount", "x-on:change": "getImpactMessage()"}),
         }
 
-    def __init__(self, max_deadline_date, kind, questions_list=None, *args, **kwargs):
+    def __init__(self, kind, questions_list=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.max_deadline_date = max_deadline_date
         self.kind = kind
 
         # required fields
@@ -123,20 +122,22 @@ class TenderCreateStepDetailForm(forms.ModelForm):
                 questions.pop(index)
         return questions
 
-    def clean_deadline_date(self):
+    def clean(self):
+        super().clean()
         today = date.today()
+        max_deadline_date = self.cleaned_data.get("start_working_date")
+        deadline_date = self.cleaned_data.get("deadline_date")
         # check that deadline_date < start_working_date
-        if (
-            self.max_deadline_date
-            and self.cleaned_data.get("deadline_date")
-            and (self.cleaned_data.get("deadline_date") > self.max_deadline_date)
-        ):
+        if max_deadline_date and deadline_date and (deadline_date > max_deadline_date):
             self.add_error(
                 "deadline_date",
-                f"La date de clôture des réponses ne doit pas être supérieure à la date de début d'intervention ({self.max_deadline_date}).",  # noqa
+                (
+                    "La date de clôture des réponses ne doit pas être supérieure à la date "
+                    f"de début d'intervention ({max_deadline_date})."
+                ),
             )
         # check that deadline_date > today
-        if self.cleaned_data.get("deadline_date") and (self.cleaned_data.get("deadline_date") < today):
+        if deadline_date and (deadline_date < today):
             self.add_error(
                 "deadline_date", "La date de clôture des réponses ne doit pas être antérieure à aujourd'hui."
             )
@@ -144,7 +145,6 @@ class TenderCreateStepDetailForm(forms.ModelForm):
 
 class TenderCreateStepContactForm(forms.ModelForm):
     # fields from previous step
-    max_deadline_date = None
     external_link = None
     user_is_anonymous = None
     user_does_not_have_company_name = None
