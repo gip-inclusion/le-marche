@@ -104,7 +104,7 @@
                         </a>
                         <a href="{% url 'tenders:detail-siae-list' tender.slug "VIEWED" %}" id="show-tender-siae-list-from-detail-btn" class="btn btn-primary mb-3">
                             <i class="ri-focus-2-line"></i>
-                            {{ tender.siae_detail_display_date_count_all }} prestataire{{ tender.siae_email_send_date_count|pluralize }} qui {{ tender.siae_email_send_date_count|pluralize:'a,ont' }} vu
+                            {{ tender.siae_email_link_click_or_detail_display_count }} prestataire{{ tender.siae_email_link_click_or_detail_display_count|pluralize }} qui {{ tender.siae_email_link_click_or_detail_display_count|pluralize:'a,ont' }} vu
                         </a>
                         <a href="{% url 'tenders:detail-siae-list' tender.slug "INTERESTED" %}" id="show-tender-siae-interested-list-from-detail-btn" class="btn btn-primary mb-3">
                             <i class="ri-thumb-up-line"></i>
@@ -113,11 +113,11 @@
                     {% endif %}
                 {% else %}
                     {% if not tender.deadline_date_outdated %}
-                        {% if tender.siae_detail_display_date_count_all > 0 %}
+                        {% if tender.siae_email_link_click_or_detail_display_count > 0 %}
                             <div class="alert alert-warning mt-3 mt-lg-0" role="alert">
                                 <p class="mb-0 fs-sm">
-                                    Déjà {{ tender.siae_detail_display_date_count_all }} prestataire{{ tender.siae_detail_display_date_count_all|pluralize }} inclusif{{ tender.siae_detail_display_date_count_all|pluralize }}
-                                    {{ tender.siae_detail_display_date_count_all|pluralize:"a,ont" }} vu le besoin de ce client.
+                                    Déjà {{ tender.siae_email_link_click_or_detail_display_count }} prestataire{{ tender.siae_email_link_click_or_detail_display_count|pluralize }} inclusif{{ tender.siae_email_link_click_or_detail_display_count|pluralize }}
+                                    {{ tender.siae_email_link_click_or_detail_display_count|pluralize:"a,ont" }} vu le besoin de ce client.
                                 </p>
                             </div>
                         {% endif %}
