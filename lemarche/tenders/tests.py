@@ -103,6 +103,16 @@ class TenderModelPropertyTest(TestCase):
         self.assertEqual(len(tender_with_questions.questions_list()), 2)
         self.assertEqual(tender_with_questions.questions_list()[0].get("text"), tender_question_1.text)
 
+    def test_status(self):
+        tender_draft = TenderFactory(status=tender_constants.STATUS_DRAFT)
+        tender_pending_validation = TenderFactory(status=tender_constants.STATUS_PUBLISHED)
+        tender_validated_half = TenderFactory(status=tender_constants.STATUS_VALIDATED)
+        tender_validated_full = TenderFactory(status=tender_constants.STATUS_VALIDATED, validated_at=timezone.now())
+        self.assertTrue(tender_draft.is_draft, True)
+        self.assertTrue(tender_pending_validation.is_pending_validation, True)
+        self.assertTrue(tender_validated_half.is_validated, False)
+        self.assertTrue(tender_validated_full.is_validated, True)
+
 
 class TenderModelSaveTest(TestCase):
     def test_set_slug(self):
