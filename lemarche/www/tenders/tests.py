@@ -1283,6 +1283,7 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
     def test_update_tender_stats_on_tender_survey_transactioned_answer_true(self):
         user_sesame_query_string = sesame_get_query_string(self.user_buyer_1)
         self.assertEqual(self.tender.survey_transactioned_answer, None)
+        self.assertEqual(self.tender.siae_transactioned, None)
         # load without answer
         url = (
             reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
@@ -1292,6 +1293,7 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
         self.assertEqual(response.status_code, 200)  # redirect
         self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
         self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_answer, None)
+        self.assertEqual(Tender.objects.get(id=self.tender.id).siae_transactioned, None)
         # load with answer
         url = (
             reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
@@ -1303,6 +1305,7 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
         self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
         self.assertContains(response, "Merci pour vote réponse")
         self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_answer, True)
+        self.assertEqual(Tender.objects.get(id=self.tender.id).siae_transactioned, True)
         # reload with answer, ignore changes
         url = (
             reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
@@ -1314,10 +1317,12 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
         self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
         self.assertContains(response, "Votre réponse a déjà été prise en compte")
         self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_answer, True)
+        self.assertEqual(Tender.objects.get(id=self.tender.id).siae_transactioned, True)
 
     def test_update_tender_stats_on_tender_survey_transactioned_answer_false(self):
         user_sesame_query_string = sesame_get_query_string(self.user_buyer_1)
         self.assertEqual(self.tender.survey_transactioned_answer, None)
+        self.assertEqual(self.tender.siae_transactioned, None)
         # load without answer
         url = (
             reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
@@ -1327,6 +1332,7 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
         self.assertEqual(response.status_code, 200)  # redirect
         self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
         self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_answer, None)
+        self.assertEqual(Tender.objects.get(id=self.tender.id).siae_transactioned, None)
         # load with answer
         url = (
             reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
@@ -1338,6 +1344,7 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
         self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
         self.assertContains(response, "Merci pour vote réponse")
         self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_answer, False)
+        self.assertEqual(Tender.objects.get(id=self.tender.id).siae_transactioned, False)
         # reload with answer, ignore changes
         url = (
             reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
@@ -1349,3 +1356,4 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
         self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
         self.assertContains(response, "Votre réponse a déjà été prise en compte")
         self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_answer, False)
+        self.assertEqual(Tender.objects.get(id=self.tender.id).siae_transactioned, False)
