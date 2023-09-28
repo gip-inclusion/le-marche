@@ -4,6 +4,16 @@
         <div class="col-12">
             <ul class="list-unstyled mb-0">
                 <li class="mb-2">
+                    Publié le {{ tender.published_at|date }}
+                </li>
+                <li class="mb-2">
+                    {% if tender.is_validated %}
+                        Validé le {{ tender.validated_at|date }}
+                    {% else %}
+                        Statut : {{ tender.get_status_display }}
+                    {% endif %}
+                </li>
+                <li class="mb-2">
                     <i class="ri-focus-2-line"></i>
                     {{ tender.siae_email_send_date_count }} prestataire{{ tender.siae_email_send_date_count|pluralize }} ciblé{{ tender.siae_email_send_date_count|pluralize }}
                 </li>
@@ -15,6 +25,16 @@
                     <i class="ri-thumb-up-line"></i>
                     {{ tender.siae_detail_contact_click_date_count }} prestataire{{ tender.siae_detail_contact_click_date_count|pluralize }} intéressé{{ tender.siae_detail_contact_click_date_count|pluralize }}
                 </li>
+                {% if not tender.deadline_date_outdated %}
+                    <li class="mb-2">
+                        Transactionné :
+                        {% if tender.siae_transactioned == None %}
+                            Inconnu
+                        {% else %}
+                            {{ tender.siae_transactioned.value|yesno:"Oui,Non" }}
+                        {% endif %}
+                    </li>
+                {% endif %}
                 <li>
                     <a href="{% url 'admin:tenders_tender_change' tender.id %}" target="_blank" id="tender-detail-admin-btn" class="btn btn-sm btn-outline-primary btn-ico">
                         <span>

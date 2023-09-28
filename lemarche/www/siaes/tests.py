@@ -1088,11 +1088,35 @@ class SiaeSearchOrderTest(TestCase):
 class SiaeDetailTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.user = UserFactory()
+        cls.user_buyer = UserFactory(kind="BUYER")
+        cls.user_partner = UserFactory(kind="PARTNER")
+        cls.user_siae = UserFactory(kind="SIAE")
+        cls.user_admin = UserFactory(kind="ADMIN")
+        cls.siae = SiaeFactory(name="ABC Insertion")
+        cls.siae.users.add(cls.user_siae)
 
-    def test_should_display_contact_fields_to_authenticated_users(self):
-        siae = SiaeFactory(name="Ma boite", contact_email="contact@example.com")
-        self.client.force_login(self.user)
-        url = reverse("siae:detail", args=[siae.slug])
+    def test_should_display_contact_cta(self):
+        url = reverse("siae:detail", args=[self.siae.slug])
+        # anonymous
         response = self.client.get(url)
         self.assertContains(response, "Contacter la structure")
+        # authenticated
+        for user in [self.user_buyer, self.user_partner, self.user_siae, self.user_admin]:
+            self.client.force_login(user)
+            response = self.client.get(url)
+            self.assertContains(response, "Contacter la structure")
+
+    def test_admin_has_extra_info(self):
+        url = reverse("siae:detail", args=[self.siae.slug])
+        # anonymous
+        response = self.client.get(url)
+        self.assertNotContains(response, "Informations Admin")
+        # other users
+        for user in [self.user_buyer, self.user_partner, self.user_siae]:
+            self.client.force_login(user)
+            response = self.client.get(url)
+            self.assertNotContains(response, "Informations Admin")
+        # admin
+        self.client.force_login(self.user_admin)
+        response = self.client.get(url)
+        self.assertContains(response, "Informations Admin")
