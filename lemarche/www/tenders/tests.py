@@ -613,10 +613,10 @@ class TenderDetailViewTest(TestCase):
         self.tender_1.siaes.add(self.siae_2)
         self.assertEqual(self.tender_1.tendersiae_set.count(), 1 + 1)
         self.assertEqual(self.tender_1.tendersiae_set.first().siae, self.siae_2)
-        self.assertEqual(self.tender_1.tendersiae_set.last().siae, self.siae_1)
         self.assertIsNone(self.tender_1.tendersiae_set.first().email_link_click_date)
         self.assertIsNone(self.tender_1.tendersiae_set.first().detail_display_date)
-        self.assertIsNotNone(self.tender_1.tendersiae_set.last().email_link_click_date)  # siae_1
+        self.assertEqual(self.tender_1.tendersiae_set.last().siae, self.siae_1)
+        self.assertIsNotNone(self.tender_1.tendersiae_set.last().email_link_click_date)
         self.assertIsNotNone(self.tender_1.tendersiae_set.last().detail_display_date)
         # first load anonymous
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
