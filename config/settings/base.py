@@ -766,9 +766,23 @@ DEFAULT_CKEDITOR_CONFIG = {
     "entities": False,
 }
 
+DEFAULT_CKEDITOR_CONFIG_USER = {
+    "toolbar": "frontuser",
+    "toolbar_frontuser": [
+        ["Format", "Bold", "Italic", "Underline"],
+        ["NumberedList", "BulletedList"],
+        ["Link", "Unlink"],
+    ],
+    "width": "100%",
+    # avoid special characters encoding
+    "basicEntities": False,
+    "entities": False,
+}
+
 CKEDITOR_CONFIGS = {
     "default": DEFAULT_CKEDITOR_CONFIG,
     "admin_note_text": DEFAULT_CKEDITOR_CONFIG | {"height": 100},
+    "frontuser": DEFAULT_CKEDITOR_CONFIG_USER,
 }
 
 

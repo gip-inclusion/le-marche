@@ -1,5 +1,6 @@
 from datetime import date
 
+from ckeditor.widgets import CKEditorWidget
 from django import forms
 
 from lemarche.sectors.models import Sector
@@ -15,6 +16,8 @@ class TenderCreateStepGeneralForm(forms.ModelForm):
         (tender_constants.KIND_QUOTE, "Devis"),
         (tender_constants.KIND_PROJECT, "Sourcing inversé"),  # modif par rapport à tender_constants.KIND_CHOICES
     )
+
+    description = forms.CharField(widget=CKEditorWidget(config_name="frontuser"))
 
     sectors = GroupedModelMultipleChoiceField(
         label=Sector._meta.verbose_name_plural,
