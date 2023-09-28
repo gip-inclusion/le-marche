@@ -40,18 +40,24 @@
         </div>
     {% endif %}
 </div>
+
 {% if tender.can_display_contact_external_link %}
     <div class="row">
         <div class="col-12">
             {% if tender.author.id == APPROCH_USER_ID %}
                 <p>
-                    Ce projet d'achat a été publié sur la plateforme <strong>APProch</strong>.
+                    <i class="ri-lightbulb-line ri-lg mr-1"></i>Ce projet d'achat a été publié sur la plateforme <strong>APProch</strong>.
+                    <br />
                     Pour plus d'informations, pour être informé des mises à jour sur ce projet
                     ou pour indiquer votre intérêt auprès de l'acheteur public, cliquez sur le lien ci-dessous.
                 </p>
             {% endif %}
             <a href="{{ tender.external_link }}" target="_blank" class="btn btn-outline-primary float-right">
-                {{ tender.external_link_title|safe }}
+                {% if tender.author.id == APPROCH_USER_ID %}
+                    Ça m'intéresse
+                {% else %}
+                    {{ tender.external_link_title|safe }}
+                {% endif %}
                 <i class="ri-external-link-line" aria-hidden="true"></i>
             </a>
         </div>
