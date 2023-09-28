@@ -43,16 +43,17 @@ class TenderCreateViewTest(TestCase):
             "tender_create_multi_step_view-current_step": "general",
             "general-kind": tender_not_saved.kind,
             "general-title": tender_not_saved.title,
+            "general-description": tender_not_saved.description,
             "general-sectors": cls.sectors,
             "general-location": cls.location_slug,
             "general-is_country_area": tender_not_saved.is_country_area,
         } | _step_1
         step_2 = {
-            "tender_create_multi_step_view-current_step": "description",
-            "description-description": tender_not_saved.description,
-            "description-start_working_date": tender_not_saved.start_working_date,
-            "description-external_link": tender_not_saved.external_link,
-            "description-amount": tender_constants.AMOUNT_RANGE_1000_MORE,
+            "tender_create_multi_step_view-current_step": "detail",
+            "detail-start_working_date": tender_not_saved.start_working_date,
+            "detail-deadline_date": tender_not_saved.deadline_date,
+            "detail-external_link": tender_not_saved.external_link,
+            "detail-amount": tender_constants.AMOUNT_RANGE_1000_MORE,
         } | _step_2
         step_3 = {
             "tender_create_multi_step_view-current_step": "contact",
@@ -62,7 +63,6 @@ class TenderCreateViewTest(TestCase):
             "contact-contact_phone": "0123456789",
             "contact-contact_company_name": "TEST",
             "contact-response_kind": [Tender.RESPONSE_KIND_EMAIL],
-            "contact-deadline_date": tender_not_saved.deadline_date,
         } | _step_3
         step_4 = {
             "tender_create_multi_step_view-current_step": "survey",
@@ -189,7 +189,7 @@ class TenderCreateViewTest(TestCase):
             {"text": "Êtes-vous disponible tout l'été ? "},
         ]
         tenders_step_data = self._generate_fake_data_form(
-            _step_2={"description-questions_list": json.dumps(initial_data_questions_list)}  # json field
+            _step_2={"detail-questions_list": json.dumps(initial_data_questions_list)}  # json field
         )
 
         self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))

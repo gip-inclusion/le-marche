@@ -80,7 +80,7 @@ def get_or_create_user(request_user, tender_dict: dict, source=User.SOURCE_TENDE
         user = request_user
         need_to_be_saved = False
         if not user.phone:
-            user.phone = tender_dict.get("contact_phone")
+            user.phone = tender_dict.get("contact_phone", "")
             need_to_be_saved = True
         if not user.company_name:
             user.company_name = tender_dict.get("contact_company_name")
