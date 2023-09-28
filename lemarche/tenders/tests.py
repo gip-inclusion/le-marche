@@ -310,6 +310,7 @@ class TenderModelQuerysetStatsTest(TestCase):
         self.assertEqual(tender_with_siae_1.siae_email_send_count, 4)
         self.assertEqual(tender_with_siae_1.siae_email_link_click_count, 3)
         self.assertEqual(tender_with_siae_1.siae_detail_display_count, 2)
+        self.assertEqual(tender_with_siae_1.siae_email_link_click_or_detail_display_count, 2)
         self.assertEqual(tender_with_siae_1.siae_detail_contact_click_count, 1)
         self.assertEqual(tender_with_siae_1.siae_detail_contact_click_since_last_seen_date_count, 1)
         tender_with_siae_2 = Tender.objects.with_siae_stats().filter(id=self.tender_with_siae_2.id).first()
@@ -317,6 +318,7 @@ class TenderModelQuerysetStatsTest(TestCase):
         self.assertEqual(tender_with_siae_2.siae_count, 1)
         self.assertEqual(tender_with_siae_2.siae_email_send_count, 1)
         self.assertEqual(tender_with_siae_2.siae_detail_display_count, 1)
+        self.assertEqual(tender_with_siae_2.siae_email_link_click_or_detail_display_count, 1)
         self.assertEqual(tender_with_siae_2.siae_detail_contact_click_count, 1)
         self.assertEqual(tender_with_siae_2.siae_detail_contact_click_since_last_seen_date_count, 1)
         tender_without_siae = Tender.objects.with_siae_stats().filter(id=self.tender_without_siae.id).first()
@@ -324,6 +326,7 @@ class TenderModelQuerysetStatsTest(TestCase):
         self.assertEqual(tender_without_siae.siae_count, 0)
         self.assertEqual(tender_without_siae.siae_email_send_count, 0)
         self.assertEqual(tender_without_siae.siae_detail_display_count, 0)
+        self.assertEqual(tender_without_siae.siae_email_link_click_or_detail_display_count, 0)
         self.assertEqual(tender_without_siae.siae_detail_contact_click_count, 0)
         self.assertEqual(tender_without_siae.siae_detail_contact_click_since_last_seen_date_count, 0)
 
@@ -367,6 +370,7 @@ class TenderModelQuerysetStatsTest(TestCase):
     #     self.assertEqual(tender_with_siae_1.siae_email_send_count, 4)
     #     self.assertEqual(tender_with_siae_1.siae_email_link_click_count, 3)
     #     self.assertEqual(tender_with_siae_1.siae_detail_display_count, 2)
+    #     self.assertEqual(tender_with_siae_1.siae_email_link_click_or_detail_display_count, 2)
     #     self.assertEqual(tender_with_siae_1.siae_detail_contact_click_count, 1)
     #     self.assertEqual(tender_with_siae_1.siae_detail_contact_click_since_last_seen_date_count, 1)
 
