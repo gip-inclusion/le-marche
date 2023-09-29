@@ -16,12 +16,6 @@
             </button>
             <div id="collapseCoordonnees" class="collapse mt-2">
                 <ul class="list-unstyled mb-0">
-                    {% if siae.is_missing_contact %}
-                        <li class="mb-2">
-                            <i class="ri-search-line"></i>
-                            <a href="https://www.google.fr/search?q={{ siae.name_display }}" id="company_google" target="_blank" rel="noopener">Google</a>
-                        </li>
-                    {% endif %}
                     {% if siae.user_count %}
                         {% if siae.contact_short_name %}
                             <li class="mb-2">
@@ -54,10 +48,12 @@
                             <a href="{{ siae.contact_social_website }}" id="company_social_website" target="_blank" rel="noopener">{{ siae.contact_social_website }}</a>
                         </li>
                     {% endif %}
-                    <li>
-                        <i class="ri-map-pin-line"></i>
-                        <span>{{ siae.address }} {{ siae.post_code }} {{ siae.city }}</span>
-                    </li>
+                    {% if siae.is_missing_contact %}
+                        <li class="mb-2">
+                            <i class="ri-search-line"></i>
+                            <a href="https://www.google.fr/search?q={{ siae.name_display }}" id="company_google" target="_blank" rel="noopener">Google</a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         {% else %}
