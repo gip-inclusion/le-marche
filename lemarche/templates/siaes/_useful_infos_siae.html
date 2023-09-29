@@ -63,27 +63,25 @@
 
     <!-- Second column -->
     <div class="col-12 col-md-6">
-        <div class="map-holder mb-3">
+        <div class="map-holder mb-2">
             <div id="map-siae" class="map-canvas"></div>
         </div>
-        <div class="map_details">
-            <ul class="list-unstyled m-0">
-                <li class="mb-2">
-                    <i class="ri-map-2-line"></i>
-                    <strong>Situé à :</strong>
-                    <span>{{ siae.city }}</span>
-                </li>
-                <li class="mb-2">
-                    <i class="ri-map-pin-line"></i>
-                    <strong>Adresse :</strong>
-                    <span>{{ siae.address }} {{ siae.post_code }} {{ siae.city }}</span>
-                </li>
-                <li class="mb-2">
-                    <i class="ri-focus-2-line"></i>
-                    <strong>Intervient sur :</strong>
-                    <span>{{ siae.geo_range_pretty_display }}</span>
-                </li>
-            </ul>
-        </div>
+        <ul class="list-unstyled m-0">
+            <li class="mb-2">
+                <i class="ri-map-2-line"></i>
+                <strong>Situé à :</strong>
+                <span>{{ siae.city }}</span>
+            </li>
+            <li class="mb-2">
+                <i class="ri-map-pin-line"></i>
+                <strong>Adresse :</strong>
+                <span>{{ siae.address }} {{ siae.post_code }} {{ siae.city }}</span>
+            </li>
+            <li class="mb-2">
+                <i class="ri-focus-2-line"></i>
+                <strong>Intervient sur :</strong>
+                <span>{{ siae.geo_range_pretty_display }}</span>
+            </li>
+        </ul>
     </div>
 </div>
