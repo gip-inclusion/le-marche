@@ -71,10 +71,6 @@
         </div>
     </div>
     <div class="card-body" style="border-top:1px solid #e6e6eb">
-        {% if inbound_email_is_activated %}
-            {% include "siaes/_useful_infos_siae_v2.html" with siae=siae %}
-        {% else %}
-            {% include "siaes/_useful_infos_siae.html" with siae=siae %}
-        {% endif %}
+        {% include "siaes/_useful_infos_siae.html" with siae=siae %}
     </div>
 </div>
