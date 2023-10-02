@@ -1045,19 +1045,14 @@ class Siae(models.Model):
         last_activity_at = None
         if self.users.exists():
             users_last_activities = self.users.values_list(
-                "last_login", "updated_at", "dashboard_last_seen_date", "tender_list_last_seen_date"
+                "updated_at", "last_login", "dashboard_last_seen_date", "tender_list_last_seen_date"
             )
             for index, user_last_activities in enumerate(users_last_activities):
                 if index == 0:
                     # set the first date
                     last_activity_at = user_last_activities[0]
-                    for index1, activity_at in enumerate(user_last_activities):
-                        if index1 > 0:
-                            last_activity_at = (
-                                activity_at if activity_at and activity_at > last_activity_at else last_activity_at
-                            )
-                else:
-                    for activity_at in user_last_activities:
+                    start_index = 1 if index == 0 else 0
+                    for _, activity_at in enumerate(user_last_activities, start=start_index):
                         last_activity_at = (
                             activity_at if activity_at and activity_at > last_activity_at else last_activity_at
                         )
