@@ -609,6 +609,21 @@ class TenderDetailViewTest(TestCase):
         self.assertNotContains(response, "1 prestataire ciblé")
         self.assertNotContains(response, "1 prestataire intéressé")
 
+    def test_admin_has_extra_info(self):
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        # anonymous
+        response = self.client.get(url)
+        self.assertNotContains(response, "Informations Admin")
+        # other users
+        for user in [self.user_buyer_1, self.user_partner, self.siae_user_1]:
+            self.client.force_login(user)
+            response = self.client.get(url)
+            self.assertNotContains(response, "Informations Admin")
+        # admin
+        self.client.force_login(self.user_admin)
+        response = self.client.get(url)
+        self.assertContains(response, "Informations Admin")
+
     def test_update_tendersiae_stats_on_tender_view(self):
         self.tender_1.siaes.add(self.siae_2)
         self.assertEqual(self.tender_1.tendersiae_set.count(), 1 + 1)

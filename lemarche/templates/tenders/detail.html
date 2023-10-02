@@ -58,8 +58,11 @@
             </div>
             {# Sidebar with actions #}
             <div class="col-12 col-lg-4 order-1 order-lg-2">
+                {% if is_admin %}
+                    {% include "tenders/_detail_admin_extra_info.html" with tender=tender %}
+                {% endif %}
                 {% if user == tender.author %}
-                    {% if is_draft %}
+                    {% if tender.is_draft %}
                         <div class="alert alert-warning fade show" role="status">
                             <div class="row">
                                 <div class="col-auto pr-0">
@@ -75,7 +78,7 @@
                             <span>Modifier</span>
                         </a>
                     {% endif %}
-                    {% if is_pending_validation %}
+                    {% if tender.is_pending_validation %}
                         <div class="alert alert-info fade show" role="status">
                             <div class="row">
                                 <div class="col-auto pr-0">
@@ -87,7 +90,7 @@
                             </div>
                         </div>
                     {% endif %}
-                    {% if is_validated %}
+                    {% if tender.is_validated %}
                         <div class="alert alert-success fade show" role="status">
                             <div class="row">
                                 <div class="col-auto pr-0">

@@ -589,6 +589,14 @@ class Tender(models.Model):
             self.save()
 
     @property
+    def is_draft(self) -> bool:
+        return self.status == self.STATUS_DRAFT
+
+    @property
+    def is_pending_validation(self) -> bool:
+        return self.status == self.STATUS_PUBLISHED
+
+    @property
     def is_validated(self) -> bool:
         return self.validated_at and self.status == self.STATUS_VALIDATED
 
