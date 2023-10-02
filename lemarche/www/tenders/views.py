@@ -327,6 +327,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
         user_kind = user.kind if user.is_authenticated else "anonymous"
         show_nps = self.request.GET.get("nps", None)
         # enrich context
+        context["is_admin"] = self.request.user.is_authenticated and self.request.user.is_admin
         context["parent_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
         context["tender_kind_display"] = (
             TITLE_KIND_SOURCING_SIAE
@@ -339,11 +340,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailVie
                 tender=self.object, siae_id=int(self.siae_id), detail_contact_click_date__isnull=False
             ).exists()
         if user.is_authenticated:
-            if self.object.author == user:
-                context["is_draft"] = self.object.status == tender_constants.STATUS_DRAFT
-                context["is_pending_validation"] = self.object.status == tender_constants.STATUS_PUBLISHED
-                context["is_validated"] = self.object.status == tender_constants.STATUS_VALIDATED
-            elif user.kind == User.KIND_SIAE:
+            if user.kind == User.KIND_SIAE:
                 context["user_siae_has_detail_contact_click_date"] = TenderSiae.objects.filter(
                     tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False
                 ).exists()
