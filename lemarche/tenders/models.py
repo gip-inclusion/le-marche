@@ -113,6 +113,17 @@ class TenderQuerySet(models.QuerySet):
                     When(tendersiae__detail_display_date__isnull=False, then=1), default=0, output_field=IntegerField()
                 )
             ),
+            siae_email_link_click_or_detail_display_count=Sum(
+                Case(
+                    When(
+                        Q(tendersiae__detail_display_date__isnull=False)
+                        | Q(tendersiae__detail_display_date__isnull=False),
+                        then=1,
+                    ),
+                    default=0,
+                    output_field=IntegerField(),
+                )
+            ),
             siae_detail_contact_click_count=Sum(
                 Case(
                     When(tendersiae__detail_contact_click_date__isnull=False, then=1),
@@ -556,19 +567,14 @@ class Tender(models.Model):
         return self.tendersiae_set.filter(detail_display_date__isnull=False).count()
 
     @property
-    def siae_detail_display_date_count_all(self):
-        """
-        Return all siae that have seen the tender (via e-mail or link or both)
-        """
-        return (
-            self.tendersiae_set.filter(Q(email_link_click_date__isnull=False) | Q(detail_display_date__isnull=False))
-            .distinct()
-            .count()
-        )
-
-    @property
     def siae_email_send_date_count(self):
         return self.tendersiae_set.filter(email_send_date__isnull=False).count()
+
+    @property
+    def siae_email_link_click_date_or_detail_display_date_count(self):
+        return self.tendersiae_set.filter(
+            Q(email_link_click_date__isnull=False) | Q(detail_display_date__isnull=False)
+        ).count()
 
     @property
     def siae_detail_contact_click_date_count(self):
