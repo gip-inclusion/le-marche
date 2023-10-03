@@ -16,7 +16,7 @@
                         <h1 class="h2 mb-2">
                             {{ siae.name_display }}
                             <br />
-                            <small>(Dernière activité il y a {{ siae.last_activity_at|timesince }})</small>
+                            <small>(Dernière activité il y a {{ siae.latest_activity_at|timesince }})</small>
                         </h1>
                         {% if user.is_authenticated %}
                             {% if siae.in_user_favorite_list_count %}

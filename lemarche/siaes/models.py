@@ -1041,25 +1041,19 @@ class Siae(models.Model):
         return round_by_base(score_percent, base=5)
 
     @property
-    def last_activity_at(self):
-        last_activity_at = None
-        if self.users.exists():
-            users_last_activities = self.users.values_list(
+    def latest_activity_at(self):
+        latest_activity_at = None
+        users_activity = self.users.annotate(
+            latest_activity_at=Greatest(
                 "updated_at", "last_login", "dashboard_last_seen_date", "tender_list_last_seen_date"
             )
-            for index, user_last_activities in enumerate(users_last_activities):
-                if index == 0:
-                    # set the first date
-                    last_activity_at = user_last_activities[0]
-                    start_index = 1 if index == 0 else 0
-                    for _, activity_at in enumerate(user_last_activities, start=start_index):
-                        last_activity_at = (
-                            activity_at if activity_at and activity_at > last_activity_at else last_activity_at
-                        )
-            last_activity_at = last_activity_at if last_activity_at > self.updated_at else self.updated_at
+        ).order_by("-latest_activity_at")
+        if users_activity:
+            latest_activity_at = users_activity.first().latest_activity_at
+            latest_activity_at = self.updated_at if self.updated_at > latest_activity_at else latest_activity_at
         else:
-            last_activity_at = self.updated_at
-        return last_activity_at
+            latest_activity_at = self.updated_at
+        return latest_activity_at
 
     def sectors_list_string(self, display_max=3):
         sectors_name_list = self.sectors.form_filter_queryset().values_list("name", flat=True)
