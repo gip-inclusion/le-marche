@@ -34,14 +34,14 @@
                     <i class="ri-lightbulb-line ri-lg mr-1"></i><strong>Optimiser vos titres</strong>,
                     <br />
                     Votre titre doit être le plus précis sans être très long ou court.
-                    Les structures inclusives doivent directement pouvoir comprendre vos attente.
+                    Les structures inclusives doivent directement pouvoir comprendre vos attentes.
                 </p>
             </div>
         </div>
     </div>
 </div>
 <div class="row">
-    <div class="col-12 col-lg-7">{% bootstrap_field form.description %}</div>
+    <div class="col-12 col-lg-7">{% bootstrap_field form.description form_group_class="form-description-ckeditor" %}</div>
     <div class="col-12 col-lg-5">
         <div class="c-form-conseil">
             <div>
@@ -74,6 +74,8 @@
 {% endblock content_form %}
 
 {% block extra_js %}
+<script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
+<script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
 {{ current_perimeters|json_script:"current-perimeters" }}
 <script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
 <script type="text/javascript">
