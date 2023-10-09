@@ -18,7 +18,7 @@ from lemarche.siaes.factories import SiaeFactory
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.factories import TenderFactory, TenderQuestionFactory
-from lemarche.tenders.models import Tender, TenderSiae
+from lemarche.tenders.models import Tender, TenderSiae, TenderStepsData
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 from lemarche.www.tenders.views import TenderCreateMultiStepView
@@ -88,6 +88,13 @@ class TenderCreateViewTest(TestCase):
                 self.assertEqual(response.status_code, 200)
                 current_errors = response.context_data["form"].errors
                 self.assertEquals(current_errors, {})
+
+                # Is the step data stored correctly ?
+                tender_step_data = TenderStepsData.objects.first()
+                self.assertEqual(
+                    data_step["tender_create_multi_step_view-current_step"],
+                    tender_step_data.steps_data[-1]["tender_create_multi_step_view-current_step"],
+                )
 
     def test_anyone_can_access_create_tender(self):
         # anonymous
