@@ -748,7 +748,7 @@ LOGGING = {
 # django-ckeditor
 # https://django-ckeditor.readthedocs.io/en/latest/#optional-customizing-ckeditor-editor
 # ------------------------------------------------------------------------------
-
+CKEDITOR_BASEPATH = f"{{STATIC_URL}}ckeditor/ckeditor/"
 DEFAULT_CKEDITOR_CONFIG = {
     "toolbar": "Custom",
     "toolbar_Custom": [
