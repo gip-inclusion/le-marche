@@ -777,3 +777,10 @@ class TenderStepsData(models.Model):
         auto_created=True,
     )
     steps_data = models.JSONField(verbose_name="Données des étapes", editable=False, default=list)
+
+    class Meta:
+        verbose_name = "Besoin d'achat - Données des étapes"
+        verbose_name_plural = "Besoins d'achat - Données des étapes"
+
+    def __str__(self):
+        return f"{self.uuid} - {self.created_at}"

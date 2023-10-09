@@ -16,7 +16,7 @@ from lemarche.notes.models import Note
 from lemarche.perimeters.admin import PerimeterRegionFilter
 from lemarche.tenders import constants
 from lemarche.tenders.forms import TenderAdminForm
-from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion
+from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderStepsData
 from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.apis import api_hubspot
 from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
@@ -591,3 +591,23 @@ class PartnerShareTenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin, DynamicArr
         return "-"
 
     logs_display.short_description = PartnerShareTender._meta.get_field("logs").verbose_name
+
+
+@admin.register(TenderStepsData, site=admin_site)
+class TenderStepsDataAdmin(admin.ModelAdmin):
+    list_display = ["created_at", "updated_at", "uuid"]
+
+    readonly_fields = [
+        "id",
+        "created_at",
+        "updated_at",
+        "uuid",
+        "steps_data_display",
+    ]
+
+    def steps_data_display(self, tender_steps_data: TenderStepsData = None):
+        if tender_steps_data:
+            return pretty_print_readonly_jsonfield(tender_steps_data.steps_data)
+        return "-"
+
+    steps_data_display.short_description = "Données saisies dans les étapes"
