@@ -17,7 +17,7 @@ class TenderCreateStepGeneralForm(forms.ModelForm):
         (tender_constants.KIND_PROJECT, "Sourcing inversé"),  # modif par rapport à tender_constants.KIND_CHOICES
     )
 
-    description = forms.CharField(widget=CKEditorWidget(config_name="frontuser"))
+    # description = forms.CharField(widget=CKEditorWidget(config_name="frontuser"))
 
     sectors = GroupedModelMultipleChoiceField(
         label=Sector._meta.verbose_name_plural,
