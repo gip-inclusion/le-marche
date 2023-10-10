@@ -83,6 +83,8 @@ class TenderCreateViewTest(TestCase):
                 # make sure that after the create tender we are redirected to ??
                 self.assertEqual(response.status_code, 200)
                 self.assertRedirects(response, final_redirect_page)
+                # has the step datas been cleaned ?
+                self.assertEqual(TenderStepsData.objects.count(), 0)
                 return response
             else:
                 self.assertEqual(response.status_code, 200)

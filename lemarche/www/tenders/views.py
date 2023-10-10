@@ -235,6 +235,11 @@ class TenderCreateMultiStepView(SessionWizardView):
         self.save_instance_tender(tender_dict=tender_dict, form_dict=form_dict, is_draft=is_draft)
         self.instance.set_siae_found_list()
 
+        # remove steps data
+        uuid = self.request.session.get("tender_steps_data_uuid", None)
+        if uuid:
+            TenderStepsData.objects.filter(uuid=uuid).delete()
+
         # we notify the admin team
         if settings.BITOUBI_ENV == "prod":
             notify_admin_tender_created(self.instance)
