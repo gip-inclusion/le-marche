@@ -14,7 +14,7 @@ from formtools.wizard.views import SessionWizardView
 
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.models import Tender, TenderSiae
+from lemarche.tenders.models import Tender, TenderSiae, TenderStepsData
 from lemarche.users.models import User
 from lemarche.utils.data import get_choice
 from lemarche.utils.mixins import (
@@ -148,6 +148,35 @@ class TenderCreateMultiStepView(SessionWizardView):
             context.update({"tender": tender_dict})
         return context
 
+    def process_step(self, form):
+        """
+        Save step data
+        """
+        data = form.data.copy()
+        if "csrfmiddlewaretoken" in data:
+            del data["csrfmiddlewaretoken"]
+
+        # Hide personal data
+        for field_to_redacted in TenderStepsData.FIELDS_TO_REDACT:
+            if field_to_redacted in data:
+                data[field_to_redacted] = "[REDACTED]"
+
+        data["timestamp"] = timezone.now().isoformat()
+
+        uuid = self.request.session.get("tender_steps_data_uuid", None)
+        if uuid:
+            try:
+                tender_steps_data = TenderStepsData.objects.get(uuid=uuid)
+                tender_steps_data.steps_data.append(data)
+                tender_steps_data.save()
+            except TenderStepsData.DoesNotExist:
+                tender_steps_data = TenderStepsData.objects.create(uuid=uuid, steps_data=[data])
+        else:
+            tender_steps_data = TenderStepsData.objects.create(steps_data=[data])
+            self.request.session["tender_steps_data_uuid"] = tender_steps_data.uuid
+
+        return form.data
+
     def save_instance_tender(self, tender_dict: dict, form_dict: dict, is_draft: bool):
         tender_status = tender_constants.STATUS_DRAFT if is_draft else tender_constants.STATUS_PUBLISHED
         tender_published_at = None if is_draft else timezone.now()
@@ -200,6 +229,11 @@ class TenderCreateMultiStepView(SessionWizardView):
         is_draft: bool = self.request.POST.get("is_draft", False)
         self.save_instance_tender(tender_dict=tender_dict, form_dict=form_dict, is_draft=is_draft)
         self.instance.set_siae_found_list()
+
+        # remove steps data
+        uuid = self.request.session.get("tender_steps_data_uuid", None)
+        if uuid:
+            TenderStepsData.objects.filter(uuid=uuid).delete()
 
         # we notify the admin team
         if settings.BITOUBI_ENV == "prod":
