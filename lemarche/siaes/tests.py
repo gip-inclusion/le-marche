@@ -5,7 +5,7 @@ from lemarche.networks.factories import NetworkFactory
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
-from lemarche.siaes import constants as siae_constants
+from lemarche.siaes import constants as siae_constants, utils as siae_utils
 from lemarche.siaes.factories import SiaeFactory, SiaeGroupFactory, SiaeLabelOldFactory, SiaeOfferFactory
 from lemarche.siaes.models import Siae, SiaeGroup, SiaeLabel, SiaeUser
 from lemarche.users.factories import UserFactory
@@ -63,13 +63,18 @@ class SiaeModelTest(TestCase):
         self.assertEqual(siae_without_brand.name_display, "Ma raison sociale")
         self.assertEqual(siae_with_brand.name_display, "Mon enseigne")
 
-    def test_siret_display_property(self):
+    def test_siret_siren_nic_properties(self):
+        # siret_display
         siae_with_siret = SiaeFactory(siret="12312312312345")
         self.assertEqual(siae_with_siret.siret_display, "123 123 123 12345")
         siae_with_siren = SiaeFactory(siret="123123123")
         self.assertEqual(siae_with_siren.siret_display, "123 123 123")
         siae_with_anormal_siret = SiaeFactory(siret="123123123123")
         self.assertEqual(siae_with_anormal_siret.siret_display, "123123123123")
+        # siren
+        self.assertEqual(siae_with_siret.siren, "123123123")
+        # nic
+        self.assertEqual(siae_with_siret.nic, "12345")
 
     def test_geo_range_pretty_display_property(self):
         siae_country = SiaeFactory(geo_range=siae_constants.GEO_RANGE_COUNTRY)
@@ -464,3 +469,14 @@ class SiaeLabelModelTest(TestCase):
         siae = SiaeFactory()
         SiaeLabel.objects.create(siae=siae, label=self.label_2)
         self.assertEqual(siae.labels.count(), 1)
+
+
+class SiaeUtilsTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae_with_siret_1 = SiaeFactory(siret="12312312312345", is_active=True)
+        cls.siae_with_siret_2 = SiaeFactory(siret="12312312312346", is_active=True)
+        cls.siae_with_siret_inactive = SiaeFactory(siret="12312312312347", is_active=False)
+
+    def test_calculate_etablissement_count(self):
+        self.assertEqual(siae_utils.calculate_etablissement_count(self.siae_with_siret_1), 2)
