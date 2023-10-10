@@ -11,6 +11,8 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 from django_better_admin_arrayfield.models.fields import ArrayField
+from django_extensions.db.fields import ShortUUIDField
+from shortuuid import uuid
 
 from lemarche.perimeters.models import Perimeter
 from lemarche.siaes import constants as siae_constants
@@ -761,3 +763,31 @@ class PartnerShareTender(models.Model):
     @cached_property
     def perimeters_list_string(self) -> str:
         return ", ".join(self.perimeters.values_list("name", flat=True))
+
+
+class TenderStepsData(models.Model):
+    FIELDS_TO_REDACT = [
+        "contact-contact_email",
+        "contact-contact_phone",
+        "contact-contact_last_name",
+        "contact-contact_first_name",
+    ]
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+    uuid = ShortUUIDField(
+        verbose_name="Identifiant UUID",
+        default=uuid,
+        editable=False,
+        unique=True,
+        db_index=True,
+        auto_created=True,
+    )
+    steps_data = models.JSONField(verbose_name="Données des étapes", editable=False, default=list)
+
+    class Meta:
+        verbose_name = "Besoin d'achat - Données des étapes"
+        verbose_name_plural = "Besoins d'achat - Données des étapes"
+
+    def __str__(self):
+        return f"{self.uuid} - {self.created_at}"

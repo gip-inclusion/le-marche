@@ -15,7 +15,7 @@ from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae, SiaeGroup
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.models import Tender
+from lemarche.tenders.models import Tender, TenderStepsData
 from lemarche.users.models import User
 from lemarche.utils.tracker import track
 from lemarche.www.pages.forms import (
@@ -356,6 +356,11 @@ def csrf_failure(request, reason=""):  # noqa C901
                     setattr(tender, attribute, tender_dict.get(attribute))
             tender.save()
             tender.set_siae_found_list()
+
+        # remove steps data
+        uuid = request.session.get("tender_steps_data_uuid", None)
+        if uuid:
+            TenderStepsData.objects.filter(uuid=uuid).delete()
 
         if settings.BITOUBI_ENV == "prod":
             notify_admin_tender_created(tender)
