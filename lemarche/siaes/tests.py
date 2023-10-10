@@ -5,7 +5,7 @@ from lemarche.networks.factories import NetworkFactory
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
-from lemarche.siaes import constants as siae_constants
+from lemarche.siaes import constants as siae_constants, utils as siae_utils
 from lemarche.siaes.factories import SiaeFactory, SiaeGroupFactory, SiaeLabelOldFactory, SiaeOfferFactory
 from lemarche.siaes.models import Siae, SiaeGroup, SiaeLabel, SiaeUser
 from lemarche.users.factories import UserFactory
@@ -469,3 +469,14 @@ class SiaeLabelModelTest(TestCase):
         siae = SiaeFactory()
         SiaeLabel.objects.create(siae=siae, label=self.label_2)
         self.assertEqual(siae.labels.count(), 1)
+
+
+class SiaeUtilsTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae_with_siret_1 = SiaeFactory(siret="12312312312345", is_active=True)
+        cls.siae_with_siret_2 = SiaeFactory(siret="12312312312346", is_active=True)
+        cls.siae_with_siret_inactive = SiaeFactory(siret="12312312312347", is_active=False)
+
+    def test_calculate_etablissement_count(self):
+        self.assertEqual(siae_utils.calculate_etablissement_count(self.siae_with_siret_1), 2)
