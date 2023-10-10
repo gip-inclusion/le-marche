@@ -611,3 +611,12 @@ class TenderStepsDataAdmin(admin.ModelAdmin):
         return "-"
 
     steps_data_display.short_description = "Données saisies dans les étapes"
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
