@@ -157,12 +157,7 @@ class TenderCreateMultiStepView(SessionWizardView):
             del data["csrfmiddlewaretoken"]
 
         # Hide personal data
-        for field_to_redacted in [
-            "contact-contact_email",
-            "contact-contact_phone",
-            "contact-contact_last_name",
-            "contact-contact_first_name",
-        ]:
+        for field_to_redacted in TenderStepsData.FIELDS_TO_REDACT:
             if field_to_redacted in data:
                 data[field_to_redacted] = "[REDACTED]"
 

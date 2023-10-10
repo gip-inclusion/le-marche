@@ -766,6 +766,13 @@ class PartnerShareTender(models.Model):
 
 
 class TenderStepsData(models.Model):
+    FIELDS_TO_REDACT = [
+        "contact-contact_email",
+        "contact-contact_phone",
+        "contact-contact_last_name",
+        "contact-contact_first_name",
+    ]
+
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
     uuid = ShortUUIDField(
