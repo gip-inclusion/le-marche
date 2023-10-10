@@ -907,6 +907,18 @@ class Siae(models.Model):
         return self.siret
 
     @property
+    def siren(self):
+        return self.siret[:9]
+
+    @property
+    def nic(self):
+        """
+        The second part of SIRET is called the NIC (numéro interne de classement).
+        https://www.insee.fr/fr/metadonnees/definition/c1981
+        """
+        return self.siret[9:14]
+
+    @property
     def year_constitution_display(self):
         if self.year_constitution:
             return self.year_constitution
