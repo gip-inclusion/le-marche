@@ -61,7 +61,7 @@ EMPLOYEES_API_ENTREPRISE_MAPPING = {
 
 class SiaeFilterForm(forms.Form):
     q = forms.CharField(
-        label="Recherche via le numéro de SIRET ou le nom de votre structure",
+        label="Recherche via le numéro de SIRET, SIREN ou le nom de votre structure",
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "Votre recherche…"}),
     )
