@@ -164,6 +164,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     autocomplete_fields = ["sectors", "networks", "groups"]
     # prepopulated_fields = {"slug": ("name",)}
     readonly_fields = [field for field in Siae.READONLY_FIELDS if field not in ("coords")] + [
+        "siren",
         "sector_count_with_link",
         "network_count_with_link",
         "group_count_with_link",
@@ -180,8 +181,6 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "tender_email_link_click_count_with_link",
         "tender_detail_display_count_with_link",
         "tender_detail_contact_click_count_with_link",
-        "signup_date",
-        "content_filled_basic_date",
         "logs_display",
         # "import_raw_object",
         "import_raw_object_display",
@@ -210,6 +209,8 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "slug",
                     "brand",
                     "siret",
+                    "siren",
+                    "etablissement_count",
                     "naf",
                     "kind",
                     "nature",

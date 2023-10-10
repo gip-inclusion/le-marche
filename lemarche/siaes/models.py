@@ -502,12 +502,14 @@ class Siae(models.Model):
         "api_entreprise_ca_date_fin_exercice",
         "api_entreprise_exercice_last_sync_date",
     ]
+    READONLY_FIELDS_STATS = ["etablissement_count", "signup_date", "content_filled_basic_date"]
     READONLY_FIELDS = (
         READONLY_FIELDS_FROM_C1
         + READONLY_FIELDS_FROM_C2
         + READONLY_FIELDS_FROM_QPV
         + READONLY_FIELDS_FROM_ZRR
         + READONLY_FIELDS_FROM_API_ENTREPRISE
+        + READONLY_FIELDS_STATS
     )
 
     TRACK_UPDATE_FIELDS = [
@@ -759,6 +761,7 @@ class Siae(models.Model):
     client_reference_count = models.IntegerField("Nombre de références clients", default=0)
     label_count = models.IntegerField("Nombre de labels", default=0)
     image_count = models.IntegerField("Nombre d'images", default=0)
+    etablissement_count = models.IntegerField("Nombre d'établissements (à partir du Siren)", default=0)
     signup_date = models.DateTimeField(
         "Date d'inscription de la structure (premier utilisateur)", blank=True, null=True
     )
@@ -905,6 +908,18 @@ class Siae(models.Model):
         if len(self.siret) == 9:
             return f"{self.siret[0:3]} {self.siret[3:6]} {self.siret[6:9]}"
         return self.siret
+
+    @property
+    def siren(self):
+        return self.siret[:9]
+
+    @property
+    def nic(self):
+        """
+        The second part of SIRET is called the NIC (numéro interne de classement).
+        https://www.insee.fr/fr/metadonnees/definition/c1981
+        """
+        return self.siret[9:14]
 
     @property
     def year_constitution_display(self):
