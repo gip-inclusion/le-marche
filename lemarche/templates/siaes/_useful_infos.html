@@ -23,7 +23,7 @@
                 <li class="mb-2">
                     <i class="ri-building-4-line"></i>
                     <strong>Nombre d'établissements :</strong>
-                    <a href="{% url 'siae:search_results' %}?q={{ siae.siren }}" target="_blank" title="Consulter la liste des {{ siae.etablissement_count }} établissements">{{ siae.etablissement_count }}</span>
+                    <a href="{% url 'siae:search_results' %}?q={{ siae.siren }}" target="_blank" title="Consulter la liste des {{ siae.etablissement_count }} établissements">{{ siae.etablissement_count }}</a>
                 </li>
             {% endif %}
             <li class="mb-2" title="{% get_verbose_name siae 'presta_type' %}">
