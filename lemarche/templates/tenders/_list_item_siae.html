@@ -1,4 +1,4 @@
-{% load static humanize %}
+{% load static humanize get_verbose_name %}
 
 <div class="card c-card c-card--marche c-card--link siae-card" role="button" data-url="{% url 'tenders:detail' tender.slug %}">
     <div class="card-body">
@@ -30,19 +30,19 @@
         <hr />
 
         <div class="row">
-            <div class="col-md-4" title="Secteurs d'activité">
+            <div class="col-md-4" title="{% get_verbose_name tender 'sectors' %} : {{ tender.sectors_full_list_string|safe }}">
                 {% if tender.sectors.count %}
                     <i class="ri-award-line"></i>
                     {{ tender.sectors_list_string|safe }}
                 {% endif %}
             </div>
-            <div class="col-md-4 text-center" title="Lieu d'intervention">
+            <div class="col-md-4 text-center" title="{% get_verbose_name tender 'location' %}">
                 {% if tender.perimeters_list_string %}
                     <i class="ri-map-pin-2-line"></i>
                     {{ tender.location_display|safe }}
                 {% endif %}
             </div>
-            <div class="col-md-4 text-center">
+            <div class="col-md-4 text-center" title="{% get_verbose_name tender 'amount' %}">
                 {% if tender.amount %}
                     <i class="ri-money-euro-circle-line"></i>
                     {{ tender.get_amount_display|default:"-" }}
