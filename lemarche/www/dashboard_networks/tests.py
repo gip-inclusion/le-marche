@@ -27,12 +27,14 @@ class DashboardNetworkViewTest(TestCase):
         cls.network_2 = NetworkFactory(name="Liste 2")
         cls.user_network_1 = UserFactory(kind=User.KIND_PARTNER, partner_network=cls.network_1)
         cls.user_network_2 = UserFactory(kind=User.KIND_PARTNER, partner_network=cls.network_2)
-        cls.user_buyer = UserFactory(kind=User.KIND_BUYER)
+        cls.user_buyer = UserFactory(kind=User.KIND_BUYER, company_name="Entreprise Buyer")
         cls.user_without_network = UserFactory(kind=User.KIND_PARTNER)
         cls.siae_1 = SiaeFactory(networks=[cls.network_1])
         cls.siae_2 = SiaeFactory()
         cls.tender_1 = TenderFactory(
             author=cls.user_buyer,
+            amount=tender_constants.AMOUNT_RANGE_100_150,
+            accept_share_amount=False,
             status=tender_constants.STATUS_VALIDATED,
             validated_at=timezone.now(),
             deadline_date=timezone.now() - timedelta(days=5),
@@ -94,6 +96,8 @@ class DashboardNetworkViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.tender_1.title)
+        self.assertContains(response, "Entreprise Buyer")
+        self.assertNotContains(response, "K€")  # !accept_share_amount
         self.assertContains(response, "1 adhérent notifié")
         self.assertNotContains(response, self.tender_2.title)
 
