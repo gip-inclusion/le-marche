@@ -21,10 +21,8 @@
     </div>
     {% if tender.accept_share_amount %}
         <div class="col-md-4" title="{% get_verbose_name tender 'amount' %}">
-            {% if tender.amount %}
-                <i class="ri-money-euro-circle-line"></i>
-                {{ tender.get_amount_display|default:"-" }}
-            {% endif %}
+            <i class="ri-money-euro-circle-line"></i>
+            {{ tender.get_amount_display|default:"-" }}
         </div>
     {% endif %}
 </div>
