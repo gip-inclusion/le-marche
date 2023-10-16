@@ -464,7 +464,7 @@ class Tender(models.Model):
     def sectors_list(self):
         return self.sectors.form_filter_queryset().values_list("name", flat=True)
 
-    def sectors_list_string(self, display_max=5) -> str:
+    def sectors_list_string(self, display_max=3) -> str:
         sectors_name_list = self.sectors_list()
         if display_max and len(sectors_name_list) > display_max:
             sectors_name_list = sectors_name_list[:display_max]

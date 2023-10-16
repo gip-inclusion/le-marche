@@ -1040,7 +1040,7 @@ class Siae(models.Model):
         score_percent = round(score / total, 2) * 100
         return round_by_base(score_percent, base=5)
 
-    def sectors_list_string(self, display_max=5):
+    def sectors_list_string(self, display_max=3):
         sectors_name_list = self.sectors.form_filter_queryset().values_list("name", flat=True)
         if display_max and len(sectors_name_list) > display_max:
             sectors_name_list = sectors_name_list[:display_max]
