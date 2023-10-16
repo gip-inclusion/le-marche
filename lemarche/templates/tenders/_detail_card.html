@@ -12,26 +12,25 @@
             <div class="col-md-12">
                 <h1>
                     {{ tender.title }}
-                    <span class="fs-sm badge badge-base badge-pill badge-emploi float-right"
-                          aria-hidden="true">{{ tender_kind_display|default:tender.get_kind_display }}</span>
+                    <span class="fs-sm badge badge-base badge-pill badge-emploi float-right" aria-hidden="true">{{ tender_kind_display|default:tender.get_kind_display }}</span>
                 </h1>
             </div>
         </div>
         <div class="row text-bold">
-            <div class="col" title="Secteurs d'activité : {{ tender.sectors_full_list_string|safe }}">
-                <i class="ri-award-line"></i>
-                {{ tender.sectors_list_string|safe }}
-            </div>
-            <div class="col" title="Lieu d'intervention">
-                <i class="ri-map-pin-2-line"></i>
-                {{ tender.location_display|safe }}
-            </div>
             {% if tender.contact_company_name_display %}
-                <div class="col" title="Entreprise">
+                <div class="col-md-4" title="Entreprise">
                     <i class="ri-building-4-line"></i>
                     {{ tender.contact_company_name_display }}
                 </div>
             {% endif %}
+            <div class="col-md-4" title="Lieu d'intervention">
+                <i class="ri-map-pin-2-line"></i>
+                {{ tender.location_display|safe }}
+            </div>
+            <div class="col-md-4" title="Secteurs d'activité : {{ tender.sectors_full_list_string|safe }}">
+                <i class="ri-award-line"></i>
+                {{ tender.sectors_list_string|safe }}
+            </div>
         </div>
         {% if not source_form %}
             {% if user.is_authenticated %}
