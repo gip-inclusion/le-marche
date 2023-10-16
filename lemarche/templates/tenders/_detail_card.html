@@ -1,4 +1,5 @@
-{% load bootstrap4 static array_choices_display humanize %}
+{% load bootstrap4 static humanize array_choices_display %}
+
 <div class="card c-card c-card--marche siae-card rounded-lg shadow-lg">
     <div class="card-header text-right bg-marche text-white fs-sm rounded-top rounded-lg p-3 mb-0">
         Date limite de réponse : {{ tender.deadline_date|default:"" }}
@@ -21,7 +22,7 @@
                 <i class="ri-award-line"></i>
                 {{ tender.sectors_list_string|safe }}
             </div>
-            <div class="col" title="Lieu d'éxécution">
+            <div class="col" title="Lieu d'intervention">
                 <i class="ri-map-pin-2-line"></i>
                 {{ tender.location_display|safe }}
             </div>
