@@ -28,7 +28,7 @@ class TenderCreateViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user_siae = UserFactory(kind=User.KIND_SIAE)
-        cls.user_buyer = UserFactory(kind=User.KIND_BUYER, company_name="Test")
+        cls.user_buyer = UserFactory(kind=User.KIND_BUYER, company_name="Entreprise Buyer")
         cls.sectors = [SectorFactory().slug for _ in range(3)]
         cls.location_slug = PerimeterFactory().slug
 
@@ -343,7 +343,7 @@ class TenderListViewTest(TestCase):
         cls.siae_1 = SiaeFactory()
         cls.siae_2 = SiaeFactory(post_code=perimeter.post_codes[0])
         cls.siae_user_2 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_1])
-        cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
+        cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER, company_name="Entreprise Buyer")
         cls.user_buyer_2 = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
         cls.tender = TenderFactory(author=cls.user_buyer_1, validated_at=timezone.now(), perimeters=[perimeter])
@@ -352,6 +352,8 @@ class TenderListViewTest(TestCase):
         )
         cls.tender_3 = TenderFactory(
             author=cls.user_buyer_1,
+            amount=tender_constants.AMOUNT_RANGE_100_150,
+            accept_share_amount=False,
             validated_at=timezone.now(),
             deadline_date=timezone.now() - timedelta(days=5),
             perimeters=[perimeter],
@@ -386,6 +388,9 @@ class TenderListViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["tenders"]), 1)
+        self.assertContains(response, self.tender_3.title)
+        self.assertContains(response, "Entreprise Buyer")
+        self.assertNotContains(response, "K€")  # !accept_share_amount
         self.assertNotContains(response, "2 prestataires ciblés")  # tender_3, but only visible to author
         self.assertNotContains(response, "1 prestataire intéressé")  # tender_3, but only visible to author
 

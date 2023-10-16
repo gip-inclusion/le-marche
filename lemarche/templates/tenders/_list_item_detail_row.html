@@ -1,0 +1,28 @@
+{% load get_verbose_name %}
+
+<div class="row">
+    {% if tender.contact_company_name_display %}
+        <div class="col-md-4" title="Entreprise">
+            <i class="ri-building-4-line"></i>
+            {{ tender.contact_company_name_display }}
+        </div>
+    {% endif %}
+    <div class="col-md-4" title="{% get_verbose_name tender 'location' %}">
+        {% if tender.perimeters_list_string %}
+            <i class="ri-map-pin-2-line"></i>
+            {{ tender.location_display|safe }}
+        {% endif %}
+    </div>
+    <div class="col-md-4" title="{% get_verbose_name tender 'sectors' %} : {{ tender.sectors_full_list_string|safe }}">
+        {% if tender.sectors.count %}
+            <i class="ri-award-line"></i>
+            {{ tender.sectors_list_string|safe }}
+        {% endif %}
+    </div>
+    {% if tender.accept_share_amount %}
+        <div class="col-md-4" title="{% get_verbose_name tender 'amount' %}">
+            <i class="ri-money-euro-circle-line"></i>
+            {{ tender.get_amount_display|default:"-" }}
+        </div>
+    {% endif %}
+</div>
