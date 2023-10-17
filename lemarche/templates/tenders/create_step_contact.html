@@ -23,6 +23,46 @@
             </div>
         {% endif %}
         {% bootstrap_field form.response_kind %}
+        {% bootstrap_field form.response_is_anonymous %}
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+    const checkboxResponseIsAnonymous = document.getElementById('id_contact-response_is_anonymous');
+    const input_responses_kind = document.getElementById("id_contact-response_kind")
+
+    const input_responses_kind_inputs = input_responses_kind.querySelectorAll("input")
+    document.addEventListener("DOMContentLoaded", function() {
+        // code
+        if(checkboxResponseIsAnonymous.checked){
+            input_responses_kind.parentElement.classList.remove("form-group-required")
+            input_responses_kind_inputs.forEach(elmt => {
+                elmt.checked = false;
+                elmt.disabled = true;
+            });
+        } else {
+            input_responses_kind.parentElement.classList.add("form-group-required")
+        }
+    });
+
+    checkboxResponseIsAnonymous.addEventListener('change', e => {
+        if(e.target.checked === true) {
+
+            input_responses_kind_inputs.forEach(elmt => {
+                elmt.checked = false;
+                elmt.disabled = true;
+            });
+            input_responses_kind.parentElement.classList.remove("form-group-required")
+        }
+        if(e.target.checked === false) {
+            input_responses_kind_inputs.forEach(elmt => {
+                elmt.disabled = false;
+            });
+            input_responses_kind.parentElement.classList.add("form-group-required")
+        }
+    });
+</script>
+
 {% endblock %}
