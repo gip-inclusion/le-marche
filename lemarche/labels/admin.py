@@ -5,6 +5,7 @@ from django.utils.html import format_html, mark_safe
 from lemarche.labels.models import Label
 from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.fields import pretty_print_readonly_jsonfield
+from lemarche.utils.s3 import S3Upload
 
 
 @admin.register(Label, site=admin_site)
@@ -29,7 +30,7 @@ class LabelAdmin(admin.ModelAdmin):
                 "fields": ("name", "slug", "description", "website"),
             },
         ),
-        ("Logo", {"fields": ("logo_url", "logo_url_display")}),
+        ("Logo (voir en bas pour uploader)", {"fields": ("logo_url", "logo_url_display")}),
         ("Structures", {"fields": ("siae_count_annotated_with_link",)}),
         (
             "Source de données",
@@ -43,6 +44,22 @@ class LabelAdmin(admin.ModelAdmin):
         ("Stats", {"fields": ("logs_display",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
+
+    change_form_template = "labels/admin_change_form.html"
+
+    class Media:
+        js = (
+            "https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js",
+            "vendor/dropzone-5.9.3/dropzone.min.js",
+            "js/s3_upload.js",
+        )
+
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        extra_context = extra_context or {}
+        s3_upload = S3Upload(kind="label_logo")
+        extra_context["s3_form_values_label_logo"] = s3_upload.form_values
+        extra_context["s3_upload_config_label_logo"] = s3_upload.config
+        return super(LabelAdmin, self).change_view(request, object_id, form_url, extra_context=extra_context)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

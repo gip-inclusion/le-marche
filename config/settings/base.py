@@ -460,6 +460,7 @@ AWS_S3_USE_SSL = env.bool("AWS_S3_USE_SSL", False)
 SIAE_LOGO_FOLDER_NAME = "siae_logo"
 SIAE_IMAGE_FOLDER_NAME = "siae_image"
 SIAE_CLIENT_REFERENCE_LOGO_FOLDER_NAME = "client_reference_logo"
+LABEL_LOGO_FOLDER_NAME = "label_logo"
 USER_IMAGE_FOLDER_NAME = "user_image"
 SIAE_EXPORT_FOLDER_NAME = "siae_export"
 STAT_EXPORT_FOLDER_NAME = "stat_export"
@@ -481,6 +482,9 @@ STORAGE_UPLOAD_KINDS = {
     },
     "client_reference_logo": {
         "key_path": SIAE_CLIENT_REFERENCE_LOGO_FOLDER_NAME,
+    },
+    "label_logo": {
+        "key_path": LABEL_LOGO_FOLDER_NAME,
     },
     "user_image": {
         "key_path": USER_IMAGE_FOLDER_NAME,
