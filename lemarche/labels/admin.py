@@ -10,12 +10,13 @@ from lemarche.utils.s3 import S3Upload
 
 @admin.register(Label, site=admin_site)
 class LabelAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", "siae_count_annotated_with_link", "created_at"]
+    list_display = ["id", "name", "siae_count_annotated_with_link", "has_logo", "created_at"]
     search_fields = ["id", "name", "description"]
     search_help_text = "Cherche sur les champs : ID, Nom, Description"
 
     readonly_fields = [
         "siae_count_annotated_with_link",
+        "has_logo",
         "logo_url_display",
         "data_last_sync_date",
         "logs_display",
@@ -77,6 +78,12 @@ class LabelAdmin(admin.ModelAdmin):
         if not obj:
             return {"slug": ("name",)}
         return {}
+
+    def has_logo(self, instance):
+        return instance.has_logo
+
+    has_logo.boolean = True
+    has_logo.short_description = "Logo ?"
 
     def logo_url_display(self, instance):
         if instance.logo_url:
