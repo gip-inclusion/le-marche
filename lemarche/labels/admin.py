@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 
@@ -10,12 +9,12 @@ from lemarche.utils.fields import pretty_print_readonly_jsonfield
 
 @admin.register(Label, site=admin_site)
 class LabelAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", "nb_siaes", "created_at"]
+    list_display = ["id", "name", "siae_count_annotated_with_link", "created_at"]
     search_fields = ["id", "name", "description"]
     search_help_text = "Cherche sur les champs : ID, Nom, Description"
 
     readonly_fields = [
-        "nb_siaes",
+        "siae_count_annotated_with_link",
         "logo_url_display",
         "data_last_sync_date",
         "logs_display",
@@ -31,7 +30,7 @@ class LabelAdmin(admin.ModelAdmin):
             },
         ),
         ("Logo", {"fields": ("logo_url", "logo_url_display")}),
-        ("Structures", {"fields": ("nb_siaes",)}),
+        ("Structures", {"fields": ("siae_count_annotated_with_link",)}),
         (
             "Source de données",
             {
@@ -47,7 +46,7 @@ class LabelAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.annotate(siae_count=Count("siaes", distinct=True))
+        qs = qs.with_siae_stats()
         return qs
 
     def get_readonly_fields(self, request, obj=None):
@@ -73,16 +72,16 @@ class LabelAdmin(admin.ModelAdmin):
 
     logo_url_display.short_description = "Logo"
 
-    def nb_siaes(self, label):
-        url = reverse("admin:siaes_siae_changelist") + f"?labels__id__exact={label.id}"
-        return format_html(f'<a href="{url}">{label.siae_count}</a>')
-
-    nb_siaes.short_description = "Nombre de structures"
-    nb_siaes.admin_order_field = "siae_count"
-
     def logs_display(self, label=None):
         if label:
             return pretty_print_readonly_jsonfield(label.logs)
         return "-"
 
     logs_display.short_description = Label._meta.get_field("logs").verbose_name
+
+    def siae_count_annotated_with_link(self, label):
+        url = reverse("admin:siaes_siae_changelist") + f"?labels__id__exact={label.id}"
+        return format_html(f'<a href="{url}">{label.siae_count_annotated}</a>')
+
+    siae_count_annotated_with_link.short_description = "Nombre de structures"
+    siae_count_annotated_with_link.admin_order_field = "siae_count_annotated"

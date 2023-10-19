@@ -1,6 +1,12 @@
 from django.db import models
+from django.db.models import Count
 from django.template.defaultfilters import slugify
 from django.utils import timezone
+
+
+class LabelQuerySet(models.QuerySet):
+    def with_siae_stats(self):
+        return self.annotate(siae_count_annotated=Count("siaes", distinct=True))
 
 
 class Label(models.Model):
@@ -17,6 +23,8 @@ class Label(models.Model):
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(LabelQuerySet)()
 
     class Meta:
         verbose_name = "Label & certification"
