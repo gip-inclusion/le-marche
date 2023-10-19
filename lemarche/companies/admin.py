@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
@@ -42,12 +41,12 @@ class HasEmailDomainFilter(admin.SimpleListFilter):
 
 @admin.register(Company, site=admin_site)
 class CompanyAdmin(admin.ModelAdmin, DynamicArrayMixin):
-    list_display = ["id", "name", "nb_users", "created_at"]
+    list_display = ["id", "name", "user_count_annotated_with_link", "created_at"]
     list_filter = [HasUserFilter, HasEmailDomainFilter]
     search_fields = ["id", "name"]
     search_help_text = "Cherche sur les champs : ID, Nom"
 
-    readonly_fields = ["logo_url_display", "nb_users", "created_at", "updated_at"]
+    readonly_fields = ["logo_url_display", "user_count_annotated_with_link", "created_at", "updated_at"]
 
     fieldsets = (
         (
@@ -57,13 +56,13 @@ class CompanyAdmin(admin.ModelAdmin, DynamicArrayMixin):
             },
         ),
         ("Logo", {"fields": ("logo_url", "logo_url_display")}),
-        ("Utilisateurs", {"fields": ("nb_users",)}),
+        ("Utilisateurs", {"fields": ("user_count_annotated_with_link",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.annotate(user_count=Count("users", distinct=True))
+        qs = qs.with_user_stats()
         qs = qs.order_by("name")
         return qs
 
@@ -90,9 +89,9 @@ class CompanyAdmin(admin.ModelAdmin, DynamicArrayMixin):
 
     logo_url_display.short_description = "Logo"
 
-    def nb_users(self, company):
+    def user_count_annotated_with_link(self, company):
         url = reverse("admin:users_user_changelist") + f"?company__id__exact={company.id}"
-        return format_html(f'<a href="{url}">{company.user_count}</a>')
+        return format_html(f'<a href="{url}">{company.user_count_annotated}</a>')
 
-    nb_users.short_description = "Nombre d'utilisateurs rattachés"
-    nb_users.admin_order_field = "user_count"
+    user_count_annotated_with_link.short_description = "Nombre d'utilisateurs rattachés"
+    user_count_annotated_with_link.admin_order_field = "user_count_annotated"
