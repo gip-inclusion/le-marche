@@ -107,6 +107,10 @@ class TenderCreateStepDetailForm(forms.ModelForm):
         if self.kind != tender_constants.KIND_TENDER:
             self.fields["external_link"].label = "Lien à partager"
             self.fields["external_link"].help_text = None
+
+        if self.kind == tender_constants.KIND_TENDER:
+            self.fields["external_link"].required = True
+
         self.fields["amount"].label = "Montant € estimé de votre besoin"
         self.fields["accept_share_amount"].label = self.fields["accept_share_amount"].help_text
         self.fields["external_link"].widget.attrs["placeholder"] = "https://www.example.fr"
