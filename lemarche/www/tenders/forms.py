@@ -184,6 +184,9 @@ class TenderCreateStepContactForm(forms.ModelForm):
         self.user = user
         user_is_anonymous = not user.is_authenticated
 
+        # display response_is_anonymous if the tender is a project
+        if self.instance and self.instance.kind != tender_constants.KIND_PROJECT:
+            self.fields["response_is_anonymous"].widget = forms.HiddenInput()
         # required fields
         if user_is_anonymous:
             self.fields["contact_first_name"].required = True
