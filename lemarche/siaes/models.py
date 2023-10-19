@@ -1108,9 +1108,10 @@ def siae_users_changed(sender, instance, action, **kwargs):
 
 @receiver(m2m_changed, sender=Siae.sectors.through)
 def siae_sectors_changed(sender, instance, action, **kwargs):
-    if action in ("post_add", "post_remove", "post_clear"):
-        instance.sector_count = instance.sectors.count()
-        instance.save()
+    if isinstance(instance, Siae):
+        if action in ("post_add", "post_remove", "post_clear"):
+            instance.sector_count = instance.sectors.count()
+            instance.save()
 
 
 @receiver(m2m_changed, sender=Siae.networks.through)

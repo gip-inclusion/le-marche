@@ -19,3 +19,8 @@ class SectorFactory(DjangoModelFactory):
     name = factory.Faker("name", locale="fr_FR")
     # slug auto-generated
     group = factory.SubFactory(SectorGroupFactory)
+
+    @factory.post_generation
+    def siaes(self, create, extracted, **kwargs):
+        if extracted:
+            self.siaes.add(*extracted)
