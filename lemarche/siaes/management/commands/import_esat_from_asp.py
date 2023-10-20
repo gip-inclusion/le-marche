@@ -8,7 +8,6 @@ from django.core.management.base import BaseCommand
 
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
-from lemarche.utils.apis.api_entreprise import etablissement_get_or_error  # exercice_get_or_error
 from lemarche.utils.apis.geocoding import get_geocoding_data
 from lemarche.utils.constants import DEPARTMENT_TO_REGION, department_from_postcode
 from lemarche.utils.data import rename_dict_key
@@ -136,20 +135,6 @@ class Command(BaseCommand):
         esat["name"] = esat["name"].replace("  ", " ")
         rename_dict_key(esat, "N° de Siret", "siret")
         esat["siret_is_valid"] = True
-
-        # enrich with API Entreprise
-        etablissement, error = etablissement_get_or_error(
-            esat["siret"], reason="Mise à jour données Marché de la plateforme de l'Inclusion"
-        )
-        if etablissement:
-            print(etablissement)
-            esat["nature"] = Siae.NATURE_HEAD_OFFICE if etablissement["is_head_office"] else Siae.NATURE_ANTENNA
-            esat["is_active"] = False if etablissement["is_closed"] else True
-            esat["naf"] = etablissement["naf"]
-            if etablissement["employees"]:
-                esat["api_entreprise_employees"] = etablissement["employees"]
-            if etablissement["date_constitution"]:
-                esat["api_entreprise_date_constitution"] = etablissement["date_constitution"]
 
         full_address = esat.pop("Adresse")
 
