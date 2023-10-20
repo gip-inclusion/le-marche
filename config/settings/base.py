@@ -857,3 +857,11 @@ FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 # ------------------------------------------------------------------------------
 MTCAPTCHA_PRIVATE_KEY = env.str("MTCAPTCHA_PRIVATE_KEY", "")
 MTCAPTCHA_PUBLIC_KEY = env.str("MTCAPTCHA_PUBLIC_KEY", "")
+
+
+# OPENAI
+# ------------------------------------------------------------------------------
+OPENAI_ORG = env.str("OPENAI_ORG", "")
+OPENAI_API_BASE = env.str("OPENAI_API_BASE", "")
+OPENAI_API_KEY = env.str("OPENAI_API_KEY", "")
+OPENAI_MODEL = env.str("OPENAI_MODEL", "")
