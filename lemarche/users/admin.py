@@ -159,8 +159,8 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         "last_name",
         "kind",
         "company_name",
-        "siae_count_with_link",
-        "tender_count_with_link",
+        "siae_count_annotated_with_link",
+        "tender_count_annotated_with_link",
         "last_login",
         "created_at",
     ]
@@ -188,8 +188,8 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         + [f"{field}_last_updated" for field in User.TRACK_UPDATE_FIELDS]
         + [field.name for field in User._meta.fields if field.name.endswith("_last_seen_date")]
         + [
-            "siae_count_with_link",
-            "tender_count_with_link",
+            "siae_count_annotated_with_link",
+            "tender_count_annotated_with_link",
             "favorite_list_count_with_link",
             "last_login",
             "image_url",
@@ -234,7 +234,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             "Dépôt de besoin",
             {
                 "fields": (
-                    "tender_count_with_link",
+                    "tender_count_annotated_with_link",
                     "can_display_tender_contact_details",
                 ),
             },
@@ -330,19 +330,19 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
                     form.instance.author = request.user
         super().save_formset(request, form, formset, change)
 
-    def siae_count_with_link(self, user):
+    def siae_count_annotated_with_link(self, user):
         url = reverse("admin:siaes_siae_changelist") + f"?users__in={user.id}"
-        return format_html(f'<a href="{url}">{getattr(user, "siae_count", 0)}</a>')
+        return format_html(f'<a href="{url}">{getattr(user, "siae_count_annotated", 0)}</a>')
 
-    siae_count_with_link.short_description = "Nombre de structures"
-    siae_count_with_link.admin_order_field = "siae_count"
+    siae_count_annotated_with_link.short_description = "Nombre de structures"
+    siae_count_annotated_with_link.admin_order_field = "siae_count_annotated"
 
-    def tender_count_with_link(self, user):
+    def tender_count_annotated_with_link(self, user):
         url = reverse("admin:tenders_tender_changelist") + f"?author__id__exact={user.id}"
-        return format_html(f'<a href="{url}">{getattr(user, "tender_count", 0)}</a>')
+        return format_html(f'<a href="{url}">{getattr(user, "tender_count_annotated", 0)}</a>')
 
-    tender_count_with_link.short_description = "Nombre de besoins déposés"
-    tender_count_with_link.admin_order_field = "tender_count"
+    tender_count_annotated_with_link.short_description = "Nombre de besoins déposés"
+    tender_count_annotated_with_link.admin_order_field = "tender_count_annotated"
 
     def favorite_list_count_with_link(self, user):
         url = reverse("admin:favorites_favoritelist_changelist") + f"?users__in={user.id}"
