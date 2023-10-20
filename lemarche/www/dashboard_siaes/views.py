@@ -143,9 +143,9 @@ class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView)
             context["label_formset"] = SiaeLabelOldFormSet(self.request.POST, instance=self.object)
         else:
             context["label_formset"] = SiaeLabelOldFormSet(instance=self.object)
-        context["last_3_siae_content_filled_full"] = (
+        context["last_3_siae_content_filled_full_annotated"] = (
             Siae.objects.with_content_filled_stats()
-            .filter(content_filled_full=True)
+            .filter(content_filled_full_annotated=True)
             .exclude(id=self.object.id)
             .order_by("-updated_at")[:3]
         )

@@ -50,17 +50,9 @@ class FavoriteListModelQuerysetTest(TestCase):
         self.assertEqual(favorite_list_queryset.get(id=favorite_list.id).siae_count_annotated, 0)
         self.assertEqual(favorite_list_queryset.get(id=favorite_list_with_siaes.id).siae_count_annotated, 2)
 
-    def test_siae_annotate_with_user_favorite_list_count(self):
+    def test_siae_with_in_user_favorite_list_stats(self):
         FavoriteListFactory(user=self.user, siaes=[self.siae_1])
         FavoriteListFactory(user=self.user, siaes=[self.siae_1])
-        siae_queryset = Siae.objects.annotate_with_user_favorite_list_count(self.user)
-        self.assertEqual(siae_queryset.get(id=self.siae_1.id).in_user_favorite_list_count, 2)
-        self.assertEqual(siae_queryset.get(id=self.siae_2.id).in_user_favorite_list_count, 0)
-
-    def test_siae_annotate_with_user_favorite_list_ids(self):
-        favorite_list_1 = FavoriteListFactory(user=self.user, siaes=[self.siae_1])
-        FavoriteListFactory(user=self.user, siaes=[self.siae_1])
-        siae_queryset = Siae.objects.annotate_with_user_favorite_list_ids(self.user)
-        self.assertEqual(len(siae_queryset.get(id=self.siae_1.id).in_user_favorite_list_ids), 2)
-        self.assertEqual(len(siae_queryset.get(id=self.siae_2.id).in_user_favorite_list_ids), 0)
-        self.assertEqual(siae_queryset.get(id=self.siae_1.id).in_user_favorite_list_ids[0], favorite_list_1.id)
+        siae_queryset = Siae.objects.with_in_user_favorite_list_stats(self.user)
+        self.assertEqual(siae_queryset.get(id=self.siae_1.id).in_user_favorite_list_count_annotated, 2)
+        self.assertEqual(siae_queryset.get(id=self.siae_2.id).in_user_favorite_list_count_annotated, 0)

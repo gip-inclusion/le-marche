@@ -5,7 +5,6 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
-from django.contrib.postgres.aggregates import ArrayAgg
 from django.contrib.postgres.search import TrigramSimilarity  # SearchVector
 from django.db import IntegrityError, models, transaction
 from django.db.models import BooleanField, Case, CharField, Count, F, IntegerField, PositiveIntegerField, Q, Sum, When
@@ -312,20 +311,12 @@ class SiaeQuerySet(models.QuerySet):
     def exclude_country_geo_range(self):
         return self.exclude(Q(geo_range=siae_constants.GEO_RANGE_COUNTRY))
 
-    def annotate_with_user_favorite_list_count(self, user):
+    def with_in_user_favorite_list_stats(self, user):
         """
         Enrich each Siae with the number of occurences in the user's favorite lists
         """
         return self.prefetch_related("favorite_lists").annotate(
-            in_user_favorite_list_count=Count("favorite_lists", filter=Q(favorite_lists__user=user))
-        )
-
-    def annotate_with_user_favorite_list_ids(self, user):
-        """
-        Enrich each Siae with the list of occurences in the user's favorite lists
-        """
-        return self.prefetch_related("favorite_lists").annotate(
-            in_user_favorite_list_ids=ArrayAgg("favorite_lists__pk", filter=Q(favorite_lists__user=user))
+            in_user_favorite_list_count_annotated=Count("favorite_lists", filter=Q(favorite_lists__user=user))
         )
 
     def has_contact_email(self):
@@ -371,23 +362,23 @@ class SiaeQuerySet(models.QuerySet):
         Enrich each Siae with stats on their linked Tender
         """
         return self.annotate(
-            tender_count=Count("tenders", distinct=True),
-            tender_email_send_count=Sum(
+            tender_count_annotated=Count("tenders", distinct=True),
+            tender_email_send_count_annotated=Sum(
                 Case(When(tendersiae__email_send_date__isnull=False, then=1), default=0, output_field=IntegerField())
             ),
-            tender_email_link_click_count=Sum(
+            tender_email_link_click_count_annotated=Sum(
                 Case(
                     When(tendersiae__email_link_click_date__isnull=False, then=1),
                     default=0,
                     output_field=IntegerField(),
                 )
             ),
-            tender_detail_display_count=Sum(
+            tender_detail_display_count_annotated=Sum(
                 Case(
                     When(tendersiae__detail_display_date__isnull=False, then=1), default=0, output_field=IntegerField()
                 )
             ),
-            tender_detail_contact_click_count=Sum(
+            tender_detail_contact_click_count_annotated=Sum(
                 Case(
                     When(tendersiae__detail_contact_click_date__isnull=False, then=1),
                     default=0,
@@ -396,16 +387,16 @@ class SiaeQuerySet(models.QuerySet):
             ),
         )
 
-    def annotate_with_brand_or_name(self, with_order_by=False):
+    def with_brand_or_name(self, with_order_by=False):
         """
         We usually want to display the brand by default
         See Siae.name_display()
         """
         qs = self.annotate(
-            brand_or_name=Case(When(brand="", then=F("name")), default=F("brand"), output_field=CharField())
+            brand_or_name_annotated=Case(When(brand="", then=F("name")), default=F("brand"), output_field=CharField())
         )
         if with_order_by:
-            qs = qs.order_by("brand_or_name")
+            qs = qs.order_by("brand_or_name_annotated")
         return qs
 
     def with_content_filled_stats(self):
@@ -417,12 +408,12 @@ class SiaeQuerySet(models.QuerySet):
         - Level 4 (full): user_count + sector_count + description + logo + client_reference_count + image_count + label_count  # noqa
         """
         return self.annotate(
-            content_filled_basic=Case(
+            content_filled_basic_annotated=Case(
                 When(Q(user_count__gte=1) & Q(sector_count__gte=1) & ~Q(description=""), then=True),
                 default=False,
                 output_field=BooleanField(),
             ),
-            content_filled_full=Case(
+            content_filled_full_annotated=Case(
                 When(
                     Q(user_count__gte=1)
                     & Q(sector_count__gte=1)
@@ -441,24 +432,23 @@ class SiaeQuerySet(models.QuerySet):
     def content_not_filled(self):
         return self.filter(Q(sector_count=0) | Q(contact_email=""))
 
-    def with_employees_count(self):
+    def with_employees_stats(self):
         """
         Enrich each Siae with count of employees
         Annotate first to use the field "c2_etp_count" if employees_insertion_count is null
         Next, the sum of an integer and a null value is null, so we check if fields are not null before make sum
         """
         return self.annotate(
-            employees_insertion_count_with_c2_etp=Case(
+            employees_insertion_count_with_c2_etp_annotated=Case(
                 When(employees_insertion_count=None, then=Round(F("c2_etp_count"))),
                 default=F("employees_insertion_count"),
                 output_field=PositiveIntegerField(),
-            )
-        ).annotate(
-            employees_count=Case(
-                When(employees_insertion_count_with_c2_etp=None, then=F("employees_permanent_count")),
-                When(employees_permanent_count=None, then=F("employees_insertion_count_with_c2_etp")),
-                default=F("employees_insertion_count_with_c2_etp") + F("employees_permanent_count"),
-            )
+            ),
+            employees_count_annotated=Case(
+                When(employees_insertion_count_with_c2_etp_annotated=None, then=F("employees_permanent_count")),
+                When(employees_permanent_count=None, then=F("employees_insertion_count_with_c2_etp_annotated")),
+                default=F("employees_insertion_count_with_c2_etp_annotated") + F("employees_permanent_count"),
+            ),
         )
 
 

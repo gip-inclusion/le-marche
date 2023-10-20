@@ -45,7 +45,7 @@
                                 class="nav-link{% if request.get_full_path == NETWORK_TENDER_SIAE_LIST_URL %} active{% endif %}"
                                 hx-target="#siaeTenderList" hx-swap="outerHTML">
                                 Adhérents notifiés
-                                <span class="badge badge-pill badge-primary fs-xs" style="vertical-align:middle;">{{ tender.network_siae_email_send_count }}</span>
+                                <span class="badge badge-pill badge-primary fs-xs" style="vertical-align:middle;">{{ tender.network_siae_email_send_count_annotated }}</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -53,7 +53,7 @@
                                 class="nav-link{% if request.get_full_path == NETWORK_TENDER_SIAE_CONTACT_CLICK_LIST_URL %} active{% endif %}"
                                 hx-target="#siaeTenderList" hx-swap="outerHTML">
                                 Adhérents intéressés
-                                <span class="badge badge-pill badge-primary fs-xs" style="vertical-align:middle;">{{ tender.network_siae_detail_contact_click_count }}</span>
+                                <span class="badge badge-pill badge-primary fs-xs" style="vertical-align:middle;">{{ tender.network_siae_detail_contact_click_count_annotated }}</span>
                             </a>
                         </li>
                     </ul>
