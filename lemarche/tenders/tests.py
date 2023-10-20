@@ -167,24 +167,24 @@ class TenderModelQuerysetTest(TestCase):
             # coords=Point(5.8862, 45.1106),
         )
 
-    def test_by_user_queryset(self):
+    def test_by_user(self):
         user = UserFactory()
         TenderFactory(author=user)
         TenderFactory()
         self.assertEqual(Tender.objects.by_user(user).count(), 1)
 
-    def test_validated_queryset(self):
+    def test_validated(self):
         TenderFactory(validated_at=timezone.now())
         TenderFactory(validated_at=None)
         self.assertEqual(Tender.objects.validated().count(), 1)
 
-    def test_is_live_queryset(self):
+    def test_is_live(self):
         TenderFactory(deadline_date=timezone.now() + timedelta(days=1))
         TenderFactory(deadline_date=timezone.now() - timedelta(days=1))
         # TenderFactory(deadline_date=None)  # cannot be None
         self.assertEqual(Tender.objects.is_live().count(), 1)
 
-    def test_has_amount_queryset(self):
+    def test_has_amount(self):
         TenderFactory()
         TenderFactory(amount=tender_constants.AMOUNT_RANGE_0_1)
         TenderFactory(amount_exact=1000)
@@ -193,7 +193,7 @@ class TenderModelQuerysetTest(TestCase):
         self.assertEqual(Tender.objects.has_amount().count(), 3)
         self.assertEqual(Tender.objects.filter(amount__isnull=True, amount_exact__isnull=True).count(), 1)
 
-    def test_in_sectors_queryset(self):
+    def test_in_sectors(self):
         sector_1 = SectorFactory(name="Un secteur")
         sector_2 = SectorFactory(name="Un deuxieme secteur")
         sector_3 = SectorFactory(name="Autre")
@@ -205,7 +205,7 @@ class TenderModelQuerysetTest(TestCase):
         self.assertEqual(Tender.objects.in_sectors([sector_1, sector_3]).count(), 1)
         self.assertEqual(Tender.objects.in_sectors([sector_3]).count(), 0)
 
-    def test_in_perimeters_queryset(self):
+    def test_in_perimeters(self):
         # create the Perimeters
         auvergne_rhone_alpes_perimeter = PerimeterFactory(
             name="Auvergne-Rhône-Alpes", kind=Perimeter.KIND_REGION, insee_code="R84"
@@ -248,7 +248,7 @@ class TenderModelQuerysetOrderTest(TestCase):
         self.assertEqual(tender_queryset.count(), 3)
         self.assertEqual(tender_queryset.first().id, self.tender_3.id)
 
-    def test_order_by_deadline_date_queryset(self):
+    def test_order_by_deadline_date(self):
         tender_queryset = Tender.objects.order_by_deadline_date()
         self.assertEqual(tender_queryset.count(), 3)
         self.assertEqual(tender_queryset.first().id, self.tender_2.id)
@@ -306,13 +306,13 @@ class TenderModelQuerysetStatsTest(TestCase):
         TenderQuestionFactory(tender=cls.tender_with_siae_1)
         TenderQuestionFactory(tender=cls.tender_with_siae_1)
 
-    def test_filter_with_siaes_queryset(self):
+    def test_filter_with_siaes(self):
         self.tender_with_siae_2.validated_at = None
         self.tender_with_siae_2.save()
         # tender_with_siae_2 is not validated
         self.assertEqual(Tender.objects.filter_with_siaes(self.user_siae.siaes.all()).count(), 1)
 
-    def test_with_siae_stats_queryset(self):
+    def test_with_siae_stats(self):
         self.assertEqual(Tender.objects.count(), 2 + 1)
         tender_with_siae_1 = Tender.objects.with_siae_stats().filter(id=self.tender_with_siae_1.id).first()
         self.assertEqual(tender_with_siae_1.siaes.count(), 6)
@@ -340,7 +340,7 @@ class TenderModelQuerysetStatsTest(TestCase):
         self.assertEqual(tender_without_siae.siae_detail_contact_click_count, 0)
         self.assertEqual(tender_without_siae.siae_detail_contact_click_since_last_seen_date_count, 0)
 
-    def test_siae_with_tender_stats_queryset(self):
+    def test_siae_with_tender_stats(self):
         self.assertEqual(Siae.objects.count(), 6 + 1)
         siae_with_tender_1 = Siae.objects.with_tender_stats().filter(id=self.siae_with_tender_1.id).first()
         # self.assertEqual(siae_with_tender_1.tenders.count(), 2)
@@ -361,14 +361,14 @@ class TenderModelQuerysetStatsTest(TestCase):
         self.assertEqual(tender_with_siae_1.questions.count(), 2)
         self.assertEqual(tender_with_siae_1.question_count, 2)
 
-    def test_with_deadline_date_is_outdated_queryset(self):
+    def test_with_deadline_date_is_outdated(self):
         TenderFactory(deadline_date=date_last_week)
         tender_queryset = Tender.objects.with_deadline_date_is_outdated()
         tender_3 = tender_queryset.first()  # order by -created_at
-        self.assertTrue(tender_3.deadline_date_is_outdated)
+        self.assertTrue(tender_3.deadline_date_is_outdated_annotated)
         tender_with_siae_1 = tender_queryset.last()
         self.assertEqual(tender_with_siae_1.id, self.tender_with_siae_1.id)
-        self.assertFalse(tender_with_siae_1.deadline_date_is_outdated)
+        self.assertFalse(tender_with_siae_1.deadline_date_is_outdated_annotated)
 
     # doesn't work when chaining these 2 querysets: adds duplicates...
     # def test_chain_querysets(self):
@@ -551,7 +551,7 @@ class TenderSiaeModelQuerysetTest(TestCase):
             siaes=[siae_with_tender_2, siae_with_tender_3], deadline_date=date_tomorrow
         )
 
-    def test_email_click_reminder_queryset(self):
+    def test_email_click_reminder(self):
         lt_days_ago = timezone.now() - timedelta(days=2)
         gte_days_ago = timezone.now() - timedelta(days=2 + 1)
         self.assertEqual(TenderSiae.objects.count(), 2 + 2 + 4)
@@ -559,7 +559,7 @@ class TenderSiaeModelQuerysetTest(TestCase):
             TenderSiae.objects.email_click_reminder(lt_days_ago=lt_days_ago, gte_days_ago=gte_days_ago).count(), 1
         )
 
-    def test_detail_contact_click_post_reminder_queryset(self):
+    def test_detail_contact_click_post_reminder(self):
         lt_days_ago = timezone.now() - timedelta(days=2)
         gte_days_ago = timezone.now() - timedelta(days=2 + 1)
         self.assertEqual(TenderSiae.objects.count(), 2 + 2 + 4)

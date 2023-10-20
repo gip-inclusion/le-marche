@@ -49,6 +49,20 @@ class SiaeGroupModelSaveTest(TestCase):
         self.assertNotEqual(siae_group.employees_insertion_count_last_updated, employees_insertion_count_last_updated)
 
 
+class SiaeGroupQuerySetTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae_1 = SiaeFactory()
+        cls.siae_2 = SiaeFactory(is_active=False)
+        cls.siae_group = SiaeGroupFactory()
+        cls.siae_group_with_siaes = SiaeGroupFactory(siaes=[cls.siae_1, cls.siae_2])
+
+    def test_with_siae_stats(self):
+        siae_group_queryset = SiaeGroup.objects.with_siae_stats()
+        self.assertEqual(siae_group_queryset.get(id=self.siae_group.id).siae_count_annotated, 0)
+        self.assertEqual(siae_group_queryset.get(id=self.siae_group_with_siaes.id).siae_count_annotated, 2)
+
+
 class SiaeModelTest(TestCase):
     def setUp(self):
         pass

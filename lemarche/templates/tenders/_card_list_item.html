@@ -1,7 +1,7 @@
 <div>
     <time class="fs-sm d-block" aria-label="Date de clôture">
         <span>{{ tender.deadline_date|default:"" }}</span>
-        {% if tender.deadline_date_is_outdated %}
+        {% if tender.deadline_date_is_outdated_annotated %}
             <span class="badge badge-xs badge-base badge-pill badge-pilotage float-right">Clôturé</span>
         {% endif %}
         {% if tender.status == tender.STATUS_DRAFT %}

@@ -64,6 +64,11 @@ def get_city_filter(perimeter, with_country=False):
     return filters
 
 
+class SiaeGroupQuerySet(models.QuerySet):
+    def with_siae_stats(self):
+        return self.annotate(siae_count_annotated=Count("siaes", distinct=True))
+
+
 class SiaeGroup(models.Model):
     TRACK_UPDATE_FIELDS = [
         # set last_updated fields
@@ -118,6 +123,8 @@ class SiaeGroup(models.Model):
 
     created_at = models.DateTimeField("Date de création", default=timezone.now)
     updated_at = models.DateTimeField("Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(SiaeGroupQuerySet)()
 
     class Meta:
         verbose_name = "Groupement"
@@ -1124,9 +1131,10 @@ def siae_networks_changed(sender, instance, action, **kwargs):
 
 @receiver(m2m_changed, sender=Siae.groups.through)
 def siae_groups_changed(sender, instance, action, **kwargs):
-    if action in ("post_add", "post_remove", "post_clear"):
-        instance.group_count = instance.groups.count()
-        instance.save()
+    if isinstance(instance, Siae):
+        if action in ("post_add", "post_remove", "post_clear"):
+            instance.group_count = instance.groups.count()
+            instance.save()
 
 
 class SiaeUser(models.Model):
