@@ -11,6 +11,12 @@
     margin-bottom: 1.5em;
 }
 
+@media (max-width: 767px) {
+    div.flex-container {
+        flex-flow: wrap;  /* changes to 'column' on small screens, but breaks stuff like checkboxes */
+    }
+}
+
 .custom-checkbox-select-multiple {
     display: table-cell;
 }
