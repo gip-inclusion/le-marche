@@ -1,6 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from django.db import models
+from django.utils import timezone
 
 from lemarche.siaes import constants as siae_constants
 from lemarche.utils import constants
@@ -17,7 +18,7 @@ class TrackerQuerySet(models.QuerySet):
         return self.env_prod().filter(
             action="load",
             page=f"/prestataires/{siae_slug}/",
-            date_created__gte=datetime.now() - timedelta(days=90),
+            date_created__gte=timezone.now() - timedelta(days=90),
         )
 
     def siae_buyer_views_last_3_months(self, siae_slug):
