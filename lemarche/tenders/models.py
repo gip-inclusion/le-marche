@@ -607,7 +607,7 @@ class Tender(models.Model):
         self.status = tender_constants.STATUS_VALIDATED
         log_item = {
             "action": "validate",
-            "date": str(self.validated_at),
+            "date": self.validated_at.isoformat(),
         }
         self.logs.append(log_item)
         if with_save:

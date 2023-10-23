@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib import admin
@@ -7,6 +5,7 @@ from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db import models
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.html import format_html
 from django_admin_filters import MultiChoice
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
@@ -109,7 +108,7 @@ def restart_send_tender_task(tender: Tender):
     # 1) log the tender send restart
     log_item = {
         "action": "restart_send",
-        "date": str(datetime.now()),
+        "date": timezone.now().isoformat(),
     }
     tender.logs.append(log_item)
     tender.save()
