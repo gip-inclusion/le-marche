@@ -603,7 +603,7 @@ class Tender(models.Model):
         return self.validated_at and self.status == self.STATUS_VALIDATED
 
     def set_validated(self, with_save=True):
-        self.validated_at = datetime.now()
+        self.validated_at = timezone.now()
         self.status = tender_constants.STATUS_VALIDATED
         log_item = {
             "action": "validate",
