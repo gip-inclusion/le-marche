@@ -23,8 +23,8 @@ class NetworkQuerySetTest(TestCase):
     def setUpTestData(cls):
         cls.siae_1 = SiaeFactory()
         cls.siae_2 = SiaeFactory()
-        cls.network = NetworkFactory()
-        cls.network_with_user_partner = NetworkFactory()
+        cls.network = NetworkFactory(name="Reseau")
+        cls.network_with_user_partner = NetworkFactory(name="Reseau avec utilisateur")
         cls.network_with_siaes = NetworkFactory(siaes=[cls.siae_1, cls.siae_2])
         cls.user = UserFactory(partner_network=cls.network_with_user_partner)
 
