@@ -21,5 +21,5 @@
     display: table-cell;
 }
 div.custom-checkbox-select-multiple > div > label {
-    width: 500px;  /* 160px default ; to avoid line breaks */
+    width: 100%;  /* 160px default ; to avoid line breaks */
 }
