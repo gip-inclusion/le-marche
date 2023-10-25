@@ -398,6 +398,21 @@ class Tender(models.Model):
     siae_count = models.IntegerField(
         "Nombre de structures concernées", help_text="Champ recalculé à intervalles réguliers", default=0
     )
+    siae_email_send_count = models.IntegerField(
+        "Nombre de structures contactées", help_text="Champ recalculé à intervalles réguliers", default=0
+    )
+    siae_email_link_click_count = models.IntegerField(
+        "Nombre de structures cliquées", help_text="Champ recalculé à intervalles réguliers", default=0
+    )
+    siae_detail_display_count = models.IntegerField(
+        "Nombre de structures vues", help_text="Champ recalculé à intervalles réguliers", default=0
+    )
+    siae_email_link_click_or_detail_display_count = models.IntegerField(
+        "Nombre de structures cliquées ou vues", help_text="Champ recalculé à intervalles réguliers", default=0
+    )
+    siae_detail_contact_click_count = models.IntegerField(
+        "Nombre de structures intéressées", help_text="Champ recalculé à intervalles réguliers", default=0
+    )
     published_at = models.DateTimeField("Date de publication", blank=True, null=True)
     siae_list_last_seen_date = models.DateTimeField(
         "Date de dernière visite de l'auteur sur la page 'structures intéressées'", blank=True, null=True

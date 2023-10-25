@@ -4,6 +4,11 @@ from lemarche.utils.commands import BaseCommand
 
 TENDER_COUNT_FIELDS = [
     "siae_count",
+    "siae_email_send_count",
+    "siae_email_link_click_count",
+    "siae_detail_display_count",
+    "siae_email_link_click_or_detail_display_count",
+    "siae_detail_contact_click_count",
 ]
 
 
@@ -15,7 +20,7 @@ class Command(BaseCommand):
     python manage.py update_tender_count_fields
     python manage.py update_tender_count_fields --id 1
     python manage.py update_tender_count_fields --id 1 --fields siae_count
-    python manage.py update_tender_count_fields --id 1 --fields siae_count --fields siae_count
+    python manage.py update_tender_count_fields --id 1 --fields siae_count --fields siae_detail_contact_click_count
     """
 
     def add_arguments(self, parser):
@@ -42,6 +47,13 @@ class Command(BaseCommand):
         for index, tender in enumerate(tender_queryset):
             # M2M
             tender.siae_count = tender.siae_count_annotated
+            tender.siae_email_send_count = tender.siae_email_send_count_annotated
+            tender.siae_email_link_click_count = tender.siae_email_link_click_count_annotated
+            tender.siae_detail_display_count = tender.siae_detail_display_count_annotated
+            tender.siae_email_link_click_or_detail_display_count = (
+                tender.siae_email_link_click_or_detail_display_count_annotated
+            )
+            tender.siae_detail_contact_click_count = tender.siae_detail_contact_click_count_annotated
 
             # Step 3: update count fields
             tender.save(update_fields=update_fields)
