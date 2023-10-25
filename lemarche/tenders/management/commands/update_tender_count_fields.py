@@ -1,4 +1,4 @@
-from lemarche.siaes.models import Tender
+from lemarche.tenders.models import Tender
 from lemarche.utils.commands import BaseCommand
 
 

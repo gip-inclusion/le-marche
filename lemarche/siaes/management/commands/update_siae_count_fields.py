@@ -24,10 +24,10 @@ class Command(BaseCommand):
     Note: these fields should be updated automatically on each Siae save()
 
     Usage:
-    python manage.py update_count_fields
-    python manage.py update_count_fields --id 1
-    python manage.py update_count_fields --id 1 --fields user_count
-    python manage.py update_count_fields --id 1 --fields user_count --fields etablissement_count
+    python manage.py update_siae_count_fields
+    python manage.py update_siae_count_fields --id 1
+    python manage.py update_siae_count_fields --id 1 --fields user_count
+    python manage.py update_siae_count_fields --id 1 --fields user_count --fields etablissement_count
     """
 
     def add_arguments(self, parser):
