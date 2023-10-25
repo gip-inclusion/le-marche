@@ -50,8 +50,12 @@ class SiaeGroupModelSaveTest(TestCase):
 
 
 class SiaeModelTest(TestCase):
-    def setUp(self):
-        pass
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae_ei = SiaeFactory(kind=siae_constants.KIND_EI)
+        cls.siae_ea = SiaeFactory(kind=siae_constants.KIND_EA)
+        cls.siae_eatt = SiaeFactory(kind=siae_constants.KIND_EATT)
+        cls.siae_esat = SiaeFactory(kind=siae_constants.KIND_ESAT)
 
     def test_str(self):
         siae = SiaeFactory(name="Ma boite")
@@ -142,13 +146,13 @@ class SiaeModelTest(TestCase):
         self.assertFalse(siae_full_2.is_missing_content)
 
     def test_kind_is_esat_or_ea_or_eatt_property(self):
-        siae_esat = SiaeFactory(kind=siae_constants.KIND_ESAT)
-        siae_ea = SiaeFactory(kind=siae_constants.KIND_EA)
-        siae_eatt = SiaeFactory(kind=siae_constants.KIND_EATT)
-        siae_ei = SiaeFactory(kind=siae_constants.KIND_EI)
-        for siae in [siae_esat, siae_ea, siae_eatt]:
+        for siae in [self.siae_esat, self.siae_ea, self.siae_eatt]:
             self.assertTrue(siae.kind_is_esat_or_ea_or_eatt)
-        self.assertFalse(siae_ei.kind_is_esat_or_ea_or_eatt)
+        self.assertFalse(self.siae_ei.kind_is_esat_or_ea_or_eatt)
+
+    def test_kind_parent_property(self):
+        self.assertEqual(self.siae_ei.kind_parent, "Insertion")
+        self.assertEqual(self.siae_esat.kind_parent, "Handicap")
 
 
 class SiaeModelSaveTest(TestCase):
