@@ -480,3 +480,22 @@ class SiaeUtilsTest(TestCase):
 
     def test_calculate_etablissement_count(self):
         self.assertEqual(siae_utils.calculate_etablissement_count(self.siae_with_siret_1), 2)
+
+
+class SiaeActivitiesTest(TestCase):
+    @classmethod
+    def setUpTestData(cls) -> None:
+        # cls.users = [UserFactory() for i in range(3)]
+        cls.siae: Siae = SiaeFactory(siret="12312312312345", is_active=True)
+
+    def test_last_activity_is_updated_at(self):
+        self.assertEqual(self.siae.updated_at, self.siae.latest_activity_at)
+        users = [UserFactory() for i in range(3)]
+        self.siae.users.set(users)
+        users[0].first_name = "test"
+        users[0].save()
+        self.assertNotEqual(self.siae.updated_at, self.siae.latest_activity_at)
+        self.assertTrue(self.siae.updated_at < self.siae.latest_activity_at)
+        self.siae.name = "test_siae"
+        self.siae.save()
+        self.assertTrue(self.siae.updated_at == self.siae.latest_activity_at)

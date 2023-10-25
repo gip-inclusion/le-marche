@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.db.models import Count
-from django.db.models.functions import Lower
+from django.db.models.functions import Greatest, Lower
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.forms.models import model_to_dict
@@ -43,6 +43,13 @@ class UserQueryset(models.QuerySet):
 
     def with_tender_stats(self):
         return self.prefetch_related("tenders").annotate(tender_count=Count("tenders", distinct=True))
+
+    def with_latest_activities(self):
+        return self.annotate(
+            latest_activity_at=Greatest(
+                "updated_at", "last_login", "dashboard_last_seen_date", "tender_list_last_seen_date"
+            )
+        )
 
 
 class UserManager(BaseUserManager):
