@@ -1040,6 +1040,21 @@ class Siae(models.Model):
         score_percent = round(score / total, 2) * 100
         return round_by_base(score_percent, base=5)
 
+    @property
+    def latest_activity_at(self):
+        latest_activity_at = None
+        users_activity = self.users.annotate(
+            latest_activity_at=Greatest(
+                "updated_at", "last_login", "dashboard_last_seen_date", "tender_list_last_seen_date"
+            )
+        ).order_by("-latest_activity_at")
+        if users_activity:
+            latest_activity_at = users_activity.first().latest_activity_at
+            latest_activity_at = self.updated_at if self.updated_at > latest_activity_at else latest_activity_at
+        else:
+            latest_activity_at = self.updated_at
+        return latest_activity_at
+
     def sectors_list_string(self, display_max=3):
         sectors_name_list = self.sectors.form_filter_queryset().values_list("name", flat=True)
         if display_max and len(sectors_name_list) > display_max:
