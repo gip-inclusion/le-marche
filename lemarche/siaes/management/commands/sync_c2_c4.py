@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import psycopg2
 import psycopg2.extras
@@ -64,10 +64,10 @@ class Command(BaseCommand):
 
             # count after
             siae_etp_count_after = Siae.objects.filter(c2_etp_count__isnull=False).count()
-            date_yesterday = datetime.now() - timedelta(days=1)
+            date_yesterday = timezone.now() - timedelta(days=1)
             siae_etp_updated = (
                 Siae.objects.filter(c2_etp_count__isnull=False)
-                .filter(c2_etp_count_last_sync_date__gte=timezone.make_aware(date_yesterday))
+                .filter(c2_etp_count_last_sync_date__gte=date_yesterday)
                 .count()
             )
 
