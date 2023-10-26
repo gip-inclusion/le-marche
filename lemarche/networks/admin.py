@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 
@@ -9,11 +8,17 @@ from lemarche.utils.admin.admin_site import admin_site
 
 @admin.register(Network, site=admin_site)
 class NetworkAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", "brand", "nb_siaes", "created_at"]
+    list_display = ["id", "name", "brand", "siae_count_annotated_with_link", "created_at"]
     search_fields = ["id", "name", "brand"]
     search_help_text = "Cherche sur les champs : ID, Nom, Enseigne"
 
-    readonly_fields = ["logo_url_display", "nb_siaes", "nb_user_partners", "created_at", "updated_at"]
+    readonly_fields = [
+        "logo_url_display",
+        "siae_count_annotated_with_link",
+        "user_partner_count_annotated_with_link",
+        "created_at",
+        "updated_at",
+    ]
 
     fieldsets = (
         (
@@ -23,15 +28,15 @@ class NetworkAdmin(admin.ModelAdmin):
             },
         ),
         ("Logo", {"fields": ("logo_url", "logo_url_display")}),
-        ("Structures", {"fields": ("nb_siaes",)}),
-        ("Utilisateurs (partenaires)", {"fields": ("nb_user_partners",)}),
+        ("Structures", {"fields": ("siae_count_annotated_with_link",)}),
+        ("Utilisateurs (partenaires)", {"fields": ("user_partner_count_annotated_with_link",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.annotate(siae_count=Count("siaes", distinct=True))
-        qs = qs.annotate(user_partner_count=Count("user_partners", distinct=True))
+        qs = qs.with_siae_stats()
+        qs = qs.with_user_partner_stats()
         return qs
 
     def get_readonly_fields(self, request, obj=None):
@@ -46,10 +51,6 @@ class NetworkAdmin(admin.ModelAdmin):
             return {"slug": ("name",)}
         return {}
 
-    def nb_siaes(self, network):
-        url = reverse("admin:siaes_siae_changelist") + f"?networks__id__exact={network.id}"
-        return format_html(f'<a href="{url}">{network.siae_count}</a>')
-
     def logo_url_display(self, instance):
         if instance.logo_url:
             return mark_safe(
@@ -61,12 +62,16 @@ class NetworkAdmin(admin.ModelAdmin):
 
     logo_url_display.short_description = "Logo"
 
-    nb_siaes.short_description = "Nombre de structures rattachées"
-    nb_siaes.admin_order_field = "siae_count"
+    def siae_count_annotated_with_link(self, network):
+        url = reverse("admin:siaes_siae_changelist") + f"?networks__id__exact={network.id}"
+        return format_html(f'<a href="{url}">{network.siae_count_annotated}</a>')
 
-    def nb_user_partners(self, network):
+    siae_count_annotated_with_link.short_description = "Nombre de structures rattachées"
+    siae_count_annotated_with_link.admin_order_field = "siae_count_annotated"
+
+    def user_partner_count_annotated_with_link(self, network):
         url = reverse("admin:users_user_changelist") + f"?partner_network__id__exact={network.id}"
-        return format_html(f'<a href="{url}">{network.user_partner_count}</a>')
+        return format_html(f'<a href="{url}">{network.user_partner_count_annotated}</a>')
 
-    nb_user_partners.short_description = "Nombre d'utilisateurs (partenaires) rattachés"
-    nb_user_partners.admin_order_field = "user_partner_count"
+    user_partner_count_annotated_with_link.short_description = "Nombre d'utilisateurs (partenaires) rattachés"
+    user_partner_count_annotated_with_link.admin_order_field = "user_partner_count_annotated"

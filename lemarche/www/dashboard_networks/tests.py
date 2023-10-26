@@ -23,8 +23,8 @@ class DashboardNetworkViewTest(TestCase):
             # "dashboard_networks:tender_detail"
             # "dashboard_networks:siae_tender_list"
         ]
-        cls.network_1 = NetworkFactory(name="Liste 1")
-        cls.network_2 = NetworkFactory(name="Liste 2")
+        cls.network_1 = NetworkFactory(name="Reseau 1")
+        cls.network_2 = NetworkFactory(name="Reseau 2")
         cls.user_network_1 = UserFactory(kind=User.KIND_PARTNER, partner_network=cls.network_1)
         cls.user_network_2 = UserFactory(kind=User.KIND_PARTNER, partner_network=cls.network_2)
         cls.user_buyer = UserFactory(kind=User.KIND_BUYER, company_name="Entreprise Buyer")

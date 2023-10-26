@@ -10,3 +10,8 @@ class FavoriteListFactory(DjangoModelFactory):
 
     name = factory.Faker("company", locale="fr_FR")
     # slug: auto-generated
+
+    @factory.post_generation
+    def siaes(self, create, extracted, **kwargs):
+        if extracted:
+            self.siaes.add(*extracted)

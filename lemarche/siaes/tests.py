@@ -6,7 +6,14 @@ from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants, utils as siae_utils
-from lemarche.siaes.factories import SiaeFactory, SiaeGroupFactory, SiaeLabelOldFactory, SiaeOfferFactory
+from lemarche.siaes.factories import (
+    SiaeClientReferenceFactory,
+    SiaeFactory,
+    SiaeGroupFactory,
+    SiaeImageFactory,
+    SiaeLabelOldFactory,
+    SiaeOfferFactory,
+)
 from lemarche.siaes.models import Siae, SiaeGroup, SiaeLabel, SiaeUser
 from lemarche.users.factories import UserFactory
 
@@ -47,6 +54,20 @@ class SiaeGroupModelSaveTest(TestCase):
         siae_group.save()
         self.assertEqual(siae_group.employees_insertion_count, 15)
         self.assertNotEqual(siae_group.employees_insertion_count_last_updated, employees_insertion_count_last_updated)
+
+
+class SiaeGroupQuerySetTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae_1 = SiaeFactory()
+        cls.siae_2 = SiaeFactory(is_active=False)
+        cls.siae_group = SiaeGroupFactory()
+        cls.siae_group_with_siaes = SiaeGroupFactory(siaes=[cls.siae_1, cls.siae_2])
+
+    def test_with_siae_stats(self):
+        siae_group_queryset = SiaeGroup.objects.with_siae_stats()
+        self.assertEqual(siae_group_queryset.get(id=self.siae_group.id).siae_count_annotated, 0)
+        self.assertEqual(siae_group_queryset.get(id=self.siae_group_with_siaes.id).siae_count_annotated, 2)
 
 
 class SiaeModelTest(TestCase):
@@ -331,32 +352,43 @@ class SiaeModelQuerysetTest(TestCase):
         self.assertEqual(Siae.objects.count(), 2)
         self.assertEqual(Siae.objects.has_user().count(), 1)
 
-    # def test_annotate_with_user_favorite_list_ids(self):
+    # def test_with_in_user_favorite_list_stats(self):
     # see favorites > tests.py
 
     # def test_with_tender_stats(self):
     # see tenders > tests.py > TenderModelQuerysetStatsTest
 
-    def test_annotate_with_brand_or_name(self):
+    def test_with_brand_or_name(self):
         siae_1 = SiaeFactory(name="ZZZ", brand="ABC")
         siae_2 = SiaeFactory(name="Test", brand="")
-        siae_queryset = Siae.objects.annotate_with_brand_or_name()
-        self.assertEqual(siae_queryset.get(id=siae_1.id).brand_or_name, siae_1.brand)
-        self.assertEqual(siae_queryset.get(id=siae_2.id).brand_or_name, siae_2.name)
+        siae_queryset = Siae.objects.with_brand_or_name()
+        self.assertEqual(siae_queryset.get(id=siae_1.id).brand_or_name_annotated, siae_1.brand)
+        self.assertEqual(siae_queryset.get(id=siae_2.id).brand_or_name_annotated, siae_2.name)
         self.assertEqual(siae_queryset.first(), siae_2)  # default order is by "name"
-        siae_queryset_with_order_by = Siae.objects.annotate_with_brand_or_name().order_by("brand_or_name")
+        siae_queryset_with_order_by = Siae.objects.with_brand_or_name().order_by("brand_or_name_annotated")
         self.assertEqual(siae_queryset_with_order_by.first(), siae_1)
-        siae_queryset_with_order_by_parameter = Siae.objects.annotate_with_brand_or_name(with_order_by=True)
+        siae_queryset_with_order_by_parameter = Siae.objects.with_brand_or_name(with_order_by=True)
         self.assertEqual(siae_queryset_with_order_by_parameter.first(), siae_1)
 
     def test_with_content_filled_stats(self):
         siae_empty = SiaeFactory(name="Empty")
-        siae_filled_basic = SiaeFactory(name="Filled basic", user_count=1, sector_count=2, description="desc")
+        siae_filled_basic = SiaeFactory(name="Filled basic", user_count=1, sector_count=1, description="desc")
+        siae_filled_full = SiaeFactory(
+            name="Filled full", user_count=1, sector_count=1, description="desc", logo_url="https://logo.png"
+        )
+        SiaeClientReferenceFactory(siae=siae_filled_full)
+        SiaeImageFactory(siae=siae_filled_full)
+        SiaeLabelOldFactory(siae=siae_filled_full)
+        siae_filled_full.save()
         siae_queryset = Siae.objects.with_content_filled_stats()
-        self.assertEqual(siae_queryset.get(id=siae_empty.id).content_filled_basic, False)
-        self.assertEqual(siae_queryset.get(id=siae_filled_basic.id).content_filled_basic, True)
+        self.assertEqual(siae_queryset.get(id=siae_empty.id).content_filled_basic_annotated, False)
+        self.assertEqual(siae_queryset.get(id=siae_empty.id).content_filled_full_annotated, False)
+        self.assertEqual(siae_queryset.get(id=siae_filled_basic.id).content_filled_basic_annotated, True)
+        self.assertEqual(siae_queryset.get(id=siae_filled_basic.id).content_filled_full_annotated, False)
+        self.assertEqual(siae_queryset.get(id=siae_filled_full.id).content_filled_basic_annotated, True)
+        self.assertEqual(siae_queryset.get(id=siae_filled_full.id).content_filled_full_annotated, True)
 
-    def test_with_employees_count(self):
+    def test_with_employees_stats(self):
         siae_1 = SiaeFactory()
         siae_2 = SiaeFactory(employees_insertion_count=10)
         siae_3 = SiaeFactory(c2_etp_count=19.5)
@@ -366,30 +398,30 @@ class SiaeModelQuerysetTest(TestCase):
         siae_7 = SiaeFactory(c2_etp_count=2550, employees_permanent_count=1500)
         siae_8 = SiaeFactory(employees_insertion_count=125, c2_etp_count=158, employees_permanent_count=88)
 
-        siae_queryset = Siae.objects.with_employees_count()
-        self.assertEqual(siae_queryset.get(id=siae_1.id).employees_insertion_count_with_c2_etp, None)
-        self.assertEqual(siae_queryset.get(id=siae_1.id).employees_count, None)
+        siae_queryset = Siae.objects.with_employees_stats()
+        self.assertEqual(siae_queryset.get(id=siae_1.id).employees_insertion_count_with_c2_etp_annotated, None)
+        self.assertEqual(siae_queryset.get(id=siae_1.id).employees_count_annotated, None)
 
-        self.assertEqual(siae_queryset.get(id=siae_2.id).employees_insertion_count_with_c2_etp, 10)
-        self.assertEqual(siae_queryset.get(id=siae_2.id).employees_count, 10)
+        self.assertEqual(siae_queryset.get(id=siae_2.id).employees_insertion_count_with_c2_etp_annotated, 10)
+        self.assertEqual(siae_queryset.get(id=siae_2.id).employees_count_annotated, 10)
 
-        self.assertEqual(siae_queryset.get(id=siae_3.id).employees_insertion_count_with_c2_etp, 20)
-        self.assertEqual(siae_queryset.get(id=siae_3.id).employees_count, 20)
+        self.assertEqual(siae_queryset.get(id=siae_3.id).employees_insertion_count_with_c2_etp_annotated, 20)
+        self.assertEqual(siae_queryset.get(id=siae_3.id).employees_count_annotated, 20)
 
-        self.assertEqual(siae_queryset.get(id=siae_4.id).employees_insertion_count_with_c2_etp, None)
-        self.assertEqual(siae_queryset.get(id=siae_4.id).employees_count, 155)
+        self.assertEqual(siae_queryset.get(id=siae_4.id).employees_insertion_count_with_c2_etp_annotated, None)
+        self.assertEqual(siae_queryset.get(id=siae_4.id).employees_count_annotated, 155)
 
-        self.assertEqual(siae_queryset.get(id=siae_5.id).employees_insertion_count_with_c2_etp, 22)
-        self.assertEqual(siae_queryset.get(id=siae_5.id).employees_count, 22)
+        self.assertEqual(siae_queryset.get(id=siae_5.id).employees_insertion_count_with_c2_etp_annotated, 22)
+        self.assertEqual(siae_queryset.get(id=siae_5.id).employees_count_annotated, 22)
 
-        self.assertEqual(siae_queryset.get(id=siae_6.id).employees_insertion_count_with_c2_etp, 280)
-        self.assertEqual(siae_queryset.get(id=siae_6.id).employees_count, 280 + 105)
+        self.assertEqual(siae_queryset.get(id=siae_6.id).employees_insertion_count_with_c2_etp_annotated, 280)
+        self.assertEqual(siae_queryset.get(id=siae_6.id).employees_count_annotated, 280 + 105)
 
-        self.assertEqual(siae_queryset.get(id=siae_7.id).employees_insertion_count_with_c2_etp, 2550)
-        self.assertEqual(siae_queryset.get(id=siae_7.id).employees_count, 2550 + 1500)
+        self.assertEqual(siae_queryset.get(id=siae_7.id).employees_insertion_count_with_c2_etp_annotated, 2550)
+        self.assertEqual(siae_queryset.get(id=siae_7.id).employees_count_annotated, 2550 + 1500)
 
-        self.assertEqual(siae_queryset.get(id=siae_8.id).employees_insertion_count_with_c2_etp, 125)
-        self.assertEqual(siae_queryset.get(id=siae_8.id).employees_count, 125 + 88)
+        self.assertEqual(siae_queryset.get(id=siae_8.id).employees_insertion_count_with_c2_etp_annotated, 125)
+        self.assertEqual(siae_queryset.get(id=siae_8.id).employees_count_annotated, 125 + 88)
 
 
 class SiaeModelPerimeterQuerysetTest(TestCase):

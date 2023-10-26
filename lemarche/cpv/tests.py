@@ -48,3 +48,8 @@ class CodeModelQuerySetTest(TestCase):
     def test_has_sector(self):
         self.assertEqual(Code.objects.count(), 2)
         self.assertEqual(Code.objects.has_sector().count(), 1)
+
+    def test_with_sector_stats(self):
+        code_queryset = Code.objects.with_sector_stats()
+        self.assertEqual(code_queryset.get(id=self.code.id).sector_count_annotated, 0)
+        self.assertEqual(code_queryset.get(id=self.code_with_sector.id).sector_count_annotated, 1)

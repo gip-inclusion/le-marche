@@ -74,8 +74,8 @@ class SiaeListFilterApiTest(TestCase):
             kind=siae_constants.KIND_EI, presta_type=[siae_constants.PRESTA_DISP], department="01"
         )
         siae_with_sector_2.sectors.add(cls.sector_2)
-        cls.network_1 = NetworkFactory()
-        cls.network_2 = NetworkFactory()
+        cls.network_1 = NetworkFactory(name="Reseau 1")
+        cls.network_2 = NetworkFactory(name="Reseau 2")
         siae_with_network_1 = SiaeFactory(
             kind=siae_constants.KIND_EI, presta_type=[siae_constants.PRESTA_DISP], department="01"
         )

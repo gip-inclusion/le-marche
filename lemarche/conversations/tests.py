@@ -60,7 +60,7 @@ class ConversationQuerysetTest(TestCase):
     def test_has_answer(self):
         self.assertEqual(Conversation.objects.has_answer().count(), 1)
 
-    def test_with_answer_count(self):
-        conversation_queryset = Conversation.objects.with_answer_count()
-        self.assertEqual(conversation_queryset.get(id=self.conversation.id).answer_count, 0)
-        self.assertEqual(conversation_queryset.get(id=self.conversation_with_answer.id).answer_count, 1)
+    def test_with_answer_stats(self):
+        conversation_queryset = Conversation.objects.with_answer_stats()
+        self.assertEqual(conversation_queryset.get(id=self.conversation.id).answer_count_annotated, 0)
+        self.assertEqual(conversation_queryset.get(id=self.conversation_with_answer.id).answer_count_annotated, 1)

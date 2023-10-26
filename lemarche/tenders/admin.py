@@ -129,12 +129,12 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "kind",
         "deadline_date",
         "start_working_date",
-        "siae_count_with_link",
-        # "siae_email_send_count_with_link",
-        "siae_email_link_click_count_with_link",
-        "siae_detail_display_count_with_link",
-        # "siae_email_link_click_or_detail_display_count_with_link",
-        "siae_detail_contact_click_count_with_link",
+        "siae_count_annotated_with_link",
+        # "siae_email_send_count_annotated_with_link",
+        "siae_email_link_click_count_annotated_with_link",
+        "siae_detail_display_count_annotated_with_link",
+        # "siae_email_link_click_or_detail_display_count_annotated_with_link",
+        "siae_detail_contact_click_count_annotated_with_link",
         "siae_transactioned",
         "created_at",
         "validated_at",
@@ -172,13 +172,13 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "survey_transactioned_answer",
         "survey_transactioned_answer_date",
         "validated_at",
-        "question_count_with_link",
-        "siae_count_with_link",
-        "siae_email_send_count_with_link",
-        "siae_email_link_click_count_with_link",
-        "siae_detail_display_count_with_link",
-        "siae_email_link_click_or_detail_display_count_with_link",
-        "siae_detail_contact_click_count_with_link",
+        "question_count_annotated_with_link",
+        "siae_count_annotated_with_link",
+        "siae_email_send_count_annotated_with_link",
+        "siae_email_link_click_count_annotated_with_link",
+        "siae_detail_display_count_annotated_with_link",
+        "siae_email_link_click_or_detail_display_count_annotated_with_link",
+        "siae_detail_contact_click_count_annotated_with_link",
         "logs_display",
         "extra_data_display",
         "source",
@@ -209,7 +209,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "constraints",
                     "external_link",
                     "accept_cocontracting",
-                    "question_count_with_link",
+                    "question_count_annotated_with_link",
                 ),
             },
         ),
@@ -279,12 +279,12 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             "Structures",
             {
                 "fields": (
-                    "siae_count_with_link",
-                    "siae_email_send_count_with_link",
-                    "siae_email_link_click_count_with_link",
-                    "siae_detail_display_count_with_link",
-                    "siae_email_link_click_or_detail_display_count_with_link",
-                    "siae_detail_contact_click_count_with_link",
+                    "siae_count_annotated_with_link",
+                    "siae_email_send_count_annotated_with_link",
+                    "siae_email_link_click_count_annotated_with_link",
+                    "siae_detail_display_count_annotated_with_link",
+                    "siae_email_link_click_or_detail_display_count_annotated_with_link",
+                    "siae_detail_contact_click_count_annotated_with_link",
                 )
             },
         ),
@@ -338,6 +338,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.with_siae_stats()
+        qs = qs.with_question_stats()
         return qs
 
     def get_changeform_initial_data(self, request):
@@ -405,73 +406,73 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     user_with_link.short_description = "Auteur"
     user_with_link.admin_order_field = "author"
 
-    def question_count_with_link(self, tender):
+    def question_count_annotated_with_link(self, tender):
         url = reverse("admin:tenders_tenderquestion_changelist") + f"?tender__in={tender.id}"
-        return format_html(f'<a href="{url}">{getattr(tender, "questions_count", 0)}</a>')
+        return format_html(f'<a href="{url}">{getattr(tender, "question_count_annotated", 0)}</a>')
 
-    question_count_with_link.short_description = TenderQuestion._meta.verbose_name_plural
-    question_count_with_link.admin_order_field = "questions_count"
+    question_count_annotated_with_link.short_description = TenderQuestion._meta.verbose_name_plural
+    question_count_annotated_with_link.admin_order_field = "question_count_annotated"
 
-    def siae_count_with_link(self, tender):
+    def siae_count_annotated_with_link(self, tender):
         url = reverse("admin:siaes_siae_changelist") + f"?tenders__in={tender.id}"
-        return format_html(f'<a href="{url}">{getattr(tender, "siae_count", 0)}</a>')
+        return format_html(f'<a href="{url}">{getattr(tender, "siae_count_annotated", 0)}</a>')
 
-    siae_count_with_link.short_description = "Structures concernées"
-    siae_count_with_link.admin_order_field = "siae_count"
+    siae_count_annotated_with_link.short_description = "Structures concernées"
+    siae_count_annotated_with_link.admin_order_field = "siae_count_annotated"
 
-    def siae_email_send_count_with_link(self, tender):
+    def siae_email_send_count_annotated_with_link(self, tender):
         url = (
             reverse("admin:siaes_siae_changelist")
             + f"?tenders__in={tender.id}&tendersiae__email_send_date__isnull=False"
         )
-        return format_html(f'<a href="{url}">{getattr(tender, "siae_email_send_count", 0)}</a>')
+        return format_html(f'<a href="{url}">{getattr(tender, "siae_email_send_count_annotated", 0)}</a>')
 
-    siae_email_send_count_with_link.short_description = "S. contactées"
-    siae_email_send_count_with_link.admin_order_field = "siae_email_send_count"
+    siae_email_send_count_annotated_with_link.short_description = "S. contactées"
+    siae_email_send_count_annotated_with_link.admin_order_field = "siae_email_send_count_annotated"
 
-    def siae_email_link_click_count_with_link(self, tender):
+    def siae_email_link_click_count_annotated_with_link(self, tender):
         url = (
             reverse("admin:siaes_siae_changelist")
             + f"?tenders__in={tender.id}&tendersiae__email_link_click_date__isnull=False"
         )
-        return format_html(f'<a href="{url}">{getattr(tender, "siae_email_link_click_count", 0)}</a>')
+        return format_html(f'<a href="{url}">{getattr(tender, "siae_email_link_click_count_annotated", 0)}</a>')
 
-    siae_email_link_click_count_with_link.short_description = "S. cliquées"
-    siae_email_link_click_count_with_link.admin_order_field = "siae_email_link_click_count"
+    siae_email_link_click_count_annotated_with_link.short_description = "S. cliquées"
+    siae_email_link_click_count_annotated_with_link.admin_order_field = "siae_email_link_click_count_annotated"
 
-    def siae_detail_display_count_with_link(self, tender):
+    def siae_detail_display_count_annotated_with_link(self, tender):
         url = (
             reverse("admin:siaes_siae_changelist")
             + f"?tenders__in={tender.id}&tendersiae__detail_display_date__isnull=False"
         )
-        return format_html(f'<a href="{url}">{getattr(tender, "siae_detail_display_count", 0)}</a>')
+        return format_html(f'<a href="{url}">{getattr(tender, "siae_detail_display_count_annotated", 0)}</a>')
 
-    siae_detail_display_count_with_link.short_description = "S. vues"
-    siae_detail_display_count_with_link.admin_order_field = "siae_detail_display_count"
+    siae_detail_display_count_annotated_with_link.short_description = "S. vues"
+    siae_detail_display_count_annotated_with_link.admin_order_field = "siae_detail_display_count_annotated"
 
-    def siae_email_link_click_or_detail_display_count_with_link(self, tender):
+    def siae_email_link_click_or_detail_display_count_annotated_with_link(self, tender):
         url = (
             reverse("admin:siaes_siae_changelist")
             + f"?tenders__in={tender.id}&tendersiae__detail_display_date__isnull=False"
         )
         return format_html(
-            f'<a href="{url}">{getattr(tender, "siae_email_link_click_or_detail_display_count", 0)}</a>'
+            f'<a href="{url}">{getattr(tender, "siae_email_link_click_or_detail_display_count_annotated", 0)}</a>'
         )
 
-    siae_email_link_click_or_detail_display_count_with_link.short_description = "S. cliquées ou vues"
-    siae_email_link_click_or_detail_display_count_with_link.admin_order_field = (
-        "siae_email_link_click_or_detail_display_count"
+    siae_email_link_click_or_detail_display_count_annotated_with_link.short_description = "S. cliquées ou vues"
+    siae_email_link_click_or_detail_display_count_annotated_with_link.admin_order_field = (
+        "siae_email_link_click_or_detail_display_count_annotated"
     )
 
-    def siae_detail_contact_click_count_with_link(self, tender):
+    def siae_detail_contact_click_count_annotated_with_link(self, tender):
         url = (
             reverse("admin:siaes_siae_changelist")
             + f"?tenders__in={tender.id}&tendersiae__detail_contact_click_date__isnull=False"
         )
-        return format_html(f'<a href="{url}">{getattr(tender, "siae_detail_contact_click_count", 0)}</a>')
+        return format_html(f'<a href="{url}">{getattr(tender, "siae_detail_contact_click_count_annotated", 0)}</a>')
 
-    siae_detail_contact_click_count_with_link.short_description = "S. intéressées"
-    siae_detail_contact_click_count_with_link.admin_order_field = "siae_detail_contact_click_count"
+    siae_detail_contact_click_count_annotated_with_link.short_description = "S. intéressées"
+    siae_detail_contact_click_count_annotated_with_link.admin_order_field = "siae_detail_contact_click_count_annotated"
 
     def logs_display(self, tender=None):
         if tender:

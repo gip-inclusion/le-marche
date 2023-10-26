@@ -82,25 +82,25 @@
                         {% for siae in siaes %}
                             <tr>
                                 <td>
-                                    <a href="{% url 'siae:detail' siae.slug %}" target="_blank">{{ siae.brand_or_name }}</a>
+                                    <a href="{% url 'siae:detail' siae.slug %}" target="_blank">{{ siae.brand_or_name_annotated }}</a>
                                 </td>
                                 <td>
-                                    {% if siae.tender_email_send_count > 0 %}
-                                        <a href="{% url 'dashboard_networks:siae_tender_list' network.slug siae.slug %}" title="Voir les demandes reçues" id="dashboard-network-siae-show-tender-email-send-list-btn">{{ siae.tender_email_send_count }}</a>
+                                    {% if siae.tender_email_send_count_annotated > 0 %}
+                                        <a href="{% url 'dashboard_networks:siae_tender_list' network.slug siae.slug %}" title="Voir les demandes reçues" id="dashboard-network-siae-show-tender-email-send-list-btn">{{ siae.tender_email_send_count_annotated }}</a>
                                     {% else %}
                                         0
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if siae.tender_detail_display_count > 0 %}
-                                        <a href="{% url 'dashboard_networks:siae_tender_list' network.slug siae.slug "DISPLAY" %}" title="Voir les demandes vues" id="dashboard-network-siae-show-tender-detail-display-list-btn">{{ siae.tender_detail_display_count }}</a>
+                                    {% if siae.tender_detail_display_count_annotated > 0 %}
+                                        <a href="{% url 'dashboard_networks:siae_tender_list' network.slug siae.slug "DISPLAY" %}" title="Voir les demandes vues" id="dashboard-network-siae-show-tender-detail-display-list-btn">{{ siae.tender_detail_display_count_annotated }}</a>
                                     {% else %}
                                         0
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if siae.tender_detail_contact_click_count > 0 %}
-                                        <a href="{% url 'dashboard_networks:siae_tender_list' network.slug siae.slug "CONTACT-CLICK" %}" title="Voir les demandes intéressées" id="dashboard-network-siae-show-tender-detail-contact-click-list-btn">{{ siae.tender_detail_contact_click_count }}</a>
+                                    {% if siae.tender_detail_contact_click_count_annotated > 0 %}
+                                        <a href="{% url 'dashboard_networks:siae_tender_list' network.slug siae.slug "CONTACT-CLICK" %}" title="Voir les demandes intéressées" id="dashboard-network-siae-show-tender-detail-contact-click-list-btn">{{ siae.tender_detail_contact_click_count_annotated }}</a>
                                     {% else %}
                                         0
                                     {% endif %}

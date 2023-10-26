@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html
 
@@ -27,7 +26,14 @@ class HasSectorFilter(admin.SimpleListFilter):
 
 @admin.register(Code, site=admin_site)
 class CodeAdmin(admin.ModelAdmin):
-    list_display = ["cpv_code", "name", "hierarchy_level", "nb_sectors", "created_at", "updated_at"]
+    list_display = [
+        "cpv_code",
+        "name",
+        "hierarchy_level",
+        "sector_count_annotated_with_link",
+        "created_at",
+        "updated_at",
+    ]
     list_filter = ["hierarchy_level", HasSectorFilter]
 
     autocomplete_fields = ["sectors"]
@@ -56,13 +62,12 @@ class CodeAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.prefetch_related("sectors")
-        qs = qs.annotate(sector_count=Count("sectors", distinct=True))
+        qs = qs.with_sector_stats()
         return qs
 
-    def nb_sectors(self, code):
+    def sector_count_annotated_with_link(self, code):
         url = reverse("admin:sectors_sector_changelist") + f"?cpv_codes__in={code.id}"
-        return format_html(f'<a href="{url}">{code.sector_count}</a>')
+        return format_html(f'<a href="{url}">{code.sector_count_annotated}</a>')
 
-    nb_sectors.short_description = "Nombre de secteurs correspondants"
-    nb_sectors.admin_order_field = "sector_count"
+    sector_count_annotated_with_link.short_description = "Nombre de secteurs correspondants"
+    sector_count_annotated_with_link.admin_order_field = "sector_count_annotated"

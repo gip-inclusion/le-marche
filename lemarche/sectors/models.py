@@ -1,15 +1,23 @@
 from django.db import models
-from django.db.models import Value
+from django.db.models import Count, Value
 from django.db.models.functions import Left, NullIf
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 
 
+class SectorGroupQuerySet(models.QuerySet):
+    def with_sector_stats(self):
+        return self.annotate(sector_count_annotated=Count("sectors", distinct=True))
+
+
 class SectorGroup(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
+
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(SectorGroupQuerySet)()
 
     class Meta:
         verbose_name = "Groupe de secteurs d'activité"
@@ -44,6 +52,9 @@ class SectorQuerySet(models.QuerySet):
             .order_by("group__id", "sector_is_autre")
         )
 
+    def with_siae_stats(self):
+        return self.annotate(siae_count_annotated=Count("siaes", distinct=True))
+
 
 class Sector(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
@@ -56,6 +67,7 @@ class Sector(models.Model):
         null=True,
         blank=True,
     )
+
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
 

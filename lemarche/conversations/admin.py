@@ -45,7 +45,16 @@ class IsValidatedFilter(admin.SimpleListFilter):
 
 @admin.register(Conversation, site=admin_site)
 class ConversationAdmin(admin.ModelAdmin):
-    list_display = ["id", "uuid", "sender_encoded", "is_validate", "title", "kind", "answer_count", "created_at"]
+    list_display = [
+        "id",
+        "uuid",
+        "sender_encoded",
+        "is_validate",
+        "title",
+        "kind",
+        "answer_count_annotated",
+        "created_at",
+    ]
     list_filter = ["kind", HasAnswerFilter, IsValidatedFilter]
     search_fields = ["id", "uuid", "sender_email"]
     search_help_text = "Cherche sur les champs : ID, UUID, Initiateur (E-mail)"
@@ -61,7 +70,7 @@ class ConversationAdmin(admin.ModelAdmin):
         "sender_first_name",
         "sender_last_name",
         "sender_email",
-        "answer_count",
+        "answer_count_annotated",
         "data_display",
         "created_at",
         "updated_at",
@@ -77,7 +86,7 @@ class ConversationAdmin(admin.ModelAdmin):
             "Contenu de la conversation",
             {
                 "fields": (
-                    "answer_count",
+                    "answer_count_annotated",
                     "data_display",
                 )
             },
@@ -92,7 +101,7 @@ class ConversationAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.with_answer_count()
+        qs = qs.with_answer_stats()
         return qs
 
     def is_validate(self, conversation: Conversation):
@@ -101,11 +110,11 @@ class ConversationAdmin(admin.ModelAdmin):
     is_validate.boolean = True
     is_validate.short_description = "Validé"
 
-    def answer_count(self, conversation):
-        return getattr(conversation, "answer_count", 0)
+    def answer_count_annotated(self, conversation):
+        return getattr(conversation, "answer_count_annotated", 0)
 
-    answer_count.short_description = "Nombre de réponses"
-    answer_count.admin_order_field = "answer_count"
+    answer_count_annotated.short_description = "Nombre de réponses"
+    answer_count_annotated.admin_order_field = "answer_count_annotated"
 
     def response_change(self, request, obj: Conversation):
         if request.POST.get("_validate_conversation"):
