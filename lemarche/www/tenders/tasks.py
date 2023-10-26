@@ -449,7 +449,7 @@ def notify_admin_tender_created(tender: Tender):
         recipient_list=[settings.NOTIFY_EMAIL],
     )
 
-    api_slack.send_message_to_channel(text=email_body, service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL)
+    api_slack.send_message_to_channel(text=email_body, service_id=settings.SLACK_WEBHOOK_C4_TENDER_CHANNEL)
 
 
 def send_author_incremental_2_days_email(tender: Tender):
@@ -556,4 +556,4 @@ def notify_admin_siae_wants_cocontracting(tender: Tender, siae: Siae):
     )
 
     if settings.BITOUBI_ENV == "prod":
-        api_slack.send_message_to_channel(text=email_body, service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL)
+        api_slack.send_message_to_channel(text=email_body, service_id=settings.SLACK_WEBHOOK_C4_TENDER_CHANNEL)
