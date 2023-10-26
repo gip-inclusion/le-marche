@@ -44,3 +44,7 @@ class Label(models.Model):
         """Generate the slug field before saving."""
         self.set_slug()
         super().save(*args, **kwargs)
+
+    @property
+    def has_logo(self):
+        return len(self.logo_url) > 0
