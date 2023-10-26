@@ -15,7 +15,7 @@ class SiaeListApiTest(TestCase):
             SiaeFactory()
         UserFactory(api_key="admin")
 
-    def test_should_return_siae_sublist_to_anonmyous_users(self):
+    def test_should_return_siae_sublist_to_anonymous_users(self):
         url = reverse("api:siae-list")  # anonymous user
         response = self.client.get(url)
         # self.assertEqual(response.data["count"], 12)
@@ -25,6 +25,7 @@ class SiaeListApiTest(TestCase):
         self.assertTrue("name" in response.data[0])
         self.assertTrue("siret" in response.data[0])
         self.assertTrue("kind" in response.data[0])
+        self.assertTrue("kind_parent" in response.data[0])
         self.assertTrue("presta_type" in response.data[0])
         self.assertTrue("department" in response.data[0])
         self.assertTrue("created_at" in response.data[0])
@@ -38,6 +39,7 @@ class SiaeListApiTest(TestCase):
         self.assertTrue("name" in response.data["results"][0])
         self.assertTrue("siret" in response.data["results"][0])
         self.assertTrue("kind" in response.data["results"][0])
+        self.assertTrue("kind_parent" in response.data["results"][0])
         self.assertTrue("presta_type" in response.data["results"][0])
         self.assertTrue("department" in response.data["results"][0])
         self.assertTrue("created_at" in response.data["results"][0])
@@ -92,7 +94,7 @@ class SiaeListFilterApiTest(TestCase):
         self.assertEqual(response.data["count"], 4 + 2 + 2)
         self.assertEqual(len(response.data["results"]), 4 + 2 + 2)
 
-    def test_should_not_filter_siae_list_for_anonmyous_user(self):
+    def test_should_not_filter_siae_list_for_anonymous_user(self):
         # single
         url = reverse("api:siae-list") + f"?kind={siae_constants.KIND_ETTI}"  # anonymous user
         response = self.client.get(url)
@@ -174,7 +176,7 @@ class SiaeDetailApiTest(TestCase):
         cls.siae = SiaeFactory()
         UserFactory(api_key="admin")
 
-    def test_should_return_simple_siae_object_to_anonmyous_users(self):
+    def test_should_return_simple_siae_object_to_anonymous_users(self):
         url = reverse("api:siae-detail", args=[self.siae.id])  # anonymous user
         response = self.client.get(url)
         self.assertTrue("id" in response.data)
@@ -182,6 +184,7 @@ class SiaeDetailApiTest(TestCase):
         self.assertTrue("siret" in response.data)
         self.assertTrue("slug" in response.data)
         self.assertTrue("kind" in response.data)
+        self.assertTrue("kind_parent" in response.data)
         self.assertTrue("presta_type" in response.data)
         self.assertTrue("sectors" not in response.data)
         self.assertTrue("networks" not in response.data)
@@ -197,6 +200,7 @@ class SiaeDetailApiTest(TestCase):
         self.assertTrue("siret" in response.data)
         self.assertTrue("slug" in response.data)
         self.assertTrue("kind" in response.data)
+        self.assertTrue("kind_parent" in response.data)
         self.assertTrue("presta_type" in response.data)
         self.assertTrue("sectors" in response.data)
         self.assertTrue("networks" in response.data)
