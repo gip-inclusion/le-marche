@@ -863,6 +863,18 @@ class Siae(models.Model):
                 raise e
 
     @property
+    def kind_is_esat_or_ea_or_eatt(self):
+        return self.kind in [siae_constants.KIND_ESAT, siae_constants.KIND_EA, siae_constants.KIND_EATT]
+
+    @property
+    def kind_parent(self):
+        if self.kind in siae_constants.KIND_GROUP_INSERTION_LIST:
+            return siae_constants.KIND_GROUP_INSERTION_NAME
+        if self.kind in siae_constants.KIND_GROUP_HANDICAP_LIST:
+            return siae_constants.KIND_GROUP_HANDICAP_NAME
+        return ""
+
+    @property
     def latitude(self):
         if self.coords:
             return self.coords.y
@@ -1016,10 +1028,6 @@ class Siae(models.Model):
             return "l'ATIGIP"
         else:
             return "l'ASP"
-
-    @property
-    def kind_is_esat_or_ea_or_eatt(self):
-        return self.kind in [siae_constants.KIND_ESAT, siae_constants.KIND_EA, siae_constants.KIND_EATT]
 
     @property
     def completion_percent(self):

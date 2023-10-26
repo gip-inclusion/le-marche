@@ -33,6 +33,7 @@ class SiaeLabelOldSimpleSerializer(serializers.ModelSerializer):
 
 
 class SiaeDetailSerializer(serializers.ModelSerializer):
+    kind_parent = serializers.ReadOnlyField()
     sectors = SectorSimpleSerializer(many=True)
     networks = NetworkSimpleSerializer(many=True)
     offers = SiaeOfferSimpleSerializer(many=True)
@@ -49,6 +50,7 @@ class SiaeDetailSerializer(serializers.ModelSerializer):
             "siret",
             "nature",
             "kind",
+            "kind_parent",
             "presta_type",
             "contact_website",
             "contact_email",
@@ -85,6 +87,7 @@ class SiaeListSerializer(SiaeDetailSerializer):
             "siret",
             "nature",
             "kind",
+            "kind_parent",
             "presta_type",
             "contact_website",
             "logo_url",
