@@ -1,0 +1,30 @@
+{% extends 'admin/change_form.html' %}
+{% load static bootstrap4 theme_inclusion %}
+
+{% block after_related_objects %}
+    {{ block.super }}
+
+    {% import_static_JS_theme_inclusion %}
+
+    <div class="submit-row">
+        <div class="form-group">
+            <label for="logo_form" class="js-display-if-javascript-enabled">Importez votre logo</label>
+            {% include "storage/s3_upload_form.html" with dropzone_form_id="logo_form" %}
+        </div>
+    </div>
+
+    {{ s3_form_values_label_logo|json_script:"s3-form-values-label-logo" }}
+    {{ s3_upload_config_label_logo|json_script:"s3-upload-config-label-logo" }}
+    <script type="text/javascript">
+    // init dropzone
+    s3UploadInit({
+        dropzoneSelector: "#logo_form",
+        callbackLocationSelector: "#{{ adminform.form.logo_url.id_for_label }}",
+        s3FormValuesId: "s3-form-values-label-logo",
+        s3UploadConfigId: "s3-upload-config-label-logo",
+        // Not really nice
+        sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
+        sentryCsrfToken: "{{ csrf_token }}"
+    });
+    </script>
+{% endblock %}
