@@ -39,10 +39,10 @@ class UserQueryset(models.QuerySet):
         return self.filter(api_key__isnull=False)
 
     def with_siae_stats(self):
-        return self.prefetch_related("siaes").annotate(siae_count=Count("siaes", distinct=True))
+        return self.prefetch_related("siaes").annotate(siae_count_annotated=Count("siaes", distinct=True))
 
     def with_tender_stats(self):
-        return self.prefetch_related("tenders").annotate(tender_count=Count("tenders", distinct=True))
+        return self.prefetch_related("tenders").annotate(tender_count_annotated=Count("tenders", distinct=True))
 
     def with_latest_activities(self):
         return self.annotate(

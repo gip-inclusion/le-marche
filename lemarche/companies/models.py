@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Count
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django_better_admin_arrayfield.models.fields import ArrayField
@@ -10,6 +11,9 @@ class CompanyQuerySet(models.QuerySet):
 
     def has_email_domain(self):
         return self.exclude(email_domain_list=[])
+
+    def with_user_stats(self):
+        return self.annotate(user_count_annotated=Count("users", distinct=True))
 
 
 class Company(models.Model):

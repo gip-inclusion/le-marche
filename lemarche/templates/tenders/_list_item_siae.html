@@ -6,7 +6,7 @@
             <div class="col-md-12">
                 <p class="mb-1">
                     Date de clôture : {{ tender.deadline_date|default:"" }}
-                    {% if tender.deadline_date_is_outdated %}
+                    {% if tender.deadline_date_is_outdated_annotated %}
                         <span class="badge badge-sm badge-base badge-pill badge-pilotage">Clôturé</span>
                     {% endif %}
                     {% if not tender.tendersiae_set.first.detail_display_date %}

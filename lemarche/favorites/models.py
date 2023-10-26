@@ -2,6 +2,7 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Count
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
@@ -11,6 +12,9 @@ from django.utils import timezone
 class FavoriteListQuerySet(models.QuerySet):
     def by_user(self, user):
         return self.filter(user=user)
+
+    def with_siae_stats(self):
+        return self.annotate(siae_count_annotated=Count("siaes", distinct=True))
 
 
 class FavoriteList(models.Model):

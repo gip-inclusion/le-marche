@@ -1,6 +1,15 @@
 from django.db import models
+from django.db.models import Count
 from django.template.defaultfilters import slugify
 from django.utils import timezone
+
+
+class NetworkQuerySet(models.QuerySet):
+    def with_siae_stats(self):
+        return self.annotate(siae_count_annotated=Count("siaes", distinct=True))
+
+    def with_user_partner_stats(self):
+        return self.annotate(user_partner_count_annotated=Count("user_partners", distinct=True))
 
 
 class Network(models.Model):
@@ -12,6 +21,8 @@ class Network(models.Model):
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(NetworkQuerySet)()
 
     class Meta:
         verbose_name = "Réseau"

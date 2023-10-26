@@ -4,7 +4,6 @@ from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.contrib.gis import admin as gis_admin
 from django.db import models
-from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
@@ -142,9 +141,9 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "label_count_with_link",
         "client_reference_count_with_link",
         "image_count_with_link",
-        "tender_email_send_count_with_link",
-        "tender_detail_display_count_with_link",
-        "tender_detail_contact_click_count_with_link",
+        "tender_email_send_count_annotated_with_link",
+        "tender_detail_display_count_annotated_with_link",
+        "tender_detail_contact_click_count_annotated_with_link",
         "created_at",
     ]
     list_filter = [
@@ -176,11 +175,11 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "coords_display",
         "logo_url",
         "logo_url_display",
-        "tender_count_with_link",
-        "tender_email_send_count_with_link",
-        "tender_email_link_click_count_with_link",
-        "tender_detail_display_count_with_link",
-        "tender_detail_contact_click_count_with_link",
+        "tender_count_annotated_with_link",
+        "tender_email_send_count_annotated_with_link",
+        "tender_email_link_click_count_annotated_with_link",
+        "tender_detail_display_count_annotated_with_link",
+        "tender_detail_contact_click_count_annotated_with_link",
         "logs_display",
         # "import_raw_object",
         "import_raw_object_display",
@@ -296,11 +295,11 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
             "Besoins des acheteurs",
             {
                 "fields": (
-                    "tender_count_with_link",
-                    "tender_email_send_count_with_link",
-                    "tender_email_link_click_count_with_link",
-                    "tender_detail_display_count_with_link",
-                    "tender_detail_contact_click_count_with_link",
+                    "tender_count_annotated_with_link",
+                    "tender_email_send_count_annotated_with_link",
+                    "tender_email_link_click_count_annotated_with_link",
+                    "tender_detail_display_count_annotated_with_link",
+                    "tender_detail_contact_click_count_annotated_with_link",
                 )
             },
         ),
@@ -532,52 +531,54 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
 
     import_raw_object_display.short_description = Siae._meta.get_field("import_raw_object").verbose_name
 
-    def tender_count_with_link(self, siae):
+    def tender_count_annotated_with_link(self, siae):
         url = reverse("admin:tenders_tender_changelist") + f"?siaes__in={siae.id}"
-        return format_html(f'<a href="{url}">{getattr(siae, "tender_count", 0)}</a>')
+        return format_html(f'<a href="{url}">{getattr(siae, "tender_count_annotated", 0)}</a>')
 
-    tender_count_with_link.short_description = "Besoins concernés"
-    tender_count_with_link.admin_order_field = "tender_count"
+    tender_count_annotated_with_link.short_description = "Besoins concernés"
+    tender_count_annotated_with_link.admin_order_field = "tender_count_annotated"
 
-    def tender_email_send_count_with_link(self, siae):
+    def tender_email_send_count_annotated_with_link(self, siae):
         url = (
             reverse("admin:tenders_tender_changelist")
             + f"?siaes__in={siae.id}&tendersiae__email_send_date__isnull=False"
         )
-        return format_html(f'<a href="{url}">{getattr(siae, "tender_email_send_count", 0)}</a>')
+        return format_html(f'<a href="{url}">{getattr(siae, "tender_email_send_count_annotated", 0)}</a>')
 
-    tender_email_send_count_with_link.short_description = "Besoins reçus"
-    tender_email_send_count_with_link.admin_order_field = "tender_email_send_count"
+    tender_email_send_count_annotated_with_link.short_description = "Besoins reçus"
+    tender_email_send_count_annotated_with_link.admin_order_field = "tender_email_send_count_annotated"
 
-    def tender_email_link_click_count_with_link(self, siae):
+    def tender_email_link_click_count_annotated_with_link(self, siae):
         url = (
             reverse("admin:tenders_tender_changelist")
             + f"?siaes__in={siae.id}&tendersiae__email_link_click_date__isnull=False"
         )
-        return format_html(f'<a href="{url}">{getattr(siae, "tender_email_link_click_count", 0)}</a>')
+        return format_html(f'<a href="{url}">{getattr(siae, "tender_email_link_click_count_annotated", 0)}</a>')
 
-    tender_email_link_click_count_with_link.short_description = "Besoins cliqués"
-    tender_email_link_click_count_with_link.admin_order_field = "tender_email_link_click_count"
+    tender_email_link_click_count_annotated_with_link.short_description = "Besoins cliqués"
+    tender_email_link_click_count_annotated_with_link.admin_order_field = "tender_email_link_click_count_annotated"
 
-    def tender_detail_display_count_with_link(self, siae):
+    def tender_detail_display_count_annotated_with_link(self, siae):
         url = (
             reverse("admin:tenders_tender_changelist")
             + f"?siaes__in={siae.id}&tendersiae__detail_display_date__isnull=False"
         )
-        return format_html(f'<a href="{url}">{getattr(siae, "tender_detail_display_count", 0)}</a>')
+        return format_html(f'<a href="{url}">{getattr(siae, "tender_detail_display_count_annotated", 0)}</a>')
 
-    tender_detail_display_count_with_link.short_description = "Besoins vues"
-    tender_detail_display_count_with_link.admin_order_field = "tender_detail_display_count"
+    tender_detail_display_count_annotated_with_link.short_description = "Besoins vues"
+    tender_detail_display_count_annotated_with_link.admin_order_field = "tender_detail_display_count_annotated"
 
-    def tender_detail_contact_click_count_with_link(self, siae):
+    def tender_detail_contact_click_count_annotated_with_link(self, siae):
         url = (
             reverse("admin:tenders_tender_changelist")
             + f"?siaes__in={siae.id}&tendersiae__detail_contact_click_date__isnull=False"
         )
-        return format_html(f'<a href="{url}">{getattr(siae, "tender_detail_contact_click_count", 0)}</a>')
+        return format_html(f'<a href="{url}">{getattr(siae, "tender_detail_contact_click_count_annotated", 0)}</a>')
 
-    tender_detail_contact_click_count_with_link.short_description = "Besoins intéressés"
-    tender_detail_contact_click_count_with_link.admin_order_field = "tender_detail_contact_click_count"
+    tender_detail_contact_click_count_annotated_with_link.short_description = "Besoins intéressés"
+    tender_detail_contact_click_count_annotated_with_link.admin_order_field = (
+        "tender_detail_contact_click_count_annotated"
+    )
 
     def logs_display(self, siae=None):
         if siae:
@@ -717,14 +718,14 @@ class SiaeImageAdmin(admin.ModelAdmin):
 
 @admin.register(SiaeGroup, site=admin_site)
 class SiaeGroupAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", "nb_siaes", "created_at"]
+    list_display = ["id", "name", "siae_count_annotated_with_link", "created_at"]
     search_fields = ["id", "name"]
     search_help_text = "Cherche sur les champs : ID, Nom"
 
     prepopulated_fields = {"slug": ("name",)}
     autocomplete_fields = ["sectors"]
     readonly_fields = [f"{field}_last_updated" for field in SiaeGroup.TRACK_UPDATE_FIELDS] + [
-        "nb_siaes",
+        "siae_count_annotated_with_link",
         "logo_url_display",
         "created_at",
         "updated_at",
@@ -745,7 +746,7 @@ class SiaeGroupAdmin(admin.ModelAdmin):
                     "year_constitution",
                     "siae_count",
                     "siae_count_last_updated",
-                    "nb_siaes",
+                    "siae_count_annotated_with_link",
                     "employees_insertion_count",
                     "employees_insertion_count_last_updated",
                     "employees_permanent_count",
@@ -782,15 +783,15 @@ class SiaeGroupAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.annotate(siae_count_live=Count("siaes", distinct=True))
+        qs = qs.with_siae_stats()
         return qs
 
-    def nb_siaes(self, siae_group):
+    def siae_count_annotated_with_link(self, siae_group):
         url = reverse("admin:siaes_siae_changelist") + f"?groups__in={siae_group.id}"
-        return format_html(f'<a href="{url}">{siae_group.siae_count_live}</a>')
+        return format_html(f'<a href="{url}">{siae_group.siae_count_annotated}</a>')
 
-    nb_siaes.short_description = "Nombre de structures (live)"
-    nb_siaes.admin_order_field = "siae_count_live"
+    siae_count_annotated_with_link.short_description = "Nombre de structures (live)"
+    siae_count_annotated_with_link.admin_order_field = "siae_count_annotated"
 
     def logo_url_display(self, siae_group):
         if siae_group.logo_url:

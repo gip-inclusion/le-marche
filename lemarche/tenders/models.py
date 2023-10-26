@@ -83,39 +83,41 @@ class TenderQuerySet(models.QuerySet):
 
     def with_deadline_date_is_outdated(self, limit_date=datetime.today()):
         return self.annotate(
-            deadline_date_is_outdated=ExpressionWrapper(Q(deadline_date__lt=limit_date), output_field=BooleanField())
+            deadline_date_is_outdated_annotated=ExpressionWrapper(
+                Q(deadline_date__lt=limit_date), output_field=BooleanField()
+            )
         )
 
     def order_by_deadline_date(self, limit_date=datetime.today()):
         return self.with_deadline_date_is_outdated(limit_date=limit_date).order_by(
-            "deadline_date_is_outdated", "deadline_date", "-updated_at"
+            "deadline_date_is_outdated_annotated", "deadline_date", "-updated_at"
         )
 
     def with_question_stats(self):
-        return self.annotate(question_count=Count("questions", distinct=True))
+        return self.annotate(question_count_annotated=Count("questions", distinct=True))
 
     def with_siae_stats(self):
         """
         Enrich each Tender with stats on their linked Siae
         """
         return self.annotate(
-            siae_count=Count("siaes", distinct=True),
-            siae_email_send_count=Sum(
+            siae_count_annotated=Count("siaes", distinct=True),
+            siae_email_send_count_annotated=Sum(
                 Case(When(tendersiae__email_send_date__isnull=False, then=1), default=0, output_field=IntegerField())
             ),
-            siae_email_link_click_count=Sum(
+            siae_email_link_click_count_annotated=Sum(
                 Case(
                     When(tendersiae__email_link_click_date__isnull=False, then=1),
                     default=0,
                     output_field=IntegerField(),
                 )
             ),
-            siae_detail_display_count=Sum(
+            siae_detail_display_count_annotated=Sum(
                 Case(
                     When(tendersiae__detail_display_date__isnull=False, then=1), default=0, output_field=IntegerField()
                 )
             ),
-            siae_email_link_click_or_detail_display_count=Sum(
+            siae_email_link_click_or_detail_display_count_annotated=Sum(
                 Case(
                     When(
                         Q(tendersiae__detail_display_date__isnull=False)
@@ -126,14 +128,14 @@ class TenderQuerySet(models.QuerySet):
                     output_field=IntegerField(),
                 )
             ),
-            siae_detail_contact_click_count=Sum(
+            siae_detail_contact_click_count_annotated=Sum(
                 Case(
                     When(tendersiae__detail_contact_click_date__isnull=False, then=1),
                     default=0,
                     output_field=IntegerField(),
                 )
             ),
-            siae_detail_contact_click_since_last_seen_date_count=Sum(
+            siae_detail_contact_click_since_last_seen_date_count_annotated=Sum(
                 Case(
                     When(
                         tendersiae__detail_contact_click_date__gte=Greatest(
@@ -149,14 +151,14 @@ class TenderQuerySet(models.QuerySet):
 
     def with_network_siae_stats(self, network_siaes):
         return self.annotate(
-            network_siae_email_send_count=Sum(
+            network_siae_email_send_count_annotated=Sum(
                 Case(
                     When(Q(tendersiae__email_send_date__isnull=False) & Q(tendersiae__siae__in=network_siaes), then=1),
                     default=0,
                     output_field=IntegerField(),
                 ),
             ),
-            network_siae_detail_contact_click_count=Sum(
+            network_siae_detail_contact_click_count_annotated=Sum(
                 Case(
                     When(
                         Q(tendersiae__detail_contact_click_date__isnull=False) & Q(tendersiae__siae__in=network_siaes),
@@ -493,10 +495,6 @@ class Tender(models.Model):
 
     def questions_list(self):
         return list(self.questions.values("id", "text"))
-
-    @property
-    def questions_count(self):
-        return self.questions.count()
 
     @cached_property
     def external_link_title(self) -> str:

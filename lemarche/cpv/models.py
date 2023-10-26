@@ -1,5 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import Count
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 
@@ -8,6 +9,9 @@ class CodeQuerySet(models.QuerySet):
     def has_sector(self):
         """Only return codes who have at least 1 Sector."""
         return self.prefetch_related("sectors").filter(sectors__isnull=False).distinct()
+
+    def with_sector_stats(self):
+        return self.annotate(sector_count_annotated=Count("sectors", distinct=True))
 
 
 class Code(models.Model):

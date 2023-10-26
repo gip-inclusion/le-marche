@@ -276,10 +276,10 @@ class SiaeFilterForm(forms.Form):
             lower_limit, upper_limit = employees.split("-")
 
             # Check lower limitation, it always exists when employees filter is used
-            qs = qs.with_employees_count().filter(
-                (Q(employees_count__isnull=False) & Q(employees_count__gte=int(lower_limit)))
+            qs = qs.with_employees_stats().filter(
+                (Q(employees_count_annotated__isnull=False) & Q(employees_count_annotated__gte=int(lower_limit)))
                 | (
-                    Q(employees_count=None)
+                    Q(employees_count_annotated=None)
                     & Q(api_entreprise_employees__in=EMPLOYEES_API_ENTREPRISE_MAPPING[employees])
                 )
             )
@@ -287,9 +287,9 @@ class SiaeFilterForm(forms.Form):
             # Upper limitation
             if upper_limit:
                 qs = qs.filter(
-                    (Q(employees_count__isnull=False) & Q(employees_count__lte=int(upper_limit)))
+                    (Q(employees_count_annotated__isnull=False) & Q(employees_count_annotated__lte=int(upper_limit)))
                     | (
-                        Q(employees_count=None)
+                        Q(employees_count_annotated=None)
                         & Q(api_entreprise_employees__in=EMPLOYEES_API_ENTREPRISE_MAPPING[employees])
                     )
                 )

@@ -11,3 +11,8 @@ class CompanyFactory(DjangoModelFactory):
     name = factory.Faker("company", locale="fr_FR")
     # slug: auto-generated
     website = "https://example.com"
+
+    @factory.post_generation
+    def users(self, create, extracted, **kwargs):
+        if extracted:
+            self.users.add(*extracted)

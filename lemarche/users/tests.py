@@ -49,50 +49,52 @@ class UserModelQuerysetTest(TestCase):
     def setUpTestData(cls):
         cls.user = UserFactory()
 
-    def test_has_siae_queryset(self):
+    def test_has_siae(self):
         user_2 = UserFactory()
         siae = SiaeFactory()
         siae.users.add(user_2)
         self.assertEqual(User.objects.count(), 1 + 1)
         self.assertEqual(User.objects.has_siae().count(), 1)
 
-    def test_has_tender_queryset(self):
+    def test_has_tender(self):
         user_2 = UserFactory()
         TenderFactory(author=user_2)
         self.assertEqual(User.objects.count(), 1 + 1)
         self.assertEqual(User.objects.has_tender().count(), 1)
 
-    def test_has_favorite_list_queryset(self):
+    def test_has_favorite_list(self):
         user_2 = UserFactory()
         FavoriteListFactory(user=user_2)
         self.assertEqual(User.objects.count(), 1 + 1)
         self.assertEqual(User.objects.has_favorite_list().count(), 1)
 
-    def test_has_api_key_queryset(self):
+    def test_has_api_key(self):
         UserFactory(api_key="coucou")
         self.assertEqual(User.objects.count(), 1 + 1)
         self.assertEqual(User.objects.has_api_key().count(), 1)
 
-    def test_with_siae_stats_queryset(self):
+    def test_with_siae_stats(self):
         user_2 = UserFactory()
         siae = SiaeFactory()
         siae.users.add(user_2)
         self.assertEqual(User.objects.count(), 1 + 1)
-        self.assertEqual(User.objects.with_siae_stats().filter(id=self.user.id).first().siae_count, 0)
-        self.assertEqual(User.objects.with_siae_stats().filter(id=user_2.id).first().siae_count, 1)
+        self.assertEqual(User.objects.with_siae_stats().filter(id=self.user.id).first().siae_count_annotated, 0)
+        self.assertEqual(User.objects.with_siae_stats().filter(id=user_2.id).first().siae_count_annotated, 1)
 
-    def test_with_tender_stats_queryset(self):
+    def test_with_tender_stats(self):
         user_2 = UserFactory()
         TenderFactory(author=user_2)
         self.assertEqual(User.objects.count(), 1 + 1)
-        self.assertEqual(User.objects.with_tender_stats().filter(id=self.user.id).first().tender_count, 0)
-        self.assertEqual(User.objects.with_tender_stats().filter(id=user_2.id).first().tender_count, 1)
+        self.assertEqual(User.objects.with_tender_stats().filter(id=self.user.id).first().tender_count_annotated, 0)
+        self.assertEqual(User.objects.with_tender_stats().filter(id=user_2.id).first().tender_count_annotated, 1)
 
     def test_chain_querysets(self):
         user_2 = UserFactory(api_key="chain")
         siae = SiaeFactory()
         siae.users.add(user_2)
-        self.assertEqual(User.objects.has_api_key().with_siae_stats().filter(id=user_2.id).first().siae_count, 1)
+        self.assertEqual(
+            User.objects.has_api_key().with_siae_stats().filter(id=user_2.id).first().siae_count_annotated, 1
+        )
 
 
 class UserModelSaveTest(TestCase):

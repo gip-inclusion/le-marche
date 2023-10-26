@@ -8,8 +8,8 @@ from lemarche.users.factories import UserFactory
 class NetworkApiTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        NetworkFactory()
-        NetworkFactory()
+        NetworkFactory(name="Reseau 1")
+        NetworkFactory(name="Reseau 2")
         UserFactory(api_key="admin")
 
     def test_should_return_network_list(self):

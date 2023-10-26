@@ -68,7 +68,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         results = filter_form.filter_queryset()
         results_ordered = filter_form.order_queryset(results)
         if user.is_authenticated:
-            results_ordered = results_ordered.annotate_with_user_favorite_list_count(user)
+            results_ordered = results_ordered.with_in_user_favorite_list_stats(user)
         return results_ordered
 
     def get_mailto_share_url(self):
@@ -262,7 +262,7 @@ class SiaeDetailView(FormMixin, DetailView):
         """
         qs = super().get_queryset()
         if self.request.user.is_authenticated:
-            qs = qs.annotate_with_user_favorite_list_count(self.request.user)
+            qs = qs.with_in_user_favorite_list_stats(self.request.user)
         return qs
 
     def get_context_data(self, **kwargs):

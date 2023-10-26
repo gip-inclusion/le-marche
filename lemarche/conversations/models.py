@@ -13,8 +13,10 @@ class ConversationQuerySet(models.QuerySet):
     def has_answer(self):
         return self.exclude(data=[])
 
-    def with_answer_count(self):
-        return self.annotate(answer_count=Func("data", function="jsonb_array_length", output_field=IntegerField()))
+    def with_answer_stats(self):
+        return self.annotate(
+            answer_count_annotated=Func("data", function="jsonb_array_length", output_field=IntegerField())
+        )
 
     def get_conv_from_uuid(self, conv_uuid: str, version=1):
         """get conv form
