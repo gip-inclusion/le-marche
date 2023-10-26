@@ -1,10 +1,10 @@
 #!/bin/bash -l
 
-# Update siae count fields
+# Update tender count fields
 
 # Do not run if this env var is not set:
-if [[ -z "$CRON_UPDATE_SIAE_COUNT_FIELDS_ENABLED" ]]; then
-    echo "CRON_UPDATE_SIAE_COUNT_FIELDS_ENABLED not set. Exiting..."
+if [[ -z "$CRON_UPDATE_TENDER_COUNT_FIELDS_ENABLED" ]]; then
+    echo "CRON_UPDATE_TENDER_COUNT_FIELDS_ENABLED not set. Exiting..."
     exit 0
 fi
 
@@ -19,5 +19,5 @@ fi
 # $APP_HOME is set by default by clever cloud.
 cd $APP_HOME
 
-# django-admin update_siae_count_fields
-django-admin update_siae_count_fields --fields etablissement_count
+# django-admin update_tender_count_fields
+django-admin update_tender_count_fields

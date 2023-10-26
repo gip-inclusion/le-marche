@@ -24,10 +24,10 @@ class Command(BaseCommand):
     Note: these fields should be updated automatically on each Siae save()
 
     Usage:
-    python manage.py update_count_fields
-    python manage.py update_count_fields --id 1
-    python manage.py update_count_fields --id 1 --fields user_count
-    python manage.py update_count_fields --id 1 --fields user_count --fields etablissement_count
+    python manage.py update_siae_count_fields
+    python manage.py update_siae_count_fields --id 1
+    python manage.py update_siae_count_fields --id 1 --fields user_count
+    python manage.py update_siae_count_fields --id 1 --fields user_count --fields etablissement_count
     """
 
     def add_arguments(self, parser):
@@ -39,13 +39,13 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout_messages_info("Updating Siae count fields...")
 
-        # Step 1a: build Siae queryset
+        # Step 1a: build the queryset
         siae_queryset = Siae.objects.prefetch_related(
             "users", "sectors", "networks", "groups", "offers", "client_references", "labels", "images"
         ).all()
         if options["id"]:
             siae_queryset = siae_queryset.filter(id=options["id"])
-        self.stdout_messages_info(f"Found {siae_queryset.count()} Siae")
+        self.stdout_messages_info(f"Found {siae_queryset.count()} siaes")
 
         # Step 1b: init fields to update
         update_fields = options["fields"] if options["fields"] else SIAE_COUNT_FIELDS
