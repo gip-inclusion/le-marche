@@ -11,6 +11,7 @@ SIAE_FIELDS_TO_EXPORT = [
     "siret",  # siret_pretty ?
     "nature",
     "kind",
+    "kind_parent",
     "presta_type",
     "contact_website",
     # "contact_email",
@@ -106,7 +107,7 @@ def export_siae_to_excel(siae_queryset, with_contact_info=False):
     # header
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
-    for (index, header_item) in enumerate(generate_header(field_list)):
+    for index, header_item in enumerate(generate_header(field_list)):
         ws.write(row_number, index, header_item, font_style)
         # set column width
         # ws.col(col_num).width = HEADER[col_num][1]
@@ -117,7 +118,7 @@ def export_siae_to_excel(siae_queryset, with_contact_info=False):
     for siae in siae_queryset:
         row_number += 1
         siae_row = generate_siae_row(siae, field_list)
-        for (index, row_item) in enumerate(siae_row):
+        for index, row_item in enumerate(siae_row):
             ws.write(row_number, index, row_item, font_style)
 
     return wb
