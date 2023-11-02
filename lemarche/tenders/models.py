@@ -556,6 +556,8 @@ class Tender(models.Model):
     def cta_card_button_text(self):
         if self.kind == tender_constants.KIND_TENDER:
             return "Voir l'appel d'offres"
+        elif self.kind == tender_constants.KIND_PROJECT and self.response_is_anonymous:
+            return "Je suis intéressé !"
         return "Accéder aux coordonnées"
 
     @cached_property

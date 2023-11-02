@@ -31,11 +31,13 @@
         {% if not tender.deadline_date_outdated and not tender.response_is_anonymous %}
             {% if user_siae_has_detail_contact_click_date or siae_has_detail_contact_click_date %}
                 <div class="row">
-                    <div class="col-12 col-lg-8">
-                        <div class="alert alert-info fade show" role="status">
-                            {% include "tenders/_detail_contact.html" with tender=tender source="alert" %}
+                    {% if not tender.response_is_anonymous %}
+                        <div class="col-12 col-lg-8">
+                            <div class="alert alert-info fade show" role="status">
+                                {% include "tenders/_detail_contact.html" with tender=tender source="alert" %}
+                            </div>
                         </div>
-                    </div>
+                    {% endif %}
                     <div class="col-12 col-lg-4">
                         <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                             <p class="mb-1">
@@ -121,9 +123,11 @@
                                 {% include "tenders/_detail_contact.html" with tender=tender %}
                             {% endif %}
                         {% comment %} for anonymous tenders {% endcomment %}
-                        {% elif tender.response_is_anonymous and (siae_id or user.is_authenticated) %}
-                            {% if not siae_has_detail_contact_click_date %}
-                                {% include "tenders/_detail_cta.html" with tender=tender user_can_click=False %}
+                        {% elif tender.response_is_anonymous and siae_id or tender.response_is_anonymous and user.is_authenticated %}
+                            {% if not siae_has_detail_contact_click_date and not user_siae_has_detail_contact_click_date %}
+                                {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True tender_is_anonymous=True %}
+                            {% else %}
+                                {% include "tenders/_detail_success_contact.html" %}
                             {% endif %}
                         {% else %}
                             {% include "tenders/_detail_cta.html" with tender=tender user_can_click=False %}
