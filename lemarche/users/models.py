@@ -235,7 +235,7 @@ class User(AbstractUser):
     sectors = models.ManyToManyField(
         "sectors.Sector",
         verbose_name="Secteurs d'activité",
-        related_name="buyers",
+        related_name="users",
         blank=True,
         help_text="Quelles sont les familles d’achat sur lesquelles vous travaillez ?",
     )

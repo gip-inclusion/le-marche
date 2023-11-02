@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             field=models.ManyToManyField(
                 blank=True,
                 help_text="Quelles sont les familles d’achat sur lesquelles vous travaillez ?",
-                related_name="buyers",
+                related_name="users",
                 to="sectors.sector",
                 verbose_name="Secteurs d'activité",
             ),
