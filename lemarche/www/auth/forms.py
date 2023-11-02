@@ -1,8 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, UserCreationForm
 
+from lemarche.sectors.models import Sector
 from lemarche.users.models import User
 from lemarche.utils.constants import EMPTY_CHOICE, HOW_MANY_CHOICES
+from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.utils.password_validation import CnilCompositionPasswordValidator
 
 
@@ -44,6 +46,15 @@ class SignupForm(UserCreationForm):
         widget=forms.TextInput(attrs={"placeholder": "Merci de bien vérifier l'adresse saisie."}),
         required=True,
     )
+
+    sectors = GroupedModelMultipleChoiceField(
+        label=Sector._meta.verbose_name_plural,
+        queryset=Sector.objects.form_filter_queryset(),
+        choices_groupby="group",
+        to_field_name="slug",
+        required=True,
+    )
+
     # help_text="Nous enverrons un e-mail de confirmation à cette adresse avant de valider le compte.")
     nb_of_inclusive_provider_2022 = forms.ChoiceField(
         # flake8: noqa E501
@@ -81,6 +92,7 @@ class SignupForm(UserCreationForm):
             "company_name",
             "partner_kind",
             "email",
+            "sectors",
             "password1",
             "password2",
             "accept_rgpd",
@@ -92,13 +104,13 @@ class SignupForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         # password validation rules
         self.fields["password1"].help_text = CnilCompositionPasswordValidator().get_help_text()
+        self.fields["sectors"].label = User._meta.get_field("sectors").help_text
 
     def clean_email(self):
         email = self.cleaned_data["email"]
         return email.lower()
 
     def save(self, commit=True):
-
         instance = super(SignupForm, self).save(commit=False)
         extra_data = {}
         if self.cleaned_data.get("nb_of_inclusive_provider_2022"):
@@ -110,9 +122,9 @@ class SignupForm(UserCreationForm):
         instance.extra_data = extra_data
 
         if commit:
+            instance.save()
             self.save_m2m()
 
-            instance.save()
         return instance
 
 
