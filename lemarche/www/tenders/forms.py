@@ -116,10 +116,10 @@ class TenderCreateStepDetailForm(forms.ModelForm):
         questions = self.cleaned_data["questions_list"]
         if questions is None:
             return questions
-        elif type(questions) != list:
+        elif type(questions) is not list:
             raise ValueError("It's not a list")
         for index, question in enumerate(questions):
-            if type(question) != dict:
+            if type(question) is not dict:
                 raise ValueError("Bad format")
             if not question.get("text"):
                 questions.pop(index)
@@ -277,3 +277,22 @@ class TenderCreateStepSurveyForm(forms.ModelForm):
 
 class TenderCreateStepConfirmationForm(forms.Form):
     pass
+
+
+class TenderSurveyTransactionedForm(forms.ModelForm):
+    class Meta:
+        model = Tender
+        fields = [
+            "survey_transactioned_answer",
+            "survey_transactioned_amount",
+            "survey_transactioned_feedback",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields[
+            "survey_transactioned_answer"
+        ].label = "Avez-vous contractualisé avec un prestataire trouvé via le Marché de l'inclusion ?"
+        self.fields["survey_transactioned_amount"].label = "Quel est le montant de la transaction ?"
+        self.fields["survey_transactioned_feedback"].label = "Partagez-nous votre retour d'expérience"
+        self.fields["survey_transactioned_feedback"].widget.attrs.update({"placeholder": "Champ libre"})
