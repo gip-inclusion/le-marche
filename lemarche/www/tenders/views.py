@@ -532,6 +532,8 @@ class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, Updat
     """
 
     model = Tender
+    # success_message (see get_success_message() below)
+    # success_url (see get_success_url() below)
 
     def get(self, request, *args, **kwargs):
         """

@@ -169,6 +169,8 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         # status
         "survey_transactioned_send_date",
         "survey_transactioned_answer",
+        "survey_transactioned_amount",
+        "survey_transactioned_feedback",
         "survey_transactioned_answer_date",
         "validated_at",
         "question_count_annotated_with_link",
@@ -293,6 +295,8 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                 "fields": (
                     "survey_transactioned_send_date",
                     "survey_transactioned_answer",
+                    "survey_transactioned_amount",
+                    "survey_transactioned_feedback",
                     "survey_transactioned_answer_date",
                     "siae_transactioned",
                 )

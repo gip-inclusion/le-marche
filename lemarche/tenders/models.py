@@ -357,13 +357,19 @@ class Tender(models.Model):
         default=list,
     )
     survey_transactioned_send_date = models.DateTimeField(
-        verbose_name="Sondage transaction J+30 : date d'envoi de l'e-mail", blank=True, null=True
+        verbose_name="Sondage transaction : date d'envoi de l'e-mail", blank=True, null=True
     )
     survey_transactioned_answer = models.BooleanField(
-        verbose_name="Sondage transaction J+30 : réponse", blank=True, null=True
+        verbose_name="Sondage transaction : réponse", blank=True, null=True
+    )
+    survey_transactioned_amount = models.PositiveIntegerField(
+        verbose_name="Sondage transaction : montant du besoin", blank=True, null=True
+    )
+    survey_transactioned_feedback = models.TextField(
+        verbose_name="Sondage transaction : retour d'expérience", blank=True
     )
     survey_transactioned_answer_date = models.DateTimeField(
-        "Sondage transaction J+30 : date de réponse", blank=True, null=True
+        "Sondage transaction : date de réponse", blank=True, null=True
     )
 
     # validation
