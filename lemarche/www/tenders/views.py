@@ -559,10 +559,13 @@ class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, Updat
                     siae_transactioned=survey_transactioned_answer,
                     updated_at=timezone.now(),
                 )
+            else:
+                pass
+                # TODO or not? "answer" should always be passed
             return super().get(request, *args, **kwargs)
         # already answered
         else:
-            messages.add_message(self.request, messages.WARNING, self.get_success_message())
+            messages.add_message(self.request, messages.WARNING, self.get_success_message(already_answered=True))
         return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
@@ -570,11 +573,21 @@ class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, Updat
         context["tender"] = self.object
         return context
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["tender_survey_transactioned_answer"] = self.object.survey_transactioned_answer
+        return kwargs
+
+    def form_valid(self, form):
+        super().form_valid(form)
+        messages.add_message(self.request, messages.SUCCESS, self.get_success_message())
+        return HttpResponseRedirect(self.get_success_url())
+
     def get_success_url(self):
         success_url = reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
         return success_url
 
-    def get_success_message(self, survey_transactioned_answer=None):
-        if survey_transactioned_answer is None:
+    def get_success_message(self, already_answered=False):
+        if already_answered:
             return "Votre réponse a déjà été prise en compte."
-        return "Merci pour vote réponse !"
+        return "Merci pour votre réponse !"

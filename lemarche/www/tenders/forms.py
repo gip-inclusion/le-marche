@@ -288,7 +288,7 @@ class TenderSurveyTransactionedForm(forms.ModelForm):
             "survey_transactioned_feedback",
         ]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, tender_survey_transactioned_answer=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields[
             "survey_transactioned_answer"
@@ -296,3 +296,7 @@ class TenderSurveyTransactionedForm(forms.ModelForm):
         self.fields["survey_transactioned_amount"].label = "Quel est le montant de la transaction ?"
         self.fields["survey_transactioned_feedback"].label = "Partagez-nous votre retour d'expérience"
         self.fields["survey_transactioned_feedback"].widget.attrs.update({"placeholder": "Champ libre"})
+        if tender_survey_transactioned_answer is not None:
+            self.fields["survey_transactioned_answer"].disabled = True
+            if tender_survey_transactioned_answer is False:
+                self.fields["survey_transactioned_amount"].widget = forms.HiddenInput()

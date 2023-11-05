@@ -1272,6 +1272,7 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
         cls.user_admin = UserFactory(kind=User.KIND_ADMIN)
         cls.tender = TenderFactory(kind=tender_constants.KIND_TENDER, author=cls.user_buyer_1, siaes=[cls.siae])
+        cls.user_buyer_1_sesame_query_string = sesame_get_query_string(cls.user_buyer_1)
 
     def test_anonymous_user_cannot_call_tender_survey_transactioned(self):
         url = reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
@@ -1300,45 +1301,34 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
             reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
             + user_sesame_query_string
         )
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        # self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
-        # # but the user is not logged in !
-        # url = reverse("dashboard:home")
-        # response = self.client.get(url)
-        # self.assertEqual(response.status_code, 302)
-        # self.assertEqual(response.url, "/accounts/login/?next=/profil/")
-
-    def test_update_tender_stats_on_tender_survey_transactioned_answer_true(self):
-        user_sesame_query_string = sesame_get_query_string(self.user_buyer_1)
-        self.assertEqual(self.tender.survey_transactioned_answer, None)
-        self.assertEqual(self.tender.siae_transactioned, None)
-        # load without answer
-        url = (
-            reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
-            + user_sesame_query_string
-        )
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        # self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
-        self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_answer, None)
-        self.assertEqual(Tender.objects.get(id=self.tender.id).siae_transactioned, None)
-        # load with answer
+        # full form displayed (but should never happen)
+
+    def test_update_tender_stats_on_tender_survey_transactioned_answer_true(self):
+        # load with answer 'True': partial form
         url = (
             reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
-            + user_sesame_query_string
+            + self.user_buyer_1_sesame_query_string
             + "&answer=True"
         )
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        # self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
-        # self.assertContains(response, "Merci pour vote réponse")
         self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_answer, True)
         self.assertEqual(Tender.objects.get(id=self.tender.id).siae_transactioned, True)
-        # reload with answer, ignore changes
+        # fill in form
+        response = self.client.post(
+            url, data={"survey_transactioned_amount": 1000, "survey_transactioned_feedback": "Feedback"}, follow=True
+        )
+        self.assertEqual(response.status_code, 200)  # redirect
+        self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
+        self.assertContains(response, "Merci pour votre réponse")
+        self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_answer, True)
+        self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_amount, 1000)
+        # reload with answer, ignore changes and redirect
         url = (
             reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
-            + user_sesame_query_string
+            + self.user_buyer_1_sesame_query_string
             + "&answer=False"
         )
         response = self.client.get(url, follow=True)
@@ -1349,35 +1339,27 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
         self.assertEqual(Tender.objects.get(id=self.tender.id).siae_transactioned, True)
 
     def test_update_tender_stats_on_tender_survey_transactioned_answer_false(self):
-        user_sesame_query_string = sesame_get_query_string(self.user_buyer_1)
-        self.assertEqual(self.tender.survey_transactioned_answer, None)
-        self.assertEqual(self.tender.siae_transactioned, None)
-        # load without answer
+        # load with answer 'False': partial form
         url = (
             reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
-            + user_sesame_query_string
-        )
-        response = self.client.get(url, follow=True)
-        self.assertEqual(response.status_code, 200)
-        # self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
-        self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_answer, None)
-        self.assertEqual(Tender.objects.get(id=self.tender.id).siae_transactioned, None)
-        # load with answer
-        url = (
-            reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
-            + user_sesame_query_string
+            + self.user_buyer_1_sesame_query_string
             + "&answer=False"
         )
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        # self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
-        # self.assertContains(response, "Merci pour vote réponse")
         self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_answer, False)
         self.assertEqual(Tender.objects.get(id=self.tender.id).siae_transactioned, False)
+        # fill in form
+        response = self.client.post(url, data={"survey_transactioned_feedback": "Feedback"}, follow=True)
+        self.assertEqual(response.status_code, 200)  # redirect
+        self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
+        self.assertContains(response, "Merci pour votre réponse")
+        self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_answer, False)
+        self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_amount, None)
         # reload with answer, ignore changes
         url = (
             reverse("tenders:detail-survey-transactioned", kwargs={"slug": self.tender.slug})
-            + user_sesame_query_string
+            + self.user_buyer_1_sesame_query_string
             + "&answer=True"
         )
         response = self.client.get(url, follow=True)
