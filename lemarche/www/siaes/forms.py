@@ -308,8 +308,16 @@ class SiaeFilterForm(forms.Form):
         tender = self.cleaned_data.get("tender", None)
         tender_status = self.cleaned_data.get("tender_status", None)
         if tender:
-            if tender_status:  # status == "INTERESTED"
+            if tender_status == "INTERESTED":  # status == "INTERESTED"
                 qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_contact_click_date__isnull=False)
+            elif tender_status == "VIEWED":
+                qs = qs.filter(
+                    Q(tendersiae__tender=tender)
+                    & (
+                        Q(tendersiae__email_link_click_date__isnull=False)
+                        | Q(tendersiae__detail_display_date__isnull=False)
+                    )
+                ).distinct()
             else:
                 qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
 
