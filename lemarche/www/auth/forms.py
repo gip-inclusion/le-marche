@@ -52,7 +52,7 @@ class SignupForm(UserCreationForm):
         queryset=Sector.objects.form_filter_queryset(),
         choices_groupby="group",
         to_field_name="slug",
-        required=True,
+        required=False,
     )
 
     # help_text="Nous enverrons un e-mail de confirmation à cette adresse avant de valider le compte.")
