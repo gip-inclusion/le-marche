@@ -171,7 +171,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "survey_transactioned_answer",
         "survey_transactioned_answer_date",
         "validated_at",
-        "question_count_annotated_with_link",
+        "question_count_with_link",
         "siae_count_annotated_with_link",
         "siae_email_send_count_annotated_with_link",
         "siae_email_link_click_count_annotated_with_link",
@@ -208,7 +208,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "constraints",
                     "external_link",
                     "accept_cocontracting",
-                    "question_count_annotated_with_link",
+                    "question_count_with_link",
                 ),
             },
         ),
@@ -337,7 +337,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.with_siae_stats()
-        qs = qs.with_question_stats()
+        # qs = qs.with_question_stats()  # doesn't work when chaining these 2 querysets: adds duplicates...
         return qs
 
     def get_changeform_initial_data(self, request):
@@ -405,12 +405,11 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     user_with_link.short_description = "Auteur"
     user_with_link.admin_order_field = "author"
 
-    def question_count_annotated_with_link(self, tender):
+    def question_count_with_link(self, tender):
         url = reverse("admin:tenders_tenderquestion_changelist") + f"?tender__in={tender.id}"
-        return format_html(f'<a href="{url}">{getattr(tender, "question_count_annotated", 0)}</a>')
+        return format_html(f'<a href="{url}">{tender.questions.count()}</a>')
 
-    question_count_annotated_with_link.short_description = TenderQuestion._meta.verbose_name_plural
-    question_count_annotated_with_link.admin_order_field = "question_count_annotated"
+    question_count_with_link.short_description = TenderQuestion._meta.verbose_name_plural
 
     def siae_count_annotated_with_link(self, tender):
         url = reverse("admin:siaes_siae_changelist") + f"?tenders__in={tender.id}"
