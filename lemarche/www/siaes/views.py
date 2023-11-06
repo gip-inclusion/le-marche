@@ -137,9 +137,6 @@ class SiaeSearchResultsDownloadView(LoginRequiredMixin, View):
         Filter results.
         """
         filter_form = SiaeDownloadForm(data=self.request.GET)
-        import ipdb
-
-        ipdb.set_trace()
         results = filter_form.filter_queryset()
         return results
 

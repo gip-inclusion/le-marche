@@ -306,20 +306,9 @@ class SiaeFilterForm(forms.Form):
 
         # a Tender author can export its Siae list
         tender = self.cleaned_data.get("tender", None)
-        tender_status = self.cleaned_data.get("tender_status", None)
         if tender:
-            if tender_status == "INTERESTED":  # status == "INTERESTED"
-                qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_contact_click_date__isnull=False)
-            elif tender_status == "VIEWED":
-                qs = qs.filter(
-                    Q(tendersiae__tender=tender)
-                    & (
-                        Q(tendersiae__email_link_click_date__isnull=False)
-                        | Q(tendersiae__detail_display_date__isnull=False)
-                    )
-                ).distinct()
-            else:
-                qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
+            tender_status = self.cleaned_data.get("tender_status", "ALL")
+            qs = qs.filter_with_tender(tender=tender, tender_status=tender_status)
 
         locations = self.cleaned_data.get("locations", None)
         if locations:
