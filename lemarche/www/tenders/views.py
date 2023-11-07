@@ -30,6 +30,7 @@ from lemarche.www.tenders.forms import (
     TenderCreateStepDetailForm,
     TenderCreateStepGeneralForm,
     TenderCreateStepSurveyForm,
+    TenderSurveyTransactionedForm,
 )
 from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
     notify_admin_siae_wants_cocontracting,
@@ -528,10 +529,14 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
 
 class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, UpdateView):
     """
-    Endpoint to store the tender author J+30 survey answer
+    Endpoint to store the tender author survey transactioned answer
     """
 
-    model = Tender
+    template_name = "tenders/survey_transactioned_detail.html"
+    form_class = TenderSurveyTransactionedForm
+    queryset = Tender.objects.all()
+    # success_message (see get_success_message() below)
+    # success_url (see get_success_url() below)
 
     def get(self, request, *args, **kwargs):
         """
@@ -554,20 +559,35 @@ class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, Updat
                     siae_transactioned=survey_transactioned_answer,
                     updated_at=timezone.now(),
                 )
-                messages.add_message(
-                    self.request, messages.SUCCESS, self.get_success_message(survey_transactioned_answer)
-                )
+            else:
+                pass
+                # TODO or not? "answer" should always be passed
+            return super().get(request, *args, **kwargs)
         # already answered
         else:
-            messages.add_message(self.request, messages.WARNING, self.get_success_message())
-        # redirect
+            messages.add_message(self.request, messages.WARNING, self.get_success_message(already_answered=True))
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["tender"] = self.object
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["tender_survey_transactioned_answer"] = self.object.survey_transactioned_answer
+        return kwargs
+
+    def form_valid(self, form):
+        super().form_valid(form)
+        messages.add_message(self.request, messages.SUCCESS, self.get_success_message())
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         success_url = reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
         return success_url
 
-    def get_success_message(self, survey_transactioned_answer=None):
-        if survey_transactioned_answer is None:
+    def get_success_message(self, already_answered=False):
+        if already_answered:
             return "Votre réponse a déjà été prise en compte."
-        return "Merci pour vote réponse !"
+        return "Merci pour votre réponse !"
