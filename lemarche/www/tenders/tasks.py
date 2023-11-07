@@ -487,7 +487,7 @@ def send_author_incremental_2_days_email(tender: Tender):
 
 
 def send_tenders_author_30_days(tender: Tender, kind="feedback"):
-    email_subject = f"Concernant votre {tender.get_kind_display().lower()} sur le Marché de l'inclusion"
+    email_subject = f"Suite à votre {tender.get_kind_display().lower()}"
     recipient_list = whitelist_recipient_list([tender.author.email])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
