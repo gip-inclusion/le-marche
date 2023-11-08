@@ -122,7 +122,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         scroll_to_and_click_element(self.driver, accept_rgpd_element)
 
         if with_submit:
-            submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button")
+            submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
             scroll_to_and_click_element(self.driver, submit_element)
 
     def _assert_signup_success(self, redirect_url: str) -> list:
@@ -182,10 +182,8 @@ class SignupFormTest(StaticLiveServerTestCase):
             By.CSS_SELECTOR, f"input#id_nb_of_inclusive_provider_2022_{nb_of_inclusive}"
         )
         scroll_to_and_click_element(self.driver, nb_of_inclusive_provider_2022_element)
-
-        submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button")
+        submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
         scroll_to_and_click_element(self.driver, submit_element)
-
         # should get created User
         user = User.objects.get(email=BUYER.get("email"))
 
@@ -209,7 +207,7 @@ class SignupFormTest(StaticLiveServerTestCase):
     #         By.XPATH, "//select[@id='id_partner_kind']/option[text()='Réseaux IAE']"
     #     )
     #     scroll_to_and_click_element(self.driver, partner_kind_option_element, sleep_time=10)
-    #     submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button")
+    #     submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
     #     scroll_to_and_click_element(self.driver, submit_element)
 
     #     self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)))
@@ -230,7 +228,7 @@ class SignupFormTest(StaticLiveServerTestCase):
             signup_url=f"{reverse('auth:signup')}?next={next_url}",
             with_submit=False,
         )
-        submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button")
+        submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
         scroll_to_and_click_element(self.driver, submit_element)
 
         self._assert_signup_success(redirect_url=next_url)
@@ -258,7 +256,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys(user_siae.email)
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys(DEFAULT_PASSWORD)
 
-        driver.find_element(By.CSS_SELECTOR, "form button").click()
+        driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
 
         # should redirect SIAE to dashboard
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('dashboard:home')}")
@@ -271,7 +269,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys(user_buyer.email)
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys(DEFAULT_PASSWORD)
 
-        driver.find_element(By.CSS_SELECTOR, "form button").click()
+        driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
 
         # should redirect BUYER to search
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('siae:search_results')}")
@@ -284,7 +282,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys("SIAE5@example.com")
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys(DEFAULT_PASSWORD)
 
-        driver.find_element(By.CSS_SELECTOR, "form button").click()
+        driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
 
     def test_user_wrong_credentials_should_see_error_message(self):
         user_siae = UserFactory(email="siae5@example.com", kind=User.KIND_SIAE)
@@ -294,7 +292,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys(user_siae.email)
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys("password")
 
-        driver.find_element(By.CSS_SELECTOR, "form button").click()
+        driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
 
         # should not submit form
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:login')}")
@@ -312,7 +310,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         driver.find_element(By.CSS_SELECTOR, "input#id_username").send_keys("existing-user@example.com")
         driver.find_element(By.CSS_SELECTOR, "input#id_password").send_keys("password")
 
-        driver.find_element(By.CSS_SELECTOR, "form button").click()
+        driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
 
         # should not submit form
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:login')}")

@@ -44,21 +44,27 @@
                         </fieldset>
                         <hr>
                         <fieldset>
-                            <legend>Contact et coordonnées de votre structure</legend>
+                            <legend>Contact</legend>
                             {% bootstrap_field form.first_name %}
                             {% bootstrap_field form.last_name %}
                             {% bootstrap_field form.phone form_group_class="phone-form-group form-group" %}
+
+                        </fieldset>
+                        <hr>
+                        <fieldset id="infoStructuresFieldset" class="d-none">
+                            <legend>Informations structure</legend>
+                            {% bootstrap_field form.partner_kind form_group_class="partner-kind-form-group form-group form-group-required d-none" %}
                             {% bootstrap_field form.company_name form_group_class="company-name-form-group form-group form-group-required d-none" %}
+                            {% bootstrap_field form.position form_group_class="position-form-group form-group form-group-required d-none" %}
+                            {% bootstrap_field form.sectors form_group_class="form-group form-group-required use-multiselect d-none" %}
                             <div class="company-name-siae-form-group form-group d-none">
                                 <label>Le nom de votre structure</label>
                                 <div class="alert alert-info" role="status">
                                     Une fois votre compte créé, vous pourrez ajouter puis modifier votre structure.
                                 </div>
                             </div>
-                            {% bootstrap_field form.position form_group_class="position-form-group form-group form-group-required d-none" %}
-                            {% bootstrap_field form.partner_kind form_group_class="partner-kind-form-group form-group form-group-required d-none" %}
+                            <hr>
                         </fieldset>
-                        <hr>
                         <fieldset>
                             <legend>Création du mot de passe</legend>
                             {% bootstrap_field form.email %}
@@ -119,6 +125,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let acceptSurveyInput = document.getElementById('id_accept_survey');
     let acceptShareContactInput = document.getElementById('id_accept_share_contact_to_external_partners');
     let statsSignupBuyerContent = document.getElementById('statsSignupBuyer');
+    let sectorsInput = document.getElementById('id_sectors_multiselect');
+    let infoStructuresFieldset = document.getElementById('infoStructuresFieldset');
 
     let kindRadios = document.querySelectorAll('input[type=radio][name="kind"]');
     kindRadios.forEach(radio => radio.addEventListener('change', () => {
@@ -138,16 +146,23 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleInputElement(true, element=positionInput, required=true);
             toggleInputElement(true, element=phoneInput, required=true);
             statsSignupBuyerContent.classList.remove('d-none');
+            toggleInputElement(true, element=sectorsInput, required=false);
         } else {
             toggleInputElement(false, element=positionInput, required=false);
             toggleInputElement(true, element=phoneInput, required=false);
             statsSignupBuyerContent.classList.add('d-none');
+            toggleInputElement(false, element=sectorsInput, required=false);
         }
 
         if (radio.value === 'PARTNER') {
             toggleInputElement(true, element=partnerKindInput, required=true);
         } else {
             toggleInputElement(false, element=partnerKindInput, required=false);
+        }
+        if(radio.value){
+            infoStructuresFieldset.classList.remove('d-none');
+        } else { //empty
+            infoStructuresFieldset.classList.add('d-none');
         }
     }));
 });
