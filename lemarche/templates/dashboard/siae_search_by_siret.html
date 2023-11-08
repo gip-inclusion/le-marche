@@ -26,9 +26,11 @@
     <div class="s-section__container container">
         <div class="row">
             <div class="col-12 col-lg-8">
-                <h1><strong>Ma structure</strong></h1>
-                <p class="lead mb-0">Recherchez la structure à laquelle vous êtes attaché.</p>
-                <p class="mb-3 mb-lg-5">Si vous en avez plusieurs, vous aurez la possibilité de spécifier d'autres structures par la suite.</p>
+                <h1><strong>Se rattacher à une structure</strong></h1>
+                <p class="mb-3 mb-lg-5">
+                    Nous référençons uniquement les structures relevant de l'Insertion par l'activité économique et du secteur du travail protégé et adapté.
+                    Nous ne référençons pas encore les TIH, ni les autres structures de l'ESS.
+                </p>
 
                 <form method="GET" action="{% url 'dashboard_siaes:siae_search_by_siret' %}">
                     {% bootstrap_form_errors form type="all" %}
