@@ -320,6 +320,10 @@ def csrf_failure(request, reason=""):  # noqa C901
 
                     elif key_cleaned == "sectors":
                         tender_dict[key_cleaned] = Sector.objects.filter(slug__in=value)
+                    elif key_cleaned == "questions_list" and value:
+                        tender_dict[key_cleaned] = json.loads(value[0])
+                    elif key_cleaned == "alpine-questions_list":
+                        continue
                     elif key_cleaned not in [
                         "response_kind",
                         "is_country_area",
