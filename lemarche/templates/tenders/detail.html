@@ -28,14 +28,16 @@
 <section class="s-section">
     <div class="s-section__container container">
         {# Afficher les contacts en haut + conseil #}
-        {% if not tender.deadline_date_outdated %}
-            {% if user_siae_has_detail_contact_click_date or siae_has_detail_contact_click_date %}
+        {% if not tender.deadline_date_outdated and not tender.response_is_anonymous %}
+            {% if siae_has_detail_contact_click_date %}
                 <div class="row">
-                    <div class="col-12 col-lg-8">
-                        <div class="alert alert-info fade show" role="status">
-                            {% include "tenders/_detail_contact.html" with tender=tender source="alert" %}
+                    {% if not tender.response_is_anonymous %}
+                        <div class="col-12 col-lg-8">
+                            <div class="alert alert-info fade show" role="status">
+                                {% include "tenders/_detail_contact.html" with tender=tender source="alert" %}
+                            </div>
                         </div>
-                    </div>
+                    {% endif %}
                     <div class="col-12 col-lg-4">
                         <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                             <p class="mb-1">
@@ -58,64 +60,16 @@
             </div>
             {# Sidebar with actions #}
             <div class="col-12 col-lg-4 order-1 order-lg-2">
+                {% comment %} admin info {% endcomment %}
                 {% if is_admin %}
                     {% include "tenders/_detail_admin_extra_info.html" with tender=tender %}
                 {% endif %}
+                {% comment %} details author {% endcomment %}
                 {% if user == tender.author %}
-                    {% if tender.is_draft %}
-                        <div class="alert alert-warning fade show" role="status">
-                            <div class="row">
-                                <div class="col-auto pr-0">
-                                    <i class="ri-information-line ri-xl text-warning"></i>
-                                </div>
-                                <div class="col">
-                                    <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} est encore en brouillon. Modifiez-le pour le publier.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <a href="{% url 'tenders:update' tender.slug %}" class="btn btn-primary btn-ico">
-                            <i class="ri-pencil-fill ri-lg font-weight-normal" aria-hidden="true"></i>
-                            <span>Modifier</span>
-                        </a>
-                    {% endif %}
-                    {% if tender.is_pending_validation %}
-                        <div class="alert alert-info fade show" role="status">
-                            <div class="row">
-                                <div class="col-auto pr-0">
-                                    <i class="ri-information-line ri-xl text-info"></i>
-                                </div>
-                                <div class="col">
-                                    <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} est en cours de validation.</p>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-                    {% if tender.is_validated %}
-                        <div class="alert alert-success fade show" role="status">
-                            <div class="row">
-                                <div class="col-auto pr-0">
-                                    <i class="ri-checkbox-circle ri-xl text-info"></i>
-                                </div>
-                                <div class="col">
-                                    <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} est validé et envoyé !</p>
-                                </div>
-                            </div>
-                        </div>
-                        <a href="{% url 'tenders:detail-siae-list' tender.slug %}" id="show-tender-siae-list-from-detail-btn" class="btn btn-primary mb-3">
-                            <i class="ri-focus-2-line"></i>
-                            {{ tender.siae_email_send_date_count }} prestataire{{ tender.siae_email_send_date_count|pluralize }} ciblé{{ tender.siae_email_send_date_count|pluralize }}
-                        </a>
-                        <a href="{% url 'tenders:detail-siae-list' tender.slug "VIEWED" %}" id="show-tender-siae-list-from-detail-btn" class="btn btn-primary mb-3">
-                            <i class="ri-focus-2-line"></i>
-                            {{ tender.siae_email_link_click_date_or_detail_display_date_count }} prestataire{{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize }} qui {{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize:'a,ont' }} vu
-                        </a>
-                        <a href="{% url 'tenders:detail-siae-list' tender.slug "INTERESTED" %}" id="show-tender-siae-interested-list-from-detail-btn" class="btn btn-primary mb-3">
-                            <i class="ri-thumb-up-line"></i>
-                            {{ tender.siae_detail_contact_click_date_count }} prestataire{{ tender.siae_detail_contact_click_date_count|pluralize }} intéressé{{ tender.siae_detail_contact_click_date_count|pluralize }}
-                        </a>
-                    {% endif %}
+                    {% include "tenders/_detail_side_infos_author.html" %}
                 {% else %}
                     {% if not tender.deadline_date_outdated %}
+                        {% comment %} stats of views {% endcomment %}
                         {% if tender.siae_email_link_click_date_or_detail_display_date_count > 0 %}
                             <div class="alert alert-warning mt-3 mt-lg-0" role="alert">
                                 <p class="mb-0 fs-sm">
@@ -124,7 +78,8 @@
                                 </p>
                             </div>
                         {% endif %}
-                        {% if user.is_authenticated %}
+                        {% if user.is_authenticated and not tender.response_is_anonymous %}
+                            {% comment %} infos for partner {% endcomment %}
                             {% if user.kind == user.KIND_PARTNER %}
                                 {% if not user_partner_can_display_tender_contact_details %}
                                     <div class="alert alert-info" role="alert">
@@ -139,6 +94,7 @@
                                         </p>
                                     </div>
                                 {% endif %}
+                            {% comment %} infos for siaes {% endcomment %}
                             {% elif user.kind == user.KIND_SIAE %}
                                 {% if not user.has_siae %}
                                     <div class="alert alert-info" role="alert">
@@ -153,17 +109,25 @@
                                             Besoin d'aide ? contacter le support via le chat en ligne qui se trouve en bas à droite.
                                         </p>
                                     </div>
-                                {% elif not user_siae_has_detail_contact_click_date %}
+                                {% elif not siae_has_detail_contact_click_date %}
                                     {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True %}
                                     {% include "tenders/_detail_cta_cocontracting.html" with tender=tender %}
                                 {% endif %}
                             {% endif %}
-                        {% elif siae_id %}
+                        {% comment %} if siae_id {% endcomment %}
+                        {% elif siae_id and not tender.response_is_anonymous %}
                             {% if not siae_has_detail_contact_click_date %}
                                 {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True siae_id=siae_id %}
                                 {% include "tenders/_detail_cta_cocontracting.html" with tender=tender siae_id=siae_id %}
                             {% else %}
                                 {% include "tenders/_detail_contact.html" with tender=tender %}
+                            {% endif %}
+                        {% comment %} for anonymous tenders {% endcomment %}
+                        {% elif tender.response_is_anonymous and siae_id or tender.response_is_anonymous and user.is_authenticated %}
+                            {% if not siae_has_detail_contact_click_date %}
+                                {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True tender_is_anonymous=True %}
+                            {% else %}
+                                {% include "tenders/_detail_success_contact.html" %}
                             {% endif %}
                         {% else %}
                             {% include "tenders/_detail_cta.html" with tender=tender user_can_click=False %}

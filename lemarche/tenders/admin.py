@@ -1,5 +1,6 @@
 from ckeditor.widgets import CKEditorWidget
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db import models
@@ -488,7 +489,8 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         if request.POST.get("_validate_tender"):
             update_and_send_tender_task(tender=obj)
             self.message_user(request, "Ce dépôt de besoin a été validé et envoyé aux structures")
-            api_hubspot.create_deal_from_tender(tender=obj)
+            if settings.BITOUBI_ENV == "prod":
+                api_hubspot.create_deal_from_tender(tender=obj)
 
             return HttpResponseRedirect(".")
         elif request.POST.get("_restart_tender"):

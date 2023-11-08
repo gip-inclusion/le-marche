@@ -1,0 +1,52 @@
+{% if tender.is_draft %}
+    <div class="alert alert-warning fade show" role="status">
+        <div class="row">
+            <div class="col-auto pr-0">
+                <i class="ri-information-line ri-xl text-warning"></i>
+            </div>
+            <div class="col">
+                <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} est encore en brouillon. Modifiez-le pour le publier.</p>
+            </div>
+        </div>
+    </div>
+    <a href="{% url 'tenders:update' tender.slug %}" class="btn btn-primary btn-ico">
+        <i class="ri-pencil-fill ri-lg font-weight-normal" aria-hidden="true"></i>
+        <span>Modifier</span>
+    </a>
+{% endif %}
+{% if tender.is_pending_validation %}
+    <div class="alert alert-info fade show" role="status">
+        <div class="row">
+            <div class="col-auto pr-0">
+                <i class="ri-information-line ri-xl text-info"></i>
+            </div>
+            <div class="col">
+                <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} est en cours de validation.</p>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% if tender.is_validated %}
+    <div class="alert alert-success fade show" role="status">
+        <div class="row">
+            <div class="col-auto pr-0">
+                <i class="ri-checkbox-circle ri-xl text-info"></i>
+            </div>
+            <div class="col">
+                <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} est validé et envoyé !</p>
+            </div>
+        </div>
+    </div>
+    <a href="{% url 'tenders:detail-siae-list' tender.slug %}" id="show-tender-siae-list-from-detail-btn" class="btn btn-primary mb-3">
+        <i class="ri-focus-2-line"></i>
+        {{ tender.siae_email_send_date_count }} prestataire{{ tender.siae_email_send_date_count|pluralize }} ciblé{{ tender.siae_email_send_date_count|pluralize }}
+    </a>
+    <a href="{% url 'tenders:detail-siae-list' tender.slug "VIEWED" %}" id="show-tender-siae-list-from-detail-btn" class="btn btn-primary mb-3">
+        <i class="ri-focus-2-line"></i>
+        {{ tender.siae_email_link_click_date_or_detail_display_date_count }} prestataire{{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize }} qui {{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize:'a,ont' }} vu
+    </a>
+    <a href="{% url 'tenders:detail-siae-list' tender.slug "INTERESTED" %}" id="show-tender-siae-interested-list-from-detail-btn" class="btn btn-primary mb-3">
+        <i class="ri-thumb-up-line"></i>
+        {{ tender.siae_detail_contact_click_date_count }} prestataire{{ tender.siae_detail_contact_click_date_count|pluralize }} intéressé{{ tender.siae_detail_contact_click_date_count|pluralize }}
+    </a>
+{% endif %}

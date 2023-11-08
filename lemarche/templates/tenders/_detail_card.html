@@ -40,7 +40,7 @@
                 {% elif user_partner_can_display_tender_contact_details %}
                     <hr class="my-5">
                     {% include "tenders/_detail_contact.html" with tender=tender %}
-                {% elif user_siae_has_detail_contact_click_date and not tender.deadline_date_outdated %}
+                {% elif siae_has_detail_contact_click_date and not tender.deadline_date_outdated %}
                     <!-- for SIAE, contact details are displayed above (see tenders/detail.html) -->
                 {% endif %}
             {% endif %}

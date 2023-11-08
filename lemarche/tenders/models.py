@@ -545,6 +545,8 @@ class Tender(models.Model):
             return "Accéder à l'appel d'offres afin d'y répondre."
         elif self.kind == tender_constants.KIND_QUOTE:
             return "Accéder aux coordonnées du client afin de lui envoyer un devis."
+        elif self.kind == tender_constants.KIND_PROJECT and self.response_is_anonymous:
+            return "Manifestez votre intérêt au client. S’il est intéressé, le client vous recontactera via les coordonnées présentes sur votre fiche commerciale."  # noqa
         elif self.kind == tender_constants.KIND_PROJECT:
             return "Accéder aux coordonnées du client afin de lui présenter vos services et produits."
         # just in case
@@ -554,6 +556,8 @@ class Tender(models.Model):
     def cta_card_button_text(self):
         if self.kind == tender_constants.KIND_TENDER:
             return "Voir l'appel d'offres"
+        elif self.kind == tender_constants.KIND_PROJECT and self.response_is_anonymous:
+            return "Je suis intéressé !"
         return "Accéder aux coordonnées"
 
     @cached_property
