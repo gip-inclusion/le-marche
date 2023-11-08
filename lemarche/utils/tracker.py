@@ -83,7 +83,6 @@ def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
 
         try:
             Tracker.objects.create(**payload)
-            logger.info("Tracker saved")
         except Exception as e:
             logger.exception(e)
             logger.warning("Failed to save tracker")
