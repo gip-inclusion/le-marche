@@ -142,6 +142,22 @@ class TenderCreateViewTest(TestCase):
         with self.assertRaises(AssertionError):
             self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
 
+    def test_tender_wizard_form_external_link_required_for_tender(self):
+        self.client.force_login(self.user_buyer)
+        tenders_step_data = self._generate_fake_data_form(_step_1={"general-kind": tender_constants.KIND_TENDER})
+        # remove required field in survey
+        tenders_step_data[1].pop("detail-external_link")
+        with self.assertRaises(AssertionError):
+            self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+
+    def test_tender_wizard_form_contact_response_required_for_project(self):
+        self.client.force_login(self.user_buyer)
+        tenders_step_data = self._generate_fake_data_form(_step_1={"general-kind": tender_constants.KIND_PROJECT})
+        # remove required field in survey
+        tenders_step_data[2].pop("contact-response_kind")
+        with self.assertRaises(AssertionError):
+            self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+
     def test_tender_wizard_form_all_good_anonymous(self):
         tenders_step_data = self._generate_fake_data_form()
         final_response = self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))

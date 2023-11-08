@@ -273,6 +273,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "contact_email",
                     "contact_phone",
                     "response_kind",
+                    "response_is_anonymous",
                 ),
             },
         ),

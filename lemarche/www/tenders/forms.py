@@ -107,6 +107,10 @@ class TenderCreateStepDetailForm(forms.ModelForm):
         if self.kind != tender_constants.KIND_TENDER:
             self.fields["external_link"].label = "Lien à partager"
             self.fields["external_link"].help_text = None
+
+        if self.kind == tender_constants.KIND_TENDER:
+            self.fields["external_link"].required = True
+
         self.fields["amount"].label = "Montant € estimé de votre besoin"
         self.fields["accept_share_amount"].label = self.fields["accept_share_amount"].help_text
         self.fields["external_link"].widget.attrs["placeholder"] = "https://www.example.fr"
@@ -116,10 +120,10 @@ class TenderCreateStepDetailForm(forms.ModelForm):
         questions = self.cleaned_data["questions_list"]
         if questions is None:
             return questions
-        elif type(questions) is not list:
+        elif not isinstance(questions, list):
             raise ValueError("It's not a list")
         for index, question in enumerate(questions):
-            if type(question) is not dict:
+            if not isinstance(question, dict):
                 raise ValueError("Bad format")
             if not question.get("text"):
                 questions.pop(index)
@@ -157,8 +161,8 @@ class TenderCreateStepContactForm(forms.ModelForm):
         label="Comment les prestataires doivent vous répondre",
         choices=Tender._meta.get_field("response_kind").base_field.choices,
         widget=forms.CheckboxSelectMultiple,
+        required=False,
     )
-
     contact_company_name = forms.CharField(label="Votre entreprise", widget=forms.HiddenInput(), required=False)
 
     class Meta:
@@ -169,6 +173,7 @@ class TenderCreateStepContactForm(forms.ModelForm):
             "contact_email",
             "contact_phone",
             "response_kind",
+            "response_is_anonymous",
         ]
         labels = {
             "contact_first_name": "Prénom",
@@ -183,8 +188,10 @@ class TenderCreateStepContactForm(forms.ModelForm):
         self.user = user
         user_is_anonymous = not user.is_authenticated
 
+        # display response_is_anonymous if the tender is a project
+        if self.instance and self.instance.kind != tender_constants.KIND_PROJECT:
+            self.fields["response_is_anonymous"].widget = forms.HiddenInput()
         # required fields
-        self.fields["response_kind"].required = True
         if user_is_anonymous:
             self.fields["contact_first_name"].required = True
             self.fields["contact_last_name"].required = True
@@ -205,6 +212,9 @@ class TenderCreateStepContactForm(forms.ModelForm):
 
     def clean(self):
         super().clean()
+        if not self.cleaned_data.get("response_kind") and not self.cleaned_data.get("response_is_anonymous"):
+            self.add_error("response_kind", "Ce champ est obligatoire.")
+
         if not self.user.is_authenticated:
             # contact_email must be filled if RESPONSE_KIND_EMAIL
             if self.cleaned_data.get("response_kind") and (
