@@ -232,6 +232,13 @@ class User(AbstractUser):
         null=True,
         blank=True,
     )
+    sectors = models.ManyToManyField(
+        "sectors.Sector",
+        verbose_name="Secteurs d'activité",
+        related_name="users",
+        blank=True,
+        help_text="Quelles sont les familles d’achat sur lesquelles vous travaillez ?",
+    )
 
     can_display_tender_contact_details = models.BooleanField(
         verbose_name="Ce partenaire a accès aux coordonnées de l'acheteur ?",
