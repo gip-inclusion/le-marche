@@ -261,6 +261,8 @@ class Tender(models.Model):
         blank=True,
         default=list,
     )
+
+    response_is_anonymous = models.BooleanField(verbose_name="Je souhaite rester anonyme", blank=False, default=False)
     accept_cocontracting = models.BooleanField(
         verbose_name="Ouvert à la co-traitance",
         help_text="Ce besoin peut être répondu par plusieurs prestataires (co-traitance ou sous-traitance)",
