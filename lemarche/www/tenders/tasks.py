@@ -335,7 +335,7 @@ def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes
         }
 
         api_mailjet.send_transactional_email_with_template(
-            template_id=settings.MAILJET_TENDERS_AUTHOR_CONFIRMATION_PUBLISHED_TEMPLATE_ID,
+            template_id=settings.MAILJET_TENDERS_AUTHOR_CONFIRMATION_VALIDATED_TEMPLATE_ID,
             subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
