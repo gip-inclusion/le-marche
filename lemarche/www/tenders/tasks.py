@@ -156,13 +156,13 @@ def send_tender_contacted_reminder_email_to_siaes(
 ):
     if days_since_email_send_date == 2:
         email_subject = f"Un {tender.get_kind_display().lower()} pour vous sur le Marché de l'inclusion"
-        template_id = settings.MAILJET_TENDERS_CONTACTED_REMINDER_2D_TEMPLATE_ID
+        template_id = settings.MAILJET_TENDERS_SIAE_CONTACTED_REMINDER_2D_TEMPLATE_ID
     elif days_since_email_send_date == 3:
         email_subject = f"Avez vous consulté le {tender.get_kind_display().lower()} ?"
-        template_id = settings.MAILJET_TENDERS_CONTACTED_REMINDER_3D_TEMPLATE_ID
+        template_id = settings.MAILJET_TENDERS_SIAE_CONTACTED_REMINDER_3D_TEMPLATE_ID
     elif days_since_email_send_date == 4:
         email_subject = f"L'opportunité : {tender.get_kind_display().lower()} a besoin de votre réponse !"
-        template_id = settings.MAILJET_TENDERS_CONTACTED_REMINDER_4D_TEMPLATE_ID
+        template_id = settings.MAILJET_TENDERS_SIAE_CONTACTED_REMINDER_4D_TEMPLATE_ID
     else:
         error_message = f"send_tender_contacted_reminder_email_to_siaes: days_since_email_send_date has a non-managed value ({days_since_email_send_date})"  # noqa
         raise Exception(error_message)
@@ -291,7 +291,7 @@ def send_tender_interested_reminder_email_to_siae(
         }
 
         api_mailjet.send_transactional_email_with_template(
-            template_id=settings.MAILJET_TENDERS_INTERESTED_REMINDER_2D_TEMPLATE_ID,
+            template_id=settings.MAILJET_TENDERS_SIAE_INTERESTED_REMINDER_2D_TEMPLATE_ID,
             subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
