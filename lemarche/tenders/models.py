@@ -519,6 +519,17 @@ class Tender(models.Model):
             # maintain legacy perimeters display
             return self.perimeters_list_string
 
+    @cached_property
+    def amount_display(self) -> str:
+        if not self.accept_share_amount:
+            return "Non renseigné"
+        elif self.amount_exact:
+            return f"{self.amount_exact} €"
+        elif self.amount:
+            return self.get_amount_display()
+        else:
+            return "Non renseigné"
+
     def questions_list(self):
         return list(self.questions.values("id", "text"))
 
@@ -546,7 +557,7 @@ class Tender(models.Model):
         elif self.kind == tender_constants.KIND_QUOTE:
             return "Accéder aux coordonnées du client afin de lui envoyer un devis."
         elif self.kind == tender_constants.KIND_PROJECT and self.response_is_anonymous:
-            return "Manifestez votre intérêt au client. S’il est intéressé, le client vous recontactera via les coordonnées présentes sur votre fiche commerciale."  # noqa
+            return "Manifestez votre intérêt au client. S'il est intéressé, le client vous recontactera via les coordonnées présentes sur votre fiche commerciale."  # noqa
         elif self.kind == tender_constants.KIND_PROJECT:
             return "Accéder aux coordonnées du client afin de lui présenter vos services et produits."
         # just in case

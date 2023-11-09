@@ -114,6 +114,22 @@ class TenderModelPropertyTest(TestCase):
         self.assertTrue(tender_validated_half.is_validated, False)
         self.assertTrue(tender_validated_full.is_validated, True)
 
+    def test_amount_display(self):
+        tender_with_amount = TenderFactory(amount=tender_constants.AMOUNT_RANGE_0_1, accept_share_amount=True)
+        tender_with_amount_2 = TenderFactory(amount=tender_constants.AMOUNT_RANGE_10_15, accept_share_amount=True)
+        tender_with_amount_exact = TenderFactory(
+            amount=tender_constants.AMOUNT_RANGE_10_15, amount_exact=10000, accept_share_amount=True
+        )
+        tender_dont_share_amount = TenderFactory(
+            amount=tender_constants.AMOUNT_RANGE_10_15, amount_exact=10000, accept_share_amount=False
+        )
+        tender_no_amount = TenderFactory(amount=None, amount_exact=None, accept_share_amount=True)
+        self.assertEqual(tender_with_amount.amount_display, "0-1000 €")
+        self.assertEqual(tender_with_amount_2.amount_display, "10-15 K€")
+        self.assertEqual(tender_with_amount_exact.amount_display, "10000 €")
+        self.assertEqual(tender_dont_share_amount.amount_display, "Non renseigné")
+        self.assertEqual(tender_no_amount.amount_display, "Non renseigné")
+
 
 class TenderModelSaveTest(TestCase):
     def test_set_slug(self):
