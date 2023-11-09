@@ -95,7 +95,7 @@ def send_tender_email_to_partner(email_subject: str, tender: Tender, partner: Pa
         }
 
         api_mailjet.send_transactional_email_many_recipient_with_template(
-            template_id=settings.MAILJET_TENDERS_PRESENTATION_TEMPLATE_PARTNERS_ID,
+            template_id=settings.MAILJET_TENDERS_PARTNER_PRESENTATION_TEMPLATE_ID,
             subject=email_subject,
             recipient_email_list=recipient_list,
             variables=variables,
@@ -141,7 +141,7 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, em
         }
 
         api_mailjet.send_transactional_email_with_template(
-            template_id=settings.MAILJET_TENDERS_PRESENTATION_TEMPLATE_ID,
+            template_id=settings.MAILJET_TENDERS_SIAE_PRESENTATION_TEMPLATE_ID,
             subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
