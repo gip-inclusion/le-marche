@@ -274,7 +274,7 @@ class SiaeQuerySet(models.QuerySet):
                 conditions |= get_region_filter(perimeter)
         return self.filter(conditions)
 
-    def geo_range_in_perimeter_list(self, perimeters: models.QuerySet, with_country=False):
+    def geo_range_in_perimeter_list(self, perimeters: models.QuerySet, with_country=False, include_country_area=False):
         """
         Method to filter the Siaes depending on the perimeter filter.
         We filter on the Siae's address & geo_range fields.
@@ -300,6 +300,8 @@ class SiaeQuerySet(models.QuerySet):
                 conditions |= get_department_filter(perimeter)
             if perimeter.kind == Perimeter.KIND_REGION:
                 conditions |= get_region_filter(perimeter)
+        if include_country_area:
+            conditions = Q(geo_range=siae_constants.GEO_RANGE_COUNTRY) | conditions
         return self.filter(conditions)
 
     def within(self, point, distance_km=0):
@@ -341,13 +343,19 @@ class SiaeQuerySet(models.QuerySet):
         if tender.sectors.count():
             qs = qs.filter_sectors(tender.sectors.all())
         # filter by perimeters
-        if tender.is_country_area:
+        if tender.is_country_area:  # for all country
             qs = qs.with_country_geo_range()
         else:
-            if tender.perimeters.count():
-                qs = qs.geo_range_in_perimeter_list(tender.perimeters.all(), with_country=True)
-            if not tender.include_country_area:
-                qs = qs.exclude_country_geo_range()
+            if tender.perimeters.count() and tender.include_country_area:  # perimeters and all country
+                qs = qs.geo_range_in_perimeter_list(
+                    tender.perimeters.all(), with_country=False, include_country_area=True
+                )
+            elif tender.perimeters.count():  # only perimeters
+                qs = qs.geo_range_in_perimeter_list(
+                    tender.perimeters.all(), with_country=True
+                ).exclude_country_geo_range()
+            elif tender.include_country_area:
+                qs = qs.with_country_geo_range()
         # filter by presta_type
         if len(tender.presta_type):
             qs = qs.filter(presta_type__overlap=tender.presta_type)
