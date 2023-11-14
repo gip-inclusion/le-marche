@@ -322,7 +322,7 @@ class SiaeQuerySet(models.QuerySet):
     def has_contact_email(self):
         return self.exclude(contact_email__isnull=True).exclude(contact_email__exact="")
 
-    def filter_with_tender(self, tender):
+    def filter_with_tender(self, tender, tender_status=None):
         """
         Filter Siaes with tenders:
         - first we filter the Siae that are live + can be contacted
@@ -354,7 +354,25 @@ class SiaeQuerySet(models.QuerySet):
         # filter by siae_kind
         if len(tender.siae_kind):
             qs = qs.filter(kind__in=tender.siae_kind)
-        # return
+
+        # tender status
+        if tender_status == "INTERESTED":
+            qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_contact_click_date__isnull=False)
+            qs = qs.order_by("-tendersiae__detail_contact_click_date")
+        elif tender_status == "VIEWED":
+            qs = qs.filter(
+                Q(tendersiae__tender=tender)
+                & (
+                    Q(tendersiae__email_link_click_date__isnull=False)
+                    | Q(tendersiae__detail_display_date__isnull=False)
+                )
+            )
+            qs = qs.order_by("-tendersiae__email_link_click_date")
+        elif tender_status == "ALL":
+            # why need to filter more ?
+            qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
+            qs = qs.order_by("-tendersiae__email_send_date")
+
         return qs.distinct()
 
     def with_tender_stats(self):
