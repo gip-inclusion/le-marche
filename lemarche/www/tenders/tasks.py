@@ -95,7 +95,7 @@ def send_tender_email_to_partner(email_subject: str, tender: Tender, partner: Pa
         }
 
         api_mailjet.send_transactional_email_many_recipient_with_template(
-            template_id=settings.MAILJET_TENDERS_PRESENTATION_TEMPLATE_PARTNERS_ID,
+            template_id=settings.MAILJET_TENDERS_PARTNER_PRESENTATION_TEMPLATE_ID,
             subject=email_subject,
             recipient_email_list=recipient_list,
             variables=variables,
@@ -142,7 +142,7 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, em
         }
 
         api_mailjet.send_transactional_email_with_template(
-            template_id=settings.MAILJET_TENDERS_PRESENTATION_TEMPLATE_ID,
+            template_id=settings.MAILJET_TENDERS_SIAE_PRESENTATION_TEMPLATE_ID,
             subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
@@ -157,13 +157,13 @@ def send_tender_contacted_reminder_email_to_siaes(
 ):
     if days_since_email_send_date == 2:
         email_subject = f"Un {tender.get_kind_display().lower()} pour vous sur le Marché de l'inclusion"
-        template_id = settings.MAILJET_TENDERS_CONTACTED_REMINDER_2D_TEMPLATE_ID
+        template_id = settings.MAILJET_TENDERS_SIAE_CONTACTED_REMINDER_2D_TEMPLATE_ID
     elif days_since_email_send_date == 3:
         email_subject = f"Avez vous consulté le {tender.get_kind_display().lower()} ?"
-        template_id = settings.MAILJET_TENDERS_CONTACTED_REMINDER_3D_TEMPLATE_ID
+        template_id = settings.MAILJET_TENDERS_SIAE_CONTACTED_REMINDER_3D_TEMPLATE_ID
     elif days_since_email_send_date == 4:
         email_subject = f"L'opportunité : {tender.get_kind_display().lower()} a besoin de votre réponse !"
-        template_id = settings.MAILJET_TENDERS_CONTACTED_REMINDER_4D_TEMPLATE_ID
+        template_id = settings.MAILJET_TENDERS_SIAE_CONTACTED_REMINDER_4D_TEMPLATE_ID
     else:
         error_message = f"send_tender_contacted_reminder_email_to_siaes: days_since_email_send_date has a non-managed value ({days_since_email_send_date})"  # noqa
         raise Exception(error_message)
@@ -294,7 +294,7 @@ def send_tender_interested_reminder_email_to_siae(
         }
 
         api_mailjet.send_transactional_email_with_template(
-            template_id=settings.MAILJET_TENDERS_INTERESTED_REMINDER_2D_TEMPLATE_ID,
+            template_id=settings.MAILJET_TENDERS_SIAE_INTERESTED_REMINDER_2D_TEMPLATE_ID,
             subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
@@ -339,7 +339,7 @@ def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes
         }
 
         api_mailjet.send_transactional_email_with_template(
-            template_id=settings.MAILJET_TENDERS_AUTHOR_CONFIRMATION_PUBLISHED_TEMPLATE_ID,
+            template_id=settings.MAILJET_TENDERS_AUTHOR_CONFIRMATION_VALIDATED_TEMPLATE_ID,
             subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
@@ -380,19 +380,19 @@ def send_siae_interested_email_to_author(tender: Tender):
         if tender_siae_detail_contact_click_count == 1:
             should_send_email = True
             email_subject = "Un premier prestataire intéressé !"
-            template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_1_TEMPLATE_ID
+            template_id = settings.MAILJET_TENDERS_AUTHOR_SIAE_INTERESTED_1_TEMPLATE_ID
         elif tender_siae_detail_contact_click_count == 2:
             should_send_email = True
             email_subject = "Un deuxième prestataire intéressé !"
-            template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_2_TEMPLATE_ID
+            template_id = settings.MAILJET_TENDERS_AUTHOR_SIAE_INTERESTED_2_TEMPLATE_ID
         elif tender_siae_detail_contact_click_count == 5:
             should_send_email = True
             email_subject = "Un cinquième prestataire intéressé !"
-            template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_5_TEMPLATE_ID
+            template_id = settings.MAILJET_TENDERS_AUTHOR_SIAE_INTERESTED_5_TEMPLATE_ID
         elif tender_siae_detail_contact_click_count % 5 == 0:
             should_send_email = True
             email_subject = "5 nouveaux prestataires intéressés !"
-            template_id = settings.MAILJET_TENDERS_SIAE_INTERESTED_5_MORE_TEMPLATE_ID
+            template_id = settings.MAILJET_TENDERS_AUTHOR_SIAE_INTERESTED_5_MORE_TEMPLATE_ID
         else:
             pass
 
