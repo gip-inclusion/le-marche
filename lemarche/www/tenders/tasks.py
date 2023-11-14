@@ -136,6 +136,7 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, em
             "TENDER_KIND": tender.get_kind_display(),
             "TENDER_SECTORS": tender.sectors_list_string(),
             "TENDER_PERIMETERS": tender.location_display,
+            "TENDER_AMOUNT": tender.amount_display,
             "TENDER_DEADLINE_DATE": date_to_string(tender.deadline_date),
             "TENDER_URL": f"{get_share_url_object(tender)}?siae_id={siae.id}",
         }
@@ -213,6 +214,7 @@ def send_tender_contacted_reminder_email_to_siae(
             "TENDER_KIND": tendersiae.tender.get_kind_display(),
             "TENDER_SECTORS": tendersiae.tender.sectors_list_string(),
             "TENDER_PERIMETERS": tendersiae.tender.location_display,
+            "TENDER_AMOUNT": tendersiae.tender.amount_display,
             "TENDER_DEADLINE_DATE": date_to_string(tendersiae.tender.deadline_date),
             "TENDER_URL": f"{get_share_url_object(tendersiae.tender)}?siae_id={tendersiae.siae.id}&mtm_campaign=relance-esi-contactees",  # noqa
         }
@@ -286,6 +288,7 @@ def send_tender_interested_reminder_email_to_siae(
             "TENDER_KIND": tendersiae.tender.get_kind_display(),
             "TENDER_SECTORS": tendersiae.tender.sectors_list_string(),
             "TENDER_PERIMETERS": tendersiae.tender.location_display,
+            "TENDER_AMOUNT": tendersiae.tender.amount_display,
             "TENDER_DEADLINE_DATE": date_to_string(tendersiae.tender.deadline_date),
             "TENDER_URL": f"{get_share_url_object(tendersiae.tender)}?siae_id={tendersiae.siae.id}&mtm_campaign=relance-esi-interessees",  # noqa
         }
@@ -329,6 +332,7 @@ def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes
             "TENDER_KIND": tender.get_kind_display(),
             "TENDER_SECTORS": tender.sectors_list_string(),
             "TENDER_PERIMETERS": tender.location_display,
+            "TENDER_AMOUNT": tender.amount_display,
             "TENDER_DEADLINE_DATE": date_to_string(tender.deadline_date),
             "TENDER_NB_MATCH": nb_matched_siaes,
             "TENDER_URL": get_share_url_object(tender),
