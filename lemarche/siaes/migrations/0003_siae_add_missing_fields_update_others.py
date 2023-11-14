@@ -2,11 +2,11 @@
 
 import django.contrib.postgres.fields
 from django.db import migrations, models
+
 import lemarche.siaes.validators
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0002_rename_sequence_and_indexes"),
     ]

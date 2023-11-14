@@ -6,7 +6,6 @@ import lemarche.utils.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tenders", "0029_alter_tendersiae_source"),
     ]

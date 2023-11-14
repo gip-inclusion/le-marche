@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0048_siae_ca_siae_ca_last_updated_and_more"),
     ]

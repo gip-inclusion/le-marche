@@ -20,7 +20,6 @@ def slugify_name(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0016_siae_contact_fields"),
     ]

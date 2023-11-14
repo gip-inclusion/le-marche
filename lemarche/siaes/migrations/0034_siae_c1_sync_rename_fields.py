@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0033_alter_siae_contact_email"),
     ]

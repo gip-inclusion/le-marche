@@ -6,7 +6,6 @@ import lemarche.siaes.validators
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0031_siae_add_verbose_names"),
     ]

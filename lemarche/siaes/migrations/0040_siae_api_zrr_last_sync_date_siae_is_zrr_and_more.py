@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0039_siae_api_qpv_last_sync_date_alter_siae_is_qpv_and_more"),
     ]

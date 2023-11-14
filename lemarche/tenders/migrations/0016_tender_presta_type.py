@@ -6,7 +6,6 @@ import lemarche.utils.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tenders", "0015_alter_partnersharetender_arrayfield"),
     ]

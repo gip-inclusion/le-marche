@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("conversations", "0002_conversation_kind_conversation_siae_and_more"),
     ]

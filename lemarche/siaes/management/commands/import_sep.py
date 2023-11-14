@@ -33,7 +33,6 @@ def read_csv(file_path):
     with open(file_path) as csv_file:
         csvreader = csv.DictReader(csv_file, delimiter=",")
         for index, row in enumerate(csvreader):
-
             # sectors
             row["Secteurs d'act list"] = list()
             for sector_column_name in SECTOR_COLUMN_NAME_LIST:

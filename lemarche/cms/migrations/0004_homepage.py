@@ -19,7 +19,6 @@ def create_homepage(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("wagtailcore", "0083_workflowcontenttype"),
         ("cms", "0003_advert"),

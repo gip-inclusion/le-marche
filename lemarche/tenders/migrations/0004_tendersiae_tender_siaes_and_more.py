@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0053_siae_contact_social_website_and_more"),
         ("tenders", "0003_rename_nb_siaes_found_tender_siae_found_count_and_more"),

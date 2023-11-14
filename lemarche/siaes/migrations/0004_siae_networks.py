@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0003_siae_add_missing_fields_update_others"),
         ("networks", "0001_initial"),

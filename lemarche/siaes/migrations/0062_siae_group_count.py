@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0061_alter_siae_geo_range_alter_siae_is_active_and_more"),
     ]
