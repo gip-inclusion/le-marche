@@ -306,6 +306,31 @@ class TenderMatchingTest(TestCase):
         siae_found_list = Siae.objects.filter_with_tender(tender_2)
         self.assertEqual(len(siae_found_list), 2 + 1)
 
+    def test_matching_siae_country(self):
+        # add Siae with geo_range_country
+        siae_country = SiaeFactory(is_active=True, geo_range=siae_constants.GEO_RANGE_COUNTRY)
+        siae_country_2 = SiaeFactory(is_active=True, geo_range=siae_constants.GEO_RANGE_COUNTRY)
+        siae_country.sectors.add(self.sectors[0])
+        siae_country_2.sectors.add(self.sectors[0])
+        # tender perimeter custom with is_country_area = False
+        tender_1 = TenderFactory(sectors=self.sectors, is_country_area=True)
+        siae_found_list_1 = Siae.objects.filter_with_tender(tender_1)
+        self.assertEqual(len(siae_found_list_1), 2)
+        # tender perimeter custom with include_country_area = True
+        tender_2 = TenderFactory(sectors=self.sectors, include_country_area=True)
+        siae_found_list_2 = Siae.objects.filter_with_tender(tender_2)
+        # we should have the same length of structures
+        self.assertEqual(len(siae_found_list_1), len(siae_found_list_2))
+        # add perimeters
+        tender_2.perimeters.set(self.perimeters)
+        siae_found_list_2 = Siae.objects.filter_with_tender(tender_2)
+        self.assertEqual(len(siae_found_list_2), 2 + 2)
+        tender_2.is_country_area = True
+        tender_2.save()
+        siae_found_list_2 = Siae.objects.filter_with_tender(tender_2)
+        # we should have only siaes with country geo range
+        self.assertEqual(len(siae_found_list_2), 2 + 0)
+
     def test_matching_siae_perimeters_custom_2(self):
         # add Siae with geo_range_department (75)
         siae_department = SiaeFactory(is_active=True, department="75", geo_range=siae_constants.GEO_RANGE_DEPARTMENT)
