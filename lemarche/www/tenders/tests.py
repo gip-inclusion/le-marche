@@ -540,6 +540,11 @@ class TenderDetailViewTest(TestCase):
                 self.assertEqual(response.status_code, 302)
                 self.assertEqual(response.url, "/")
 
+    def test_tender_unknown_should_return_404(self):
+        url = reverse("tenders:detail", kwargs={"slug": f"{self.tender_1.slug}-bug"})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
     def test_tender_basic_fields_display(self):
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)

@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import redirect_to_login
 from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from sesame.utils import get_user as sesame_get_user
 
@@ -161,7 +162,7 @@ class TenderAuthorOrAdminRequiredIfNotValidatedMixin(UserPassesTestMixin):
     def test_func(self):
         # user = self.request.user
         tender_slug = self.kwargs.get("slug")
-        tender = Tender.objects.get(slug=tender_slug)
+        tender = get_object_or_404(Tender.objects.all(), slug=tender_slug)
         if tender.status != tender_constants.STATUS_VALIDATED:
             return TenderAuthorOrAdminRequiredMixin.test_func(self)
         return True
