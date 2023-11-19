@@ -10,7 +10,7 @@
 # git log --since "2023-03-10" --until "2023-03-31" --pretty=format:"%s"
 
 FOR_PROD=${1:-0}
-REPOSITORY_URL=https://github.com/betagouv/itou-marche
+REPOSITORY_URL=https://github.com/gip-inclusion/le-marche
 DATE=$(date +"%Y.%m.%d")
 
 echo "====================="
