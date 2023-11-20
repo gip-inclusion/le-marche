@@ -139,31 +139,6 @@ class User(AbstractUser):
     KIND_PARTNER = user_constants.KIND_PARTNER
     KIND_ADMIN = user_constants.KIND_ADMIN
 
-    BUYER_KIND_PUBLIC = "PUBLIC"
-    BUYER_KIND_PRIVATE = "PRIVE"
-    BUYER_KIND_CHOICES = (
-        (BUYER_KIND_PUBLIC, "Public"),
-        (BUYER_KIND_PRIVATE, "Privé"),
-    )
-    BUYER_KIND_DETAIL_PRIVATE_BIG_CORP = "PRIVATE_BIG_CORP"
-    BUYER_KIND_DETAIL_PRIVATE_ETI = "PRIVATE_ETI"
-    BUYER_KIND_DETAIL_PRIVATE_PME = "PRIVATE_PME"
-    BUYER_KIND_DETAIL_PRIVATE_TPE = "PRIVATE_TPE"
-    BUYER_KIND_DETAIL_PUBLIC_ASSOCIATION = "PUBLIC_ASSOCIATION"
-    BUYER_KIND_DETAIL_PUBLIC_COLLECTIVITY = "PUBLIC_COLLECTIVITY"
-    BUYER_KIND_DETAIL_PUBLIC_ESTABLISHMENT = "PUBLIC_ESTABLISHMENT"
-    BUYER_KIND_DETAIL_PUBLIC_MINISTRY = "PUBLIC_MINISTRY"
-    BUYER_KIND_DETAIL_CHOICES = (
-        (BUYER_KIND_DETAIL_PRIVATE_BIG_CORP, "Grand groupe (+5000 salariés)"),
-        (BUYER_KIND_DETAIL_PRIVATE_ETI, "ETI (+250 salariés)"),
-        (BUYER_KIND_DETAIL_PRIVATE_PME, "PME (+10 salariés)"),
-        (BUYER_KIND_DETAIL_PRIVATE_TPE, "TPE"),
-        (BUYER_KIND_DETAIL_PUBLIC_ASSOCIATION, "Association"),
-        (BUYER_KIND_DETAIL_PUBLIC_COLLECTIVITY, "Collectivité"),
-        (BUYER_KIND_DETAIL_PUBLIC_ESTABLISHMENT, "Établissement public"),
-        (BUYER_KIND_DETAIL_PUBLIC_MINISTRY, "Ministère"),
-    )
-
     PARTNER_KIND_FACILITATOR = "FACILITATEUR"
     PARTNER_KIND_NETWORD_IAE = "RESEAU_IAE"
     PARTNER_KIND_NETWORK_HANDICAP = "RESEAU_HANDICAP"
@@ -216,10 +191,13 @@ class User(AbstractUser):
 
     position = models.CharField(verbose_name="Poste", max_length=255, blank=True)
     buyer_kind = models.CharField(
-        verbose_name="Type d'acheteur", max_length=20, choices=BUYER_KIND_CHOICES, blank=True
+        verbose_name="Type d'acheteur", max_length=20, choices=user_constants.BUYER_KIND_CHOICES, blank=True
     )
     buyer_kind_detail = models.CharField(
-        verbose_name="Type d'acheteur (détail)", max_length=20, choices=BUYER_KIND_DETAIL_CHOICES, blank=True
+        verbose_name="Type d'acheteur (détail)",
+        max_length=20,
+        choices=user_constants.BUYER_KIND_DETAIL_CHOICES,
+        blank=True,
     )
     partner_kind = models.CharField(
         verbose_name="Type de partenaire", max_length=20, choices=PARTNER_KIND_CHOICES, blank=True

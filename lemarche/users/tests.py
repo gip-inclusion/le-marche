@@ -24,11 +24,11 @@ class UserModelTest(TestCase):
     def test_kind_detail_display(self):
         user_siae = UserFactory(kind=user_constants.KIND_SIAE)
         user_buyer = UserFactory(kind=user_constants.KIND_BUYER)
-        user_buyer_public = UserFactory(kind=user_constants.KIND_BUYER, buyer_kind=User.BUYER_KIND_PUBLIC)
+        user_buyer_public = UserFactory(kind=user_constants.KIND_BUYER, buyer_kind=user_constants.BUYER_KIND_PUBLIC)
         user_buyer_private_pme = UserFactory(
             kind=user_constants.KIND_BUYER,
-            buyer_kind=User.BUYER_KIND_PRIVATE,
-            buyer_kind_detail=User.BUYER_KIND_DETAIL_PRIVATE_PME,
+            buyer_kind=user_constants.BUYER_KIND_PRIVATE,
+            buyer_kind_detail=user_constants.BUYER_KIND_DETAIL_PRIVATE_PME,
         )
         user_partner = UserFactory(kind=user_constants.KIND_PARTNER)
         user_partner_facilitator = UserFactory(
