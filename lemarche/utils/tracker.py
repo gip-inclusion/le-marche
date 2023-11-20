@@ -53,10 +53,10 @@ DEFAULT_PAYLOAD = {
 # @task()
 def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
     # Don't log in dev
-    if settings.BITOUBI_ENV not in ("dev", "test"):
+    if settings.BITOUBI_ENV not in ("test"):
         date_created = timezone.now()
         user_id = int(meta.get("user_id")) if meta.get("user_id", None) else None
-        user_kind = meta.get("user_type") if meta.get("user_type", "") else ""
+        user_kind = meta.get("user_kind") if meta.get("user_kind", "") else ""
         siae_id = meta.get("siae_id", None)
         if siae_id:
             siae_id = int(siae_id[0]) if (type(siae_id) is list) else int(siae_id)
@@ -154,7 +154,7 @@ class TrackerMiddleware:
         siae = context_data.get("siae")
         return {
             "user_id": user.id if user.is_authenticated else None,
-            "user_type": user.kind if user.is_authenticated else "",
+            "user_kind": user.kind if user.is_authenticated else "",
             "is_admin": user.is_authenticated and user.kind == User.KIND_ADMIN,
             "siae_id": siae.id if siae else None,
             "siae_kind": siae.kind if siae else "",

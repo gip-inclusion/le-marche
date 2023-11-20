@@ -20,7 +20,7 @@ function computeRequestBody(page, action, metaIn) {
     const meta = Object.assign(metaIn, getUrlMeta());
     // user info
     meta['is_admin'] = {% if user.is_authenticated %}{% if user.kind == 'ADMIN' %}true{% else %}false{% endif %}{% else %}false{% endif %};
-    meta['user_type'] = {% if user.is_authenticated %}'{{ user.kind }}'{% else %}null{% endif %};
+    meta['user_kind'] = {% if user.is_authenticated %}'{{ user.kind }}'{% else %}null{% endif %};
     meta['user_id'] = {% if user.is_authenticated %}{{ user.id }}{% else %}null{% endif %};
     meta['siae_id'] = {% if siae %}{{ siae.id }}{% else %}null{% endif %};
     // default data
