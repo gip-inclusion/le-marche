@@ -182,7 +182,7 @@ def siae_update_etablissement(siae):
         update_data = dict()
 
         if etablissement:
-            # update_data"nature"] = Siae.NATURE_HEAD_OFFICE if etablissement["is_head_office"] else Siae.NATURE_ANTENNA  # noqa
+            # update_data"nature"] = siae_constants.NATURE_HEAD_OFFICE if etablissement["is_head_office"] else siae_constants.NATURE_ANTENNA  # noqa
             # update_data"is_active"] = False if not etablissement["is_closed"] else True
             if etablissement["employees"]:
                 update_data["api_entreprise_employees"] = (

@@ -11,6 +11,7 @@ from fieldsets_with_inlines import FieldsetsInlineMixin
 from lemarche.conversations.models import Conversation
 from lemarche.labels.models import Label
 from lemarche.notes.models import Note
+from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import (
     Siae,
     SiaeClientReference,
@@ -410,7 +411,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         if not obj:
             return add_readonly_fields
         # also allow edition of some specific Siae
-        if obj and obj.source in [Siae.SOURCE_STAFF_C4_CREATED, Siae.SOURCE_ESAT]:
+        if obj and obj.source in [siae_constants.SOURCE_STAFF_C4_CREATED, siae_constants.SOURCE_ESAT]:
             return add_readonly_fields + ["name"]
         # for the rest, use the default full-version list
         return self.readonly_fields
@@ -428,7 +429,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         """
         Default values in add form.
         """
-        return {"is_active": False, "source": Siae.SOURCE_STAFF_C4_CREATED}
+        return {"is_active": False, "source": siae_constants.SOURCE_STAFF_C4_CREATED}
 
     def lookup_allowed(self, lookup, *args, **kwargs):
         if lookup in [
