@@ -3,6 +3,7 @@ from django.urls import reverse
 
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.sectors.factories import SectorFactory
+from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
@@ -65,8 +66,8 @@ class TenderCreateApiTest(TestCase):
         tender = Tender.objects.get(title="Test author 1")
         self.assertEqual(User.objects.count(), 2 + 1)  # created a new user
         self.assertEqual(tender.author.email, USER_CONTACT_EMAIL)
-        self.assertEqual(tender.status, Tender.STATUS_PUBLISHED)
-        self.assertEqual(tender.source, Tender.SOURCE_API)
+        self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
+        self.assertEqual(tender.source, tender_constants.SOURCE_API)
         self.assertNotEqual(tender.import_raw_object, None)
         self.assertEqual(tender.import_raw_object["title"], "Test author 1")
         # test with own email
@@ -79,8 +80,8 @@ class TenderCreateApiTest(TestCase):
         tender = Tender.objects.get(title="Test author 2")
         self.assertEqual(User.objects.count(), 3)  # did not create a new user
         self.assertEqual(tender.author, self.user_with_token)
-        self.assertEqual(tender.status, Tender.STATUS_PUBLISHED)
-        self.assertEqual(tender.source, Tender.SOURCE_API)
+        self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
+        self.assertEqual(tender.source, tender_constants.SOURCE_API)
         self.assertNotEqual(tender.import_raw_object, None)
         self.assertEqual(tender.import_raw_object["title"], "Test author 2")
 
@@ -141,7 +142,7 @@ class TenderCreateApiTest(TestCase):
         response = self.client.post(url, data=tender_data, content_type="application/json")
         self.assertEqual(response.status_code, 201)
         tender = Tender.objects.get(title="Test tally")
-        self.assertEqual(tender.source, Tender.SOURCE_TALLY)
+        self.assertEqual(tender.source, tender_constants.SOURCE_TALLY)
 
 
 class TenderChoicesApiTest(TestCase):

@@ -62,7 +62,7 @@ class TenderCreateViewTest(TestCase):
             "contact-contact_email": tender_not_saved.contact_email,
             "contact-contact_phone": "0123456789",
             "contact-contact_company_name": "TEST",
-            "contact-response_kind": [Tender.RESPONSE_KIND_EMAIL],
+            "contact-response_kind": [tender_constants.RESPONSE_KIND_EMAIL],
         } | _step_3
         step_4 = {
             "tender_create_multi_step_view-current_step": "survey",
@@ -164,7 +164,7 @@ class TenderCreateViewTest(TestCase):
         tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
-        self.assertEqual(tender.status, Tender.STATUS_PUBLISHED)
+        self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
         self.assertIsNotNone(tender.published_at)
         messages = list(get_messages(final_response.wsgi_request))
         self.assertEqual(len(messages), 1)
@@ -197,7 +197,7 @@ class TenderCreateViewTest(TestCase):
         tender: Tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
         self.assertIsNotNone(tender)
         self.assertIsInstance(tender, Tender)
-        self.assertEqual(tender.status, Tender.STATUS_DRAFT)
+        self.assertEqual(tender.status, tender_constants.STATUS_DRAFT)
         self.assertIsNone(tender.published_at)
         messages = list(get_messages(final_response.wsgi_request))
         self.assertEqual(len(messages), 1)
@@ -512,7 +512,7 @@ class TenderDetailViewTest(TestCase):
             author=cls.user_buyer_1,
             amount=tender_constants.AMOUNT_RANGE_100_150,
             accept_share_amount=True,
-            response_kind=[Tender.RESPONSE_KIND_EMAIL],
+            response_kind=[tender_constants.RESPONSE_KIND_EMAIL],
             sectors=[sector_1],
             location=grenoble_perimeter,
         )
@@ -629,7 +629,7 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertContains(response, "Montant du marché")
-        self.assertContains(response, Tender.TENDER_ACCEPT_SHARE_AMOUNT_TRUE)
+        self.assertContains(response, tender_constants.ACCEPT_SHARE_AMOUNT_TRUE)
         # tender with amount + !accept_share_amount: section should be hidden
         tender_2 = TenderFactory(
             author=self.user_buyer_2, amount=tender_constants.AMOUNT_RANGE_100_150, accept_share_amount=False
@@ -644,7 +644,7 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
         response = self.client.get(url)
         self.assertContains(response, "Montant du marché")
-        self.assertContains(response, Tender.TENDER_ACCEPT_SHARE_AMOUNT_FALSE)
+        self.assertContains(response, tender_constants.ACCEPT_SHARE_AMOUNT_FALSE)
 
     def test_tender_deadline_date_display(self):
         # tender is not outdated by default
@@ -788,7 +788,7 @@ class TenderDetailViewTest(TestCase):
         tender_2 = TenderFactory(
             kind=tender_constants.KIND_TENDER,
             author=self.user_buyer_1,
-            response_kind=[Tender.RESPONSE_KIND_EMAIL, Tender.RESPONSE_KIND_EXTERNAL],
+            response_kind=[tender_constants.RESPONSE_KIND_EMAIL, tender_constants.RESPONSE_KIND_EXTERNAL],
             external_link="https://example.com",
         )
         # tender_2 author
@@ -805,7 +805,7 @@ class TenderDetailViewTest(TestCase):
         tender_3 = TenderFactory(
             kind=tender_constants.KIND_PROJECT,
             author=self.user_buyer_2,
-            response_kind=[Tender.RESPONSE_KIND_TEL, Tender.RESPONSE_KIND_EXTERNAL],
+            response_kind=[tender_constants.RESPONSE_KIND_TEL, tender_constants.RESPONSE_KIND_EXTERNAL],
             external_link="https://example.com",
         )
         TenderSiae.objects.create(tender=tender_3, siae=self.siae_1, detail_contact_click_date=timezone.now())
@@ -833,7 +833,7 @@ class TenderDetailViewTest(TestCase):
         tender_4 = TenderFactory(
             kind=tender_constants.KIND_PROJECT,
             author=self.user_buyer_2,
-            response_kind=[Tender.RESPONSE_KIND_EXTERNAL],
+            response_kind=[tender_constants.RESPONSE_KIND_EXTERNAL],
             external_link="https://example.com",
         )
         TenderSiae.objects.create(tender=tender_4, siae=self.siae_1, detail_contact_click_date=timezone.now())
@@ -1117,7 +1117,7 @@ class TenderDetailCocontractingClickView(TestCase):
             author=self.user_buyer,
             amount=tender_constants.AMOUNT_RANGE_100_150,
             accept_share_amount=True,
-            response_kind=[Tender.RESPONSE_KIND_EMAIL],
+            response_kind=[tender_constants.RESPONSE_KIND_EMAIL],
         )
         self.tendersiae = TenderSiae.objects.create(
             tender=self.tender,

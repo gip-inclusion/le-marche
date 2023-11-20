@@ -298,7 +298,7 @@ def csrf_failure(request, reason=""):  # noqa C901
             extra_data={},
             status=tender_status,
             published_at=tender_published_at,
-            source=Tender.SOURCE_FORM_CSRF,
+            source=tender_constants.SOURCE_FORM_CSRF,
         )
         formtools_session_step_data = request.session.get("wizard_tender_create_multi_step_view", {}).get(
             "step_data", {}
