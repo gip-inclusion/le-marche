@@ -16,6 +16,7 @@ from lemarche.sectors.models import Sector
 from lemarche.siaes.models import Siae, SiaeGroup
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderStepsData
+from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.utils.tracker import track
 from lemarche.www.pages.forms import (
@@ -338,7 +339,7 @@ def csrf_failure(request, reason=""):  # noqa C901
                         tender_dict[key_cleaned] = list() if value[0] == "" else value
         # get user
         if not request.user.is_authenticated:
-            user = get_or_create_user_from_anonymous_content(tender_dict, source=User.SOURCE_TENDER_FORM)
+            user = get_or_create_user_from_anonymous_content(tender_dict, source=user_constants.SOURCE_TENDER_FORM)
         else:
             user = request.user
         tender_dict["author"] = user

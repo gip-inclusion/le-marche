@@ -63,15 +63,15 @@ def send_new_user_password_reset_link(user: User):
         )
 
 
-def get_mailjet_cl_on_signup(user: User, source: str = User.SOURCE_SIGNUP_FORM):
+def get_mailjet_cl_on_signup(user: User, source: str = user_constants.SOURCE_SIGNUP_FORM):
     if user.kind == user.KIND_SIAE:
         return settings.MAILJET_NL_CL_SIAE_ID
     elif user.kind == user.KIND_BUYER:
-        if source == User.SOURCE_SIGNUP_FORM:
+        if source == user_constants.SOURCE_SIGNUP_FORM:
             return settings.MAILJET_NL_CL_BUYER_ID
-        elif source == User.SOURCE_TALLY_FORM:
+        elif source == user_constants.SOURCE_TALLY_FORM:
             return settings.MAILJET_NL_CL_BUYER_TALLY_ID
-        elif source == User.SOURCE_TENDER_FORM:
+        elif source == user_constants.SOURCE_TENDER_FORM:
             return settings.MAILJET_NL_CL_BUYER_TENDER_ID
     elif user.kind == user.KIND_PARTNER:
         if user.partner_kind == user_constants.PARTNER_KIND_FACILITATOR:
@@ -85,7 +85,7 @@ def get_mailjet_cl_on_signup(user: User, source: str = User.SOURCE_SIGNUP_FORM):
             return settings.MAILJET_NL_CL_PARTNER_DREETS_ID
 
 
-def add_to_contact_list(user: User, type: str, source: str = User.SOURCE_SIGNUP_FORM):
+def add_to_contact_list(user: User, type: str, source: str = user_constants.SOURCE_SIGNUP_FORM):
     """Add user to contactlist
 
     Args:

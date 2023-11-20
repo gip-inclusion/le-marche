@@ -15,6 +15,7 @@ from formtools.wizard.views import SessionWizardView
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderSiae, TenderStepsData
+from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.utils.data import get_choice
 from lemarche.utils.mixins import (
@@ -224,7 +225,9 @@ class TenderCreateMultiStepView(SessionWizardView):
     def done(self, _, form_dict, **kwargs):
         cleaned_data = self.get_all_cleaned_data()
         # anonymous user? create user (or get an existing user by email)
-        user = get_or_create_user(self.request.user, tender_dict=cleaned_data, source=User.SOURCE_TENDER_FORM)
+        user = get_or_create_user(
+            self.request.user, tender_dict=cleaned_data, source=user_constants.SOURCE_TENDER_FORM
+        )
         # when it's done we save the tender
         tender_dict = cleaned_data | {"author": user, "source": Tender.SOURCE_FORM}
         is_draft: bool = self.request.POST.get("is_draft", False)

@@ -58,3 +58,15 @@ PARTNER_KIND_CHOICES = (
     (PARTNER_KIND_PRIVATE, "Organisme privé"),
     (PARTNER_KIND_OTHER, "Autre"),
 )
+
+SOURCE_SIGNUP_FORM = "SIGNUP_FORM"
+SOURCE_TALLY_FORM = "TALLY_FORM"
+SOURCE_TENDER_FORM = "TENDER_FORM"
+SOURCE_DJANGO_ADMIN = "DJANGO_ADMIN"
+
+SOURCE_CHOICES = (
+    (SOURCE_SIGNUP_FORM, "Formulaire d'inscription"),
+    (SOURCE_TALLY_FORM, "Formulaire verticale"),
+    (SOURCE_TENDER_FORM, "Formulaire de dépôt de besoin"),
+    (SOURCE_DJANGO_ADMIN, "Admin Django"),
+)

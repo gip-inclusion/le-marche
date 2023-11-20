@@ -1,6 +1,7 @@
 from django.conf import settings
 
 from lemarche.tenders.models import Tender, TenderQuestion
+from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.www.auth.tasks import add_to_contact_list, send_new_user_password_reset_link
 
@@ -51,7 +52,9 @@ def create_tender_from_dict(tender_dict: dict) -> Tender:
     return tender
 
 
-def get_or_create_user_from_anonymous_content(tender_dict: dict, source: str = User.SOURCE_TENDER_FORM) -> User:
+def get_or_create_user_from_anonymous_content(
+    tender_dict: dict, source: str = user_constants.SOURCE_TENDER_FORM
+) -> User:
     email = tender_dict.get("contact_email").lower()
     user, created = User.objects.get_or_create(
         email=email,
@@ -72,7 +75,7 @@ def get_or_create_user_from_anonymous_content(tender_dict: dict, source: str = U
     return user
 
 
-def get_or_create_user(request_user, tender_dict: dict, source=User.SOURCE_TENDER_FORM):
+def get_or_create_user(request_user, tender_dict: dict, source=user_constants.SOURCE_TENDER_FORM):
     user: User = None
     if not request_user.is_authenticated:
         user = get_or_create_user_from_anonymous_content(tender_dict, source=source)
