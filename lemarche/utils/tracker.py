@@ -17,6 +17,7 @@ from django.http import HttpRequest, HttpResponse
 from django.urls import reverse
 from django.utils import timezone
 
+from lemarche.siaes.models import Siae
 from lemarche.stats.models import Tracker
 from lemarche.users.models import User
 
@@ -53,7 +54,7 @@ DEFAULT_PAYLOAD = {
 # @task()
 def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
     # Don't log in dev
-    if settings.BITOUBI_ENV not in ("test"):
+    if settings.BITOUBI_ENV not in ("dev", "test"):
         date_created = timezone.now()
         user_id = int(meta.get("user_id")) if meta.get("user_id", None) else None
         user_kind = meta.get("user_kind") if meta.get("user_kind", "") else ""
@@ -152,6 +153,8 @@ class TrackerMiddleware:
     def extract_user_info(self, request: HttpRequest, context_data: dict):
         user: User = request.user
         siae = context_data.get("siae")
+        if not siae and context_data.get("object") and type(context_data.get("object")) is Siae:
+            siae = context_data.get("object")
         return {
             "user_id": user.id if user.is_authenticated else None,
             "user_kind": user.kind if user.is_authenticated else "",
