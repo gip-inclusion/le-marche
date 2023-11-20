@@ -137,13 +137,13 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "kind",
         "city",
         "user_count_with_link",
+        "tender_email_send_count_annotated_with_link",
+        "tender_detail_display_count_annotated_with_link",
+        "tender_detail_contact_click_count_annotated_with_link",
         "offer_count_with_link",
         "label_count_with_link",
         "client_reference_count_with_link",
         "image_count_with_link",
-        "tender_email_send_count_annotated_with_link",
-        "tender_detail_display_count_annotated_with_link",
-        "tender_detail_contact_click_count_annotated_with_link",
         "created_at",
     ]
     list_filter = [
