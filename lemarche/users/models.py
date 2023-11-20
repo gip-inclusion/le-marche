@@ -139,25 +139,6 @@ class User(AbstractUser):
     KIND_PARTNER = user_constants.KIND_PARTNER
     KIND_ADMIN = user_constants.KIND_ADMIN
 
-    PARTNER_KIND_FACILITATOR = "FACILITATEUR"
-    PARTNER_KIND_NETWORD_IAE = "RESEAU_IAE"
-    PARTNER_KIND_NETWORK_HANDICAP = "RESEAU_HANDICAP"
-    PARTNER_KIND_DREETS = "DREETS"
-    PARTNER_KIND_PRESCRIBER = "PRESCRIPTEUR"
-    PARTNER_KIND_PUBLIC = "PUBLIC"
-    PARTNER_KIND_PRIVATE = "PRIVE"
-    PARTNER_KIND_OTHER = "AUTRE"
-    PARTNER_KIND_CHOICES = (
-        (PARTNER_KIND_FACILITATOR, "Facilitateur des clauses sociales"),
-        (PARTNER_KIND_NETWORD_IAE, "Réseaux IAE"),
-        (PARTNER_KIND_NETWORK_HANDICAP, "Réseau secteur Handicap"),
-        (PARTNER_KIND_DREETS, "DREETS / DDETS"),
-        (PARTNER_KIND_PRESCRIBER, "Prescripteur"),
-        (PARTNER_KIND_PUBLIC, "Organisme public"),
-        (PARTNER_KIND_PRIVATE, "Organisme privé"),
-        (PARTNER_KIND_OTHER, "Autre"),
-    )
-
     SOURCE_SIGNUP_FORM = "SIGNUP_FORM"
     SOURCE_TALLY_FORM = "TALLY_FORM"
     SOURCE_TENDER_FORM = "TENDER_FORM"
@@ -200,7 +181,7 @@ class User(AbstractUser):
         blank=True,
     )
     partner_kind = models.CharField(
-        verbose_name="Type de partenaire", max_length=20, choices=PARTNER_KIND_CHOICES, blank=True
+        verbose_name="Type de partenaire", max_length=20, choices=user_constants.PARTNER_KIND_CHOICES, blank=True
     )
     partner_network = models.ForeignKey(
         "networks.Network",

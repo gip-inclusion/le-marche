@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
+from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.utils.apis import api_hubspot, api_mailjet
 from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
@@ -73,11 +74,14 @@ def get_mailjet_cl_on_signup(user: User, source: str = User.SOURCE_SIGNUP_FORM):
         elif source == User.SOURCE_TENDER_FORM:
             return settings.MAILJET_NL_CL_BUYER_TENDER_ID
     elif user.kind == user.KIND_PARTNER:
-        if user.partner_kind == user.PARTNER_KIND_FACILITATOR:
+        if user.partner_kind == user_constants.PARTNER_KIND_FACILITATOR:
             return settings.MAILJET_NL_CL_PARTNER_FACILITATORS_ID
-        elif user.partner_kind in (user.PARTNER_KIND_NETWORD_IAE, user.PARTNER_KIND_NETWORK_HANDICAP):
+        elif user.partner_kind in (
+            user_constants.PARTNER_KIND_NETWORD_IAE,
+            user_constants.PARTNER_KIND_NETWORK_HANDICAP,
+        ):
             return settings.MAILJET_NL_CL_PARTNER_NETWORKS_IAE_HANDICAP_ID
-        elif user.partner_kind == user.PARTNER_KIND_DREETS:
+        elif user.partner_kind == user_constants.PARTNER_KIND_DREETS:
             return settings.MAILJET_NL_CL_PARTNER_DREETS_ID
 
 

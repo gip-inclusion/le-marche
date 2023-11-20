@@ -32,7 +32,7 @@ class UserModelTest(TestCase):
         )
         user_partner = UserFactory(kind=user_constants.KIND_PARTNER)
         user_partner_facilitator = UserFactory(
-            kind=user_constants.KIND_PARTNER, partner_kind=User.PARTNER_KIND_FACILITATOR
+            kind=user_constants.KIND_PARTNER, partner_kind=user_constants.PARTNER_KIND_FACILITATOR
         )
         self.assertEqual(user_siae.kind_detail_display, "Structure")
         self.assertEqual(user_buyer.kind_detail_display, "Acheteur")
