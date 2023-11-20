@@ -11,7 +11,7 @@ from django.forms.models import model_to_dict
 from django.utils import timezone
 
 from lemarche.stats.models import StatsUser
-from lemarche.utils import constants
+from lemarche.users import constants as user_constants
 from lemarche.utils.emails import anonymize_email
 
 
@@ -134,10 +134,10 @@ class User(AbstractUser):
     ]
 
     # used in templates
-    KIND_SIAE = constants.USER_KIND_SIAE
-    KIND_BUYER = constants.USER_KIND_BUYER
-    KIND_PARTNER = constants.USER_KIND_PARTNER
-    KIND_ADMIN = constants.USER_KIND_ADMIN
+    KIND_SIAE = user_constants.KIND_SIAE
+    KIND_BUYER = user_constants.KIND_BUYER
+    KIND_PARTNER = user_constants.KIND_PARTNER
+    KIND_ADMIN = user_constants.KIND_ADMIN
 
     BUYER_KIND_PUBLIC = "PUBLIC"
     BUYER_KIND_PRIVATE = "PRIVE"
@@ -200,7 +200,7 @@ class User(AbstractUser):
     first_name = models.CharField(verbose_name="Prénom", max_length=150)
     last_name = models.CharField(verbose_name="Nom", max_length=150)
     kind = models.CharField(
-        verbose_name="Type", max_length=20, choices=constants.USER_KIND_CHOICES_WITH_ADMIN, blank=True
+        verbose_name="Type", max_length=20, choices=user_constants.KIND_CHOICES_WITH_ADMIN, blank=True
     )
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True)
 
