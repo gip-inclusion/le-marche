@@ -11,8 +11,8 @@ class TrackerQuerySet(models.QuerySet):
     def env_prod(self):
         return self.filter(env="prod", isadmin=False)
 
-    def by_user_type(self, user_type):
-        return self.filter(data__meta__user_type=user_type)
+    def by_user_kind(self, user_kind):
+        return self.filter(user_kind=user_kind)
 
     def siae_views_last_3_months(self, siae_slug):
         return self.env_prod().filter(
@@ -22,10 +22,10 @@ class TrackerQuerySet(models.QuerySet):
         )
 
     def siae_buyer_views_last_3_months(self, siae_slug):
-        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_type(constants.USER_KIND_BUYER)
+        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_kind(constants.USER_KIND_BUYER)
 
     def siae_partner_views_last_3_months(self, siae_slug):
-        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_type(constants.USER_KIND_PARTNER)
+        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_kind(constants.USER_KIND_PARTNER)
 
 
 class Tracker(models.Model):
