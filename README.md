@@ -10,7 +10,7 @@ Voici un tableau explicatif de la nomenclature utilisée dans le code (par rappo
 |Dans le métier|Dans le code|
 |--------------|------------|
 |Appel d'offres|Tender      |
-|Devis         |Quote       |
+|Demande de devis|Quote       |
 |Sourcing      |Project     |
 |Liste de favoris|Favorite list|
 |Structure     |Siae        |

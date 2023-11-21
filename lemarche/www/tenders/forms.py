@@ -12,9 +12,9 @@ from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 class TenderCreateStepGeneralForm(forms.ModelForm):
     FORM_KIND_CHOICES = (
-        (tender_constants.KIND_TENDER, "Appel d'offres"),
-        (tender_constants.KIND_QUOTE, "Devis"),
-        (tender_constants.KIND_PROJECT, "Sourcing inversé"),  # modif par rapport à tender_constants.KIND_CHOICES
+        (tender_constants.KIND_TENDER, tender_constants.KIND_TENDER_DISPLAY),
+        (tender_constants.KIND_QUOTE, tender_constants.KIND_QUOTE_DISPLAY),
+        (tender_constants.KIND_PROJECT, "Sourcing inversé"),  # tender_constants.KIND_PROJECT_DISPLAY
     )
 
     description = forms.CharField(widget=CKEditorWidget(config_name="frontuser"))
@@ -49,7 +49,7 @@ class TenderCreateStepGeneralForm(forms.ModelForm):
         self.fields["description"].required = True
         # self.fields["perimeters"].required = True  # JS
         # label, placeholder & help_text
-        self.fields["title"].widget.attrs["placeholder"] = "Ex : Devis rénovation façade"
+        self.fields["title"].widget.attrs["placeholder"] = "Ex : Demande de devis rénovation façade à Grenoble"
         self.fields["sectors"].help_text = Tender._meta.get_field("sectors").help_text  # else doesn't appear
         self.fields["is_country_area"].help_text = None
 
