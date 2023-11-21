@@ -172,7 +172,7 @@ class TenderQuerySet(models.QuerySet):
 
 
 class Tender(models.Model):
-    """Appel d'offres et devis"""
+    """Appel d'offres, demande de devis et sourcing"""
 
     STATUS_DRAFT = tender_constants.STATUS_DRAFT
     STATUS_PUBLISHED = tender_constants.STATUS_PUBLISHED
