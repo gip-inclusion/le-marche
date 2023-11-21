@@ -137,13 +137,13 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "kind",
         "city",
         "user_count_with_link",
+        "tender_email_send_count_annotated_with_link",
+        "tender_detail_display_count_annotated_with_link",
+        "tender_detail_contact_click_count_annotated_with_link",
         "offer_count_with_link",
         "label_count_with_link",
         "client_reference_count_with_link",
         "image_count_with_link",
-        "tender_email_send_count_annotated_with_link",
-        "tender_detail_display_count_annotated_with_link",
-        "tender_detail_contact_click_count_annotated_with_link",
         "created_at",
     ]
     list_filter = [
@@ -454,56 +454,56 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         url = reverse("admin:users_user_changelist") + f"?siaes__in={siae.id}"
         return format_html(f'<a href="{url}">{siae.user_count}</a>')
 
-    user_count_with_link.short_description = "Nombre d'utilisateurs"
+    user_count_with_link.short_description = "Utilisateurs"
     user_count_with_link.admin_order_field = "user_count"
 
     def sector_count_with_link(self, siae):
         url = reverse("admin:sectors_sector_changelist") + f"?siaes__in={siae.id}"
         return format_html(f'<a href="{url}">{siae.sector_count}</a>')
 
-    sector_count_with_link.short_description = "Nbr de secteurs"
+    sector_count_with_link.short_description = "Secteurs"
     sector_count_with_link.admin_order_field = "sector_count"
 
     def network_count_with_link(self, siae):
         url = reverse("admin:networks_network_changelist") + f"?siaes__in={siae.id}"
         return format_html(f'<a href="{url}">{siae.network_count}</a>')
 
-    network_count_with_link.short_description = "Nbr de réseaux"
+    network_count_with_link.short_description = "Réseaux"
     network_count_with_link.admin_order_field = "network_count"
 
     def group_count_with_link(self, siae):
         url = reverse("admin:siaes_siaegroup_changelist") + f"?siaes__in={siae.id}"
         return format_html(f'<a href="{url}">{siae.group_count}</a>')
 
-    group_count_with_link.short_description = "Nbr de groupements"
+    group_count_with_link.short_description = "Groupements"
     group_count_with_link.admin_order_field = "group_count"
 
     def offer_count_with_link(self, siae):
         url = reverse("admin:siaes_siaeoffer_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.offer_count}</a>')
 
-    offer_count_with_link.short_description = "Nbr de prestations"
+    offer_count_with_link.short_description = "Prestations"
     offer_count_with_link.admin_order_field = "offer_count"
 
     def label_count_with_link(self, siae):
         url = reverse("admin:siaes_siaelabelold_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.label_count}</a>')
 
-    label_count_with_link.short_description = "Nbr de labels"
+    label_count_with_link.short_description = "Labels"
     label_count_with_link.admin_order_field = "label_count"
 
     def client_reference_count_with_link(self, siae):
         url = reverse("admin:siaes_siaeclientreference_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.client_reference_count}</a>')
 
-    client_reference_count_with_link.short_description = "Nbr de réf. clients"
+    client_reference_count_with_link.short_description = "Réf. clients"
     client_reference_count_with_link.admin_order_field = "client_reference_count"
 
     def image_count_with_link(self, siae):
         url = reverse("admin:siaes_siaeimage_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.image_count}</a>')
 
-    image_count_with_link.short_description = "Nbr d'images"
+    image_count_with_link.short_description = "Images"
     image_count_with_link.admin_order_field = "image_count"
 
     def coords_display(self, siae):
