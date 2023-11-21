@@ -324,7 +324,7 @@ class SiaeQuerySet(models.QuerySet):
     def has_contact_email(self):
         return self.exclude(contact_email__isnull=True).exclude(contact_email__exact="")
 
-    def filter_with_tender(self, tender, tender_status=None):
+    def filter_with_tender(self, tender, tender_status=None):  # noqa C901
         """
         Filter Siaes with tenders:
         - first we filter the Siae that are live + can be contacted
