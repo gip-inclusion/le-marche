@@ -11,6 +11,7 @@ class Command(BaseCommand):
     Usage:
     - poetry run python manage.py set_company_users --dry-run
     - poetry run python manage.py set_company_users --only-add
+    - poetry run python manage.py set_company_users --only-add --with-count
     - poetry run python manage.py set_company_users
     """
 
@@ -18,6 +19,9 @@ class Command(BaseCommand):
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Dry run (no changes to the DB)")
         parser.add_argument(
             "--only-add", dest="only_add", action="store_true", help="Only add new users, don't delete existing"
+        )
+        parser.add_argument(
+            "--with-count", dest="with_count", action="store_true", help="Update user_count at the end"
         )
 
     def handle(self, *args, **options):
@@ -64,3 +68,11 @@ class Command(BaseCommand):
         self.stdout_info(f"Users with company count: {users_with_company.count()}")
         self.stdout_info(f"Companies with email_domain_list field count: {companies_with_email_domain_list.count()}")
         self.stdout_info(f"Companies with users count: {companies_with_users.count()}")
+
+        if options["with_count"]:
+            self.stdout_info("-" * 80)
+            self.stdout_info("Updating Company.user_count fields")
+            for company in Company.objects.prefetch_related("users").all():
+                company.user_count = company.users.count()
+                company.save()
+            self.stdout_info("Finished updating Company.user_count!")
