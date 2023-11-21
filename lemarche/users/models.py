@@ -376,7 +376,8 @@ class User(AbstractUser):
         if self.kind:
             kind_detail_display_string += self.get_kind_display()
         if self.buyer_kind_detail:
-            kind_detail_display_string += f" : {self.get_buyer_kind_detail_display()}"
+            # remove parenthesis suffix
+            kind_detail_display_string += f" : {self.get_buyer_kind_detail_display().split(' (', 1)[0]}"
         elif self.partner_kind:
             kind_detail_display_string += f" : {self.get_partner_kind_display()}"
         return kind_detail_display_string
