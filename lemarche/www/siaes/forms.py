@@ -500,10 +500,8 @@ class SiaeSemanticForm(forms.Form):
         label="Recherche sémantique",
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "Je cherche…"}),
-        help_text=" ".join(
-            [
-                "Soyez le plus précis possible (Exemple: nettoyage des locaux d'entreprise",
-                "/ entretien des espaces verts)",
-            ]
+        help_text=(
+            "Soyez le plus précis possible (Exemple: nettoyage des locaux d'entreprise ",
+            "/ entretien des espaces verts",
         ),
     )
