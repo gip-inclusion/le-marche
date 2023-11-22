@@ -1,0 +1,30 @@
+{% load static bootstrap4 wagtailcore_tags advert_cms %}
+{% block content %}
+    <div id="dir_list">
+        <div id="searchResults" class="row dir_list-row">
+            <div class="col-12 col-lg-8">
+                <div class="c-box mb-3">
+                    {% if siaes %}
+                        {% for siae in siaes %}
+                            {% include "siaes/_card_search_result.html" with siae=siae %}
+                            <!-- insert to nudge tender creation -->
+                            {% if forloop.counter in position_promote_tenders and page_obj.number == 1 %}
+                                {% include "siaes/_card_suggest_tender.html" with current_perimeters=current_perimeters current_sectors=current_sectors %}
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <!-- no results -->
+                        <p>Il y a encore de l'espoir ❤️</p>
+                        <p>Publiez votre besoin, et on s'occupe de vous trouver des prestataires inclusifs.</p>
+                        <p>Obtenez des réponses en moins de 24 heures (en moyenne).</p>
+                        <a href="{% url 'tenders:create' %}"
+                            id="siae-search-empty-demande"
+                            class="btn btn-primary d-block d-md-inline-block mb-2">
+                            <i class="ri-mail-send-line ri-lg mr-2"></i>Publier un besoin d'achat
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
