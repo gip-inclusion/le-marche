@@ -1,0 +1,80 @@
+{% extends "layouts/base.html" %}
+{% load static bootstrap4 wagtailcore_tags advert_cms %}
+{% block title %}Trouvez votre prestataire parmi 8600 prestataires inclusifs{{ block.super }}{% endblock %}
+{% block meta_description %}
+    <meta name="description"
+          content="Recherchez en fonction de votre segment d'achats, périmètre géographique et types de prestation afin de trouver le prestataire idéal.">
+{% endblock %}
+{% block body_class %}bg-light{% endblock %}
+"
+{% block breadcrumbs %}
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'wagtail_serve' '' %}">Accueil</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Recherche</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+{% block content %}
+    <section class="s-tabs-01">
+        <div class="s-tabs-01__container container">
+            <div class="s-tabs-01__row row">
+                <div class="s-tabs-01__col col-12">
+                    <form method="GET" hx-get="{% url 'siae:semantic_search_results' %}" hx-target="#siaes_results"  hx-indicator="#spinner"
+                            action=""
+                            id="text-semantic-search-form">
+                        {% bootstrap_form_errors form type="all" %}
+                        <div class="row">
+                            <div class="col-12 col-lg-8">
+                                <div class="row">
+                                    <div class="col-12">{% bootstrap_field form.search_query %}</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-4">
+                                <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
+                                <button id="text-search-submit"
+                                        class="btn btn-primary btn-block btn-ico"
+                                        type="submit">
+                                    <span>Rechercher</span>
+                                    <i class="ri-search-line ri-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="s-siae-02">
+        <div class="container">
+            <img  id="spinner" class="htmx-indicator" src="{% static 'img/spinner-bars.svg' %}"/>
+        </div>
+        <div class="container" id="siaes_results"></div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .htmx-indicator{
+        opacity:0;
+        transition: opacity 500ms ease-in;
+    }
+    .htmx-request .htmx-indicator{
+        opacity:1
+    }
+    .htmx-request.htmx-indicator{
+        opacity:1
+    }
+</style>
+{% endblock %}
