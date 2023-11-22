@@ -876,3 +876,11 @@ OPENAI_ORG = env.str("OPENAI_ORG", "")
 OPENAI_API_BASE = env.str("OPENAI_API_BASE", "")
 OPENAI_API_KEY = env.str("OPENAI_API_KEY", "")
 OPENAI_MODEL = env.str("OPENAI_MODEL", "")
+
+
+# ELASTICSEARCH
+# ------------------------------------------------------------------------------
+ELASTICSEARCH_HOST = env.str("ELASTICSEARCH_HOST", "")
+ELASTICSEARCH_USERNAME = env.str("ELASTICSEARCH_USERNAME", "")
+ELASTICSEARCH_PASSWORD = env.str("ELASTICSEARCH_PASSWORD", "")
+ELASTICSEARCH_INDEX_SIAES = env.str("ELASTICSEARCH_INDEX_SIAES", "")
