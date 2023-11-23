@@ -490,7 +490,7 @@ def send_author_incremental_2_days_email(tender: Tender):
         tender.save()
 
 
-def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback"):
+def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
     email_subject = f"Suite à votre {tender.get_kind_display().lower()}"
     recipient_list = whitelist_recipient_list([tender.author.email])
     if recipient_list:
@@ -504,8 +504,8 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback"):
             "TENDER_KIND": tender.get_kind_display(),
         }
 
-        if kind == "transactioned_question":
-            template_id = settings.MAILJET_TENDERS_AUTHOR_TRANSACTIONED_QUESTION_30D_TEMPLATE_ID
+        if kind == "transactioned_question_7d":
+            template_id = settings.MAILJET_TENDERS_AUTHOR_TRANSACTIONED_QUESTION_7D_TEMPLATE_ID
             user_sesame_query_string = sesame_get_query_string(tender.author)  # TODO: sesame scope parameter
             answer_url_with_sesame_token = (
                 f"https://{get_domain_url()}"
@@ -529,7 +529,7 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback"):
 
         # log email
         log_item = {
-            "action": f"email_{kind}_30d_sent",
+            "action": f"email_{kind}_sent",
             "email_to": recipient_email,
             "email_subject": email_subject,
             # "email_body": email_body,

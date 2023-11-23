@@ -10,7 +10,7 @@ from lemarche.www.tenders.tasks import send_tenders_author_feedback_or_survey
 class Command(BaseCommand):
     """
     Daily script to send an email to tender authors
-    When? J+30 after validation of tenders
+    When? J+7 after tender deadline_date
 
     Usage:
     python manage.py send_author_transactioned_question_emails --dry-run
@@ -55,7 +55,7 @@ class Command(BaseCommand):
 
         if not dry_run:
             for tender in tender_qs:
-                send_tenders_author_feedback_or_survey(tender, kind="transactioned_question")
+                send_tenders_author_feedback_or_survey(tender, kind="transactioned_question_7d")
             self.stdout.write(f"Sent {tender_qs.count()} J+30 feedbacks")
 
         self.stdout.write("-" * 80)
