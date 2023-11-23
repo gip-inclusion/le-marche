@@ -145,23 +145,23 @@ class User(AbstractUser):
         (BUYER_KIND_PUBLIC, "Public"),
         (BUYER_KIND_PRIVATE, "Privé"),
     )
-    BUYER_KIND_DETAIL_PUBLIC_MINISTRY = "PUBLIC_MINISTRY"
-    BUYER_KIND_DETAIL_PUBLIC_ESTABLISHMENT = "PUBLIC_ESTABLISHMENT"
-    BUYER_KIND_DETAIL_PUBLIC_COLLECTIVITY = "PUBLIC_COLLECTIVITY"
-    BUYER_KIND_DETAIL_PUBLIC_ASSOCIATION = "PUBLIC_ASSOCIATION"
     BUYER_KIND_DETAIL_PRIVATE_BIG_CORP = "PRIVATE_BIG_CORP"
     BUYER_KIND_DETAIL_PRIVATE_ETI = "PRIVATE_ETI"
     BUYER_KIND_DETAIL_PRIVATE_PME = "PRIVATE_PME"
     BUYER_KIND_DETAIL_PRIVATE_TPE = "PRIVATE_TPE"
+    BUYER_KIND_DETAIL_PUBLIC_ASSOCIATION = "PUBLIC_ASSOCIATION"
+    BUYER_KIND_DETAIL_PUBLIC_COLLECTIVITY = "PUBLIC_COLLECTIVITY"
+    BUYER_KIND_DETAIL_PUBLIC_ESTABLISHMENT = "PUBLIC_ESTABLISHMENT"
+    BUYER_KIND_DETAIL_PUBLIC_MINISTRY = "PUBLIC_MINISTRY"
     BUYER_KIND_DETAIL_CHOICES = (
-        (BUYER_KIND_DETAIL_PUBLIC_MINISTRY, "Public : Ministère"),
-        (BUYER_KIND_DETAIL_PUBLIC_ESTABLISHMENT, "Public : Établissement public"),
-        (BUYER_KIND_DETAIL_PUBLIC_COLLECTIVITY, "Public : Collectivité"),
-        (BUYER_KIND_DETAIL_PUBLIC_ASSOCIATION, "Public : Association"),
-        (BUYER_KIND_DETAIL_PRIVATE_BIG_CORP, "Privé : Grand groupe"),
-        (BUYER_KIND_DETAIL_PRIVATE_ETI, "Privé : ETI"),
-        (BUYER_KIND_DETAIL_PRIVATE_PME, "Privé : PME"),
-        (BUYER_KIND_DETAIL_PRIVATE_TPE, "Privé : TPE"),
+        (BUYER_KIND_DETAIL_PRIVATE_BIG_CORP, "Grand groupe (+5000 salariés)"),
+        (BUYER_KIND_DETAIL_PRIVATE_ETI, "ETI (+250 salariés)"),
+        (BUYER_KIND_DETAIL_PRIVATE_PME, "PME (+10 salariés)"),
+        (BUYER_KIND_DETAIL_PRIVATE_TPE, "TPE"),
+        (BUYER_KIND_DETAIL_PUBLIC_ASSOCIATION, "Association"),
+        (BUYER_KIND_DETAIL_PUBLIC_COLLECTIVITY, "Collectivité"),
+        (BUYER_KIND_DETAIL_PUBLIC_ESTABLISHMENT, "Établissement public"),
+        (BUYER_KIND_DETAIL_PUBLIC_MINISTRY, "Ministère"),
     )
 
     PARTNER_KIND_FACILITATOR = "FACILITATEUR"
@@ -376,7 +376,8 @@ class User(AbstractUser):
         if self.kind:
             kind_detail_display_string += self.get_kind_display()
         if self.buyer_kind_detail:
-            kind_detail_display_string += f" : {self.get_buyer_kind_detail_display()}"
+            # remove parenthesis suffix
+            kind_detail_display_string += f" : {self.get_buyer_kind_detail_display().split(' (', 1)[0]}"
         elif self.partner_kind:
             kind_detail_display_string += f" : {self.get_partner_kind_display()}"
         return kind_detail_display_string

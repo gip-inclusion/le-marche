@@ -38,7 +38,7 @@ class UserModelTest(TestCase):
         self.assertEqual(user_buyer.kind_detail_display, "Acheteur")
         self.assertEqual(user_partner.kind_detail_display, "Partenaire")
         self.assertEqual(user_buyer_public.kind_detail_display, "Acheteur")
-        self.assertEqual(user_buyer_private_pme.kind_detail_display, "Acheteur : Privé : PME")
+        self.assertEqual(user_buyer_private_pme.kind_detail_display, "Acheteur : PME")
         self.assertEqual(
             user_partner_facilitator.kind_detail_display, "Partenaire : Facilitateur des clauses sociales"
         )
