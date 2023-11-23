@@ -27,6 +27,10 @@ class SignupForm(UserCreationForm):
         max_length=35,
         required=False,
     )
+    # buyer_kind_detail is hidden by default in the frontend. Shown if the user choses kind BUYER
+    buyer_kind_detail = forms.ChoiceField(
+        label="Type de votre organisation", choices=user_constants.BUYER_KIND_DETAIL_CHOICES, required=False
+    )
     # company_name is hidden by default in the frontend. Shown if the user choses kind BUYER or PARTNER
     company_name = forms.CharField(
         label="Le nom de votre structure",
@@ -89,8 +93,9 @@ class SignupForm(UserCreationForm):
             "first_name",
             "last_name",
             "phone",
-            "position",
+            "buyer_kind_detail",
             "company_name",
+            "position",
             "partner_kind",
             "email",
             "sectors",
