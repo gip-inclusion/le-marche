@@ -4,8 +4,8 @@ from django.test import TestCase
 
 from lemarche.companies.factories import CompanyFactory
 from lemarche.conversations.factories import ConversationFactory
+from lemarche.users import constants as user_constants
 from lemarche.users.factories import UserFactory
-from lemarche.utils import constants
 from lemarche.www.conversations.tasks import send_first_email_from_conversation
 
 
@@ -25,7 +25,7 @@ class TestConversationTasks(TestCase):
 
         company = CompanyFactory.build()
         user_buyer = UserFactory(
-            kind=constants.USER_KIND_BUYER,
+            kind=user_constants.KIND_BUYER,
             company_name=company.name,
         )
 

@@ -4,14 +4,14 @@ from lemarche.notes.factories import NoteFactory
 from lemarche.notes.models import Note
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.tenders.factories import TenderFactory
+from lemarche.users import constants as user_constants
 from lemarche.users.factories import UserFactory
-from lemarche.utils import constants
 
 
 class NoteModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.user = UserFactory(kind=constants.USER_KIND_ADMIN)
+        cls.user = UserFactory(kind=user_constants.KIND_ADMIN)
         cls.note = NoteFactory()
         cls.note_with_author = NoteFactory(author=cls.user)
 
@@ -41,7 +41,7 @@ class NoteModelTest(TestCase):
         self.assertEqual(siae.notes.count(), 2)
 
     def test_create_user_note_with_generic_relation(self):
-        user_siae = UserFactory(kind=constants.USER_KIND_SIAE)
+        user_siae = UserFactory(kind=user_constants.KIND_SIAE)
         NoteFactory(author=self.user, content_object=user_siae)
         self.assertEqual(Note.objects.count(), 2 + 1)
         # can create multiple notes for the same object

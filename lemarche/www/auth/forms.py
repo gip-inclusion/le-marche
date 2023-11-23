@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, UserCreationForm
 
 from lemarche.sectors.models import Sector
+from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.utils.constants import EMPTY_CHOICE, HOW_MANY_CHOICES
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
@@ -14,7 +15,7 @@ class SignupForm(UserCreationForm):
         (User.KIND_BUYER, "Un acheteur"),
         (User.KIND_PARTNER, "Un partenaire (réseaux, facilitateurs)"),
     )
-    FORM_PARTNER_KIND_CHOICES = EMPTY_CHOICE + User.PARTNER_KIND_CHOICES
+    FORM_PARTNER_KIND_CHOICES = EMPTY_CHOICE + user_constants.PARTNER_KIND_CHOICES
 
     kind = forms.ChoiceField(label="", widget=forms.RadioSelect, choices=KIND_CHOICES_FORM, required=True)
     first_name = forms.CharField(

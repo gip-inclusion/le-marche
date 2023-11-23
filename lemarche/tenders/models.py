@@ -174,34 +174,10 @@ class TenderQuerySet(models.QuerySet):
 class Tender(models.Model):
     """Appel d'offres, demande de devis et sourcing"""
 
+    # used in templates
     STATUS_DRAFT = tender_constants.STATUS_DRAFT
     STATUS_PUBLISHED = tender_constants.STATUS_PUBLISHED
     STATUS_VALIDATED = tender_constants.STATUS_VALIDATED
-
-    TENDER_ACCEPT_SHARE_AMOUNT_TRUE = "✅ Montant partagé"
-    TENDER_ACCEPT_SHARE_AMOUNT_FALSE = "❌ Montant non partagé"
-
-    RESPONSE_KIND_EMAIL = "EMAIL"
-    RESPONSE_KIND_TEL = "TEL"
-    RESPONSE_KIND_EXTERNAL = "EXTERN"
-    RESPONSE_KIND_CHOICES = (
-        (RESPONSE_KIND_EMAIL, "E-mail"),
-        (RESPONSE_KIND_TEL, "Téléphone"),
-        (RESPONSE_KIND_EXTERNAL, "Lien externe"),
-    )
-
-    SOURCE_FORM = "FORM"
-    SOURCE_FORM_CSRF = "FORM_CSRF"
-    SOURCE_STAFF_C4_CREATED = "STAFF_C4_CREATED"
-    SOURCE_API = "API"
-    SOURCE_TALLY = "TALLY"
-    SOURCE_CHOICES = (
-        (SOURCE_FORM, "Formulaire"),
-        (SOURCE_FORM_CSRF, "Formulaire (erreur CSRF)"),
-        (SOURCE_STAFF_C4_CREATED, "Staff Marché (via l'Admin)"),
-        (SOURCE_API, "API"),
-        (SOURCE_TALLY, "TALLY"),
-    )
 
     title = models.CharField(verbose_name="Titre du besoin", max_length=255)
     slug = models.SlugField(verbose_name="Slug", max_length=255, unique=True)
@@ -257,7 +233,7 @@ class Tender(models.Model):
     )
     response_kind = ChoiceArrayField(
         verbose_name="Comment souhaitez-vous être contacté ?",
-        base_field=models.CharField(max_length=6, choices=RESPONSE_KIND_CHOICES),
+        base_field=models.CharField(max_length=6, choices=tender_constants.RESPONSE_KIND_CHOICES),
         blank=True,
         default=list,
     )
@@ -426,7 +402,12 @@ class Tender(models.Model):
         "Date de dernière visite de l'auteur sur la page 'structures intéressées'", blank=True, null=True
     )
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
-    source = models.CharField(verbose_name="Source", max_length=20, choices=SOURCE_CHOICES, default=SOURCE_FORM)
+    source = models.CharField(
+        verbose_name="Source",
+        max_length=20,
+        choices=tender_constants.SOURCE_CHOICES,
+        default=tender_constants.SOURCE_FORM,
+    )
     extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)
     import_raw_object = models.JSONField(verbose_name="Données d'import", editable=False, null=True)
 
@@ -573,15 +554,15 @@ class Tender(models.Model):
 
     @cached_property
     def can_display_contact_email(self):
-        return (self.RESPONSE_KIND_EMAIL in self.response_kind) and self.contact_email
+        return (tender_constants.RESPONSE_KIND_EMAIL in self.response_kind) and self.contact_email
 
     @cached_property
     def can_display_contact_phone(self):
-        return (self.RESPONSE_KIND_TEL in self.response_kind) and self.contact_phone
+        return (tender_constants.RESPONSE_KIND_TEL in self.response_kind) and self.contact_phone
 
     @cached_property
     def can_display_contact_external_link(self):
-        return (self.RESPONSE_KIND_EXTERNAL in self.response_kind) and self.external_link
+        return (tender_constants.RESPONSE_KIND_EXTERNAL in self.response_kind) and self.external_link
 
     @cached_property
     def response_kind_is_only_external(self):
@@ -590,8 +571,8 @@ class Tender(models.Model):
     @cached_property
     def accept_share_amount_display(self):
         if self.accept_share_amount:
-            return self.TENDER_ACCEPT_SHARE_AMOUNT_TRUE
-        return self.TENDER_ACCEPT_SHARE_AMOUNT_FALSE
+            return tender_constants.ACCEPT_SHARE_AMOUNT_TRUE
+        return tender_constants.ACCEPT_SHARE_AMOUNT_FALSE
 
     @cached_property
     def deadline_date_outdated(self):
@@ -631,15 +612,15 @@ class Tender(models.Model):
 
     @property
     def is_draft(self) -> bool:
-        return self.status == self.STATUS_DRAFT
+        return self.status == tender_constants.STATUS_DRAFT
 
     @property
     def is_pending_validation(self) -> bool:
-        return self.status == self.STATUS_PUBLISHED
+        return self.status == tender_constants.STATUS_PUBLISHED
 
     @property
     def is_validated(self) -> bool:
-        return self.validated_at and self.status == self.STATUS_VALIDATED
+        return self.validated_at and self.status == tender_constants.STATUS_VALIDATED
 
     def set_validated(self, with_save=True):
         self.validated_at = timezone.now()

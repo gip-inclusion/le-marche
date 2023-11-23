@@ -4,7 +4,7 @@ from django.db import models
 from django.utils import timezone
 
 from lemarche.siaes import constants as siae_constants
-from lemarche.utils import constants
+from lemarche.users import constants as user_constants
 
 
 class TrackerQuerySet(models.QuerySet):
@@ -22,10 +22,10 @@ class TrackerQuerySet(models.QuerySet):
         )
 
     def siae_buyer_views_last_3_months(self, siae_slug):
-        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_kind(constants.USER_KIND_BUYER)
+        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_kind(user_constants.KIND_BUYER)
 
     def siae_partner_views_last_3_months(self, siae_slug):
-        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_kind(constants.USER_KIND_PARTNER)
+        return self.env_prod().siae_views_last_3_months(siae_slug).by_user_kind(user_constants.KIND_PARTNER)
 
 
 class Tracker(models.Model):
@@ -41,7 +41,7 @@ class Tracker(models.Model):
     data = models.JSONField()
 
     user_id = models.IntegerField(blank=True, null=True)
-    user_kind = models.CharField(max_length=20, choices=constants.USER_KIND_CHOICES_WITH_ADMIN, blank=True)
+    user_kind = models.CharField(max_length=20, choices=user_constants.KIND_CHOICES_WITH_ADMIN, blank=True)
     isadmin = models.BooleanField(default=False)  # user.kind == User.KIND_ADMIN
 
     siae_id = models.IntegerField(blank=True, null=True)
