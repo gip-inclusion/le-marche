@@ -218,19 +218,19 @@ class TenderCreateStepContactForm(forms.ModelForm):
         if not self.user.is_authenticated:
             # contact_email must be filled if RESPONSE_KIND_EMAIL
             if self.cleaned_data.get("response_kind") and (
-                Tender.RESPONSE_KIND_EMAIL in self.cleaned_data.get("response_kind")
+                tender_constants.RESPONSE_KIND_EMAIL in self.cleaned_data.get("response_kind")
                 and not self.cleaned_data.get("contact_email")
             ):
                 self.add_error("response_kind", "E-mail sélectionné mais aucun e-mail renseigné.")
             # contact_phone must be filled if RESPONSE_KIND_TEL
             if self.cleaned_data.get("response_kind") and (
-                Tender.RESPONSE_KIND_TEL in self.cleaned_data.get("response_kind")
+                tender_constants.RESPONSE_KIND_TEL in self.cleaned_data.get("response_kind")
                 and not self.cleaned_data.get("contact_phone")
             ):
                 self.add_error("response_kind", "Téléphone sélectionné mais aucun téléphone renseigné.")
         elif not self.user.phone:
             if self.cleaned_data.get("response_kind") and (
-                Tender.RESPONSE_KIND_TEL in self.cleaned_data.get("response_kind")
+                tender_constants.RESPONSE_KIND_TEL in self.cleaned_data.get("response_kind")
             ):
                 self.add_error(
                     "response_kind", "Téléphone sélectionné mais aucun téléphone renseigné dans votre profil."
@@ -238,7 +238,8 @@ class TenderCreateStepContactForm(forms.ModelForm):
 
         # external_link must be filled if RESPONSE_KIND_EXTERNAL
         if self.cleaned_data.get("response_kind") and (
-            Tender.RESPONSE_KIND_EXTERNAL in self.cleaned_data.get("response_kind") and not self.external_link
+            tender_constants.RESPONSE_KIND_EXTERNAL in self.cleaned_data.get("response_kind")
+            and not self.external_link
         ):
             self.add_error(
                 "response_kind", "Lien externe sélectionné mais aucun lien renseigné (à l'étape précédente)."

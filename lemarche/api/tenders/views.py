@@ -6,7 +6,7 @@ from lemarche.api.tenders.serializers import TenderSerializer
 from lemarche.api.utils import BasicChoiceSerializer, check_user_token
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender
-from lemarche.users.models import User
+from lemarche.users import constants as user_constants
 from lemarche.www.tenders.utils import get_or_create_user_from_anonymous_content
 
 
@@ -27,17 +27,19 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     def perform_create(self, serializer: TenderSerializer):
         source = (
-            Tender.SOURCE_TALLY
-            if serializer.validated_data.get("extra_data", {}).get("source") == Tender.SOURCE_TALLY
-            else Tender.SOURCE_API
+            tender_constants.SOURCE_TALLY
+            if serializer.validated_data.get("extra_data", {}).get("source") == tender_constants.SOURCE_TALLY
+            else tender_constants.SOURCE_API
         )
         user = get_or_create_user_from_anonymous_content(
             serializer.validated_data,
-            source=User.SOURCE_TALLY_FORM if source == Tender.SOURCE_TALLY else User.SOURCE_SIGNUP_FORM,
+            source=user_constants.SOURCE_TALLY_FORM
+            if source == tender_constants.SOURCE_TALLY
+            else user_constants.SOURCE_SIGNUP_FORM,
         )
         serializer.save(
             author=user,
-            status=Tender.STATUS_PUBLISHED,
+            status=tender_constants.STATUS_PUBLISHED,
             published_at=timezone.now(),
             source=source,
             import_raw_object=self.request.data,

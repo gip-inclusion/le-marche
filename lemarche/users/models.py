@@ -11,7 +11,7 @@ from django.forms.models import model_to_dict
 from django.utils import timezone
 
 from lemarche.stats.models import StatsUser
-from lemarche.utils import constants
+from lemarche.users import constants as user_constants
 from lemarche.utils.emails import anonymize_email
 
 
@@ -134,73 +134,17 @@ class User(AbstractUser):
     ]
 
     # used in templates
-    KIND_SIAE = constants.USER_KIND_SIAE
-    KIND_BUYER = constants.USER_KIND_BUYER
-    KIND_PARTNER = constants.USER_KIND_PARTNER
-    KIND_ADMIN = constants.USER_KIND_ADMIN
-
-    BUYER_KIND_PUBLIC = "PUBLIC"
-    BUYER_KIND_PRIVATE = "PRIVE"
-    BUYER_KIND_CHOICES = (
-        (BUYER_KIND_PUBLIC, "Public"),
-        (BUYER_KIND_PRIVATE, "Privé"),
-    )
-    BUYER_KIND_DETAIL_PRIVATE_BIG_CORP = "PRIVATE_BIG_CORP"
-    BUYER_KIND_DETAIL_PRIVATE_ETI = "PRIVATE_ETI"
-    BUYER_KIND_DETAIL_PRIVATE_PME = "PRIVATE_PME"
-    BUYER_KIND_DETAIL_PRIVATE_TPE = "PRIVATE_TPE"
-    BUYER_KIND_DETAIL_PUBLIC_ASSOCIATION = "PUBLIC_ASSOCIATION"
-    BUYER_KIND_DETAIL_PUBLIC_COLLECTIVITY = "PUBLIC_COLLECTIVITY"
-    BUYER_KIND_DETAIL_PUBLIC_ESTABLISHMENT = "PUBLIC_ESTABLISHMENT"
-    BUYER_KIND_DETAIL_PUBLIC_MINISTRY = "PUBLIC_MINISTRY"
-    BUYER_KIND_DETAIL_CHOICES = (
-        (BUYER_KIND_DETAIL_PRIVATE_BIG_CORP, "Grand groupe (+5000 salariés)"),
-        (BUYER_KIND_DETAIL_PRIVATE_ETI, "ETI (+250 salariés)"),
-        (BUYER_KIND_DETAIL_PRIVATE_PME, "PME (+10 salariés)"),
-        (BUYER_KIND_DETAIL_PRIVATE_TPE, "TPE"),
-        (BUYER_KIND_DETAIL_PUBLIC_ASSOCIATION, "Association"),
-        (BUYER_KIND_DETAIL_PUBLIC_COLLECTIVITY, "Collectivité"),
-        (BUYER_KIND_DETAIL_PUBLIC_ESTABLISHMENT, "Établissement public"),
-        (BUYER_KIND_DETAIL_PUBLIC_MINISTRY, "Ministère"),
-    )
-
-    PARTNER_KIND_FACILITATOR = "FACILITATEUR"
-    PARTNER_KIND_NETWORD_IAE = "RESEAU_IAE"
-    PARTNER_KIND_NETWORK_HANDICAP = "RESEAU_HANDICAP"
-    PARTNER_KIND_DREETS = "DREETS"
-    PARTNER_KIND_PRESCRIBER = "PRESCRIPTEUR"
-    PARTNER_KIND_PUBLIC = "PUBLIC"
-    PARTNER_KIND_PRIVATE = "PRIVE"
-    PARTNER_KIND_OTHER = "AUTRE"
-    PARTNER_KIND_CHOICES = (
-        (PARTNER_KIND_FACILITATOR, "Facilitateur des clauses sociales"),
-        (PARTNER_KIND_NETWORD_IAE, "Réseaux IAE"),
-        (PARTNER_KIND_NETWORK_HANDICAP, "Réseau secteur Handicap"),
-        (PARTNER_KIND_DREETS, "DREETS / DDETS"),
-        (PARTNER_KIND_PRESCRIBER, "Prescripteur"),
-        (PARTNER_KIND_PUBLIC, "Organisme public"),
-        (PARTNER_KIND_PRIVATE, "Organisme privé"),
-        (PARTNER_KIND_OTHER, "Autre"),
-    )
-
-    SOURCE_SIGNUP_FORM = "SIGNUP_FORM"
-    SOURCE_TALLY_FORM = "TALLY_FORM"
-    SOURCE_TENDER_FORM = "TENDER_FORM"
-    SOURCE_DJANGO_ADMIN = "DJANGO_ADMIN"
-
-    SOURCE_CHOICES = (
-        (SOURCE_SIGNUP_FORM, "Formulaire d'inscription"),
-        (SOURCE_TALLY_FORM, "Formulaire verticale"),
-        (SOURCE_TENDER_FORM, "Formulaire de dépôt de besoin"),
-        (SOURCE_DJANGO_ADMIN, "Admin Django"),
-    )
+    KIND_SIAE = user_constants.KIND_SIAE
+    KIND_BUYER = user_constants.KIND_BUYER
+    KIND_PARTNER = user_constants.KIND_PARTNER
+    KIND_ADMIN = user_constants.KIND_ADMIN
 
     username = None
     email = models.EmailField(verbose_name="Adresse e-mail", unique=True)
     first_name = models.CharField(verbose_name="Prénom", max_length=150)
     last_name = models.CharField(verbose_name="Nom", max_length=150)
     kind = models.CharField(
-        verbose_name="Type", max_length=20, choices=constants.USER_KIND_CHOICES_WITH_ADMIN, blank=True
+        verbose_name="Type", max_length=20, choices=user_constants.KIND_CHOICES_WITH_ADMIN, blank=True
     )
     phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True)
 
@@ -216,13 +160,16 @@ class User(AbstractUser):
 
     position = models.CharField(verbose_name="Poste", max_length=255, blank=True)
     buyer_kind = models.CharField(
-        verbose_name="Type d'acheteur", max_length=20, choices=BUYER_KIND_CHOICES, blank=True
+        verbose_name="Type d'acheteur", max_length=20, choices=user_constants.BUYER_KIND_CHOICES, blank=True
     )
     buyer_kind_detail = models.CharField(
-        verbose_name="Type d'acheteur (détail)", max_length=20, choices=BUYER_KIND_DETAIL_CHOICES, blank=True
+        verbose_name="Type d'acheteur (détail)",
+        max_length=20,
+        choices=user_constants.BUYER_KIND_DETAIL_CHOICES,
+        blank=True,
     )
     partner_kind = models.CharField(
-        verbose_name="Type de partenaire", max_length=20, choices=PARTNER_KIND_CHOICES, blank=True
+        verbose_name="Type de partenaire", max_length=20, choices=user_constants.PARTNER_KIND_CHOICES, blank=True
     )
     partner_network = models.ForeignKey(
         "networks.Network",
@@ -246,7 +193,9 @@ class User(AbstractUser):
         default=False,
     )
 
-    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default=SOURCE_SIGNUP_FORM)
+    source = models.CharField(
+        max_length=20, choices=user_constants.SOURCE_CHOICES, default=user_constants.SOURCE_SIGNUP_FORM
+    )
 
     api_key = models.CharField(verbose_name="Clé API", max_length=128, unique=True, blank=True, null=True)
     api_key_last_updated = models.DateTimeField(

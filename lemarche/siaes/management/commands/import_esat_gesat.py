@@ -142,7 +142,7 @@ class Command(BaseCommand):
 
         # defaults
         esat["kind"] = siae_constants.KIND_ESAT
-        esat["source"] = Siae.SOURCE_ESAT
+        esat["source"] = siae_constants.SOURCE_ESAT
         esat["geo_range"] = siae_constants.GEO_RANGE_DEPARTMENT
 
         # basic fields
@@ -194,7 +194,9 @@ class Command(BaseCommand):
             esat["siret"], reason="Mise à jour donnéés Marché de la plateforme de l'Inclusion"
         )
         if etablissement:
-            esat["nature"] = Siae.NATURE_HEAD_OFFICE if etablissement["is_head_office"] else Siae.NATURE_ANTENNA
+            esat["nature"] = (
+                siae_constants.NATURE_HEAD_OFFICE if etablissement["is_head_office"] else siae_constants.NATURE_ANTENNA
+            )
             # esat["is_active"] = False if not etablissement["is_closed"] else True
             esat["api_entreprise_employees"] = etablissement["employees"]
             if etablissement["date_constitution"]:

@@ -3,9 +3,9 @@ from django.test import TestCase
 from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.tenders.factories import TenderFactory
+from lemarche.users import constants as user_constants
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
-from lemarche.utils import constants
 
 
 class UserModelTest(TestCase):
@@ -22,17 +22,17 @@ class UserModelTest(TestCase):
         self.assertEqual(user.full_name, "Paul Anploi")
 
     def test_kind_detail_display(self):
-        user_siae = UserFactory(kind=constants.USER_KIND_SIAE)
-        user_buyer = UserFactory(kind=constants.USER_KIND_BUYER)
-        user_buyer_public = UserFactory(kind=constants.USER_KIND_BUYER, buyer_kind=User.BUYER_KIND_PUBLIC)
+        user_siae = UserFactory(kind=user_constants.KIND_SIAE)
+        user_buyer = UserFactory(kind=user_constants.KIND_BUYER)
+        user_buyer_public = UserFactory(kind=user_constants.KIND_BUYER, buyer_kind=user_constants.BUYER_KIND_PUBLIC)
         user_buyer_private_pme = UserFactory(
-            kind=constants.USER_KIND_BUYER,
-            buyer_kind=User.BUYER_KIND_PRIVATE,
-            buyer_kind_detail=User.BUYER_KIND_DETAIL_PRIVATE_PME,
+            kind=user_constants.KIND_BUYER,
+            buyer_kind=user_constants.BUYER_KIND_PRIVATE,
+            buyer_kind_detail=user_constants.BUYER_KIND_DETAIL_PRIVATE_PME,
         )
-        user_partner = UserFactory(kind=constants.USER_KIND_PARTNER)
+        user_partner = UserFactory(kind=user_constants.KIND_PARTNER)
         user_partner_facilitator = UserFactory(
-            kind=constants.USER_KIND_PARTNER, partner_kind=User.PARTNER_KIND_FACILITATOR
+            kind=user_constants.KIND_PARTNER, partner_kind=user_constants.PARTNER_KIND_FACILITATOR
         )
         self.assertEqual(user_siae.kind_detail_display, "Structure")
         self.assertEqual(user_buyer.kind_detail_display, "Acheteur")

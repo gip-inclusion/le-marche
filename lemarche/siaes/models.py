@@ -544,34 +544,6 @@ class Siae(models.Model):
         "ca",
     ]
 
-    SOURCE_ASP = "ASP"
-    SOURCE_GEIQ = "GEIQ"
-    SOURCE_EA_EATT = "EA_EATT"
-    SOURCE_USER_CREATED = "USER_CREATED"
-    SOURCE_STAFF_C1_CREATED = "STAFF_C1_CREATED"
-    SOURCE_STAFF_C4_CREATED = "STAFF_C4_CREATED"
-    SOURCE_ESAT = "ESAT"
-    SOURCE_SEP = "SEP"
-
-    SOURCE_CHOICES = (
-        (SOURCE_ASP, "Export ASP"),
-        (SOURCE_GEIQ, "Export GEIQ"),
-        (SOURCE_EA_EATT, "Export EA+EATT"),
-        (SOURCE_USER_CREATED, "Utilisateur (Antenne)"),
-        (SOURCE_STAFF_C1_CREATED, "Staff C1"),
-        (SOURCE_STAFF_C4_CREATED, "Staff C4"),
-        (SOURCE_ESAT, "Import ESAT (GSAT, Handeco)"),
-        (SOURCE_SEP, "Import SEP"),
-    )
-
-    NATURE_HEAD_OFFICE = "HEAD_OFFICE"
-    NATURE_ANTENNA = "ANTENNA"
-
-    NATURE_CHOICES = (
-        (NATURE_HEAD_OFFICE, "Conventionné par la DREETS"),
-        (NATURE_ANTENNA, "Rattaché à un autre conventionnement"),
-    )
-
     DEPARTMENT_CHOICES = DEPARTMENTS_PRETTY.items()
     REGION_CHOICES = REGIONS_PRETTY.items()
 
@@ -589,7 +561,9 @@ class Siae(models.Model):
     siret = models.CharField(verbose_name="Siret", validators=[validate_siret], max_length=14, db_index=True)
     siret_is_valid = models.BooleanField(verbose_name="Siret Valide", default=False)
     naf = models.CharField(verbose_name="Naf", validators=[validate_naf], max_length=5, blank=True)
-    nature = models.CharField(verbose_name="Établissement", max_length=20, choices=NATURE_CHOICES, blank=True)
+    nature = models.CharField(
+        verbose_name="Établissement", max_length=20, choices=siae_constants.NATURE_CHOICES, blank=True
+    )
     presta_type = ChoiceArrayField(
         verbose_name="Type de prestation",
         base_field=models.CharField(max_length=20, choices=siae_constants.PRESTA_CHOICES),
@@ -792,7 +766,9 @@ class Siae(models.Model):
         "Date de remplissage (basique) de la fiche", blank=True, null=True
     )
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
-    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default=SOURCE_STAFF_C4_CREATED)
+    source = models.CharField(
+        max_length=20, choices=siae_constants.SOURCE_CHOICES, default=siae_constants.SOURCE_STAFF_C4_CREATED
+    )
     import_raw_object = models.JSONField(verbose_name="Donnée JSON brute", editable=False, null=True)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)

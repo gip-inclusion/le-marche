@@ -21,7 +21,7 @@ class TenderFactory(DjangoModelFactory):
     presta_type = []
     response_kind = factory.List(
         [
-            factory.fuzzy.FuzzyChoice([key for (key, _) in Tender.RESPONSE_KIND_CHOICES]),
+            factory.fuzzy.FuzzyChoice([key for (key, _) in tender_constants.RESPONSE_KIND_CHOICES]),
         ]
     )
     # presta_type = factory.List(

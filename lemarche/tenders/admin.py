@@ -14,7 +14,7 @@ from fieldsets_with_inlines import FieldsetsInlineMixin
 
 from lemarche.notes.models import Note
 from lemarche.perimeters.admin import PerimeterRegionFilter
-from lemarche.tenders import constants
+from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderStepsData
 from lemarche.utils.admin.admin_site import admin_site
@@ -68,7 +68,7 @@ class ResponseKindFilter(admin.SimpleListFilter):
     parameter_name = "response_kind"
 
     def lookups(self, request, model_admin):
-        return Tender.RESPONSE_KIND_CHOICES
+        return tender_constants.RESPONSE_KIND_CHOICES
 
     def queryset(self, request, queryset):
         lookup_value = self.value()
@@ -350,7 +350,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         """
         Default values in add form.
         """
-        return {"source": Tender.SOURCE_STAFF_C4_CREATED}
+        return {"source": tender_constants.SOURCE_STAFF_C4_CREATED}
 
     def lookup_allowed(self, lookup, *args, **kwargs):
         if lookup in [
@@ -369,7 +369,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             if obj.author_id and obj.author_id != request.user.id:
                 readonly_fields.append("status")
             # slug cannot be changed once the tender is validated
-            if obj.status == constants.STATUS_VALIDATED:
+            if obj.status == tender_constants.STATUS_VALIDATED:
                 readonly_fields.append("slug")
         return readonly_fields
 

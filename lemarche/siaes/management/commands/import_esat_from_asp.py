@@ -126,7 +126,7 @@ class Command(BaseCommand):
 
         # defaults
         esat["kind"] = siae_constants.KIND_ESAT
-        esat["source"] = Siae.SOURCE_ESAT
+        esat["source"] = siae_constants.SOURCE_ESAT
         esat["geo_range"] = siae_constants.GEO_RANGE_DEPARTMENT
 
         # basic fields

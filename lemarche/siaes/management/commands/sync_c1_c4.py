@@ -97,9 +97,9 @@ def map_siae_presta_type(siae_kind):
 def map_siae_nature(siae_source):
     if siae_source:
         if siae_source in ["ASP", "GEIQ", "EA_EATT"]:
-            return Siae.NATURE_HEAD_OFFICE
+            return siae_constants.NATURE_HEAD_OFFICE
         if siae_source == "USER_CREATED":
-            return Siae.NATURE_ANTENNA
+            return siae_constants.NATURE_ANTENNA
     return ""
 
 

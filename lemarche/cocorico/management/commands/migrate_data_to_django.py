@@ -56,13 +56,13 @@ USER_EXTRA_KEYS = [
     "company_addr_string",
 ]
 
-DIRECTORY_BOOLEAN_FIELDS = [field.name for field in Siae._meta.fields if type(field) == BooleanField]
-USER_BOOLEAN_FIELDS = [field.name for field in User._meta.fields if type(field) == BooleanField]
+DIRECTORY_BOOLEAN_FIELDS = [field.name for field in Siae._meta.fields if type(field) is BooleanField]
+USER_BOOLEAN_FIELDS = [field.name for field in User._meta.fields if type(field) is BooleanField]
 
-DIRECTORY_DATE_FIELDS = [field.name for field in Siae._meta.fields if type(field) == DateTimeField]
-NETWORK_DATE_FIELDS = [field.name for field in Network._meta.fields if type(field) == DateTimeField]
-SECTOR_DATE_FIELDS = [field.name for field in Sector._meta.fields if type(field) == DateTimeField]
-USER_DATE_FIELDS = [field.name for field in User._meta.fields if type(field) == DateTimeField]
+DIRECTORY_DATE_FIELDS = [field.name for field in Siae._meta.fields if type(field) is DateTimeField]
+NETWORK_DATE_FIELDS = [field.name for field in Network._meta.fields if type(field) is DateTimeField]
+SECTOR_DATE_FIELDS = [field.name for field in Sector._meta.fields if type(field) is DateTimeField]
+USER_DATE_FIELDS = [field.name for field in User._meta.fields if type(field) is DateTimeField]
 
 
 def integer_to_boolean(elem):
@@ -101,8 +101,8 @@ def make_aware_dates(elem):
 def map_siae_nature(input_value):
     if input_value:
         nature_mapping = {
-            "siege": Siae.NATURE_HEAD_OFFICE,
-            "antenne": Siae.NATURE_ANTENNA,
+            "siege": siae_constants.NATURE_HEAD_OFFICE,
+            "antenne": siae_constants.NATURE_ANTENNA,
             "n/a": None,
             None: None,
         }
@@ -625,7 +625,7 @@ class Command(BaseCommand):
                 # print("images missing", siae_listing)
                 error_count["listing_without_image"] += 1
             else:
-                for (index, siae_image) in enumerate(siae_listing["images"]):
+                for index, siae_image in enumerate(siae_listing["images"]):
                     siae_image_dict = siae_listing.copy() | siae_image
 
                     # rename fields
