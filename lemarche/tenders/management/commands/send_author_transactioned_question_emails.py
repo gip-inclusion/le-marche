@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.db.models import Q
 
 from lemarche.tenders.models import Tender
-from lemarche.www.tenders.tasks import send_tenders_author_30_days
+from lemarche.www.tenders.tasks import send_tenders_author_feedback_or_survey
 
 
 class Command(BaseCommand):
@@ -26,34 +26,37 @@ class Command(BaseCommand):
             "--all",
             dest="is_all_tenders",
             action="store_true",
-            help="Send to all tenders validated 30 days ago or more",
+            help="Send to all tenders with deadline_date 7 days ago",
         )
 
     def handle(self, kind=None, dry_run=False, is_all_tenders=False, **options):
         self.stdout.write("-" * 80)
-        self.stdout.write("Script to send email feedback for tenders...")
+        self.stdout.write("Script to send email transactioned_question for tenders...")
 
         self.stdout.write("-" * 80)
-        thirty_days_ago = datetime.today().date() - timedelta(days=30)
-        tenders_validated = Tender.objects.validated()
+        seven_days_ago = datetime.today().date() - timedelta(days=7)
+        # we first filter on validated tenders
+        tender_qs = Tender.objects.validated()
+        # we also filter on tenders who haven't answered to the email yet
+        tender_qs = tender_qs.filter(survey_transactioned_answer=None)
+        # optional filter on kind
         if kind:
-            tenders_validated = tenders_validated.filter(kind=kind)
+            tender_qs = tender_qs.filter(kind=kind)
+        # date filter
         if is_all_tenders:
-            #  all tenders validated 30 days ago or more
-            tenders_for_feedbacks = tenders_validated.filter(validated_at__date__lte=thirty_days_ago)
+            # all tenders with deadline_date 7 days or more
+            tender_qs = tender_qs.filter(deadline_date__lte=seven_days_ago)
         else:
-            # only tenders validated 30 days ago and up to 23/06/2022
+            # only tenders with deadline_date 7 days ago and up to 23/06/2022
             start_date_feature = datetime(2022, 6, 23).date()
-            tenders_for_feedbacks = tenders_validated.filter(
-                Q(validated_at__date=thirty_days_ago) & Q(validated_at__date__gte=start_date_feature)
-            )
+            tender_qs = tender_qs.filter(Q(deadline_date=seven_days_ago) & Q(deadline_date__gte=start_date_feature))
 
-        self.stdout.write(f"Found {tenders_for_feedbacks.count()} tenders")
+        self.stdout.write(f"Found {tender_qs.count()} tenders")
 
         if not dry_run:
-            for tender in tenders_for_feedbacks:
-                send_tenders_author_30_days(tender, kind="transactioned_question")
-            self.stdout.write(f"Sent {tenders_for_feedbacks.count()} J+30 feedbacks")
+            for tender in tender_qs:
+                send_tenders_author_feedback_or_survey(tender, kind="transactioned_question")
+            self.stdout.write(f"Sent {tender_qs.count()} J+30 feedbacks")
 
         self.stdout.write("-" * 80)
         self.stdout.write("Done!")

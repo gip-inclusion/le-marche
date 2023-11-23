@@ -490,7 +490,7 @@ def send_author_incremental_2_days_email(tender: Tender):
         tender.save()
 
 
-def send_tenders_author_30_days(tender: Tender, kind="feedback"):
+def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback"):
     email_subject = f"Suite à votre {tender.get_kind_display().lower()}"
     recipient_list = whitelist_recipient_list([tender.author.email])
     if recipient_list:
