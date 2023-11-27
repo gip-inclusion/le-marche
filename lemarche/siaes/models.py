@@ -1033,7 +1033,7 @@ class Siae(models.Model):
             return "l'ASP"
 
     @property
-    def completion_percent(self):
+    def completion_rate_calculated(self):
         score, total = 0, 0
         for key, value in siae_constants.SIAE_COMPLETION_SCORE_GRID.items():
             completion_item_kind = value[siae_constants.COMPLETION_KIND_KEY]
