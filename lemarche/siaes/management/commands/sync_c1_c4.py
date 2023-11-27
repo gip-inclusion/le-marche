@@ -2,7 +2,6 @@ import os
 import re
 from datetime import timedelta
 
-import requests
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.management.base import CommandError
@@ -11,14 +10,10 @@ from stdnum.fr import siret
 
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
-from lemarche.utils.apis import api_mailjet, api_slack
+from lemarche.utils.apis import api_emplois_inclusion, api_mailjet, api_slack
 from lemarche.utils.commands import BaseCommand
 from lemarche.utils.constants import DEPARTMENT_TO_REGION
 from lemarche.utils.data import rename_dict_key
-
-
-API_ENDPOINT = f"{settings.API_EMPLOIS_INCLUSION_URL}/marche"
-API_HEADERS = {"Authorization": f"Token {settings.API_EMPLOIS_INCLUSION_TOKEN}"}
 
 
 UPDATE_FIELDS = [
@@ -154,22 +149,9 @@ class Command(BaseCommand):
         self.stdout_messages_success(msg_success)
         api_slack.send_message_to_channel("\n".join(msg_success))
 
-    def c1_export(self):
+    def c1_export(self):  # noqa C901
         try:
-            c1_list_temp = list()
-            pagination = 0
-
-            # loop on API to fetch all the data
-            while True:
-                response = requests.get(f"{API_ENDPOINT}?page_size={pagination}", headers=API_HEADERS)
-                data = response.json()
-                if data["results"]:
-                    for siae in response.json()["results"]:
-                        c1_list_temp.append(siae)
-                if data["next"]:
-                    pagination += 1000
-                else:
-                    break
+            c1_list_temp = api_emplois_inclusion.get_siae_list()
 
             # clean fields
             c1_list_cleaned = list()
