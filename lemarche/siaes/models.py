@@ -525,7 +525,7 @@ class Siae(models.Model):
         "api_entreprise_ca_date_fin_exercice",
         "api_entreprise_exercice_last_sync_date",
     ]
-    READONLY_FIELDS_STATS = ["etablissement_count", "signup_date", "content_filled_basic_date"]
+    READONLY_FIELDS_STATS = ["etablissement_count", "signup_date", "content_filled_basic_date", "completion_rate"]
     READONLY_FIELDS = (
         READONLY_FIELDS_FROM_C1
         + READONLY_FIELDS_FROM_C2
@@ -765,6 +765,7 @@ class Siae(models.Model):
     content_filled_basic_date = models.DateTimeField(
         "Date de remplissage (basique) de la fiche", blank=True, null=True
     )
+    completion_rate = models.IntegerField("Taux de remplissage de sa fiche", blank=True, null=True)
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
     source = models.CharField(
         max_length=20, choices=siae_constants.SOURCE_CHOICES, default=siae_constants.SOURCE_STAFF_C4_CREATED
