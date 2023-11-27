@@ -6,7 +6,8 @@ from langchain.vectorstores import ElasticVectorSearch
 def siaes_similarity_search(search_text):
     # Create the HuggingFace Transformer
     model_name = "sentence-transformers/all-mpnet-base-v2"
-    hf = HuggingFaceEmbeddings(model_name=model_name)
+    model_kwargs = {"device": "cpu"}
+    hf = HuggingFaceEmbeddings(model_name=model_name, model_kwargs=model_kwargs)
 
     # Elasticsearch as a vector db
     url = (
