@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tenders", "0045_alter_tender_deadline_date_response_kind_not_required"),
     ]

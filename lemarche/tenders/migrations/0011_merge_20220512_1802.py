@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tenders", "0010_alter_tender_choice_plural_fix"),
         ("tenders", "0010_tender_is_country_area_alter_tender_perimeters"),

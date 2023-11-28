@@ -23,7 +23,6 @@ class Command(BaseCommand):
     help = "Create a JSON file with all departments of France."
 
     def handle(self, **options):
-
         url = f"{settings.API_GEO_BASE_URL}/departements"
 
         r = requests.get(url)

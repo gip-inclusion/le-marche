@@ -6,7 +6,6 @@ import lemarche.utils.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0060_siae_labels_m2m"),
     ]

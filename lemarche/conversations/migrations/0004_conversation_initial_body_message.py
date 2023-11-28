@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("conversations", "0003_alter_conversation_options_conversation_email_sender_and_more"),
     ]

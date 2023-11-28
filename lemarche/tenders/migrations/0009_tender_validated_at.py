@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tenders", "0008_alter_tender_author_alter_tender_response_kind"),
     ]

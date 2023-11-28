@@ -6,7 +6,6 @@ import lemarche.utils.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tenders", "0026_tender_is_marche_useful_tender_marche_benefits"),
     ]

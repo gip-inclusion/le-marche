@@ -8,7 +8,6 @@ import lemarche.utils.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("tenders", "0007_alter_tender_kind"),

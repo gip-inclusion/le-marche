@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("labels", "0001_initial"),
         ("siaes", "0058_siaelabel_old"),

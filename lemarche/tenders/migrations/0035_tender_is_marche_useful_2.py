@@ -18,7 +18,6 @@ def set_marche_is_useful_reverse(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tenders", "0034_tender_siae_transactioned"),
     ]

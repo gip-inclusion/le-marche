@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("companies", "0001_initial"),
         ("users", "0025_user_user_email_ci_uniqueness"),

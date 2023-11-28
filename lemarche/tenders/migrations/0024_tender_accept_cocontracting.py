@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tenders", "0023_alter_partnersharetender_amount_in_and_more"),
     ]

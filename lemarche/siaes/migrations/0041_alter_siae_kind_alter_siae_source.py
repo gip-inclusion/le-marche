@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0040_siae_api_zrr_last_sync_date_siae_is_zrr_and_more"),
     ]

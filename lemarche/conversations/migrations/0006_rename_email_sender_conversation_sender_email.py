@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("conversations", "0005_remove_conversation_uuid"),
     ]

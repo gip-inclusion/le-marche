@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("api", "0007_migrate_siae_model_to_siae_app"),
         ("siaes", "0005_alter_siae_sectors"),

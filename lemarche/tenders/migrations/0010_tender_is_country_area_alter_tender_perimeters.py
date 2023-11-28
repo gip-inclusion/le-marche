@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("perimeters", "0005_alter_perimeter_post_codes"),
         ("tenders", "0009_tender_validated_at"),

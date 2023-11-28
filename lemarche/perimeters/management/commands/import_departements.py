@@ -54,11 +54,9 @@ class Command(BaseCommand):
         self.set_logger(options.get("verbosity"))
 
         with open(DEPARTMENTS_JSON_FILE, "r") as raw_json_data:
-
             json_data = json.load(raw_json_data)
 
             for i, item in enumerate(json_data):
-
                 name = item["nom"]
                 insee_code = item["code"]
 

@@ -18,7 +18,6 @@ def read_csv(file_path):
     with open(file_path) as csv_file:
         csvreader = csv.DictReader(csv_file, delimiter=",")
         for index, row in enumerate(csvreader):
-
             siae_group_list.append(row)
 
     return siae_group_list
