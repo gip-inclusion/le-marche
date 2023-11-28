@@ -4,7 +4,8 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.firefox.service import Service as FirefoxService
 from selenium.webdriver.support.select import Select
 
 from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
@@ -69,6 +70,18 @@ PARTNER_2 = {
 }
 
 
+def setup_selenium_browser():
+    options = FirefoxOptions()
+    options.add_argument("-headless")
+    try:
+        driver = webdriver.Firefox(options=options)
+    except:  # selenium.common.exceptions.InvalidArgumentException: Message: binary is not a Firefox executable  # noqa
+        service = FirefoxService(executable_path="/snap/bin/geckodriver")
+        driver = webdriver.Firefox(options=options, service=service)
+    # driver = webdriver.Chrome(executable_path='/usr/bin/chromedriver')
+    return driver
+
+
 def scroll_to_and_click_element(driver, element, click=True, sleep_time=1):
     """
     Helper to avoid some errors with selenium
@@ -91,10 +104,8 @@ class SignupFormTest(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        # selenium browser  # TODO: make it test-wide
-        options = Options()
-        options.add_argument("-headless")
-        cls.driver = webdriver.Firefox(options=options)
+        # selenium browser
+        cls.driver = setup_selenium_browser()
         cls.driver.implicitly_wait(1)
         # other init
         cls.user_count = User.objects.count()
@@ -127,7 +138,7 @@ class SignupFormTest(StaticLiveServerTestCase):
             submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
             scroll_to_and_click_element(self.driver, submit_element)
 
-    def _assert_signup_success(self, redirect_url: str) -> list:
+    def _assert_signup_success(self, redirect_url: str, with_content=True) -> list:
         """Assert the success signup and returns the sucess messages
 
         Args:
@@ -138,16 +149,17 @@ class SignupFormTest(StaticLiveServerTestCase):
         """
         # should create User
         self.assertEqual(User.objects.count(), self.user_count + 1)
-        # user should be automatically logged in
-        header = self.driver.find_element(By.CSS_SELECTOR, "header#header")
-        self.assertTrue("Mon espace" in header.text)
-        self.assertTrue("Connexion" not in header.text)
-        # should redirect to redirect_url
-        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{redirect_url}")
-        # message should be displayed
-        messages = self.driver.find_element(By.CSS_SELECTOR, "div.messages")
-        self.assertTrue("Inscription validée" in messages.text)
-        return messages
+        if with_content:
+            # user should be automatically logged in
+            header = self.driver.find_element(By.CSS_SELECTOR, "header#header")
+            self.assertTrue("Mon espace" in header.text)
+            self.assertTrue("Connexion" not in header.text)
+            # should redirect to redirect_url
+            self.assertEqual(self.driver.current_url, f"{self.live_server_url}{redirect_url}")
+            # message should be displayed
+            messages = self.driver.find_element(By.CSS_SELECTOR, "div.messages")
+            self.assertTrue("Inscription validée" in messages.text)
+            return messages
 
     def test_siae_submits_signup_form_success(self):
         self._complete_form(user_profile=SIAE.copy(), with_submit=True)
@@ -210,17 +222,17 @@ class SignupFormTest(StaticLiveServerTestCase):
         # should not submit form (position field is required)
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
-    # TODO: problem with this test
-    # def test_partner_submits_signup_form_success(self):
-    #     self._complete_form(user_profile=PARTNER, with_submit=False)
-    #     partner_kind_option_element = self.driver.find_element(
-    #         By.XPATH, "//select[@id='id_partner_kind']/option[text()='Réseaux IAE']"
-    #     )
-    #     scroll_to_and_click_element(self.driver, partner_kind_option_element, sleep_time=10)
-    #     submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
-    #     scroll_to_and_click_element(self.driver, submit_element)
+    def test_partner_submits_signup_form_success(self):
+        self._complete_form(user_profile=PARTNER, with_submit=False)
 
-    #     self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)))
+        partner_kind_select_element = self.driver.find_element(By.CSS_SELECTOR, "select#id_partner_kind")
+        partner_kind_select = Select(partner_kind_select_element)
+        scroll_to_and_click_element(self.driver, partner_kind_select_element, click=False)
+        partner_kind_select.select_by_visible_text("Réseaux IAE")
+        submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
+        scroll_to_and_click_element(self.driver, submit_element)
+
+        self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)), with_content=False)
 
     def test_partner_submits_signup_form_error(self):
         user_profile = PARTNER.copy()
@@ -253,9 +265,8 @@ class LoginFormTest(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        options = Options()
-        options.add_argument("-headless")
-        cls.driver = webdriver.Firefox(options=options)
+        # selenium browser
+        cls.driver = setup_selenium_browser()
         cls.driver.implicitly_wait(1)
 
     def test_siae_user_can_sign_in_and_is_redirected_to_dashboard(self):
