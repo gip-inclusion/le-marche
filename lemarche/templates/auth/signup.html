@@ -53,6 +53,7 @@
                         <hr>
                         <fieldset id="infoStructuresFieldset" class="d-none">
                             <legend>Informations structure</legend>
+                            {% bootstrap_field form.buyer_kind_detail form_group_class="buyer-kind-detail-form-group form-group form-group-required d-none" %}
                             {% bootstrap_field form.partner_kind form_group_class="partner-kind-form-group form-group form-group-required d-none" %}
                             {% bootstrap_field form.company_name form_group_class="company-name-form-group form-group form-group-required d-none" %}
                             {% bootstrap_field form.position form_group_class="position-form-group form-group form-group-required d-none" %}
@@ -113,15 +114,17 @@
  *      - add survey checkbox
  * - if the user is BUYER:
  *      - make phone field required
+ *      - add buyer_kind_detail field (and make it required)
  *      - add position field (and make it required)
  *      - add survey checkbox for newsletter
  */
 document.addEventListener('DOMContentLoaded', function() {
     let phoneInput = document.getElementById('id_phone');
-    let companyNameSiaeFormGroupDiv = document.getElementsByClassName('company-name-siae-form-group')[0];
-    let companyNameInput = document.getElementById('id_company_name');
-    let positionInput = document.getElementById('id_position');
+    let buyerKindDetailInput = document.getElementById('id_buyer_kind_detail');
     let partnerKindInput = document.getElementById('id_partner_kind');
+    let companyNameInput = document.getElementById('id_company_name');
+    let companyNameSiaeFormGroupDiv = document.getElementsByClassName('company-name-siae-form-group')[0];
+    let positionInput = document.getElementById('id_position');
     let acceptSurveyInput = document.getElementById('id_accept_survey');
     let acceptShareContactInput = document.getElementById('id_accept_share_contact_to_external_partners');
     let statsSignupBuyerContent = document.getElementById('statsSignupBuyer');
@@ -143,11 +146,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (radio.value === 'BUYER') {
+            toggleInputElement(true, element=buyerKindDetailInput, required=true);
             toggleInputElement(true, element=positionInput, required=true);
             toggleInputElement(true, element=phoneInput, required=true);
             statsSignupBuyerContent.classList.remove('d-none');
             toggleInputElement(true, element=sectorsInput, required=false);
         } else {
+            toggleInputElement(false, element=buyerKindDetailInput, required=false);
             toggleInputElement(false, element=positionInput, required=false);
             toggleInputElement(true, element=phoneInput, required=false);
             statsSignupBuyerContent.classList.add('d-none');
