@@ -86,10 +86,7 @@ class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, SuccessMessa
                 logs=[{"action": "create", "timestamp": timezone.now().isoformat()}],
             )
             send_siae_user_request_email_to_assignee(siae_user_request)
-            success_message = (
-                f"La demande a été envoyée à {self.object.users.first().full_name}.<br />"
-                f"<i>Cet utilisateur ne fait plus partie de la structure ? <a href=\"{reverse_lazy('pages:contact')}?siret={self.object.siret}\">Contactez le support</a></i>"  # noqa
-            )
+            success_message = f"La demande a été envoyée à {self.object.users.first().full_name}."
             messages.add_message(self.request, messages.SUCCESS, success_message)
             return HttpResponseRedirect(reverse_lazy("dashboard:home"))
 
