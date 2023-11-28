@@ -27,8 +27,5 @@ class EmailItemSerializer(serializers.Serializer):
     Headers = serializers.DictField()
 
 
-ATTRIBUTES_TO_SAVE_FOR_INBOUND = ["From", "To", "CC", "ReplyTo", "SentAtDate", "Attachments"]
-
-
 class EmailsSerializer(serializers.Serializer):
     items = serializers.ListField(child=EmailItemSerializer())

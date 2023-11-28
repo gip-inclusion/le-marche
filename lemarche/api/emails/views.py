@@ -4,7 +4,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from lemarche.api.emails.serializers import ATTRIBUTES_TO_SAVE_FOR_INBOUND, EmailsSerializer
+from lemarche.api.emails.serializers import EmailsSerializer
+from lemarche.conversations.constants import ATTRIBUTES_TO_SAVE_FOR_INBOUND
 from lemarche.conversations.models import Conversation
 from lemarche.conversations.utils import get_info_from_email_prefix
 from lemarche.www.conversations.tasks import send_email_from_conversation
