@@ -253,6 +253,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "label_count_with_link",
                     "client_reference_count_with_link",
                     "image_count_with_link",
+                    "completion_rate",
                 )
             },
         ),

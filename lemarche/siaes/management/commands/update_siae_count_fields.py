@@ -14,6 +14,7 @@ SIAE_COUNT_FIELDS = [
     "label_count",
     "image_count",
     "etablissement_count",
+    "completion_rate",
 ]
 
 
@@ -67,6 +68,8 @@ class Command(BaseCommand):
             # etablissement_count
             if siae.is_active and siae.siren:
                 siae.etablissement_count = siae_utils.calculate_etablissement_count(siae)
+            # completion_rate
+            siae.completion_rate = siae.completion_rate_calculated
 
             # Step 3: update count fields
             siae.save(update_fields=update_fields)
