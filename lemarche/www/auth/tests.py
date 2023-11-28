@@ -5,6 +5,7 @@ from django.urls import reverse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.support.select import Select
 
 from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
@@ -27,6 +28,7 @@ BUYER = {
     "first_name": "Prenom",
     "last_name": "Nom",
     "phone": "012345678",
+    # "buyer_kind_detail": "PRIVATE_BIG_CORP",
     "company_name": "Ma boite",
     "position": "Role important",
     "email": "buyer@example.com",
@@ -43,8 +45,8 @@ PARTNER = {
     "first_name": "Prenom",
     "last_name": "Nom",
     "phone": "012345678",  # not required
-    "company_name": "Ma boite",
     # "partner_kind": "RESEAU_IAE",
+    "company_name": "Ma boite",
     "email": "partner@example.com",
     "password1": "Erls92#32",
     "password2": "Erls92#32",
@@ -57,8 +59,8 @@ PARTNER_2 = {
     "first_name": "Prenom",
     "last_name": "Nom",
     "phone": "012345678",  # not required
-    "company_name": "Ma boite",
     # "partner_kind": "RESEAU_IAE",
+    "company_name": "Ma boite",
     "email": "partner2@example.com",
     "password1": "Erls92#32",
     "password2": "Erls92#32",
@@ -67,7 +69,7 @@ PARTNER_2 = {
 }
 
 
-def scroll_to_and_click_element(driver, element, sleep_time=1):
+def scroll_to_and_click_element(driver, element, click=True, sleep_time=1):
     """
     Helper to avoid some errors with selenium
     - selenium.common.exceptions.ElementNotInteractableException
@@ -78,10 +80,11 @@ def scroll_to_and_click_element(driver, element, sleep_time=1):
     driver.execute_script("arguments[0].scrollIntoView();", element)
     # small pause
     time.sleep(sleep_time)
-    try:
-        element.click()
-    except:  # noqa # selenium.common.exceptions.ElementClickInterceptedException
-        driver.execute_script("arguments[0].click();", element)
+    if click:
+        try:
+            element.click()
+        except:  # noqa # selenium.common.exceptions.ElementClickInterceptedException
+            driver.execute_script("arguments[0].click();", element)
 
 
 class SignupFormTest(StaticLiveServerTestCase):
@@ -165,7 +168,15 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
     def test_buyer_submits_signup_form_success(self):
-        self._complete_form(user_profile=BUYER, with_submit=True)
+        self._complete_form(user_profile=BUYER, with_submit=False)
+
+        buyer_kind_detail_select_element = self.driver.find_element(By.CSS_SELECTOR, "select#id_buyer_kind_detail")
+        buyer_kind_detail_select = Select(buyer_kind_detail_select_element)
+        scroll_to_and_click_element(self.driver, buyer_kind_detail_select_element, click=False)
+        buyer_kind_detail_select.select_by_visible_text("Grand groupe (+5000 salariés)")
+
+        submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
+        scroll_to_and_click_element(self.driver, submit_element)
 
         # should redirect BUYER to search
         self._assert_signup_success(redirect_url=reverse("siae:search_results"))
