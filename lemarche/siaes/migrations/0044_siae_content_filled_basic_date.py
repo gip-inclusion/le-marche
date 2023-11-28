@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0043_siae_c2_etp_count_siae_c2_etp_count_date_saisie_and_more"),
     ]

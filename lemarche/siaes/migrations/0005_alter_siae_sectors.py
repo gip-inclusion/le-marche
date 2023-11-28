@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("sectors", "0002_sector"),
         ("siaes", "0004_siae_networks"),

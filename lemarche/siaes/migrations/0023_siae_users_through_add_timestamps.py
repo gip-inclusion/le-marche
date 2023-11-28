@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0022_siae_users_m2m_add_through"),
     ]

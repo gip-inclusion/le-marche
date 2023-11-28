@@ -30,7 +30,7 @@ def export_as_xls(self, request, queryset):
     headers = ExportAction.generate_header(self, self.model, field_names)
     row_number = 0
     # write header
-    for (index, header_item) in enumerate(headers):
+    for index, header_item in enumerate(headers):
         ws.write(row_number, index, header_item, font_style)
     # write content queryset
     for obj in queryset:

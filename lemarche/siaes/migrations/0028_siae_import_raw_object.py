@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0027_alter_siae_kind_source_choices"),
     ]

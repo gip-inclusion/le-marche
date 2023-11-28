@@ -93,9 +93,8 @@ class SignupFormTest(StaticLiveServerTestCase):
         super().setUpClass()
         # selenium browser  # TODO: make it test-wide
         options = Options()
-        options.headless = True
+        options.add_argument("-headless")
         cls.driver = webdriver.Firefox(options=options)
-        # cls.driver = webdriver.Chrome(executable_path='/usr/bin/chromedriver')
         cls.driver.implicitly_wait(1)
         # other init
         cls.user_count = User.objects.count()
@@ -255,7 +254,7 @@ class LoginFormTest(StaticLiveServerTestCase):
     def setUpClass(cls):
         super().setUpClass()
         options = Options()
-        options.headless = True
+        options.add_argument("-headless")
         cls.driver = webdriver.Firefox(options=options)
         cls.driver.implicitly_wait(1)
 

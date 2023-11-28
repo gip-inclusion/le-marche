@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("perimeters", "0005_alter_perimeter_post_codes"),
         ("tenders", "0012_tender_siae_interested_list_last_seen_date"),

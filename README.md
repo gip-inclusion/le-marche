@@ -7,22 +7,22 @@
 
 Voici un tableau explicatif de la nomenclature utilisée dans le code (par rapport à l'application)
 
-|Dans le métier|Dans le code|
-|--------------|------------|
-|Appel d'offres|Tender      |
-|Demande de devis|Quote       |
-|Sourcing      |Project     |
-|Liste de favoris|Favorite list|
-|Structure     |Siae        |
-|Utilisateur   |User|
-|Réseau        |Network|
-|Demande de rattachement|User request|
-|Prestation    |Offer|
-|Référence client|Client reference|
-|Label & certification|Label|
-|Secteur d'activité|Sector|
-|Groupe de secteurs d'activité|Sector group|
-|Périmètre|Perimeter|
+|Dans le métier               |Dans le code    |
+|-----------------------------|----------------|
+|Appel d'offres               |Tender          |
+|Demande de devis             |Quote           |
+|Sourcing                     |Project         |
+|Liste de favoris             |Favorite list   |
+|Structure                    |Siae            |
+|Utilisateur                  |User            |
+|Réseau                       |Network         |
+|Demande de rattachement      |User request    |
+|Prestation                   |Offer           |
+|Référence client             |Client reference|
+|Label & certification        |Label           |
+|Secteur d'activité           |Sector          |
+|Groupe de secteurs d'activité|Sector group    |
+|Périmètre                    |Perimeter       |
 
 ## Installation
 
@@ -103,7 +103,6 @@ Après création du fichier `env.docker.local` :
 
  # Effacement complet des images dockers
  > ./scripts/delete_docker.sh
-
 ```
 
 #### Lancement Dockerfile
@@ -172,6 +171,13 @@ $ poetry run python manage.py migrate
 Le repo suit le workflow [par branche de fonctionnalité](https://www.atlassian.com/fr/git/tutorials/comparing-workflows/feature-branch-workflow), et un [versionnage sémantique](CHANGELOG.md).
 
 ### Qualité du code
+
+Mettre en place le `pre-commit` :
+
+```bash
+poetry run pre-commit install
+poetry run pre-commit run
+```
 
 Le projet utilise flake8, isort et black pour assurer la standardisation des écritures.
 Poetry est configuré pour en faciliter l'utilisation.

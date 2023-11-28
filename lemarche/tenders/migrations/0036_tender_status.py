@@ -16,7 +16,6 @@ def set_tender_status_reverse(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tenders", "0035_tender_is_marche_useful_2"),
     ]

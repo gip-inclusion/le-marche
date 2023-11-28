@@ -12,7 +12,6 @@ def slugify_name(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("networks", "0002_network_slug"),
     ]

@@ -5,7 +5,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0014_update_siae_perimeter_choices"),
     ]

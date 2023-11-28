@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0036_alter_siae_api_entreprise_date_constitution"),
     ]

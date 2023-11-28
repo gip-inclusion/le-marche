@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("perimeters", "0002_perimeter_name_gin_index"),
     ]

@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0055_alter_siae_is_active_alter_siae_is_delisted_and_more"),
     ]

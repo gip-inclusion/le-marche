@@ -61,7 +61,6 @@ def update_amount(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tenders", "0020_add_help_text"),
     ]

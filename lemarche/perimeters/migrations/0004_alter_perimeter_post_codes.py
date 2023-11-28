@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("perimeters", "0003_avoid_null_on_charfields"),
     ]

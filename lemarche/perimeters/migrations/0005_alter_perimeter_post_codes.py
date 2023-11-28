@@ -6,7 +6,6 @@ import lemarche.utils.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("perimeters", "0004_alter_perimeter_post_codes"),
     ]

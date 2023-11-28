@@ -6,7 +6,6 @@ import lemarche.utils.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("siaes", "0053_siae_contact_social_website_and_more"),
     ]

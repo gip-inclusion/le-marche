@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("tenders", "0039_tender_siae_rename_contact_click_date"),
     ]

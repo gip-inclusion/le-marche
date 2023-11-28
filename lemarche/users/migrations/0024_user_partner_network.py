@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("networks", "0004_alter_network_slug"),
         ("users", "0023_user_buyer_kind_detail"),
