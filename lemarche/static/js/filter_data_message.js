@@ -1,8 +1,8 @@
 function filterData(data, filterText) {
     return data.filter(item => {
-        const from = `${item.items[0].From.Name} || ${item.items[0].From.Address}`;
-        const to = item.items[0].To[0].Address;
-        const RawHtmlBody = item.items[0].RawHtmlBody;
+        const from = `${item.From.Name} || ${item.From.Address}`;
+        const to = item.To[0].Address;
+        const RawHtmlBody = item.RawHtmlBody;
         // filter fields
         return from.includes(filterText) || to.includes(filterText) || RawHtmlBody.includes(filterText);
     });
@@ -11,14 +11,14 @@ function filterData(data, filterText) {
 // Fonction pour générer les lignes du tableau HTML
 function generateTableRows(filteredData) {
     const rows = filteredData.map(item => {
-        const sendAt = new Date(item.items[0].SentAtDate).strftime('%d/%m/%Y %Hh%M');
-        const from = `${item.items[0].From.Name} - ${item.items[0].From.Address}`;
-        const RawHtmlBody = item.items[0].RawHtmlBody ? item.items[0].RawHtmlBody : item.items[0].RawTextBody;
+        const sendAt = new Date(item.SentAtDate).strftime('%d/%m/%Y %Hh%M');
+        const from = `${item.From.Name} - ${item.From.Address}`;
+        const attachementsCount = item.Attachments ? item.Attachments.length : 0;
 
         return `<tr>
                     <td>${sendAt}</td>
                     <td>${from}</td>
-                    <td>${RawHtmlBody}</td>
+                    <td>${attachementsCount}</td>
                 </tr>`;
     });
 
@@ -35,7 +35,14 @@ function init() {
     // const filteredData = filterData(rawData, filterText);
 
     // generate rows
-    const tableRows = generateTableRows(rawData);
+    const headTable = `
+        <tr>
+            <th scope="col">Date d'envoi</th>
+            <th scope="col">Expéditeur</th>
+            <th scope="col">Nombre de PJ</th>
+        </tr>
+    `;
+    const tableRows = headTable + generateTableRows(rawData);
 
     // insert rows
     dataTableBody.innerHTML = tableRows;
