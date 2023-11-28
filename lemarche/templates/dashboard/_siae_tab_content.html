@@ -12,7 +12,7 @@
             </span>
             <h2 class="mb-0">{{ siae.name_display }}</h2>
         </div>
-        {% include "includes/_completion_progress_bar.html" with completion_percent=siae.completion_percent %}
+        {% include "includes/_completion_progress_bar.html" with completion_percent=siae.completion_rate_calculated %}
     </div>
     <div class="col-12 col-md-auto ml-auto d-flex flex-column">
         <a href="{% url 'dashboard_siaes:siae_edit' siae.slug %}" id="dashboard-siae-edit-btn" class="btn btn-important btn-sm btn-ico mb-2">

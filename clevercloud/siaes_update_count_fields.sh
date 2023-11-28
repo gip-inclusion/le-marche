@@ -20,4 +20,4 @@ fi
 cd $APP_HOME
 
 # django-admin update_siae_count_fields
-django-admin update_siae_count_fields --fields etablissement_count
+django-admin update_siae_count_fields --fields etablissement_count --fields completion_rate

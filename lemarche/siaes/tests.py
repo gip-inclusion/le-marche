@@ -134,7 +134,7 @@ class SiaeModelTest(TestCase):
 
     def test_is_missing_content_property(self):
         siae_missing: Siae = SiaeFactory(name="Ma boite", contact_email="")
-        score_completion_before = siae_missing.completion_percent
+        score_completion_before = siae_missing.completion_rate_calculated
         self.assertTrue(siae_missing.is_missing_content)
         siae_full: Siae = SiaeFactory(
             name="Ma boite",
@@ -143,15 +143,15 @@ class SiaeModelTest(TestCase):
             contact_phone="0000000000",
             description="test",
         )
-        self.assertTrue(score_completion_before < siae_full.completion_percent)
-        score_completion_before = siae_full.completion_percent
+        self.assertTrue(score_completion_before < siae_full.completion_rate_calculated)
+        score_completion_before = siae_full.completion_rate_calculated
         sector = SectorFactory()
         siae_full.sectors.add(sector)
         SiaeOfferFactory(siae=siae_full)
         SiaeLabelOldFactory(siae=siae_full)
         siae_full.save()  # to update stats
         self.assertFalse(siae_full.is_missing_content)
-        self.assertTrue(score_completion_before < siae_full.completion_percent)
+        self.assertTrue(score_completion_before < siae_full.completion_rate_calculated)
 
         siae_full_2: Siae = SiaeFactory(
             name="Ma boite",
