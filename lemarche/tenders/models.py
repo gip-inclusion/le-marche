@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from uuid import uuid4
 
 from django.conf import settings
@@ -57,6 +57,17 @@ class TenderQuerySet(models.QuerySet):
 
     def has_amount(self):
         return self.filter(Q(amount__isnull=False) | Q(amount_exact__isnull=False))
+
+    def transaction_survey_email(self, kind=None, all=False):
+        seven_days_ago = datetime.today().date() - timedelta(days=7)
+        qs = self.validated().filter(survey_transactioned_answer=None)
+        if kind:
+            qs = qs.filter(kind=kind)
+        if all:
+            qs = qs.filter(deadline_date__lte=seven_days_ago)
+        else:
+            qs = qs.filter(deadline_date=seven_days_ago)
+        return qs
 
     def in_perimeters(self, post_code, department, region):
         filters = (

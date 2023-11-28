@@ -19,4 +19,4 @@ fi
 # $APP_HOME is set by default by clever cloud.
 cd $APP_HOME
 
-django-admin send_author_transactioned_question_emails --kind QUOTE
+django-admin send_author_transactioned_question_emails
