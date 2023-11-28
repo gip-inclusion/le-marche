@@ -5,12 +5,28 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from lemarche.api.emails.serializers import EmailsSerializer
+from lemarche.conversations.constants import ATTRIBUTES_TO_SAVE_FOR_INBOUND
 from lemarche.conversations.models import Conversation
 from lemarche.conversations.utils import get_info_from_email_prefix
 from lemarche.www.conversations.tasks import send_email_from_conversation
 
 
 logger = logging.getLogger(__name__)
+
+
+def clean_saved_data_of_inbound(data_inbound: dict):
+    """We clean saved data to respect the law of RGPD
+
+    Args:
+        data_inbound (dict): all data that we receive from inbound api
+
+    Returns:
+        dict with only neccessary key to save
+    """
+    clean_saved_data = {}
+    for key in ATTRIBUTES_TO_SAVE_FOR_INBOUND:
+        clean_saved_data[key] = data_inbound.get(key)
+    return clean_saved_data
 
 
 class InboundParsingEmailView(APIView):
@@ -23,7 +39,8 @@ class InboundParsingEmailView(APIView):
             version, conv_uuid, user_kind = get_info_from_email_prefix(inbound_email_prefix)
             conv: Conversation = Conversation.objects.get_conv_from_uuid(conv_uuid=conv_uuid, version=version)
             # save the input data
-            conv.data.append(serializer.data)
+            data_inbound_clean = clean_saved_data_of_inbound(data_inbound=serializer.data.get("items")[0])
+            conv.data.append(data_inbound_clean)
             conv.save()
             # find user_kind
             if version >= 1:
