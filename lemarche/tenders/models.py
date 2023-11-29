@@ -296,6 +296,15 @@ class Tender(models.Model):
         blank=True,
         help_text="Ajoutez un ou plusieurs lieux d'exécutions",
     )
+    location_distance = models.IntegerField(
+        verbose_name="Distance en kilomètres autour du lieu d'intervention",
+        blank=True,
+        null=True,
+        help_text=(
+            "Si vous décidez de faire un ciblage en km, vérifiez que le lieu d’intervention est bien renseigné et est "
+            "une ville et que le kilométrage indiqué correspond à la réalité du besoin et des prestataires en face"
+        ),
+    )
     include_country_area = models.BooleanField(
         verbose_name="Inclure les structures qui ont comme périmètre d'intervention 'France entière' ?",
         help_text="Laisser vide pour exclure les structures qui ont comme périmètre d'intervention 'France entière'",
