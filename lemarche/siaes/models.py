@@ -346,7 +346,15 @@ class SiaeQuerySet(models.QuerySet):
         if tender.is_country_area:  # for all country
             qs = qs.with_country_geo_range()
         else:
-            if tender.perimeters.count() and tender.include_country_area:  # perimeters and all country
+            # radius in tender.distance_location km around the given city
+            if (
+                tender.location
+                and tender.location.kind == Perimeter.KIND_CITY
+                and tender.distance_location
+                and tender.distance_location > 0
+            ):
+                qs = qs.within(tender.location.coords, tender.distance_location)
+            elif tender.perimeters.count() and tender.include_country_area:  # perimeters and all country
                 qs = qs.geo_range_in_perimeter_list(
                     tender.perimeters.all(), with_country=False, include_country_area=True
                 )
