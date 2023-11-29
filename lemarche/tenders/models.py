@@ -296,7 +296,7 @@ class Tender(models.Model):
         blank=True,
         help_text="Ajoutez un ou plusieurs lieux d'exécutions",
     )
-    location_distance = models.IntegerField(
+    distance_location = models.IntegerField(
         verbose_name="Distance en kilomètres autour du lieu d'intervention",
         blank=True,
         null=True,
