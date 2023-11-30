@@ -9,7 +9,7 @@ from lemarche.www.tenders.tasks import send_author_incremental_2_days_email
 
 class Command(BaseCommand):
     """
-    Daily script to check recently validated Tenders. If incremental, then contact author
+    Daily script to check recently sent Tenders. If incremental, then contact author
     When? J+2
 
     Usage:
@@ -25,21 +25,21 @@ class Command(BaseCommand):
         self.stdout.write("Script to send Tender incremental emails...")
 
         self.stdout.write("-" * 80)
-        self.stdout.write("Step 1: Find Tender validated J+2")
+        self.stdout.write("Step 1: Find Tender sent J+2")
         two_days_ago = timezone.now() - timedelta(days=2)
         three_days_ago = timezone.now() - timedelta(days=3)
-        tender_validated_incremental = Tender.objects.validated().is_incremental()
-        tender_validated_incremental_2_days = tender_validated_incremental.filter(
-            created_at__gte=three_days_ago
-        ).filter(created_at__lt=two_days_ago)
-        self.stdout.write(f"Found {tender_validated_incremental_2_days.count()} Tenders")
+        tender_sent_incremental = Tender.objects.sent().is_incremental()
+        tender_sent_incremental_2_days = tender_sent_incremental.filter(created_at__gte=three_days_ago).filter(
+            created_at__lt=two_days_ago
+        )
+        self.stdout.write(f"Found {tender_sent_incremental_2_days.count()} Tenders")
 
         if not dry_run:
             self.stdout.write("-" * 80)
             self.stdout.write("Step 2: Send emails")
-            for tender in tender_validated_incremental_2_days:
+            for tender in tender_sent_incremental_2_days:
                 send_author_incremental_2_days_email(tender)
-            self.stdout.write(f"Sent {tender_validated_incremental_2_days.count()} J+2 emails")
+            self.stdout.write(f"Sent {tender_sent_incremental_2_days.count()} J+2 emails")
 
         self.stdout.write("-" * 80)
         self.stdout.write("Done!")

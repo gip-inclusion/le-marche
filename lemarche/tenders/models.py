@@ -44,6 +44,9 @@ class TenderQuerySet(models.QuerySet):
     def validated(self):
         return self.filter(validated_at__isnull=False)
 
+    def sent(self):
+        return self.filter(sent_at__isnull=False)
+
     def is_incremental(self):
         return self.filter(
             scale_marche_useless__in=[
@@ -53,14 +56,14 @@ class TenderQuerySet(models.QuerySet):
         )
 
     def is_live(self):
-        return self.validated().filter(deadline_date__gte=datetime.today())
+        return self.sent().filter(deadline_date__gte=datetime.today())
 
     def has_amount(self):
         return self.filter(Q(amount__isnull=False) | Q(amount_exact__isnull=False))
 
     def transaction_survey_email(self, kind=None, all=False):
         seven_days_ago = datetime.today().date() - timedelta(days=7)
-        qs = self.validated().filter(survey_transactioned_answer=None)
+        qs = self.sent().filter(survey_transactioned_answer=None)
         if kind:
             qs = qs.filter(kind=kind)
         if all:
@@ -90,7 +93,7 @@ class TenderQuerySet(models.QuerySet):
         - the tender-siae matching has already been done with filter_with_tender()
         - we return only validated tenders
         """
-        return self.filter(tendersiae__siae__in=siaes).validated().distinct()
+        return self.filter(tendersiae__siae__in=siaes).sent().distinct()
 
     def with_deadline_date_is_outdated(self, limit_date=datetime.today()):
         return self.annotate(

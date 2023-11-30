@@ -195,6 +195,11 @@ class TenderModelQuerysetTest(TestCase):
         TenderFactory(validated_at=None)
         self.assertEqual(Tender.objects.validated().count(), 1)
 
+    def test_sent(self):
+        TenderFactory(sent_at=timezone.now())
+        TenderFactory(sent_at=None)
+        self.assertEqual(Tender.objects.sent().count(), 1)
+
     def test_is_live(self):
         TenderFactory(deadline_date=timezone.now() + timedelta(days=1))
         TenderFactory(deadline_date=timezone.now() - timedelta(days=1))
