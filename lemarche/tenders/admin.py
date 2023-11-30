@@ -123,7 +123,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     list_display = [
         "id",
         "status",
-        "is_validate",
+        "is_validated_or_sent",
         "title",
         "user_with_link",
         "kind",
@@ -138,6 +138,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "siae_transactioned",
         "created_at",
         "validated_at",
+        "sent_at",
     ]
 
     list_filter = [
@@ -174,6 +175,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "survey_transactioned_feedback",
         "survey_transactioned_answer_date",
         "validated_at",
+        "sent_at",
         "question_count_with_link",
         "siae_count_annotated_with_link",
         "siae_email_send_count_annotated_with_link",
@@ -321,6 +323,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "status",
                     "published_at",
                     "validated_at",
+                    "sent_at",
                 )
             },
         ),
@@ -399,11 +402,11 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     form.instance.author = request.user
         super().save_formset(request, form, formset, change)
 
-    def is_validate(self, tender: Tender):
-        return tender.validated_at is not None
+    def is_validated_or_sent(self, tender: Tender):
+        return tender.is_validated_or_sent
 
-    is_validate.boolean = True
-    is_validate.short_description = "Validé"
+    is_validated_or_sent.boolean = True
+    is_validated_or_sent.short_description = "Validé / Envoyé"
 
     def user_with_link(self, tender):
         url = reverse("admin:users_user_change", args=[tender.author_id])
