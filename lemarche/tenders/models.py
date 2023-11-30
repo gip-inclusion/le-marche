@@ -651,12 +651,18 @@ class Tender(models.Model):
     def is_validated_or_sent(self) -> bool:
         return self.validated_at and self.status in [tender_constants.STATUS_VALIDATED, tender_constants.STATUS_SENT]
 
-    def set_validated(self, with_save=True):
+    def set_validated_and_sent(self, with_save=True):
         self.validated_at = timezone.now()
-        self.status = tender_constants.STATUS_VALIDATED
+        self.sent_at = timezone.now()
+        self.status = tender_constants.STATUS_SENT
         log_item = {
             "action": "validate",
             "date": self.validated_at.isoformat(),
+        }
+        self.logs.append(log_item)
+        log_item = {
+            "action": "send",
+            "date": self.sent_at.isoformat(),
         }
         self.logs.append(log_item)
         if with_save:

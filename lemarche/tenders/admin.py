@@ -95,9 +95,9 @@ class TenderQuestionInline(admin.TabularInline):
     extra = 0
 
 
-def update_and_send_tender_task(tender: Tender):
+def validate_and_send_tender_task(tender: Tender):
     # 1) validate the tender
-    tender.set_validated(with_save=True)
+    tender.set_validated_and_sent(with_save=True)
     # 2) find the matching Siaes? done in Tender post_save signal
     send_confirmation_published_email_to_author(tender, nb_matched_siaes=tender.siaes.count())
     # 3) send the tender to all matching Siaes & Partners
@@ -490,18 +490,19 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     logs_display.short_description = Tender._meta.get_field("logs").verbose_name
 
     def response_change(self, request, obj: Tender):
+        """
+        Catch submit of custom admin button to Validate or Resend Tender
+        """
         if request.POST.get("_validate_tender"):
-            update_and_send_tender_task(tender=obj)
+            validate_and_send_tender_task(tender=obj)
             self.message_user(request, "Ce dépôt de besoin a été validé et envoyé aux structures")
             if settings.BITOUBI_ENV == "prod":
                 api_hubspot.create_deal_from_tender(tender=obj)
-
             return HttpResponseRedirect(".")
         elif request.POST.get("_restart_tender"):
             restart_send_tender_task(tender=obj)
             self.message_user(request, "Ce dépôt de besoin a été renvoyé aux structures")
             return HttpResponseRedirect(".")
-
         return super().response_change(request, obj)
 
     def extra_data_display(self, instance: Tender = None):
