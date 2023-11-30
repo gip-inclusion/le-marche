@@ -106,11 +106,14 @@ class Command(BaseCommand):
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Dry run, no writes")
 
     def handle(self, dry_run=False, **options):
-        if not os.environ.get("C1_DSN"):
-            raise CommandError("Missing C1_DSN in env")
+        if not os.environ.get("API_EMPLOIS_INCLUSION_TOKEN"):
+            raise CommandError("Missing API_EMPLOIS_INCLUSION_TOKEN in env")
 
         self.stdout_info("-" * 80)
         self.stdout_info("Sync script between C1 & C4...")
+
+        if dry_run:
+            self.stdout_info("Running in dry run mode !")
 
         self.stdout_info("-" * 80)
         self.stdout_info("Step 1: fetching C1 data")
