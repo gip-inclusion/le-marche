@@ -44,6 +44,9 @@ class TenderQuerySet(models.QuerySet):
     def validated(self):
         return self.filter(validated_at__isnull=False)
 
+    def validated_but_not_sent(self):
+        return self.filter(validated_at__isnull=False).filter(sent_at__isnull=True)
+
     def sent(self):
         return self.filter(sent_at__isnull=False)
 
