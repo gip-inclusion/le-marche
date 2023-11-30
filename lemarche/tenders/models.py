@@ -370,7 +370,7 @@ class Tender(models.Model):
         "Sondage transaction : date de réponse", blank=True, null=True
     )
 
-    # validation
+    # validation & send
     status = models.CharField(
         verbose_name="Statut",
         max_length=10,
@@ -378,6 +378,7 @@ class Tender(models.Model):
         default=tender_constants.STATUS_DRAFT,
     )
     validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
+    sent_at = models.DateTimeField("Date d'envoi", blank=True, null=True)
 
     # admin
     notes = GenericRelation("notes.Note", related_query_name="tender")
@@ -641,6 +642,10 @@ class Tender(models.Model):
     @property
     def is_validated(self) -> bool:
         return self.validated_at and self.status == tender_constants.STATUS_VALIDATED
+
+    @property
+    def is_sent(self) -> bool:
+        return self.sent_at and self.status == tender_constants.STATUS_SENT
 
     def set_validated(self, with_save=True):
         self.validated_at = timezone.now()
