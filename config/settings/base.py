@@ -559,6 +559,10 @@ SLACK_WEBHOOK_C4_TENDER_CHANNEL = env.str("SLACK_WEBHOOK_C4_TENDER_CHANNEL", "se
 # API Marché APProch
 MARCHE_APPROCH_TOKEN_RECETTE = env.str("MARCHE_APPROCH_TOKEN_RECETTE", "set-it")
 
+# API Emplois de l'inclusion
+API_EMPLOIS_INCLUSION_URL = "https://emplois.inclusion.beta.gouv.fr/api/v1"
+API_EMPLOIS_INCLUSION_TOKEN = env.str("API_EMPLOIS_INCLUSION_TOKEN", "set-it")
+
 
 # Django REST Framework (DRF)
 # https://www.django-rest-framework.org/
