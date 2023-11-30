@@ -14,6 +14,9 @@ export SECRET_KEY="coucou"
 export DJANGO_SETTINGS_MODULE="config.settings.dev"
 export TRACKER_HOST="https://example.com"
 
+# APIs
+export API_EMPLOIS_INCLUSION_TOKEN=""
+
 # MTCAPTCHA
 # ########################
 export MTCAPTCHA_PRIVATE_KEY=""
