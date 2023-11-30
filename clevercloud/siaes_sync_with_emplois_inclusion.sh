@@ -1,10 +1,10 @@
 #!/bin/bash -l
 
-# Fetch new siaes from C1 + update existing
+# Fetch new siaes from les-emplois + update existing
 
 # Do not run if this env var is not set:
-if [[ -z "$CRON_SYNC_C1_C4_ENABLED" ]]; then
-    echo "CRON_SYNC_C1_C4_ENABLED not set. Exiting..."
+if [[ -z "$CRON_SYNC_WITH_EMPLOIS_INCLUSION_ENABLED" ]]; then
+    echo "CRON_SYNC_WITH_EMPLOIS_INCLUSION_ENABLED not set. Exiting..."
     exit 0
 fi
 
@@ -19,4 +19,4 @@ fi
 # $APP_HOME is set by default by clever cloud.
 cd $APP_HOME
 
-django-admin sync_c1_c4
+django-admin sync_with_emplois_inclusion
