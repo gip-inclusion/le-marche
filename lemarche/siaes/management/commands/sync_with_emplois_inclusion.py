@@ -63,7 +63,7 @@ def map_siae_nature(siae_source):
 
 def set_is_active(siae):
     """
-    C1 field
+    les-emplois field
     Most Siae have a convention (AI, ACI, EI, ETTI, EITI)
     We consider the Siae as active if "having a convention" + "this convention is active".
 
@@ -81,7 +81,7 @@ def set_is_active(siae):
 
 def set_is_delisted(siae):
     """
-    C4 field
+    le-marche field
     Helps to track the number of Siae who were set from active to inactive during a sync.
     """
     is_active = set_is_active(siae)
@@ -90,16 +90,18 @@ def set_is_delisted(siae):
 
 class Command(BaseCommand):
     """
-    This command syncs the list of siae (creates new, updates existing) from C1 to C4.
+    This command syncs the list of siae (creates new, updates existing) from les-emplois to le-marché.
+    C1 = les-emplois
+    C4 = le-marche
 
     Steps:
-    1. First we fetch all the siae from C1
+    1. First we fetch all the siae from les-emplois
     2. Then we loop on each of them, to create or update it (depends if its c1_id already exists or not)
     3. Don't forget to delist the siae who were not updated or inactive
 
     Usage:
-    - poetry run python manage.py sync_c1_c4 --dry-run
-    - poetry run python manage.py sync_c1_c4
+    - poetry run python manage.py sync_with_emplois_inclusion --dry-run
+    - poetry run python manage.py sync_with_emplois_inclusion
     """
 
     def add_arguments(self, parser):
@@ -110,21 +112,21 @@ class Command(BaseCommand):
             raise CommandError("Missing API_EMPLOIS_INCLUSION_TOKEN in env")
 
         self.stdout_info("-" * 80)
-        self.stdout_info("Sync script between C1 & C4...")
+        self.stdout_info("Sync script between les-emplois & le-marché...")
 
         if dry_run:
             self.stdout_info("Running in dry run mode !")
 
         self.stdout_info("-" * 80)
-        self.stdout_info("Step 1: fetching C1 data")
+        self.stdout_info("Step 1: fetching les-emplois data")
         c1_list = self.c1_export()
 
         self.stdout_info("-" * 80)
-        self.stdout_info("Step 2: filter C1 data")
+        self.stdout_info("Step 2: filter les-emplois data")
         c1_list_filtered = self.filter_c1_export(c1_list)
 
         self.stdout_info("-" * 80)
-        self.stdout_info("Step 3: update C4 data")
+        self.stdout_info("Step 3: update le-marche data")
         # count before
         siae_total_before = Siae.objects.all().count()
         siae_active_before = Siae.objects.filter(is_active=True).count()
@@ -142,7 +144,7 @@ class Command(BaseCommand):
         created_count = siae_total_after - siae_total_before
         updated_count = len(c1_list_filtered) - created_count
         msg_success = [
-            "----- Synchronisation C1/C4 -----",
+            "----- Synchronisation emplois/marché -----",
             f"Siae total: before {siae_total_before} / after {siae_total_after} / +{created_count}",
             f"Siae updated: {updated_count}",
             f"Siae active: before {siae_active_before} / after {siae_active_after}",
@@ -205,10 +207,10 @@ class Command(BaseCommand):
 
                 c1_list_cleaned.append(c1_siae_cleaned)
 
-            self.stdout_info(f"Found {len(c1_list_cleaned)} Siae in C1")
+            self.stdout_info(f"Found {len(c1_list_cleaned)} Siae in les-emplois")
             return c1_list_cleaned
         except Exception as e:
-            api_slack.send_message_to_channel("Erreur lors de la synchronisation C1 <-> C4")
+            api_slack.send_message_to_channel("Erreur lors de la synchronisation emplois <-> marché")
             self.stdout_error(e)
             raise Exception(e)
 
@@ -246,7 +248,7 @@ class Command(BaseCommand):
 
     def c4_create_siae(self, c1_siae, dry_run):
         """
-        Here we create a new Siae with C1 data
+        Here we create a new Siae with les-emplois data
         """
         self.stdout_info("Creating Siae...")
 
@@ -282,7 +284,7 @@ class Command(BaseCommand):
 
     def c4_update_siae(self, c1_siae, c4_siae, dry_run):
         """
-        Here we update an existing Siae with a subset of C1 data
+        Here we update an existing Siae with a subset of les-emplois data
         """
         if not dry_run:
             # other fields
