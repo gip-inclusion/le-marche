@@ -8,6 +8,10 @@ class Command(BaseCommand):
     """
     Command to send validated tenders
 
+    Note: run via a CRON
+    "*/5 9-17 * * 1-5" = Every 5 minutes from 9am through 5pm on Monday through Friday
+    https://cron.help/#*/5_9-17_*_*_1-5
+
     Usage: python manage.py send_validated_tenders
     """
 
