@@ -109,10 +109,12 @@ class TenderModelPropertyTest(TestCase):
         tender_pending_validation = TenderFactory(status=tender_constants.STATUS_PUBLISHED)
         tender_validated_half = TenderFactory(status=tender_constants.STATUS_VALIDATED)
         tender_validated_full = TenderFactory(status=tender_constants.STATUS_VALIDATED, validated_at=timezone.now())
+        tender_sent = TenderFactory(status=tender_constants.STATUS_SENT, sent_at=timezone.now())
         self.assertTrue(tender_draft.is_draft, True)
         self.assertTrue(tender_pending_validation.is_pending_validation, True)
         self.assertTrue(tender_validated_half.is_validated, False)
         self.assertTrue(tender_validated_full.is_validated, True)
+        self.assertTrue(tender_sent.is_sent, True)
 
     def test_amount_display(self):
         tender_with_amount = TenderFactory(amount=tender_constants.AMOUNT_RANGE_0_1, accept_share_amount=True)
@@ -329,9 +331,9 @@ class TenderModelQuerysetStatsTest(TestCase):
         TenderQuestionFactory(tender=cls.tender_with_siae_1)
 
     def test_filter_with_siaes(self):
-        self.tender_with_siae_2.validated_at = None
+        self.tender_with_siae_2.sent_at = None
         self.tender_with_siae_2.save()
-        # tender_with_siae_2 is not validated
+        # tender_with_siae_2 is not sent
         self.assertEqual(Tender.objects.filter_with_siaes(self.user_siae.siaes.all()).count(), 1)
 
     def test_with_siae_stats(self):

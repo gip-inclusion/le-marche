@@ -389,7 +389,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         super().save_related(request=request, form=form, formsets=formsets, change=change)
         tender: Tender = form.instance
         # we can add `and obj.status != obj.STATUS_DRAFT` to disable matching when is draft
-        if not tender.is_validated:
+        if not tender.is_validated_or_sent:
             tender.set_siae_found_list()
 
     def save_formset(self, request, form, formset, change):

@@ -647,12 +647,16 @@ class Tender(models.Model):
         return self.validated_at and self.status == tender_constants.STATUS_VALIDATED
 
     @property
+    def is_pending_validation_or_validated(self) -> bool:
+        return self.is_pending_validation or self.is_validated
+
+    @property
     def is_sent(self) -> bool:
         return self.sent_at and self.status == tender_constants.STATUS_SENT
 
     @property
     def is_validated_or_sent(self) -> bool:
-        return self.validated_at and self.status in [tender_constants.STATUS_VALIDATED, tender_constants.STATUS_SENT]
+        return self.is_validated or self.is_sent
 
     def set_validated_and_sent(self, with_save=True):
         self.validated_at = timezone.now()

@@ -7,8 +7,8 @@
                     Publié le {{ tender.published_at|date }}
                 </li>
                 <li class="mb-2">
-                    {% if tender.is_validated %}
-                        Validé le {{ tender.validated_at|date }}
+                    {% if tender.is_sent %}
+                        Validé le {{ tender.sent_at|date }}
                     {% else %}
                         Statut : {{ tender.get_status_display }}
                     {% endif %}
