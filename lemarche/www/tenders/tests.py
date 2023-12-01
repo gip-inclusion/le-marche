@@ -309,6 +309,7 @@ class TenderMatchingTest(TestCase):
             kind=siae_constants.KIND_AI,
             presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
             coords=self.perimeter_marseille.coords,
+            geo_range=siae_constants.GEO_RANGE_COUNTRY,
         )
         siae_marseille.sectors.add(self.sectors[0])
 
@@ -330,8 +331,7 @@ class TenderMatchingTest(TestCase):
             distance_location=300,
             siae_kind=[siae_constants.KIND_ESAT, siae_constants.KIND_AI],
             sectors=self.sectors,
-            include_country_area=True,  # check this option without effect when the distance is setted
-            perimeters=[self.perimeter_paris],  # without effect too
+            perimeters=[self.perimeter_paris],  # test this option without effect when the distance is setted
         )
         siae_found_list = Siae.objects.filter_with_tender(tender)
         self.assertEqual(len(siae_found_list), 3)
@@ -347,6 +347,19 @@ class TenderMatchingTest(TestCase):
         self.assertIn(self.siae_one, siae_found_list)
         self.assertIn(self.siae_two, siae_found_list)
 
+        # set distance location and include country
+        tender = TenderFactory(
+            location=perimeter_azaylerideau,
+            distance_location=50,
+            siae_kind=[siae_constants.KIND_ESAT, siae_constants.KIND_AI],
+            sectors=self.sectors,
+            include_country_area=True,
+        )
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+        self.assertEqual(len(siae_found_list), 2)
+        self.assertIn(siae_tours, siae_found_list)
+        self.assertIn(siae_marseille, siae_found_list)
+
         # set a department in location disable distance_location, perimeters is used instead
         tender = TenderFactory(
             location=PerimeterFactory(
@@ -358,9 +371,11 @@ class TenderMatchingTest(TestCase):
             include_country_area=True,  # check this option without effect when the distance is setted
             perimeters=[self.perimeter_paris],  # without effect too
         )
-        self.assertEqual(len(siae_found_list), 2)
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+        self.assertEqual(len(siae_found_list), 3)
         self.assertIn(self.siae_one, siae_found_list)
         self.assertIn(self.siae_two, siae_found_list)
+        self.assertIn(siae_marseille, siae_found_list)
 
     def test_matching_siae_perimeters_custom(self):
         # add Siae with geo_range_country
