@@ -15,6 +15,11 @@ SIAE_COUNT_FIELDS = [
     "image_count",
     "etablissement_count",
     "completion_rate",
+    "tender_count",
+    "tender_email_send_count",
+    "tender_email_link_click_count",
+    "tender_detail_display_count",
+    "tender_detail_contact_click_count",
 ]
 
 
@@ -41,9 +46,13 @@ class Command(BaseCommand):
         self.stdout_messages_info("Updating Siae count fields...")
 
         # Step 1a: build the queryset
-        siae_queryset = Siae.objects.prefetch_related(
-            "users", "sectors", "networks", "groups", "offers", "client_references", "labels", "images"
-        ).all()
+        siae_queryset = (
+            Siae.objects.prefetch_related(
+                "users", "sectors", "networks", "groups", "offers", "client_references", "labels", "images"
+            )
+            .with_tender_stats()
+            .all()
+        )
         if options["id"]:
             siae_queryset = siae_queryset.filter(id=options["id"])
         self.stdout_messages_info(f"Found {siae_queryset.count()} siaes")
@@ -70,6 +79,12 @@ class Command(BaseCommand):
                 siae.etablissement_count = siae_utils.calculate_etablissement_count(siae)
             # completion_rate
             siae.completion_rate = siae.completion_rate_calculated
+            # tenders
+            siae.tender_count = siae.tender_count_annotated
+            siae.tender_email_send_count = siae.tender_email_send_count_annotated
+            siae.tender_email_link_click_count = siae.tender_email_link_click_count_annotated
+            siae.tender_detail_display_count = siae.tender_detail_display_count_annotated
+            siae.tender_detail_contact_click_count = siae.tender_detail_contact_click_count_annotated
 
             # Step 3: update count fields
             siae.save(update_fields=update_fields)
