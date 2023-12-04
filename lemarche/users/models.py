@@ -137,6 +137,7 @@ class User(AbstractUser):
     KIND_SIAE = user_constants.KIND_SIAE
     KIND_BUYER = user_constants.KIND_BUYER
     KIND_PARTNER = user_constants.KIND_PARTNER
+    KIND_INDIVIDUAL = user_constants.KIND_INDIVIDUAL
     KIND_ADMIN = user_constants.KIND_ADMIN
 
     username = None

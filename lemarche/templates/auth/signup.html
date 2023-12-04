@@ -38,19 +38,24 @@
 
                     <div class="c-form">
                         {% bootstrap_form_errors form type="all" %}
+
+                        <!-- User kind -->
                         <fieldset>
                             <legend>Vous êtes <strong class="fs-base">*</strong></legend>
                             {% bootstrap_field form.kind %}
                         </fieldset>
                         <hr>
+
+                        <!-- User contact -->
                         <fieldset>
                             <legend>Contact</legend>
                             {% bootstrap_field form.first_name %}
                             {% bootstrap_field form.last_name %}
                             {% bootstrap_field form.phone form_group_class="phone-form-group form-group" %}
-
                         </fieldset>
                         <hr>
+
+                        <!-- User company -->
                         <fieldset id="infoStructuresFieldset" class="d-none">
                             <legend>Informations structure</legend>
                             {% bootstrap_field form.buyer_kind_detail form_group_class="buyer-kind-detail-form-group form-group form-group-required d-none" %}
@@ -66,12 +71,17 @@
                             </div>
                             <hr>
                         </fieldset>
+
+                        <!-- User password -->
                         <fieldset>
                             <legend>Création du mot de passe</legend>
                             {% bootstrap_field form.email %}
                             {% bootstrap_field form.password1 %}
                             {% bootstrap_field form.password2 %}
                         </fieldset>
+                        <hr>
+
+                        <!-- Legal mentions, survey & co -->
                         <fieldset id="statsSignupBuyer" class="d-none">
                             <hr>
                             <div class="form-group">
@@ -86,6 +96,8 @@
                             {% bootstrap_field form.accept_share_contact_to_external_partners form_group_class="form-group accept-survey-form-group d-none" %}
                         </div>
                         <hr>
+
+                        <!-- Submit -->
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-row justify-content-end align-items-center">
@@ -117,6 +129,8 @@
  *      - add buyer_kind_detail field (and make it required)
  *      - add position field (and make it required)
  *      - add survey checkbox for newsletter
+ *  - if the user is an INDIVIDUAL:
+ *      - hide company section
  */
 document.addEventListener('DOMContentLoaded', function() {
     let phoneInput = document.getElementById('id_phone');
@@ -164,10 +178,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             toggleInputElement(false, element=partnerKindInput, required=false);
         }
-        if(radio.value){
-            infoStructuresFieldset.classList.remove('d-none');
-        } else { //empty
+
+        if (radio.value === 'INDIVIDUAL') {
             infoStructuresFieldset.classList.add('d-none');
+        } else {
+            infoStructuresFieldset.classList.remove('d-none');
         }
     }));
 });

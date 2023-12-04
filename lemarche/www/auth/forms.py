@@ -14,6 +14,7 @@ class SignupForm(UserCreationForm):
         (User.KIND_SIAE, "Une entreprise sociale inclusive (SIAE ou structure du handicap, GEIQ)"),
         (User.KIND_BUYER, "Un acheteur"),
         (User.KIND_PARTNER, "Un partenaire (réseaux, facilitateurs)"),
+        (User.KIND_INDIVIDUAL, "Un particulier"),
     )
     FORM_PARTNER_KIND_CHOICES = EMPTY_CHOICE + user_constants.PARTNER_KIND_CHOICES
 
