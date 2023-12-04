@@ -1,5 +1,6 @@
 from lemarche.companies.models import Company
 from lemarche.users.models import User
+from lemarche.utils.apis import api_slack
 from lemarche.utils.commands import BaseCommand
 
 
@@ -29,16 +30,18 @@ class Command(BaseCommand):
         self.stdout_info("Populating users field...")
 
         users = User.objects.all()
-        users_with_company = users.has_company()
         companies = Company.objects.all()
         companies_with_email_domain_list = companies.has_email_domain()
-        companies_with_users = companies.has_user()
+
+        # Old stats (before changes)
+        old_users_with_company_count = users.has_company().count()
+        old_companies_with_user_count = companies.has_user().count()
         self.stdout_info("-" * 80)
         self.stdout_info(f"User count: {users.count()}")
-        self.stdout_info(f"Users with company count: {users_with_company.count()}")
+        self.stdout_info(f"Users with company count: {old_users_with_company_count}")
         self.stdout_info(f"Company count: {companies.count()}")
         self.stdout_info(f"Companies with email_domain_list field count: {companies_with_email_domain_list.count()}")
-        self.stdout_info(f"Companies with users count: {companies_with_users.count()}")
+        self.stdout_info(f"Companies with user count: {old_companies_with_user_count}")
 
         self.stdout_info("-" * 80)
         self.stdout_info("Mapping users to their company, depending on User.email and Company.email_domain_list...")
@@ -58,16 +61,16 @@ class Command(BaseCommand):
             if (progress % 50) == 0:
                 self.stdout_info(f"{progress}...")
 
-        users = User.objects.all()
-        users_with_company = users.has_company()
-        companies = Company.objects.all()
-        companies_with_email_domain_list = companies.has_email_domain()
-        companies_with_users = companies.has_user()
-        self.stdout_info("-" * 80)
-        self.stdout_info("RECAP")
-        self.stdout_info(f"Users with company count: {users_with_company.count()}")
-        self.stdout_info(f"Companies with email_domain_list field count: {companies_with_email_domain_list.count()}")
-        self.stdout_info(f"Companies with users count: {companies_with_users.count()}")
+        # New stats (after changes)
+        new_users_with_company_count = users.has_company().count()
+        new_companies_with_user_count = companies.has_user().count()
+
+        msg_success = [
+            "----- Company users -----",
+            f"Done! Processed {companies_with_email_domain_list.count()} companies with email_domain_list",
+            f"Users with company: before {old_users_with_company_count} / after {new_users_with_company_count} / {new_users_with_company_count-old_users_with_company_count}",  # noqa
+            f"Companies with user: before {old_companies_with_user_count} / after {new_companies_with_user_count} / {new_companies_with_user_count-old_companies_with_user_count}",  # noqa
+        ]
 
         if options["with_count"]:
             self.stdout_info("-" * 80)
@@ -75,4 +78,7 @@ class Command(BaseCommand):
             for company in Company.objects.prefetch_related("users").all():
                 company.user_count = company.users.count()
                 company.save()
-            self.stdout_info("Finished updating Company.user_count!")
+            msg_success.append("Also updated Company.user_count field")
+
+        self.stdout_messages_success(msg_success)
+        api_slack.send_message_to_channel("\n".join(msg_success))
