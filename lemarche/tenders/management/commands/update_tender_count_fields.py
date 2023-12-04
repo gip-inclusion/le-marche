@@ -3,16 +3,6 @@ from lemarche.utils.apis import api_slack
 from lemarche.utils.commands import BaseCommand
 
 
-TENDER_COUNT_FIELDS = [
-    "siae_count",
-    "siae_email_send_count",
-    "siae_email_link_click_count",
-    "siae_detail_display_count",
-    "siae_email_link_click_or_detail_display_count",
-    "siae_detail_contact_click_count",
-]
-
-
 class Command(BaseCommand):
     """
     Goal: update the '_count' fields of each Tender
@@ -40,7 +30,7 @@ class Command(BaseCommand):
         self.stdout_messages_info(f"Found {tender_queryset.count()} tenders")
 
         # Step 1b: init fields to update
-        update_fields = options["fields"] if options["fields"] else TENDER_COUNT_FIELDS
+        update_fields = options["fields"] if options["fields"] else Tender.FIELDS_STATS_COUNT
         self.stdout_messages_info(f"Fields to update: {update_fields}")
 
         # Step 2: loop on each Tender
