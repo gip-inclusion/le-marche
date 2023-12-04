@@ -206,7 +206,14 @@ class Tender(models.Model):
         "siae_email_link_click_or_detail_display_count",
         "siae_detail_contact_click_count",
     ]
-    FIELDS_STATS_TIMESTAMPS = ["published_at", "validated_at", "sent_at", "siae_list_last_seen_date", "created_at", "updated_at"]
+    FIELDS_STATS_TIMESTAMPS = [
+        "published_at",
+        "validated_at",
+        "sent_at",
+        "siae_list_last_seen_date",
+        "created_at",
+        "updated_at",
+    ]
     FIELDS_STATS = FIELDS_STATS_COUNT + FIELDS_STATS_TIMESTAMPS + []
     READONLY_FIELDS = FIELDS_SURVEY_TRANSACTIONED + FIELDS_STATS
 
