@@ -304,8 +304,12 @@ class SiaeQuerySet(models.QuerySet):
             conditions = Q(geo_range=siae_constants.GEO_RANGE_COUNTRY) | conditions
         return self.filter(conditions)
 
-    def within(self, point, distance_km=0):
-        return self.filter(coords__dwithin=(point, D(km=distance_km)))
+    def within(self, point, distance_km=0, include_country_area=False):
+        return (
+            self.filter(Q(coords__dwithin=(point, D(km=distance_km))) | Q(geo_range=siae_constants.GEO_RANGE_COUNTRY))
+            if include_country_area
+            else self.filter(coords__dwithin=(point, D(km=distance_km)))
+        )
 
     def with_country_geo_range(self):
         return self.filter(Q(geo_range=siae_constants.GEO_RANGE_COUNTRY))
@@ -346,7 +350,15 @@ class SiaeQuerySet(models.QuerySet):
         if tender.is_country_area:  # for all country
             qs = qs.with_country_geo_range()
         else:
-            if tender.perimeters.count() and tender.include_country_area:  # perimeters and all country
+            # filter by tender.distance_location km around the given city in location
+            if (
+                tender.location
+                and tender.location.kind == Perimeter.KIND_CITY
+                and tender.distance_location
+                and tender.distance_location > 0
+            ):
+                qs = qs.within(tender.location.coords, tender.distance_location, tender.include_country_area)
+            elif tender.perimeters.count() and tender.include_country_area:  # perimeters and all country
                 qs = qs.geo_range_in_perimeter_list(
                     tender.perimeters.all(), with_country=False, include_country_area=True
                 )

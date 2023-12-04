@@ -238,6 +238,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                 "fields": (
                     "location",
                     "perimeters",
+                    "distance_location",
                     "include_country_area",
                 ),
             },

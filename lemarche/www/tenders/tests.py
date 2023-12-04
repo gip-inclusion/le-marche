@@ -235,7 +235,7 @@ class TenderMatchingTest(TestCase):
         # by default is Paris
         coords_paris = Point(48.86385199985207, 2.337071483848432)
 
-        siae_one = SiaeFactory(
+        cls.siae_one = SiaeFactory(
             is_active=True,
             kind=siae_constants.KIND_AI,
             presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
@@ -243,7 +243,7 @@ class TenderMatchingTest(TestCase):
             coords=coords_paris,
             geo_range_custom_distance=100,
         )
-        siae_two = SiaeFactory(
+        cls.siae_two = SiaeFactory(
             is_active=True,
             kind=siae_constants.KIND_ESAT,
             presta_type=[siae_constants.PRESTA_BUILD],
@@ -252,8 +252,8 @@ class TenderMatchingTest(TestCase):
             geo_range_custom_distance=10,
         )
         for i in range(5):
-            siae_one.sectors.add(cls.sectors[i])
-            siae_two.sectors.add(cls.sectors[i + 5])
+            cls.siae_one.sectors.add(cls.sectors[i])
+            cls.siae_two.sectors.add(cls.sectors[i + 5])
 
     def test_matching_siae_presta_type(self):
         tender = TenderFactory(presta_type=[], sectors=self.sectors, perimeters=self.perimeters)
@@ -292,6 +292,90 @@ class TenderMatchingTest(TestCase):
         tender = TenderFactory(sectors=self.sectors)
         siae_found_list = Siae.objects.filter_with_tender(tender)
         self.assertEqual(len(siae_found_list), 2)
+
+    def test_matching_siae_distance_location(self):
+        # create SIAE in Tours
+        siae_tours = SiaeFactory(
+            is_active=True,
+            kind=siae_constants.KIND_AI,
+            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
+            coords=Point(47.392287, 0.690049),  # Tours city
+        )
+        siae_tours.sectors.add(self.sectors[0])
+
+        # create SIAE in Marseille
+        siae_marseille = SiaeFactory(
+            is_active=True,
+            kind=siae_constants.KIND_AI,
+            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
+            coords=self.perimeter_marseille.coords,
+            geo_range=siae_constants.GEO_RANGE_COUNTRY,
+        )
+        siae_marseille.sectors.add(self.sectors[0])
+
+        # create tender in Azay-le-rideau (near Tours ~25km)
+        perimeter_azaylerideau = PerimeterFactory(coords=Point(47.262352, 0.466372))
+        tender = TenderFactory(
+            location=perimeter_azaylerideau,
+            distance_location=30,
+            siae_kind=[siae_constants.KIND_ESAT, siae_constants.KIND_AI],
+            sectors=self.sectors,
+        )
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+        self.assertEqual(len(siae_found_list), 1)
+        self.assertIn(siae_tours, siae_found_list)
+
+        # Azay-le-rideau is less than 240km from Paris but more 550km from Marseille
+        tender = TenderFactory(
+            location=perimeter_azaylerideau,
+            distance_location=300,
+            siae_kind=[siae_constants.KIND_ESAT, siae_constants.KIND_AI],
+            sectors=self.sectors,
+            perimeters=[self.perimeter_paris],  # test this option without effect when the distance is setted
+        )
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+        self.assertEqual(len(siae_found_list), 3)
+        self.assertIn(siae_tours, siae_found_list)
+        self.assertIn(self.siae_one, siae_found_list)
+        self.assertIn(self.siae_two, siae_found_list)
+
+        # unset distance location, perimeters is used instead, Paris as it happens
+        tender.distance_location = None
+        tender.save()
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+        self.assertEqual(len(siae_found_list), 2)
+        self.assertIn(self.siae_one, siae_found_list)
+        self.assertIn(self.siae_two, siae_found_list)
+
+        # set distance location and include country
+        tender = TenderFactory(
+            location=perimeter_azaylerideau,
+            distance_location=50,
+            siae_kind=[siae_constants.KIND_ESAT, siae_constants.KIND_AI],
+            sectors=self.sectors,
+            include_country_area=True,
+        )
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+        self.assertEqual(len(siae_found_list), 2)
+        self.assertIn(siae_tours, siae_found_list)
+        self.assertIn(siae_marseille, siae_found_list)
+
+        # set a department in location disable distance_location, perimeters is used instead
+        tender = TenderFactory(
+            location=PerimeterFactory(
+                name="Indre-et-loire", kind=Perimeter.KIND_DEPARTMENT, insee_code="37", region_code="24"
+            ),
+            distance_location=50,
+            siae_kind=[siae_constants.KIND_ESAT, siae_constants.KIND_AI],
+            sectors=self.sectors,
+            include_country_area=True,  # check this option without effect when the distance is setted
+            perimeters=[self.perimeter_paris],  # without effect too
+        )
+        siae_found_list = Siae.objects.filter_with_tender(tender)
+        self.assertEqual(len(siae_found_list), 3)
+        self.assertIn(self.siae_one, siae_found_list)
+        self.assertIn(self.siae_two, siae_found_list)
+        self.assertIn(siae_marseille, siae_found_list)
 
     def test_matching_siae_perimeters_custom(self):
         # add Siae with geo_range_country
