@@ -23,7 +23,7 @@ from lemarche.siaes.tasks import set_siae_coords
 from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
 from lemarche.stats.models import Tracker
 from lemarche.users.models import User
-from lemarche.utils.constants import DEPARTMENTS_PRETTY, REGIONS_PRETTY
+from lemarche.utils.constants import DEPARTMENTS_PRETTY, RECALCULATED_FIELD_HELP_TEXT, REGIONS_PRETTY
 from lemarche.utils.data import round_by_base
 from lemarche.utils.fields import ChoiceArrayField
 
@@ -778,6 +778,21 @@ class Siae(models.Model):
         "Date de remplissage (basique) de la fiche", blank=True, null=True
     )
     completion_rate = models.IntegerField("Taux de remplissage de sa fiche", blank=True, null=True)
+    tender_count = models.IntegerField(
+        "Nombre de besoins concernés", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
+    )
+    tender_email_send_count = models.IntegerField(
+        "Nombre de besoins reçus", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
+    )
+    tender_email_link_click_count = models.IntegerField(
+        "Nombre de besoins cliqués", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
+    )
+    tender_detail_display_count = models.IntegerField(
+        "Nombre de besoins vues", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
+    )
+    tender_detail_contact_click_count = models.IntegerField(
+        "Nombre de besoins intéressés", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
+    )
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
     source = models.CharField(
         max_length=20, choices=siae_constants.SOURCE_CHOICES, default=siae_constants.SOURCE_STAFF_C4_CREATED
