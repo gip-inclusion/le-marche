@@ -491,7 +491,7 @@ class SiaeQuerySet(models.QuerySet):
 
 
 class Siae(models.Model):
-    READONLY_FIELDS_FROM_C1 = [
+    FIELDS_FROM_C1 = [
         "name",
         "slug",  # generated from 'name'
         "brand",
@@ -518,14 +518,14 @@ class Siae(models.Model):
         "c1_last_sync_date",
         "source",
     ]
-    READONLY_FIELDS_FROM_C2 = [
+    FIELDS_FROM_C2 = [
         "c2_etp_count",
         "c2_etp_count_date_saisie",
         "c2_etp_count_last_sync_date",
     ]
-    READONLY_FIELDS_FROM_QPV = ["is_qpv", "qpv_name", "qpv_code", "api_qpv_last_sync_date"]
-    READONLY_FIELDS_FROM_ZRR = ["is_zrr", "zrr_name", "zrr_code", "api_zrr_last_sync_date"]
-    READONLY_FIELDS_FROM_API_ENTREPRISE = [
+    FIELDS_FROM_QPV = ["is_qpv", "qpv_name", "qpv_code", "api_qpv_last_sync_date"]
+    FIELDS_FROM_ZRR = ["is_zrr", "zrr_name", "zrr_code", "api_zrr_last_sync_date"]
+    FIELDS_FROM_API_ENTREPRISE = [
         "api_entreprise_forme_juridique",
         "api_entreprise_forme_juridique_code",
         "api_entreprise_entreprise_last_sync_date",
@@ -537,14 +537,27 @@ class Siae(models.Model):
         "api_entreprise_ca_date_fin_exercice",
         "api_entreprise_exercice_last_sync_date",
     ]
-    READONLY_FIELDS_STATS = ["etablissement_count", "signup_date", "content_filled_basic_date", "completion_rate"]
+    FIELDS_STATS_COUNT = [
+        "user_count",
+        "sector_count",
+        "network_count",
+        "group_count",
+        "offer_count",
+        "client_reference_count",
+        "label_count",
+        "image_count",
+        "etablissement_count",
+        "completion_rate",
+        "tender_count",
+        "tender_email_send_count",
+        "tender_email_link_click_count",
+        "tender_detail_display_count",
+        "tender_detail_contact_click_count",
+    ]
+    FIELDS_STATS_TIMESTAMPS = ["signup_date", "content_filled_basic_date", "created_at", "updated_at"]
+    FIELDS_STATS = FIELDS_STATS_COUNT + FIELDS_STATS_TIMESTAMPS + ["completion_rate"]
     READONLY_FIELDS = (
-        READONLY_FIELDS_FROM_C1
-        + READONLY_FIELDS_FROM_C2
-        + READONLY_FIELDS_FROM_QPV
-        + READONLY_FIELDS_FROM_ZRR
-        + READONLY_FIELDS_FROM_API_ENTREPRISE
-        + READONLY_FIELDS_STATS
+        FIELDS_FROM_C1 + FIELDS_FROM_C2 + FIELDS_FROM_QPV + FIELDS_FROM_ZRR + FIELDS_FROM_API_ENTREPRISE + FIELDS_STATS
     )
 
     TRACK_UPDATE_FIELDS = [
