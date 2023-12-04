@@ -567,7 +567,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         )
         return format_html(f'<a href="{url}">{getattr(siae, "tender_detail_display_count_annotated", 0)}</a>')
 
-    tender_detail_display_count_annotated_with_link.short_description = "Besoins vues"
+    tender_detail_display_count_annotated_with_link.short_description = "Besoins vus"
     tender_detail_display_count_annotated_with_link.admin_order_field = "tender_detail_display_count_annotated"
 
     def tender_detail_contact_click_count_annotated_with_link(self, siae):

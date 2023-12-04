@@ -788,7 +788,7 @@ class Siae(models.Model):
         "Nombre de besoins cliqués", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
     )
     tender_detail_display_count = models.IntegerField(
-        "Nombre de besoins vues", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
+        "Nombre de besoins vus", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
     )
     tender_detail_contact_click_count = models.IntegerField(
         "Nombre de besoins intéressés", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0

@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
             model_name="siae",
             name="tender_detail_display_count",
             field=models.IntegerField(
-                default=0, help_text="Champ recalculé à intervalles réguliers", verbose_name="Nombre de besoins vues"
+                default=0, help_text="Champ recalculé à intervalles réguliers", verbose_name="Nombre de besoins vus"
             ),
         ),
         migrations.AddField(
