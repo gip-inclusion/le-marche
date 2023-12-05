@@ -1,4 +1,5 @@
 from lemarche.tenders.models import Tender
+from lemarche.utils.apis import api_slack
 from lemarche.utils.commands import BaseCommand
 
 
@@ -68,3 +69,4 @@ class Command(BaseCommand):
             f"Fields updated: {update_fields}",
         ]
         self.stdout_messages_success(msg_success)
+        api_slack.send_message_to_channel("\n".join(msg_success))
