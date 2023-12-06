@@ -70,7 +70,7 @@ class DashboardHomeView(LoginRequiredMixin, DetailView):
             context["last_3_tenders"] = Tender.objects.filter(author=user).order_by_deadline_date()[:3]
             context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
             context["siae_count"] = Siae.objects.is_live().count()
-            context["tender_count"] = Tender.objects.validated().count() + 30  # historic number (before form)
+            context["tender_count"] = Tender.objects.sent().count() + 30  # historic number (before form)
         return context
 
 

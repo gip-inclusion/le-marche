@@ -34,7 +34,6 @@ class TenderFactory(DjangoModelFactory):
     deadline_date = date.today() + timedelta(days=10)
     start_working_date = date.today() + timedelta(days=random.randint(12, 90))
     author = factory.SubFactory(UserFactory)
-    validated_at = timezone.now()
     external_link = factory.Sequence("https://{0}example.com".format)
     # Contact fields
     contact_first_name = factory.Sequence("first_name{0}".format)
@@ -43,7 +42,9 @@ class TenderFactory(DjangoModelFactory):
     contact_phone = factory.fuzzy.FuzzyText(length=10, chars=string.digits)
     # amount = tender_constants.AMOUNT_RANGE_100_150
     # marche_benefits = factory.fuzzy.FuzzyChoice([key for (key, _) in constants.MARCHE_BENEFIT_CHOICES])
-    status = tender_constants.STATUS_VALIDATED
+    status = tender_constants.STATUS_SENT
+    validated_at = timezone.now()
+    sent_at = timezone.now()
 
     @factory.post_generation
     def perimeters(self, create, extracted, **kwargs):

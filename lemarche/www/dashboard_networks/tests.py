@@ -35,7 +35,7 @@ class DashboardNetworkViewTest(TestCase):
             author=cls.user_buyer,
             amount=tender_constants.AMOUNT_RANGE_100_150,
             accept_share_amount=False,
-            status=tender_constants.STATUS_VALIDATED,
+            status=tender_constants.STATUS_SENT,
             validated_at=timezone.now(),
             deadline_date=timezone.now() - timedelta(days=5),
         )

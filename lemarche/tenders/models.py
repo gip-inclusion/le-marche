@@ -44,6 +44,9 @@ class TenderQuerySet(models.QuerySet):
     def validated(self):
         return self.filter(validated_at__isnull=False)
 
+    def sent(self):
+        return self.filter(sent_at__isnull=False)
+
     def is_incremental(self):
         return self.filter(
             scale_marche_useless__in=[
@@ -53,14 +56,14 @@ class TenderQuerySet(models.QuerySet):
         )
 
     def is_live(self):
-        return self.validated().filter(deadline_date__gte=datetime.today())
+        return self.sent().filter(deadline_date__gte=datetime.today())
 
     def has_amount(self):
         return self.filter(Q(amount__isnull=False) | Q(amount_exact__isnull=False))
 
     def transaction_survey_email(self, kind=None, all=False):
         seven_days_ago = datetime.today().date() - timedelta(days=7)
-        qs = self.validated().filter(survey_transactioned_answer=None)
+        qs = self.sent().filter(survey_transactioned_answer=None)
         if kind:
             qs = qs.filter(kind=kind)
         if all:
@@ -86,11 +89,11 @@ class TenderQuerySet(models.QuerySet):
 
     def filter_with_siaes(self, siaes):
         """
-        Return the list of tenders corresponding to the list of Siaes
+        Return the list of tenders corresponding to the list of
+        - we return only sent tenders
         - the tender-siae matching has already been done with filter_with_tender()
-        - we return only validated tenders
         """
-        return self.filter(tendersiae__siae__in=siaes).validated().distinct()
+        return self.sent().filter(tendersiae__siae__in=siaes).distinct()
 
     def with_deadline_date_is_outdated(self, limit_date=datetime.today()):
         return self.annotate(
@@ -370,7 +373,7 @@ class Tender(models.Model):
         "Sondage transaction : date de réponse", blank=True, null=True
     )
 
-    # validation
+    # validation & send
     status = models.CharField(
         verbose_name="Statut",
         max_length=10,
@@ -378,6 +381,7 @@ class Tender(models.Model):
         default=tender_constants.STATUS_DRAFT,
     )
     validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
+    sent_at = models.DateTimeField("Date d'envoi", blank=True, null=True)
 
     # admin
     notes = GenericRelation("notes.Note", related_query_name="tender")
@@ -642,12 +646,30 @@ class Tender(models.Model):
     def is_validated(self) -> bool:
         return self.validated_at and self.status == tender_constants.STATUS_VALIDATED
 
-    def set_validated(self, with_save=True):
+    @property
+    def is_pending_validation_or_validated(self) -> bool:
+        return self.is_pending_validation or self.is_validated
+
+    @property
+    def is_sent(self) -> bool:
+        return self.sent_at and self.status == tender_constants.STATUS_SENT
+
+    @property
+    def is_validated_or_sent(self) -> bool:
+        return self.is_validated or self.is_sent
+
+    def set_validated_and_sent(self, with_save=True):
         self.validated_at = timezone.now()
-        self.status = tender_constants.STATUS_VALIDATED
+        self.sent_at = timezone.now()
+        self.status = tender_constants.STATUS_SENT
         log_item = {
             "action": "validate",
             "date": self.validated_at.isoformat(),
+        }
+        self.logs.append(log_item)
+        log_item = {
+            "action": "send",
+            "date": self.sent_at.isoformat(),
         }
         self.logs.append(log_item)
         if with_save:

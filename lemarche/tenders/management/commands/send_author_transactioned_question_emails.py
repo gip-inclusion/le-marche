@@ -35,8 +35,10 @@ class Command(BaseCommand):
         self.stdout.write("-" * 80)
         start_date_feature = datetime(2022, 6, 23).date()
         # we first filter on validated tenders
-        tender_qs = Tender.objects.transaction_survey_email(kind=kind, all=is_all_tenders).filter(
-            deadline_date__gte=start_date_feature
+        tender_qs = (
+            Tender.objects.sent()
+            .transaction_survey_email(kind=kind, all=is_all_tenders)
+            .filter(deadline_date__gte=start_date_feature)
         )
 
         self.stdout.write(f"Found {tender_qs.count()} tenders")

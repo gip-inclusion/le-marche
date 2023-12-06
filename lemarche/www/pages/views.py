@@ -55,7 +55,7 @@ class HomeView(TemplateView):
             pass
         context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
         context["siae_count"] = Siae.objects.is_live().count()
-        context["tender_count"] = Tender.objects.validated().count() + 30  # historic number (before form)
+        context["tender_count"] = Tender.objects.sent().count() + 30  # historic number (before form)
         return context
 
 
@@ -370,7 +370,7 @@ def csrf_failure(request, reason=""):  # noqa C901
         if settings.BITOUBI_ENV == "prod":
             notify_admin_tender_created(tender)
 
-        if tender.status == tender_constants.STATUS_DRAFT:
+        if tender.is_draft:
             messages.add_message(
                 request=request,
                 level=messages.INFO,
