@@ -36,7 +36,7 @@
                     {% if tender.is_sent %}
                         <div class="col-md-4">
                             <i class="ri-time-line"></i>
-                            Publié le {{ tender.validated_at|date }}
+                            Publié le {{ tender.sent_at|date }}
                         </div>
                     {% endif %}
                 </div>

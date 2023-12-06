@@ -14,7 +14,7 @@ def populate_tenders_sent_status(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("tenders", "0062_tender_rename_kind_quote_display"),
+        ("tenders", "0063_tender_distance_location"),
     ]
 
     operations = [

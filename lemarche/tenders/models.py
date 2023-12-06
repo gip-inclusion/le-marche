@@ -89,11 +89,11 @@ class TenderQuerySet(models.QuerySet):
 
     def filter_with_siaes(self, siaes):
         """
-        Return the list of tenders corresponding to the list of Siaes
+        Return the list of tenders corresponding to the list of
+        - we return only sent tenders
         - the tender-siae matching has already been done with filter_with_tender()
-        - we return only validated tenders
         """
-        return self.filter(tendersiae__siae__in=siaes).sent().distinct()
+        return self.sent().filter(tendersiae__siae__in=siaes).distinct()
 
     def with_deadline_date_is_outdated(self, limit_date=datetime.today()):
         return self.annotate(
