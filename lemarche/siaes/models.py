@@ -1082,6 +1082,15 @@ class Siae(models.Model):
             return "l'ASP"
 
     @property
+    def super_badge_calculated(self):
+        if (self.user_count >= 1) and (self.completion_rate >= 80) and (self.tender_email_send_count >= 1):
+            tender_view_rate = round(100 * self.tender_email_link_click_count / self.tender_email_send_count)
+            tender_interested_rate = round(100 * self.tender_detail_contact_click_count / self.tender_email_send_count)
+            if (tender_view_rate >= 40) or (tender_interested_rate >= 20):
+                return True
+        return False
+
+    @property
     def completion_rate_calculated(self):
         score, total = 0, 0
         for key, value in siae_constants.SIAE_COMPLETION_SCORE_GRID.items():
