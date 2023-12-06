@@ -30,7 +30,7 @@ class Command(BaseCommand):
         siae_queryset = (
             Siae.objects.prefetch_many_to_many()
             .prefetch_many_to_one()
-            .prefetch("users", "groups", "labels")
+            .prefetch_related("users", "groups", "labels")
             .with_tender_stats()
             .all()
         )
