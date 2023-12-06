@@ -1042,7 +1042,7 @@ Ressources :
     - Séparé la page "Collaborateurs" du formulaire de modification de sa structure
 - Données
     - API Entreprise : renommé "Unités non employeuses" par "Non renseigné"
-    - Synchonisation avec le C1 : rajouté le champ `brand` à la liste des champs synchronisés
+    - Synchronisation avec le C1 : rajouté le champ `brand` à la liste des champs synchronisés
 - Tech
     - Meilleure gestion des tâches asynchrones
 
