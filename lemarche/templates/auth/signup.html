@@ -180,6 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (radio.value === 'INDIVIDUAL') {
+            toggleInputElement(false, element=companyNameInput, required=false);
             infoStructuresFieldset.classList.add('d-none');
         } else {
             infoStructuresFieldset.classList.remove('d-none');
