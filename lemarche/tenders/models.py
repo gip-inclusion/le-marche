@@ -19,7 +19,7 @@ from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.users.models import User
-from lemarche.utils import constants
+from lemarche.utils.constants import MARCHE_BENEFIT_CHOICES, RECALCULATED_FIELD_HELP_TEXT
 from lemarche.utils.fields import ChoiceArrayField
 
 
@@ -356,7 +356,7 @@ class Tender(models.Model):
     marche_benefits = ChoiceArrayField(
         verbose_name="Bénéfices du marché de l'inclusion",
         help_text="Pour ce besoin, quels sont les bénéfices de passer par le Marché de l'inclusion ?",
-        base_field=models.CharField(max_length=20, choices=constants.MARCHE_BENEFIT_CHOICES),
+        base_field=models.CharField(max_length=20, choices=MARCHE_BENEFIT_CHOICES),
         blank=True,
         default=list,
     )
@@ -407,22 +407,22 @@ class Tender(models.Model):
 
     # stats
     siae_count = models.IntegerField(
-        "Nombre de structures concernées", help_text="Champ recalculé à intervalles réguliers", default=0
+        "Nombre de structures concernées", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
     )
     siae_email_send_count = models.IntegerField(
-        "Nombre de structures contactées", help_text="Champ recalculé à intervalles réguliers", default=0
+        "Nombre de structures contactées", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
     )
     siae_email_link_click_count = models.IntegerField(
-        "Nombre de structures cliquées", help_text="Champ recalculé à intervalles réguliers", default=0
+        "Nombre de structures cliquées", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
     )
     siae_detail_display_count = models.IntegerField(
-        "Nombre de structures vues", help_text="Champ recalculé à intervalles réguliers", default=0
+        "Nombre de structures vues", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
     )
     siae_email_link_click_or_detail_display_count = models.IntegerField(
-        "Nombre de structures cliquées ou vues", help_text="Champ recalculé à intervalles réguliers", default=0
+        "Nombre de structures cliquées ou vues", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
     )
     siae_detail_contact_click_count = models.IntegerField(
-        "Nombre de structures intéressées", help_text="Champ recalculé à intervalles réguliers", default=0
+        "Nombre de structures intéressées", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
     )
     published_at = models.DateTimeField("Date de publication", blank=True, null=True)
     siae_list_last_seen_date = models.DateTimeField(
