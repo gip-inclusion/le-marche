@@ -154,16 +154,16 @@ class TenderAuthorOrAdminRequiredMixin(LoginRequiredUserPassesTestMixin):
         return HttpResponseRedirect(reverse_lazy("tenders:list"))
 
 
-class TenderAuthorOrAdminRequiredIfNotValidatedMixin(UserPassesTestMixin):
+class TenderAuthorOrAdminRequiredIfNotSentMixin(UserPassesTestMixin):
     """
-    If the Tender's status is not "validated", restrict access to the Tender's author (or Admin)
+    If the Tender's status is not "sent", restrict access to the Tender's author (or Admin)
     """
 
     def test_func(self):
         # user = self.request.user
         tender_slug = self.kwargs.get("slug")
         tender = get_object_or_404(Tender.objects.all(), slug=tender_slug)
-        if tender.status != tender_constants.STATUS_VALIDATED:
+        if tender.status != tender_constants.STATUS_SENT:
             return TenderAuthorOrAdminRequiredMixin.test_func(self)
         return True
 

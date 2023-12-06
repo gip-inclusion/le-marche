@@ -21,7 +21,7 @@ from lemarche.utils.data import get_choice
 from lemarche.utils.mixins import (
     SesameTenderAuthorRequiredMixin,
     SiaeUserRequiredOrSiaeIdParamMixin,
-    TenderAuthorOrAdminRequiredIfNotValidatedMixin,
+    TenderAuthorOrAdminRequiredIfNotSentMixin,
     TenderAuthorOrAdminRequiredMixin,
 )
 from lemarche.www.siaes.forms import SiaeFilterForm
@@ -324,7 +324,7 @@ class TenderListView(LoginRequiredMixin, ListView):
         return context
 
 
-class TenderDetailView(TenderAuthorOrAdminRequiredIfNotValidatedMixin, DetailView):
+class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
     model = Tender
     template_name = "tenders/detail.html"
     context_object_name = "tender"

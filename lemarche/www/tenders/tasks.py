@@ -466,7 +466,7 @@ def send_author_incremental_2_days_email(tender: Tender):
         variables = {
             "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
             "TENDER_TITLE": tender.title,
-            "TENDER_VALIDATE_AT": tender.validated_at.strftime("%d %B %Y"),
+            "TENDER_VALIDATE_AT": tender.sent_at.strftime("%d %B %Y"),  # TODO: TENDER_SENT_AT?
             "TENDER_KIND": tender.get_kind_display(),
         }
 
@@ -500,7 +500,7 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
         variables = {
             "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
             "TENDER_TITLE": tender.title,
-            "TENDER_VALIDATE_AT": tender.validated_at.strftime("%d %B %Y"),
+            "TENDER_VALIDATE_AT": tender.sent_at.strftime("%d %B %Y"),  # TODO: TENDER_SENT_AT?
             "TENDER_KIND": tender.get_kind_display(),
         }
 

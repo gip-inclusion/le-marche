@@ -38,8 +38,11 @@ No need to repeat them under fieldsets!
     {% if original %}
         <div class="submit-row">
             {% if original.validated_at %}
-                <i>Validé et envoyé le {{ original.validated_at }}</i><br>
-                <button type="submit" name="_restart_tender" value="1" class="button">Renvoyer aux structures</button>
+                <i>Validé le {{ original.validated_at }}.&nbsp;</i>
+                {% if original.sent_at %}
+                    <i>Envoyé le {{ original.sent_at }}.</i><br>
+                    <button type="submit" name="_restart_tender" value="1" class="button">Renvoyer aux structures</button>
+                {% endif %}
             {% else %}
                 <button type="submit" name="_validate_tender" value="1" class="button">Valider (sauvegarder) et envoyer aux structures</button>
             {% endif %}
