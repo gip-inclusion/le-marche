@@ -68,6 +68,18 @@ PARTNER_2 = {
     # "id_accept_survey"  # not required
 }
 
+INDIVIDUAL = {
+    "id_kind": 3,
+    "first_name": "Prenom",
+    "last_name": "Nom",
+    # "phone": "012345678",  # not required
+    "email": "individual@example.com",
+    "password1": "Erls92#32",
+    "password2": "Erls92#32",
+    # "id_accept_rgpd"  # required
+    # "id_accept_survey"  # not required
+}
+
 
 def scroll_to_and_click_element(driver, element, click=True, sleep_time=1):
     """
@@ -229,6 +241,22 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._complete_form(user_profile=user_profile, with_submit=True)
 
         # should not submit form (company_name field is required)
+        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+
+    # TODO: problem with this test
+    # def test_individual_submits_signup_form_success(self):
+    #     self._complete_form(user_profile=INDIVIDUAL, with_submit=False)
+
+    #     # should redirect INDIVIDUAL to home
+    #     self._assert_signup_success(redirect_url=reverse("wagtail_serve", args=("",)))
+
+    def test_individual_submits_signup_form_error(self):
+        user_profile = INDIVIDUAL.copy()
+        del user_profile["last_name"]
+
+        self._complete_form(user_profile=user_profile, with_submit=True)
+
+        # should not submit form (last_name field is required)
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
     def test_user_submits_signup_form_with_next_param_success_and_redirect(self):
