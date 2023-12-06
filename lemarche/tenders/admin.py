@@ -136,16 +136,9 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     ordering = ["-created_at"]
 
     autocomplete_fields = ["sectors", "location", "perimeters", "author"]
-    readonly_fields = [field.name for field in Tender._meta.fields if field.name.endswith("_last_seen_date")] + [
+    readonly_fields = [field for field in Tender.READONLY_FIELDS] + [
         # slug
         # status
-        "survey_transactioned_send_date",
-        "survey_transactioned_answer",
-        "survey_transactioned_amount",
-        "survey_transactioned_feedback",
-        "survey_transactioned_answer_date",
-        "validated_at",
-        "sent_at",
         "question_count_with_link",
         "siae_count_annotated_with_link",
         "siae_email_send_count_annotated_with_link",
@@ -156,11 +149,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "logs_display",
         "extra_data_display",
         "source",
-        # "import_raw_object",
         "import_raw_object_display",
-        "created_at",
-        "published_at",
-        "updated_at",
     ]
     formfield_overrides = {
         models.TextField: {"widget": CKEditorWidget},

@@ -182,10 +182,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "tender_detail_display_count_annotated_with_link",
         "tender_detail_contact_click_count_annotated_with_link",
         "logs_display",
-        # "import_raw_object",
         "import_raw_object_display",
-        "created_at",
-        "updated_at",
     ]
     formfield_overrides = {
         ChoiceArrayField: {"widget": forms.CheckboxSelectMultiple(attrs={"class": "custom-checkbox-select-multiple"})},
@@ -231,13 +228,13 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                 )
             },
         ),
-        ("Données C2", {"fields": Siae.READONLY_FIELDS_FROM_C2}),
-        ("Données API Entreprise", {"fields": Siae.READONLY_FIELDS_FROM_API_ENTREPRISE}),
+        ("Données C2", {"fields": Siae.FIELDS_FROM_C2}),
+        ("Données API Entreprise", {"fields": Siae.FIELDS_FROM_API_ENTREPRISE}),
         (
             "Données API QPV (Quartier prioritaire de la politique de la ville)",
-            {"fields": Siae.READONLY_FIELDS_FROM_QPV},
+            {"fields": Siae.FIELDS_FROM_QPV},
         ),
-        ("Données API ZRR (Zone de revitalisation rurale)", {"fields": Siae.READONLY_FIELDS_FROM_ZRR}),
+        ("Données API ZRR (Zone de revitalisation rurale)", {"fields": Siae.FIELDS_FROM_ZRR}),
         (
             "Détails",
             {

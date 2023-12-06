@@ -4,25 +4,6 @@ from lemarche.utils.apis import api_slack
 from lemarche.utils.commands import BaseCommand
 
 
-SIAE_COUNT_FIELDS = [
-    "user_count",
-    "sector_count",
-    "network_count",
-    "group_count",
-    "offer_count",
-    "client_reference_count",
-    "label_count",
-    "image_count",
-    "etablissement_count",
-    "completion_rate",
-    "tender_count",
-    "tender_email_send_count",
-    "tender_email_link_click_count",
-    "tender_detail_display_count",
-    "tender_detail_contact_click_count",
-]
-
-
 class Command(BaseCommand):
     """
     Goal: update the '_count' fields of each Siae
@@ -47,9 +28,9 @@ class Command(BaseCommand):
 
         # Step 1a: build the queryset
         siae_queryset = (
-            Siae.objects.prefetch_related(
-                "users", "sectors", "networks", "groups", "offers", "client_references", "labels", "images"
-            )
+            Siae.objects.prefetch_many_to_many()
+            .prefetch_many_to_one()
+            .prefetch("users", "groups", "labels")
             .with_tender_stats()
             .all()
         )
@@ -58,7 +39,7 @@ class Command(BaseCommand):
         self.stdout_messages_info(f"Found {siae_queryset.count()} siaes")
 
         # Step 1b: init fields to update
-        update_fields = options["fields"] if options["fields"] else SIAE_COUNT_FIELDS
+        update_fields = options["fields"] if options["fields"] else Siae.FIELDS_STATS_COUNT
         self.stdout_messages_info(f"Fields to update: {update_fields}")
 
         # Step 2: loop on each Siae

@@ -185,18 +185,14 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
     autocomplete_fields = ["company", "partner_network"]
     readonly_fields = (
         [field.name for field in User._meta.fields if field.name.startswith("c4_")]
-        + [f"{field}_last_updated" for field in User.TRACK_UPDATE_FIELDS]
-        + [field.name for field in User._meta.fields if field.name.endswith("_last_seen_date")]
+        + [field for field in User.READONLY_FIELDS]
         + [
             "siae_count_annotated_with_link",
             "tender_count_annotated_with_link",
             "favorite_list_count_with_link",
-            "last_login",
             "image_url",
             "image_url_display",
             "extra_data",
-            "created_at",
-            "updated_at",
         ]
     )
 
