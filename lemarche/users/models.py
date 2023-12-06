@@ -133,6 +133,18 @@ class User(AbstractUser):
         "api_key",
     ]
 
+    FIELDS_STATS_COUNT = ["favorite_list_count"]
+    FIELDS_STATS_TIMESTAMPS = [
+        "api_key_last_updated",
+        "dashboard_last_seen_date",
+        "tender_list_last_seen_date",
+        "date_joined",
+        "last_login",
+        "created_at",
+        "updated_at",
+    ]
+    READONLY_FIELDS = FIELDS_STATS_COUNT + FIELDS_STATS_TIMESTAMPS
+
     # used in templates
     KIND_SIAE = user_constants.KIND_SIAE
     KIND_BUYER = user_constants.KIND_BUYER
