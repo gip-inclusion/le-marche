@@ -44,6 +44,9 @@ class TenderQuerySet(models.QuerySet):
     def validated(self):
         return self.filter(validated_at__isnull=False)
 
+    def validated_but_not_sent(self):
+        return self.filter(validated_at__isnull=False).filter(sent_at__isnull=True)
+
     def sent(self):
         return self.filter(sent_at__isnull=False)
 
@@ -644,7 +647,7 @@ class Tender(models.Model):
 
     @property
     def is_validated(self) -> bool:
-        return self.validated_at and self.status == tender_constants.STATUS_VALIDATED
+        return bool(self.validated_at) and self.status == tender_constants.STATUS_VALIDATED
 
     @property
     def is_pending_validation_or_validated(self) -> bool:
@@ -652,28 +655,31 @@ class Tender(models.Model):
 
     @property
     def is_sent(self) -> bool:
-        return self.sent_at and self.status == tender_constants.STATUS_SENT
+        return bool(self.sent_at) and self.status == tender_constants.STATUS_SENT
 
     @property
     def is_validated_or_sent(self) -> bool:
         return self.is_validated or self.is_sent
 
-    def set_validated_and_sent(self, with_save=True):
+    def set_validated(self):
         self.validated_at = timezone.now()
-        self.sent_at = timezone.now()
-        self.status = tender_constants.STATUS_SENT
+        self.status = tender_constants.STATUS_VALIDATED
         log_item = {
             "action": "validate",
             "date": self.validated_at.isoformat(),
         }
         self.logs.append(log_item)
+        self.save()
+
+    def set_sent(self):
+        self.sent_at = timezone.now()
+        self.status = tender_constants.STATUS_SENT
         log_item = {
             "action": "send",
             "date": self.sent_at.isoformat(),
         }
         self.logs.append(log_item)
-        if with_save:
-            self.save()
+        self.save()
 
 
 class TenderSiaeQuerySet(models.QuerySet):

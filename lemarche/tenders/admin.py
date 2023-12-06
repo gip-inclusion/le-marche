@@ -1,12 +1,10 @@
 from ckeditor.widgets import CKEditorWidget
 from django import forms
-from django.conf import settings
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db import models
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.html import format_html
 from django_admin_filters import MultiChoice
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
@@ -18,13 +16,8 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderStepsData
 from lemarche.utils.admin.admin_site import admin_site
-from lemarche.utils.apis import api_hubspot
 from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
-from lemarche.www.tenders.tasks import (
-    send_confirmation_published_email_to_author,
-    send_tender_emails_to_partners,
-    send_tender_emails_to_siaes,
-)
+from lemarche.www.tenders.tasks import restart_send_tender_task
 
 
 class KindFilter(MultiChoice):
@@ -93,29 +86,6 @@ class TenderQuestionInline(admin.TabularInline):
     fields = ["text", "created_at", "updated_at"]
     readonly_fields = ["created_at", "updated_at"]
     extra = 0
-
-
-def validate_and_send_tender_task(tender: Tender):
-    # 1) validate the tender
-    tender.set_validated_and_sent(with_save=True)
-    # 2) find the matching Siaes? done in Tender post_save signal
-    send_confirmation_published_email_to_author(tender, nb_matched_siaes=tender.siaes.count())
-    # 3) send the tender to all matching Siaes & Partners
-    send_tender_emails_to_siaes(tender)
-    send_tender_emails_to_partners(tender)
-
-
-def restart_send_tender_task(tender: Tender):
-    # 1) log the tender send restart
-    log_item = {
-        "action": "restart_send",
-        "date": timezone.now().isoformat(),
-    }
-    tender.logs.append(log_item)
-    tender.save()
-    # 2) send the tender to all matching Siaes & Partners
-    send_tender_emails_to_siaes(tender)
-    send_tender_emails_to_partners(tender)
 
 
 @admin.register(Tender, site=admin_site)
@@ -425,7 +395,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         url = reverse("admin:siaes_siae_changelist") + f"?tenders__in={tender.id}"
         return format_html(f'<a href="{url}">{getattr(tender, "siae_count_annotated", 0)}</a>')
 
-    siae_count_annotated_with_link.short_description = "Structures concernées"
+    siae_count_annotated_with_link.short_description = "S. concernées"
     siae_count_annotated_with_link.admin_order_field = "siae_count_annotated"
 
     def siae_email_send_count_annotated_with_link(self, tender):
@@ -494,10 +464,8 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         Catch submit of custom admin button to Validate or Resend Tender
         """
         if request.POST.get("_validate_tender"):
-            validate_and_send_tender_task(tender=obj)
-            self.message_user(request, "Ce dépôt de besoin a été validé et envoyé aux structures")
-            if settings.BITOUBI_ENV == "prod":
-                api_hubspot.create_deal_from_tender(tender=obj)
+            obj.set_validated()
+            self.message_user(request, "Ce dépôt de besoin a été validé. Il sera envoyé en temps voulu :)")
             return HttpResponseRedirect(".")
         elif request.POST.get("_restart_tender"):
             restart_send_tender_task(tender=obj)

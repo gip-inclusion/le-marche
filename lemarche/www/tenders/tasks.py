@@ -8,10 +8,36 @@ from sesame.utils import get_query_string as sesame_get_query_string
 
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
-from lemarche.utils.apis import api_mailjet, api_slack
+from lemarche.utils.apis import api_hubspot, api_mailjet, api_slack
 from lemarche.utils.data import date_to_string
 from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_admin_url_object, get_domain_url, get_share_url_object
+
+
+def send_validated_tender(tender: Tender):
+    # find the matching Siaes? done in Tender post_save signal
+    # notify author
+    send_confirmation_published_email_to_author(tender, nb_matched_siaes=tender.siaes.count())
+    # send the tender to all matching Siaes & Partners
+    send_tender_emails_to_siaes(tender)
+    send_tender_emails_to_partners(tender)
+    # log
+    tender.set_sent()
+    if settings.BITOUBI_ENV == "prod":
+        api_hubspot.create_deal_from_tender(tender=tender)
+
+
+def restart_send_tender_task(tender: Tender):
+    # send the tender to all matching Siaes & Partners
+    send_tender_emails_to_siaes(tender)
+    send_tender_emails_to_partners(tender)
+    # log
+    log_item = {
+        "action": "restart_send",
+        "date": timezone.now().isoformat(),
+    }
+    tender.logs.append(log_item)
+    tender.save()
 
 
 # @task()
