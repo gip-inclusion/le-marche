@@ -555,7 +555,7 @@ class Siae(models.Model):
         "tender_detail_contact_click_count",
     ]
     FIELDS_STATS_TIMESTAMPS = ["signup_date", "content_filled_basic_date", "created_at", "updated_at"]
-    FIELDS_STATS = FIELDS_STATS_COUNT + FIELDS_STATS_TIMESTAMPS + ["completion_rate"]
+    FIELDS_STATS = FIELDS_STATS_COUNT + FIELDS_STATS_TIMESTAMPS + ["super_badge", "completion_rate"]
     READONLY_FIELDS = (
         FIELDS_FROM_C1 + FIELDS_FROM_C2 + FIELDS_FROM_QPV + FIELDS_FROM_ZRR + FIELDS_FROM_API_ENTREPRISE + FIELDS_STATS
     )
@@ -564,6 +564,7 @@ class Siae(models.Model):
         # update coords
         "address",
         # set last_updated fields
+        "super_badge",
         "employees_insertion_count",
         "employees_permanent_count",
         "ca",
