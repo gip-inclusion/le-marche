@@ -707,6 +707,14 @@ class Siae(models.Model):
     )
     # ForeignKeys: offers, client_references, labels_old, images
 
+    # super badge
+    super_badge = models.BooleanField(
+        "Badge 'Super prestataire inclusif'", help_text=RECALCULATED_FIELD_HELP_TEXT, blank=True, null=True
+    )
+    super_badge_last_updated = models.DateTimeField(
+        verbose_name="Date de dernière mise à jour du badge 'Super prestataire inclusif'", blank=True, null=True
+    )
+
     # C2 (ETP)
     c2_etp_count = models.FloatField("Nombre d'ETP (C2)", blank=True, null=True)
     c2_etp_count_date_saisie = models.DateField("Date de saisie du nombre d'ETP (C2)", blank=True, null=True)
