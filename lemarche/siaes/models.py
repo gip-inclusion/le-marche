@@ -1083,7 +1083,11 @@ class Siae(models.Model):
 
     @property
     def super_badge_calculated(self):
-        if (self.user_count >= 1) and (self.completion_rate >= 80) and (self.tender_email_send_count >= 1):
+        if (
+            (self.user_count >= 1)
+            and (self.completion_rate and self.completion_rate >= 80)
+            and (self.tender_email_send_count >= 1)
+        ):
             tender_view_rate = round(100 * self.tender_email_link_click_count / self.tender_email_send_count)
             tender_interested_rate = round(100 * self.tender_detail_contact_click_count / self.tender_email_send_count)
             if (tender_view_rate >= 40) or (tender_interested_rate >= 20):
@@ -1158,6 +1162,17 @@ class Siae(models.Model):
 
     def get_absolute_url(self):
         return reverse("siae:detail", kwargs={"slug": self.slug})
+
+    def set_super_badge(self):
+        UPDATE_FIELDS = ["super_badge"]
+        siae_super_badge_current_value = self.super_badge
+        self.super_badge = self.super_badge_calculated
+
+        if self.super_badge != siae_super_badge_current_value:
+            self.super_badge_last_updated = timezone.now()
+            UPDATE_FIELDS.append("super_badge_last_updated")
+
+        self.save(update_fields=UPDATE_FIELDS)
 
 
 @receiver(post_save, sender=Siae)
