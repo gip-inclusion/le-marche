@@ -647,7 +647,7 @@ class Tender(models.Model):
 
     @property
     def is_validated(self) -> bool:
-        return self.validated_at and self.status == tender_constants.STATUS_VALIDATED
+        return bool(self.validated_at) and self.status == tender_constants.STATUS_VALIDATED
 
     @property
     def is_pending_validation_or_validated(self) -> bool:
@@ -655,7 +655,7 @@ class Tender(models.Model):
 
     @property
     def is_sent(self) -> bool:
-        return self.sent_at and self.status == tender_constants.STATUS_SENT
+        return bool(self.sent_at) and self.status == tender_constants.STATUS_SENT
 
     @property
     def is_validated_or_sent(self) -> bool:

@@ -395,7 +395,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         url = reverse("admin:siaes_siae_changelist") + f"?tenders__in={tender.id}"
         return format_html(f'<a href="{url}">{getattr(tender, "siae_count_annotated", 0)}</a>')
 
-    siae_count_annotated_with_link.short_description = "Structures concernées"
+    siae_count_annotated_with_link.short_description = "S. concernées"
     siae_count_annotated_with_link.admin_order_field = "siae_count_annotated"
 
     def siae_email_send_count_annotated_with_link(self, tender):
