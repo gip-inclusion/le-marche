@@ -40,11 +40,12 @@ No need to repeat them under fieldsets!
             {% if original.validated_at %}
                 <i>Validé le {{ original.validated_at }}.&nbsp;</i>
                 {% if original.sent_at %}
-                    <i>Envoyé le {{ original.sent_at }}.</i><br>
-                    <button type="submit" name="_restart_tender" value="1" class="button">Renvoyer aux structures</button>
+                    <i>Envoyé le {{ original.sent_at }}.</i>
+                    <button type="submit" class="button" name="_restart_tender" value="1">Renvoyer aux structures</button>
                 {% endif %}
             {% else %}
-                <button type="submit" name="_validate_tender" value="1" class="button">Valider (sauvegarder) et envoyer aux structures</button>
+                <button type="submit" class="button" name="_validate_tender" value="1">Valider (sauvegarder) et envoyer aux structures</button>
+                <i>L'envoi des besoins 'validés' se fait toutes les 5 minutes, du Lundi au Vendredi, entre 9h et 17h</i>
             {% endif %}
         </div>
     {% endif %}
