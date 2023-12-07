@@ -65,7 +65,7 @@ def get_or_create_user_from_anonymous_content(
             "company_name": tender_dict.get("contact_company_name")
             if tender_dict.get("contact_company_name")
             else "Particulier",
-            "kind": User.KIND_BUYER,  # not necessarily true, could be a PARTNER
+            "kind": User.KIND_BUYER if tender_dict.get("contact_company_name") else User.KIND_INDIVIDUAL,
             "source": source,
         },
     )
