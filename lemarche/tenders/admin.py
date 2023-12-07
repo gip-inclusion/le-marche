@@ -2,6 +2,7 @@ from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -12,6 +13,7 @@ from fieldsets_with_inlines import FieldsetsInlineMixin
 
 from lemarche.notes.models import Note
 from lemarche.perimeters.admin import PerimeterRegionFilter
+from lemarche.perimeters.models import Perimeter
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderStepsData
@@ -88,6 +90,26 @@ class TenderQuestionInline(admin.TabularInline):
     extra = 0
 
 
+class TenderForm(forms.ModelForm):
+    class Meta:
+        model = Tender
+        fields = "__all__"
+
+    def clean(self):
+        """
+        Add validation on form rules:
+        - if distance_location is set, then location must be filled + a city
+        """
+        cleaned_data = super().clean()
+        distance_location = cleaned_data.get("distance_location")
+        if distance_location:
+            location = cleaned_data.get("location")
+            if not location:
+                raise ValidationError({"location": "Distance en km est spécifié, ce champ doit donc être rempli"})
+            if location.kind != Perimeter.KIND_CITY:
+                raise ValidationError({"location": "Distance en km est spécifié, ce champ doit être une ville"})
+
+
 @admin.register(Tender, site=admin_site)
 class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     list_display = [
@@ -135,6 +157,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     search_help_text = "Cherche sur les champs : ID, Titre, Slug, Auteur (ID, E-mail)"
     ordering = ["-created_at"]
 
+    form = TenderForm
     autocomplete_fields = ["sectors", "location", "perimeters", "author"]
     readonly_fields = [field for field in Tender.READONLY_FIELDS] + [
         # slug
