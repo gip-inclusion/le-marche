@@ -105,9 +105,13 @@ class TenderForm(forms.ModelForm):
         if distance_location:
             location = cleaned_data.get("location")
             if not location:
-                raise ValidationError({"location": "Distance en km est spécifié, ce champ doit donc être rempli"})
+                raise ValidationError(
+                    {"location": "Le champ 'Distance en km' est spécifié, ce champ doit donc être rempli"}
+                )
             if location.kind != Perimeter.KIND_CITY:
-                raise ValidationError({"location": "Distance en km est spécifié, ce champ doit être une ville"})
+                raise ValidationError(
+                    {"location": "Le champ 'Distance en km' est spécifié, ce champ doit être une ville"}
+                )
 
 
 @admin.register(Tender, site=admin_site)
