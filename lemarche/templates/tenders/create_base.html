@@ -97,6 +97,16 @@
                                     <div class="row">
                                         <div class="col-12 col-lg-7">
                                             <div class="form-row align-items-center {% if wizard.steps.prev %}justify-content-between{% else %}justify-content-end{% endif %}">
+                                                {% block submit_btn %}
+                                                    <div class="form-group col-6 col-lg-auto order-2 order-lg-3">
+                                                        <button type="submit"
+                                                                id="tender-create-{{ wizard.steps.current }}-form-next-step-btn"
+                                                                class="btn btn-primary btn-block"
+                                                                aria-label="Passer à l'étape suivante">
+                                                            Étape Suivante
+                                                        </button>
+                                                    </div>
+                                                {% endblock submit_btn %}
                                                 {% if wizard.steps.prev %}
                                                     <div class="form-group col-12 col-lg order-3 order-lg-1">
                                                         <button type="submit"
@@ -111,16 +121,6 @@
                                                         </button>
                                                     </div>
                                                 {% endif %}
-                                                {% block submit_btn %}
-                                                    <div class="form-group col-6 col-lg-auto order-2 order-lg-3">
-                                                        <button type="submit"
-                                                                id="tender-create-{{ wizard.steps.current }}-form-next-step-btn"
-                                                                class="btn btn-primary btn-block"
-                                                                aria-label="Passer à l'étape suivante">
-                                                            Étape Suivante
-                                                        </button>
-                                                    </div>
-                                                {% endblock submit_btn %}
                                             </div>
                                         </div>
                                     </div>
