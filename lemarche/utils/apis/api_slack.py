@@ -28,7 +28,7 @@ def get_default_client(params={}):
 
 @task()
 def send_message_to_channel(
-    text: str, service_id: str = settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL, client: requests.Session = None
+    text: str, service_id: str = settings.SLACK_WEBHOOK_C4_TECH_NOTIFICATIONS_CHANNEL, client: requests.Session = None
 ):
     """Huey task to send message to specific payload for specific slack service
 
