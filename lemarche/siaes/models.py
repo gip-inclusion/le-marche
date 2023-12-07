@@ -1164,15 +1164,15 @@ class Siae(models.Model):
         return reverse("siae:detail", kwargs={"slug": self.slug})
 
     def set_super_badge(self):
-        UPDATE_FIELDS = ["super_badge"]
+        update_fields_list = ["super_badge"]
         siae_super_badge_current_value = self.super_badge
         self.super_badge = self.super_badge_calculated
 
         if self.super_badge != siae_super_badge_current_value:
             self.super_badge_last_updated = timezone.now()
-            UPDATE_FIELDS.append("super_badge_last_updated")
+            update_fields_list.append("super_badge_last_updated")
 
-        self.save(update_fields=UPDATE_FIELDS)
+        self.save(update_fields=update_fields_list)
 
 
 @receiver(post_save, sender=Siae)

@@ -137,7 +137,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "siret",
         "kind",
         "city",
-        # "super_badge",
+        "super_badge",
         "user_count_with_link",
         "tender_email_send_count_annotated_with_link",
         "tender_detail_display_count_annotated_with_link",
