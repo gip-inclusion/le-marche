@@ -8,7 +8,7 @@ class Command(BaseCommand):
     """
     Goal: update the '_count' fields of each Siae
 
-    Note: these fields should be updated automatically on each Siae save()
+    Note: some of these fields are updated on each Siae save()
 
     Usage:
     python manage.py update_siae_count_fields
