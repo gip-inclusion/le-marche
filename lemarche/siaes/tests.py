@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.utils import timezone
 
 from lemarche.labels.factories import LabelFactory
 from lemarche.networks.factories import NetworkFactory
@@ -175,6 +176,38 @@ class SiaeModelTest(TestCase):
         self.assertEqual(self.siae_ei.kind_parent, "Insertion")
         self.assertEqual(self.siae_esat.kind_parent, "Handicap")
 
+    def test_super_badge_computed_property(self):
+        siae_1 = SiaeFactory(user_count=0)
+        siae_2 = SiaeFactory(user_count=1, completion_rate=50)
+        siae_3 = SiaeFactory(
+            user_count=1, completion_rate=80, tender_email_send_count=10, tender_email_link_click_count=3
+        )
+        siae_4 = SiaeFactory(
+            user_count=1,
+            completion_rate=80,
+            tender_email_send_count=10,
+            tender_email_link_click_count=3,
+            tender_detail_contact_click_count=1,
+        )
+        siae_super_badge_1 = SiaeFactory(
+            user_count=1,
+            completion_rate=80,
+            tender_email_send_count=10,
+            tender_email_link_click_count=4,
+            tender_detail_contact_click_count=1,
+        )
+        siae_super_badge_2 = SiaeFactory(
+            user_count=1,
+            completion_rate=80,
+            tender_email_send_count=10,
+            tender_email_link_click_count=3,
+            tender_detail_contact_click_count=3,
+        )
+        for siae in [siae_1, siae_2, siae_3, siae_4]:
+            self.assertFalse(siae.super_badge_calculated)
+        for siae in [siae_super_badge_1, siae_super_badge_2]:
+            self.assertTrue(siae.super_badge_calculated)
+
 
 class SiaeModelSaveTest(TestCase):
     def setUp(self):
@@ -332,6 +365,37 @@ class SiaeModelSaveTest(TestCase):
     #     siae.save()
     #     siae = Siae.objects.get(id=siae.id)  # we need to fetch it again to make sure
     #     self.assertNotEqual(siae.coords, None)
+
+    def test_set_super_badge(self):
+        # None -> True
+        siae_super_badge_1 = SiaeFactory(
+            user_count=1,
+            completion_rate=80,
+            tender_email_send_count=10,
+            tender_email_link_click_count=4,
+            tender_detail_contact_click_count=1,
+        )
+        self.assertIsNone(siae_super_badge_1.super_badge)
+        self.assertIsNone(siae_super_badge_1.super_badge_last_updated)
+        siae_super_badge_1.set_super_badge()
+        self.assertTrue(siae_super_badge_1.super_badge)
+        self.assertIsNotNone(siae_super_badge_1.super_badge_last_updated)
+        # True -> True
+        siae_super_badge_2 = SiaeFactory(
+            user_count=1,
+            completion_rate=80,
+            tender_email_send_count=10,
+            tender_email_link_click_count=3,
+            tender_detail_contact_click_count=3,
+            super_badge=True,
+            super_badge_last_updated=timezone.now(),
+        )
+        self.assertTrue(siae_super_badge_2.super_badge)
+        self.assertIsNotNone(siae_super_badge_2.super_badge_last_updated)
+        siae_super_badge_last_updated_current_value = siae_super_badge_2.super_badge_last_updated
+        siae_super_badge_2.set_super_badge()
+        self.assertTrue(siae_super_badge_2.super_badge)
+        self.assertEqual(siae_super_badge_2.super_badge_last_updated, siae_super_badge_last_updated_current_value)
 
 
 class SiaeModelQuerysetTest(TestCase):

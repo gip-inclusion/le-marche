@@ -555,7 +555,7 @@ class Siae(models.Model):
         "tender_detail_contact_click_count",
     ]
     FIELDS_STATS_TIMESTAMPS = ["signup_date", "content_filled_basic_date", "created_at", "updated_at"]
-    FIELDS_STATS = FIELDS_STATS_COUNT + FIELDS_STATS_TIMESTAMPS + ["completion_rate"]
+    FIELDS_STATS = FIELDS_STATS_COUNT + FIELDS_STATS_TIMESTAMPS + ["super_badge", "completion_rate"]
     READONLY_FIELDS = (
         FIELDS_FROM_C1 + FIELDS_FROM_C2 + FIELDS_FROM_QPV + FIELDS_FROM_ZRR + FIELDS_FROM_API_ENTREPRISE + FIELDS_STATS
     )
@@ -564,6 +564,7 @@ class Siae(models.Model):
         # update coords
         "address",
         # set last_updated fields
+        "super_badge",
         "employees_insertion_count",
         "employees_permanent_count",
         "ca",
@@ -706,6 +707,14 @@ class Siae(models.Model):
         blank=True,
     )
     # ForeignKeys: offers, client_references, labels_old, images
+
+    # super badge
+    super_badge = models.BooleanField(
+        "Badge 'Super prestataire inclusif'", help_text=RECALCULATED_FIELD_HELP_TEXT, blank=True, null=True
+    )
+    super_badge_last_updated = models.DateTimeField(
+        verbose_name="Date de dernière mise à jour du badge 'Super prestataire inclusif'", blank=True, null=True
+    )
 
     # C2 (ETP)
     c2_etp_count = models.FloatField("Nombre d'ETP (C2)", blank=True, null=True)
@@ -1073,6 +1082,19 @@ class Siae(models.Model):
             return "l'ASP"
 
     @property
+    def super_badge_calculated(self):
+        if (
+            (self.user_count >= 1)
+            and (self.completion_rate and self.completion_rate >= 80)
+            and (self.tender_email_send_count >= 1)
+        ):
+            tender_view_rate = round(100 * self.tender_email_link_click_count / self.tender_email_send_count)
+            tender_interested_rate = round(100 * self.tender_detail_contact_click_count / self.tender_email_send_count)
+            if (tender_view_rate >= 40) or (tender_interested_rate >= 20):
+                return True
+        return False
+
+    @property
     def completion_rate_calculated(self):
         score, total = 0, 0
         for key, value in siae_constants.SIAE_COMPLETION_SCORE_GRID.items():
@@ -1140,6 +1162,17 @@ class Siae(models.Model):
 
     def get_absolute_url(self):
         return reverse("siae:detail", kwargs={"slug": self.slug})
+
+    def set_super_badge(self):
+        update_fields_list = ["super_badge"]
+        siae_super_badge_current_value = self.super_badge
+        self.super_badge = self.super_badge_calculated
+
+        if self.super_badge != siae_super_badge_current_value:
+            self.super_badge_last_updated = timezone.now()
+            update_fields_list.append("super_badge_last_updated")
+
+        self.save(update_fields=update_fields_list)
 
 
 @receiver(post_save, sender=Siae)
