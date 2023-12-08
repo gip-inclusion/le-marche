@@ -152,7 +152,7 @@ class Command(BaseCommand):
             f"Siae delisted: before {siae_delisted_before} / after {siae_delisted_after}",
         ]
         self.stdout_messages_success(msg_success)
-        api_slack.send_message_to_channel("\n".join(msg_success))
+        api_slack.send_message_to_channel("\n".join(msg_success), service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL)
 
     def c1_export(self):  # noqa C901
         try:

@@ -82,10 +82,14 @@ class Command(BaseCommand):
                 f"ETP count updated: {siae_etp_updated_count}",
             ]
             self.stdout_messages_success(msg_success)
-            api_slack.send_message_to_channel("\n".join(msg_success))
+            api_slack.send_message_to_channel(
+                "\n".join(msg_success), service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL
+            )
         except Exception as e:
             self.stdout_error(str(e))
-            api_slack.send_message_to_channel("Erreur lors de la synchronisation C2 <-> C4")
+            api_slack.send_message_to_channel(
+                "Erreur lors de la synchronisation C2 <-> C4", service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL
+            )
             raise Exception(e)
 
     def c2_etp_export(self):
