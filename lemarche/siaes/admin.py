@@ -137,6 +137,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "siret",
         "kind",
         "city",
+        "super_badge",
         "user_count_with_link",
         "tender_email_send_count_annotated_with_link",
         "tender_detail_display_count_annotated_with_link",
@@ -153,6 +154,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "is_first_page",
         HasUserFilter,
         "kind",
+        "super_badge",
         "geo_range",
         "source",
         "networks",
@@ -163,27 +165,31 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
 
     autocomplete_fields = ["sectors", "networks", "groups"]
     # prepopulated_fields = {"slug": ("name",)}
-    readonly_fields = [field for field in Siae.READONLY_FIELDS if field not in ("coords")] + [
-        "siren",
-        "sector_count_with_link",
-        "network_count_with_link",
-        "group_count_with_link",
-        "offer_count_with_link",
-        "label_count_with_link",
-        "client_reference_count_with_link",
-        "user_count_with_link",
-        "image_count_with_link",
-        "coords_display",
-        "logo_url",
-        "logo_url_display",
-        "tender_count_annotated_with_link",
-        "tender_email_send_count_annotated_with_link",
-        "tender_email_link_click_count_annotated_with_link",
-        "tender_detail_display_count_annotated_with_link",
-        "tender_detail_contact_click_count_annotated_with_link",
-        "logs_display",
-        "import_raw_object_display",
-    ]
+    readonly_fields = (
+        [field for field in Siae.READONLY_FIELDS if field not in ("coords")]
+        + [f"{field}_last_updated" for field in Siae.TRACK_UPDATE_FIELDS if field not in ("address")]
+        + [
+            "siren",
+            "sector_count_with_link",
+            "network_count_with_link",
+            "group_count_with_link",
+            "offer_count_with_link",
+            "label_count_with_link",
+            "client_reference_count_with_link",
+            "user_count_with_link",
+            "image_count_with_link",
+            "coords_display",
+            "logo_url",
+            "logo_url_display",
+            "tender_count_annotated_with_link",
+            "tender_email_send_count_annotated_with_link",
+            "tender_email_link_click_count_annotated_with_link",
+            "tender_detail_display_count_annotated_with_link",
+            "tender_detail_contact_click_count_annotated_with_link",
+            "logs_display",
+            "import_raw_object_display",
+        ]
+    )
     formfield_overrides = {
         ChoiceArrayField: {"widget": forms.CheckboxSelectMultiple(attrs={"class": "custom-checkbox-select-multiple"})},
     }
@@ -299,6 +305,15 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "tender_email_link_click_count_annotated_with_link",
                     "tender_detail_display_count_annotated_with_link",
                     "tender_detail_contact_click_count_annotated_with_link",
+                )
+            },
+        ),
+        (
+            "Badge 'Super prestataire inclusif'",
+            {
+                "fields": (
+                    "super_badge",
+                    "super_badge_last_updated",
                 )
             },
         ),
