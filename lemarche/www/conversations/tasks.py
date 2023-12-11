@@ -4,8 +4,8 @@ from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
 
 
 DISCLAIMER_ATTACHMENTS = (
-    "\nVeuillez noter que cette conversation email ne prend pas en charge les pièces jointes.\n"
-    "Pour envoyer un document, un devis ou autre, demandez les coordonnées direct de votre interlocuteur"
+    "\n\n<i>Veuillez noter que cette conversation email ne prend pas en charge les pièces jointes.\n"
+    "Pour envoyer un document, un devis ou autre, demandez les coordonnées direct de votre interlocuteur</i>"
 )
 
 
@@ -20,8 +20,9 @@ def send_first_email_from_conversation(conv: Conversation):
     disclaimer = (
         f"\n\n{conv.sender_first_name} {conv.sender_last_name}\n"
         f"{sender_company_name}"
-        f"Ce client vous a contacté via le Marché de l'inclusion. "
-        "Pour échanger avec lui, répondez simplement à cet e-mail.\n"
+        f"\n\n{'*'*80}\n\n"
+        f"<i>Ce client vous a contacté via le Marché de l'inclusion. "
+        "Pour échanger avec lui, répondez simplement à cet e-mail.</i>\n"
     ) + DISCLAIMER_ATTACHMENTS
 
     send_mail_async(
