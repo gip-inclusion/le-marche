@@ -56,16 +56,26 @@ def get_or_create_user_from_anonymous_content(
     tender_dict: dict, source: str = user_constants.SOURCE_TENDER_FORM
 ) -> User:
     email = tender_dict.get("contact_email").lower()
+    kind = (
+        tender_dict.get("contact_kind")
+        if tender_dict.get("contact_kind")
+        else (User.KIND_BUYER if tender_dict.get("contact_company_name") else User.KIND_INDIVIDUAL)
+    )
+    buyer_kind_detail = (
+        tender_dict.get("contact_buyer_kind_detail") if tender_dict.get("contact_buyer_kind_detail") else ""
+    )
+    company_name = (
+        tender_dict.get("contact_company_name") if tender_dict.get("contact_company_name") else "Particulier"
+    )
     user, created = User.objects.get_or_create(
         email=email,
         defaults={
             "first_name": tender_dict.get("contact_first_name"),
             "last_name": tender_dict.get("contact_last_name"),
             "phone": tender_dict.get("contact_phone"),
-            "company_name": tender_dict.get("contact_company_name")
-            if tender_dict.get("contact_company_name")
-            else "Particulier",
-            "kind": User.KIND_BUYER if tender_dict.get("contact_company_name") else User.KIND_INDIVIDUAL,
+            "kind": kind,
+            "buyer_kind_detail": buyer_kind_detail,
+            "company_name": company_name,
             "source": source,
         },
     )
