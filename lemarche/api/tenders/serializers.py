@@ -32,6 +32,7 @@ class TenderSerializer(serializers.ModelSerializer):
             "external_link",
             "constraints",
             "amount",
+            "amount_exact",
             "why_amount_is_blank",
             "accept_share_amount",
             "accept_cocontracting",
