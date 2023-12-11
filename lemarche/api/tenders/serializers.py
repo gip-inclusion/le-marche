@@ -3,6 +3,7 @@ from rest_framework import serializers
 from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.tenders.models import Tender
+from lemarche.users import constants as user_constants
 
 
 class TenderSerializer(serializers.ModelSerializer):
@@ -14,6 +15,13 @@ class TenderSerializer(serializers.ModelSerializer):
         queryset=Perimeter.objects.all(), slug_field="slug", allow_null=True, required=False
     )
     extra_data = serializers.JSONField(required=False)
+    # non-model fields
+    contact_kind = serializers.ChoiceField(
+        choices=user_constants.KIND_CHOICES, allow_blank=True, write_only=True, required=False
+    )
+    contact_buyer_kind_detail = serializers.ChoiceField(
+        choices=user_constants.BUYER_KIND_DETAIL_CHOICES, allow_blank=True, write_only=True, required=False
+    )
 
     class Meta:
         model = Tender
@@ -47,4 +55,7 @@ class TenderSerializer(serializers.ModelSerializer):
             "deadline_date",
             # extra data
             "extra_data",
+            # non-model fields
+            "contact_kind",
+            "contact_buyer_kind_detail",
         ]

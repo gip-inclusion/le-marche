@@ -26,17 +26,28 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         return super().create(request, args, kwargs)
 
     def perform_create(self, serializer: TenderSerializer):
+        """
+        - set Tender source
+        - set Tender author (create user if it doesn't exist)
+        - pop non-model fields
+        - create Tender !
+        """
         source = (
             tender_constants.SOURCE_TALLY
             if serializer.validated_data.get("extra_data", {}).get("source") == tender_constants.SOURCE_TALLY
             else tender_constants.SOURCE_API
         )
+        # get Tender author
         user = get_or_create_user_from_anonymous_content(
             serializer.validated_data,
             source=user_constants.SOURCE_TALLY_FORM
             if source == tender_constants.SOURCE_TALLY
             else user_constants.SOURCE_SIGNUP_FORM,
         )
+        # pop non-model fields
+        serializer.validated_data.pop("contact_kind", None)
+        serializer.validated_data.pop("contact_buyer_kind_detail", None)
+        # create Tender
         serializer.save(
             author=user,
             status=tender_constants.STATUS_PUBLISHED,
