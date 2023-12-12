@@ -99,6 +99,12 @@ def scroll_to_and_click_element(driver, element, click=True, sleep_time=1):
             driver.execute_script("arguments[0].click();", element)
 
 
+def element_select_option(driver, element, option=""):
+    field_select = Select(element)
+    scroll_to_and_click_element(driver, element, click=False)
+    field_select.select_by_visible_text(option)
+
+
 class SignupFormTest(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
@@ -182,9 +188,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self._complete_form(user_profile=BUYER, with_submit=False)
 
         buyer_kind_detail_select_element = self.driver.find_element(By.CSS_SELECTOR, "select#id_buyer_kind_detail")
-        buyer_kind_detail_select = Select(buyer_kind_detail_select_element)
-        scroll_to_and_click_element(self.driver, buyer_kind_detail_select_element, click=False)
-        buyer_kind_detail_select.select_by_visible_text("Grand groupe (+5000 salariés)")
+        element_select_option(self.driver, buyer_kind_detail_select_element, "Grand groupe (+5000 salariés)")
 
         submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
         scroll_to_and_click_element(self.driver, submit_element)
@@ -194,6 +198,10 @@ class SignupFormTest(StaticLiveServerTestCase):
 
     def test_buyer_submits_signup_form_success_extra_data(self):
         self._complete_form(user_profile=BUYER, with_submit=False)
+
+        buyer_kind_detail_select_element = self.driver.find_element(By.CSS_SELECTOR, "select#id_buyer_kind_detail")
+        element_select_option(self.driver, buyer_kind_detail_select_element, "Grand groupe (+5000 salariés)")
+
         nb_of_handicap = "3"
         nb_of_inclusive = "4"
         nb_of_handicap_provider_2022_element = self.driver.find_element(

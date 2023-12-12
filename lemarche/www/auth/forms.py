@@ -16,6 +16,7 @@ class SignupForm(UserCreationForm):
         (User.KIND_PARTNER, "Un partenaire (réseaux, facilitateurs)"),
         (User.KIND_INDIVIDUAL, "Un particulier"),
     )
+    FORM_BUYER_KIND_DETAIL_CHOICES = EMPTY_CHOICE + user_constants.BUYER_KIND_DETAIL_CHOICES
     FORM_PARTNER_KIND_CHOICES = EMPTY_CHOICE + user_constants.PARTNER_KIND_CHOICES
 
     kind = forms.ChoiceField(label="", widget=forms.RadioSelect, choices=KIND_CHOICES_FORM, required=True)
@@ -30,7 +31,7 @@ class SignupForm(UserCreationForm):
     )
     # buyer_kind_detail is hidden by default in the frontend. Shown if the user choses kind BUYER
     buyer_kind_detail = forms.ChoiceField(
-        label="Type de votre organisation", choices=user_constants.BUYER_KIND_DETAIL_CHOICES, required=False
+        label="Type de votre organisation", choices=FORM_BUYER_KIND_DETAIL_CHOICES, required=False
     )
     # company_name is hidden by default in the frontend. Shown if the user choses kind BUYER or PARTNER
     company_name = forms.CharField(
