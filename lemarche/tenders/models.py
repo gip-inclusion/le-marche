@@ -430,7 +430,17 @@ class Tender(models.Model):
         null=True,
         default=None,
     )
+    limit_send_to_siae_batch = models.PositiveSmallIntegerField(
+        verbose_name="Nombre de SIAES par envoi",
+        help_text="Champ renseigné par un ADMIN",
+        default=10,
+    )
 
+    limit_nb_siae_interested = models.PositiveSmallIntegerField(
+        verbose_name="Limite des SIAES intéressées",
+        help_text="Champ renseigné par un ADMIN",
+        default=5,
+    )
     # stats
     siae_count = models.IntegerField(
         "Nombre de structures concernées", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
