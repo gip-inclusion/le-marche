@@ -9,8 +9,10 @@ class Command(BaseCommand):
     Command to send validated tenders
 
     Note: run via a CRON
-    "*/5 9-17 * * 1-5" = Every 5 minutes from 9am through 5pm, Monday through Friday
-    https://cron.help/#*/5_9-17_*_*_1-5
+    "*/5 8-15 * * 1-5" = Every 5 minutes from 8am through 3pm, Monday through Friday
+    https://cron.help/#*/5_8-15_*_*_1-5
+    - why 8am and not 9am? because the server has UTC time
+    - why 3pm and not 5pm? because UTC + will run until 15h55 included
 
     Usage: python manage.py send_validated_tenders
     """
