@@ -61,10 +61,8 @@ def get_or_create_user_from_anonymous_content(
         if tender_dict.get("contact_kind")
         else (User.KIND_BUYER if tender_dict.get("contact_company_name") else User.KIND_INDIVIDUAL)
     )
-    buyer_kind_detail = (
-        tender_dict.get("contact_buyer_kind_detail") if tender_dict.get("contact_buyer_kind_detail") else ""
-    )
-    company_name = tender_dict.get("contact_company_name") if tender_dict.get("contact_company_name") else ""
+    buyer_kind_detail = tender_dict.get("contact_buyer_kind_detail", "")
+    company_name = tender_dict.get("contact_company_name", "")
     user, created = User.objects.get_or_create(
         email=email,
         defaults={
