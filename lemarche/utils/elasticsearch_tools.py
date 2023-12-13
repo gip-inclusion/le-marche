@@ -14,7 +14,7 @@ def siaes_similarity_search(search_text):
         index_name=settings.ELASTICSEARCH_INDEX_SIAES,
     )
 
-    similar_docs = db.similarity_search(search_text)
+    similar_docs = db.similarity_search(search_text, k=10)
     siaes_id = []
     for similar_doc in similar_docs:
         siaes_id.append(similar_doc.metadata["id"])
