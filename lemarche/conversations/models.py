@@ -8,6 +8,8 @@ from django.utils.text import slugify
 from django_extensions.db.fields import ShortUUIDField
 from shortuuid import uuid
 
+from lemarche.conversations import constants as conversation_constants
+
 
 class ConversationQuerySet(models.QuerySet):
     def has_answer(self):
@@ -191,6 +193,11 @@ class TemplateTransactional(models.Model):
         verbose_name="Identifiant Mailjet", unique=True, db_index=True, blank=True, null=True
     )
     brevo_id = models.IntegerField(verbose_name="Identifiant Brevo", unique=True, db_index=True, blank=True, null=True)
+
+    source = models.CharField(
+        verbose_name="Source", max_length=20, choices=conversation_constants.SOURCE_CHOICES, blank=True
+    )
+    is_active = models.BooleanField(verbose_name="Actif", default=False)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)

@@ -21,7 +21,6 @@ class Migration(migrations.Migration):
                     models.IntegerField(
                         blank=True,
                         db_index=True,
-                        max_length=20,
                         null=True,
                         unique=True,
                         verbose_name="Identifiant Mailjet",
@@ -32,7 +31,6 @@ class Migration(migrations.Migration):
                     models.IntegerField(
                         blank=True,
                         db_index=True,
-                        max_length=20,
                         null=True,
                         unique=True,
                         verbose_name="Identifiant Brevo",
