@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
+from lemarche.conversations.models import TemplateTransactional
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.utils.apis import api_hubspot, api_mailjet
@@ -43,7 +44,7 @@ def send_signup_notification_email(user):
 
 
 def send_new_user_password_reset_link(user: User):
-    email_subject = "Finalisez votre inscription sur le marché de l'inclusion"
+    email_template = TemplateTransactional.objects.get(code="NEW_USER_PASSWORD_RESET")
     recipient_list = whitelist_recipient_list([user.email])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
@@ -51,12 +52,11 @@ def send_new_user_password_reset_link(user: User):
 
         variables = {
             "USER_FIRST_NAME": user.first_name,
+            "USER_EMAIL": user.email,
             "PASSWORD_RESET_LINK": generate_password_reset_link(user),
         }
 
-        api_mailjet.send_transactional_email_with_template(
-            template_id=settings.MAILJET_NEW_USER_PASSWORD_RESET_ID,
-            subject=email_subject,
+        email_template.send_transactional_email(
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
