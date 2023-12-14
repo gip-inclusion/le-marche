@@ -98,3 +98,12 @@ a.disabled {
 .form-description-ckeditor .django-ckeditor-widget {
     width: 100%;
 }
+
+.htmx-indicator{
+    opacity:0;
+    transition: opacity 500ms ease-in;
+}
+
+.htmx-request .htmx-indicator{
+    opacity:1
+}

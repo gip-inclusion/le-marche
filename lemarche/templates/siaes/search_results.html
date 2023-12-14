@@ -51,6 +51,17 @@
                                aria-controls="search-text"
                                aria-selected="false">
                                 Recherche par SIRET / nom
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link"
+                                id="search-semantic-tab"
+                                data-toggle="tab"
+                                href="#search-semantic"
+                                role="tab"
+                                aria-controls="search-semantic"
+                                aria-selected="false">
+                                Recherche sémantique
                                 <span class="badge badge-sm badge-pill badge-important ml-2">Nouveauté</span>
                             </a>
                         </li>
@@ -192,6 +203,35 @@
                                 </div>
                             </form>
                         </div>
+                        <div class="tab-pane fade"
+                            id="search-semantic"
+                            role="tabpanel"
+                            aria-labelledby="search-semantic-tab">
+                            <form method="GET"
+                                hx-get="{% url 'siae:semantic_search_results' %}"
+                                hx-target="#searchResults"
+                                hx-indicator="#spinner"
+                                action=""
+                                id="text-semantic-search-form">
+                                {% bootstrap_form_errors form_semantic type="all" %}
+                                <div class="row">
+                                    <div class="col-12 col-lg-8">
+                                        <div class="row">
+                                            <div class="col-12">{% bootstrap_field form_semantic.search_query %}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-lg-4">
+                                        <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
+                                        <button id="text-search-submit"
+                                                class="btn btn-primary btn-block btn-ico"
+                                                type="submit">
+                                            <span>Rechercher</span>
+                                            <i class="ri-search-line ri-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -199,6 +239,7 @@
     </section>
     <section class="s-siae-02">
         <div class="container">
+            <img  id="spinner" class="htmx-indicator" src="{% static 'img/spinner-bars.svg' %}"/>
             <div id="dir_list">
                 <div id="searchResults" class="row dir_list-row">
                     <div class="col-12 col-lg-8">
@@ -247,46 +288,12 @@
                             <div id="map-siae-list" class="map-canvas"></div>
                         </div>
                         {% cms_advert layout="card" %}
-                        <div class="siae-info-sticky c-box bg-light mb-3">
-                            <div class="si-ideas">
-                                <h3 class="h4">Idées reçues</h3>
-                                <p>
-                                    <span>
-                                        <i class="ri-check-fill ri-xl font-weight-bold"></i>
-                                    </span>
-                                    <span class="ml-2">
-                                        Le prestataire est trop petit pour répondre à mon besoin…
-                                        <b>Mais il est sûrement ouvert à la co-traitance.</b>
-                                    </span>
-                                </p>
-                                <p>
-                                    <span>
-                                        <i class="ri-check-fill ri-xl font-weight-bold"></i>
-                                    </span>
-                                    <span class="ml-2">
-                                        Son chiffre d'affaires est trop bas et je ne veux pas être
-                                        son seul client… <b>Mais Vous pouvez commencer par lui confier
-                                        un marché de plus faible périmètre, sans prendre de risque,
-                                    puis faire grandir ce partenariat si vous en êtes satisfait.</b>
-                                </span>
-                            </p>
-                            <p>
-                                <span>
-                                    <i class="ri-check-fill ri-xl font-weight-bold"></i>
-                                </span>
-                                <span class="ml-2">
-                                    L'offre ne correspond pas exactement à ce que je cherche…
-                                    <b>Heureusement les entreprises sociales inclusives sont très
-                                    innovantes et s'adaptent à vos besoins.</b>
-                                </span>
-                            </p>
-                        </div>
+                        {% include "siaes/_si_ideas_search_result.html" %}
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 {% endblock %}
 {% block modals %}
     {% include "auth/_login_or_signup_modal.html" %}

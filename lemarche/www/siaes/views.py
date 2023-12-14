@@ -12,7 +12,7 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
-from django.views.generic import DetailView, FormView, ListView, UpdateView
+from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.edit import FormMixin
 
@@ -104,6 +104,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         context["position_promote_tenders"] = [5, 15]
         siae_search_form = self.get_filter_form()
         context["form"] = siae_search_form
+        context["form_semantic"] = SiaeSemanticForm()
         context["form_download"] = SiaeDownloadForm(data=self.request.GET)
         context["form_share"] = SiaeShareForm(data=self.request.GET, user=self.request.user)
         context["url_share_list"] = self.get_mailto_share_url()
@@ -335,11 +336,6 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             f"<strong>{siae.name_display}</strong> a été ajoutée à "
             f"votre liste d'achat <strong>{favorite_list.name}</strong>."
         )
-
-
-class SiaeSemanticSearchView(FormView):
-    template_name = "siaes/semantic_search.html"
-    form_class = SiaeSemanticForm
 
 
 class SiaeSemanticSearchResultsView(TemplateResponseMixin, View):
