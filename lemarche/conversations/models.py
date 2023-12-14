@@ -208,3 +208,12 @@ class TemplateTransactional(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def get_template_id(self):
+        if self.is_active and self.source:
+            if self.source == conversation_constants.SOURCE_MAILJET:
+                return self.mailjet_id
+            elif self.source == conversation_constants.SOURCE_BREVO:
+                return self.brevo_id
+        return None

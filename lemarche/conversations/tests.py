@@ -1,7 +1,8 @@
 from django.test import TestCase
 
+from lemarche.conversations import constants as conversation_constants
 from lemarche.conversations.factories import ConversationFactory
-from lemarche.conversations.models import Conversation
+from lemarche.conversations.models import Conversation, TemplateTransactional
 from lemarche.siaes.factories import SiaeFactory
 
 
@@ -64,3 +65,24 @@ class ConversationQuerysetTest(TestCase):
         conversation_queryset = Conversation.objects.with_answer_stats()
         self.assertEqual(conversation_queryset.get(id=self.conversation.id).answer_count_annotated, 0)
         self.assertEqual(conversation_queryset.get(id=self.conversation_with_answer.id).answer_count_annotated, 1)
+
+
+class TemplateTransactionalModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.tt_inactive = TemplateTransactional(
+            mailjet_id=10, brevo_id=11, source=conversation_constants.SOURCE_MAILJET, is_active=False
+        )
+        cls.tt_active_empty = TemplateTransactional(source=conversation_constants.SOURCE_MAILJET, is_active=False)
+        cls.tt_active_mailjet = TemplateTransactional(
+            mailjet_id=30, brevo_id=31, source=conversation_constants.SOURCE_MAILJET, is_active=True
+        )
+        cls.tt_active_brevo = TemplateTransactional(
+            mailjet_id=40, brevo_id=41, source=conversation_constants.SOURCE_BREVO, is_active=True
+        )
+
+    def test_get_template_id(self):
+        self.assertIsNone(self.tt_inactive.get_template_id)
+        self.assertIsNone(self.tt_active_empty.get_template_id)
+        self.assertEqual(self.tt_active_mailjet.get_template_id, self.tt_active_mailjet.mailjet_id)
+        self.assertEqual(self.tt_active_brevo.get_template_id, self.tt_active_brevo.brevo_id)
