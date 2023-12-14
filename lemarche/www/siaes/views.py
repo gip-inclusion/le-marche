@@ -339,11 +339,6 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         )
 
 
-class SiaeSemanticSearchView(FormView):
-    template_name = "siaes/semantic_search.html"
-    form_class = SiaeSemanticForm
-
-
 class SiaeSemanticSearchResultsView(TemplateResponseMixin, View):
     template_name = "siaes/semantic_search_results.html"
 
