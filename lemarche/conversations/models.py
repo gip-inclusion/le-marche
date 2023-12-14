@@ -182,3 +182,22 @@ class Conversation(models.Model):
     def set_validated(self):
         self.validated_at = timezone.now()
         self.save()
+
+
+class TemplateTransactional(models.Model):
+    name = models.CharField(verbose_name="Nom", max_length=255)
+    description = models.TextField(verbose_name="Description", blank=True)
+    mailjet_id = models.IntegerField(
+        verbose_name="Identifiant Mailjet", unique=True, db_index=True, blank=True, null=True
+    )
+    brevo_id = models.IntegerField(verbose_name="Identifiant Brevo", unique=True, db_index=True, blank=True, null=True)
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Template transactionnel"
+        verbose_name_plural = "Templates transactionnels"
+
+    def __str__(self):
+        return self.name
