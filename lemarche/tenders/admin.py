@@ -134,7 +134,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "siae_transactioned",
         "created_at",
         "validated_at",
-        "sent_at",
+        "first_sent_at",
     ]
 
     list_filter = [
@@ -309,7 +309,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "status",
                     "published_at",
                     "validated_at",
-                    "sent_at",
+                    "first_sent_at",
                 )
             },
         ),

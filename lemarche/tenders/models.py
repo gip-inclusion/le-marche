@@ -45,10 +45,10 @@ class TenderQuerySet(models.QuerySet):
         return self.filter(validated_at__isnull=False)
 
     def validated_but_not_sent(self):
-        return self.filter(validated_at__isnull=False).filter(sent_at__isnull=True)
+        return self.filter(validated_at__isnull=False).filter(first_sent_at__isnull=True)
 
     def sent(self):
-        return self.filter(sent_at__isnull=False)
+        return self.filter(first_sent_at__isnull=False)
 
     def is_incremental(self):
         return self.filter(
@@ -209,7 +209,7 @@ class Tender(models.Model):
     FIELDS_STATS_TIMESTAMPS = [
         "published_at",
         "validated_at",
-        "sent_at",
+        "first_sent_at",
         "siae_list_last_seen_date",
         "created_at",
         "updated_at",
@@ -410,8 +410,8 @@ class Tender(models.Model):
         default=tender_constants.STATUS_DRAFT,
     )
     validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
-    sent_at = models.DateTimeField("Date d'envoi", blank=True, null=True)
-
+    first_sent_at = models.DateTimeField("Date du premier envoi", blank=True, null=True)
+    last_sent_at = models.DateTimeField(blank=True, null=True, verbose_name="Date du dernier envoi")
     # admin
     notes = GenericRelation("notes.Note", related_query_name="tender")
     siae_transactioned = models.BooleanField(
@@ -471,6 +471,7 @@ class Tender(models.Model):
         choices=tender_constants.SOURCE_CHOICES,
         default=tender_constants.SOURCE_FORM,
     )
+    version = models.PositiveIntegerField(verbose_name="Version", default=1)
     extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)
     import_raw_object = models.JSONField(verbose_name="Données d'import", editable=False, null=True)
 
@@ -691,7 +692,7 @@ class Tender(models.Model):
 
     @property
     def is_sent(self) -> bool:
-        return bool(self.sent_at) and self.status == tender_constants.STATUS_SENT
+        return bool(self.first_sent_at) and self.status == tender_constants.STATUS_SENT
 
     @property
     def is_validated_or_sent(self) -> bool:
@@ -708,11 +709,11 @@ class Tender(models.Model):
         self.save()
 
     def set_sent(self):
-        self.sent_at = timezone.now()
+        self.first_sent_at = timezone.now()
         self.status = tender_constants.STATUS_SENT
         log_item = {
             "action": "send",
-            "date": self.sent_at.isoformat(),
+            "date": self.first_sent_at.isoformat(),
         }
         self.logs.append(log_item)
         self.save()

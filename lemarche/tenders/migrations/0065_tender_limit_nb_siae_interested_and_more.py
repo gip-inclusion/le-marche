@@ -23,4 +23,29 @@ class Migration(migrations.Migration):
                 default=10, help_text="Champ renseigné par un ADMIN", verbose_name="Nombre de SIAES par envoi"
             ),
         ),
+        migrations.RenameField(
+            model_name="tender",
+            old_name="sent_at",
+            new_name="first_sent_at",
+        ),
+        migrations.AlterField(
+            model_name="tender",
+            name="first_sent_at",
+            field=models.DateTimeField(blank=True, null=True, verbose_name="Date du premier envoi"),
+        ),
+        migrations.AddField(
+            model_name="tender",
+            name="last_sent_at",
+            field=models.DateTimeField(blank=True, null=True, verbose_name="Date du dernier envoi"),
+        ),
+        migrations.AddField(
+            model_name="tender",
+            name="version",
+            field=models.PositiveIntegerField(default=0, verbose_name="Version"),
+        ),
+        migrations.AlterField(
+            model_name="tender",
+            name="version",
+            field=models.PositiveIntegerField(default=1, verbose_name="Version"),
+        ),
     ]

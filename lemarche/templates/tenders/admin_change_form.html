@@ -39,8 +39,8 @@ No need to repeat them under fieldsets!
         <div class="submit-row">
             {% if original.validated_at %}
                 <i>Validé le {{ original.validated_at }}.&nbsp;</i>
-                {% if original.sent_at %}
-                    <i>Envoyé le {{ original.sent_at }}.</i>
+                {% if original.first_sent_at %}
+                    <i>Envoyé le {{ original.first_sent_at }}.</i>
                     <button type="submit" class="button" name="_restart_tender" value="1">Renvoyer aux structures</button>
                 {% endif %}
             {% else %}
