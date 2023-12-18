@@ -337,7 +337,8 @@ class SiaeQuerySet(models.QuerySet):
             - if tender is made for country area, we filter with siae_geo_range=country
             - else we filter on the perimeters
         - then we filter on presta_type
-        - finally we filter on kind
+        - then we filter on kind
+        - finally we filter with the tender_status passed as a parameter
 
         Args:
             tender (Tender): Tender used to make the matching
@@ -388,6 +389,9 @@ class SiaeQuerySet(models.QuerySet):
                 )
             )
             qs = qs.order_by("-tendersiae__email_link_click_date")
+        elif tender_status == "COCONTRACTED":
+            qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_cocontracting_click_date__isnull=False)
+            qs = qs.order_by("-tendersiae__detail_cocontracting_click_date")
         elif tender_status == "ALL":
             # why need to filter more ?
             qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)

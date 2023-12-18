@@ -73,6 +73,7 @@
                 {% url 'tenders:detail-siae-list' slug=tender.slug as TENDER_SIAE_LIST_URL %}
                 {% url 'tenders:detail-siae-list' slug=tender.slug status="VIEWED" as TENDER_SIAE_DETAIL_CONTACT_VIEW_LIST_URL %}
                 {% url 'tenders:detail-siae-list' slug=tender.slug status="INTERESTED" as TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL %}
+                {% url 'tenders:detail-siae-list' slug=tender.slug status="COCONTRACTED" as TENDER_SIAE_DETAIL_CONTACT_COCONTRACTED_LIST_URL %}
 
                 <li class="nav-item">
                     <a role="button" hx-push-url="true" hx-get="{{ TENDER_SIAE_LIST_URL }}?{{ current_search_query }}"
@@ -93,6 +94,13 @@
                         class="nav-link{% if request.path == TENDER_SIAE_DETAIL_CONTACT_CLICK_LIST_URL %} active{% endif %}"
                         hx-target="#tenderSiaeList" hx-swap="outerHTML">
                         Prestataires intéressés
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a role="button" hx-push-url="true" hx-get="{{ TENDER_SIAE_DETAIL_CONTACT_COCONTRACTED_LIST_URL }}?{{ current_search_query }}"
+                        class="nav-link{% if request.path == TENDER_SIAE_DETAIL_CONTACT_COCONTRACTED_LIST_URL %} active{% endif %}"
+                        hx-target="#tenderSiaeList" hx-swap="outerHTML">
+                        Prestataires ouverts à la co-traitance
                     </a>
                 </li>
             </ul>
