@@ -173,7 +173,7 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, em
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            from_email=settings.CONTACT_EMAIL,
+            from_email=settings.TEAM_CONTACT_EMAIL,
             from_name="Raphaël du Marché de l'inclusion",
         )
 
