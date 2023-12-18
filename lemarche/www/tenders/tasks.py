@@ -125,6 +125,8 @@ def send_tender_email_to_partner(email_subject: str, tender: Tender, partner: Pa
             subject=email_subject,
             recipient_email_list=recipient_list,
             variables=variables,
+            from_email=settings.TEAM_CONTACT_EMAIL,
+            from_name="Raphaël du Marché de l'inclusion",
         )
 
         # log email
