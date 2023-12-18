@@ -468,6 +468,11 @@ class TenderDetailCocontractingClickView(SiaeUserRequiredOrSiaeIdParamMixin, Det
             siae = Siae.objects.filter(pk=self.request.GET.get("siae_id", None)).first()
 
         if siae:
+            # save the datetime of this action
+            TenderSiae.objects.filter(
+                tender=self.object, siae=siae, detail_cocontracting_click_date__isnull=True
+            ).update(detail_cocontracting_click_date=timezone.now(), updated_at=timezone.now())
+
             notify_admin_siae_wants_cocontracting(self.object, siae)
         else:
             self.template_name = "tenders/_detail_cocontracting_click_error.html"
