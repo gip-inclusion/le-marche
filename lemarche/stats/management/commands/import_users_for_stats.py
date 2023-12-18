@@ -55,7 +55,7 @@ class Command(BaseCommand):
         try:
             return StatsUser.objects.bulk_create(stats_users_list, batch_size=50)
         except IntegrityError as e:
-            self.stdout_error(e)
+            self.stdout_error(str(e))
 
     def clean_stats_users(self):
         count_delete, _ = StatsUser.objects.all().delete()
