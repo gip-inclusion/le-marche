@@ -1226,7 +1226,7 @@ class TenderDetailCocontractingClickView(TestCase):
         )
         TenderQuestionFactory(tender=self.tender)
 
-    def test_user_can_notify_cocontracting_wish(self):
+    def test_user_can_notify_cocontracting_wish_with_siae_id(self):
         url = reverse("tenders:detail-cocontracting-click", kwargs={"slug": self.tender.slug})
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
             response = self.client.post(url, data={})
@@ -1235,29 +1235,47 @@ class TenderDetailCocontractingClickView(TestCase):
 
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
             response = self.client.post(f"{url}?siae_id=999999", data={})
-        self.assertContains(response, "nous n'avons pas pu prendre en compte votre demande de mise en relation")
+        self.assertContains(
+            response, "nous n'avons pas pu prendre en compte votre souhait de répondre en co-traitance"
+        )
         mock_send_mail_async.assert_not_called()
 
+        self.assertEqual(
+            TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_cocontracting_click_date, None
+        )
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
             response = self.client.post(f"{url}?siae_id={self.siae.id}", data={})
-        self.assertContains(response, "Nous avons bien pris en compte votre demande de mise en relation")
+        self.assertContains(response, "Votre intérêt a bien été signalé au client.")
         mock_send_mail_async.assert_called_once()
         email_body = mock_send_mail_async.call_args[1]["email_body"]
         self.assertTrue(f"La structure {self.siae.name } souhaite répondre en co-traitance" in email_body)
+        self.assertNotEqual(
+            TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_cocontracting_click_date, None
+        )
 
+    def test_user_can_notify_cocontracting_wish_with_authenticated_user(self):
+        url = reverse("tenders:detail-cocontracting-click", kwargs={"slug": self.tender.slug})
+        self.assertEqual(
+            TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_cocontracting_click_date, None
+        )
         self.client.force_login(self.siae_user)
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
             response = self.client.post(url, data={})
-        self.assertContains(response, "Nous avons bien pris en compte votre demande de mise en relation")
+        self.assertContains(response, "Votre intérêt a bien été signalé au client.")
         mock_send_mail_async.assert_called_once()
         email_body = mock_send_mail_async.call_args[1]["email_body"]
         self.assertTrue(f"La structure {self.siae.name } souhaite répondre en co-traitance" in email_body)
+        self.assertNotEqual(
+            TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_cocontracting_click_date, None
+        )
 
         user_without_siae = UserFactory(kind=User.KIND_SIAE)
         self.client.force_login(user_without_siae)
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
             response = self.client.post(url, data={})
-        self.assertContains(response, "nous n'avons pas pu prendre en compte votre demande de mise en relation")
+        self.assertContains(
+            response, "nous n'avons pas pu prendre en compte votre souhait de répondre en co-traitance"
+        )
         mock_send_mail_async.assert_not_called()
 
 
