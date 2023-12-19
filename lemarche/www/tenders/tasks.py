@@ -125,6 +125,8 @@ def send_tender_email_to_partner(email_subject: str, tender: Tender, partner: Pa
             subject=email_subject,
             recipient_email_list=recipient_list,
             variables=variables,
+            from_email=settings.TEAM_CONTACT_EMAIL,
+            from_name="Pauline du Marché de l'inclusion",
         )
 
         # log email
@@ -173,8 +175,8 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, em
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            from_email=settings.CONTACT_EMAIL,
-            from_name="Raphaël du Marché de l'inclusion",
+            from_email=settings.TEAM_CONTACT_EMAIL,
+            from_name="Pauline du Marché de l'inclusion",
         )
 
 
