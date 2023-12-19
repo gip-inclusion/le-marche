@@ -71,14 +71,16 @@ class TemplateTransactionalModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.tt_inactive = TemplateTransactional(
-            mailjet_id=10, brevo_id=11, source=conversation_constants.SOURCE_MAILJET, is_active=False
+            code="EMAIL_1", mailjet_id=10, brevo_id=11, source=conversation_constants.SOURCE_MAILJET, is_active=False
         )
-        cls.tt_active_empty = TemplateTransactional(source=conversation_constants.SOURCE_MAILJET, is_active=False)
+        cls.tt_active_empty = TemplateTransactional(
+            code="EMAIL_2", source=conversation_constants.SOURCE_MAILJET, is_active=False
+        )
         cls.tt_active_mailjet = TemplateTransactional(
-            mailjet_id=30, brevo_id=31, source=conversation_constants.SOURCE_MAILJET, is_active=True
+            code="EMAIL_3", mailjet_id=30, brevo_id=31, source=conversation_constants.SOURCE_MAILJET, is_active=True
         )
         cls.tt_active_brevo = TemplateTransactional(
-            mailjet_id=40, brevo_id=41, source=conversation_constants.SOURCE_BREVO, is_active=True
+            code="EMAIL_4", mailjet_id=40, brevo_id=41, source=conversation_constants.SOURCE_BREVO, is_active=True
         )
 
     def test_get_template_id(self):

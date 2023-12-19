@@ -188,6 +188,9 @@ class Conversation(models.Model):
 
 class TemplateTransactional(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
+    code = models.CharField(
+        verbose_name="Nom technique", max_length=255, unique=True, db_index=True, blank=True, null=True
+    )
     description = models.TextField(verbose_name="Description", blank=True)
     mailjet_id = models.IntegerField(
         verbose_name="Identifiant Mailjet", unique=True, db_index=True, blank=True, null=True
@@ -211,7 +214,7 @@ class TemplateTransactional(models.Model):
 
     @property
     def get_template_id(self):
-        if self.is_active and self.source:
+        if self.is_active and self.source and self.code:
             if self.source == conversation_constants.SOURCE_MAILJET:
                 return self.mailjet_id
             elif self.source == conversation_constants.SOURCE_BREVO:

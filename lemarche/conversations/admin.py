@@ -135,6 +135,6 @@ class ConversationAdmin(admin.ModelAdmin):
 @admin.register(TemplateTransactional, site=admin_site)
 class TemplateTransactionalAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "mailjet_id", "brevo_id", "source", "is_active", "created_at", "updated_at"]
-    search_fields = ["id", "name", "mailjet_id", "brevo_id"]
+    search_fields = ["id", "name", "code", "mailjet_id", "brevo_id"]
 
-    readonly_fields = ["created_at", "updated_at"]
+    readonly_fields = ["code", "created_at", "updated_at"]

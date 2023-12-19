@@ -15,6 +15,12 @@ class Migration(migrations.Migration):
             fields=[
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("name", models.CharField(max_length=255, verbose_name="Nom")),
+                (
+                    "code",
+                    models.CharField(
+                        blank=True, db_index=True, max_length=255, null=True, unique=True, verbose_name="Nom technique"
+                    ),
+                ),
                 ("description", models.TextField(blank=True, verbose_name="Description")),
                 (
                     "mailjet_id",
