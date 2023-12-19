@@ -197,7 +197,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     # OSMGeoAdmin param for coords fields
     modifiable = False
 
-    fieldsets_with_inlines = [
+    fieldsets_with_inlines_origin = [
         (
             "Affichage",
             {
@@ -331,6 +331,9 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         ("Dates", {"fields": ("created_at", "updated_at")}),
     ]
 
+    # _origin is used to switch between lighter fieldsets (add form) and full form (edit form)
+    fieldsets_with_inlines = fieldsets_with_inlines_origin
+
     add_fieldsets = [
         # (
         #     "Affichage",
@@ -436,6 +439,8 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         """
         if not obj:
             self.fieldsets_with_inlines = self.add_fieldsets
+        if obj:
+            self.fieldsets_with_inlines = self.fieldsets_with_inlines_origin  # returns the original fieldsets
         return super().get_fieldsets(request, obj)
 
     def get_changeform_initial_data(self, request):
