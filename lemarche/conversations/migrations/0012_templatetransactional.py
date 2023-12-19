@@ -36,6 +36,16 @@ class Migration(migrations.Migration):
                         verbose_name="Identifiant Brevo",
                     ),
                 ),
+                ("is_active", models.BooleanField(default=False, verbose_name="Actif")),
+                (
+                    "source",
+                    models.CharField(
+                        blank=True,
+                        choices=[("MAILJET", "Mailjet"), ("BREVO", "Brevo")],
+                        max_length=20,
+                        verbose_name="Source",
+                    ),
+                ),
                 (
                     "created_at",
                     models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date de création"),
