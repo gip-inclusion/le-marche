@@ -197,7 +197,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     # OSMGeoAdmin param for coords fields
     modifiable = False
 
-    fieldsets_with_inlines = [
+    fieldsets_with_inlines_original = [
         (
             "Affichage",
             {
@@ -331,6 +331,9 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         ("Dates", {"fields": ("created_at", "updated_at")}),
     ]
 
+    # _origin is used to switch between lighter fieldsets (add form) and full form (edit form)
+    fieldsets_with_inlines = fieldsets_with_inlines_original
+
     add_fieldsets = [
         # (
         #     "Affichage",
@@ -433,9 +436,14 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         """
         The add form has a lighter fieldsets.
         (add_fieldsets is only available for User Admin, so we need to set it manually)
+        This method is called every time the form is displayed.
+        But the SiaeAdmin instance is loaded when the Django server starts.
+        Therefore, the original fieldsets must be reapplied when the edit form is opened after the add form.
         """
         if not obj:
             self.fieldsets_with_inlines = self.add_fieldsets
+        else:
+            self.fieldsets_with_inlines = self.fieldsets_with_inlines_original  # returns the original fieldsets
         return super().get_fieldsets(request, obj)
 
     def get_changeform_initial_data(self, request):
