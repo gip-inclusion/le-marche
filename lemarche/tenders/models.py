@@ -45,7 +45,13 @@ class TenderQuerySet(models.QuerySet):
         return self.filter(validated_at__isnull=False)
 
     def validated_but_not_sent(self):
-        return self.filter(validated_at__isnull=False).filter(first_sent_at__isnull=True)
+        return self.with_siae_stats().filter(
+            (Q(version=0) & Q(validated_at__isnull=False) & Q(first_sent_at__isnull=True))
+            | Q(version=1)
+            & Q(validated_at__isnull=False)
+            & Q(first_sent_at__isnull=True)
+            & Q(siae_detail_contact_click_count_annotated__lte=F("limit_nb_siae_interested"))
+        )
 
     def sent(self):
         return self.filter(first_sent_at__isnull=False)
@@ -709,11 +715,14 @@ class Tender(models.Model):
         self.save()
 
     def set_sent(self):
-        self.first_sent_at = timezone.now()
-        self.status = tender_constants.STATUS_SENT
+        if not self.first_sent_at:
+            self.first_sent_at = timezone.now()
+            self.status = tender_constants.STATUS_SENT
+
+        self.last_sent_at = timezone.now()
         log_item = {
             "action": "send",
-            "date": self.first_sent_at.isoformat(),
+            "date": self.last_sent_at.isoformat(),
         }
         self.logs.append(log_item)
         self.save()
