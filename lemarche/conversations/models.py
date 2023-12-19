@@ -8,6 +8,8 @@ from django.utils.text import slugify
 from django_extensions.db.fields import ShortUUIDField
 from shortuuid import uuid
 
+from lemarche.conversations import constants as conversation_constants
+
 
 class ConversationQuerySet(models.QuerySet):
     def has_answer(self):
@@ -182,3 +184,39 @@ class Conversation(models.Model):
     def set_validated(self):
         self.validated_at = timezone.now()
         self.save()
+
+
+class TemplateTransactional(models.Model):
+    name = models.CharField(verbose_name="Nom", max_length=255)
+    code = models.CharField(
+        verbose_name="Nom technique", max_length=255, unique=True, db_index=True, blank=True, null=True
+    )
+    description = models.TextField(verbose_name="Description", blank=True)
+    mailjet_id = models.IntegerField(
+        verbose_name="Identifiant Mailjet", unique=True, db_index=True, blank=True, null=True
+    )
+    brevo_id = models.IntegerField(verbose_name="Identifiant Brevo", unique=True, db_index=True, blank=True, null=True)
+
+    source = models.CharField(
+        verbose_name="Source", max_length=20, choices=conversation_constants.SOURCE_CHOICES, blank=True
+    )
+    is_active = models.BooleanField(verbose_name="Actif", default=False)
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Template transactionnel"
+        verbose_name_plural = "Templates transactionnels"
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def get_template_id(self):
+        if self.is_active and self.source and self.code:
+            if self.source == conversation_constants.SOURCE_MAILJET:
+                return self.mailjet_id
+            elif self.source == conversation_constants.SOURCE_BREVO:
+                return self.brevo_id
+        return None

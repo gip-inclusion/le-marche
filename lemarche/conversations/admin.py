@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 
-from lemarche.conversations.models import Conversation
+from lemarche.conversations.models import Conversation, TemplateTransactional
 from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.fields import pretty_print_readonly_jsonfield_to_table
 from lemarche.www.conversations.tasks import send_first_email_from_conversation
@@ -130,3 +130,11 @@ class ConversationAdmin(admin.ModelAdmin):
         return "-"
 
     data_display.short_description = "Messages de la conversation"
+
+
+@admin.register(TemplateTransactional, site=admin_site)
+class TemplateTransactionalAdmin(admin.ModelAdmin):
+    list_display = ["id", "name", "mailjet_id", "brevo_id", "source", "is_active", "created_at", "updated_at"]
+    search_fields = ["id", "name", "code", "mailjet_id", "brevo_id"]
+
+    readonly_fields = ["code", "created_at", "updated_at"]
