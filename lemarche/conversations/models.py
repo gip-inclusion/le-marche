@@ -192,11 +192,15 @@ class TemplateTransactional(models.Model):
         verbose_name="Nom technique", max_length=255, unique=True, db_index=True, blank=True, null=True
     )
     description = models.TextField(verbose_name="Description", blank=True)
+
+    email_subject = models.CharField(verbose_name="E-mail : objet", max_length=255, blank=True, null=True)
+    email_from_email = models.EmailField(verbose_name="E-mail : expéditeur (e-mail)", blank=True, null=True)
+    email_from_name = models.CharField(verbose_name="E-mail : expéditeur (nom)", max_length=255, blank=True, null=True)
+
     mailjet_id = models.IntegerField(
         verbose_name="Identifiant Mailjet", unique=True, db_index=True, blank=True, null=True
     )
     brevo_id = models.IntegerField(verbose_name="Identifiant Brevo", unique=True, db_index=True, blank=True, null=True)
-
     source = models.CharField(
         verbose_name="Source", max_length=20, choices=conversation_constants.SOURCE_CHOICES, blank=True
     )
