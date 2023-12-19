@@ -1,19 +1,23 @@
 <div id="detail_cocontracting_container" class="mt-3">
-    <div class="card c-card rounded-lg shadow-lg">
-        <div class="card-body">
-            <h3>Répondre en co-traitance ?</h3>
-            <p>
-                Cette demande vous intéresse mais vous ne pouvez pas répondre seul ? Signalez au client que vous souhaiteriez répondre en co-traitance.
-            </p>
-            {% if user.is_authenticated %}
-                <button type="button" class="btn btn-primary btn-block" title="Répondre en co-traitance" hx-post="{% url 'tenders:detail-cocontracting-click' tender.slug %}" hx-target="#detail_cocontracting_container">
-                    Répondre en co-traitance
-                </button>
-            {% elif siae_id %}
-                <button type="button" class="btn btn-primary btn-block" title="Répondre en co-traitance" hx-post="{% url 'tenders:detail-cocontracting-click' tender.slug %}?siae_id={{siae_id}}" hx-target="#detail_cocontracting_container">
-                    Répondre en co-traitance
-                </button>
-            {% endif %}
+    {% if not tender.siae_detail_cocontracting_click_date_count %}
+        <div class="card c-card rounded-lg shadow-lg">
+            <div class="card-body">
+                <h3>Répondre en co-traitance ?</h3>
+                <p>
+                    Cette demande vous intéresse mais vous ne pouvez pas répondre seul ? Signalez au client que vous souhaiteriez répondre en co-traitance.
+                </p>
+                {% if user.is_authenticated %}
+                    <button type="button" class="btn btn-primary btn-block" title="Répondre en co-traitance" hx-post="{% url 'tenders:detail-cocontracting-click' tender.slug %}" hx-target="#detail_cocontracting_container">
+                        Répondre en co-traitance
+                    </button>
+                {% elif siae_id %}
+                    <button type="button" class="btn btn-primary btn-block" title="Répondre en co-traitance" hx-post="{% url 'tenders:detail-cocontracting-click' tender.slug %}?siae_id={{siae_id}}" hx-target="#detail_cocontracting_container">
+                        Répondre en co-traitance
+                    </button>
+                {% endif %}
+            </div>
         </div>
-    </div>
+    {% else %}
+        {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+    {% endif %}
 </div>

@@ -655,6 +655,10 @@ class Tender(models.Model):
     def siae_detail_contact_click_date_count(self):
         return self.tendersiae_set.filter(detail_contact_click_date__isnull=False).count()
 
+    @property
+    def siae_detail_cocontracting_click_date_count(self):
+        return self.tendersiae_set.filter(detail_cocontracting_click_date__isnull=False).count()
+
     def get_absolute_url(self):
         return reverse("tenders:detail", kwargs={"slug": self.slug})
 
