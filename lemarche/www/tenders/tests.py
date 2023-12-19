@@ -1222,7 +1222,6 @@ class TenderDetailCocontractingClickView(TestCase):
             email_send_date=timezone.now(),
             email_link_click_date=timezone.now(),
             detail_display_date=timezone.now(),
-            detail_contact_click_date=timezone.now(),
         )
         TenderQuestionFactory(tender=self.tender)
 
@@ -1243,6 +1242,12 @@ class TenderDetailCocontractingClickView(TestCase):
         self.assertEqual(
             TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_cocontracting_click_date, None
         )
+
+        detail_url = reverse("tenders:detail", kwargs={"slug": self.tender.slug}) + f"?siae_id={self.siae.id}"
+        response = self.client.get(detail_url)
+        self.assertContains(response, "Répondre en co-traitance ?")
+        self.assertNotContains(response, "Votre intérêt a bien été signalé au client.")
+
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
             response = self.client.post(f"{url}?siae_id={self.siae.id}", data={})
         self.assertContains(response, "Votre intérêt a bien été signalé au client.")
@@ -1252,13 +1257,22 @@ class TenderDetailCocontractingClickView(TestCase):
         self.assertNotEqual(
             TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_cocontracting_click_date, None
         )
+        response = self.client.get(detail_url)
+        self.assertContains(response, "Votre intérêt a bien été signalé au client.")
+        self.assertNotContains(response, "Répondre en co-traitance ?")
 
     def test_user_can_notify_cocontracting_wish_with_authenticated_user(self):
+        self.client.force_login(self.siae_user)
+
+        detail_url = reverse("tenders:detail", kwargs={"slug": self.tender.slug})
+        response = self.client.get(detail_url)
+        self.assertContains(response, "Répondre en co-traitance ?")
+        self.assertNotContains(response, "Votre intérêt a bien été signalé au client.")
+
         url = reverse("tenders:detail-cocontracting-click", kwargs={"slug": self.tender.slug})
         self.assertEqual(
             TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_cocontracting_click_date, None
         )
-        self.client.force_login(self.siae_user)
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
             response = self.client.post(url, data={})
         self.assertContains(response, "Votre intérêt a bien été signalé au client.")
@@ -1268,6 +1282,10 @@ class TenderDetailCocontractingClickView(TestCase):
         self.assertNotEqual(
             TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_cocontracting_click_date, None
         )
+
+        response = self.client.get(detail_url)
+        self.assertContains(response, "Votre intérêt a bien été signalé au client.")
+        self.assertNotContains(response, "Répondre en co-traitance ?")
 
         user_without_siae = UserFactory(kind=User.KIND_SIAE)
         self.client.force_login(user_without_siae)
