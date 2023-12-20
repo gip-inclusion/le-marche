@@ -47,10 +47,12 @@ class TenderQuerySet(models.QuerySet):
     def validated_but_not_sent(self):
         return self.with_siae_stats().filter(
             (Q(version=0) & Q(validated_at__isnull=False) & Q(first_sent_at__isnull=True))
-            | Q(version=1)
-            & Q(validated_at__isnull=False)
-            & Q(first_sent_at__isnull=True)
-            & Q(siae_detail_contact_click_count_annotated__lte=F("limit_nb_siae_interested"))
+            | (
+                Q(version=1)
+                & Q(validated_at__isnull=False)
+                & Q(siae_detail_contact_click_count_annotated__lte=F("limit_nb_siae_interested"))
+                & ~Q(siae_count_annotated=F("siae_email_send_count_annotated"))
+            )
         )
 
     def sent(self):

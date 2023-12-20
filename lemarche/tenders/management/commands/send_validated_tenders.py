@@ -22,4 +22,5 @@ class Command(BaseCommand):
         if validated_tenders_to_send.count():
             self.stdout.write(f"Found {validated_tenders_to_send.count()} validated tender(s) to send")
             for tender in validated_tenders_to_send:
+                self.stdout.write(f"Found {tender} ")
                 send_validated_tender(tender)
