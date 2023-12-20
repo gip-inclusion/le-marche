@@ -61,7 +61,7 @@ def send_tender_emails_to_siaes(tender: Tender):
     # queryset
     all_siaes = tender.siaes.filter(tendersiae__email_send_date=None)
     logger.info(f"total siaes {all_siaes.count()}")
-    siaes = all_siaes[:5]
+    siaes = all_siaes[: tender.limit_send_to_siae_batch]
 
     for siae in siaes:
         # send to siae 'contact_email'
