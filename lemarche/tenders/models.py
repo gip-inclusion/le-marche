@@ -152,6 +152,13 @@ class TenderQuerySet(models.QuerySet):
                     output_field=IntegerField(),
                 )
             ),
+            siae_detail_cocontracting_click_count_annotated=Sum(
+                Case(
+                    When(tendersiae__detail_cocontracting_click_date__isnull=False, then=1),
+                    default=0,
+                    output_field=IntegerField(),
+                )
+            ),
             siae_detail_contact_click_since_last_seen_date_count_annotated=Sum(
                 Case(
                     When(
