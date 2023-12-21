@@ -289,6 +289,7 @@ class TenderModelQuerysetStatsTest(TestCase):
         siae_with_tender_4 = SiaeFactory()
         siae_with_tender_5 = SiaeFactory()
         siae_with_tender_6 = SiaeFactory()
+        siae_with_tender_7 = SiaeFactory()
         cls.siae_without_tender = SiaeFactory()
         cls.tender_with_siae_1 = TenderFactory(
             siaes=[cls.siae_with_tender_1, siae_with_tender_2], deadline_date=date_tomorrow
@@ -317,6 +318,13 @@ class TenderModelQuerysetStatsTest(TestCase):
             detail_display_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
         )
+        TenderSiae.objects.create(
+            tender=cls.tender_with_siae_1,
+            siae=siae_with_tender_7,
+            email_send_date=timezone.now(),
+            email_link_click_date=timezone.now(),
+            detail_cocontracting_click_date=timezone.now(),
+        )
         cls.tender_with_siae_2 = TenderFactory()
         TenderSiae.objects.create(
             tender=cls.tender_with_siae_2,
@@ -339,13 +347,14 @@ class TenderModelQuerysetStatsTest(TestCase):
     def test_with_siae_stats(self):
         self.assertEqual(Tender.objects.count(), 2 + 1)
         tender_with_siae_1 = Tender.objects.with_siae_stats().filter(id=self.tender_with_siae_1.id).first()
-        self.assertEqual(tender_with_siae_1.siaes.count(), 6)
-        self.assertEqual(tender_with_siae_1.siae_count_annotated, 6)
-        self.assertEqual(tender_with_siae_1.siae_email_send_count_annotated, 4)
-        self.assertEqual(tender_with_siae_1.siae_email_link_click_count_annotated, 3)
+        self.assertEqual(tender_with_siae_1.siaes.count(), 7)
+        self.assertEqual(tender_with_siae_1.siae_count_annotated, 7)
+        self.assertEqual(tender_with_siae_1.siae_email_send_count_annotated, 5)
+        self.assertEqual(tender_with_siae_1.siae_email_link_click_count_annotated, 4)
         self.assertEqual(tender_with_siae_1.siae_detail_display_count_annotated, 2)
         self.assertEqual(tender_with_siae_1.siae_email_link_click_or_detail_display_count_annotated, 2)
         self.assertEqual(tender_with_siae_1.siae_detail_contact_click_count_annotated, 1)
+        self.assertEqual(tender_with_siae_1.siae_detail_cocontracting_click_count_annotated, 1)
         self.assertEqual(tender_with_siae_1.siae_detail_contact_click_since_last_seen_date_count_annotated, 1)
         tender_with_siae_2 = Tender.objects.with_siae_stats().filter(id=self.tender_with_siae_2.id).first()
         self.assertEqual(tender_with_siae_2.siaes.count(), 1)
@@ -354,6 +363,7 @@ class TenderModelQuerysetStatsTest(TestCase):
         self.assertEqual(tender_with_siae_2.siae_detail_display_count_annotated, 1)
         self.assertEqual(tender_with_siae_2.siae_email_link_click_or_detail_display_count_annotated, 1)
         self.assertEqual(tender_with_siae_2.siae_detail_contact_click_count_annotated, 1)
+        self.assertEqual(tender_with_siae_2.siae_detail_cocontracting_click_count_annotated, 0)
         self.assertEqual(tender_with_siae_2.siae_detail_contact_click_since_last_seen_date_count_annotated, 1)
         tender_without_siae = Tender.objects.with_siae_stats().filter(id=self.tender_without_siae.id).first()
         self.assertEqual(tender_without_siae.siaes.count(), 0)
@@ -362,10 +372,11 @@ class TenderModelQuerysetStatsTest(TestCase):
         self.assertEqual(tender_without_siae.siae_detail_display_count_annotated, 0)
         self.assertEqual(tender_without_siae.siae_email_link_click_or_detail_display_count_annotated, 0)
         self.assertEqual(tender_without_siae.siae_detail_contact_click_count_annotated, 0)
+        self.assertEqual(tender_without_siae.siae_detail_cocontracting_click_count_annotated, 0)
         self.assertEqual(tender_without_siae.siae_detail_contact_click_since_last_seen_date_count_annotated, 0)
 
     def test_siae_with_tender_stats(self):
-        self.assertEqual(Siae.objects.count(), 6 + 1)
+        self.assertEqual(Siae.objects.count(), 7 + 1)
         siae_with_tender_1 = Siae.objects.with_tender_stats().filter(id=self.siae_with_tender_1.id).first()
         # self.assertEqual(siae_with_tender_1.tenders.count(), 2)
         self.assertEqual(siae_with_tender_1.tender_count_annotated, 2)

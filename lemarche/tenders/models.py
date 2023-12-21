@@ -152,6 +152,13 @@ class TenderQuerySet(models.QuerySet):
                     output_field=IntegerField(),
                 )
             ),
+            siae_detail_cocontracting_click_count_annotated=Sum(
+                Case(
+                    When(tendersiae__detail_cocontracting_click_date__isnull=False, then=1),
+                    default=0,
+                    output_field=IntegerField(),
+                )
+            ),
             siae_detail_contact_click_since_last_seen_date_count_annotated=Sum(
                 Case(
                     When(
@@ -655,6 +662,10 @@ class Tender(models.Model):
     def siae_detail_contact_click_date_count(self):
         return self.tendersiae_set.filter(detail_contact_click_date__isnull=False).count()
 
+    @property
+    def siae_detail_cocontracting_click_date_count(self):
+        return self.tendersiae_set.filter(detail_cocontracting_click_date__isnull=False).count()
+
     def get_absolute_url(self):
         return reverse("tenders:detail", kwargs={"slug": self.slug})
 
@@ -763,6 +774,9 @@ class TenderSiae(models.Model):
     detail_display_date = models.DateTimeField("Date de visualisation du besoin", blank=True, null=True)
     detail_contact_click_date = models.DateTimeField(
         "Date de clic sur les coordonnées du besoin", blank=True, null=True
+    )
+    detail_cocontracting_click_date = models.DateTimeField(
+        "Date de clic sur Répondre en co-traitance", blank=True, null=True
     )
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
 

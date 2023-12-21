@@ -458,6 +458,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
             "tendersiae__email_link_click_date__isnull",
             "tendersiae__detail_display_date__isnull",
             "tendersiae__detail_contact_click_date__isnull",
+            "tendersiae__detail_cocontracting_click_date__isnull",
         ]:
             return True
         return super().lookup_allowed(lookup, *args, **kwargs)

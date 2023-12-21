@@ -1222,11 +1222,10 @@ class TenderDetailCocontractingClickView(TestCase):
             email_send_date=timezone.now(),
             email_link_click_date=timezone.now(),
             detail_display_date=timezone.now(),
-            detail_contact_click_date=timezone.now(),
         )
         TenderQuestionFactory(tender=self.tender)
 
-    def test_user_can_notify_cocontracting_wish(self):
+    def test_user_can_notify_cocontracting_wish_with_siae_id(self):
         url = reverse("tenders:detail-cocontracting-click", kwargs={"slug": self.tender.slug})
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
             response = self.client.post(url, data={})
@@ -1235,29 +1234,66 @@ class TenderDetailCocontractingClickView(TestCase):
 
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
             response = self.client.post(f"{url}?siae_id=999999", data={})
-        self.assertContains(response, "nous n'avons pas pu prendre en compte votre demande de mise en relation")
+        self.assertContains(
+            response, "nous n'avons pas pu prendre en compte votre souhait de répondre en co-traitance"
+        )
         mock_send_mail_async.assert_not_called()
+
+        self.assertEqual(
+            TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_cocontracting_click_date, None
+        )
+
+        detail_url = reverse("tenders:detail", kwargs={"slug": self.tender.slug}) + f"?siae_id={self.siae.id}"
+        response = self.client.get(detail_url)
+        self.assertContains(response, "Répondre en co-traitance ?")
+        self.assertNotContains(response, "Votre intérêt a bien été signalé au client.")
 
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
             response = self.client.post(f"{url}?siae_id={self.siae.id}", data={})
-        self.assertContains(response, "Nous avons bien pris en compte votre demande de mise en relation")
+        self.assertContains(response, "Votre intérêt a bien été signalé au client.")
         mock_send_mail_async.assert_called_once()
         email_body = mock_send_mail_async.call_args[1]["email_body"]
         self.assertTrue(f"La structure {self.siae.name } souhaite répondre en co-traitance" in email_body)
+        self.assertNotEqual(
+            TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_cocontracting_click_date, None
+        )
+        response = self.client.get(detail_url)
+        self.assertContains(response, "Votre intérêt a bien été signalé au client.")
+        self.assertNotContains(response, "Répondre en co-traitance ?")
 
+    def test_user_can_notify_cocontracting_wish_with_authenticated_user(self):
         self.client.force_login(self.siae_user)
+
+        detail_url = reverse("tenders:detail", kwargs={"slug": self.tender.slug})
+        response = self.client.get(detail_url)
+        self.assertContains(response, "Répondre en co-traitance ?")
+        self.assertNotContains(response, "Votre intérêt a bien été signalé au client.")
+
+        url = reverse("tenders:detail-cocontracting-click", kwargs={"slug": self.tender.slug})
+        self.assertEqual(
+            TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_cocontracting_click_date, None
+        )
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
             response = self.client.post(url, data={})
-        self.assertContains(response, "Nous avons bien pris en compte votre demande de mise en relation")
+        self.assertContains(response, "Votre intérêt a bien été signalé au client.")
         mock_send_mail_async.assert_called_once()
         email_body = mock_send_mail_async.call_args[1]["email_body"]
         self.assertTrue(f"La structure {self.siae.name } souhaite répondre en co-traitance" in email_body)
+        self.assertNotEqual(
+            TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_cocontracting_click_date, None
+        )
+
+        response = self.client.get(detail_url)
+        self.assertContains(response, "Votre intérêt a bien été signalé au client.")
+        self.assertNotContains(response, "Répondre en co-traitance ?")
 
         user_without_siae = UserFactory(kind=User.KIND_SIAE)
         self.client.force_login(user_without_siae)
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
             response = self.client.post(url, data={})
-        self.assertContains(response, "nous n'avons pas pu prendre en compte votre demande de mise en relation")
+        self.assertContains(
+            response, "nous n'avons pas pu prendre en compte votre souhait de répondre en co-traitance"
+        )
         mock_send_mail_async.assert_not_called()
 
 
@@ -1293,7 +1329,14 @@ class TenderSiaeListView(TestCase):
         cls.siae_3 = SiaeFactory(
             name="Une autre structure", kind=siae_constants.KIND_ETTI, employees_insertion_count=53
         )
-        cls.siae_4 = SiaeFactory(name="Une dernière structure", kind=siae_constants.KIND_ETTI)
+        cls.siae_4 = SiaeFactory(
+            name="Une structure ouverte à la co-traitance",
+            kind=siae_constants.KIND_EA,
+            city="Grenoble",
+            post_code="38000",
+            is_cocontracting=True,
+        )
+        cls.siae_5 = SiaeFactory(name="Une dernière structure", kind=siae_constants.KIND_ETTI)
         cls.siae_user_1 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_1, cls.siae_2])
         cls.siae_user_2 = UserFactory(kind=User.KIND_SIAE, siaes=[cls.siae_3])
         cls.user_buyer_1 = UserFactory(kind=User.KIND_BUYER)
@@ -1317,7 +1360,10 @@ class TenderSiaeListView(TestCase):
             detail_contact_click_date=timezone.now() - timedelta(hours=1),
         )
         cls.tendersiae_1_4 = TenderSiae.objects.create(
-            tender=cls.tender_1, siae=cls.siae_4, detail_contact_click_date=timezone.now() - timedelta(hours=2)
+            tender=cls.tender_1, siae=cls.siae_4, detail_cocontracting_click_date=timezone.now() - timedelta(hours=3)
+        )
+        cls.tendersiae_1_5 = TenderSiae.objects.create(
+            tender=cls.tender_1, siae=cls.siae_5, detail_contact_click_date=timezone.now() - timedelta(hours=2)
         )
         cls.tendersiae_2_1 = TenderSiae.objects.create(
             tender=cls.tender_2,
@@ -1419,9 +1465,15 @@ class TenderSiaeListView(TestCase):
         self.assertEqual(len(response.context["siaes"]), 1)
         self.assertEqual(response.context["siaes"][0].id, self.siae_2.id)
 
+        url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug, "status": "COCONTRACTED"})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["siaes"]), 1)  # detail_cocontracting_click_date
+        self.assertEqual(response.context["siaes"][0].id, self.siae_4.id)
+
     def test_order_tender_siae_by_last_detail_contact_click_date(self):
         # TenderSiae are ordered by -created_at by default
-        self.assertEqual(self.tender_1.tendersiae_set.first().id, self.tendersiae_1_4.id)
+        self.assertEqual(self.tender_1.tendersiae_set.first().id, self.tendersiae_1_5.id)
         # but TenderSiaeListView are ordered by -detail_contact_click_date
         self.client.force_login(self.user_buyer_1)
         url = reverse("tenders:detail-siae-list", kwargs={"slug": self.tender_1.slug, "status": "INTERESTED"})
