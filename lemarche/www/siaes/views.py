@@ -19,7 +19,7 @@ from django.views.generic.edit import FormMixin
 from lemarche.conversations.models import Conversation
 from lemarche.favorites.models import FavoriteList
 from lemarche.siaes.models import Siae
-from lemarche.utils.elasticsearch_tools import siaes_similarity_search
+from lemarche.utils.apis.api_elasticsearch import siaes_similarity_search
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
