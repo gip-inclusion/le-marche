@@ -1134,6 +1134,20 @@ class Siae(models.Model):
             latest_activity_at = self.updated_at
         return latest_activity_at
 
+    @property
+    def elasticsearch_index_text(self):
+        text = self.description
+        if self.offers.count() > 0:
+            offers = "\n\nPrestations:\n"
+            for offer in self.offers.all():
+                offers += f"- {offer.name}:\n{offer.description}\n\n"
+            text += offers
+        return text
+
+    @property
+    def elasticsearch_index_metadata(self):
+        return {"id": self.id, "name": self.name, "website": self.website if self.website else ""}
+
     def sectors_list_string(self, display_max=3):
         sectors_name_list = self.sectors.form_filter_queryset().values_list("name", flat=True)
         if display_max and len(sectors_name_list) > display_max:
