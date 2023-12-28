@@ -422,7 +422,7 @@ class Tender(models.Model):
     )
     validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
     first_sent_at = models.DateTimeField("Date du premier envoi", blank=True, null=True)
-    last_sent_at = models.DateTimeField(blank=True, null=True, verbose_name="Date du dernier envoi")
+    last_sent_at = models.DateTimeField("Date du dernier envoi", blank=True, null=True)
     # admin
     notes = GenericRelation("notes.Note", related_query_name="tender")
     siae_transactioned = models.BooleanField(
