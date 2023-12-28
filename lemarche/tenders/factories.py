@@ -44,7 +44,7 @@ class TenderFactory(DjangoModelFactory):
     # marche_benefits = factory.fuzzy.FuzzyChoice([key for (key, _) in constants.MARCHE_BENEFIT_CHOICES])
     status = tender_constants.STATUS_SENT
     validated_at = timezone.now()
-    sent_at = timezone.now()
+    first_sent_at = timezone.now()
 
     @factory.post_generation
     def perimeters(self, create, extracted, **kwargs):

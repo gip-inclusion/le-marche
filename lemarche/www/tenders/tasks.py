@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 
 from django.conf import settings
@@ -14,9 +15,13 @@ from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_admin_url_object, get_domain_url, get_share_url_object
 
 
+logger = logging.getLogger(__name__)
+
+
 def send_validated_tender(tender: Tender):
     # find the matching Siaes? done in Tender post_save signal
     # notify author
+    # TODO: we still notify author for each send ?
     send_confirmation_published_email_to_author(tender, nb_matched_siaes=tender.siaes.count())
     # send the tender to all matching Siaes & Partners
     send_tender_emails_to_siaes(tender)
@@ -54,7 +59,9 @@ def send_tender_emails_to_siaes(tender: Tender):
     siae_users_send_count = 0
 
     # queryset
-    siaes = tender.siaes.all()
+    all_siaes = tender.siaes.filter(tendersiae__email_send_date=None).order_by_super_siaes()
+    logger.info(f"total siaes {all_siaes.count()}")
+    siaes = all_siaes[: tender.limit_send_to_siae_batch]
 
     for siae in siaes:
         # send to siae 'contact_email'
@@ -65,8 +72,9 @@ def send_tender_emails_to_siaes(tender: Tender):
             if user.email != siae.contact_email:
                 send_tender_email_to_siae(tender, siae, email_subject, email_to_override=user.email)
                 siae_users_send_count += 1
-
-    tender.tendersiae_set.update(email_send_date=timezone.now(), updated_at=timezone.now())
+    TenderSiae.objects.filter(tender=tender, siae__in=siaes).update(
+        email_send_date=timezone.now(), updated_at=timezone.now()
+    )
 
     # log email batch
     siaes_log_item = {
@@ -76,6 +84,8 @@ def send_tender_emails_to_siaes(tender: Tender):
         "email_timestamp": timezone.now().isoformat(),
     }
     tender.logs.append(siaes_log_item)
+    logger.info(siaes_log_item)
+
     siae_users_log_item = {
         "action": "email_siae_users_matched",
         "email_subject": email_subject,
@@ -84,6 +94,8 @@ def send_tender_emails_to_siaes(tender: Tender):
         "siae_users_count": siae_users_count,
     }
     tender.logs.append(siae_users_log_item)
+    logger.info(siae_users_log_item)
+
     tender.save()
 
 
@@ -494,7 +506,7 @@ def send_author_incremental_2_days_email(tender: Tender):
         variables = {
             "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
             "TENDER_TITLE": tender.title,
-            "TENDER_VALIDATE_AT": tender.sent_at.strftime("%d %B %Y"),  # TODO: TENDER_SENT_AT?
+            "TENDER_VALIDATE_AT": tender.first_sent_at.strftime("%d %B %Y"),  # TODO: TENDER_SENT_AT?
             "TENDER_KIND": tender.get_kind_display(),
         }
 
@@ -528,7 +540,7 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
         variables = {
             "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
             "TENDER_TITLE": tender.title,
-            "TENDER_VALIDATE_AT": tender.sent_at.strftime("%d %B %Y"),  # TODO: TENDER_SENT_AT?
+            "TENDER_VALIDATE_AT": tender.first_sent_at.strftime("%d %B %Y"),  # TODO: TENDER_SENT_AT?
             "TENDER_KIND": tender.get_kind_display(),
         }
 

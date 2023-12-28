@@ -29,8 +29,8 @@ class Command(BaseCommand):
         two_days_ago = timezone.now() - timedelta(days=2)
         three_days_ago = timezone.now() - timedelta(days=3)
         tender_sent_incremental = Tender.objects.sent().is_incremental()
-        tender_sent_incremental_2_days = tender_sent_incremental.filter(sent_at__gte=three_days_ago).filter(
-            sent_at__lt=two_days_ago
+        tender_sent_incremental_2_days = tender_sent_incremental.filter(first_sent_at__gte=three_days_ago).filter(
+            first_sent_at__lt=two_days_ago
         )
         self.stdout.write(f"Found {tender_sent_incremental_2_days.count()} Tenders")
 

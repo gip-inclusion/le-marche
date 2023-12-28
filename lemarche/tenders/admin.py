@@ -135,7 +135,9 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "siae_transactioned",
         "created_at",
         "validated_at",
-        "sent_at",
+        "first_sent_at",
+        "limit_send_to_siae_batch",
+        "limit_nb_siae_interested",
     ]
 
     list_filter = [
@@ -206,6 +208,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             },
         ),
         TenderQuestionInline,
+        ("Paramètres d'envois", {"fields": ("limit_send_to_siae_batch", "limit_nb_siae_interested")}),
         (
             "Filtres",
             {
@@ -312,7 +315,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "status",
                     "published_at",
                     "validated_at",
-                    "sent_at",
+                    "first_sent_at",
                 )
             },
         ),
