@@ -45,10 +45,21 @@ class TenderQuerySet(models.QuerySet):
         return self.filter(validated_at__isnull=False)
 
     def validated_but_not_sent(self):
-        return self.filter(validated_at__isnull=False).filter(sent_at__isnull=True)
+        yesterday = timezone.now() - timedelta(days=1)
+
+        return self.with_siae_stats().filter(
+            (Q(version=0) & Q(validated_at__isnull=False) & Q(first_sent_at__isnull=True))
+            | (
+                Q(version=1)
+                & Q(validated_at__isnull=False)
+                & Q(siae_detail_contact_click_count_annotated__lte=F("limit_nb_siae_interested"))
+                & ~Q(siae_count_annotated=F("siae_email_send_count_annotated"))
+                & (Q(first_sent_at__isnull=True) | Q(last_sent_at__lt=yesterday))
+            )
+        )
 
     def sent(self):
-        return self.filter(sent_at__isnull=False)
+        return self.filter(first_sent_at__isnull=False)
 
     def is_incremental(self):
         return self.filter(
@@ -216,7 +227,7 @@ class Tender(models.Model):
     FIELDS_STATS_TIMESTAMPS = [
         "published_at",
         "validated_at",
-        "sent_at",
+        "first_sent_at",
         "siae_list_last_seen_date",
         "created_at",
         "updated_at",
@@ -417,8 +428,8 @@ class Tender(models.Model):
         default=tender_constants.STATUS_DRAFT,
     )
     validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
-    sent_at = models.DateTimeField("Date d'envoi", blank=True, null=True)
-
+    first_sent_at = models.DateTimeField("Date du premier envoi", blank=True, null=True)
+    last_sent_at = models.DateTimeField("Date du dernier envoi", blank=True, null=True)
     # admin
     notes = GenericRelation("notes.Note", related_query_name="tender")
     siae_transactioned = models.BooleanField(
@@ -437,7 +448,17 @@ class Tender(models.Model):
         null=True,
         default=None,
     )
+    limit_send_to_siae_batch = models.PositiveSmallIntegerField(
+        verbose_name="Nombre de SIAES par envoi",
+        help_text="Champ renseigné par un ADMIN",
+        default=10,
+    )
 
+    limit_nb_siae_interested = models.PositiveSmallIntegerField(
+        verbose_name="Limite des SIAES intéressées",
+        help_text="Champ renseigné par un ADMIN",
+        default=5,
+    )
     # stats
     siae_count = models.IntegerField(
         "Nombre de structures concernées", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
@@ -468,6 +489,7 @@ class Tender(models.Model):
         choices=tender_constants.SOURCE_CHOICES,
         default=tender_constants.SOURCE_FORM,
     )
+    version = models.PositiveIntegerField(verbose_name="Version", default=1)
     extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)
     import_raw_object = models.JSONField(verbose_name="Données d'import", editable=False, null=True)
 
@@ -692,7 +714,7 @@ class Tender(models.Model):
 
     @property
     def is_sent(self) -> bool:
-        return bool(self.sent_at) and self.status == tender_constants.STATUS_SENT
+        return bool(self.first_sent_at) and self.status == tender_constants.STATUS_SENT
 
     @property
     def is_validated_or_sent(self) -> bool:
@@ -709,11 +731,14 @@ class Tender(models.Model):
         self.save()
 
     def set_sent(self):
-        self.sent_at = timezone.now()
-        self.status = tender_constants.STATUS_SENT
+        if not self.first_sent_at:
+            self.first_sent_at = timezone.now()
+            self.status = tender_constants.STATUS_SENT
+
+        self.last_sent_at = timezone.now()
         log_item = {
             "action": "send",
-            "date": self.sent_at.isoformat(),
+            "date": self.last_sent_at.isoformat(),
         }
         self.logs.append(log_item)
         self.save()

@@ -493,6 +493,11 @@ class SiaeQuerySet(models.QuerySet):
             ),
         )
 
+    def order_by_super_siaes(self):
+        return self.order_by(
+            "-super_badge", "-tender_detail_contact_click_count", "-tender_detail_display_count", "-completion_rate"
+        )
+
 
 class Siae(models.Model):
     FIELDS_FROM_C1 = [

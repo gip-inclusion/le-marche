@@ -599,7 +599,7 @@ class TenderDetailViewTest(TestCase):
             sectors=[sector_1],
             location=grenoble_perimeter,
             status=tender_constants.STATUS_SENT,
-            sent_at=timezone.now(),
+            first_sent_at=timezone.now(),
         )
         cls.tendersiae_1_1 = TenderSiae.objects.create(
             tender=cls.tender_1,
@@ -615,7 +615,7 @@ class TenderDetailViewTest(TestCase):
             author=cls.user_buyer_1,
             contact_company_name="Another company",
             status=tender_constants.STATUS_SENT,
-            sent_at=timezone.now(),
+            first_sent_at=timezone.now(),
         )
 
     def test_anyone_can_view_sent_tenders(self):
