@@ -1,3 +1,4 @@
+from datetime import timedelta
 from uuid import uuid4
 
 from django.conf import settings
@@ -32,6 +33,14 @@ class ConversationQuerySet(models.QuerySet):
             return self.get(uuid=conv_uuid)
         else:
             return self.get(Q(sender_encoded__endswith=conv_uuid) | Q(siae_encoded__endswith=conv_uuid))
+
+    def oudated_conversations(self):
+        """the conversations must be deleted after six month
+        So we get all conversations outdated with this method (30)
+        """
+        # we use shortcut of 30 days x 6 month because timedelta don't accept months
+        six_months_ago = timezone.now() - timedelta(days=30 * 6)
+        return self.filter(created_at__lte=six_months_ago)
 
 
 class Conversation(models.Model):
