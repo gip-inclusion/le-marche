@@ -490,8 +490,9 @@ class SiaeQuerySet(models.QuerySet):
         )
 
     def order_by_super_siaes(self):
-        # need to be better specified in the future
-        return self.order_by("-tender_detail_display_count", "-tender_detail_display_count", "-completion_rate")
+        return self.order_by(
+            "-super_badge", "-tender_detail_contact_click_count", "-tender_detail_display_count", "-completion_rate"
+        )
 
 
 class Siae(models.Model):
