@@ -59,7 +59,7 @@ def send_tender_emails_to_siaes(tender: Tender):
     siae_users_send_count = 0
 
     # queryset
-    all_siaes = tender.siaes.filter(tendersiae__email_send_date=None)
+    all_siaes = tender.siaes.filter(tendersiae__email_send_date=None).order_by_super_siaes()
     logger.info(f"total siaes {all_siaes.count()}")
     siaes = all_siaes[: tender.limit_send_to_siae_batch]
 
