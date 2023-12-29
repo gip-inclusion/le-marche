@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("tenders", "0064_tender_status_sent"),
+        ("tenders", "0065_tendersiae_detail_cocontracting_click_date"),
     ]
 
     operations = [
