@@ -7,7 +7,7 @@ from django.utils.http import urlsafe_base64_encode
 
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
-from lemarche.utils.apis import api_hubspot, api_mailjet
+from lemarche.utils.apis import api_brevo, api_hubspot, api_mailjet
 from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url
 
@@ -95,7 +95,9 @@ def add_to_contact_list(user: User, type: str, source: str = user_constants.SOUR
     if type == "signup":
         contact_list_id = get_mailjet_cl_on_signup(user, source)
         if user.kind == user.KIND_BUYER:
+            # TODO: we still use it ?
             api_hubspot.add_user_to_crm(user)
+            api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_BUYER_ID)
     elif type == "buyer_search":
         contact_list_id = settings.MAILJET_NL_CL_BUYER_SEARCH_SIAE_LIST_ID
     elif type == "buyer_search_traiteur":
