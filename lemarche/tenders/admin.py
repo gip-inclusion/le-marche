@@ -17,6 +17,7 @@ from lemarche.perimeters.models import Perimeter
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderStepsData
+from lemarche.users import constants as user_constants
 from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
 from lemarche.www.tenders.tasks import restart_send_tender_task
@@ -72,6 +73,20 @@ class ResponseKindFilter(admin.SimpleListFilter):
         return queryset
 
 
+class BuyerKindFilter(admin.SimpleListFilter):
+    title = "Type d'acheteur"
+    parameter_name = "buyer_kind"
+
+    def lookups(self, request, model_admin):
+        return user_constants.KIND_CHOICES
+
+    def queryset(self, request, queryset):
+        lookup_value = self.value()
+        if lookup_value:
+            queryset = queryset.filter(author__kind=lookup_value)
+        return queryset
+
+
 class TenderNoteInline(GenericTabularInline):
     model = Note
     fields = ["text", "author", "created_at", "updated_at"]
@@ -122,6 +137,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "is_validated_or_sent",
         "title",
         "user_with_link",
+        "user_kind_with_link",
         "kind",
         "deadline_date",
         "start_working_date",
@@ -142,6 +158,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     list_filter = [
         ("kind", KindFilter),
+        BuyerKindFilter,
         "status",
         ("scale_marche_useless", ScaleMarcheUselessFilter),
         ("source", SourceFilter),
@@ -407,6 +424,13 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     user_with_link.short_description = "Auteur"
     user_with_link.admin_order_field = "author"
+
+    def user_kind_with_link(self, tender):
+        url = reverse("admin:users_user_change", args=[tender.author_id])
+        return format_html(f'<a href="{url}">{tender.author.get_kind_display()}</a>')
+
+    user_kind_with_link.short_description = "Type d'acheteur"
+    user_kind_with_link.admin_order_field = "author"
 
     def question_count_with_link(self, tender):
         url = reverse("admin:tenders_tenderquestion_changelist") + f"?tender__in={tender.id}"
