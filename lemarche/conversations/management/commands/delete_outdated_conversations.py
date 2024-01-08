@@ -1,17 +1,17 @@
-from django.core.management.base import BaseCommand
-
 from lemarche.conversations.models import Conversation
+from lemarche.utils.commands import BaseCommand
 
 
 class Command(BaseCommand):
     """
-    Command to send validated tenders
+    Command to delete outdated conversations
 
     Note: run via a CRON every day
     Usage: python manage.py delete_outdated_conversations
     """
 
     def handle(self, *args, **options):
-        oudated_conversations = Conversation.objects.oudated_conversations()
-        numb_delete, _ = oudated_conversations.delete()
-        self.stdout.write(f"Delete {numb_delete} conversation(s)")
+        self.stdout_info("Delete script of outdated conversations")
+        conversations_outdated = Conversation.objects.outdated_conversations()
+        deleted_count, _ = conversations_outdated.delete()
+        self.stdout_info(f"Deleted {deleted_count} outdated conversation(s)")

@@ -3,7 +3,7 @@
 # delete outdated conversations
 
 # Do not run if this env var is not set:
-if [[ -z "$CRON_TENDER_SEND_VALIDATED_ENABLED" ]]; then
+if [[ -z "$CRON_CONVERSATIONS_DELETE_OUTDATED_CONVERSATIONS" ]]; then
     echo "CRON_CONVERSATIONS_DELETE_OUTDATED_CONVERSATIONS not set. Exiting..."
     exit 0
 fi
@@ -19,4 +19,4 @@ fi
 # $APP_HOME is set by default by clever cloud.
 cd $APP_HOME
 
-django-admin delete_outdated_conversations.sh
+django-admin delete_outdated_conversations

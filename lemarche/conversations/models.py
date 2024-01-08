@@ -34,7 +34,7 @@ class ConversationQuerySet(models.QuerySet):
         else:
             return self.get(Q(sender_encoded__endswith=conv_uuid) | Q(siae_encoded__endswith=conv_uuid))
 
-    def oudated_conversations(self):
+    def outdated_conversations(self):
         """the conversations must be deleted after six month
         So we get all conversations outdated with this method (30)
         """
