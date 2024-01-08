@@ -73,12 +73,12 @@ class ResponseKindFilter(admin.SimpleListFilter):
         return queryset
 
 
-class BuyerKindFilter(admin.SimpleListFilter):
-    title = "Type d'acheteur"
-    parameter_name = "buyer_kind"
+class AuthorKindFilter(admin.SimpleListFilter):
+    title = "Type du client"
+    parameter_name = "author__kind"
 
     def lookups(self, request, model_admin):
-        return user_constants.KIND_CHOICES
+        return user_constants.KIND_CHOICES_WITH_ADMIN
 
     def queryset(self, request, queryset):
         lookup_value = self.value()
@@ -136,8 +136,8 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "status",
         "is_validated_or_sent",
         "title",
-        "user_with_link",
-        "user_kind_with_link",
+        "author_with_link",
+        "author_kind",
         "kind",
         "deadline_date",
         "start_working_date",
@@ -158,7 +158,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     list_filter = [
         ("kind", KindFilter),
-        BuyerKindFilter,
+        AuthorKindFilter,
         "status",
         ("scale_marche_useless", ScaleMarcheUselessFilter),
         ("source", SourceFilter),
@@ -186,6 +186,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     readonly_fields = [field for field in Tender.READONLY_FIELDS] + [
         # slug
         # status
+        "author_kind",
         "question_count_with_link",
         "siae_count_annotated_with_link",
         "siae_email_send_count_annotated_with_link",
@@ -279,6 +280,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             {
                 "fields": (
                     "author",
+                    "author_kind",
                     "contact_first_name",
                     "contact_last_name",
                     "contact_company_name",
@@ -355,6 +357,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
+        qs = qs.select_related("author")
         qs = qs.with_siae_stats()
         # qs = qs.with_question_stats()  # doesn't work when chaining these 2 querysets: adds duplicates...
         return qs
@@ -418,19 +421,18 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     is_validated_or_sent.boolean = True
     is_validated_or_sent.short_description = "Validé / Envoyé"
 
-    def user_with_link(self, tender):
+    def author_with_link(self, tender):
         url = reverse("admin:users_user_change", args=[tender.author_id])
         return format_html(f'<a href="{url}">{tender.author}</a>')
 
-    user_with_link.short_description = "Auteur"
-    user_with_link.admin_order_field = "author"
+    author_with_link.short_description = "Client"
+    author_with_link.admin_order_field = "author"
 
-    def user_kind_with_link(self, tender):
-        url = reverse("admin:users_user_change", args=[tender.author_id])
-        return format_html(f'<a href="{url}">{tender.author.get_kind_display()}</a>')
+    def author_kind(self, tender):
+        return tender.author.get_kind_display()
 
-    user_kind_with_link.short_description = "Type d'acheteur"
-    user_kind_with_link.admin_order_field = "author"
+    author_kind.short_description = "Type du client"
+    author_kind.admin_order_field = "author__kind"
 
     def question_count_with_link(self, tender):
         url = reverse("admin:tenders_tenderquestion_changelist") + f"?tender__in={tender.id}"
