@@ -148,7 +148,7 @@ class TenderQuerySet(models.QuerySet):
             siae_email_link_click_or_detail_display_count_annotated=Sum(
                 Case(
                     When(
-                        Q(tendersiae__detail_display_date__isnull=False)
+                        Q(tendersiae__email_link_click_date__isnull=False)
                         | Q(tendersiae__detail_display_date__isnull=False),
                         then=1,
                     ),
