@@ -137,7 +137,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "is_validated_or_sent",
         "title",
         "author_with_link",
-        "author_kind",
+        "author_kind_detail",
         "kind",
         "deadline_date",
         "start_working_date",
@@ -186,7 +186,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     readonly_fields = [field for field in Tender.READONLY_FIELDS] + [
         # slug
         # status
-        "author_kind",
+        "author_kind_detail",
         "question_count_with_link",
         "siae_count_annotated_with_link",
         "siae_email_send_count_annotated_with_link",
@@ -280,7 +280,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             {
                 "fields": (
                     "author",
-                    "author_kind",
+                    "author_kind_detail",
                     "contact_first_name",
                     "contact_last_name",
                     "contact_company_name",
@@ -428,11 +428,11 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     author_with_link.short_description = "Client"
     author_with_link.admin_order_field = "author"
 
-    def author_kind(self, tender):
-        return tender.author.get_kind_display()
+    def author_kind_detail(self, tender):
+        return tender.author.kind_detail_display
 
-    author_kind.short_description = "Type du client"
-    author_kind.admin_order_field = "author__kind"
+    author_kind_detail.short_description = "Type du client"
+    author_kind_detail.admin_order_field = "author__kind"
 
     def question_count_with_link(self, tender):
         url = reverse("admin:tenders_tenderquestion_changelist") + f"?tender__in={tender.id}"
