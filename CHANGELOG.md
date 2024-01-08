@@ -4,6 +4,140 @@ Ressources :
 - [Calendar Versioning](https://calver.org/)
 - [CHANGELOG recommendations](https://keepachangelog.com/)
 
+## 2023.12.29
+
+- Feature(Dépôt de besoin) : Envoi des dépôt de besoins par lot (#1025)
+- Permettre aux acheteurs de voir les prestataires ouverts à la co-traitance (#1021)
+- [Admin] Correction du formulaire d'édition des structures qui est parfois tronqué
+- Emails : nouveau modèle TemplateTransactional pour stocker nos configurations (#1018)
+- Dépôt de besoins : envoyer les e-mails aux prestataires (et aux partenaires) à partir d'une autre adresse mail (#1020)
+- [Dépôt de besoin] Répare les horaires du cron d'envoi des besoins validés (#1017)
+- [Utilisateurs] Inscription : évite la valeur par défaut pour buyer_kind_detail (#1016)
+- [Utilisateurs] Rattacher correctement les utilisateurs provenant de Tally (#1010)
+- [Inbound Parsing] Améliorer la visibilité des disclaimer (#1015)
+- Permettre de renseigner le montant exact sur l'api des dépôt de besoins(#1014)
+- [Tech] Envoyer certaines notifications Slack vers le canal #support (#1013)
+- [Structures] Mettre à jour régulièrement la valeur de super_badge (#1009)
+- [Structures] Nouveau champ super_badge et méthode pour le calculer (#1008)
+- [Tech] Modifier le canal par défaut d'envoi des notifications Slack (#1012)
+- [Dépôt de besoin] Inversement de l'ordre des boutons pour gérer l'appui de la touche Entrée
+- [Dépôt de besoin] Admin : ajout de validation sur les règles de ciblage par km (#1011)
+- [Tech] Léger refactoring des champs en lecture seule dans l'admin (#1004)
+- [Structures] Stats supplémentaires pour Metabase (#1003)
+- [Utilisateurs] nouveau type "Particulier" (#1002)
+- [Dépôt de besoin] Envoyer en asynchrone les besoins validés (#998)
+- [Dépôt de besoin] Nouveau status "SENT" (#997)
+- Mise à jour du logo pour les réseaux sociaux  (#1005)
+- [Tech] Rajoute 2 notifications Slack sur des commandes cron (#1001)
+- [Dépôt de besoin] Ciblage par rayon en KM (#999)
+- [Tech] Renommer le script de synchro avec le C1 (#996)
+- [Structures] Réparer la synchro avec les emplois (#993)
+- Mise à jours des données enregistrées dans l'inbound parsing (#985)
+- [Structures] Nouveau champ pour stocker le taux de complétion de la fiche (#991)
+- [Structures] Rattachement : déplacer la mention de contacter le support (#992)
+- [Documentation] info sur le setup de pre-commit (#972)
+- [Utilisateurs] Inscription : demander aux acheteurs leur type d'organisation (#987)
+- [Dépôt de besoin] Modifications dans la tâche d'envoi du sondage transaction (#986)
+
+## 2023.11.24
+
+- [Tech] Refactoring des constants (#984)
+- [Utilisateurs] Renommer les choix des types d'acheteurs (#983)
+- fix filter_with_tender too complex error. ref #975
+- [Dépôt de besoin] Fix du bug de périmètre et France entière (#975)
+- [Dépôt de besoin] Stats : ajout de tests supplémentaires pour les utilisateurs avec plusieurs structures (#978)
+- [Structures] Admin : réorganiser les colonnes (#982)
+- [Dépôt de besoin] Renommer "Devis" en "Demande de devis" (#981)
+- [Tracker] Petites améliorations sur siae_kind & user_kind (#980)
+- [Entreprises] Tâche pour rattacher automatiquement les utilisateurs tous les lundi (#979)
+- [Dépôt de besoin] Renvoyer une erreur 404 si le besoin n'est pas trouvé (#977)
+- Update Github repo URL (migration from betagouv to gip-inclusion) (#976)
+- Fix du bug de téléchargement des structures qui ont vu des dépôts de besoins (#969)
+- [Structures] Rattachement : répare le lien vers les contact à la fin du workflow (#974)
+- [Dépôt de besoin] Renommer les noms des templates  (#973)
+- [Dépôt de besoin] Dans les e-mails aux prestataires, envoyer aussi le montant (#967)
+- Export : ajouter la property Siae.kind_parent (#962)
+- Affichage des dépôts de besoins de type sourcing et anonyme côté utilisateur (#961)
+- Ajout des secteurs d'activité dans le profile des acheteurs (#963)
+- Permettre aux utilisateurs de publier un DDB en anonyme (#956)
+- fix questions list on csrf (#971)
+- Suppression d'un message de log inutile (#970)
+- Another tender survey form wording improvement (label, placeholder). ref #964
+- [Dépôt de besoin] Admin : réparer les stats des structures (#968)
+- [Tableau de bord] Se rattacher à une structure : clarifier le wording (#966)
+- [Calculateur] Impact social : clarifier le wording (#965)
+- Small wording change on tender transaction email. ref #964
+- [Dépôt de besoin] Champ supplémentaires dans le sondage transaction (#964)
+
+## 2023.10.27
+
+- Structure : nouvelle property "kind_parent" (#955)
+- Fiche : ajout MTM sur le bouton Annuaire Entreprise (#954)
+- Admin : améliore le rendu des checkbox sur mobile (#953)
+- Label : pouvoir uploader un label dans l'admin (#946)
+- [Dépôt de besoin] Stats supplémentaires pour Metabase (#939)
+- Dépôt de besoin : envoyer les notif Slack dans un canal dédié (#957)
+- Refactoring : remplacer datetime par timezone (#952)
+- Refactoring : clarifier si une stat vient d'une annotation (#949)
+- Fix du nom de l'entreprise d'un dépôt de besoin (#945)
+- Mise à jours de la date de dernière activité des structures  (#930)
+- Suppression de Hotjar (#950)
+- Import des ESATs du fichier Excel de l'ASP (#948)
+- [Dépôt de besoin] Répare l'affichage (ou pas) du montant (#944)
+- [Dépôt de besoin] Inverser l'affichage des secteurs et de l'entreprise (#943)
+- [Dépôt de besoin] Afficher seulement 3 secteurs d'activité max (#942)
+- [Dépôt de besoin] Conservation des données des dépôts abandonnés (#938)
+- [Structure] Afficher le nombre d'établissement dans la fiche (#941)
+- [Structure] Calculer le nombre d'établissements (#940)
+- [Dépot de besoin] Correction de la mise en forme la description (#937)
+- [Dépot de besoin] Correction sur la forme de la description (#936)
+- [Dépot de besoin] Possibilité de mettre en forme la description (#934)
+- [Fiche structure] Répare l'affichage de la carte si Inbound désactivé (#928)
+- [Dépôt de besoin] Faire un encart dédié aux informations admin (#926)
+- [Dépôt de besoin] Ajouter une stat du nombre de structures qui ont cliqué OU vu (#927)
+
+## 2023.09.29
+
+- [Dépôt de besoin] : Déplacement des champs "description" et "date de clôture" (#924)
+- [Dépôt de besoin] Rajouter un message pour les besoins en provenance d'APProch (#923)
+- [Dépôt de besoin] Sondage J+30 : mettre à jour siae_transactioned (#922)
+- [CMS- Homepage] Correction sur l'affichage des logos partenaires
+- [Dépôt de besoin] Permettre aux admin d'indiquer que le besoin n'a PAS transactionné (#920)
+- [Dépôt de besoin] Simplification du formulaire en supprimant les informations de contact pour les utilisateurs connectés (#916)
+- [Recherche] Répare les liens de redirection après la modale de recherche avancée (#919)
+- [Fiche structure] Faire un encart dédié aux informations admin (#918)
+- [Aperçu du besoin] Ajout du bouton "Répondre en co-traitance" (#914)
+- [Dépôt de besoin - dashboard acheteur] ajout d'une vue pour voir les structures qui ont vu le DB (#912)
+- [Fiche structure] Intégrer la carte et les informations géo (#915)
+- [Recherche] Remonter les prestataires qui ont un logo (#913)
+- add images with links (#906)
+- Recherche : enlever les inscriptions des acheteurs aux listes Mailjet  (#911)
+- [Dépôt de besoin] Simplification du formulaire (#909)
+- Inbound parsing : améliorer le matching (#910)
+- Dépôt de besoin : réduire le taux d'abandon à la dernière étape (aperçu) (#907)
+- Improve API tests. ref #905
+- Dépôt de besoin : permettre à certains utilisateurs anonyme de se mettre en relation (#899)
+- Dépôt de besoin : nouveau champ pour overrider le company_name affiché (#905)
+- Fiche structure : changer le label des salariés en insertion pour les ESAT/EA (#903)
+- Fiche structure : indiquer la forme juridique (#902)
+- [Inbound Parsing] Modification du format d'email (#901)
+- MTCaptcha : tracer l'erreur uniquement si l'utilisateur n'est pas en cause - Round 2
+- Dépôt de besoin : stocker la date d'envoi du sondage J+30 (#895)
+- Tarteaucitron : ajout de Google Tag Manager (#896)
+- [Inbound parsing] Validation par l'admin du premier e-mail de la conversation (#894)
+- Refactoring : séparer Dashboard & Siaes (#892)
+- Fix forgot to move tests in new dashboard_networks app. ref #867
+- set company name in mail signature instread siae (#890)
+- Dépôt de besoin : Admin : filtre "montant renseigné ?" (#891)
+- [Inbound parsing] Ajouter de l’identité du client et disclaimer dans le premier mail (#889)
+- Ajout d'un lien dans l'entête avec le nombre de demandes reçues à lire (#881)
+- Refactoring : renommer certaines views (#884)
+- Remplacement du terme "mail" par "e-mail"
+- Script de maj des dépendances : rendre poetry update optionnel (#879)
+- Dépôt de besoin : utiliser django-sesame pour générer les liens du sondage J+30 (#880)
+- [CI] Mise à jour de la Github action de mise en cache des dépendances
+- change wording on contact card v2
+
 ## 2023.08.25
 
 ### Ajouté
