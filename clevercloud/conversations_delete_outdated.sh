@@ -3,8 +3,8 @@
 # delete outdated conversations
 
 # Do not run if this env var is not set:
-if [[ -z "$CRON_CONVERSATIONS_DELETE_OUTDATED_CONVERSATIONS" ]]; then
-    echo "CRON_CONVERSATIONS_DELETE_OUTDATED_CONVERSATIONS not set. Exiting..."
+if [[ -z "$CRON_CONVERSATIONS_DELETE_OUTDATED" ]]; then
+    echo "CRON_CONVERSATIONS_DELETE_OUTDATED not set. Exiting..."
     exit 0
 fi
 

@@ -34,11 +34,11 @@ class ConversationQuerySet(models.QuerySet):
         else:
             return self.get(Q(sender_encoded__endswith=conv_uuid) | Q(siae_encoded__endswith=conv_uuid))
 
-    def outdated_conversations(self):
+    def outdated(self):
         """the conversations must be deleted after six month
-        So we get all conversations outdated with this method (30)
+        So we get all conversations outdated with this method
         """
-        # we use shortcut of 30 days x 6 month because timedelta don't accept months
+        # we use shortcut of 30 days x 6 month because timedelta doesn't accept months
         six_months_ago = timezone.now() - timedelta(days=30 * 6)
         return self.filter(created_at__lte=six_months_ago)
 
