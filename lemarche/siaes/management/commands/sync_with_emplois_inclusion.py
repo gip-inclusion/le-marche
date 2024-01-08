@@ -211,7 +211,7 @@ class Command(BaseCommand):
             return c1_list_cleaned
         except Exception as e:
             api_slack.send_message_to_channel("Erreur lors de la synchronisation emplois <-> marché")
-            self.stdout_error(e)
+            self.stdout_error(str(e))
             raise Exception(e)
 
     def filter_c1_export(self, c1_list):
