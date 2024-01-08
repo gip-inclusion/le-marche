@@ -1,4 +1,5 @@
 import logging
+import time
 
 import requests
 from django.conf import settings
@@ -26,6 +27,7 @@ def get_siae_list():
                 siae_list.append(siae)
         if data["next"]:
             pagination += 1
+            time.sleep(1)
         else:
             break
 
