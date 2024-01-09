@@ -10,6 +10,7 @@ from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX
 logger = logging.getLogger(__name__)
 
 
+ENV_NOT_ALLOWED = ("dev", "test")
 BASE_URL = "https://api.mailjet.com/v3/REST/"
 SEND_URL = "https://api.mailjet.com/v3.1/send"
 
@@ -32,9 +33,6 @@ def get_default_client(params={}):
     client.headers = headers
     client.auth = (settings.MAILJET_MASTER_API_KEY, settings.MAILJET_MASTER_API_SECRET)
     return client
-
-
-ENV_NOT_ALLOWED = ("dev", "test")
 
 
 @task()
@@ -75,7 +73,7 @@ def add_to_contact_list_async(email_address, properties, contact_list_id, client
 
 @task()
 def send_transactional_email_with_template(
-    template_id,
+    template_id: int,
     subject,
     recipient_email,
     recipient_name,
