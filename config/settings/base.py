@@ -323,9 +323,6 @@ NOTIFY_EMAIL = env("NOTIFY_EMAIL", default="notif@example.com")
 GIP_CONTACT_EMAIL = env("GIP_CONTACT_EMAIL", default="gip.contact@example.com")
 
 # Transactional email templates
-# -- user: new user password reset
-MAILJET_NEW_USER_PASSWORD_RESET_ID = env.int("MAILJET_NEW_USER_PASSWORD_RESET_ID", 4216730)
-
 # -- siae: completion
 MAILJET_SIAE_COMPLETION_REMINDER_TEMPLATE_ID = env.int("MAILJET_SIAE_COMPLETION_REMINDER_TEMPLATE_ID", 4791779)
 
