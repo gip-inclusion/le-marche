@@ -13,7 +13,6 @@ import locale
 import os
 
 import environ
-import sib_api_v3_sdk
 from django.contrib.messages import constants as messages
 
 
@@ -315,7 +314,9 @@ MAILJET_API_URL = "https://api.mailjet.com/v3.1"
 EMAIL_BACKEND = "anymail.backends.mailjet.EmailBackend"
 
 DEFAULT_FROM_EMAIL = "noreply@inclusion.beta.gouv.fr"
+DEFAULT_FROM_EMAIL_BREVO = env("DEFAULT_FROM_EMAIL_BREVO", default=DEFAULT_FROM_EMAIL)
 DEFAULT_FROM_NAME = "Marché de l'inclusion"
+DEFAULT_FROM_NAME_BREVO = "Le Marché de l'inclusion"
 CONTACT_EMAIL = env("CONTACT_EMAIL", default="contact@example.com")
 TEAM_CONTACT_EMAIL = env("TEAM_CONTACT_EMAIL", default="team.contact@example.com")
 NOTIFY_EMAIL = env("NOTIFY_EMAIL", default="notif@example.com")
@@ -391,8 +392,6 @@ MAILJET_TENDERS_AUTHOR_TRANSACTIONED_QUESTION_7D_TEMPLATE_ID = env.int(
 
 # -- Sendinblue (BREVO)
 BREVO_API_KEY = env.str("BREVO_API_KEY", "set-it")
-brevo_configuration = sib_api_v3_sdk.Configuration()
-brevo_configuration.api_key["api-key"] = BREVO_API_KEY
 INBOUND_PARSING_DOMAIN_EMAIL = env.str("INBOUND_PARSING_DOMAIN_EMAIL", "reply.staging.lemarche.inclusion.beta.gouv.fr")
 
 INBOUND_EMAIL_IS_ACTIVATED = env.bool("INBOUND_EMAIL_IS_ACTIVATED", True)
