@@ -25,44 +25,6 @@ def get_api_client():
     return sib_api_v3_sdk.ApiClient(config)
 
 
-@task()
-def send_html_email(to: list, sender: dict, html_content: str, headers: dict = {}):
-    api_client = get_api_client()
-    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(api_client)
-    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-        to=to, headers=headers, html_content=html_content, sender=sender
-    )  # SendSmtpEmail | Values to send a transactional email
-    try:
-        # Send a transactional email
-        api_response = api_instance.send_transac_email(send_smtp_email)
-        print(api_response)
-    except ApiException as e:
-        print("Exception when calling SMTPApi->send_transac_email: %s\n" % e)
-
-
-@task()
-def send_transactionnel_email(to: list, sender: dict, template_id: int, params_template: dict, headers: dict = {}):
-    """Send transactionnel email
-
-    Args:
-        to (list): List of dict, ex : [{"email": "testmail@example.com", "name": "John Doe"}]
-        template_id (int): template id of email
-        params_template (dict): Paramaters of template, ec {"name": "John", "surname": "Doe"}
-        headers (dict, optional): Custom headers of emails. Defaults to {}.
-    """
-    api_client = get_api_client()
-    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(api_client)
-    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-        to=to, template_id=template_id, sender=sender, params=params_template, headers=headers
-    )  # SendSmtpEmail | Values to send a transactional email
-    try:
-        # Send a transactional email
-        api_response = api_instance.send_transac_email(send_smtp_email)
-        print(api_response)
-    except ApiException as e:
-        print("Exception when calling SMTPApi->send_transac_email: %s\n" % e)
-
-
 def create_contact(user: User, list_id: int):
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
@@ -101,3 +63,34 @@ def remove_contact_from_list(user: User, list_id: int):
             logger.info("calling Brevo->ContactsApi->remove_contact_from_list: contact doesn't exist in this list")
         else:
             logger.error("Exception when calling Brevo->ContactsApi->remove_contact_from_list: %s\n" % e)
+
+
+@task()
+def send_transactional_email_with_template(
+    template_id: int,
+    subject: str,
+    recipient_email: str,
+    recipient_name: str,
+    variables: dict,
+    from_email=settings.DEFAULT_FROM_EMAIL_BREVO,
+    from_name=settings.DEFAULT_FROM_NAME_BREVO,
+):
+    api_client = get_api_client()
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(api_client)
+    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+        sender={"email": from_email, "name": from_name},
+        to=[{"email": recipient_email, "name": recipient_name}],
+        subject=subject,
+        template_id=template_id,
+        params=variables,
+    )
+
+    if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
+        try:
+            response = api_instance.send_transac_email(send_smtp_email)
+            logger.info("Brevo: send transactional email with template")
+            return response
+        except ApiException as e:
+            print("Exception when calling SMTPApi->send_transac_email: %s\n" % e)
+    else:
+        logger.info("Brevo: email not sent (DEV or TEST environment detected)")
