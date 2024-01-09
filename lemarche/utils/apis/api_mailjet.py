@@ -95,7 +95,7 @@ def add_to_contact_list_async(email_address, properties, contact_list_id, client
 
 @task()
 def send_transactional_email_with_template(
-    template_id,
+    template_id: int,
     subject,
     recipient_email,
     recipient_name,

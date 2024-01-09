@@ -10,6 +10,7 @@ from django_extensions.db.fields import ShortUUIDField
 from shortuuid import uuid
 
 from lemarche.conversations import constants as conversation_constants
+from lemarche.utils.apis import api_brevo, api_mailjet
 
 
 class ConversationQuerySet(models.QuerySet):
@@ -235,3 +236,26 @@ class TemplateTransactional(models.Model):
             elif self.source == conversation_constants.SOURCE_BREVO:
                 return self.brevo_id
         return None
+
+    def send_transactional_email(self, recipient_email, recipient_name, variables):
+        print("send_transactional_email", self.source)
+        if self.source == conversation_constants.SOURCE_MAILJET:
+            api_mailjet.send_transactional_email_with_template(
+                template_id=self.get_template_id,
+                subject=self.email_subject,
+                recipient_email=recipient_email,
+                recipient_name=recipient_name,
+                variables=variables,
+                # from_email=self.email_from_email,
+                # from_name=self.email_from_name,
+            )
+        elif self.source == conversation_constants.SOURCE_BREVO:
+            api_brevo.send_transactional_email_with_template(
+                template_id=self.get_template_id,
+                subject=self.email_subject,
+                recipient_email=recipient_email,
+                recipient_name=recipient_name,
+                variables=variables,
+                # from_email=self.email_from_email,
+                # from_name=self.email_from_name,
+            )
