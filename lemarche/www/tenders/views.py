@@ -377,11 +377,23 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
             context["siae_has_detail_contact_click_date"] = TenderSiae.objects.filter(
                 tender=self.object, siae_id=int(self.siae_id), detail_contact_click_date__isnull=False
             ).exists()
+            context["siae_has_detail_not_interested_click_date"] = TenderSiae.objects.filter(
+                tender=self.object, siae_id=int(self.siae_id), detail_not_interested_click_date__isnull=False
+            ).exists()
         if user.is_authenticated:
             if user.kind == User.KIND_SIAE:
-                context["siae_has_detail_contact_click_date"] = TenderSiae.objects.filter(
-                    tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False
-                ).exists()
+                context["siae_has_detail_contact_click_date"] = (
+                    context["siae_has_detail_contact_click_date"]
+                    or TenderSiae.objects.filter(
+                        tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False
+                    ).exists()
+                )
+                context["siae_has_detail_not_interested_click_date"] = (
+                    context["siae_has_detail_not_interested_click_date"]
+                    or TenderSiae.objects.filter(
+                        tender=self.object, siae__in=user.siaes.all(), detail_not_interested_click_date__isnull=False
+                    ).exists()
+                )
                 if show_nps:
                     context["show_nps"] = True
             elif user.kind == User.KIND_PARTNER:

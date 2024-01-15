@@ -109,14 +109,14 @@
                                             Besoin d'aide ? contacter le support via le chat en ligne qui se trouve en bas à droite.
                                         </p>
                                     </div>
-                                {% elif not siae_has_detail_contact_click_date %}
+                                {% elif not (siae_has_detail_contact_click_date or siae_has_detail_not_interested_click_date) %}
                                     {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True %}
                                     {% include "tenders/_detail_cta_cocontracting.html" with tender=tender %}
                                 {% endif %}
                             {% endif %}
                         {% comment %} if siae_id {% endcomment %}
                         {% elif siae_id and not tender.response_is_anonymous %}
-                            {% if not siae_has_detail_contact_click_date %}
+                            {% if not (siae_has_detail_contact_click_date or siae_has_detail_not_interested_click_date) %}
                                 {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True siae_id=siae_id %}
                                 {% include "tenders/_detail_cta_cocontracting.html" with tender=tender siae_id=siae_id %}
                             {% else %}
@@ -124,7 +124,7 @@
                             {% endif %}
                         {% comment %} for anonymous tenders {% endcomment %}
                         {% elif tender.response_is_anonymous and siae_id or tender.response_is_anonymous and user.is_authenticated %}
-                            {% if not siae_has_detail_contact_click_date %}
+                            {% if not (siae_has_detail_contact_click_date or siae_has_detail_not_interested_click_date) %}
                                 {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True tender_is_anonymous=True %}
                             {% else %}
                                 {% include "tenders/_detail_success_contact.html" %}
