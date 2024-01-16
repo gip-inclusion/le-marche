@@ -11,19 +11,18 @@ from lemarche.users.models import User
 
 logger = logging.getLogger(__name__)
 
+ENV_NOT_ALLOWED = ("dev", "test")
 
-def get_brevo_config():
-    brevo_configuration = sib_api_v3_sdk.Configuration()
-    brevo_configuration.api_key["api-key"] = settings.BREVO_API_KEY
-    return brevo_configuration
+
+def get_config():
+    config = sib_api_v3_sdk.Configuration()
+    config.api_key["api-key"] = settings.BREVO_API_KEY
+    return config
 
 
 def get_api_client():
-    brevo_config = get_brevo_config()
-    return sib_api_v3_sdk.ApiClient(brevo_config)
-
-
-ENV_NOT_ALLOWED = ("dev", "test")
+    config = get_config()
+    return sib_api_v3_sdk.ApiClient(config)
 
 
 @task()

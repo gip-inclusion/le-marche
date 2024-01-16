@@ -9,7 +9,7 @@ from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX
 
 logger = logging.getLogger(__name__)
 
-
+ENV_NOT_ALLOWED = ("dev", "test")
 BASE_URL = "https://api.mailjet.com/v3/REST/"
 SEND_URL = "https://api.mailjet.com/v3.1/send"
 
@@ -32,9 +32,6 @@ def get_default_client(params={}):
     client.headers = headers
     client.auth = (settings.MAILJET_MASTER_API_KEY, settings.MAILJET_MASTER_API_SECRET)
     return client
-
-
-ENV_NOT_ALLOWED = ("dev", "test")
 
 
 @task()
