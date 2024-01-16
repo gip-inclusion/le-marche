@@ -5,6 +5,7 @@ from lemarche.www.tenders.views import (
     TenderCreateMultiStepView,
     TenderDetailCocontractingClickView,
     TenderDetailContactClickStatView,
+    TenderDetailNotInterestedClickView,
     TenderDetailSurveyTransactionedView,
     TenderDetailView,
     TenderListView,
@@ -37,6 +38,11 @@ urlpatterns = [
         "<str:slug>/cocontracting-click",
         TenderDetailCocontractingClickView.as_view(),
         name="detail-cocontracting-click",
+    ),
+    path(
+        "<str:slug>/not-interested-click",
+        TenderDetailNotInterestedClickView.as_view(),
+        name="detail-not-interested-click",
     ),
     path(
         "<str:slug>/sondage-transaction",

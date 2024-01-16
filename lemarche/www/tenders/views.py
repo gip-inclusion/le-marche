@@ -379,9 +379,12 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
             ).exists()
         if user.is_authenticated:
             if user.kind == User.KIND_SIAE:
-                context["siae_has_detail_contact_click_date"] = TenderSiae.objects.filter(
-                    tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False
-                ).exists()
+                context["siae_has_detail_contact_click_date"] = (
+                    getattr(context, "siae_has_detail_contact_click_date", None)
+                    or TenderSiae.objects.filter(
+                        tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False
+                    ).exists()
+                )
                 if show_nps:
                     context["show_nps"] = True
             elif user.kind == User.KIND_PARTNER:
@@ -393,7 +396,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
 
 class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, UpdateView):
     """
-    Endpoint to track contact_clicks by interested Siaes
+    Endpoint to track 'interested' button click
     We might also send a notification to the buyer
     """
 
@@ -449,7 +452,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
 
 class TenderDetailCocontractingClickView(SiaeUserRequiredOrSiaeIdParamMixin, DetailView):
     """
-    Endpoint to handle cocontracting button click
+    Endpoint to handle 'cocontracting' button click
     """
 
     template_name = "tenders/_detail_cocontracting_click_confirm.html"
@@ -476,6 +479,37 @@ class TenderDetailCocontractingClickView(SiaeUserRequiredOrSiaeIdParamMixin, Det
             notify_admin_siae_wants_cocontracting(self.object, siae)
         else:
             self.template_name = "tenders/_detail_cocontracting_click_error.html"
+
+        return self.get(request)
+
+
+class TenderDetailNotInterestedClickView(SiaeUserRequiredOrSiaeIdParamMixin, DetailView):
+    """
+    Endpoint to handle 'not interested' button click
+    """
+
+    template_name = "tenders/_detail_not_interested_click_confirm.html"
+    model = Tender
+
+    def get_object(self):
+        return get_object_or_404(Tender, slug=self.kwargs.get("slug"))
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        user = self.request.user
+
+        if self.request.user.is_authenticated:
+            siae = user.siaes.first()
+        else:
+            siae = Siae.objects.filter(pk=self.request.GET.get("siae_id", None)).first()
+
+        if siae:
+            # save the datetime of this action
+            TenderSiae.objects.filter(
+                tender=self.object, siae=siae, detail_not_interested_click_date__isnull=True
+            ).update(detail_not_interested_click_date=timezone.now(), updated_at=timezone.now())
+        else:
+            self.template_name = "tenders/_detail_not_interested_click_error.html"
 
         return self.get(request)
 
