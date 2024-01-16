@@ -36,10 +36,12 @@ class ArticlePage(Page):
         blank=True, verbose_name="Contenu de l'article", features=settings.WAGTAIL_RICHTEXT_FIELD_FEATURES
     )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    # Override template file for static pages
+    def get_template(self, request, *args, **kwargs):
         if self.is_static_page:
-            self.template = f"cms/static/{self.template_name}"
+            return f"cms/static/{self.template_name}"
+        else:
+            return super().get_template(request, *args, **kwargs)
 
     base_form_class = ArticlePageForm
 

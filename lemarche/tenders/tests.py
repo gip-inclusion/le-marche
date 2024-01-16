@@ -352,7 +352,7 @@ class TenderModelQuerysetStatsTest(TestCase):
         self.assertEqual(tender_with_siae_1.siae_email_send_count_annotated, 5)
         self.assertEqual(tender_with_siae_1.siae_email_link_click_count_annotated, 4)
         self.assertEqual(tender_with_siae_1.siae_detail_display_count_annotated, 2)
-        self.assertEqual(tender_with_siae_1.siae_email_link_click_or_detail_display_count_annotated, 2)
+        self.assertEqual(tender_with_siae_1.siae_email_link_click_or_detail_display_count_annotated, 4)
         self.assertEqual(tender_with_siae_1.siae_detail_contact_click_count_annotated, 1)
         self.assertEqual(tender_with_siae_1.siae_detail_cocontracting_click_count_annotated, 1)
         self.assertEqual(tender_with_siae_1.siae_detail_contact_click_since_last_seen_date_count_annotated, 1)
