@@ -1,0 +1,23 @@
+<div id="detail_not_interested_container" class="mt-3">
+    {% if not tender.siae_detail_not_interested_click_date_count %}
+        <div class="card c-card rounded-lg shadow-lg">
+            <div class="card-body">
+                <h3>Pas intéressé ?</h3>
+                <p>
+                    Cette demande ne vous intéresse pas ? Dites-le nous !
+                </p>
+                {% if user.is_authenticated %}
+                    <button type="button" class="btn btn-warning btn-block" title="Je ne suis pas intéressé" hx-post="{% url 'tenders:detail-not-interested-click' tender.slug %}" hx-target="#detail_not_interested_container">
+                        Je ne suis pas intéressé
+                    </button>
+                {% elif siae_id %}
+                    <button type="button" class="btn btn-warning btn-block" title="Je ne suis pas intéressé" hx-post="{% url 'tenders:detail-not-interested-click' tender.slug %}?siae_id={{siae_id}}" hx-target="#detail_not_interested_container">
+                        Je ne suis pas intéressé
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        {% include "tenders/_detail_not_interested_click_confirm.html" %}
+    {% endif %}
+</div>
