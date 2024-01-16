@@ -18,6 +18,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderStepsData
 from lemarche.users import constants as user_constants
+from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderSiae, TenderStepsData
 from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
 from lemarche.www.tenders.tasks import restart_send_tender_task
@@ -196,6 +197,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "siae_detail_contact_click_count_annotated_with_link",
         "siae_detail_cocontracting_click_count_annotated_with_link",
         "siae_detail_not_interested_click_count_annotated_with_link",
+        "siae_ai_count_annotated_with_link",
         "logs_display",
         "extra_data_display",
         "source",
@@ -304,6 +306,15 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "siae_detail_contact_click_count_annotated_with_link",
                     "siae_detail_cocontracting_click_count_annotated_with_link",
                     "siae_detail_not_interested_click_count_annotated_with_link",
+                )
+            },
+        ),
+        (
+            "Structures concernés Bis",
+            {
+                "fields": (
+                    "siae_ai_count_annotated_with_link",
+                    "with_semantic_matching",
                 )
             },
         ),
@@ -449,6 +460,16 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     siae_count_annotated_with_link.short_description = "S. concernées"
     siae_count_annotated_with_link.admin_order_field = "siae_count_annotated"
+
+    def siae_ai_count_annotated_with_link(self, tender):
+        url = (
+            reverse("admin:tenders_tendersiae_changelist")
+            + f"?tender={tender.id}&mchoice_source={tender_constants.TENDER_SIAE_SOURCE_AI}"
+        )
+        return format_html(f'<a href="{url}">{getattr(tender, "siae_ai_count_annotated", 0)}</a>')
+
+    siae_ai_count_annotated_with_link.short_description = "S. ciblées uniquement par l'IA"
+    siae_ai_count_annotated_with_link.admin_order_field = "siae_ai_count_annotated"
 
     def siae_email_send_count_annotated_with_link(self, tender):
         url = (
@@ -679,3 +700,45 @@ class TenderStepsDataAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+class TenderSiaeSourceFilter(MultiChoice):
+    FILTER_LABEL = TenderSiae._meta.get_field("source").verbose_name
+    BUTTON_LABEL = "Appliquer"
+
+
+@admin.register(TenderSiae, site=admin_site)
+class TenderSiaeAdmin(admin.ModelAdmin):
+    list_display = ["created_at", "siae_with_link", "tender", "source"]
+
+    readonly_fields = [
+        "id",
+        "created_at",
+        "updated_at",
+        "tender",
+        "siae",
+        "email_send_date",
+        "email_link_click_date",
+        "detail_display_date",
+        "detail_contact_click_date",
+        "logs",
+    ]
+
+    list_filter = [
+        ("source", TenderSiaeSourceFilter),
+    ]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def siae_with_link(self, tendersiae_list):
+        url = reverse("siae:detail", args=[tendersiae_list.siae.slug])
+        return format_html(
+            f'<a href="{url}" target="_blank">{tendersiae_list.siae.brand} ({tendersiae_list.siae.name})</a>'
+        )
+
+    siae_with_link.short_description = "Structure"
+    siae_with_link.admin_order_field = "siae"
