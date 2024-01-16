@@ -349,7 +349,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
                 if not user.has_tender_siae(self.object):
                     for siae in user.siaes.all():
                         TenderSiae.objects.create(
-                            tender=self.object, siae=siae, source=TenderSiae.TENDER_SIAE_SOURCE_LINK
+                            tender=self.object, siae=siae, source=tender_constants.TENDER_SIAE_SOURCE_LINK
                         )
                 # update stats
                 TenderSiae.objects.filter(
