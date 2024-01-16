@@ -1023,7 +1023,7 @@ class SiaeSearchOrderTest(TestCase):
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 3 + 1)
-        self.assertEqual(siaes[0].has_user, True)
+        self.assertTrue(siaes[0].has_user)
         self.assertEqual(siaes[0].name, "ZZ ESI user")
 
     def test_should_bring_the_siae_with_logos_to_the_top(self):
@@ -1032,7 +1032,7 @@ class SiaeSearchOrderTest(TestCase):
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 3 + 1)
-        self.assertEqual(siaes[0].has_logo, True)
+        self.assertTrue(siaes[0].has_logo)
         self.assertEqual(siaes[0].name, "ZZ ESI logo")
 
     def test_should_bring_the_siae_with_descriptions_to_the_top(self):
@@ -1041,7 +1041,7 @@ class SiaeSearchOrderTest(TestCase):
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 3 + 1)
-        self.assertEqual(siaes[0].has_description, True)
+        self.assertTrue(siaes[0].has_description)
         self.assertEqual(siaes[0].name, "ZZ ESI description")
 
     def test_should_bring_the_siae_with_offers_to_the_top(self):
@@ -1052,7 +1052,7 @@ class SiaeSearchOrderTest(TestCase):
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
         self.assertEqual(len(siaes), 3 + 1)
-        self.assertEqual(siaes[0].has_offer, True)
+        self.assertTrue(siaes[0].has_offer)
         self.assertEqual(siaes[0].name, "ZZ ESI offer")
 
     def test_should_bring_the_siae_closer_to_the_city_to_the_top(self):

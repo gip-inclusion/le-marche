@@ -34,14 +34,14 @@ class SiaeGroupModelTest(TestCase):
 class SiaeGroupModelSaveTest(TestCase):
     def test_update_last_updated_fields(self):
         siae_group = SiaeGroupFactory()
-        self.assertEqual(siae_group.employees_insertion_count, None)
-        self.assertEqual(siae_group.employees_insertion_count_last_updated, None)
+        self.assertIsNone(siae_group.employees_insertion_count)
+        self.assertIsNone(siae_group.employees_insertion_count_last_updated)
         # new value: last_updated field will be set
         siae_group = SiaeGroup.objects.get(id=siae_group.id)  # we need to fetch it again to pass through the __init__
         siae_group.employees_insertion_count = 10
         siae_group.save()
         self.assertEqual(siae_group.employees_insertion_count, 10)
-        self.assertNotEqual(siae_group.employees_insertion_count_last_updated, None)
+        self.assertIsNotNone(siae_group.employees_insertion_count_last_updated)
         employees_insertion_count_last_updated = siae_group.employees_insertion_count_last_updated
         # same value: last_updated field will not be updated
         siae_group = SiaeGroup.objects.get(id=siae_group.id)
@@ -305,10 +305,10 @@ class SiaeModelSaveTest(TestCase):
         siae.users.add(user)
         sector = SectorFactory()
         siae.sectors.add(sector)
-        self.assertEqual(siae.content_filled_basic_date, None)
+        self.assertIsNone(siae.content_filled_basic_date)
         siae.description = "test"
         siae.save()
-        self.assertNotEqual(siae.content_filled_basic_date, None)
+        self.assertIsNotNone(siae.content_filled_basic_date)
         # siae should be skipped now
         fill_date = siae.content_filled_basic_date
         siae.description = "another test"
@@ -318,12 +318,12 @@ class SiaeModelSaveTest(TestCase):
     def test_update_signup_date_on_save(self):
         siae = SiaeFactory()
         user = UserFactory()
-        self.assertEqual(siae.signup_date, None)
+        self.assertIsNone(siae.signup_date)
         siae.users.add(user)
         self.assertEqual(siae.users.count(), 1)
         # siae.save()  # no need to run save(), m2m_changed signal was triggered above
         self.assertEqual(siae.user_count, 1)
-        self.assertNotEqual(siae.signup_date, None)
+        self.assertIsNotNone(siae.signup_date)
         # siae should be skipped now
         user_2 = UserFactory()
         signup_date = siae.signup_date
@@ -333,14 +333,14 @@ class SiaeModelSaveTest(TestCase):
 
     def test_update_last_updated_fields(self):
         siae = SiaeFactory()
-        self.assertEqual(siae.employees_insertion_count, None)
-        self.assertEqual(siae.employees_insertion_count_last_updated, None)
+        self.assertIsNone(siae.employees_insertion_count)
+        self.assertIsNone(siae.employees_insertion_count_last_updated)
         # new value: last_updated field will be set
         siae = Siae.objects.get(id=siae.id)  # we need to fetch it again to pass through the __init__
         siae.employees_insertion_count = 10
         siae.save()
         self.assertEqual(siae.employees_insertion_count, 10)
-        self.assertNotEqual(siae.employees_insertion_count_last_updated, None)
+        self.assertIsNotNone(siae.employees_insertion_count_last_updated)
         employees_insertion_count_last_updated = siae.employees_insertion_count_last_updated
         # same value: last_updated field will not be updated
         siae = Siae.objects.get(id=siae.id)
@@ -359,12 +359,12 @@ class SiaeModelSaveTest(TestCase):
     # def test_update_address_coords_field(self):
     #     siae = SiaeFactory(address="", post_code="", city="", department="", region="")
     #     self.assertEqual(siae.address, "")
-    #     self.assertEqual(siae.coords, None)
+    #     self.assertIsNone(siae.coords)
     #     siae.address = "20 Avenue de Segur"
     #     siae.city = "Paris"
     #     siae.save()
     #     siae = Siae.objects.get(id=siae.id)  # we need to fetch it again to make sure
-    #     self.assertNotEqual(siae.coords, None)
+    #     self.assertIsNotNone(siae.coords)
 
     def test_set_super_badge(self):
         # None -> True
@@ -449,12 +449,12 @@ class SiaeModelQuerysetTest(TestCase):
         SiaeLabelOldFactory(siae=siae_filled_full)
         siae_filled_full.save()
         siae_queryset = Siae.objects.with_content_filled_stats()
-        self.assertEqual(siae_queryset.get(id=siae_empty.id).content_filled_basic_annotated, False)
-        self.assertEqual(siae_queryset.get(id=siae_empty.id).content_filled_full_annotated, False)
-        self.assertEqual(siae_queryset.get(id=siae_filled_basic.id).content_filled_basic_annotated, True)
-        self.assertEqual(siae_queryset.get(id=siae_filled_basic.id).content_filled_full_annotated, False)
-        self.assertEqual(siae_queryset.get(id=siae_filled_full.id).content_filled_basic_annotated, True)
-        self.assertEqual(siae_queryset.get(id=siae_filled_full.id).content_filled_full_annotated, True)
+        self.assertFalse(siae_queryset.get(id=siae_empty.id).content_filled_basic_annotated)
+        self.assertFalse(siae_queryset.get(id=siae_empty.id).content_filled_full_annotated)
+        self.assertTrue(siae_queryset.get(id=siae_filled_basic.id).content_filled_basic_annotated)
+        self.assertFalse(siae_queryset.get(id=siae_filled_basic.id).content_filled_full_annotated)
+        self.assertTrue(siae_queryset.get(id=siae_filled_full.id).content_filled_basic_annotated)
+        self.assertTrue(siae_queryset.get(id=siae_filled_full.id).content_filled_full_annotated)
 
     def test_with_employees_stats(self):
         siae_1 = SiaeFactory()
@@ -467,8 +467,8 @@ class SiaeModelQuerysetTest(TestCase):
         siae_8 = SiaeFactory(employees_insertion_count=125, c2_etp_count=158, employees_permanent_count=88)
 
         siae_queryset = Siae.objects.with_employees_stats()
-        self.assertEqual(siae_queryset.get(id=siae_1.id).employees_insertion_count_with_c2_etp_annotated, None)
-        self.assertEqual(siae_queryset.get(id=siae_1.id).employees_count_annotated, None)
+        self.assertIsNone(siae_queryset.get(id=siae_1.id).employees_insertion_count_with_c2_etp_annotated)
+        self.assertIsNone(siae_queryset.get(id=siae_1.id).employees_count_annotated)
 
         self.assertEqual(siae_queryset.get(id=siae_2.id).employees_insertion_count_with_c2_etp_annotated, 10)
         self.assertEqual(siae_queryset.get(id=siae_2.id).employees_count_annotated, 10)
@@ -476,7 +476,7 @@ class SiaeModelQuerysetTest(TestCase):
         self.assertEqual(siae_queryset.get(id=siae_3.id).employees_insertion_count_with_c2_etp_annotated, 20)
         self.assertEqual(siae_queryset.get(id=siae_3.id).employees_count_annotated, 20)
 
-        self.assertEqual(siae_queryset.get(id=siae_4.id).employees_insertion_count_with_c2_etp_annotated, None)
+        self.assertIsNone(siae_queryset.get(id=siae_4.id).employees_insertion_count_with_c2_etp_annotated)
         self.assertEqual(siae_queryset.get(id=siae_4.id).employees_count_annotated, 155)
 
         self.assertEqual(siae_queryset.get(id=siae_5.id).employees_insertion_count_with_c2_etp_annotated, 22)
