@@ -13,7 +13,6 @@ import locale
 import os
 
 import environ
-import sib_api_v3_sdk
 from django.contrib.messages import constants as messages
 
 
@@ -391,8 +390,8 @@ MAILJET_TENDERS_AUTHOR_TRANSACTIONED_QUESTION_7D_TEMPLATE_ID = env.int(
 
 # -- Sendinblue (BREVO)
 BREVO_API_KEY = env.str("BREVO_API_KEY", "set-it")
-brevo_configuration = sib_api_v3_sdk.Configuration()
-brevo_configuration.api_key["api-key"] = BREVO_API_KEY
+BREVO_CL_SIGNUP_BUYER_ID = env.int("BREVO_CL_SIGNUP_BUYER_ID", 10)
+
 INBOUND_PARSING_DOMAIN_EMAIL = env.str("INBOUND_PARSING_DOMAIN_EMAIL", "reply.staging.lemarche.inclusion.beta.gouv.fr")
 
 INBOUND_EMAIL_IS_ACTIVATED = env.bool("INBOUND_EMAIL_IS_ACTIVATED", True)
