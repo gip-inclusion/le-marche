@@ -1146,7 +1146,17 @@ class Siae(models.Model):
 
     @property
     def elasticsearch_index_metadata(self):
-        return {"id": self.id, "name": self.name, "website": self.website if self.website else ""}
+        metadata = {
+            "id": self.id,
+            "name": self.name,
+            "website": self.website if self.website else "",
+        }
+        if self.latitude and self.longitude:
+            metadata["geo_location"] = {
+                "lat": self.latitude,
+                "lon": self.longitude,
+            }
+        return metadata
 
     def sectors_list_string(self, display_max=3):
         sectors_name_list = self.sectors.form_filter_queryset().values_list("name", flat=True)
