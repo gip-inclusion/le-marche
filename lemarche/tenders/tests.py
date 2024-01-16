@@ -112,7 +112,7 @@ class TenderModelPropertyTest(TestCase):
         tender_sent = TenderFactory(status=tender_constants.STATUS_SENT, first_sent_at=timezone.now())
         self.assertTrue(tender_draft.is_draft)
         self.assertTrue(tender_pending_validation.is_pending_validation)
-        self.assertFalse(tender_validated_half.is_validated)
+        self.assertTrue(tender_validated_half.is_validated)
         self.assertTrue(tender_validated_full.is_validated)
         self.assertTrue(tender_sent.is_sent)
 
