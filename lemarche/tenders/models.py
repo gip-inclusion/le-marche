@@ -230,6 +230,8 @@ class Tender(models.Model):
         "siae_detail_display_count",
         "siae_email_link_click_or_detail_display_count",
         "siae_detail_contact_click_count",
+        "siae_detail_cocontracting_click_count",
+        "siae_detail_not_interested_click_count",
     ]
     FIELDS_STATS_TIMESTAMPS = [
         "published_at",
@@ -484,6 +486,12 @@ class Tender(models.Model):
     )
     siae_detail_contact_click_count = models.IntegerField(
         "Nombre de structures intéressées", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
+    )
+    siae_detail_cocontracting_click_count = models.IntegerField(
+        "Nombre de structures ouvertes à la co-traitance", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
+    )
+    siae_detail_not_interested_click_count = models.IntegerField(
+        "Nombre de structures pas intéressées", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
     )
     published_at = models.DateTimeField("Date de publication", blank=True, null=True)
     siae_list_last_seen_date = models.DateTimeField(
