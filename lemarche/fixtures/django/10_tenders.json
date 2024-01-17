@@ -3,7 +3,7 @@
         "model": "tenders.tender",
         "pk": 1,
         "fields": {
-            "title": "Entretien des espaces verts de la commune de Grenoble",
+            "title": "Entretien des espaces verts de la commune de Grenoble (clôturé)",
             "slug": "entretien-espaces-verts-commune-grenoble",
             "kind": "TENDER",
             "presta_type": ["DISP", "PREST"],
@@ -19,8 +19,11 @@
             "contact_last_name": "Dupont",
             "contact_email": "acheteur@test.com",
             "contact_phone": "01 02 03 04 05",
-            "status": "VALIDATED",
+            "status": "SENT",
+            "published_at": "2021-01-02T22:26:47.569Z",
             "validated_at": "2021-01-02T22:26:47.569Z",
+            "first_sent_at": "2021-01-02T22:26:47.569Z",
+            "last_sent_at": "2021-01-02T22:26:47.569Z",
             "created_at": "2021-01-01T12:44:39Z",
             "updated_at": "2021-01-02T22:26:47.569Z"
         }
@@ -36,7 +39,7 @@
             "description": "Une description",
             "external_link": "https://example.com/",
             "amount": "5-10K",
-            "deadline_date": "2023-06-30",
+            "deadline_date": "2026-12-31",
             "response_kind": [
                 "EMAIL", "TEL"
             ],
@@ -45,8 +48,11 @@
             "contact_last_name": "Dupont",
             "contact_email": "acheteur@test.com",
             "contact_phone": "01 02 03 04 05",
-            "status": "VALIDATED",
+            "status": "SENT",
+            "published_at": "2021-01-03T22:26:47.569Z",
             "validated_at": "2021-01-03T22:26:47.569Z",
+            "first_sent_at": "2021-01-03T22:26:47.569Z",
+            "last_sent_at": "2021-01-03T22:26:47.569Z",
             "created_at": "2021-01-01T12:44:39Z",
             "updated_at": "2021-01-03T22:26:47.569Z"
         }
