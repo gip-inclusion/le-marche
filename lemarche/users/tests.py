@@ -103,14 +103,14 @@ class UserModelSaveTest(TestCase):
 
     def test_update_last_updated_fields(self):
         user = UserFactory()
-        self.assertEqual(user.api_key, None)
-        self.assertEqual(user.api_key_last_updated, None)
+        self.assertIsNone(user.api_key)
+        self.assertIsNone(user.api_key_last_updated)
         # new value: last_updated field will be set
         user = User.objects.get(id=user.id)  # we need to fetch it again to pass through the __init__
         user.api_key = "AZERTY"
         user.save()
         self.assertEqual(user.api_key, "AZERTY")
-        self.assertNotEqual(user.api_key_last_updated, None)
+        self.assertIsNotNone(user.api_key_last_updated)
         api_key_last_updated = user.api_key_last_updated
         # same value: last_updated field will not be updated
         user = User.objects.get(id=user.id)

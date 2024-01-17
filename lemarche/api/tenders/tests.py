@@ -69,7 +69,7 @@ class TenderCreateApiTest(TestCase):
         self.assertEqual(tender.author.email, USER_CONTACT_EMAIL)
         self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
         self.assertEqual(tender.source, tender_constants.SOURCE_API)
-        self.assertNotEqual(tender.import_raw_object, None)
+        self.assertIsNotNone(tender.import_raw_object)
         self.assertEqual(tender.import_raw_object["title"], "Test author 1")
         # test with own email
         tender_data = TENDER_JSON.copy()
@@ -83,7 +83,7 @@ class TenderCreateApiTest(TestCase):
         self.assertEqual(tender.author, self.user_with_token)
         self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
         self.assertEqual(tender.source, tender_constants.SOURCE_API)
-        self.assertNotEqual(tender.import_raw_object, None)
+        self.assertIsNotNone(tender.import_raw_object)
         self.assertEqual(tender.import_raw_object["title"], "Test author 2")
 
     def test_create_tender_with_location(self):

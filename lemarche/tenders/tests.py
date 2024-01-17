@@ -110,11 +110,11 @@ class TenderModelPropertyTest(TestCase):
         tender_validated_half = TenderFactory(status=tender_constants.STATUS_VALIDATED)
         tender_validated_full = TenderFactory(status=tender_constants.STATUS_VALIDATED, validated_at=timezone.now())
         tender_sent = TenderFactory(status=tender_constants.STATUS_SENT, first_sent_at=timezone.now())
-        self.assertTrue(tender_draft.is_draft, True)
-        self.assertTrue(tender_pending_validation.is_pending_validation, True)
-        self.assertTrue(tender_validated_half.is_validated, False)
-        self.assertTrue(tender_validated_full.is_validated, True)
-        self.assertTrue(tender_sent.is_sent, True)
+        self.assertTrue(tender_draft.is_draft)
+        self.assertTrue(tender_pending_validation.is_pending_validation)
+        self.assertTrue(tender_validated_half.is_validated)
+        self.assertTrue(tender_validated_full.is_validated)
+        self.assertTrue(tender_sent.is_sent)
 
     def test_amount_display(self):
         tender_with_amount = TenderFactory(amount=tender_constants.AMOUNT_RANGE_0_1, accept_share_amount=True)
@@ -708,7 +708,7 @@ class TenderAdminTest(TestCase):
         )
         tender_response = response.context_data["adminform"].form.instance
         self.assertEqual(tender_response.id, self.tender.id)
-        self.assertEqual(hasattr(tender_response, "siae_count_annotated"), True)
+        self.assertTrue(hasattr(tender_response, "siae_count_annotated"))
         self.assertEqual(tender_response.siae_count_annotated, 2)
         self.assertEqual(tender_response.siae_count_annotated, self.tender.tendersiae_set.count())
         # update sectors to have only one match for siaes
