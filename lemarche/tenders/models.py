@@ -823,6 +823,7 @@ class TenderSiae(models.Model):
         "Date de clic sur Répondre en co-traitance", blank=True, null=True
     )
     detail_not_interested_click_date = models.DateTimeField("Date de clic sur Pas intéressé", blank=True, null=True)
+    detail_not_interested_feedback = models.TextField(verbose_name="Clic sur Pas intéréssé : explication", blank=True)
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
