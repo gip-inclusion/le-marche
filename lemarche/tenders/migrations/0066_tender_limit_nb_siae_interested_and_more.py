@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
             name="version",
             field=models.PositiveIntegerField(default=0, verbose_name="Version"),
         ),
-        # this is migration to manage the existants stock
+        # we set the value to 0 for existing Tenders, and 1 to future Tenders
         migrations.AlterField(
             model_name="tender",
             name="version",

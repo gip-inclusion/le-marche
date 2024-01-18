@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from lemarche.tenders.models import Tender
-from lemarche.www.tenders.tasks import send_validated_tender
+from lemarche.www.tenders.tasks import send_tender_emails_to_siaes, send_validated_tender
 
 
 class Command(BaseCommand):
@@ -18,9 +18,18 @@ class Command(BaseCommand):
     """
 
     def handle(self, *args, **options):
+        # First send newly validated tenders
         validated_tenders_to_send = Tender.objects.validated_but_not_sent()
         if validated_tenders_to_send.count():
             self.stdout.write(f"Found {validated_tenders_to_send.count()} validated tender(s) to send")
             for tender in validated_tenders_to_send:
-                self.stdout.write(f"Found {tender} ")
                 send_validated_tender(tender)
+
+        # Then look at already sent tenders (batch mode)
+        validated_sent_tenders_batch_to_send = Tender.objects.validated_sent_batch()
+        if validated_sent_tenders_batch_to_send.count():
+            self.stdout.write(
+                f"Found {validated_sent_tenders_batch_to_send.count()} validated sent tender(s) to batch"
+            )
+            for tender in validated_sent_tenders_batch_to_send:
+                send_tender_emails_to_siaes(tender)

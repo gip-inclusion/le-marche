@@ -1,5 +1,6 @@
 EMPTY_CHOICE = (("", ""),)
 
+ADMIN_FIELD_HELP_TEXT = "Champ renseigné par un ADMIN"
 RECALCULATED_FIELD_HELP_TEXT = "Champ recalculé à intervalles réguliers"
 
 MARCHE_BENEFIT_TIME = "TIME"
