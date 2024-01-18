@@ -649,6 +649,10 @@ class Tender(models.Model):
             return "Je suis intéressé !"
         return "Accéder aux coordonnées"
 
+    @property
+    def cta_not_interested_card_button_text(self):
+        return "Je ne suis pas intéressé"
+
     @cached_property
     def can_display_contact_email(self):
         return (tender_constants.RESPONSE_KIND_EMAIL in self.response_kind) and self.contact_email
