@@ -649,6 +649,10 @@ class Tender(models.Model):
             return "Je suis intéressé !"
         return "Accéder aux coordonnées"
 
+    @property
+    def cta_not_interested_card_button_text(self):
+        return "Je ne suis pas intéressé"
+
     @cached_property
     def can_display_contact_email(self):
         return (tender_constants.RESPONSE_KIND_EMAIL in self.response_kind) and self.contact_email
@@ -823,6 +827,7 @@ class TenderSiae(models.Model):
         "Date de clic sur Répondre en co-traitance", blank=True, null=True
     )
     detail_not_interested_click_date = models.DateTimeField("Date de clic sur Pas intéressé", blank=True, null=True)
+    detail_not_interested_feedback = models.TextField(verbose_name="Clic sur Pas intéréssé : explication", blank=True)
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
