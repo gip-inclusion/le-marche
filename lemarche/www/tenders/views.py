@@ -507,7 +507,11 @@ class TenderDetailNotInterestedClickView(SiaeUserRequiredOrSiaeIdParamMixin, Det
             # save the datetime of this action
             TenderSiae.objects.filter(
                 tender=self.object, siae=siae, detail_not_interested_click_date__isnull=True
-            ).update(detail_not_interested_click_date=timezone.now(), updated_at=timezone.now())
+            ).update(
+                detail_not_interested_feedback=self.request.POST.get("detail_not_interested_feedback", ""),
+                detail_not_interested_click_date=timezone.now(),
+                updated_at=timezone.now(),
+            )
         else:
             self.template_name = "tenders/_detail_not_interested_click_error.html"
 

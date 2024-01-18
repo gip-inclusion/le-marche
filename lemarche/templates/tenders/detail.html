@@ -112,7 +112,7 @@
                                 {% elif not siae_has_detail_contact_click_date %}
                                     {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True %}
                                     {% include "tenders/_detail_cta_cocontracting.html" with tender=tender %}
-                                    {% include "tenders/_detail_cta_not_interested.html" with tender=tender %}
+                                    {% include "tenders/_detail_cta_not_interested.html" with tender=tender user_can_click=True %}
                                 {% endif %}
                             {% endif %}
                         {% comment %} if siae_id {% endcomment %}
@@ -133,6 +133,7 @@
                             {% endif %}
                         {% else %}
                             {% include "tenders/_detail_cta.html" with tender=tender user_can_click=False %}
+                            {% include "tenders/_detail_cta_not_interested.html" with tender=tender user_can_click=False %}
                         {% endif %}
                     {% endif %}
                 {% endif %}
