@@ -1235,13 +1235,12 @@ class TenderDetailCocontractingClickView(TestCase):
         # missing siae
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
             response = self.client.post(f"{url}?siae_id=999999", data={})
+        tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
         self.assertContains(
             response, "nous n'avons pas pu prendre en compte votre souhait de répondre en co-traitance"
         )
         mock_send_mail_async.assert_not_called()
-        self.assertEqual(
-            TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_cocontracting_click_date, None
-        )
+        self.assertIsNone(tendersiae.detail_cocontracting_click_date)
 
         detail_url = reverse("tenders:detail", kwargs={"slug": self.tender.slug}) + f"?siae_id={self.siae.id}"
         response = self.client.get(detail_url)
@@ -1250,13 +1249,12 @@ class TenderDetailCocontractingClickView(TestCase):
 
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
             response = self.client.post(f"{url}?siae_id={self.siae.id}", data={})
+        tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
         self.assertContains(response, "Votre intérêt a bien été signalé au client.")
         mock_send_mail_async.assert_called_once()
         email_body = mock_send_mail_async.call_args[1]["email_body"]
         self.assertTrue(f"La structure {self.siae.name } souhaite répondre en co-traitance" in email_body)
-        self.assertNotEqual(
-            TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_cocontracting_click_date, None
-        )
+        self.assertIsNotNone(tendersiae.detail_cocontracting_click_date)
         response = self.client.get(detail_url)
         self.assertContains(response, "Votre intérêt a bien été signalé au client.")
         self.assertNotContains(response, "Répondre en co-traitance ?")
@@ -1270,18 +1268,16 @@ class TenderDetailCocontractingClickView(TestCase):
         self.assertNotContains(response, "Votre intérêt a bien été signalé au client.")
 
         url = reverse("tenders:detail-cocontracting-click", kwargs={"slug": self.tender.slug})
-        self.assertEqual(
-            TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_cocontracting_click_date, None
-        )
+        tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
+        self.assertIsNone(tendersiae.detail_cocontracting_click_date)
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
             response = self.client.post(url, data={})
+        tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
         self.assertContains(response, "Votre intérêt a bien été signalé au client.")
         mock_send_mail_async.assert_called_once()
         email_body = mock_send_mail_async.call_args[1]["email_body"]
         self.assertTrue(f"La structure {self.siae.name } souhaite répondre en co-traitance" in email_body)
-        self.assertNotEqual(
-            TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_cocontracting_click_date, None
-        )
+        self.assertIsNotNone(tendersiae.detail_cocontracting_click_date)
 
         response = self.client.get(detail_url)
         self.assertContains(response, "Votre intérêt a bien été signalé au client.")
@@ -1330,8 +1326,9 @@ class TenderDetailNotInterestedClickView(TestCase):
         self.assertEqual(response.status_code, 403)
         # missing siae
         response = self.client.post(f"{url}?siae_id=999999", data={})
+        tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
         self.assertContains(response, self.cta_message_error)
-        self.assertIsNone(TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_not_interested_click_date)
+        self.assertIsNone(tendersiae.detail_not_interested_click_date)
 
         detail_url = reverse("tenders:detail", kwargs={"slug": self.tender.slug}) + f"?siae_id={self.siae.id}"
         response = self.client.get(detail_url)
@@ -1339,10 +1336,9 @@ class TenderDetailNotInterestedClickView(TestCase):
         self.assertNotContains(response, self.cta_message_success)
 
         response = self.client.post(f"{url}?siae_id={self.siae.id}", data={})
+        tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
         self.assertContains(response, self.cta_message_success)
-        self.assertIsNotNone(
-            TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_not_interested_click_date
-        )
+        self.assertIsNotNone(tendersiae.detail_not_interested_click_date)
         response = self.client.get(detail_url)
         self.assertContains(response, self.cta_message_success)
         self.assertNotContains(response, self.cta_message)
@@ -1356,12 +1352,13 @@ class TenderDetailNotInterestedClickView(TestCase):
         self.assertNotContains(response, self.cta_message_success)
 
         url = reverse("tenders:detail-not-interested-click", kwargs={"slug": self.tender.slug})
-        self.assertIsNone(TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_not_interested_click_date)
-        response = self.client.post(url, data={})
+        tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
+        self.assertIsNone(tendersiae.detail_not_interested_click_date)
+        response = self.client.post(url, data={"detail_not_interested_feedback": "reason"})
+        tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
         self.assertContains(response, self.cta_message_success)
-        self.assertIsNotNone(
-            TenderSiae.objects.get(tender=self.tender, siae=self.siae).detail_not_interested_click_date
-        )
+        self.assertIsNotNone(tendersiae.detail_not_interested_click_date)
+        self.assertEqual(tendersiae.detail_not_interested_feedback, "reason")
 
         response = self.client.get(detail_url)
         self.assertContains(response, self.cta_message_success)
