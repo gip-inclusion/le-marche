@@ -19,7 +19,7 @@ from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.users.models import User
-from lemarche.utils.constants import MARCHE_BENEFIT_CHOICES, RECALCULATED_FIELD_HELP_TEXT
+from lemarche.utils.constants import ADMIN_FIELD_HELP_TEXT, MARCHE_BENEFIT_CHOICES, RECALCULATED_FIELD_HELP_TEXT
 from lemarche.utils.fields import ChoiceArrayField
 
 
@@ -44,22 +44,26 @@ class TenderQuerySet(models.QuerySet):
     def validated(self):
         return self.filter(validated_at__isnull=False)
 
-    def validated_but_not_sent(self):
-        yesterday = timezone.now() - timedelta(days=1)
-
-        return self.with_siae_stats().filter(
-            (Q(version=0) & Q(validated_at__isnull=False) & Q(first_sent_at__isnull=True))
-            | (
-                Q(version=1)
-                & Q(validated_at__isnull=False)
-                & Q(siae_detail_contact_click_count_annotated__lte=F("limit_nb_siae_interested"))
-                & ~Q(siae_count_annotated=F("siae_email_send_count_annotated"))
-                & (Q(first_sent_at__isnull=True) | Q(last_sent_at__lt=yesterday))
-            )
-        )
-
     def sent(self):
         return self.filter(first_sent_at__isnull=False)
+
+    def validated_but_not_sent(self):
+        return self.validated().filter(first_sent_at__isnull=True)
+
+    def validated_sent_batch(self):
+        yesterday = timezone.now() - timedelta(days=1)
+
+        return (
+            self.with_siae_stats()
+            .validated()
+            .sent()
+            .filter(
+                Q(version=1)
+                & Q(siae_detail_contact_click_count_annotated__lte=F("limit_nb_siae_interested"))
+                & ~Q(siae_count_annotated=F("siae_email_send_count_annotated"))
+                & Q(last_sent_at__lt=yesterday)
+            )
+        )
 
     def is_incremental(self):
         return self.filter(
@@ -443,29 +447,29 @@ class Tender(models.Model):
     notes = GenericRelation("notes.Note", related_query_name="tender")
     siae_transactioned = models.BooleanField(
         verbose_name="Abouti à une transaction avec une structure",
-        help_text="Champ renseigné par un ADMIN",
+        help_text=ADMIN_FIELD_HELP_TEXT,
         blank=True,
         null=True,
     )
     amount_exact = models.PositiveIntegerField(
-        verbose_name="Montant exact du besoin", help_text="Champ renseigné par un ADMIN", blank=True, null=True
+        verbose_name="Montant exact du besoin", help_text=ADMIN_FIELD_HELP_TEXT, blank=True, null=True
     )
     incremental_custom = models.PositiveSmallIntegerField(
         verbose_name="Modification de l'incrémental (%)",
-        help_text="Champ renseigné par un ADMIN",
+        help_text=ADMIN_FIELD_HELP_TEXT,
         blank=True,
         null=True,
         default=None,
     )
     limit_send_to_siae_batch = models.PositiveSmallIntegerField(
         verbose_name="Nombre de SIAES par envoi",
-        help_text="Champ renseigné par un ADMIN",
+        help_text=ADMIN_FIELD_HELP_TEXT,
         default=10,
     )
 
     limit_nb_siae_interested = models.PositiveSmallIntegerField(
         verbose_name="Limite des SIAES intéressées",
-        help_text="Champ renseigné par un ADMIN",
+        help_text=ADMIN_FIELD_HELP_TEXT,
         default=5,
     )
     # stats

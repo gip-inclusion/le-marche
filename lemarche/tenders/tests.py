@@ -202,6 +202,66 @@ class TenderModelQuerysetTest(TestCase):
         TenderFactory(first_sent_at=None)
         self.assertEqual(Tender.objects.sent().count(), 1)
 
+    def test_validated_but_not_sent(self):
+        siae = SiaeFactory()
+        TenderFactory(siaes=[siae], status=tender_constants.STATUS_PUBLISHED, validated_at=None, first_sent_at=None)
+        TenderFactory(
+            siaes=[siae], status=tender_constants.STATUS_VALIDATED, validated_at=timezone.now(), first_sent_at=None
+        )
+        TenderFactory(
+            siaes=[siae],
+            status=tender_constants.STATUS_SENT,
+            validated_at=timezone.now(),
+            first_sent_at=timezone.now(),
+        )
+        self.assertEqual(Tender.objects.validated_but_not_sent().count(), 1)
+
+    def test_validated_sent_batch(self):
+        one_hour_ago = timezone.now() - timedelta(hours=1)
+        two_days_ago = timezone.now() - timedelta(days=1)
+        siae = SiaeFactory()
+        TenderFactory(
+            siaes=[siae],
+            version=1,
+            status=tender_constants.STATUS_PUBLISHED,
+            validated_at=None,
+            first_sent_at=None,
+            last_sent_at=None,
+        )
+        TenderFactory(
+            siaes=[siae],
+            version=1,
+            status=tender_constants.STATUS_VALIDATED,
+            validated_at=timezone.now(),
+            first_sent_at=None,
+            last_sent_at=None,
+        )
+        TenderFactory(
+            siaes=[siae],
+            version=1,
+            status=tender_constants.STATUS_SENT,
+            validated_at=timezone.now(),
+            first_sent_at=timezone.now(),
+            last_sent_at=timezone.now(),
+        )
+        TenderFactory(
+            siaes=[siae],
+            version=1,
+            status=tender_constants.STATUS_SENT,
+            validated_at=one_hour_ago,
+            first_sent_at=one_hour_ago,
+            last_sent_at=one_hour_ago,
+        )
+        TenderFactory(
+            siaes=[siae],
+            version=1,
+            status=tender_constants.STATUS_SENT,
+            validated_at=two_days_ago,
+            first_sent_at=two_days_ago,
+            last_sent_at=two_days_ago,
+        )
+        self.assertEqual(Tender.objects.validated_sent_batch().count(), 1)
+
     def test_is_live(self):
         TenderFactory(deadline_date=timezone.now() + timedelta(days=1))
         TenderFactory(deadline_date=timezone.now() - timedelta(days=1))
