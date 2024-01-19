@@ -26,7 +26,7 @@ def send_validated_tender(tender: Tender):
     # send the tender to all matching Siaes & Partners
     send_tender_emails_to_siaes(tender)
     send_tender_emails_to_partners(tender)
-    # log
+    # set first_sent_at & last_sent_at, log
     tender.set_sent()
     # hubspot
     if settings.BITOUBI_ENV == "prod":
@@ -34,10 +34,10 @@ def send_validated_tender(tender: Tender):
 
 
 def send_validated_sent_batch_tender(tender: Tender):
-    # the tender has already been sent a first time
+    # the tender has already been sent a first time with send_validated_tender
     # this is the second/third/... iteration
     send_tender_emails_to_siaes(tender)
-    # log
+    # update last_sent_at, log
     tender.set_sent()
 
 
