@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from lemarche.tenders.models import Tender
-from lemarche.www.tenders.tasks import send_tender_emails_to_siaes, send_validated_tender
+from lemarche.www.tenders.tasks import send_validated_sent_batch_tender, send_validated_tender
 
 
 class Command(BaseCommand):
@@ -32,4 +32,4 @@ class Command(BaseCommand):
                 f"Found {validated_sent_tenders_batch_to_send.count()} validated sent tender(s) to batch"
             )
             for tender in validated_sent_tenders_batch_to_send:
-                send_tender_emails_to_siaes(tender)
+                send_validated_sent_batch_tender(tender)
