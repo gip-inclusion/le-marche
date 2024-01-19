@@ -412,13 +412,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             obj.author = request.user
         obj.save()
 
-    def save_related(self, request, form, formsets, change):
-        super().save_related(request=request, form=form, formsets=formsets, change=change)
-        tender: Tender = form.instance
-        # we can add `and obj.status != obj.STATUS_DRAFT` to disable matching when is draft
-        if not tender.is_validated_or_sent:
-            tender.set_siae_found_list()
-
     def save_formset(self, request, form, formset, change):
         """
         Set Note author on create
@@ -454,6 +447,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     question_count_with_link.short_description = TenderQuestion._meta.verbose_name_plural
 
+    # TODO: les siaes trouvés par l'IA apparaissent aussi ici : /admin/siaes/siae/?tenders__in=7
     def siae_count_annotated_with_link(self, tender):
         url = reverse("admin:siaes_siae_changelist") + f"?tenders__in={tender.id}"
         return format_html(f'<a href="{url}">{getattr(tender, "siae_count_annotated", 0)}</a>')
@@ -564,6 +558,10 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         """
         Catch submit of custom admin button to Validate or Resend Tender
         """
+        if request.POST.get("_calculate_tender"):
+            obj.set_siae_found_list()
+            self.message_user(request, "Les structures concernées ont été mises à jour.")
+            return HttpResponseRedirect(".")
         if request.POST.get("_validate_tender"):
             obj.set_validated()
             self.message_user(request, "Ce dépôt de besoin a été validé. Il sera envoyé en temps voulu :)")
