@@ -232,7 +232,6 @@ class TenderCreateMultiStepView(SessionWizardView):
         tender_dict = cleaned_data | {"author": user, "source": tender_constants.SOURCE_FORM}
         is_draft: bool = self.request.POST.get("is_draft", False)
         self.save_instance_tender(tender_dict=tender_dict, form_dict=form_dict, is_draft=is_draft)
-        self.instance.set_siae_found_list()
 
         # remove steps data
         uuid = self.request.session.get("tender_steps_data_uuid", None)
