@@ -31,13 +31,11 @@
         {% if not tender.deadline_date_outdated and not tender.response_is_anonymous %}
             {% if siae_has_detail_contact_click_date %}
                 <div class="row">
-                    {% if not tender.response_is_anonymous %}
-                        <div class="col-12 col-lg-8">
-                            <div class="alert alert-info fade show" role="status">
-                                {% include "tenders/_detail_contact.html" with tender=tender source="alert" %}
-                            </div>
+                    <div class="col-12 col-lg-8">
+                        <div class="alert alert-info fade show" role="status">
+                            {% include "tenders/_detail_contact.html" with tender=tender source="alert" %}
                         </div>
-                    {% endif %}
+                    </div>
                     <div class="col-12 col-lg-4">
                         <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                             <p class="mb-1">
