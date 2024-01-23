@@ -493,3 +493,17 @@ class NetworkSiaeFilterForm(forms.Form):
         qs = qs.distinct()
 
         return qs
+
+
+class SiaeSemanticForm(forms.Form):
+    search_query = forms.CharField(
+        label="Recherche sémantique",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Je cherche…"}),
+        help_text=" ".join(
+            [
+                "Soyez le plus précis possible (Exemple: nettoyage des locaux d'entreprise",
+                "/ entretien des espaces verts)",
+            ]
+        ),
+    )

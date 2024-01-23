@@ -12,19 +12,26 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
-from django.views import View
 from django.views.generic import DetailView, ListView, UpdateView
+from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.edit import FormMixin
 
 from lemarche.conversations.models import Conversation
 from lemarche.favorites.models import FavoriteList
 from lemarche.siaes.models import Siae
+from lemarche.utils.apis.api_elasticsearch import siaes_similarity_search
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
 from lemarche.www.auth.tasks import add_to_contact_list
 from lemarche.www.conversations.forms import ContactForm
-from lemarche.www.siaes.forms import SiaeDownloadForm, SiaeFavoriteForm, SiaeFilterForm, SiaeShareForm
+from lemarche.www.siaes.forms import (
+    SiaeDownloadForm,
+    SiaeFavoriteForm,
+    SiaeFilterForm,
+    SiaeSemanticForm,
+    SiaeShareForm,
+)
 
 
 CURRENT_SEARCH_QUERY_COOKIE_NAME = "current_search"
@@ -97,6 +104,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         context["position_promote_tenders"] = [5, 15]
         siae_search_form = self.get_filter_form()
         context["form"] = siae_search_form
+        context["form_semantic"] = SiaeSemanticForm()
         context["form_download"] = SiaeDownloadForm(data=self.request.GET)
         context["form_share"] = SiaeShareForm(data=self.request.GET, user=self.request.user)
         context["url_share_list"] = self.get_mailto_share_url()
@@ -126,6 +134,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         context["siaes_json"] = serialize(
             "geojson", context["siaes"], geometry_field="coords", fields=("id", "name", "brand", "slug")
         )
+        context["is_admin"] = self.request.user.is_authenticated and self.request.user.is_admin
         return context
 
 
@@ -328,3 +337,16 @@ class SiaeFavoriteView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             f"<strong>{siae.name_display}</strong> a été ajoutée à "
             f"votre liste d'achat <strong>{favorite_list.name}</strong>."
         )
+
+
+class SiaeSemanticSearchResultsView(TemplateResponseMixin, View):
+    template_name = "siaes/semantic_search_results.html"
+
+    def get(self, request):
+        search_query = self.request.GET.get("search_query", None)
+        siaes_id = siaes_similarity_search(search_query)
+        siaes = Siae.objects.filter(pk__in=siaes_id)
+        context = {
+            "siaes": siaes,
+        }
+        return self.render_to_response(context)
