@@ -53,6 +53,7 @@
                                 Recherche par SIRET / nom
                             </a>
                         </li>
+                        {% if is_admin %}
                         <li class="nav-item" role="presentation">
                             <a class="nav-link"
                                 id="search-semantic-tab"
@@ -65,6 +66,7 @@
                                 <span class="badge badge-sm badge-pill badge-important ml-2">Nouveauté</span>
                             </a>
                         </li>
+                        {% endif %}
                         <li class="nav-item-dropdown dropdown">
                             <a class="nav-link dropdown-toggle"
                                href="#"
@@ -203,6 +205,7 @@
                                 </div>
                             </form>
                         </div>
+                        {% if is_admin %}
                         <div class="tab-pane fade"
                             id="search-semantic"
                             role="tabpanel"
@@ -232,6 +235,7 @@
                                 </div>
                             </form>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
