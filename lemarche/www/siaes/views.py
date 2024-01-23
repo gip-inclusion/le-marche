@@ -134,6 +134,7 @@ class SiaeSearchResultsView(FormMixin, ListView):
         context["siaes_json"] = serialize(
             "geojson", context["siaes"], geometry_field="coords", fields=("id", "name", "brand", "slug")
         )
+        context["is_admin"] = self.request.user.is_authenticated and self.request.user.is_admin
         return context
 
 
