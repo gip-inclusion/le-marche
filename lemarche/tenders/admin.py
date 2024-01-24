@@ -19,6 +19,7 @@ from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderStepsData
 from lemarche.users import constants as user_constants
 from lemarche.utils.admin.admin_site import admin_site
+from lemarche.utils.apis import api_brevo_crm
 from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
 from lemarche.www.tenders.tasks import restart_send_tender_task
 
@@ -545,6 +546,8 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         """
         if request.POST.get("_validate_tender"):
             obj.set_validated()
+            # brevo create deal
+            api_brevo_crm.create_deal(tender=obj)
             self.message_user(request, "Ce dépôt de besoin a été validé. Il sera envoyé en temps voulu :)")
             return HttpResponseRedirect(".")
         elif request.POST.get("_restart_tender"):
