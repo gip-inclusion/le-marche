@@ -16,9 +16,8 @@ from lemarche.perimeters.admin import PerimeterRegionFilter
 from lemarche.perimeters.models import Perimeter
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.forms import TenderAdminForm
-from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderStepsData
-from lemarche.users import constants as user_constants
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderSiae, TenderStepsData
+from lemarche.users import constants as user_constants
 from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
 from lemarche.www.tenders.tasks import restart_send_tender_task
