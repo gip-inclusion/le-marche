@@ -123,6 +123,19 @@ Le script [start_docker.sh](./start_docker.sh) permet de lancer les environnemen
 
 Une fois lancé, l'application est disponible sur http://localhost:8880/.
 
+Le dépôt de besoin utilise les périmètres. Il est possible de les charger avec les commandes Django :
+```bash
+django-admin import_regions
+django-admin import_departements
+django-admin import_communes
+```
+
+Des données de test peuvent être chargées ainsi (fixtures) :
+
+```bash
+ls -d lemarche/fixtures/django/* | xargs django-admin loaddata
+```
+
 ## API
 
 Il y a aussi une API, qui propose plusieurs endpoints et interfaces de documentation :
