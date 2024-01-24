@@ -819,9 +819,9 @@ class TenderAdminTest(TestCase):
             perimeters=[cls.perimeter_paris],
             status=tender_constants.STATUS_PUBLISHED,
             published_at=timezone.now(),
+            validated_at=None,
         )
         cls.form_data = model_to_dict(cls.tender) | {
-            "_continue": "Enregistrer et continuer les modifications",
             "amount": "",
             "why_amount_is_blank": "DONT_WANT_TO_SHARE",
             "location": cls.perimeter_paris.pk,
@@ -847,6 +847,25 @@ class TenderAdminTest(TestCase):
             if value is None:
                 cls.form_data[key] = ""
 
+    def test_edit_form_no_matching_on_simple_submission(self):
+        self.client.force_login(self.user)
+        tender_update_post_url = get_admin_change_view_url(self.tender)
+        self.assertEqual(self.tender.tendersiae_set.count(), 0)
+        # create post request to update the model
+        response = self.client.post(
+            tender_update_post_url,
+            self.form_data
+            | {
+                "title": "New title",
+                "_continue": "Enregistrer et continuer les modifications",
+            },
+            follow=True,
+        )
+        tender_response = response.context_data["adminform"].form.instance
+        self.assertEqual(tender_response.id, self.tender.id)
+        self.assertTrue(hasattr(tender_response, "siae_count_annotated"))
+        self.assertEqual(tender_response.siae_count_annotated, 0)
+
     def test_edit_form_matching_on_submission(self):
         self.client.force_login(self.user)
         tender_update_post_url = get_admin_change_view_url(self.tender)
@@ -857,6 +876,7 @@ class TenderAdminTest(TestCase):
             self.form_data
             | {
                 "title": "New title",
+                "_calculate_tender": "Sauvegarder et chercher les structures correspondantes",
             },
             follow=True,
         )
@@ -872,6 +892,7 @@ class TenderAdminTest(TestCase):
             | {
                 "title": "New title",
                 "sectors": [sector.id for sector in self.sectors[1:3]],
+                "_calculate_tender": "Sauvegarder et chercher les structures correspondantes",
             },
             follow=True,
         )
@@ -884,6 +905,7 @@ class TenderAdminTest(TestCase):
             self.form_data
             | {
                 "sectors": [sector.id for sector in self.sectors[7:8]],
+                "_calculate_tender": "Sauvegarder et chercher les structures correspondantes",
             },
             follow=True,
         )
@@ -891,3 +913,45 @@ class TenderAdminTest(TestCase):
         self.assertEqual(tender_response.siae_count_annotated, 1)
         tender_siae_matched_2 = tender_response.tendersiae_set.first()  # only one siae
         self.assertNotEqual(tender_siae_matched.pk, tender_siae_matched_2.pk)
+
+    def test_edit_form_no_matching_on_validate_submission(self):
+        self.client.force_login(self.user)
+        tender_update_post_url = get_admin_change_view_url(self.tender)
+        self.assertEqual(self.tender.tendersiae_set.count(), 0)
+        # create post request to update the model
+        response = self.client.post(
+            tender_update_post_url,
+            self.form_data
+            | {
+                "title": "New title",
+                "_calculate_tender": "Sauvegarder et chercher les structures correspondantes",
+            },
+            follow=True,
+        )
+        tender_response = response.context_data["adminform"].form.instance
+        self.assertEqual(tender_response.id, self.tender.id)
+        self.assertNotContains(response, "Validé le ")
+        self.assertTrue(hasattr(tender_response, "siae_count_annotated"))
+        self.assertEqual(tender_response.siae_count_annotated, 2)
+        self.assertEqual(tender_response.siae_count_annotated, self.tender.tendersiae_set.count())
+
+        # delete for moderation per example
+        TenderSiae.objects.first().delete()
+        self.assertEqual(self.tender.tendersiae_set.count(), 1)
+
+        # validation does not match again and keep moderation
+        response = self.client.post(
+            tender_update_post_url,
+            self.form_data
+            | {
+                "title": "New title",
+                "_validate_tender": "Valider (sauvegarder) et envoyer aux structures",
+            },
+            follow=True,
+        )
+        tender_response = response.context_data["adminform"].form.instance
+        self.assertEqual(tender_response.id, self.tender.id)
+        self.assertContains(response, "Validé le ")
+        self.assertTrue(hasattr(tender_response, "siae_count_annotated"))
+        self.assertEqual(tender_response.siae_count_annotated, 1)
+        self.assertEqual(tender_response.siae_count_annotated, self.tender.tendersiae_set.count())
