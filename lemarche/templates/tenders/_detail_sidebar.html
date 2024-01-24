@@ -69,7 +69,7 @@
         {% else %}
             {% if user.is_authenticated or siae_id %}
                 {% if not siae_has_detail_contact_click_date %}
-                    {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True tender_response_is_anonymous=True %}
+                    {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True siae_id=siae_id tender_response_is_anonymous=True %}
                 {% else %}
                     {% include "tenders/_detail_success_contact.html" %}
                 {% endif %}
