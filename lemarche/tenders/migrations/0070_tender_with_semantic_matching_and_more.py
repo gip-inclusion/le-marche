@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("tenders", "0064_tender_status_sent"),
+        ("tenders", "0069_tendersiae_detail_not_interested_feedback"),
     ]
 
     operations = [
