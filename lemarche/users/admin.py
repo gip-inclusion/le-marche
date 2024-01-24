@@ -253,7 +253,11 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             },
         ),
         ("API", {"fields": ("api_key", "api_key_last_updated")}),
-        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser")}),
+        ("API", {"fields": ("api_key", "api_key_last_updated")}),
+        (
+            "Permissions",
+            {"fields": ("is_active", "is_staff", "is_superuser", "groups")},
+        ),
         (
             "Données C4 Cocorico",
             {
