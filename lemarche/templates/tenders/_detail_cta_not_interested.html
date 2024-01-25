@@ -1,38 +1,19 @@
 <div id="detail_not_interested_container" class="mt-3">
-    {% if not tender.siae_detail_not_interested_click_date_count %}
-        <div class="card c-card rounded-lg shadow-lg">
-            <div class="card-body">
-                <h3>Pas intéressé ?</h3>
-                <p>
-                    Cette demande ne vous intéresse pas ? Dites-le nous !
-                </p>
-                {% if user_can_click %}
-                    <form method="POST" action="{% url 'tenders:detail-not-interested-click' tender.slug %}?siae_id=">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="id_detail_not_interested_feedback">Afin d'améliorer la pertinence des demandes que nous vous envoyons, expliquez-nous pourquoi celle-ci ne vous intéresse pas.</label>
-                            <textarea id="id_detail_not_interested_feedback" class="form-control" name="detail_not_interested_feedback" placeholder="Parce que..." rows="3"></textarea>
-                        </div>
-                        <div>
-                            {% if user.is_authenticated %}
-                                <button type="submit" class="btn btn-warning btn-block" title="{{ tender.cta_not_interested_card_button_text|safe }}" hx-post="{% url 'tenders:detail-not-interested-click' tender.slug %}" hx-target="#detail_not_interested_container">
-                                    <span>{{ tender.cta_not_interested_card_button_text|safe }}</span>
-                                </button>
-                            {% elif siae_id %}
-                                <button type="submit" class="btn btn-warning btn-block" title="{{ tender.cta_not_interested_card_button_text|safe }}" hx-post="{% url 'tenders:detail-not-interested-click' tender.slug %}?siae_id={{siae_id}}" hx-target="#detail_not_interested_container">
-                                    <span>{{ tender.cta_not_interested_card_button_text|safe }}</span>
-                                </button>
-                            {% endif %}
-                        </div>
-                    </form>
-                {% else %}
-                    <a href="#" id="show-tender-not-interested-modal-btn" class="btn btn-primary btn-block" data-toggle="modal" data-target="#login_or_signup_siae_tender_modal" data-next-params="{% url 'tenders:detail' tender.slug %}">
-                        <span>{{ tender.cta_not_interested_card_button_text|safe }}</span>
-                    </a>
-                {% endif %}
-            </div>
+    <div class="card c-card rounded-lg shadow-lg">
+        <div class="card-body">
+            <h3>Pas intéressé ?</h3>
+            <p>
+                Cette demande ne vous intéresse pas ? Dites-le nous !
+            </p>
+            {% if user_can_click %}
+                <button type="button" id="show-tender-contact-modal-btn" class="btn btn-warning btn-block" data-toggle="modal" data-target="#detail_not_interested_click_confirm_modal" data-siae-id="{{ siae_id }}" title="{{ tender.cta_not_interested_card_button_text|safe }}">
+                    {{ tender.cta_not_interested_card_button_text|safe }}
+                </button>
+            {% else %}
+                <a href="#" id="show-tender-not-interested-modal-btn" class="btn btn-warning btn-block" data-toggle="modal" data-target="#login_or_signup_siae_tender_modal" data-next-params="{% url 'tenders:detail' tender.slug %}">
+                    <span>{{ tender.cta_not_interested_card_button_text|safe }}</span>
+                </a>
+            {% endif %}
         </div>
-    {% else %}
-        {% include "tenders/_detail_not_interested_click_confirm.html" %}
-    {% endif %}
+    </div>
 </div>
