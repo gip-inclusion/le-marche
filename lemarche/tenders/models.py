@@ -654,6 +654,10 @@ class Tender(models.Model):
         return "Accéder aux coordonnées"
 
     @property
+    def cta_cocontracting_card_button_text(self):
+        return "Répondre en co-traitance"
+
+    @property
     def cta_not_interested_card_button_text(self):
         return "Je ne suis pas intéressé"
 
