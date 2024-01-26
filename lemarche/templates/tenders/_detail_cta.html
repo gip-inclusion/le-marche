@@ -5,7 +5,7 @@
         <p>{{ tender.cta_card_paragraph_text|safe }}</p>
 
         {% if user_can_click %}
-            {% if tender_is_anonymous %}
+            {% if tender_response_is_anonymous %}
                 <form method="POST" action="{% url 'tenders:detail-contact-click-stat' tender.slug %}?siae_id={{ siae_id }}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-primary btn-block" name="detail_contact_click_confirm" value="true">{{ tender.cta_card_button_text|safe }}</button>
