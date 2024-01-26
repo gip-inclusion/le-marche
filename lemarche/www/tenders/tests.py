@@ -99,16 +99,16 @@ class TenderCreateViewTest(TestCase):
                 )
 
     def test_anyone_can_access_create_tender(self):
-        # anonymous
+        # anonymous user
         url = reverse("tenders:create")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        # buyer
+        # user buyer
         self.client.force_login(self.user_buyer)
         url = reverse("tenders:create")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        # siae
+        # user siae
         self.client.force_login(self.user_siae)
         url = reverse("tenders:create")
         response = self.client.get(url)
@@ -617,19 +617,36 @@ class TenderDetailViewTest(TestCase):
             status=tender_constants.STATUS_SENT,
             first_sent_at=timezone.now(),
         )
+        cls.tender_3_response_is_anonymous = TenderFactory(
+            author=cls.user_buyer_1,
+            contact_company_name="Another company",
+            status=tender_constants.STATUS_SENT,
+            first_sent_at=timezone.now(),
+            response_is_anonymous=True,
+        )
+        cls.tendersiae_3_1 = TenderSiae.objects.create(
+            tender=cls.tender_3_response_is_anonymous,
+            siae=cls.siae_1,
+            source="EMAIL",
+            email_send_date=timezone.now(),
+            email_link_click_date=timezone.now(),
+            detail_display_date=timezone.now(),
+            detail_contact_click_date=timezone.now(),
+        )
 
     def test_anyone_can_view_sent_tenders(self):
-        # anonymous
-        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Voir l'appel d'offres")
-        # users
-        for user in User.objects.all():
-            self.client.force_login(user)
-            url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        for tender in Tender.objects.all():
+            # anonymous user
+            url = reverse("tenders:detail", kwargs={"slug": tender.slug})
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
+            self.assertContains(response, tender.title)
+            # users
+            for user in User.objects.all():
+                self.client.force_login(user)
+                url = reverse("tenders:detail", kwargs={"slug": tender.slug})
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200)
 
     def test_only_author_or_admin_can_view_non_sent_tender(self):
         tender_draft = TenderFactory(author=self.user_buyer_1, status=tender_constants.STATUS_DRAFT)
@@ -643,7 +660,7 @@ class TenderDetailViewTest(TestCase):
             validated_at=timezone.now(),
         )
         for tender in [tender_draft, tender_published, tender_validated_but_not_sent]:
-            # anonymous
+            # anonymous user
             url = reverse("tenders:detail", kwargs={"slug": tender.slug})
             response = self.client.get(url)
             self.assertEqual(response.status_code, 302)
@@ -768,7 +785,7 @@ class TenderDetailViewTest(TestCase):
 
     def test_admin_has_extra_info(self):
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
-        # anonymous
+        # anonymous user
         response = self.client.get(url)
         self.assertNotContains(response, "Informations Admin")
         # other users
@@ -782,7 +799,7 @@ class TenderDetailViewTest(TestCase):
         self.assertContains(response, "Informations Admin")
 
     def test_tender_contact_display(self):
-        # anonymous
+        # anonymous user
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertNotContains(response, "Clôturé")
@@ -811,6 +828,37 @@ class TenderDetailViewTest(TestCase):
         self.assertContains(response, "Coordonnées")
         self.assertNotContains(response, "Voir l'appel d'offres")
 
+    def test_tender_response_is_anonymous_contact_display(self):
+        # anonymous user
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_3_response_is_anonymous.slug})
+        response = self.client.get(url)
+        self.assertNotContains(response, "Clôturé")
+        self.assertNotContains(response, "Voir l'appel d'offres")
+        # siae user interested
+        self.client.force_login(self.siae_user_1)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_3_response_is_anonymous.slug})
+        response = self.client.get(url)
+        self.assertNotContains(response, "Contactez le client dès maintenant")
+        self.assertNotContains(response, "Voir l'appel d'offres")
+        self.assertContains(response, "Votre intérêt a été signalé au client")
+        # siae user not concerned
+        self.client.force_login(self.siae_user_2)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_3_response_is_anonymous.slug})
+        response = self.client.get(url)
+        self.assertNotContains(response, "Voir l'appel d'offres")
+        # siae user without siae
+        self.client.force_login(self.siae_user_3)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_3_response_is_anonymous.slug})
+        response = self.client.get(url)
+        self.assertNotContains(response, "veuillez d'abord vous")
+        self.assertNotContains(response, "Voir l'appel d'offres")
+        # author
+        self.client.force_login(self.user_buyer_1)
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_3_response_is_anonymous.slug})
+        response = self.client.get(url)
+        self.assertContains(response, "Coordonnées")
+        self.assertNotContains(response, "Voir l'appel d'offres")
+
     def test_tender_outdated_contact_display(self):
         tender_2 = TenderFactory(
             kind=tender_constants.KIND_QUOTE,
@@ -818,7 +866,7 @@ class TenderDetailViewTest(TestCase):
             deadline_date=timezone.now() - timedelta(days=1),
         )
         TenderSiae.objects.create(tender=tender_2, siae=self.siae_1, detail_contact_click_date=timezone.now())
-        # anonymous
+        # anonymous user
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
         response = self.client.get(url)
         self.assertContains(response, "Clôturé")
@@ -965,11 +1013,11 @@ class TenderDetailViewTest(TestCase):
         self.assertContains(response, "Lien partagé")
 
     def test_tender_cocontracting_display(self):
-        # anonymous
+        # anonymous user
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertNotContains(response, "Répondre en co-traitance ?")
-        # anonymous but with siae_id in url
+        # anonymous user but with siae_id in url
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(f"{url}?siae_id=15")
         self.assertContains(response, "Répondre en co-traitance ?")
@@ -1009,12 +1057,12 @@ class TenderDetailViewTest(TestCase):
         self.assertEqual(self.tender_1.tendersiae_set.last().siae, self.siae_1)
         self.assertIsNotNone(self.tender_1.tendersiae_set.last().email_link_click_date)
         self.assertIsNotNone(self.tender_1.tendersiae_set.last().detail_display_date)
-        # first load anonymous
+        # first load anonymous user
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Déjà 1 prestataire inclusif")
-        # reload anonymous with ?siae_id=
+        # reload anonymous user with ?siae_id=
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug}) + f"?siae_id={self.siae_2.id}"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -1055,7 +1103,7 @@ class TenderDetailViewTest(TestCase):
         self.assertEqual(self.tender_1.tendersiae_set.last().siae, self.siae_1)
         self.assertIsNotNone(self.tender_1.tendersiae_set.last().email_link_click_date)
         self.assertIsNotNone(self.tender_1.tendersiae_set.last().detail_display_date)
-        # first load anonymous
+        # first load anonymous user
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertContains(response, "Déjà 1 prestataire inclusif")
@@ -1074,7 +1122,7 @@ class TenderDetailViewTest(TestCase):
         self.assertEqual(self.tender_1.tendersiae_set.count(), 1)
         self.assertEqual(self.tender_1.tendersiae_set.first().siae, self.siae_1)
         self.assertIsNotNone(self.tender_1.tendersiae_set.first().detail_display_date)  # siae_1
-        # first load anonymous
+        # first load anonymous user
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertContains(response, "Déjà 1 prestataire inclusif")

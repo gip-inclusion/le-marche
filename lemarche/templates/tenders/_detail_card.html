@@ -8,6 +8,7 @@
         {% endif %}
     </div>
     <div class="card-body pb-5 px-5">
+        <!-- title & header -->
         <div class="row py-4">
             <div class="col-md-12">
                 <h1>
@@ -32,6 +33,7 @@
                 {{ tender.sectors_list_string|safe }}
             </div>
         </div>
+        <!-- contact details -->
         {% if not source_form %}
             {% if user.is_authenticated %}
                 {% if user == tender.author %}
