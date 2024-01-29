@@ -313,7 +313,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             {
                 "fields": (
                     "siae_ai_count_annotated_with_link",
-                    "with_semantic_matching",
+                    "with_ai_matching",
                 )
             },
         ),

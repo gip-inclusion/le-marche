@@ -388,7 +388,7 @@ class Tender(models.Model):
         help_text="Retournera uniquement les structures qui ont comme périmètre d'intervention 'France entière'",
         default=False,
     )
-    with_semantic_matching = models.BooleanField(
+    with_ai_matching = models.BooleanField(
         verbose_name="Activer le ciblage alternatif IA",
         help_text=(
             "Effectue une recherche sémantique avec la description du besoin pour ajouter des structures au ciblage "
@@ -561,7 +561,7 @@ class Tender(models.Model):
         siae_found_list = Siae.objects.filter_with_tender(self)
         self.siaes.set(siae_found_list, clear=False)
 
-        if self.with_semantic_matching and self.validated_at is None:
+        if self.with_ai_matching and self.validated_at is None:
             if (
                 self.location
                 and self.location.kind == Perimeter.KIND_CITY
@@ -586,16 +586,14 @@ class Tender(models.Model):
                         siae,
                         through_defaults={
                             "source": tender_constants.TENDER_SIAE_SOURCE_AI,
-                            "ai_had_found_it_too": True,
+                            "found_with_ai": True,
                         },
                     )
                 else:
                     siaes_had_found_by_ia_too.append(siae)
 
             # keep the info that the AI also found those siaes
-            TenderSiae.objects.filter(tender_id=self.id, siae__in=siaes_had_found_by_ia_too).update(
-                ai_had_found_it_too=True
-            )
+            TenderSiae.objects.filter(tender_id=self.id, siae__in=siaes_had_found_by_ia_too).update(found_with_ai=True)
 
     def save(self, *args, **kwargs):
         """
@@ -870,7 +868,7 @@ class TenderSiae(models.Model):
         choices=tender_constants.TENDER_SIAE_SOURCE_CHOICES,
         default=tender_constants.TENDER_SIAE_SOURCE_EMAIL,
     )
-    ai_had_found_it_too = models.BooleanField("Trouvé aussi par l'IA", default=False)
+    found_with_ai = models.BooleanField("Trouvé par l'IA", default=False)
 
     # stats
     email_send_date = models.DateTimeField("Date d'envoi de l'e-mail", blank=True, null=True)

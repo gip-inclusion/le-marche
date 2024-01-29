@@ -222,7 +222,7 @@ class TenderModelMatchingTest(TestCase):
                 presta_type=[siae_constants.PRESTA_BUILD],
                 sectors=[self.sector],
                 is_country_area=True,
-                with_semantic_matching=True,
+                with_ai_matching=True,
                 validated_at=None,
             )
 
@@ -235,13 +235,13 @@ class TenderModelMatchingTest(TestCase):
                 with self.subTest(siae=siae):
                     self.assertIn(siae, tender.siaes.all())
 
-            # test ai_had_found_it_too field value
-            self.assertEqual(TenderSiae.objects.get(tender=tender, siae=self.siae_one).ai_had_found_it_too, False)
+            # test found_with_ai field value
+            self.assertEqual(TenderSiae.objects.get(tender=tender, siae=self.siae_one).found_with_ai, False)
             tender_siae_two = TenderSiae.objects.get(tender=tender, siae=self.siae_two)
-            self.assertEqual(tender_siae_two.ai_had_found_it_too, True)
+            self.assertEqual(tender_siae_two.found_with_ai, True)
             for siae in [self.siae_two, self.siae_three, self.siae_four]:
                 with self.subTest(siae=siae):
-                    self.assertEqual(TenderSiae.objects.get(tender=tender, siae=siae).ai_had_found_it_too, True)
+                    self.assertEqual(TenderSiae.objects.get(tender=tender, siae=siae).found_with_ai, True)
 
             # test source
             for siae in [self.siae_one, self.siae_two]:
