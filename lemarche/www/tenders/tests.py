@@ -642,6 +642,7 @@ class TenderDetailViewTest(TestCase):
             first_sent_at=timezone.now(),
         )
         cls.tender_3_response_is_anonymous = TenderFactory(
+            kind=tender_constants.KIND_TENDER,
             author=cls.user_buyer_1,
             contact_company_name="Another company",
             status=tender_constants.STATUS_SENT,
@@ -845,105 +846,113 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertNotContains(response, "Clôturé")
-        self.assertContains(response, "Voir l'appel d'offres")
+        self.assertContains(response, "Cet appel d'offres vous intéresse ?")
         self.assertContains(response, "Répondre en co-traitance ?")
-        self.assertContains(response, "Je ne suis pas intéressé")
+        self.assertContains(response, "Cette demande ne vous intéresse pas ?")
         # siae user interested
         self.client.force_login(self.siae_user_1)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
+        self.assertNotContains(response, "Cet appel d'offres vous intéresse ?")
         self.assertContains(response, "Contactez le client dès maintenant")
-        self.assertNotContains(response, "Voir l'appel d'offres")
         self.assertNotContains(response, "Répondre en co-traitance ?")
-        self.assertNotContains(response, "Je ne suis pas intéressé")
+        self.assertNotContains(response, "Cette demande ne vous intéresse pas ?")
         # siae user cocontracting
         self.client.force_login(self.siae_user_4)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
+        self.assertNotContains(response, "Cet appel d'offres vous intéresse ?")  # TODO: fix
         self.assertNotContains(response, "Contactez le client dès maintenant")
-        self.assertNotContains(response, "Voir l'appel d'offres")  # TODO: fix
         self.assertNotContains(response, "Répondre en co-traitance ?")
-        self.assertNotContains(response, "Je ne suis pas intéressé")
+        self.assertContains(response, "votre intérêt a bien été signalé au client")
+        self.assertNotContains(response, "Cette demande ne vous intéresse pas ?")
         # siae user not interested
         self.client.force_login(self.siae_user_5)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
+        self.assertNotContains(response, "Cet appel d'offres vous intéresse ?")
         self.assertNotContains(response, "Contactez le client dès maintenant")
-        self.assertNotContains(response, "Voir l'appel d'offres")
         self.assertNotContains(response, "Répondre en co-traitance ?")
-        self.assertNotContains(response, "Je ne suis pas intéressé")
+        self.assertNotContains(response, "Cette demande ne vous intéresse pas ?")
         self.assertContains(response, "Vous n'êtes pas intéressé par ce besoin")
         # siae user not concerned
         self.client.force_login(self.siae_user_6)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
-        self.assertContains(response, "Voir l'appel d'offres")
+        self.assertContains(response, "Cet appel d'offres vous intéresse ?")
         self.assertContains(response, "Répondre en co-traitance ?")
-        self.assertContains(response, "Je ne suis pas intéressé")
-        self.assertNotContains(response, "Vous n'êtes pas intéressé par ce besoin")
+        self.assertContains(response, "Cette demande ne vous intéresse pas ?")
         # siae user without siae
         self.client.force_login(self.siae_user_without_siae)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertContains(response, "veuillez d'abord vous")
-        self.assertNotContains(response, "Voir l'appel d'offres")
+        self.assertNotContains(response, "Cet appel d'offres vous intéresse ?")
         self.assertNotContains(response, "Répondre en co-traitance ?")
-        self.assertNotContains(response, "Je ne suis pas intéressé")
+        self.assertNotContains(response, "Cette demande ne vous intéresse pas ?")
         # author
         self.client.force_login(self.user_buyer_1)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertContains(response, "Coordonnées")
-        self.assertNotContains(response, "Voir l'appel d'offres")
+        self.assertNotContains(response, "Cet appel d'offres vous intéresse ?")
         self.assertNotContains(response, "Répondre en co-traitance ?")
-        self.assertNotContains(response, "Je ne suis pas intéressé")
+        self.assertNotContains(response, "Cette demande ne vous intéresse pas ?")
 
     def test_tender_response_is_anonymous_contact_display(self):
         # anonymous user
         url = reverse("tenders:detail", kwargs={"slug": self.tender_3_response_is_anonymous.slug})
         response = self.client.get(url)
         self.assertNotContains(response, "Clôturé")
-        self.assertNotContains(response, "Voir l'appel d'offres")
+        self.assertContains(response, "Cet appel d'offres vous intéresse ?")
+        self.assertContains(response, "Répondre en co-traitance ?")
+        self.assertContains(response, "Cette demande ne vous intéresse pas ?")
         # siae user interested
         self.client.force_login(self.siae_user_1)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_3_response_is_anonymous.slug})
         response = self.client.get(url)
+        self.assertNotContains(response, "Cet appel d'offres vous intéresse ?")
         self.assertNotContains(response, "Contactez le client dès maintenant")
-        self.assertNotContains(response, "Voir l'appel d'offres")
         self.assertContains(response, "Votre intérêt a été signalé au client")
+        self.assertNotContains(response, "Répondre en co-traitance ?")
+        self.assertNotContains(response, "Cette demande ne vous intéresse pas ?")
         # siae user cocontracting
         self.client.force_login(self.siae_user_4)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_3_response_is_anonymous.slug})
         response = self.client.get(url)
+        self.assertNotContains(response, "Cet appel d'offres vous intéresse ?")  # TODO: fix
         self.assertNotContains(response, "Contactez le client dès maintenant")
-        self.assertNotContains(response, "Voir l'appel d'offres")  # TODO: fix
         self.assertNotContains(response, "Répondre en co-traitance ?")
-        self.assertNotContains(response, "Je ne suis pas intéressé")
+        self.assertContains(response, "votre intérêt a bien été signalé au client")
+        self.assertNotContains(response, "Cette demande ne vous intéresse pas ?")
         # siae user not interested
         self.client.force_login(self.siae_user_5)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_3_response_is_anonymous.slug})
         response = self.client.get(url)
+        self.assertNotContains(response, "Cet appel d'offres vous intéresse ?")
         self.assertNotContains(response, "Contactez le client dès maintenant")
-        self.assertNotContains(response, "Voir l'appel d'offres")
-        self.assertNotContains(response, "Votre intérêt a été signalé au client")
+        self.assertNotContains(response, "Répondre en co-traitance ?")
+        self.assertNotContains(response, "Cette demande ne vous intéresse pas ?")
         self.assertContains(response, "Vous n'êtes pas intéressé par ce besoin")
         # siae user not concerned
         self.client.force_login(self.siae_user_6)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_3_response_is_anonymous.slug})
         response = self.client.get(url)
-        self.assertNotContains(response, "Voir l'appel d'offres")
+        self.assertContains(response, "Cet appel d'offres vous intéresse ?")
+        self.assertContains(response, "Répondre en co-traitance ?")
+        self.assertContains(response, "Cette demande ne vous intéresse pas ?")
         # siae user without siae
         self.client.force_login(self.siae_user_without_siae)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_3_response_is_anonymous.slug})
         response = self.client.get(url)
         self.assertContains(response, "veuillez d'abord vous")
-        self.assertNotContains(response, "Voir l'appel d'offres")
+        self.assertNotContains(response, "Cet appel d'offres vous intéresse ?")
         # author
         self.client.force_login(self.user_buyer_1)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_3_response_is_anonymous.slug})
         response = self.client.get(url)
         self.assertContains(response, "Coordonnées")
-        self.assertNotContains(response, "Voir l'appel d'offres")
+        self.assertNotContains(response, "Cet appel d'offres vous intéresse ?")
 
     def test_tender_outdated_contact_display(self):
         tender_2 = TenderFactory(
@@ -993,7 +1002,7 @@ class TenderDetailViewTest(TestCase):
         response = self.client.get(url)
         self.assertContains(response, "pour être mis en relation avec le client.")
         self.assertNotContains(response, "Contactez le client dès maintenant")
-        self.assertNotContains(response, "Voir l'appel d'offres")
+        self.assertNotContains(response, "Cet appel d'offres vous intéresse ?")
         # this one can!
         user_partner_2 = UserFactory(kind=User.KIND_PARTNER, can_display_tender_contact_details=True)
         self.client.force_login(user_partner_2)
@@ -1001,7 +1010,7 @@ class TenderDetailViewTest(TestCase):
         response = self.client.get(url)
         self.assertNotContains(response, "pour être mis en relation avec le client.")
         self.assertContains(response, "Contactez le client dès maintenant")
-        self.assertNotContains(response, "Voir l'appel d'offres")
+        self.assertNotContains(response, "Cet appel d'offres vous intéresse ?")
 
     def test_tender_contact_details_display(self):
         # tender_1 author
@@ -1012,7 +1021,7 @@ class TenderDetailViewTest(TestCase):
         self.assertContains(response, self.tender_1.contact_email)  # RESPONSE_KIND_EMAIL
         self.assertNotContains(response, self.tender_1.contact_phone)
         self.assertNotContains(response, settings.TEAM_CONTACT_EMAIL)
-        self.assertNotContains(response, "Voir l'appel d'offres")
+        self.assertNotContains(response, "Cet appel d'offres vous intéresse ?")
         self.assertNotContains(response, "Lien partagé")
         # tender with same kind & different response_kind
         tender_2 = TenderFactory(

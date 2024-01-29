@@ -39,6 +39,7 @@
                     {% if not user.has_siae %}
                         {% include "tenders/_detail_siae_user_without_siae.html" %}
                     {% elif siae_has_detail_contact_click_date %}
+                        {# contact info displayed in _detail_contact.html #}
                     {% elif siae_has_detail_cocontracting_click_date %}
                         {% include "tenders/_detail_cocontracting_click_confirm.html" %}
                     {% elif siae_has_detail_not_interested_click_date %}
@@ -52,6 +53,7 @@
             <!-- anonymous user but siae_id in url -->
             {% elif siae_id %}
                 {% if siae_has_detail_contact_click_date %}
+                    {# contact info displayed in _detail_contact.html #}
                 {% elif siae_has_detail_cocontracting_click_date %}
                     {% include "tenders/_detail_cocontracting_click_confirm.html" %}
                 {% elif siae_has_detail_not_interested_click_date %}
