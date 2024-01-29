@@ -887,7 +887,7 @@ class TenderDetailViewTest(TestCase):
         self.client.force_login(self.siae_user_without_siae)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_3_response_is_anonymous.slug})
         response = self.client.get(url)
-        self.assertNotContains(response, "veuillez d'abord vous")
+        self.assertContains(response, "veuillez d'abord vous")
         self.assertNotContains(response, "Voir l'appel d'offres")
         # author
         self.client.force_login(self.user_buyer_1)
