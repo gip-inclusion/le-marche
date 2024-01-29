@@ -158,11 +158,6 @@ class TenderCreateMultiStepView(SessionWizardView):
         if "csrfmiddlewaretoken" in data:
             del data["csrfmiddlewaretoken"]
 
-        # Hide personal data
-        for field_to_redacted in TenderStepsData.FIELDS_TO_REDACT:
-            if field_to_redacted in data:
-                data[field_to_redacted] = "[REDACTED]"
-
         data["timestamp"] = timezone.now().isoformat()
 
         uuid = self.request.session.get("tender_steps_data_uuid", None)
