@@ -1312,6 +1312,7 @@ class TenderDetailCocontractingClickView(TestCase):
 
     def test_user_can_notify_cocontracting_wish_with_siae_id(self):
         url = reverse("tenders:detail-cocontracting-click", kwargs={"slug": self.tender.slug})
+        detail_url = reverse("tenders:detail", kwargs={"slug": self.tender.slug}) + f"?siae_id={self.siae.id}"
         # missing data
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
             response = self.client.post(url, data={})
@@ -1326,8 +1327,6 @@ class TenderDetailCocontractingClickView(TestCase):
         )
         mock_send_mail_async.assert_not_called()
         self.assertIsNone(tendersiae.detail_cocontracting_click_date)
-
-        detail_url = reverse("tenders:detail", kwargs={"slug": self.tender.slug}) + f"?siae_id={self.siae.id}"
         response = self.client.get(detail_url)
         self.assertContains(response, "Répondre en co-traitance ?")
         self.assertNotContains(response, "Votre intérêt a bien été signalé au client.")
@@ -1346,13 +1345,12 @@ class TenderDetailCocontractingClickView(TestCase):
 
     def test_user_can_notify_cocontracting_wish_with_authenticated_user(self):
         self.client.force_login(self.siae_user)
-
+        url = reverse("tenders:detail-cocontracting-click", kwargs={"slug": self.tender.slug})
         detail_url = reverse("tenders:detail", kwargs={"slug": self.tender.slug})
+
         response = self.client.get(detail_url)
         self.assertContains(response, "Répondre en co-traitance ?")
         self.assertNotContains(response, "Votre intérêt a bien été signalé au client.")
-
-        url = reverse("tenders:detail-cocontracting-click", kwargs={"slug": self.tender.slug})
         tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
         self.assertIsNone(tendersiae.detail_cocontracting_click_date)
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
@@ -1363,11 +1361,9 @@ class TenderDetailCocontractingClickView(TestCase):
         email_body = mock_send_mail_async.call_args[1]["email_body"]
         self.assertTrue(f"La structure {self.siae.name } souhaite répondre en co-traitance" in email_body)
         self.assertIsNotNone(tendersiae.detail_cocontracting_click_date)
-
         response = self.client.get(detail_url)
         self.assertContains(response, "Votre intérêt a bien été signalé au client.")
         self.assertNotContains(response, "Répondre en co-traitance ?")
-
         user_without_siae = UserFactory(kind=User.KIND_SIAE)
         self.client.force_login(user_without_siae)
         with mock.patch("lemarche.www.tenders.tasks.send_mail_async") as mock_send_mail_async:
@@ -1381,9 +1377,8 @@ class TenderDetailCocontractingClickView(TestCase):
 class TenderDetailNotInterestedClickView(TestCase):
     @classmethod
     def setUpTestData(self):
-        self.cta_message = "Pas intéressé ?"
+        self.cta_message = "Cette demande ne vous intéresse pas ?"
         self.cta_message_success = "Vous n'êtes pas intéressé par ce besoin."
-        self.cta_message_error = "nous n'avons pas pu prendre en compte votre non intérêt pour ce besoin"
         self.siae = SiaeFactory(name="ZZ ESI")
         self.siae_user = UserFactory(kind=User.KIND_SIAE, siaes=[self.siae])
         self.user_buyer = UserFactory(kind=User.KIND_BUYER, company_name="Entreprise Buyer")
@@ -1402,57 +1397,50 @@ class TenderDetailNotInterestedClickView(TestCase):
             email_link_click_date=timezone.now(),
             detail_display_date=timezone.now(),
         )
-        TenderQuestionFactory(tender=self.tender)
+        self.tender_detail_url = reverse("tenders:detail", kwargs={"slug": self.tender.slug})
+        self.tender_not_interested_url = reverse(
+            "tenders:detail-not-interested-click", kwargs={"slug": self.tender.slug}
+        )
 
     def test_user_can_notify_not_interested_wish_with_siae_id(self):
-        url = reverse("tenders:detail-not-interested-click", kwargs={"slug": self.tender.slug})
-        # missing data
-        response = self.client.post(url, data={})
+        response = self.client.get(self.tender_detail_url)
+        self.assertContains(response, self.cta_message)
+        # anonymous user
+        response = self.client.post(self.tender_not_interested_url, data={})
         self.assertEqual(response.status_code, 403)
-        # missing siae
-        response = self.client.post(f"{url}?siae_id=999999", data={})
-        tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
-        self.assertContains(response, self.cta_message_error)
-        self.assertIsNone(tendersiae.detail_not_interested_click_date)
-
-        detail_url = reverse("tenders:detail", kwargs={"slug": self.tender.slug}) + f"?siae_id={self.siae.id}"
-        response = self.client.get(detail_url)
+        # wrong siae_id
+        response = self.client.post(f"{self.tender_not_interested_url}?siae_id=999999", data={}, follow=True)
+        self.assertContains(response, self.cta_message)
+        # workflow
+        response = self.client.get(self.tender_detail_url)
         self.assertContains(response, self.cta_message)
         self.assertNotContains(response, self.cta_message_success)
-
-        response = self.client.post(f"{url}?siae_id={self.siae.id}", data={})
         tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
+        self.assertIsNone(tendersiae.detail_not_interested_click_date)
+        response = self.client.post(f"{self.tender_not_interested_url}?siae_id={self.siae.id}", data={}, follow=True)
         self.assertContains(response, self.cta_message_success)
+        tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
         self.assertIsNotNone(tendersiae.detail_not_interested_click_date)
-        response = self.client.get(detail_url)
+        response = self.client.get(f"{self.tender_detail_url}?siae_id={self.siae.id}")
         self.assertContains(response, self.cta_message_success)
         self.assertNotContains(response, self.cta_message)
 
     def test_user_can_notify_not_interested_wish_with_authenticated_user(self):
         self.client.force_login(self.siae_user)
-
-        detail_url = reverse("tenders:detail", kwargs={"slug": self.tender.slug})
-        response = self.client.get(detail_url)
+        # workflow
+        response = self.client.get(self.tender_detail_url)
         self.assertContains(response, self.cta_message)
         self.assertNotContains(response, self.cta_message_success)
-
-        url = reverse("tenders:detail-not-interested-click", kwargs={"slug": self.tender.slug})
-        tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
-        self.assertIsNone(tendersiae.detail_not_interested_click_date)
-        response = self.client.post(url, data={"detail_not_interested_feedback": "reason"})
+        response = self.client.post(
+            self.tender_not_interested_url, data={"detail_not_interested_feedback": "reason"}, follow=True
+        )
         tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
         self.assertContains(response, self.cta_message_success)
         self.assertIsNotNone(tendersiae.detail_not_interested_click_date)
         self.assertEqual(tendersiae.detail_not_interested_feedback, "reason")
-
-        response = self.client.get(detail_url)
+        response = self.client.get(self.tender_detail_url)
         self.assertContains(response, self.cta_message_success)
         self.assertNotContains(response, self.cta_message)
-
-        user_without_siae = UserFactory(kind=User.KIND_SIAE)
-        self.client.force_login(user_without_siae)
-        response = self.client.post(url, data={})
-        self.assertContains(response, self.cta_message_error)
 
 
 # TODO: this test doesn't work anymore. find a way to test logging post-email in non-prod environments?
