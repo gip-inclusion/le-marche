@@ -37,18 +37,7 @@
                 <!-- siae info & actions -->
                 {% elif user.kind == user.KIND_SIAE %}
                     {% if not user.has_siae %}
-                        <div class="alert alert-info" role="alert">
-                            <p class="mb-1">
-                                <i class="ri-lightbulb-line ri-lg"></i>
-                                <strong>Comment contacter le client ?</strong>
-                            </p>
-                            <p class="mb-0">
-                                Pour accéder aux coordonnées du client, veuillez d'abord vous <a id="add-siae-btn" href="{% url 'dashboard_siaes:siae_search_by_siret' %}">rattacher à votre structure</a>.
-                            </p>
-                            <p>
-                                Besoin d'aide ? contacter le support via le chat en ligne qui se trouve en bas à droite.
-                            </p>
-                        </div>
+                        {% include "tenders/_detail_siae_user_without_siae.html" %}
                     {% elif siae_has_detail_contact_click_date %}
                     {% elif siae_has_detail_not_interested_click_date %}
                         {% include "tenders/_detail_not_interested_click_confirm.html" %}
@@ -72,7 +61,9 @@
         <!-- anonymous tender -->
         {% else %}
             {% if user.is_authenticated or siae_id %}
-                {% if siae_has_detail_contact_click_date %}
+                {% if user.is_authenticated and not user.has_siae %}
+                    {% include "tenders/_detail_siae_user_without_siae.html" %}
+                {% elif siae_has_detail_contact_click_date %}
                     {% include "tenders/_detail_contact_click_confirm_tender_response_is_anonymous.html" %}
                 {% elif siae_has_detail_not_interested_click_date %}
                     {% include "tenders/_detail_not_interested_click_confirm.html" %}
