@@ -6,7 +6,7 @@
                 Cette demande ne vous intéresse pas ? Dites-le nous !
             </p>
             {% if user_can_click %}
-                <button type="button" id="show-tender-contact-modal-btn" class="btn btn-warning btn-block" data-toggle="modal" data-target="#detail_not_interested_click_confirm_modal" data-siae-id="{{ siae_id }}" title="{{ tender.cta_not_interested_card_button_text|safe }}">
+                <button type="button" id="show-tender-not-interested-modal-btn" class="btn btn-warning btn-block" data-toggle="modal" data-target="#detail_not_interested_click_confirm_modal" data-siae-id="{{ siae_id }}" title="{{ tender.cta_not_interested_card_button_text|safe }}">
                     {{ tender.cta_not_interested_card_button_text|safe }}
                 </button>
             {% else %}

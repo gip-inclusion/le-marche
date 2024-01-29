@@ -377,6 +377,9 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
             context["siae_has_detail_contact_click_date"] = TenderSiae.objects.filter(
                 tender=self.object, siae_id=int(self.siae_id), detail_contact_click_date__isnull=False
             ).exists()
+            context["siae_has_detail_cocontracting_click_date"] = TenderSiae.objects.filter(
+                tender=self.object, siae_id=int(self.siae_id), detail_cocontracting_click_date__isnull=False
+            ).exists()
             context["siae_has_detail_not_interested_click_date"] = TenderSiae.objects.filter(
                 tender=self.object, siae_id=int(self.siae_id), detail_not_interested_click_date__isnull=False
             ).exists()
@@ -386,6 +389,12 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
                     getattr(context, "siae_has_detail_contact_click_date", None)
                     or TenderSiae.objects.filter(
                         tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=False
+                    ).exists()
+                )
+                context["siae_has_detail_cocontracting_click_date"] = (
+                    getattr(context, "siae_has_detail_cocontracting_click_date", None)
+                    or TenderSiae.objects.filter(
+                        tender=self.object, siae__in=user.siaes.all(), detail_cocontracting_click_date__isnull=False
                     ).exists()
                 )
                 context["siae_has_detail_not_interested_click_date"] = (
