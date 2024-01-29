@@ -506,25 +506,34 @@ class TenderDetailNotInterestedClickView(SiaeUserRequiredOrSiaeIdParamMixin, Det
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         user = self.request.user
-
-        if self.request.user.is_authenticated:
-            siae = user.siaes.first()
+        siae_id = request.GET.get("siae_id", None)
+        if (user.is_authenticated and user.kind == User.KIND_SIAE) or siae_id:
+            if user.is_authenticated:
+                TenderSiae.objects.filter(
+                    tender=self.object, siae__in=user.siaes.all(), detail_not_interested_click_date__isnull=True
+                ).update(
+                    detail_not_interested_feedback=self.request.POST.get("detail_not_interested_feedback", ""),
+                    detail_not_interested_click_date=timezone.now(),
+                    updated_at=timezone.now(),
+                )
+            else:
+                TenderSiae.objects.filter(
+                    tender=self.object, siae_id=int(siae_id), detail_not_interested_click_date__isnull=True
+                ).update(
+                    detail_not_interested_feedback=self.request.POST.get("detail_not_interested_feedback", ""),
+                    detail_not_interested_click_date=timezone.now(),
+                    updated_at=timezone.now(),
+                )
+            # redirect
+            return HttpResponseRedirect(self.get_success_url(siae_id))
         else:
-            siae = Siae.objects.filter(pk=self.request.GET.get("siae_id", None)).first()
+            return HttpResponseForbidden()
 
-        if siae:
-            # save the datetime of this action
-            TenderSiae.objects.filter(
-                tender=self.object, siae=siae, detail_not_interested_click_date__isnull=True
-            ).update(
-                detail_not_interested_feedback=self.request.POST.get("detail_not_interested_feedback", ""),
-                detail_not_interested_click_date=timezone.now(),
-                updated_at=timezone.now(),
-            )
-        else:
-            self.template_name = "tenders/_detail_not_interested_click_error.html"
-
-        return self.get(request)
+    def get_success_url(self, siae_id=None):
+        success_url = reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
+        if siae_id:
+            success_url += f"?siae_id={siae_id}"
+        return success_url
 
 
 class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):

@@ -1,0 +1,45 @@
+<div class="modal fade modal-siae" id="detail_not_interested_click_confirm_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="modalTitle">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Pas intéressé ?</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <form method="POST" action="{% url 'tenders:detail-not-interested-click' tender.slug %}?siae_id=siae-id-params-to-replace">
+                {% csrf_token %}
+                <div class="modal-body home-content-body">
+                    <div class="form-group">
+                        <label for="id_detail_not_interested_feedback">Afin d'améliorer la pertinence des demandes que nous vous envoyons, expliquez-nous pourquoi celle-ci ne vous intéresse pas.</label>
+                        <textarea id="id_detail_not_interested_feedback" class="form-control" name="detail_not_interested_feedback" placeholder="Parce que..." rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-warning" title="{{ tender.cta_not_interested_card_button_text|safe }}">
+                        <span>{{ tender.cta_not_interested_card_button_text|safe }}</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    const MODAL_ID = '#detail_not_interested_click_confirm_modal';
+    $(MODAL_ID).on('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        var button = $(event.relatedTarget);
+
+        // Extract info from data-* attributes
+        var siaeIdParams = button.data('siae-id');
+
+        // Update the modal's content
+        var modal = document.querySelector(MODAL_ID);
+        var form = modal.querySelector('form');
+        var formAction = form.getAttribute('action');
+        form.setAttribute('action', formAction.replace('siae-id-params-to-replace', siaeIdParams));
+    });
+});
+</script>
