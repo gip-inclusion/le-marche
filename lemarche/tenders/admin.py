@@ -446,9 +446,9 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     question_count_with_link.short_description = TenderQuestion._meta.verbose_name_plural
 
-    # TODO: les siaes trouvés par l'IA apparaissent aussi ici : /admin/siaes/siae/?tenders__in=7
     def siae_count_annotated_with_link(self, tender):
-        url = reverse("admin:siaes_siae_changelist") + f"?tenders__in={tender.id}"
+        url = reverse("admin:siaes_siae_changelist") + f"?tenders__in={tender.id}&tendersiae__source__in="
+        url += ",".join(tender_constants.TENDER_SIAE_SOURCES_EXCEPT_IA)
         return format_html(f'<a href="{url}">{getattr(tender, "siae_count_annotated", 0)}</a>')
 
     siae_count_annotated_with_link.short_description = "S. concernées"
