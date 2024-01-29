@@ -38,10 +38,17 @@
                 {% elif user.kind == user.KIND_SIAE %}
                     {% if not user.has_siae %}
                         {% include "tenders/_detail_siae_user_without_siae.html" %}
-                    {% elif siae_has_detail_contact_click_date %}
-                        {# contact info displayed in _detail_contact.html #}
-                    {% elif siae_has_detail_cocontracting_click_date %}
-                        {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+                    {% elif siae_has_detail_contact_click_date or siae_has_detail_cocontracting_click_date %}
+                        {% if siae_has_detail_contact_click_date and not siae_has_detail_cocontracting_click_date %}
+                            {# contact info displayed in _detail_contact.html #}
+                            {% include "tenders/_detail_cta_cocontracting.html" with tender=tender user_can_click=True %}
+                        {% elif not siae_has_detail_contact_click_date and siae_has_detail_cocontracting_click_date %}
+                            {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True %}
+                            {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+                        {% else %}
+                            {# contact info displayed in _detail_contact.html #}
+                            {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+                        {% endif %}
                     {% elif siae_has_detail_not_interested_click_date %}
                         {% include "tenders/_detail_not_interested_click_confirm.html" %}
                     {% else %}
@@ -52,10 +59,17 @@
                 {% endif %}
             <!-- anonymous user but siae_id in url -->
             {% elif siae_id %}
-                {% if siae_has_detail_contact_click_date %}
-                    {# contact info displayed in _detail_contact.html #}
-                {% elif siae_has_detail_cocontracting_click_date %}
-                    {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+                {% if siae_has_detail_contact_click_date or siae_has_detail_cocontracting_click_date %}
+                    {% if siae_has_detail_contact_click_date and not siae_has_detail_cocontracting_click_date %}
+                        {# contact info displayed in _detail_contact.html #}
+                        {% include "tenders/_detail_cta_cocontracting.html" with tender=tender user_can_click=True siae_id=siae_id %}
+                    {% elif not siae_has_detail_contact_click_date and siae_has_detail_cocontracting_click_date %}
+                        {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True siae_id=siae_id %}
+                        {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+                    {% else %}
+                        {# contact info displayed in _detail_contact.html #}
+                        {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+                    {% endif %}
                 {% elif siae_has_detail_not_interested_click_date %}
                     {% include "tenders/_detail_not_interested_click_confirm.html" %}
                 {% else %}
@@ -69,10 +83,17 @@
             {% if user.is_authenticated or siae_id %}
                 {% if user.is_authenticated and not user.has_siae %}
                     {% include "tenders/_detail_siae_user_without_siae.html" %}
-                {% elif siae_has_detail_contact_click_date %}
-                    {% include "tenders/_detail_contact_click_confirm_tender_response_is_anonymous.html" %}
-                {% elif siae_has_detail_cocontracting_click_date %}
-                    {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+                {% elif siae_has_detail_contact_click_date or siae_has_detail_cocontracting_click_date %}
+                    {% if siae_has_detail_contact_click_date and not siae_has_detail_cocontracting_click_date %}
+                        {% include "tenders/_detail_contact_click_confirm_tender_response_is_anonymous.html" %}
+                        {% include "tenders/_detail_cta_cocontracting.html" with tender=tender user_can_click=True siae_id=siae_id %}
+                    {% elif not siae_has_detail_contact_click_date and siae_has_detail_cocontracting_click_date %}
+                        {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True siae_id=siae_id tender_response_is_anonymous=True %}
+                        {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+                    {% else %}
+                        {% include "tenders/_detail_contact_click_confirm_tender_response_is_anonymous.html" %}
+                        {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+                    {% endif %}
                 {% elif siae_has_detail_not_interested_click_date %}
                     {% include "tenders/_detail_not_interested_click_confirm.html" %}
                 {% else %}

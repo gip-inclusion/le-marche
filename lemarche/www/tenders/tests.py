@@ -855,13 +855,14 @@ class TenderDetailViewTest(TestCase):
         response = self.client.get(url)
         self.assertNotContains(response, "Cet appel d'offres vous intéresse ?")
         self.assertContains(response, "Contactez le client dès maintenant")
-        self.assertNotContains(response, "Répondre en co-traitance ?")
+        self.assertContains(response, "Répondre en co-traitance ?")
+        self.assertNotContains(response, "votre intérêt a bien été signalé au client")
         self.assertNotContains(response, "Cette demande ne vous intéresse pas ?")
         # siae user cocontracting
         self.client.force_login(self.siae_user_4)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
-        self.assertNotContains(response, "Cet appel d'offres vous intéresse ?")  # TODO: fix
+        self.assertContains(response, "Cet appel d'offres vous intéresse ?")
         self.assertNotContains(response, "Contactez le client dès maintenant")
         self.assertNotContains(response, "Répondre en co-traitance ?")
         self.assertContains(response, "votre intérêt a bien été signalé au client")
@@ -914,13 +915,14 @@ class TenderDetailViewTest(TestCase):
         self.assertNotContains(response, "Cet appel d'offres vous intéresse ?")
         self.assertNotContains(response, "Contactez le client dès maintenant")
         self.assertContains(response, "Votre intérêt a été signalé au client")
-        self.assertNotContains(response, "Répondre en co-traitance ?")
+        self.assertContains(response, "Répondre en co-traitance ?")
+        self.assertNotContains(response, "votre intérêt a bien été signalé au client")
         self.assertNotContains(response, "Cette demande ne vous intéresse pas ?")
         # siae user cocontracting
         self.client.force_login(self.siae_user_4)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_3_response_is_anonymous.slug})
         response = self.client.get(url)
-        self.assertNotContains(response, "Cet appel d'offres vous intéresse ?")  # TODO: fix
+        self.assertContains(response, "Cet appel d'offres vous intéresse ?")  # TODO: fix
         self.assertNotContains(response, "Contactez le client dès maintenant")
         self.assertNotContains(response, "Répondre en co-traitance ?")
         self.assertContains(response, "votre intérêt a bien été signalé au client")
