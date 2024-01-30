@@ -160,6 +160,34 @@ class TenderCreateApiTest(TestCase):
         self.assertEqual(author.buyer_kind_detail, user_constants.BUYER_KIND_DETAIL_PUBLIC_ASSOCIATION)
 
 
+class TenderCreateApiPartnerTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.url = reverse("api:tenders-list") + "?token=approch"
+        cls.user_partner_with_token = UserFactory(email="approch@example.com", api_key="approch")
+
+    def test_partner_approch_can_create_tender(self):
+        with self.settings(PARTNER_APPROCH_USER_ID=self.user_partner_with_token.id):
+            # new tender
+            tender_data = TENDER_JSON.copy()
+            tender_data["contact_email"] = self.user_partner_with_token.email
+            tender_data["extra_data"] = {"id": 123}
+            response = self.client.post(self.url, data=tender_data, content_type="application/json")
+            self.assertEqual(response.status_code, 201)
+            self.assertEqual(Tender.objects.count(), 1)
+            tender = Tender.objects.last()
+            self.assertEqual(tender.author, self.user_partner_with_token)
+            self.assertEqual(tender.partner_approch_id, 123)
+            # existing tender
+            tender_data = TENDER_JSON.copy()
+            tender_data["contact_email"] = self.user_partner_with_token.email
+            tender_data["extra_data"] = {"id": 123}
+            response = self.client.post(self.url, data=tender_data, content_type="application/json")
+            self.assertEqual(response.status_code, 201)
+            self.assertEqual(Tender.objects.count(), 1)
+            tender = Tender.objects.last()
+
+
 class TenderChoicesApiTest(TestCase):
     def test_should_return_tender_kinds_list(self):
         url = reverse("api:tender-kinds-list")  # anonymous user
