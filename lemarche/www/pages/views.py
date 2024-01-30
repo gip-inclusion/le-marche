@@ -360,7 +360,6 @@ def csrf_failure(request, reason=""):  # noqa C901
                 else:
                     setattr(tender, attribute, tender_dict.get(attribute))
             tender.save()
-            tender.set_siae_found_list()
 
         # remove steps data
         uuid = request.session.get("tender_steps_data_uuid", None)
