@@ -2,6 +2,7 @@
 from datetime import timedelta
 from importlib import import_module
 from random import randint
+from unittest import mock
 
 from django.apps import apps
 from django.contrib.gis.geos import Point
@@ -162,6 +163,99 @@ class TenderModelSaveTest(TestCase):
     #     tender = TenderFactory()
     #     tender.deadline_date = None
     #     self.assertRaises(IntegrityError, tender.save)
+
+
+class TenderModelMatchingTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.sector = SectorFactory()
+
+        # siae found by presta_type
+        cls.siae_one = SiaeFactory(
+            is_active=True,
+            kind=siae_constants.KIND_AI,
+            presta_type=[siae_constants.PRESTA_PREST, siae_constants.PRESTA_BUILD],
+            geo_range=siae_constants.GEO_RANGE_COUNTRY,
+        )
+        cls.siae_one.sectors.add(cls.sector)
+
+        # siae found by presta_type and semantic search
+        cls.siae_two = SiaeFactory(
+            is_active=True,
+            kind=siae_constants.KIND_ESAT,
+            presta_type=[siae_constants.PRESTA_BUILD],
+            geo_range=siae_constants.GEO_RANGE_COUNTRY,
+        )
+        cls.siae_two.sectors.add(cls.sector)
+
+        # siaes found by mocked semantic search
+        cls.siae_three = SiaeFactory()
+        cls.siae_four = SiaeFactory()
+
+        # siae not found
+        cls.siae_five = SiaeFactory()
+
+    def test_set_siae_found_list_without_semantic_search(self):
+        with mock.patch(
+            "lemarche.tenders.models.api_elasticsearch.siaes_similarity_search"
+        ) as mock_siaes_similarity_search:
+            tender = TenderFactory(
+                presta_type=[siae_constants.PRESTA_BUILD],
+                sectors=[self.sector],
+                is_country_area=True,
+                validated_at=None,
+            )
+
+            siaes_found = Siae.objects.filter_with_tender(tender)
+            tender.set_siae_found_list()
+            tender.refresh_from_db()
+            self.assertEqual(list(siaes_found), list(tender.siaes.all()))
+
+        mock_siaes_similarity_search.assert_not_called()
+
+    def test_set_siae_found_list_with_semantic_search(self):
+        with mock.patch(
+            "lemarche.tenders.models.api_elasticsearch.siaes_similarity_search"
+        ) as mock_siaes_similarity_search:
+            mock_siaes_similarity_search.return_value = [self.siae_two.pk, self.siae_three.pk, self.siae_four.pk]
+            tender = TenderFactory(
+                presta_type=[siae_constants.PRESTA_BUILD],
+                sectors=[self.sector],
+                is_country_area=True,
+                with_ai_matching=True,
+                validated_at=None,
+            )
+
+            siaes_found = Siae.objects.filter_with_tender(tender)
+            tender.set_siae_found_list()
+            tender.refresh_from_db()
+
+            self.assertEqual(tender.siaes.count(), 4)
+            for siae in list(siaes_found) + [self.siae_three, self.siae_four]:
+                with self.subTest(siae=siae):
+                    self.assertIn(siae, tender.siaes.all())
+
+            # test found_with_ai field value
+            self.assertEqual(TenderSiae.objects.get(tender=tender, siae=self.siae_one).found_with_ai, False)
+            tender_siae_two = TenderSiae.objects.get(tender=tender, siae=self.siae_two)
+            self.assertEqual(tender_siae_two.found_with_ai, True)
+            for siae in [self.siae_two, self.siae_three, self.siae_four]:
+                with self.subTest(siae=siae):
+                    self.assertEqual(TenderSiae.objects.get(tender=tender, siae=siae).found_with_ai, True)
+
+            # test source
+            for siae in [self.siae_one, self.siae_two]:
+                with self.subTest(siae=siae):
+                    self.assertEqual(
+                        TenderSiae.objects.get(tender=tender, siae=siae).source,
+                        tender_constants.TENDER_SIAE_SOURCE_EMAIL,
+                    )
+            for siae in [self.siae_three, self.siae_four]:
+                with self.subTest(siae=siae):
+                    self.assertEqual(
+                        TenderSiae.objects.get(tender=tender, siae=siae).source, tender_constants.TENDER_SIAE_SOURCE_AI
+                    )
+        mock_siaes_similarity_search.assert_called_once()
 
 
 class TenderModelQuerysetTest(TestCase):
@@ -725,9 +819,9 @@ class TenderAdminTest(TestCase):
             perimeters=[cls.perimeter_paris],
             status=tender_constants.STATUS_PUBLISHED,
             published_at=timezone.now(),
+            validated_at=None,
         )
         cls.form_data = model_to_dict(cls.tender) | {
-            "_continue": "Enregistrer et continuer les modifications",
             "amount": "",
             "why_amount_is_blank": "DONT_WANT_TO_SHARE",
             "location": cls.perimeter_paris.pk,
@@ -753,6 +847,25 @@ class TenderAdminTest(TestCase):
             if value is None:
                 cls.form_data[key] = ""
 
+    def test_edit_form_no_matching_on_simple_submission(self):
+        self.client.force_login(self.user)
+        tender_update_post_url = get_admin_change_view_url(self.tender)
+        self.assertEqual(self.tender.tendersiae_set.count(), 0)
+        # create post request to update the model
+        response = self.client.post(
+            tender_update_post_url,
+            self.form_data
+            | {
+                "title": "New title",
+                "_continue": "Enregistrer et continuer les modifications",
+            },
+            follow=True,
+        )
+        tender_response = response.context_data["adminform"].form.instance
+        self.assertEqual(tender_response.id, self.tender.id)
+        self.assertTrue(hasattr(tender_response, "siae_count_annotated"))
+        self.assertEqual(tender_response.siae_count_annotated, 0)
+
     def test_edit_form_matching_on_submission(self):
         self.client.force_login(self.user)
         tender_update_post_url = get_admin_change_view_url(self.tender)
@@ -763,6 +876,7 @@ class TenderAdminTest(TestCase):
             self.form_data
             | {
                 "title": "New title",
+                "_calculate_tender": "Sauvegarder et chercher les structures correspondantes",
             },
             follow=True,
         )
@@ -778,6 +892,7 @@ class TenderAdminTest(TestCase):
             | {
                 "title": "New title",
                 "sectors": [sector.id for sector in self.sectors[1:3]],
+                "_calculate_tender": "Sauvegarder et chercher les structures correspondantes",
             },
             follow=True,
         )
@@ -790,6 +905,7 @@ class TenderAdminTest(TestCase):
             self.form_data
             | {
                 "sectors": [sector.id for sector in self.sectors[7:8]],
+                "_calculate_tender": "Sauvegarder et chercher les structures correspondantes",
             },
             follow=True,
         )
@@ -797,3 +913,45 @@ class TenderAdminTest(TestCase):
         self.assertEqual(tender_response.siae_count_annotated, 1)
         tender_siae_matched_2 = tender_response.tendersiae_set.first()  # only one siae
         self.assertNotEqual(tender_siae_matched.pk, tender_siae_matched_2.pk)
+
+    def test_edit_form_no_matching_on_validate_submission(self):
+        self.client.force_login(self.user)
+        tender_update_post_url = get_admin_change_view_url(self.tender)
+        self.assertEqual(self.tender.tendersiae_set.count(), 0)
+        # create post request to update the model
+        response = self.client.post(
+            tender_update_post_url,
+            self.form_data
+            | {
+                "title": "New title",
+                "_calculate_tender": "Sauvegarder et chercher les structures correspondantes",
+            },
+            follow=True,
+        )
+        tender_response = response.context_data["adminform"].form.instance
+        self.assertEqual(tender_response.id, self.tender.id)
+        self.assertNotContains(response, "Validé le ")
+        self.assertTrue(hasattr(tender_response, "siae_count_annotated"))
+        self.assertEqual(tender_response.siae_count_annotated, 2)
+        self.assertEqual(tender_response.siae_count_annotated, self.tender.tendersiae_set.count())
+
+        # delete for moderation per example
+        TenderSiae.objects.first().delete()
+        self.assertEqual(self.tender.tendersiae_set.count(), 1)
+
+        # validation does not match again and keep moderation
+        response = self.client.post(
+            tender_update_post_url,
+            self.form_data
+            | {
+                "title": "New title",
+                "_validate_tender": "Valider (sauvegarder) et envoyer aux structures",
+            },
+            follow=True,
+        )
+        tender_response = response.context_data["adminform"].form.instance
+        self.assertEqual(tender_response.id, self.tender.id)
+        self.assertContains(response, "Validé le ")
+        self.assertTrue(hasattr(tender_response, "siae_count_annotated"))
+        self.assertEqual(tender_response.siae_count_annotated, 1)
+        self.assertEqual(tender_response.siae_count_annotated, self.tender.tendersiae_set.count())

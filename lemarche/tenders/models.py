@@ -19,6 +19,7 @@ from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.users.models import User
+from lemarche.utils.apis import api_elasticsearch
 from lemarche.utils.constants import ADMIN_FIELD_HELP_TEXT, MARCHE_BENEFIT_CHOICES, RECALCULATED_FIELD_HELP_TEXT
 from lemarche.utils.fields import ChoiceArrayField
 
@@ -133,7 +134,16 @@ class TenderQuerySet(models.QuerySet):
         Enrich each Tender with stats on their linked Siae
         """
         return self.annotate(
-            siae_count_annotated=Count("siaes", distinct=True),
+            siae_count_annotated=Count(
+                "siaes", filter=~Q(tendersiae__source=tender_constants.TENDER_SIAE_SOURCE_AI), distinct=True
+            ),
+            siae_ai_count_annotated=Count(
+                "siaes",
+                filter=Q(
+                    tendersiae__source=tender_constants.TENDER_SIAE_SOURCE_AI,
+                ),
+                distinct=True,
+            ),
             siae_email_send_count_annotated=Sum(
                 Case(When(tendersiae__email_send_date__isnull=False, then=1), default=0, output_field=IntegerField())
             ),
@@ -378,6 +388,16 @@ class Tender(models.Model):
         help_text="Retournera uniquement les structures qui ont comme périmètre d'intervention 'France entière'",
         default=False,
     )
+    with_ai_matching = models.BooleanField(
+        verbose_name="Activer le ciblage alternatif IA",
+        help_text=(
+            "Effectue une recherche sémantique avec la description du besoin pour ajouter des structures au ciblage "
+            "traditionnel. La distance en kilomètres autour du lieu d'intervention (de type ville) est prise en "
+            "compte."
+        ),
+        default=False,
+    )
+
     siae_kind = ChoiceArrayField(
         verbose_name="Type de structure",
         base_field=models.CharField(max_length=20, choices=siae_constants.KIND_CHOICES),
@@ -540,6 +560,40 @@ class Tender(models.Model):
         """
         siae_found_list = Siae.objects.filter_with_tender(self)
         self.siaes.set(siae_found_list, clear=False)
+
+        if self.with_ai_matching and self.validated_at is None:
+            if (
+                self.location
+                and self.location.kind == Perimeter.KIND_CITY
+                and self.distance_location
+                and self.distance_location > 0
+            ):
+                # with geo distance
+                siae_ids = api_elasticsearch.siaes_similarity_search(
+                    self.description,
+                    geo_distance=self.distance_location,
+                    geo_lat=self.location.coords.y,
+                    geo_lon=self.location.coords.x,
+                )
+            else:
+                siae_ids = api_elasticsearch.siaes_similarity_search(self.description)
+
+            siaes_had_found_by_ia = Siae.objects.filter(id__in=siae_ids)
+            siaes_had_found_by_ia_too = []
+            for siae in siaes_had_found_by_ia:
+                if siae not in siae_found_list:
+                    self.siaes.add(
+                        siae,
+                        through_defaults={
+                            "source": tender_constants.TENDER_SIAE_SOURCE_AI,
+                            "found_with_ai": True,
+                        },
+                    )
+                else:
+                    siaes_had_found_by_ia_too.append(siae)
+
+            # keep the info that the AI also found those siaes
+            TenderSiae.objects.filter(tender_id=self.id, siae__in=siaes_had_found_by_ia_too).update(found_with_ai=True)
 
     def save(self, *args, **kwargs):
         """
@@ -810,19 +864,15 @@ class TenderQuestion(models.Model):
 
 
 class TenderSiae(models.Model):
-    TENDER_SIAE_SOURCE_EMAIL = "EMAIL"
-    TENDER_SIAE_SOURCE_DASHBOARD = "DASHBOARD"
-    TENDER_SIAE_SOURCE_LINK = "LINK"
-    TENDER_SIAE_SOURCE_CHOICES = (
-        (TENDER_SIAE_SOURCE_EMAIL, "E-mail"),
-        (TENDER_SIAE_SOURCE_DASHBOARD, "Dashboard"),
-        (TENDER_SIAE_SOURCE_LINK, "Lien"),
-    )
-
     tender = models.ForeignKey("tenders.Tender", verbose_name="Besoin d'achat", on_delete=models.CASCADE)
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
 
-    source = models.CharField(max_length=20, choices=TENDER_SIAE_SOURCE_CHOICES, default=TENDER_SIAE_SOURCE_EMAIL)
+    source = models.CharField(
+        max_length=20,
+        choices=tender_constants.TENDER_SIAE_SOURCE_CHOICES,
+        default=tender_constants.TENDER_SIAE_SOURCE_EMAIL,
+    )
+    found_with_ai = models.BooleanField("Trouvé par l'IA", default=False)
 
     # stats
     email_send_date = models.DateTimeField("Date d'envoi de l'e-mail", blank=True, null=True)

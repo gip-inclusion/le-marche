@@ -10,7 +10,7 @@ URL_WITH_USER = (
 )
 
 
-def siaes_similarity_search(search_text):
+def siaes_similarity_search(search_text: str, geo_distance: int = None, geo_lat: float = None, geo_lon: float = None):
     """Performs semantic search with Elasticsearch as a vector db
 
     Args:
@@ -27,9 +27,26 @@ def siaes_similarity_search(search_text):
         index_name=settings.ELASTICSEARCH_INDEX_SIAES,
     )
 
-    similar_docs = db.similarity_search(search_text, k=10)
+    search_filter = []
+    if geo_distance and geo_lat and geo_lon:
+        search_filter = [
+            {
+                "geo_distance": {
+                    "distance": f"{geo_distance}km",
+                    "metadata.geo_location": {
+                        "lat": geo_lat,
+                        "lon": geo_lon,
+                    },
+                }
+            }
+        ]
+
+    similar_docs = db.similarity_search_with_score(search_text, k=50, filter=search_filter)
     siaes_id = []
-    for similar_doc in similar_docs:
-        siaes_id.append(similar_doc.metadata["id"])
+    for similar_doc, similar_score in similar_docs:
+        # Discussion to understand score :
+        # https://github.com/langchain-ai/langchain/discussions/9984#discussioncomment-6860841
+        if similar_score > settings.ELASTICSEARCH_MIN_SCORE:
+            siaes_id.append(similar_doc.metadata["id"])
 
     return siaes_id
