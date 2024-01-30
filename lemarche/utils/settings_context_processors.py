@@ -21,7 +21,6 @@ def expose_settings(request):
         "CONTACT_EMAIL": settings.CONTACT_EMAIL,
         "TEAM_CONTACT_EMAIL": settings.TEAM_CONTACT_EMAIL,
         "GIP_CONTACT_EMAIL": settings.GIP_CONTACT_EMAIL,
-        "APPROCH_USER_ID": settings.APPROCH_USER_ID,
         # forms & docs
         "FACILITATOR_SLIDE": settings.FACILITATOR_SLIDE,
         "FACILITATOR_LIST": settings.FACILITATOR_LIST,

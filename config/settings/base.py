@@ -809,7 +809,7 @@ FORM_PARTENAIRES = (
     "https://docs.google.com/forms/d/e/1FAIpQLScx1k-UJ-962_rSgPJGabc327gGjFUho6ypgcZHCubuwTl7Lg/viewform"
 )
 TALLY_NPS_FORM_ID = env.str("TALLY_NPS_FORM_ID", "")
-APPROCH_USER_ID = env.int("APPROCH_USER_ID", 0)
+PARTNER_APPROCH_USER_ID = env.int("PARTNER_APPROCH_USER_ID", 0)
 
 
 # Misc

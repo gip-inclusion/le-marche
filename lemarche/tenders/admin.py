@@ -186,8 +186,10 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     readonly_fields = [field for field in Tender.READONLY_FIELDS] + [
         # slug
         # status
-        "author_kind_detail",
         "question_count_with_link",
+        "author_kind_detail",
+        "is_partner_approch",
+        "partner_approch_id",
         "siae_count_annotated_with_link",
         "siae_email_send_count_annotated_with_link",
         "siae_email_link_click_count_annotated_with_link",
@@ -293,6 +295,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                 ),
             },
         ),
+        ("Partenaire APProch", {"fields": ("is_partner_approch", "partner_approch_id")}),
         (
             "Structures",
             {
@@ -427,6 +430,12 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     is_validated_or_sent.boolean = True
     is_validated_or_sent.short_description = "Validé / Envoyé"
 
+    def question_count_with_link(self, tender):
+        url = reverse("admin:tenders_tenderquestion_changelist") + f"?tender__in={tender.id}"
+        return format_html(f'<a href="{url}">{tender.questions.count()}</a>')
+
+    question_count_with_link.short_description = TenderQuestion._meta.verbose_name_plural
+
     def author_with_link(self, tender):
         url = reverse("admin:users_user_change", args=[tender.author_id])
         return format_html(f'<a href="{url}">{tender.author}</a>')
@@ -440,11 +449,11 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     author_kind_detail.short_description = "Type du client"
     author_kind_detail.admin_order_field = "author__kind"
 
-    def question_count_with_link(self, tender):
-        url = reverse("admin:tenders_tenderquestion_changelist") + f"?tender__in={tender.id}"
-        return format_html(f'<a href="{url}">{tender.questions.count()}</a>')
+    def is_partner_approch(self, tender: Tender):
+        return tender.is_partner_approch
 
-    question_count_with_link.short_description = TenderQuestion._meta.verbose_name_plural
+    is_partner_approch.boolean = True
+    is_partner_approch.short_description = "Partenaire APProch ?"
 
     def siae_count_annotated_with_link(self, tender):
         url = reverse("admin:siaes_siae_changelist") + f"?tenders__in={tender.id}&tendersiae__source__in="

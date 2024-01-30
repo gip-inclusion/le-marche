@@ -492,6 +492,8 @@ class Tender(models.Model):
         help_text=ADMIN_FIELD_HELP_TEXT,
         default=5,
     )
+    # partner data
+    partner_approch_id = models.IntegerField("Partenaire APProch : ID", blank=True, null=True)
     # stats
     siae_count = models.IntegerField(
         "Nombre de structures concernées", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
@@ -671,7 +673,9 @@ class Tender(models.Model):
 
     @cached_property
     def external_link_title(self) -> str:
-        if self.kind == tender_constants.KIND_TENDER:
+        if self.is_partner_approch:
+            return "Ça m'intéresse"
+        elif self.kind == tender_constants.KIND_TENDER:
             return "Voir l'appel d'offres"
         return "Lien partagé"
 
@@ -804,6 +808,10 @@ class Tender(models.Model):
     @property
     def is_validated_or_sent(self) -> bool:
         return self.is_validated or self.is_sent
+
+    @property
+    def is_partner_approch(self) -> bool:
+        return self.author_id == settings.PARTNER_APPROCH_USER_ID
 
     def set_validated(self):
         self.validated_at = timezone.now()
