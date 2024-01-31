@@ -20,3 +20,4 @@ fi
 cd $APP_HOME
 
 django-admin send_author_transactioned_question_emails
+django-admin send_author_transactioned_question_emails --reminder

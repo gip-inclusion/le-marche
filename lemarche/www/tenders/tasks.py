@@ -553,7 +553,7 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
             "TENDER_KIND": tender.get_kind_display(),
         }
 
-        if kind == "transactioned_question_7d":
+        if kind in ["transactioned_question_7d", "transactioned_question_7d_reminder"]:
             template_id = settings.MAILJET_TENDERS_AUTHOR_TRANSACTIONED_QUESTION_7D_TEMPLATE_ID
             user_sesame_query_string = sesame_get_query_string(tender.author)  # TODO: sesame scope parameter
             answer_url_with_sesame_token = (
