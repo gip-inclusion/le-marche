@@ -13,7 +13,9 @@ one_day_ago = datetime.today().date() - timedelta(days=1)
 class Command(BaseCommand):
     """
     Daily script to send an email to tender authors
-    When? J+7 after tender deadline_date
+    When?
+    - J+7 after tender deadline_date
+    - Reminder: J+1 after tender start_working_date
 
     Usage:
     python manage.py send_author_transactioned_question_emails --dry-run
@@ -33,19 +35,13 @@ class Command(BaseCommand):
         )
 
     def handle(self, kind=None, reminder=False, dry_run=False, **options):
-        self.stdout.write("-" * 80)
         self.stdout.write("Script to send email transactioned_question for tenders...")
 
-        self.stdout.write("-" * 80)
-        tender_qs = Tender.objects.sent()
+        tender_qs = Tender.objects.sent().filter(survey_transactioned_answer=None)
         if kind:
             tender_qs = tender_qs.filter(kind=kind)
         if reminder:
-            tender_qs = (
-                tender_qs.exclude(survey_transactioned_send_date=None)
-                .filter(survey_transactioned_answer=None)
-                .filter(start_working_date=one_day_ago)
-            )
+            tender_qs = tender_qs.exclude(survey_transactioned_send_date=None).filter(start_working_date=one_day_ago)
         else:
             tender_qs = tender_qs.filter(survey_transactioned_send_date=None).filter(deadline_date=seven_days_ago)
 
@@ -56,6 +52,3 @@ class Command(BaseCommand):
             for tender in tender_qs:
                 send_tenders_author_feedback_or_survey(tender, kind=email_kind)
             self.stdout.write(f"Sent {tender_qs.count()} {email_kind}")
-
-        self.stdout.write("-" * 80)
-        self.stdout.write("Done!")
