@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name="tender",
-            name="contact_notification_disabled",
+            name="contact_notifications_disabled",
             field=models.BooleanField(
                 default=False,
                 help_text="Champ renseigné par un ADMIN",

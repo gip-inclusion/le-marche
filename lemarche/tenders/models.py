@@ -335,7 +335,7 @@ class Tender(models.Model):
         max_length=255,
         blank=True,
     )
-    contact_notification_disabled = models.BooleanField(
+    contact_notifications_disabled = models.BooleanField(
         verbose_name="Le contact ne souhaite plus être contacté pour ce besoin",
         help_text=ADMIN_FIELD_HELP_TEXT,
         default=False,
