@@ -371,7 +371,7 @@ def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes
     """
     email_subject = f"Votre {tender.get_kind_display().lower()} a été publié !"
     recipient_list = whitelist_recipient_list([tender.author.email])
-    if recipient_list:
+    if recipient_list and not tender.contact_notification_disabled:
         recipient_email = recipient_list[0] if recipient_list else ""
         recipient_name = tender.author.full_name
 
@@ -447,7 +447,7 @@ def send_siae_interested_email_to_author(tender: Tender):
 
         if should_send_email:
             recipient_list = whitelist_recipient_list([tender.author.email])  # tender.contact_email ?
-            if recipient_list:
+            if recipient_list and not tender.contact_notification_disabled:
                 recipient_email = recipient_list[0] if recipient_list else ""
                 recipient_name = tender.author.full_name
 
@@ -508,7 +508,7 @@ def notify_admin_tender_created(tender: Tender):
 def send_author_incremental_2_days_email(tender: Tender):
     email_subject = f"Concernant votre {tender.get_kind_display()} sur le Marché de l'inclusion"
     recipient_list = whitelist_recipient_list([tender.author.email])
-    if recipient_list:
+    if recipient_list and not tender.contact_notification_disabled:
         recipient_email = recipient_list[0] if recipient_list else ""
         recipient_name = tender.author.full_name
 
@@ -542,7 +542,7 @@ def send_author_incremental_2_days_email(tender: Tender):
 def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
     email_subject = f"Suite à votre {tender.get_kind_display().lower()}"
     recipient_list = whitelist_recipient_list([tender.author.email])
-    if recipient_list:
+    if recipient_list and not tender.contact_notification_disabled:
         recipient_email = recipient_list[0] if recipient_list else ""
         recipient_name = tender.author.full_name
 
