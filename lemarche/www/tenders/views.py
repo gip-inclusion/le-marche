@@ -550,13 +550,13 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
         qs = super().get_queryset()
         # first get the tender's siaes
         self.tender = Tender.objects.get(slug=self.kwargs.get("slug"))
-        qs = qs.filter_with_tender(tender=self.tender, tender_status=self.status)
+        qs = qs.filter_with_tender_tendersiae_status(tender=self.tender, tendersiae_status=self.status)
         # then filter with the form
         self.filter_form = SiaeFilterForm(data=self.request.GET)
         qs = self.filter_form.filter_queryset(qs)
         return qs
 
-    def get(self, request, status="ALL", *args, **kwargs):
+    def get(self, request, status=None, *args, **kwargs):
         """
         - set status
         - update 'siae_list_last_seen_date'

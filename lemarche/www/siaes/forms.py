@@ -162,7 +162,7 @@ class SiaeFilterForm(forms.Form):
     tender = forms.ModelChoiceField(
         queryset=Tender.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
     )
-    tender_status = forms.CharField(required=False, widget=forms.HiddenInput())
+    tendersiae_status = forms.CharField(required=False, widget=forms.HiddenInput())
     favorite_list = forms.ModelChoiceField(
         queryset=FavoriteList.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
     )
@@ -307,8 +307,8 @@ class SiaeFilterForm(forms.Form):
         # a Tender author can export its Siae list
         tender = self.cleaned_data.get("tender", None)
         if tender:
-            tender_status = self.cleaned_data.get("tender_status", "ALL")
-            qs = qs.filter_with_tender(tender=tender, tender_status=tender_status)
+            tendersiae_status = self.cleaned_data.get("tendersiae_status", "ALL")
+            qs = qs.filter_with_tender(tender=tender, tendersiae_status=tendersiae_status)
 
         locations = self.cleaned_data.get("locations", None)
         if locations:
