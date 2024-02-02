@@ -399,6 +399,30 @@ class SiaeQuerySet(models.QuerySet):
 
         return qs.distinct()
 
+    def filter_with_tender_status(self, tender, tender_status=None):
+        qs = self.prefetch_related("sectors").is_live().has_contact_email()  # .filter(tendersiae__tender=tender)
+        # tender status
+        if tender_status == "INTERESTED":
+            qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_contact_click_date__isnull=False)
+            qs = qs.order_by("-tendersiae__detail_contact_click_date")
+        elif tender_status == "VIEWED":
+            qs = qs.filter(
+                Q(tendersiae__tender=tender)
+                & (
+                    Q(tendersiae__email_link_click_date__isnull=False)
+                    | Q(tendersiae__detail_display_date__isnull=False)
+                )
+            )
+            qs = qs.order_by("-tendersiae__email_link_click_date")
+        elif tender_status == "COCONTRACTED":
+            qs = qs.filter(tendersiae__tender=tender, tendersiae__detail_cocontracting_click_date__isnull=False)
+            qs = qs.order_by("-tendersiae__detail_cocontracting_click_date")
+        else:  # "ALL"
+            qs = qs.filter(tendersiae__tender=tender, tendersiae__email_send_date__isnull=False)
+            qs = qs.order_by("-tendersiae__email_send_date")
+
+        return qs.distinct()
+
     def with_tender_stats(self):
         """
         Enrich each Siae with stats on their linked Tender
