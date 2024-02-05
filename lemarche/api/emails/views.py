@@ -1,5 +1,6 @@
 import logging
 
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -30,6 +31,7 @@ def clean_saved_data_of_inbound(data_inbound: dict):
 
 
 class InboundParsingEmailView(APIView):
+    @extend_schema(exclude=True)
     def post(self, request):
         serializer = EmailsSerializer(data=request.data)
         if serializer.is_valid():
