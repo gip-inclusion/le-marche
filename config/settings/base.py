@@ -604,8 +604,11 @@ SPECTACULAR_SETTINGS = {
     },
     "PREPROCESSING_HOOKS": ["lemarche.api.utils.custom_preprocessing_hook"],
     "ENUM_NAME_OVERRIDES": {
-        "kind": "lemarche.siaes.constants.KIND_CHOICES",
-        "department": "lemarche.siaes.models.Siae.DEPARTMENT_CHOICES",
+        "SiaeKindEnum": "lemarche.siaes.constants.KIND_CHOICES",
+        "TenderKindEnum": "lemarche.tenders.constants.KIND_CHOICES",
+        "PerimeterKindEnum": "lemarche.perimeters.models.Perimeter.KIND_CHOICES",
+        "ConversationKindEnum": "lemarche.conversations.models.Conversation.KIND_CHOICES",
+        "DepartmentEnum": "lemarche.siaes.models.Siae.DEPARTMENT_CHOICES",
     },
     "SWAGGER_UI_SETTINGS": {"defaultModelsExpandDepth": -1},  # hide model schemas
 }
