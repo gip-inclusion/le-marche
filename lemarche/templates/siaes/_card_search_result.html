@@ -1,7 +1,7 @@
 {% load static siae_sectors_display %}
 {% load theme_inclusion %}
 
-<div class="card c-card c-card--hovershadow siae-card">
+<div class="card c-card c-card--hovershadow siae-card {% if siae.super_badge %}super-badge-card{% endif %}">
     <div class="card-header">
         <div class="row">
             <div class="col-auto">
@@ -18,6 +18,12 @@
                         <span class="fs-sm font-weight-normal">(bientôt inscrite sur le marché)</span>
                     {% endif %}
                 </h2>
+                {% if  siae.super_badge %}
+                    <span class="badge badge-base rounded-pill super-badge-badge text-primary mt-1 font-weight-bold">
+                        <i class="ri-award-fill mr-1"></i>
+                        Super prestataire
+                    </span>
+                {% endif %}
             </div>
         </div>
     </div>
