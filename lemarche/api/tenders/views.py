@@ -11,6 +11,9 @@ from lemarche.users import constants as user_constants
 from lemarche.www.tenders.utils import get_or_create_user_from_anonymous_content
 
 
+PARTNER_APPROCH_UPDATE_FIELDS = ["title", "description", "deadline_date", "external_link"]
+
+
 class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     serializer_class = TenderSerializer
 
@@ -54,8 +57,12 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
                 tender_partner_approch_id = serializer.validated_data.get("extra_data", {}).get("id", None)
                 if tender_partner_approch_id:
                     try:
-                        Tender.objects.get(partner_approch_id=tender_partner_approch_id)
-                        # TODO: update existing tender
+                        # try to find an existing tender
+                        # if found, update some fields
+                        tender = Tender.objects.get(partner_approch_id=tender_partner_approch_id)
+                        for field in PARTNER_APPROCH_UPDATE_FIELDS:
+                            setattr(tender, field, serializer.validated_data.get(field))
+                        tender.save(update_fields=PARTNER_APPROCH_UPDATE_FIELDS)
                         return
                     except Tender.DoesNotExist:
                         serializer.validated_data["partner_approch_id"] = tender_partner_approch_id

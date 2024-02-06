@@ -4,6 +4,7 @@ from django.urls import reverse
 from lemarche.perimeters.factories import PerimeterFactory
 from lemarche.sectors.factories import SectorFactory
 from lemarche.tenders import constants as tender_constants
+from lemarche.tenders.factories import TenderFactory
 from lemarche.tenders.models import Tender
 from lemarche.users import constants as user_constants
 from lemarche.users.factories import UserFactory
@@ -178,14 +179,34 @@ class TenderCreateApiPartnerTest(TestCase):
             tender = Tender.objects.last()
             self.assertEqual(tender.author, self.user_partner_with_token)
             self.assertEqual(tender.partner_approch_id, 123)
-            # existing tender
-            tender_data = TENDER_JSON.copy()
-            tender_data["contact_email"] = self.user_partner_with_token.email
-            tender_data["extra_data"] = {"id": 123}
-            response = self.client.post(self.url, data=tender_data, content_type="application/json")
+
+    def test_partner_approch_can_update_tender(self):
+        with self.settings(PARTNER_APPROCH_USER_ID=self.user_partner_with_token.id):
+            existing_tender_partner_data = {
+                "contact_email": self.user_partner_with_token.email,
+                "extra_data": {"id": 123},
+                "partner_approch_id": 123,
+                "title": "Test",
+                "description": "Description",
+                "deadline_date": "2024-06-30",
+            }
+            TenderFactory(**{**TENDER_JSON.copy(), **existing_tender_partner_data})
+            self.assertEqual(Tender.objects.count(), 1)
+            self.assertEqual(Tender.objects.first().title, "Test")
+            self.assertEqual(Tender.objects.first().deadline_date.strftime("%Y-%m-%d"), "2024-06-30")
+            # existing tender: won't be re-created
+            new_tender_partner_data = {
+                **existing_tender_partner_data,
+                "title": "Test changed",
+                "deadline_date": "2024-12-31",
+            }
+            response = self.client.post(
+                self.url, data={**TENDER_JSON.copy(), **new_tender_partner_data}, content_type="application/json"
+            )
             self.assertEqual(response.status_code, 201)
             self.assertEqual(Tender.objects.count(), 1)
-            tender = Tender.objects.last()
+            self.assertEqual(Tender.objects.first().title, "Test changed")
+            self.assertEqual(Tender.objects.first().deadline_date.strftime("%Y-%m-%d"), "2024-12-31")
 
 
 class TenderChoicesApiTest(TestCase):
