@@ -6,6 +6,7 @@ from lemarche.www.tenders.views import (
     TenderDetailCocontractingClickView,
     TenderDetailContactClickStatView,
     TenderDetailNotInterestedClickView,
+    TenderDetailSiaeSurveyTransactionedView,
     TenderDetailSurveyTransactionedView,
     TenderDetailView,
     TenderListView,
@@ -48,5 +49,10 @@ urlpatterns = [
         "<str:slug>/sondage-transaction",
         TenderDetailSurveyTransactionedView.as_view(),
         name="detail-survey-transactioned",
+    ),
+    path(
+        "<str:slug>/prestataires/<str:siae_slug>/sondage-transaction",
+        TenderDetailSiaeSurveyTransactionedView.as_view(),
+        name="detail-siae-survey-transactioned",
     ),
 ]

@@ -5,7 +5,7 @@ from django import forms
 
 from lemarche.sectors.models import Sector
 from lemarche.tenders import constants as tender_constants
-from lemarche.tenders.models import Tender
+from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
@@ -315,3 +315,19 @@ class TenderSurveyTransactionedForm(forms.ModelForm):
             self.fields["survey_transactioned_answer"].disabled = True
             if tender_survey_transactioned_answer is False:
                 self.fields["survey_transactioned_amount"].widget = forms.HiddenInput()
+
+
+class TenderSiaeSurveyTransactionedForm(TenderSurveyTransactionedForm):
+    class Meta:
+        model = TenderSiae
+        fields = [
+            "survey_transactioned_answer",
+            "survey_transactioned_amount",
+            "survey_transactioned_feedback",
+        ]
+
+    def __init__(self, tender_survey_transactioned_answer=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields[
+            "survey_transactioned_answer"
+        ].label = "Avez-vous contractualisé avec un acheteur trouvé via le Marché de l'inclusion ?"

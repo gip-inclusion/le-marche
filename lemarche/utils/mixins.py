@@ -72,7 +72,7 @@ class SiaeMemberRequiredMixin(LoginRequiredUserPassesTestMixin):
 
     def test_func(self):
         user = self.request.user
-        siae_slug = self.kwargs.get("slug")
+        siae_slug = self.kwargs.get("siae_slug") or self.kwargs.get("slug")
         return user.is_authenticated and (siae_slug in user.siaes.values_list("slug", flat=True))
 
     def handle_no_permission(self):
@@ -206,3 +206,16 @@ class SesameTenderAuthorRequiredMixin(SesameTokenRequiredUserPassesTestMixin):
 
     def handle_no_permission(self):
         return HttpResponseRedirect(reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")]))
+
+
+class SesameSiaeMemberRequiredMixin(SesameTokenRequiredUserPassesTestMixin):
+    """
+    Restrict access to the Tender's author
+    """
+
+    def test_func(self):
+        siae_slug = self.kwargs.get("siae_slug") or self.kwargs.get("slug")
+        return siae_slug in self.request.user.siaes.values_list("slug", flat=True)
+
+    def handle_no_permission(self):
+        return HttpResponseRedirect(reverse_lazy("dashboard:home"))
