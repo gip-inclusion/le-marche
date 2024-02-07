@@ -313,6 +313,9 @@ $super-badge-color: #ffbe18;
 	text-align: left;
 }
 
+.super-badge-tab {
+	border-color: $super-badge-color !important;
+}
 
 // TODO: integrate to the theme
 $purple-marche: #6C38D9;
