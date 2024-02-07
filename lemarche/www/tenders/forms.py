@@ -317,7 +317,7 @@ class TenderSurveyTransactionedForm(forms.ModelForm):
                 self.fields["survey_transactioned_amount"].widget = forms.HiddenInput()
 
 
-class TenderSiaeSurveyTransactionedForm(TenderSurveyTransactionedForm):
+class TenderSiaeSurveyTransactionedForm(forms.ModelForm):
     class Meta:
         model = TenderSiae
         fields = [
@@ -328,6 +328,15 @@ class TenderSiaeSurveyTransactionedForm(TenderSurveyTransactionedForm):
 
     def __init__(self, tender_survey_transactioned_answer=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields[
-            "survey_transactioned_answer"
-        ].label = "Avez-vous contractualisé avec un acheteur trouvé via le Marché de l'inclusion ?"
+        self.fields["survey_transactioned_answer"].label = "Avez-vous contractualisé avec le client ?"
+        self.fields["survey_transactioned_amount"].label = "Quel est le montant de la transaction ? (facultatif)"
+        self.fields["survey_transactioned_feedback"].label = "Partagez-nous votre retour d'expérience (facultatif)"
+        self.fields["survey_transactioned_feedback"].widget.attrs.update(
+            {
+                "placeholder": "Lors de mon expérience avec le Marché de l'inclusion :\n- j'ai apprécié ...\n- j'ai moins aimé ...\n- vous pourriez vous améliorer dans ..."  # noqa
+            }
+        )
+        if tender_survey_transactioned_answer is not None:
+            self.fields["survey_transactioned_answer"].disabled = True
+            if tender_survey_transactioned_answer is False:
+                self.fields["survey_transactioned_amount"].widget = forms.HiddenInput()

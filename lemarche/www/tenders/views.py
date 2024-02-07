@@ -32,6 +32,7 @@ from lemarche.www.tenders.forms import (
     TenderCreateStepDetailForm,
     TenderCreateStepGeneralForm,
     TenderCreateStepSurveyForm,
+    TenderSiaeSurveyTransactionedForm,
     TenderSurveyTransactionedForm,
 )
 from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
@@ -625,6 +626,7 @@ class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, Updat
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["tender"] = self.object
+        context["parent_title"] = TITLE_DETAIL_PAGE_OTHERS
         return context
 
     def get_form_kwargs(self):
@@ -653,7 +655,7 @@ class TenderDetailSiaeSurveyTransactionedView(SesameSiaeMemberRequiredMixin, Upd
     """
 
     template_name = "tenders/survey_transactioned_detail.html"  # same template as author survey
-    form_class = TenderSurveyTransactionedForm
+    form_class = TenderSiaeSurveyTransactionedForm
     queryset = TenderSiae.objects.all()
     # success_message (see get_success_message() below)
     # success_url (see get_success_url() below)
@@ -696,6 +698,7 @@ class TenderDetailSiaeSurveyTransactionedView(SesameSiaeMemberRequiredMixin, Upd
         context = super().get_context_data(**kwargs)
         context["tender"] = self.tender
         context["siae"] = self.siae
+        context["parent_title"] = TITLE_DETAIL_PAGE_SIAE
         return context
 
     def get_form_kwargs(self):
