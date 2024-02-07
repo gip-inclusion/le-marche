@@ -79,7 +79,7 @@ class ArticlePage(Page):
         ),
     ]
 
-    parent_page_types = ["cms.ArticleList"]
+    parent_page_types = ["cms.ArticleList", "cms.PaidArticleList"]
     subpage_types = []
 
 
@@ -145,6 +145,10 @@ class ArticleList(RoutablePageMixin, Page):
 
     # parent_page_types = ["cms.HomePage"]
     subpage_types = ["cms.ArticlePage"]
+
+
+class PaidArticleList(ArticleList):
+    pass
 
 
 class HomePage(Page):

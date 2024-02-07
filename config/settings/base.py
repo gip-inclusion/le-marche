@@ -271,7 +271,6 @@ LOGIN_URL = "auth:login"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
-
 # Django Sesame
 # https://django-sesame.readthedocs.io/en/stable/index.html
 # ------------------------------------------------------------------------------
@@ -852,6 +851,7 @@ WAGTAILEMBEDS_RESPONSIVE_HTML = True
 
 WAGTAILADMIN_BASE_URL = DEPLOY_URL or "http://localhost/"
 
+WAGTAIL_FRONTEND_LOGIN_URL = LOGIN_URL
 
 # Shell Plus (django-extensions)
 # ------------------------------------------------------------------------------
