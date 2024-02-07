@@ -64,13 +64,17 @@
                         </li>
                     </ul>
                     {% if user.siaeuser_set.count %}
-                        <div class="tab-content {% if siaeuser.siae.super_badge %}super-badge-tab{% endif %}">
-                            {% for siaeuser in user.siaeuser_set.all %}
-                                <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="{{ siaeuser.siae.slug }}" role="tabpanel" aria-labelledby="{{ siaeuser.siae.slug }}-tab">
-                                    {% include "dashboard/_siae_tab_content.html" with siae=siaeuser.siae %}
+                        {% for siaeuser in user.siaeuser_set.all %}
+                            {% if forloop.first %}
+                                <div class="tab-content {% if siaeuser.siae.super_badge %}super-badge-tab{% endif %}">
+                            {% endif %}
+                            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="{{ siaeuser.siae.slug }}" role="tabpanel" aria-labelledby="{{ siaeuser.siae.slug }}-tab">
+                                {% include "dashboard/_siae_tab_content.html" with siae=siaeuser.siae %}
+                            </div>
+                            {% if forloop.last %}
                                 </div>
-                            {% endfor %}
-                        </div>
+                            {% endif %}
+                        {% endfor %}
                     {% endif %}
                 </div>
             </div>

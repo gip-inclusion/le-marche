@@ -20,7 +20,19 @@ window.addEventListener('DOMContentLoaded', function () {
         location.href = "mailto:?" + rot13(this.dataset['nextUrl']);
     });
 
-    initModalMessages()
+    initModalMessages();
+
+    $('.s-tabs-01__nav .nav-item').on('click', function (event) {
+        event.preventDefault()
+        let tabContent = $($(this).parents()[1]).find(".tab-content")[0];
+
+        if ($(this).children()[0].classList.contains("super-badge-tab")) {
+            tabContent.classList.add("super-badge-tab");
+        } else {
+            tabContent.classList.remove("super-badge-tab");
+        }
+        $(this).tab('show')
+    })
 });
 
 let toggleRequiredClasses = (toggle, element) => {
