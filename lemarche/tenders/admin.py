@@ -717,22 +717,14 @@ class TenderSiaeSourceFilter(MultiChoice):
 @admin.register(TenderSiae, site=admin_site)
 class TenderSiaeAdmin(admin.ModelAdmin):
     list_display = ["created_at", "siae_with_link", "tender", "source"]
-
-    readonly_fields = [
-        "id",
-        "created_at",
-        "updated_at",
-        "tender",
-        "siae",
-        "email_send_date",
-        "email_link_click_date",
-        "detail_display_date",
-        "detail_contact_click_date",
-        "logs",
-    ]
-
     list_filter = [
         ("source", TenderSiaeSourceFilter),
+    ]
+
+    readonly_fields = [field for field in TenderSiae.READONLY_FIELDS] + [
+        "tender",
+        "siae",
+        "logs",
     ]
 
     def has_add_permission(self, request):
