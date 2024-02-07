@@ -42,6 +42,10 @@ class PerimeterAutocompleteViewSet(mixins.ListModelMixin, viewsets.GenericViewSe
         return super().list(request, args, kwargs)
 
 
+class CityAutocompleteViewSet(PerimeterAutocompleteViewSet):
+    queryset = Perimeter.objects.cities()
+
+
 class PerimeterKindViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = PerimeterChoiceSerializer
     queryset = Perimeter.objects.none()
