@@ -56,17 +56,17 @@ class TenderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             if user.id == settings.PARTNER_APPROCH_USER_ID:
                 tender_partner_approch_id = serializer.validated_data.get("extra_data", {}).get("id", None)
                 if tender_partner_approch_id:
+                    # try to find an existing tender (same id + kind)
+                    # if found, update some fields
+                    # if not found, create it !
                     try:
-                        # try to find an existing tender
-                        # if found, update some fields
-                        tender = Tender.objects.get(partner_approch_id=tender_partner_approch_id)
-                        if tender.kind != serializer.validated_data.get("kind"):
-                            pass
-                        else:
-                            for field in PARTNER_APPROCH_UPDATE_FIELDS:
-                                setattr(tender, field, serializer.validated_data.get(field))
-                            tender.save(update_fields=PARTNER_APPROCH_UPDATE_FIELDS)
-                            return
+                        tender = Tender.objects.get(
+                            partner_approch_id=tender_partner_approch_id, kind=serializer.validated_data.get("kind")
+                        )
+                        for field in PARTNER_APPROCH_UPDATE_FIELDS:
+                            setattr(tender, field, serializer.validated_data.get(field))
+                        tender.save(update_fields=PARTNER_APPROCH_UPDATE_FIELDS)
+                        return
                     except Tender.DoesNotExist:
                         serializer.validated_data["partner_approch_id"] = tender_partner_approch_id
         # pop non-model fields
