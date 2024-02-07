@@ -724,8 +724,19 @@ class TenderSiaeAdmin(admin.ModelAdmin):
     readonly_fields = [field for field in TenderSiae.READONLY_FIELDS] + [
         "tender",
         "siae",
-        "logs",
+        "logs_display",
     ]
+
+    fieldsets = (
+        (
+            None,
+            {"fields": ("tender", "siae", "source", "found_with_ai")},
+        ),
+        ("Mise en relation", {"fields": TenderSiae.FIELDS_RELATION}),
+        ("Transaction ?", {"fields": TenderSiae.FIELDS_SURVEY_TRANSACTIONED}),
+        ("Stats", {"fields": ("logs_display",)}),
+        ("Dates", {"fields": ("created_at", "updated_at")}),
+    )
 
     def has_add_permission(self, request):
         return False
@@ -741,3 +752,10 @@ class TenderSiaeAdmin(admin.ModelAdmin):
 
     siae_with_link.short_description = "Structure"
     siae_with_link.admin_order_field = "siae"
+
+    def logs_display(self, tender=None):
+        if tender:
+            return pretty_print_readonly_jsonfield(tender.logs)
+        return "-"
+
+    logs_display.short_description = Tender._meta.get_field("logs").verbose_name
