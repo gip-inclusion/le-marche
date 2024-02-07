@@ -1180,6 +1180,16 @@ class Siae(models.Model):
                 "lat": self.latitude,
                 "lon": self.longitude,
             }
+
+        if self.geo_range == siae_constants.GEO_RANGE_COUNTRY:
+            metadata["geo_country"] = True
+        elif self.geo_range == siae_constants.GEO_RANGE_REGION:
+            metadata["geo_reg"] = self.region
+        elif self.geo_range == siae_constants.GEO_RANGE_DEPARTMENT:
+            metadata["geo_dep"] = self.department
+        elif self.geo_range == siae_constants.GEO_RANGE_CUSTOM:
+            metadata["geo_dist"] = self.geo_range_custom_distance
+
         return metadata
 
     def sectors_list_string(self, display_max=3):
