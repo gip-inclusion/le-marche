@@ -1,3 +1,5 @@
+from unittest import mock
+
 from django.contrib.gis.geos import Point
 from django.test import TestCase
 from django.urls import reverse
@@ -1120,3 +1122,74 @@ class SiaeDetailTest(TestCase):
         self.client.force_login(self.user_admin)
         response = self.client.get(url)
         self.assertContains(response, "Informations Admin")
+
+
+class SiaeSemanticSearchTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.siae_one = SiaeFactory()
+        cls.siae_two = SiaeFactory()
+        cls.siae_three = SiaeFactory()
+        cls.siae_four = SiaeFactory()
+        cls.city = PerimeterFactory(kind=Perimeter.KIND_CITY)
+        cls.url = reverse("siae:semantic_search_results")
+
+    def test_search_query_too_short(self):
+        with mock.patch(
+            "lemarche.www.siaes.views.api_elasticsearch.siaes_similarity_search"
+        ) as mock_siaes_similarity_search:
+            response = self.client.get(f"{self.url}?search_query=ent&id_city_name=&city=")
+            self.assertNotIn("siaes", response.context)
+
+        mock_siaes_similarity_search.assert_not_called()
+
+    def test_search_query_no_result(self):
+        with mock.patch(
+            "lemarche.www.siaes.views.api_elasticsearch.siaes_similarity_search"
+        ) as mock_siaes_similarity_search:
+            mock_siaes_similarity_search.return_value = []
+
+            response = self.client.get(f"{self.url}?search_query=entretien espace vert&id_city_name=&city=")
+            self.assertIn("siaes", response.context)
+            siaes = list(response.context["siaes"])
+            self.assertEqual(len(siaes), 0)
+            self.assertContains(response, "Oups, aucun prestataire trouvé !")
+
+        mock_siaes_similarity_search.assert_called_once()
+
+    def test_search_query_with_results(self):
+        with mock.patch(
+            "lemarche.tenders.models.api_elasticsearch.siaes_similarity_search"
+        ) as mock_siaes_similarity_search, mock.patch(
+            "lemarche.tenders.models.api_elasticsearch.siaes_similarity_search_with_city"
+        ) as mock_siaes_similarity_search_with_city:
+            mock_siaes_similarity_search.return_value = [self.siae_two.pk, self.siae_three.pk, self.siae_four.pk]
+
+            response = self.client.get(f"{self.url}?search_query=entretien espace vert&id_city_name=&city=")
+
+            self.assertIn("siaes", response.context)
+            siaes = list(response.context["siaes"])
+            self.assertEqual(len(siaes), 3)
+            self.assertIn(self.siae_two, siaes)
+            self.assertIn(self.siae_three, siaes)
+            self.assertIn(self.siae_four, siaes)
+
+        mock_siaes_similarity_search.assert_called_once()
+        mock_siaes_similarity_search_with_city.assert_not_called()
+
+    def test_search_query_with_city(self):
+        with mock.patch(
+            "lemarche.tenders.models.api_elasticsearch.siaes_similarity_search_with_city"
+        ) as mock_siaes_similarity_search_with_city:
+            mock_siaes_similarity_search_with_city.return_value = [self.siae_two.pk, self.siae_four.pk]
+
+            response = self.client.get(
+                f"{self.url}?search_query=entretien foret&id_city_name={self.city.name}&city={self.city.slug}"
+            )
+
+            siaes = list(response.context["siaes"])
+            self.assertEqual(len(siaes), 2)
+            self.assertIn(self.siae_two, siaes)
+            self.assertIn(self.siae_four, siaes)
+
+        mock_siaes_similarity_search_with_city.assert_called_once()

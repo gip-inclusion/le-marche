@@ -19,7 +19,7 @@ from django.views.generic.edit import FormMixin
 from lemarche.conversations.models import Conversation
 from lemarche.favorites.models import FavoriteList
 from lemarche.siaes.models import Siae
-from lemarche.utils.apis.api_elasticsearch import siaes_similarity_search, siaes_similarity_search_with_city
+from lemarche.utils.apis import api_elasticsearch
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
@@ -349,9 +349,9 @@ class SiaeSemanticSearchResultsView(TemplateResponseMixin, View):
             search_query = form_semantic.cleaned_data.get("search_query", None)
             city = form_semantic.cleaned_data.get("city", None)
             if city:
-                siaes_id = siaes_similarity_search_with_city(search_query, city)
+                siaes_id = api_elasticsearch.siaes_similarity_search_with_city(search_query, city)
             else:
-                siaes_id = siaes_similarity_search(search_query)
+                siaes_id = api_elasticsearch.siaes_similarity_search(search_query)
             siaes = Siae.objects.filter(pk__in=siaes_id)
             context = {
                 "siaes": siaes,
