@@ -24,9 +24,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
     $('.s-tabs-01__nav .nav-item').on('click', function (event) {
         event.preventDefault()
-        let tabContent = $($(this).parents()[1]).find(".tab-content")[0];
+        let tabContent = this.parentElement.parentElement.querySelector(".tab-content");
+        let hasSuperBadgeTab = this.children[0].classList.contains("super-badge-tab");
 
-        if ($(this).children()[0].classList.contains("super-badge-tab")) {
+        if (hasSuperBadgeTab) {
             tabContent.classList.add("super-badge-tab");
         } else {
             tabContent.classList.remove("super-badge-tab");
