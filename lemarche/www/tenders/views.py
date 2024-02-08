@@ -19,6 +19,7 @@ from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.utils.data import get_choice
 from lemarche.utils.mixins import (
+    SesameSiaeMemberRequiredMixin,
     SesameTenderAuthorRequiredMixin,
     SiaeUserRequiredOrSiaeIdParamMixin,
     TenderAuthorOrAdminRequiredIfNotSentMixin,
@@ -31,6 +32,7 @@ from lemarche.www.tenders.forms import (
     TenderCreateStepDetailForm,
     TenderCreateStepGeneralForm,
     TenderCreateStepSurveyForm,
+    TenderSiaeSurveyTransactionedForm,
     TenderSurveyTransactionedForm,
 )
 from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
@@ -624,6 +626,79 @@ class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, Updat
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["tender"] = self.object
+        context["parent_title"] = TITLE_DETAIL_PAGE_OTHERS
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["tender_survey_transactioned_answer"] = self.object.survey_transactioned_answer
+        return kwargs
+
+    def form_valid(self, form):
+        super().form_valid(form)
+        messages.add_message(self.request, messages.SUCCESS, self.get_success_message())
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        success_url = reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
+        return success_url
+
+    def get_success_message(self, already_answered=False):
+        if already_answered:
+            return "Votre réponse a déjà été prise en compte."
+        return "Merci pour votre réponse !"
+
+
+class TenderDetailSiaeSurveyTransactionedView(SesameSiaeMemberRequiredMixin, UpdateView):
+    """
+    Endpoint to store the tender siae survey transactioned answer
+    """
+
+    template_name = "tenders/survey_transactioned_detail.html"  # same template as author survey
+    form_class = TenderSiaeSurveyTransactionedForm
+    queryset = TenderSiae.objects.all()
+    # success_message (see get_success_message() below)
+    # success_url (see get_success_url() below)
+
+    def get(self, request, *args, **kwargs):
+        """
+        TenderSiae.survey_transactioned_answer field is updated only if:
+        - the user should be the tender author (thanks to SesameTenderAuthorRequiredMixin)
+        - the field is None in the database (first time answering)
+        - the GET parameter 'answer' is passed
+        """
+        self.object = self.get_object()
+        survey_transactioned_answer = request.GET.get("answer", None)
+        # first time answering
+        if self.object.survey_transactioned_answer is None:
+            if survey_transactioned_answer in ["True", "False"]:
+                # transform survey_transactioned_answer into bool
+                survey_transactioned_answer = survey_transactioned_answer == "True"
+                # update survey_transactioned_answer
+                TenderSiae.objects.filter(id=self.object.id).update(
+                    survey_transactioned_answer=survey_transactioned_answer,
+                    survey_transactioned_answer_date=timezone.now(),
+                    updated_at=timezone.now(),
+                )
+            else:
+                pass
+                # TODO or not? "answer" should always be passed
+            return super().get(request, *args, **kwargs)
+        # already answered
+        else:
+            messages.add_message(self.request, messages.WARNING, self.get_success_message(already_answered=True))
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_object(self):
+        self.tender = Tender.objects.get(slug=self.kwargs.get("slug"))
+        self.siae = Siae.objects.get(slug=self.kwargs.get("siae_slug"))
+        return get_object_or_404(TenderSiae, tender=self.tender, siae=self.siae)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["tender"] = self.tender
+        context["siae"] = self.siae
+        context["parent_title"] = TITLE_DETAIL_PAGE_SIAE
         return context
 
     def get_form_kwargs(self):
