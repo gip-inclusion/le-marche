@@ -40,7 +40,7 @@
                     <ul class="s-tabs-01__nav nav nav-tabs" role="tablist">
                         {% for siaeuser in user.siaeuser_set.all %}
                             <li class="nav-item" role="presentation">
-                                <a class="nav-link {% if forloop.first %}active{% endif %} {% if siaeuser.siae.super_badge %}super-badge-tab{% endif %}" id="{{ siaeuser.siae.slug }}-tab" data-toggle="tab" href="#{{ siaeuser.siae.slug }}" role="tab" aria-controls="{{ siaeuser.siae.slug }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                                <a class="nav-link {% if forloop.first %}active{% endif %} {% if siaeuser.siae.super_badge %}super-badge-tab{% endif %}" id="id-{{ siaeuser.siae.slug }}-tab" data-toggle="tab" href="#{{ siaeuser.siae.slug }}" role="tab" aria-controls="{{ siaeuser.siae.slug }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
                                     <span class="mr-2">
                                         {% if siaeuser.siae.logo_url %}
                                             <img class="img-fluid" style="width:20px" src="{{ siaeuser.siae.logo_url }}" alt="Logo de la structure {{ siaeuser.siae.name }}" loading="lazy" />
@@ -68,7 +68,7 @@
                             {% if forloop.first %}
                                 <div class="tab-content {% if siaeuser.siae.super_badge %}super-badge-tab{% endif %}">
                             {% endif %}
-                            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="{{ siaeuser.siae.slug }}" role="tabpanel" aria-labelledby="{{ siaeuser.siae.slug }}-tab">
+                            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="id-{{ siaeuser.siae.slug }}" role="tabpanel" aria-labelledby="{{ siaeuser.siae.slug }}-tab">
                                 {% include "dashboard/_siae_tab_content.html" with siae=siaeuser.siae %}
                             </div>
                             {% if forloop.last %}
