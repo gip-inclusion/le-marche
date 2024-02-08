@@ -22,6 +22,15 @@ window.addEventListener('DOMContentLoaded', function () {
 
     initModalMessages();
 
+    $('.super-badge-badge').each(function (element) {
+        $(this).tooltip(
+            {
+                html: true,
+                placement: "bottom",
+                title: $('#tooltip-super-badge').html()
+            });
+    });
+
     $('.s-tabs-01__nav .nav-item').on('click', function (event) {
         event.preventDefault()
         let tabContent = this.parentElement.parentElement.querySelector(".tab-content");
