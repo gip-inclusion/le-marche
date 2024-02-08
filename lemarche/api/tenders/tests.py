@@ -186,6 +186,7 @@ class TenderCreateApiPartnerTest(TestCase):
                 "contact_email": self.user_partner_with_token.email,
                 "extra_data": {"id": 123},
                 "partner_approch_id": 123,
+                "kind": tender_constants.KIND_PROJECT,
                 "title": "Test",
                 "description": "Description",
                 "deadline_date": "2024-06-30",
@@ -205,6 +206,38 @@ class TenderCreateApiPartnerTest(TestCase):
             )
             self.assertEqual(response.status_code, 201)
             self.assertEqual(Tender.objects.count(), 1)
+            self.assertEqual(Tender.objects.first().title, "Test changed")
+            self.assertEqual(Tender.objects.first().deadline_date.strftime("%Y-%m-%d"), "2024-12-31")
+
+    def test_partner_approch_new_tender_if_kind_changes(self):
+        with self.settings(PARTNER_APPROCH_USER_ID=self.user_partner_with_token.id):
+            existing_tender_partner_data = {
+                "contact_email": self.user_partner_with_token.email,
+                "extra_data": {"id": 123},
+                "partner_approch_id": 123,
+                "kind": tender_constants.KIND_PROJECT,
+                "title": "Test",
+                "description": "Description",
+                "deadline_date": "2024-06-30",
+            }
+            TenderFactory(**{**TENDER_JSON.copy(), **existing_tender_partner_data})
+            self.assertEqual(Tender.objects.count(), 1)
+            self.assertEqual(Tender.objects.first().title, "Test")
+            self.assertEqual(Tender.objects.first().deadline_date.strftime("%Y-%m-%d"), "2024-06-30")
+            # existing tender but kind changed ! we re-create a new one
+            new_tender_partner_data = {
+                **existing_tender_partner_data,
+                "kind": tender_constants.KIND_TENDER,
+                "title": "Test changed",
+                "deadline_date": "2024-12-31",
+            }
+            response = self.client.post(
+                self.url, data={**TENDER_JSON.copy(), **new_tender_partner_data}, content_type="application/json"
+            )
+            self.assertEqual(response.status_code, 201)
+            self.assertEqual(Tender.objects.count(), 2)
+            self.assertEqual(Tender.objects.last().title, "Test")
+            self.assertEqual(Tender.objects.last().deadline_date.strftime("%Y-%m-%d"), "2024-06-30")
             self.assertEqual(Tender.objects.first().title, "Test changed")
             self.assertEqual(Tender.objects.first().deadline_date.strftime("%Y-%m-%d"), "2024-12-31")
 
