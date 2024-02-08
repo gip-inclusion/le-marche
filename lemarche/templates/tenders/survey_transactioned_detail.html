@@ -12,7 +12,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">Mes besoins</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">{{ parent_title }}</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'tenders:detail' tender.slug %}" title="{{ tender.title }}">{{ tender.title|truncatechars:25 }}</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Avez-vous contractualisé ?</li>
                     </ol>
@@ -41,6 +41,14 @@
                                     <legend class="h5">{{ form.survey_transactioned_answer.label }}</legend>
                                     {% bootstrap_field form.survey_transactioned_answer show_label=False %}
                                 </fieldset>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-4">
+                            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
+                                <p class="mb-0">
+                                    <i class="ri-information-line ri-lg"></i>
+                                    Pour le besoin <strong>{{ tender.title }}</strong>
+                                </p>
                             </div>
                         </div>
                     </div>
