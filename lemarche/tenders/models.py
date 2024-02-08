@@ -866,6 +866,28 @@ class TenderQuestion(models.Model):
 
 
 class TenderSiae(models.Model):
+    FIELDS_RELATION = [
+        "email_send_date",
+        "email_link_click_date",
+        "detail_display_date",
+        "detail_contact_click_date",
+        "detail_cocontracting_click_date",
+        "detail_not_interested_click_date",
+        "detail_not_interested_feedback",
+    ]
+    FIELDS_SURVEY_TRANSACTIONED = [
+        "survey_transactioned_send_date",
+        "survey_transactioned_answer",
+        "survey_transactioned_amount",
+        "survey_transactioned_feedback",
+        "survey_transactioned_answer_date",
+    ]
+    FIELDS_STATS_TIMESTAMPS = [
+        "created_at",
+        "updated_at",
+    ]
+    READONLY_FIELDS = FIELDS_RELATION + FIELDS_SURVEY_TRANSACTIONED + FIELDS_STATS_TIMESTAMPS
+
     tender = models.ForeignKey("tenders.Tender", verbose_name="Besoin d'achat", on_delete=models.CASCADE)
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
 
@@ -876,7 +898,7 @@ class TenderSiae(models.Model):
     )
     found_with_ai = models.BooleanField("Trouvé par l'IA", default=False)
 
-    # stats
+    # stats: relation
     email_send_date = models.DateTimeField("Date d'envoi de l'e-mail", blank=True, null=True)
     email_link_click_date = models.DateTimeField("Date de clic sur le lien dans l'e-mail", blank=True, null=True)
     detail_display_date = models.DateTimeField("Date de visualisation du besoin", blank=True, null=True)
@@ -888,6 +910,24 @@ class TenderSiae(models.Model):
     )
     detail_not_interested_click_date = models.DateTimeField("Date de clic sur Pas intéressé", blank=True, null=True)
     detail_not_interested_feedback = models.TextField(verbose_name="Clic sur Pas intéréssé : explication", blank=True)
+
+    # stats: transaction
+    survey_transactioned_send_date = models.DateTimeField(
+        verbose_name="Sondage transaction : date d'envoi de l'e-mail", blank=True, null=True
+    )
+    survey_transactioned_answer = models.BooleanField(
+        verbose_name="Sondage transaction : réponse", blank=True, null=True
+    )
+    survey_transactioned_amount = models.PositiveIntegerField(
+        verbose_name="Sondage transaction : montant du besoin", blank=True, null=True
+    )
+    survey_transactioned_feedback = models.TextField(
+        verbose_name="Sondage transaction : retour d'expérience", blank=True
+    )
+    survey_transactioned_answer_date = models.DateTimeField(
+        "Sondage transaction : date de réponse", blank=True, null=True
+    )
+
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
