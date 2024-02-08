@@ -31,6 +31,7 @@ urlpatterns = [
     path("", TemplateView.as_view(template_name="api/home.html"), name="home"),
     # Additional API endpoints
     path("siae/slug/<str:slug>/", SiaeViewSet.as_view({"get": "retrieve_by_slug"}), name="siae-retrieve-by-slug"),
+    path("siae/siren/<str:siren>/", SiaeViewSet.as_view({"get": "retrieve_by_siren"}), name="siae-retrieve-by-siren"),
     path("siae/siret/<str:siret>/", SiaeViewSet.as_view({"get": "retrieve_by_siret"}), name="siae-retrieve-by-siret"),
     path(
         "siaes/siret/<str:siret>/",
