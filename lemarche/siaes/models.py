@@ -948,11 +948,11 @@ class Siae(models.Model):
                 raise e
 
     @property
-    def kind_is_esat_or_ea_or_eatt(self):
+    def kind_is_esat_or_ea_or_eatt(self) -> bool:
         return self.kind in [siae_constants.KIND_ESAT, siae_constants.KIND_EA, siae_constants.KIND_EATT]
 
     @property
-    def kind_parent(self):
+    def kind_parent(self) -> str:
         if self.kind in siae_constants.KIND_GROUP_INSERTION_LIST:
             return siae_constants.KIND_GROUP_INSERTION_NAME
         if self.kind in siae_constants.KIND_GROUP_HANDICAP_LIST:
@@ -972,13 +972,13 @@ class Siae(models.Model):
         return None
 
     @property
-    def name_display(self):
+    def name_display(self) -> str:
         if self.brand:
             return self.brand
         return self.name
 
     @property
-    def presta_type_display(self):
+    def presta_type_display(self) -> str:
         if self.kind == siae_constants.KIND_ETTI:
             return "Intérim"
         if self.kind == siae_constants.KIND_AI:
@@ -991,7 +991,7 @@ class Siae(models.Model):
         return ""
 
     @property
-    def siret_display(self):
+    def siret_display(self) -> str:
         """
         SIRET = 14 numbers
         SIREN = 9 numbers
@@ -1004,11 +1004,11 @@ class Siae(models.Model):
         return self.siret
 
     @property
-    def siren(self):
+    def siren(self) -> str:
         return self.siret[:9]
 
     @property
-    def nic(self):
+    def nic(self) -> str:
         """
         The second part of SIRET is called the NIC (numéro interne de classement).
         https://www.insee.fr/fr/metadonnees/definition/c1981
