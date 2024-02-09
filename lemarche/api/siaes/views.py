@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from lemarche.api.siaes.filters import SiaeFilter
 from lemarche.api.siaes.serializers import SiaeDetailSerializer, SiaeListSerializer
-from lemarche.api.utils import BasicChoiceSerializer, check_user_token
+from lemarche.api.utils import BasicChoiceSerializer, BasicChoiceWithParentSerializer, check_user_token
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 
@@ -150,11 +150,19 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
 
 
 class SiaeKindViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    serializer_class = BasicChoiceSerializer
+    serializer_class = BasicChoiceWithParentSerializer
     queryset = Siae.objects.none()
 
     def get_queryset(self):
-        siae_kinds = [{"id": id, "name": name} for (id, name) in siae_constants.KIND_CHOICES]
+        siae_kind_insertion = [
+            {"id": id, "name": name, "parent": siae_constants.KIND_PARENT_INSERTION_NAME}
+            for (id, name) in siae_constants.KIND_INSERTION_CHOICES
+        ]
+        siae_kind_handicap = [
+            {"id": id, "name": name, "parent": siae_constants.KIND_PARENT_HANDICAP_NAME}
+            for (id, name) in siae_constants.KIND_HANDICAP_CHOICES
+        ]
+        siae_kinds = siae_kind_insertion + siae_kind_handicap
         return siae_kinds
 
     @extend_schema(summary="Lister tous les types de structures", tags=[Siae._meta.verbose_name_plural])
