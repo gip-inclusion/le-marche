@@ -497,13 +497,20 @@ class NetworkSiaeFilterForm(forms.Form):
 
 class SiaeSemanticForm(forms.Form):
     search_query = forms.CharField(
-        label="Recherche sémantique",
+        label="Prestation recherchée",
         required=False,
-        widget=forms.TextInput(attrs={"placeholder": "Je cherche…"}),
-        help_text=" ".join(
-            [
-                "Soyez le plus précis possible (Exemple: nettoyage des locaux d'entreprise",
-                "/ entretien des espaces verts)",
-            ]
-        ),
+        widget=forms.TextInput(attrs={"placeholder": "Nettoyage de locaux"}),
+        min_length=5,
     )
+    city = forms.ModelChoiceField(
+        label="Localisation de votre besoin",
+        queryset=Perimeter.objects.cities(),
+        to_field_name="slug",
+        required=False,
+        widget=forms.HiddenInput(),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # this field are autocompletes
+        self.fields["city"].choices = []

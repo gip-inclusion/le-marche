@@ -29,16 +29,18 @@ const debounce = (callback, wait) => {
   };
 }
 
-async function fetchSource(query) {
-  const res = await fetch(`${API_ENDPOINT}?q=${query}&results=10`);
+async function fetchSource(query, kind = undefined) {
+  const res = await fetch(`${API_ENDPOINT}?q=${query}&results=10${kind ? `&kind=${kind}` : ''}`);
   const data = await res.json();
   return data;  // data.results
 }
 
 class PerimeterAutocomplete {
-  constructor(perimeter_container_name, perimeter_input_id) {
+  constructor(perimeter_container_name, perimeter_input_id, perimeter_placeholder='Région, ville…', perimeter_kind = undefined) {
     this.perimeter_container_name= perimeter_container_name;
     this.perimeter_input_id= perimeter_input_id;
+    this.perimeter_kind= perimeter_kind;
+    this.perimeter_placeholder= perimeter_placeholder;
     this.perimeter_name_input_id= `${this.perimeter_input_id}_name`;
     this.perimeterAutocompleteContainer = document.getElementById(perimeter_container_name);
     this.perimeterInput = document.getElementById(perimeter_input_id);  // hidden
@@ -53,10 +55,10 @@ class PerimeterAutocomplete {
         element: this.perimeterAutocompleteContainer,
         id: this.perimeter_name_input_id,
         name: this.perimeter_name_input_id,  // url GET param name
-        placeholder: 'Région, ville…',  // 'Autour de (Arras, Bobigny, Strasbourg…)', 'Région, département, ville'
+        placeholder: this.perimeter_placeholder,
         minLength: 2,
         defaultValue: this.initial_value_name,
-        source:  this.getSource,
+        source: this.perimeter_kind === 'CITY' ? this.getSourceCity : this.getSource,
         displayMenu: 'overlay',
         templates: {
           inputValue: this.inputValue,  // returns the string value to be inserted into the input
@@ -86,6 +88,11 @@ class PerimeterAutocomplete {
 
   async getSource(query, populateResults) {
     const res = await fetchSource(query);
+    populateResults(res);
+  }
+
+  async getSourceCity(query, populateResults) {
+    const res = await fetchSource(query, "CITY");
     populateResults(res);
   }
 
@@ -220,7 +227,7 @@ class PerimetersMultiAutocomplete {
   inputValue(result) {
     return "";
   }
-  
+
   inputValueHiddenField(result) {
     // we want to avoid clicks outside that return 'undefined'
     if (result) {
@@ -239,20 +246,20 @@ class PerimetersMultiAutocomplete {
   suggestion(result) {
     // display suggestions as `name (kind)`
     let resultName, resultKind = '';
-  
+
     // build resultName & resultKind from the result object
     if (typeof result === 'object') {
       resultName = result.name;
       resultKind = (result.kind === 'CITY') ? result.department_code : KIND_MAPPING[result.kind];
     }
-  
+
     // Edge case: if there is an initial value
     // reconstruct resultName & resultKind from the result string
     if (typeof result === 'string') {
       resultName = result.substring(0, result.lastIndexOf(' '));
       resultKind = result.includes('(') ? result.substring(result.lastIndexOf(' ') + 2, result.length - 1) : '';
     }
-  
+
     let nameWithKind = '<strong>' + resultName + '</strong>';
     if (resultKind) {
       nameWithKind += ' <small>(' + resultKind + ')</small>';
@@ -266,7 +273,7 @@ class PerimetersMultiAutocomplete {
     $(`#${idRefInput}`).remove();
     $(this).remove();
   }
-  
+
   createHiddenInputPerimeter(resultId, resultName) {
     let removeIcon = $('<i>', { class: "ri-close-line font-weight-bold mr-0", "aria-hidden": true });
     let resultIdString = `${this.perimeter_hidden_input_selector_prefix}-${resultId}`;

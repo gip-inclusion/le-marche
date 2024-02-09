@@ -2,6 +2,17 @@
 {% block content %}
     <div class="col-12 col-lg-8">
         <div class="c-box mb-3">
+            <div class="d-flex align-items-center mb-3">
+                <div class="flex-grow-1">
+                    <h1 class="h4 mb-0">
+                        {% if siaes %}
+                                {{ siaes.count }} prestataire{{ siaes.count|pluralize }} correspond{{ siaes.count|pluralize:"ent" }} à vos critères
+                        {% else %}
+                            Oups, aucun prestataire trouvé !
+                        {% endif %}
+                    </h1>
+                </div>
+            </div>
             {% if siaes %}
                 {% for siae in siaes %}
                     {% include "siaes/_card_search_result.html" with siae=siae %}
