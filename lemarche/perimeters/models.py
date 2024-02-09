@@ -12,6 +12,9 @@ from lemarche.utils.fields import ChoiceArrayField
 
 
 class PerimeterQuerySet(models.QuerySet):
+    def cities(self):
+        return self.filter(kind="CITY")
+
     def regions(self):
         return self.filter(kind="REGION")
 

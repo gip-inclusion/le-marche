@@ -53,7 +53,6 @@
                                 Recherche par SIRET / nom
                             </a>
                         </li>
-                        {% if is_admin %}
                         <li class="nav-item" role="presentation">
                             <a class="nav-link"
                                 id="search-semantic-tab"
@@ -62,11 +61,11 @@
                                 role="tab"
                                 aria-controls="search-semantic"
                                 aria-selected="false">
-                                Recherche sémantique
-                                <span class="badge badge-sm badge-pill badge-important ml-2">Nouveauté</span>
+                                Recherche par mot clé
+                                <span class="badge badge-sm badge-pill badge-marche ml-2">Beta</span>
+                                <span class="badge badge-sm badge-pill badge-important">Nouveauté</span>
                             </a>
                         </li>
-                        {% endif %}
                         <li class="nav-item-dropdown dropdown">
                             <a class="nav-link dropdown-toggle"
                                href="#"
@@ -205,7 +204,6 @@
                                 </div>
                             </form>
                         </div>
-                        {% if is_admin %}
                         <div class="tab-pane fade"
                             id="search-semantic"
                             role="tabpanel"
@@ -218,12 +216,17 @@
                                 id="text-semantic-search-form">
                                 {% bootstrap_form_errors form_semantic type="all" %}
                                 <div class="row">
-                                    <div class="col-12 col-lg-8">
-                                        <div class="row">
-                                            <div class="col-12">{% bootstrap_field form_semantic.search_query %}</div>
+                                    <div class="col-12 col-lg-5">
+                                        {% bootstrap_field form_semantic.search_query %}
+                                    </div>
+                                    <div class="col-12 col-lg-5">
+                                        <div class="form-group">
+                                            <label for="id_city">{{ form_semantic.city.label }}</label>
+                                            <div id="dir_form_city" data-input-name="{{ form_semantic.city.name }}"></div>
+                                            {{ form_semantic.city }}
                                         </div>
                                     </div>
-                                    <div class="col-12 col-lg-4">
+                                    <div class="col-12 col-lg-2">
                                         <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
                                         <button id="text-search-submit"
                                                 class="btn btn-primary btn-block btn-ico"
@@ -235,7 +238,6 @@
                                 </div>
                             </form>
                         </div>
-                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -363,6 +365,10 @@ document.addEventListener("DOMContentLoaded", function() {
         const locationsAutoComplete = new PerimetersMultiAutocomplete(LOCATION_AUTOCOMPLETE_ID, LOCATION_AUTOCOMPLETE_CONTAINER_SELECTOR, LOCATION_SELECTED_CONTAINER_SELECTOR, LOCATION_HIDDEN_INPUT_SELECTOR_PREFIX, LOCATION_CURRENT_ID);
         locationsAutoComplete.init();
     {% endif %}
+
+    // init city form fields
+    const cityAutoComplete = new PerimeterAutocomplete("dir_form_city", "id_city", "Ville", "CITY");
+    cityAutoComplete.init();
 });
     </script>
     <script type="text/javascript">

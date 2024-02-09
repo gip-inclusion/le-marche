@@ -565,7 +565,7 @@ class Tender(models.Model):
                 and self.distance_location > 0
             ):
                 # with geo distance
-                siae_ids = api_elasticsearch.siaes_similarity_search(
+                siae_ids = api_elasticsearch.siaes_similarity_search_with_geo_distance(
                     self.description,
                     geo_distance=self.distance_location,
                     geo_lat=self.location.coords.y,
