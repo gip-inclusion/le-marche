@@ -15,8 +15,8 @@ from lemarche.www.siaes.widgets import CustomLocationWidget
 
 
 FORM_KIND_CHOICES_GROUPED = (
-    ("Insertion par l'activité économique", siae_constants.KIND_CHOICES_WITH_EXTRA_INSERTION),
-    ("Handicap", siae_constants.KIND_CHOICES_WITH_EXTRA_HANDICAP),
+    ("Insertion par l'activité économique", siae_constants.KIND_INSERTION_CHOICES_WITH_EXTRA),
+    ("Handicap", siae_constants.KIND_HANDICAP_CHOICES_WITH_EXTRA),
 )
 FORM_TERRITORY_CHOICES = (
     ("QPV", "Quartier prioritaire de la politique de la ville (QPV)"),
