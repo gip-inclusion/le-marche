@@ -93,6 +93,12 @@ class PerimetersAutocompleteFilterApiTest(TestCase):
         self.assertEqual(len(response.data), 1 + 1)
         self.assertEqual(response.data[0]["name"], "Isère")
 
+    def test_should_filter_perimeters_autocomplete_by_q_code_only_cities(self):
+        url = reverse("api:perimeters-autocomplete-list") + "?q=38&kind=CITY"  # anonymous user
+        response = self.client.get(url)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["name"], "Grenoble")
+
     def test_should_filter_perimeters_autocomplete_by_q_post_code(self):
         url = reverse("api:perimeters-autocomplete-list") + "?q=38100"  # anonymous user
         response = self.client.get(url)

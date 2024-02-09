@@ -41,9 +41,11 @@ class PerimeterAutocompleteViewSet(mixins.ListModelMixin, viewsets.GenericViewSe
         """
         return super().list(request, args, kwargs)
 
-
-class CityAutocompleteViewSet(PerimeterAutocompleteViewSet):
-    queryset = Perimeter.objects.cities()
+    def get_queryset(self):
+        kind = self.request.query_params.get("kind", None)
+        if kind and kind in [id for (id, name) in Perimeter.KIND_CHOICES]:
+            return Perimeter.objects.filter(kind=kind)
+        return self.queryset
 
 
 class PerimeterKindViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

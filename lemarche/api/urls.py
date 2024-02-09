@@ -5,12 +5,7 @@ from rest_framework import routers
 
 from lemarche.api.emails.views import InboundParsingEmailView
 from lemarche.api.networks.views import NetworkViewSet
-from lemarche.api.perimeters.views import (
-    CityAutocompleteViewSet,
-    PerimeterAutocompleteViewSet,
-    PerimeterKindViewSet,
-    PerimeterViewSet,
-)
+from lemarche.api.perimeters.views import PerimeterAutocompleteViewSet, PerimeterKindViewSet, PerimeterViewSet
 from lemarche.api.sectors.views import SectorViewSet
 from lemarche.api.siaes.views import SiaeKindViewSet, SiaePrestaTypeViewSet, SiaeViewSet
 from lemarche.api.tenders.views import TenderAmountViewSet, TenderKindViewSet, TenderViewSet
@@ -27,7 +22,6 @@ router.register(r"sectors", SectorViewSet, basename="sectors")
 router.register(r"networks", NetworkViewSet, basename="networks")
 router.register(r"perimeters/kinds", PerimeterKindViewSet, basename="perimeter-kinds")
 router.register(r"perimeters/autocomplete", PerimeterAutocompleteViewSet, basename="perimeters-autocomplete")
-router.register(r"cities/autocomplete", CityAutocompleteViewSet, basename="cities-autocomplete")
 router.register(r"perimeters", PerimeterViewSet, basename="perimeters")
 router.register(r"tenders/kinds", TenderKindViewSet, basename="tender-kinds")
 router.register(r"tenders/amounts", TenderAmountViewSet, basename="tender-amounts")
