@@ -527,7 +527,9 @@ class TenderListViewTest(TestCase):
         self.assertContains(response, "2 prestataires ciblés")  # tender_3
         self.assertContains(response, "1 prestataire intéressé")  # tender_3
         self.assertNotContains(response, "Demandes reçues")
-        self.assertNotContains(response, '<span class="badge badge-sm badge-pill badge-important">Nouveau</span>')
+        self.assertNotContains(
+            response, '<span class="float-right badge badge-sm badge-pill badge-important">Nouveau</span>'
+        )
 
     def test_other_user_without_tender_should_not_see_any_tenders(self):
         self.client.force_login(self.user_partner)
@@ -553,7 +555,9 @@ class TenderListViewTest(TestCase):
         # The badge in header
         self.assertContains(response, 'Demandes reçues <span class="badge badge-pill badge-important fs-xs">1</span>')
         # The badge in tender list
-        self.assertContains(response, '<span class="badge badge-sm badge-pill badge-important">Nouveau</span>')
+        self.assertContains(
+            response, '<span class="float-right badge badge-sm badge-pill badge-important">Nouveau</span>'
+        )
 
         # Open tender detail page
         detail_url = reverse("tenders:detail", kwargs={"slug": self.tender_3.slug})
@@ -564,7 +568,9 @@ class TenderListViewTest(TestCase):
         self.assertNotContains(
             response, 'Demandes reçues <span class="badge badge-pill badge-important fs-xs">1</span>'
         )
-        self.assertNotContains(response, '<span class="badge badge-sm badge-pill badge-important">Nouveau</span>')
+        self.assertNotContains(
+            response, '<span class="float-right badge badge-sm badge-pill badge-important">Nouveau</span>'
+        )
 
 
 class TenderDetailViewTest(TestCase):

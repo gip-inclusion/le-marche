@@ -1,24 +1,25 @@
 {% load static humanize %}
 
-<div class="card c-card c-card--marche c-card--link siae-card" role="button" data-url="{% url 'tenders:detail' tender.slug %}">
+<div class="card c-card c-card--marche c-card--marche-{{ tender.kind|lower }} c-card--link siae-card" role="button" data-url="{% url 'tenders:detail' tender.slug %}">
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
                 <p class="mb-1">
-                    Date de clôture : {{ tender.deadline_date|default:"" }}
-                    {% if tender.deadline_date_is_outdated_annotated %}
-                        <span class="badge badge-sm badge-base badge-pill badge-pilotage">Clôturé</span>
-                    {% endif %}
-                    {% if not tender.tendersiae_set.first.detail_display_date %}
-                        <span class="badge badge-sm badge-pill badge-important">Nouveau</span>
-                    {% endif %}
-                    <span class="float-right badge badge-base badge-pill badge-emploi">
+                    <span class="badge badge-base badge-pill mr-1 badge-{{ tender.kind|lower }}">
                         {% if tender.kind == "PROJ" %}
                             {{ title_kind_sourcing_siae|default:tender.get_kind_display }}
                         {% else %}
                             {{ tender.get_kind_display }}
                         {% endif %}
                     </span>
+                    {% if tender.deadline_date_is_outdated_annotated %}
+                        <span class="badge badge-sm badge-base badge-pill badge-light">Clôturé le {{ tender.deadline_date|default:"" }}</span>
+                    {% else %}
+                        Disponible <strong>jusqu'au : {{ tender.deadline_date|default:"" }}</strong>
+                    {% endif %}
+                    {% if not tender.tendersiae_set.first.detail_display_date %}
+                        <span class="float-right badge badge-sm badge-pill badge-important">Nouveau</span>
+                    {% endif %}
                 </p>
             </div>
         </div>
