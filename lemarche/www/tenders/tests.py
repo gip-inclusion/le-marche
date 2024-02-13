@@ -491,6 +491,10 @@ class TenderListViewTest(TestCase):
             email_send_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
         )
+        cls.tender_4 = TenderFactory(author=cls.user_buyer_1, perimeters=[perimeter])
+        cls.tendersiae_4_1 = TenderSiae.objects.create(
+            tender=cls.tender_4, siae=cls.siae_1, email_send_date=timezone.now()
+        )
 
     def test_anonymous_user_cannot_list_tenders(self):
         url = reverse("tenders:list")
@@ -511,8 +515,9 @@ class TenderListViewTest(TestCase):
         url = reverse("tenders:list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["tenders"]), 1)
+        self.assertEqual(len(response.context["tenders"]), 2)
         self.assertContains(response, self.tender_3.title)
+        self.assertContains(response, self.tender_4.title)
         self.assertContains(response, "Entreprise Buyer")
         self.assertNotContains(response, "K€")  # !accept_share_amount
         self.assertNotContains(response, "2 prestataires ciblés")  # tender_3, but only visible to author
@@ -523,7 +528,7 @@ class TenderListViewTest(TestCase):
         url = reverse("tenders:list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["tenders"]), 3)
+        self.assertEqual(len(response.context["tenders"]), 4)
         self.assertContains(response, "2 prestataires ciblés")  # tender_3
         self.assertContains(response, "1 prestataire intéressé")  # tender_3
         self.assertNotContains(response, "Demandes reçues")
@@ -551,14 +556,16 @@ class TenderListViewTest(TestCase):
         url = reverse("tenders:list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["tenders"]), 1)
-        # The badge in header
+        self.assertEqual(len(response.context["tenders"]), 2)
+        # The badge in header, only one because one is outdated
         self.assertContains(response, 'Demandes reçues <span class="badge badge-pill badge-important fs-xs">1</span>')
         # The badge in tender list
-        self.assertContains(response, '<span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>')
+        self.assertContains(
+            response, '<span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>', 1
+        )
 
         # Open tender detail page
-        detail_url = reverse("tenders:detail", kwargs={"slug": self.tender_3.slug})
+        detail_url = reverse("tenders:detail", kwargs={"slug": self.tender_4.slug})
         self.client.get(detail_url)
 
         # The badges have disappeared
