@@ -17,3 +17,7 @@
 .c-card--marche-quote::after, .badge-quote {
     background-color: $marche-quote;
 }
+
+.c-card--marche-outdated::after {
+    background-color: $marche-outdated;
+}
