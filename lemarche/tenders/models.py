@@ -270,8 +270,7 @@ class Tender(models.Model):
         default=list,
     )
     constraints = models.TextField(
-        verbose_name="Contraintes techniques spécifiques",
-        help_text="Renseignez les contraintes liées à votre besoin",
+        verbose_name="Comment répondre à cette demande ?",
         blank=True,
     )
     external_link = models.URLField(
