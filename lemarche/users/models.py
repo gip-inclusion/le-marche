@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.conf import settings
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
@@ -364,9 +366,10 @@ class User(AbstractUser):
     def tender_siae_unread_count(self):
         from lemarche.tenders.models import TenderSiae
 
-        qs = TenderSiae.objects.filter(siae__in=self.siaes.all(), tender__validated_at__isnull=False).filter(
-            detail_display_date__isnull=True
-        )
+        limit_date = datetime.today()
+        qs = TenderSiae.objects.filter(
+            siae__in=self.siaes.all(), tender__validated_at__isnull=False, tender__deadline_date__gt=limit_date
+        ).filter(detail_display_date__isnull=True)
         return qs.count()
 
 
