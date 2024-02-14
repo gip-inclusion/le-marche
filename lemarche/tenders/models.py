@@ -987,7 +987,9 @@ class PartnerShareTenderQuerySet(models.QuerySet):
 
 class PartnerShareTender(models.Model):
     name = models.CharField(max_length=120, verbose_name="Nom du partenaire")
-
+    is_active = models.BooleanField(
+        "Partenaire actif", default=False, help_text="Souhaite recevoir les besoins d'achats par email"
+    )
     perimeters = models.ManyToManyField(
         "perimeters.Perimeter", verbose_name="Lieux de filtrage", related_name="partner_share_tenders", blank=True
     )
