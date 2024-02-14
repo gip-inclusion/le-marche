@@ -360,6 +360,7 @@ class SiaeChoicesApiTest(TestCase):
         self.assertEqual(len(response.data["results"]), 10)
         self.assertTrue("id" in response.data["results"][0])
         self.assertTrue("name" in response.data["results"][0])
+        self.assertTrue("parent" in response.data["results"][0])
 
     def test_should_return_siae_presta_types_list(self):
         url = reverse("api:siae-presta-types-list")  # anonymous user
