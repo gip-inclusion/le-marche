@@ -1,4 +1,4 @@
-from django.http import Http404
+from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import mixins, viewsets
@@ -77,6 +77,24 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         queryset = self.get_queryset().prefetch_many_to_one()
         queryset_or_404 = get_object_or_404(queryset, slug=slug)
         return self._retrieve_return(request, queryset_or_404, format)
+
+    @extend_schema(
+        summary="Détail d'une structure (par son siren)",
+        tags=[Siae._meta.verbose_name_plural],
+        parameters=[
+            OpenApiParameter(name="token", description="Token Utilisateur", required=False, type=str),
+        ],
+        responses=SiaeDetailSerializer,
+    )
+    def retrieve_by_siren(self, request, siren=None, format=None):
+        """
+        Note : le siren n'est pas nécessairement unique, il peut y avoir plusieurs structures retournées.<br /><br />
+        <i>Un <strong>token</strong> est nécessaire pour l'accès complet à cette ressource.</i>
+        """
+        if len(siren) != 9:
+            return HttpResponseBadRequest("siren must be 9 caracters long")
+        queryset = self.get_queryset().prefetch_many_to_one().filter(siret__startswith=siren)
+        return self._list_return(request, queryset, format)
 
     @extend_schema(
         summary="Détail d'une structure (par son siret)",
