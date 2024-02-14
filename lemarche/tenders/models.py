@@ -942,6 +942,9 @@ class TenderSiae(models.Model):
 
 
 class PartnerShareTenderQuerySet(models.QuerySet):
+    def is_active(self):
+        return self.filter(is_active=True)
+
     def filter_by_amount(self, tender: Tender):
         """
         Return partners with:
@@ -981,8 +984,7 @@ class PartnerShareTenderQuerySet(models.QuerySet):
         return self.filter(conditions)
 
     def filter_by_tender(self, tender: Tender):
-        return self.filter_by_amount(tender).filter_by_perimeter(tender).distinct()
-        # return self.filter_by_amount(tender).distinct()
+        return self.is_active().filter_by_amount(tender).filter_by_perimeter(tender).distinct()
 
 
 class PartnerShareTender(models.Model):
