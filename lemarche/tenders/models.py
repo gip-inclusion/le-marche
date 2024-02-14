@@ -942,6 +942,9 @@ class TenderSiae(models.Model):
 
 
 class PartnerShareTenderQuerySet(models.QuerySet):
+    def is_active(self):
+        return self.filter(is_active=True)
+
     def filter_by_amount(self, tender: Tender):
         """
         Return partners with:
@@ -981,13 +984,14 @@ class PartnerShareTenderQuerySet(models.QuerySet):
         return self.filter(conditions)
 
     def filter_by_tender(self, tender: Tender):
-        return self.filter_by_amount(tender).filter_by_perimeter(tender).distinct()
-        # return self.filter_by_amount(tender).distinct()
+        return self.is_active().filter_by_amount(tender).filter_by_perimeter(tender).distinct()
 
 
 class PartnerShareTender(models.Model):
     name = models.CharField(max_length=120, verbose_name="Nom du partenaire")
-
+    is_active = models.BooleanField(
+        "Partenaire actif", default=False, help_text="Souhaite recevoir les besoins d'achats par email"
+    )
     perimeters = models.ManyToManyField(
         "perimeters.Perimeter", verbose_name="Lieux de filtrage", related_name="partner_share_tenders", blank=True
     )

@@ -627,8 +627,8 @@ class PartnerShareTenderNoteInline(GenericTabularInline):
 @admin.register(PartnerShareTender, site=admin_site)
 class PartnerShareTenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin, DynamicArrayMixin):
     form = TenderAdminForm
-    list_display = ["id", "name", "perimeters_string", "amount_in", "created_at"]
-    list_filter = [PerimeterRegionFilter, "amount_in"]
+    list_display = ["id", "name", "is_active", "perimeters_string", "amount_in", "created_at"]
+    list_filter = ["is_active", PerimeterRegionFilter, "amount_in"]
     search_fields = ["id", "name", "contact_email_list"]
     search_help_text = "Cherche sur les champs : ID, Nom, Contact (E-mail)"
 
@@ -639,7 +639,7 @@ class PartnerShareTenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin, DynamicArr
         (
             None,
             {
-                "fields": ("name", "perimeters", "amount_in", "contact_email_list"),
+                "fields": ("name", "is_active", "perimeters", "amount_in", "contact_email_list"),
             },
         ),
         TenderNoteInline,
