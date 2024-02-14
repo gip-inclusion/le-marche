@@ -953,10 +953,10 @@ class Siae(models.Model):
 
     @property
     def kind_parent(self) -> str:
-        if self.kind in siae_constants.KIND_GROUP_INSERTION_LIST:
-            return siae_constants.KIND_GROUP_INSERTION_NAME
-        if self.kind in siae_constants.KIND_GROUP_HANDICAP_LIST:
-            return siae_constants.KIND_GROUP_HANDICAP_NAME
+        if self.kind in siae_constants.KIND_INSERTION_LIST:
+            return siae_constants.KIND_PARENT_INSERTION_NAME
+        if self.kind in siae_constants.KIND_HANDICAP_LIST:
+            return siae_constants.KIND_PARENT_HANDICAP_NAME
         return ""
 
     @property

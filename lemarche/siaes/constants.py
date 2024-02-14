@@ -9,7 +9,8 @@ KIND_EATT = "EATT"
 KIND_ESAT = "ESAT"
 KIND_SEP = "SEP"
 
-KIND_CHOICES = (
+KIND_PARENT_INSERTION_NAME = "Insertion"
+KIND_INSERTION_CHOICES = (
     (KIND_EI, "Entreprise d'insertion"),  # Regroupées au sein de la fédération des entreprises d'insertion.
     (KIND_AI, "Association intermédiaire"),
     (KIND_ACI, "Atelier chantier d'insertion"),
@@ -17,33 +18,22 @@ KIND_CHOICES = (
     (KIND_ETTI, "Entreprise de travail temporaire d'insertion"),
     (KIND_EITI, "Entreprise d'insertion par le travail indépendant"),
     (KIND_GEIQ, "Groupement d'employeurs pour l'insertion et la qualification"),
-    (KIND_EA, "Entreprise adaptée"),
-    (KIND_EATT, "Entreprise adaptée de travail temporaire"),
-    (KIND_ESAT, "Etablissement et service d'aide par le travail"),
     (KIND_SEP, "Produits et services réalisés en prison"),
 )
-# KIND_CHOICES_WITH_EXTRA = ((key, f"{value} ({key})") for (key, value) in KIND_CHOICES)
-KIND_CHOICES_WITH_EXTRA_INSERTION = (
-    (KIND_EI, "Entreprise d'insertion (EI)"),  # Regroupées au sein de la fédération des entreprises d'insertion.
-    (KIND_AI, "Association intermédiaire (AI)"),
-    (KIND_ACI, "Atelier chantier d'insertion (ACI)"),
-    # (KIND_ACIPHC, "Atelier chantier d'insertion premières heures en chantier (ACIPHC)"),
-    (KIND_ETTI, "Entreprise de travail temporaire d'insertion (ETTI)"),
-    (KIND_EITI, "Entreprise d'insertion par le travail indépendant (EITI)"),
-    (KIND_GEIQ, "Groupement d'employeurs pour l'insertion et la qualification (GEIQ)"),
-    (KIND_SEP, "Produits et services réalisés en prison"),  # (SEP) ne s'applique pas à toutes les structures
-)
-KIND_CHOICES_WITH_EXTRA_HANDICAP = (
+KIND_INSERTION_CHOICES_WITH_EXTRA = [(key, f"{value} ({key})") for (key, value) in KIND_INSERTION_CHOICES]
+KIND_INSERTION_LIST = [k[0] for k in KIND_INSERTION_CHOICES]
+
+KIND_PARENT_HANDICAP_NAME = "Handicap"
+KIND_HANDICAP_CHOICES = (
     (KIND_EA, "Entreprise adaptée (EA)"),
     (KIND_EATT, "Entreprise adaptée de travail temporaire (EATT)"),
     (KIND_ESAT, "Etablissement et service d'aide par le travail (ESAT)"),
 )
-KIND_CHOICES_WITH_EXTRA = KIND_CHOICES_WITH_EXTRA_INSERTION + KIND_CHOICES_WITH_EXTRA_HANDICAP
+KIND_HANDICAP_CHOICES_WITH_EXTRA = [(key, f"{value} ({key})") for (key, value) in KIND_HANDICAP_CHOICES]
+KIND_HANDICAP_LIST = [k[0] for k in KIND_HANDICAP_CHOICES]
 
-KIND_GROUP_INSERTION_NAME = "Insertion"
-KIND_GROUP_INSERTION_LIST = [k[0] for k in KIND_CHOICES_WITH_EXTRA_INSERTION]
-KIND_GROUP_HANDICAP_NAME = "Handicap"
-KIND_GROUP_HANDICAP_LIST = [k[0] for k in KIND_CHOICES_WITH_EXTRA_HANDICAP]
+KIND_CHOICES = KIND_INSERTION_CHOICES + KIND_HANDICAP_CHOICES
+KIND_CHOICES_WITH_EXTRA = KIND_INSERTION_CHOICES_WITH_EXTRA + KIND_HANDICAP_CHOICES_WITH_EXTRA
 
 PRESTA_DISP = "DISP"
 PRESTA_PREST = "PREST"
