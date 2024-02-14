@@ -663,15 +663,17 @@ class TenderPartnerMatchingTest(TestCase):
             # coords=Point(5.7301, 45.1825),
         )
         # partners
-        PartnerShareTenderFactory(perimeters=[])
-        PartnerShareTenderFactory(perimeters=[cls.auvergne_rhone_alpes_perimeter])
-        PartnerShareTenderFactory(perimeters=[cls.isere_perimeter])
-        PartnerShareTenderFactory(perimeters=[cls.grenoble_perimeter])
-        PartnerShareTenderFactory(perimeters=[], amount_in=tender_constants.AMOUNT_RANGE_0_1)
-        PartnerShareTenderFactory(perimeters=[], amount_in=tender_constants.AMOUNT_RANGE_10_15)
-        PartnerShareTenderFactory(perimeters=[], amount_in=tender_constants.AMOUNT_RANGE_100_150)
+        PartnerShareTenderFactory(perimeters=[], is_active=True)
+        PartnerShareTenderFactory(perimeters=[cls.auvergne_rhone_alpes_perimeter], is_active=True)
+        PartnerShareTenderFactory(perimeters=[cls.isere_perimeter], is_active=True)
+        PartnerShareTenderFactory(perimeters=[cls.grenoble_perimeter], is_active=True)
+        PartnerShareTenderFactory(perimeters=[], amount_in=tender_constants.AMOUNT_RANGE_0_1, is_active=True)
+        PartnerShareTenderFactory(perimeters=[], amount_in=tender_constants.AMOUNT_RANGE_10_15, is_active=True)
+        PartnerShareTenderFactory(perimeters=[], amount_in=tender_constants.AMOUNT_RANGE_100_150, is_active=True)
         PartnerShareTenderFactory(
-            perimeters=[cls.isere_perimeter, cls.rhone_perimeter], amount_in=tender_constants.AMOUNT_RANGE_10_15
+            perimeters=[cls.isere_perimeter, cls.rhone_perimeter],
+            amount_in=tender_constants.AMOUNT_RANGE_10_15,
+            is_active=True,
         )
 
     def test_tender_country_matching(self):
@@ -723,6 +725,20 @@ class TenderPartnerMatchingTest(TestCase):
         tender_3 = TenderFactory(perimeters=[self.isere_perimeter], amount=tender_constants.AMOUNT_RANGE_10_15)
         result = PartnerShareTender.objects.filter_by_tender(tender_3)
         self.assertEqual(len(result), 3 + 3)
+
+    def test_tender_partner_is_active(self):
+        # partners with perimeters=[]
+        tender = TenderFactory(is_country_area=True)
+        # by default is_active is False
+        partner = PartnerShareTenderFactory(perimeters=[])
+        result = PartnerShareTender.objects.filter_by_tender(tender)
+        self.assertEqual(len(result), 4)
+        # update partner
+        partner.is_active = True
+        partner.save()
+        # we should have +1 partner
+        result_2 = PartnerShareTender.objects.filter_by_tender(tender)
+        self.assertEqual(len(result_2), 4 + 1)
 
 
 class TenderSiaeModelQuerysetTest(TestCase):
