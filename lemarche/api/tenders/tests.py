@@ -161,6 +161,45 @@ class TenderCreateApiTest(TestCase):
         self.assertEqual(author.buyer_kind_detail, user_constants.BUYER_KIND_DETAIL_PUBLIC_ASSOCIATION)
 
 
+def test_create_tender_with_include_country_area(self):
+    tender_data = TENDER_JSON.copy()
+    title = "Test tally include_country_area"
+    tender_data["title"] = title
+    tender_data["extra_data"] = {"source": "TALLY"}
+    response = self.client.post(self.url, data=tender_data, content_type="application/json")
+    self.assertEqual(response.status_code, 201)
+    tender = Tender.objects.get(title=title)
+    self.assertEqual(tender.include_country_area, False)
+    # when include country area is True
+    title = "Test tally include_country_area is True"
+    tender_data["title"] = title
+    tender_data["include_country_area"] = "true"
+    response = self.client.post(self.url, data=tender_data, content_type="application/json")
+    self.assertEqual(response.status_code, 201)
+    tender = Tender.objects.get(title=title)
+    self.assertEqual(tender.include_country_area, True)
+
+
+def test_create_tender_with_distance_location(self):
+    tender_data = TENDER_JSON.copy()
+    title = "Test tally distance_location"
+    tender_data["title"] = title
+    tender_data["extra_data"] = {"source": "TALLY"}
+    response = self.client.post(self.url, data=tender_data, content_type="application/json")
+    self.assertEqual(response.status_code, 201)
+    tender = Tender.objects.get(title=title)
+    self.assertEqual(tender.distance_location, None)
+    # when distance_location is set
+    tender_data["distance_location"] = 60
+    title = "Test tally distance_location is 60"
+    tender_data["title"] = title
+    tender_data["extra_data"] = {"source": "TALLY"}
+    response = self.client.post(self.url, data=tender_data, content_type="application/json")
+    self.assertEqual(response.status_code, 201)
+    tender = Tender.objects.get(title=title)
+    self.assertEqual(tender.distance_location, 60)
+
+
 class TenderCreateApiPartnerTest(TestCase):
     @classmethod
     def setUpTestData(cls):
