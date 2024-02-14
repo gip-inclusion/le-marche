@@ -113,20 +113,22 @@ def send_tender_emails_to_partners(tender: Tender):
     All corresponding partners (PartnerShareTender) will be contacted
     """
     partners = PartnerShareTender.objects.filter_by_tender(tender)
-    email_subject = f"{tender.get_kind_display()} : {tender.title} ({tender.author.company_name})"
+    partners_count = partners.count()
 
-    for partner in partners:
-        send_tender_email_to_partner(email_subject, tender, partner)
+    if partners_count > 0:
+        email_subject = f"{tender.get_kind_display()} : {tender.title} ({tender.author.company_name})"
+        for partner in partners:
+            send_tender_email_to_partner(email_subject, tender, partner)
 
-    # log email batch
-    log_item = {
-        "action": "email_partners_matched",
-        "email_subject": email_subject,
-        "email_count": partners.count(),
-        "email_timestamp": timezone.now().isoformat(),
-    }
-    tender.logs.append(log_item)
-    tender.save()
+            # log email batch
+            log_item = {
+                "action": "email_partners_matched",
+                "email_subject": email_subject,
+                "email_count": partners_count,
+                "email_timestamp": timezone.now().isoformat(),
+            }
+            tender.logs.append(log_item)
+            tender.save()
 
 
 def send_tender_email_to_partner(email_subject: str, tender: Tender, partner: PartnerShareTender):
