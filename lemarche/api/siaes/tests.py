@@ -308,50 +308,51 @@ class SiaeRetrieveBySiretApiTest(TestCase):
 
     def test_should_return_404_if_siret_malformed(self):
         # anonymous user
-        for siret in ["123", "123123123123456"]:
+        for siret in ["123", "123123123123456", "123 123 123 12345"]:
             url = reverse("api:siae-retrieve-by-siret", args=[siret])
             response = self.client.get(url)
-            self.assertEqual(response.status_code, 404)
+            self.assertEqual(response.status_code, 400)
 
-    def test_should_return_404_if_siret_known_but_with_spaces(self):
+    def test_should_return_empty_list_if_siret_unknown(self):
         # anonymous user
-        url = reverse("api:siae-retrieve-by-siret", args=["123 123 123 12345"])
+        url = reverse("api:siae-retrieve-by-siret", args=["44444444444444"])
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        # self.assertEqual(type(response.data), list)
+        self.assertEqual(len(response.data), 0)
 
-    def test_should_return_siae_if_siret_known(self):
+    def test_should_return_siae_list_if_siret_known(self):
         # anonymous user
         url = reverse("api:siae-retrieve-by-siret", args=["12312312312345"])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        # self.assertEqual(type(response.data), dict)
-        self.assertEqual(response.data["siret"], "12312312312345")
-        self.assertEqual(response.data["slug"], "une-structure-38")
-        self.assertTrue("sectors" not in response.data)
-
-    def test_should_return_detailed_siae_object_to_authenticated_user(self):
-        url = reverse("api:siae-retrieve-by-siret", args=["12312312312345"]) + "?token=admin"
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["siret"], "12312312312345")
-        self.assertEqual(response.data["slug"], "une-structure-38")
-        self.assertTrue("sectors" in response.data)
-
-    def test_should_return_siae_list_if_siret_known_and_duplicate(self):
-        # anonymous user
+        # self.assertEqual(type(response.data), list)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["siret"], "12312312312345")
+        self.assertEqual(response.data[0]["slug"], "une-structure-38")
+        self.assertTrue("sectors" not in response.data[0])
         url = reverse("api:siae-retrieve-by-siret", args=["22222222233333"])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         # self.assertEqual(type(response.data), list)
+        self.assertEqual(len(response.data), 2)
         self.assertEqual(response.data[0]["siret"], "22222222233333")
         self.assertEqual(response.data[1]["siret"], "22222222233333")
         self.assertTrue("sectors" not in response.data[0])
-
-    def test_should_return_siae_detailed_list_if_siret_known_and_duplicate(self):
+        # authenticated user
+        url = reverse("api:siae-retrieve-by-siret", args=["12312312312345"]) + "?token=admin"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # self.assertEqual(type(response.data), list)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["siret"], "12312312312345")
+        self.assertEqual(response.data[0]["slug"], "une-structure-38")
+        self.assertTrue("sectors" in response.data[0])
         url = reverse("api:siae-retrieve-by-siret", args=["22222222233333"]) + "?token=admin"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         # self.assertEqual(type(response.data), list)
+        self.assertEqual(len(response.data), 2)
         self.assertEqual(response.data[0]["siret"], "22222222233333")
         self.assertEqual(response.data[1]["siret"], "22222222233333")
         self.assertTrue("sectors" in response.data[0])
