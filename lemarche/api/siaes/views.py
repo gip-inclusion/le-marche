@@ -1,4 +1,4 @@
-from django.http import Http404, HttpResponseBadRequest
+from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import mixins, viewsets
@@ -109,14 +109,10 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         Note : le siret n'est pas nécessairement unique, il peut y avoir plusieurs structures retournées.<br /><br />
         <i>Un <strong>token</strong> est nécessaire pour l'accès complet à cette ressource.</i>
         """
+        if len(siret) != 14:
+            return HttpResponseBadRequest("siret must be 14 caracters long")
         queryset = self.get_queryset().prefetch_many_to_one().filter(siret=siret)
-        queryset_count = queryset.count()
-        if queryset_count == 0:
-            raise Http404
-        elif queryset_count == 1:
-            return self._retrieve_return(request, queryset.first(), format)
-        else:
-            return self._list_return(request, queryset, format)
+        return self._list_return(request, queryset, format)
 
     def _retrieve_return(self, request, queryset, format):
         token = request.GET.get("token", None)
