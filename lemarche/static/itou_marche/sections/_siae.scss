@@ -294,6 +294,27 @@
 	}
 }
 
+
+$super-badge-color: #ffbe18;
+
+.super-badge-card {
+	border: 1px solid $super-badge-color;
+}
+.super-badge-badge {
+	padding: 2px 6px;
+	background: linear-gradient(0deg, #fff7e0, #fff7e0), linear-gradient(0deg, $super-badge-color, $super-badge-color);
+	border: 1px solid $super-badge-color;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 20px;
+	letter-spacing: 0px;
+	text-align: left;
+}
+
+.super-badge-tab {
+	border-color: $super-badge-color !important;
+}
+
 // TODO: integrate to the theme
 $purple-marche: #6C38D9;
 

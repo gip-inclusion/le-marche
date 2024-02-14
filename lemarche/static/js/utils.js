@@ -20,7 +20,20 @@ window.addEventListener('DOMContentLoaded', function () {
         location.href = "mailto:?" + rot13(this.dataset['nextUrl']);
     });
 
-    initModalMessages()
+    initModalMessages();
+
+    $('.s-tabs-01__nav .nav-item').on('click', function (event) {
+        event.preventDefault()
+        let tabContent = this.parentElement.parentElement.querySelector(".tab-content");
+        let hasSuperBadgeTab = this.children[0].classList.contains("super-badge-tab");
+
+        if (hasSuperBadgeTab) {
+            tabContent.classList.add("super-badge-tab");
+        } else {
+            tabContent.classList.remove("super-badge-tab");
+        }
+        $(this).tab('show')
+    })
 });
 
 let toggleRequiredClasses = (toggle, element) => {

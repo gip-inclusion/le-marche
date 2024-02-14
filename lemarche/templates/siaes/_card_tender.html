@@ -1,6 +1,6 @@
 {% load static %}
 
-<div class="card c-card c-card--marche siae-card">
+<div class="card c-card siae-card super-esi-card {% if siae.super_badge %}super-badge-card{% endif %}">
     <div class="card-header">
         <div class="row">
             <div class="col-auto">
@@ -12,6 +12,12 @@
             </div>
             <div class="col">
                 <h2 class="h4 mb-0">{{ siae.name_display }}</h2>
+                {% if siae.super_badge %}
+                    <span class="badge badge-base rounded-pill super-badge-badge text-primary mt-2 font-weight-bold">
+                        <i class="ri-award-fill"></i>
+                        Super prestataire
+                    </span>
+                {% endif %}
             </div>
         </div>
     </div>

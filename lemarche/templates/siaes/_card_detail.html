@@ -1,6 +1,6 @@
 {% load static %}
 
-<div class="card c-card c-card--hovershadow siae-card">
+<div class="card c-card c-card--hovershadow siae-card {% if siae.super_badge %}super-badge-card{% endif %}">
     <div class="card-header">
         <div class="row">
             <div class="col-auto">
@@ -13,11 +13,16 @@
             <div class="col">
                 <div class="row">
                     <div class="col-sm-12">
-                        <h1 class="h2 mb-2">
+                        <h1 class="h2 mb-0">
                             {{ siae.name_display }}
-                            <br />
-                            <small>(Dernière activité il y a {{ siae.latest_activity_at|timesince }})</small>
                         </h1>
+                        {% if siae.super_badge %}
+                            <span class="badge badge-base rounded-pill super-badge-badge text-primary mt-2 font-weight-bold">
+                                <i class="ri-award-fill"></i>
+                                Super prestataire
+                            </span>
+                        {% endif %}
+                        <p class="mt-3 mb-1 font-italic">(Dernière activité il y a {{ siae.latest_activity_at|timesince }})</p>
                         {% if user.is_authenticated %}
                             {% if siae.in_user_favorite_list_count_annotated %}
                                 <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_remove_modal" title="Dans votre liste d'achat">
