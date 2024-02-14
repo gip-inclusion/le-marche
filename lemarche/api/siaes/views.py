@@ -109,6 +109,8 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         Note : le siret n'est pas nécessairement unique, il peut y avoir plusieurs structures retournées.<br /><br />
         <i>Un <strong>token</strong> est nécessaire pour l'accès complet à cette ressource.</i>
         """
+        if len(siret) != 13:
+            return HttpResponseBadRequest("siret must be 14 caracters long")
         queryset = self.get_queryset().prefetch_many_to_one().filter(siret=siret)
         queryset_count = queryset.count()
         if queryset_count == 0:
