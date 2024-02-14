@@ -27,3 +27,18 @@
         transform: rotate(360deg);
     }
 }
+
+.tooltip-inner {
+    max-width: 50em;
+    padding: 3px 8px;
+    background-color: #fff;
+    color: #000;
+    text-align: left;
+    border: 1px solid #cccdd7;
+    border-radius: 0.25rem;
+}
+
+.icon-success {
+    color: $green;
+    font-weight: bold;
+}

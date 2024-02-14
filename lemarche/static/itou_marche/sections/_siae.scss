@@ -255,7 +255,9 @@
 
 .siae-card {
 	margin-bottom: 1.5rem;
-
+	&[data-url]{
+		cursor: pointer;
+	};
 	.sc-profile-type,
 	.sc-profile-sectors {
 		span.ml-1 {
@@ -309,6 +311,10 @@ $super-badge-color: #ffbe18;
 	line-height: 20px;
 	letter-spacing: 0px;
 	text-align: left;
+
+	&:hover {
+		cursor: help;
+	}
 }
 
 .super-badge-tab {

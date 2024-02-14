@@ -22,6 +22,26 @@ window.addEventListener('DOMContentLoaded', function () {
 
     initModalMessages();
 
+    $('.super-badge-badge').each(function (element) {
+        $(this).tooltip(
+            {
+                html: true,
+                placement: "bottom",
+                title: $('#tooltip-super-badge').html()
+            });
+    });
+
+    document.querySelectorAll('.siae-card[data-url]').forEach(function (card) {
+        card.addEventListener('click', function (event) {
+            if (event.target.className == 'ri-star-line ri-xl') {
+                // manage case of favorites
+                event.preventDefault()
+            }
+            else if (this.dataset.url) window.open(this.dataset.url, '_blank');
+
+        });
+    });
+
     $('.s-tabs-01__nav .nav-item').on('click', function (event) {
         event.preventDefault()
         let tabContent = this.parentElement.parentElement.querySelector(".tab-content");
