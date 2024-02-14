@@ -34,6 +34,8 @@ class TenderSerializer(serializers.ModelSerializer):
             "presta_type",
             "location",
             "is_country_area",
+            "include_country_area",
+            "distance_location",
             # description
             "description",
             "start_working_date",
