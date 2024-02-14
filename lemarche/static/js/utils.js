@@ -31,6 +31,12 @@ window.addEventListener('DOMContentLoaded', function () {
             });
     });
 
+    document.querySelectorAll('.siae-card').forEach(function (card) {
+        card.addEventListener('click', function () {
+            if (this.dataset.url) window.open(this.dataset.url, '_blank');
+        });
+    });
+
     $('.s-tabs-01__nav .nav-item').on('click', function (event) {
         event.preventDefault()
         let tabContent = this.parentElement.parentElement.querySelector(".tab-content");
