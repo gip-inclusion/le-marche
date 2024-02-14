@@ -31,9 +31,14 @@ window.addEventListener('DOMContentLoaded', function () {
             });
     });
 
-    document.querySelectorAll('.siae-card').forEach(function (card) {
-        card.addEventListener('click', function () {
-            if (this.dataset.url) window.open(this.dataset.url, '_blank');
+    document.querySelectorAll('.siae-card[data-url]').forEach(function (card) {
+        card.addEventListener('click', function (event) {
+            if (event.target.className == 'ri-star-line ri-xl') {
+                // manage case of favorites
+                event.preventDefault()
+            }
+            else if (this.dataset.url) window.open(this.dataset.url, '_blank');
+
         });
     });
 

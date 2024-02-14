@@ -255,7 +255,9 @@
 
 .siae-card {
 	margin-bottom: 1.5rem;
-	cursor: pointer;
+	&[data-url]{
+		cursor: pointer;
+	};
 	.sc-profile-type,
 	.sc-profile-sectors {
 		span.ml-1 {
