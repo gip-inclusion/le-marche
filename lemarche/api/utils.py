@@ -39,3 +39,7 @@ def custom_preprocessing_hook(endpoints):
 class BasicChoiceSerializer(serializers.Serializer):
     id = serializers.CharField()
     name = serializers.CharField()
+
+
+class BasicChoiceWithParentSerializer(BasicChoiceSerializer):
+    parent = serializers.CharField()
