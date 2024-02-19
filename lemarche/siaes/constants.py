@@ -25,9 +25,9 @@ KIND_INSERTION_LIST = [k[0] for k in KIND_INSERTION_CHOICES]
 
 KIND_PARENT_HANDICAP_NAME = "Handicap"
 KIND_HANDICAP_CHOICES = (
-    (KIND_EA, "Entreprise adaptée (EA)"),
-    (KIND_EATT, "Entreprise adaptée de travail temporaire (EATT)"),
-    (KIND_ESAT, "Etablissement et service d'aide par le travail (ESAT)"),
+    (KIND_EA, "Entreprise adaptée"),
+    (KIND_EATT, "Entreprise adaptée de travail temporaire"),
+    (KIND_ESAT, "Etablissement et service d'aide par le travail"),
 )
 KIND_HANDICAP_CHOICES_WITH_EXTRA = [(key, f"{value} ({key})") for (key, value) in KIND_HANDICAP_CHOICES]
 KIND_HANDICAP_LIST = [k[0] for k in KIND_HANDICAP_CHOICES]
