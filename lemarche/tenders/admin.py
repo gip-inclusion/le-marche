@@ -296,7 +296,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                 ),
             },
         ),
-        ("Partenaire APProch", {"fields": ("is_partner_approch", "partner_approch_id")}),
+        ("Partenaire APProch", {"classes": ["collapse"], "fields": ("is_partner_approch", "partner_approch_id")}),
         (
             "Structures",
             {
@@ -357,6 +357,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         (
             "Stats",
             {
+                "classes": ["collapse"],
                 "fields": (
                     "siae_list_last_seen_date",
                     "source",
@@ -365,8 +366,8 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                 ),
             },
         ),
-        ("Si importé", {"fields": ("import_raw_object_display",)}),
-        ("Dates", {"fields": ("created_at", "updated_at")}),
+        ("Si importé", {"classes": ["collapse"], "fields": ("import_raw_object_display",)}),
+        ("Dates", {"classes": ["collapse"], "fields": ("created_at", "updated_at")}),
     ]
 
     change_form_template = "tenders/admin_change_form.html"
