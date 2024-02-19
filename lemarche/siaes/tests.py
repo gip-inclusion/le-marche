@@ -89,6 +89,10 @@ class SiaeModelTest(TestCase):
         self.assertEqual(siae_without_brand.name_display, "Ma raison sociale")
         self.assertEqual(siae_with_brand.name_display, "Mon enseigne")
 
+    def test_kind_display(self):
+        self.assertEqual(self.siae_ei.get_kind_display(), "Entreprise d'insertion (EI)")
+        self.assertEqual(self.siae_eatt.get_kind_display(), "Entreprise adaptée de travail temporaire (EATT)")
+
     def test_siret_siren_nic_properties(self):
         # siret_display
         siae_with_siret = SiaeFactory(siret="12312312312345")
