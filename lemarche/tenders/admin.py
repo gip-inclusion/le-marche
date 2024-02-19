@@ -336,12 +336,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         ),
         (
             "Utilité du marché de l'inclusion",
-            {
-                "fields": (
-                    "scale_marche_useless",
-                    "marche_benefits",
-                )
-            },
+            {"fields": ("scale_marche_useless",)},
         ),
         (
             "Status",
@@ -359,6 +354,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             {
                 "classes": ["collapse"],
                 "fields": (
+                    "marche_benefits",
                     "siae_list_last_seen_date",
                     "source",
                     "logs_display",
