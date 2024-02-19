@@ -303,8 +303,8 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                 "fields": (
                     "siae_count_annotated_with_link",
                     "siae_email_send_count_annotated_with_link",
-                    "siae_email_link_click_count_annotated_with_link",
-                    "siae_detail_display_count_annotated_with_link",
+                    # "siae_email_link_click_count_annotated_with_link",
+                    # "siae_detail_display_count_annotated_with_link",
                     "siae_email_link_click_or_detail_display_count_annotated_with_link",
                     "siae_detail_contact_click_count_annotated_with_link",
                     "siae_detail_cocontracting_click_count_annotated_with_link",
