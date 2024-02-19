@@ -32,6 +32,34 @@ def get_perimeter_filter(siae):
     )
 
 
+def find_amount_ranges(amount, operation):
+    """
+    Returns the keys from AMOUNT_RANGE that match a given operation on a specified amount.
+
+    :param amount: The amount to compare against.
+    :param operation: The operation to perform ('lt', 'lte', 'gt', 'gte').
+    :return: A list of matching keys.
+    """
+    amount = int(amount)
+    import ipdb
+
+    ipdb.set_trace()
+    if operation == "lt":
+        return [key for key, value in tender_constants.AMOUNT_RANGE_CHOICE_EXACT.items() if value < amount]
+    elif operation == "lte":
+        return [key for key, value in tender_constants.AMOUNT_RANGE_CHOICE_EXACT.items() if value <= amount]
+    elif operation == "gt":
+        if amount >= 10 * 10**5:
+            return [tender_constants.AMOUNT_RANGE_1000_MORE]
+        return [key for key, value in tender_constants.AMOUNT_RANGE_CHOICE_EXACT.items() if value > amount]
+    elif operation == "gte":
+        if amount >= 10 * 10**5:
+            return [tender_constants.AMOUNT_RANGE_1000_MORE]
+        return [key for key, value in tender_constants.AMOUNT_RANGE_CHOICE_EXACT.items() if value >= amount]
+    else:
+        raise ValueError("Unrecognized operation. Use 'lt', 'lte', 'gt', or 'gte'.")
+
+
 class TenderQuerySet(models.QuerySet):
     def prefetch_many_to_many(self):
         return self.prefetch_related("sectors")  # "perimeters", "siaes", "questions"
@@ -79,6 +107,18 @@ class TenderQuerySet(models.QuerySet):
 
     def has_amount(self):
         return self.filter(Q(amount__isnull=False) | Q(amount_exact__isnull=False))
+
+    def filter_by_amount(self, amount, operation: str = "gte"):
+        amounts_keys = find_amount_ranges(amount=amount, operation=operation)
+        queryset = self.has_amount()
+        if operation == "gte":
+            return queryset.filter(Q(amount__in=amounts_keys) | Q(amount_exact__gte=amount))
+        elif operation == "gt":
+            return queryset.filter(Q(amount__in=amounts_keys) | Q(amount_exact__gt=amount))
+        elif operation == "lte":
+            return queryset.filter(Q(amount__in=amounts_keys) | Q(amount_exact__lte=amount))
+        elif operation == "lt":
+            return queryset.filter(Q(amount__in=amounts_keys) | Q(amount_exact__lt=amount))
 
     def in_perimeters(self, post_code, department, region):
         filters = (

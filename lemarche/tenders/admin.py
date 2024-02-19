@@ -54,9 +54,22 @@ class HasAmountFilter(admin.SimpleListFilter):
         return queryset
 
 
-class AmountFilter(MultiChoice):
-    FILTER_LABEL = Tender._meta.get_field("amount").verbose_name
+class AmountCustomFilter(admin.SimpleListFilter):
+    title = "Montant du besoin"
+    # FILTER_LABEL = Tender._meta.get_field("amount").verbose_name
     BUTTON_LABEL = "Appliquer"
+    parameter_name = "amount"
+
+    def lookups(self, request, model_admin):
+        return (("<10k", "Inférieur (<) à 10k €"), (">=10k", "Supérieur (>=) à 10k €"))
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        amount = 10 * 10**3  # 10k
+        if value == "<10k":
+            return queryset.filter_by_amount(amount, operation="lt")
+        elif value == ">=10k":
+            return queryset.filter_by_amount(amount, operation="gte")
 
 
 class ResponseKindFilter(admin.SimpleListFilter):
@@ -151,7 +164,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         ("scale_marche_useless", ScaleMarcheUselessFilter),
         ("source", SourceFilter),
         HasAmountFilter,
-        ("amount", AmountFilter),
+        AmountCustomFilter,
         "deadline_date",
         "start_working_date",
         ResponseKindFilter,
