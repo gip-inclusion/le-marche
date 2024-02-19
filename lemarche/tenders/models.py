@@ -41,19 +41,20 @@ def find_amount_ranges(amount, operation):
     :return: A list of matching keys.
     """
     amount = int(amount)
-    import ipdb
-
-    ipdb.set_trace()
     if operation == "lt":
+        if amount < tender_constants.AMOUNT_RANGE_CHOICE_EXACT.get(tender_constants.AMOUNT_RANGE_0_1):
+            return [tender_constants.AMOUNT_RANGE_0_1]
         return [key for key, value in tender_constants.AMOUNT_RANGE_CHOICE_EXACT.items() if value < amount]
     elif operation == "lte":
+        if amount <= tender_constants.AMOUNT_RANGE_CHOICE_EXACT.get(tender_constants.AMOUNT_RANGE_0_1):
+            return [tender_constants.AMOUNT_RANGE_0_1]
         return [key for key, value in tender_constants.AMOUNT_RANGE_CHOICE_EXACT.items() if value <= amount]
     elif operation == "gt":
-        if amount >= 10 * 10**5:
+        if amount >= tender_constants.AMOUNT_RANGE_CHOICE_EXACT.get(tender_constants.AMOUNT_RANGE_1000_MORE):
             return [tender_constants.AMOUNT_RANGE_1000_MORE]
         return [key for key, value in tender_constants.AMOUNT_RANGE_CHOICE_EXACT.items() if value > amount]
     elif operation == "gte":
-        if amount >= 10 * 10**5:
+        if amount >= tender_constants.AMOUNT_RANGE_CHOICE_EXACT.get(tender_constants.AMOUNT_RANGE_1000_MORE):
             return [tender_constants.AMOUNT_RANGE_1000_MORE]
         return [key for key, value in tender_constants.AMOUNT_RANGE_CHOICE_EXACT.items() if value >= amount]
     else:

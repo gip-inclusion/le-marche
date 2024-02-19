@@ -1009,7 +1009,6 @@ class FindAmountRangesTests(TestCase):
             tender_constants.AMOUNT_RANGE_750_1000,
             tender_constants.AMOUNT_RANGE_1000_MORE,
         ]
-        print("find_amount_ranges(250000", find_amount_ranges(250000, "gte"))
         self.assertListEqual(find_amount_ranges(250000, "gte"), expected_keys)
 
     def test_lt_operation(self):
@@ -1033,4 +1032,4 @@ class FindAmountRangesTests(TestCase):
 
     def test_no_matching_ranges(self):
         """Test when no ranges match the criteria."""
-        self.assertListEqual(find_amount_ranges(100, "gte"), [tender_constants.AMOUNT_RANGE_0_1])
+        self.assertListEqual(find_amount_ranges(100, "lte"), [tender_constants.AMOUNT_RANGE_0_1])
