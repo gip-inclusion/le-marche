@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 
 from django.core.management.base import BaseCommand
 
-from lemarche.tenders.models import TenderSiae
-from lemarche.www.tenders.tasks import send_tenders_siae_survey
+from lemarche.tenders.models import Tender
+from lemarche.www.tenders.tasks import send_tenders_siaes_survey
 
 
 seven_days_ago = datetime.today().date() - timedelta(days=7)
@@ -32,18 +32,11 @@ class Command(BaseCommand):
         self.stdout.write("Script to send email tender transactioned_question to interested siaes...")
 
         # tender must be sent & start_working_date J+7
-        tendersiae_qs = TenderSiae.objects.filter(
-            tender__first_sent_at__isnull=False, tender__start_working_date=seven_days_ago
-        )
-        # siae must be interested
-        tendersiae_qs = tendersiae_qs.filter(detail_contact_click_date__isnull=False)
-        # siae must not have received the survey yet
-        tendersiae_qs = tendersiae_qs.filter(survey_transactioned_answer=None, survey_transactioned_send_date=None)
+        tender_qs = Tender.objects.sent().filter(start_working_date=seven_days_ago)
 
-        self.stdout.write(f"Found {tendersiae_qs.count()} tendersiaes")
+        self.stdout.write(f"Found {tender_qs.count()} tenders")
 
         if not dry_run:
             email_kind = "transactioned_question_7d"
-            for tendersiae in tendersiae_qs:
-                send_tenders_siae_survey(tendersiae, kind=email_kind)
-            self.stdout.write(f"Sent {tendersiae.count()} {email_kind}")
+            for tender in tender_qs:
+                send_tenders_siaes_survey(tender, kind=email_kind)
