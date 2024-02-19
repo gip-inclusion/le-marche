@@ -22,38 +22,11 @@ window.addEventListener('DOMContentLoaded', function () {
 
     initModalMessages();
 
-    $('.super-badge-badge').each(function (element) {
-        $(this).tooltip(
-            {
-                html: true,
-                placement: "bottom",
-                title: $('#tooltip-super-badge').html()
-            });
+    // reload click events and tooltip after htmx content loading as in semantic search
+    document.addEventListener('htmx:afterSwap', function(event) {
+        initSuperBadges();
     });
-
-    document.querySelectorAll('.siae-card[data-url]').forEach(function (card) {
-        card.addEventListener('click', function (event) {
-            if (event.target.className == 'ri-star-line ri-xl') {
-                // manage case of favorites
-                event.preventDefault()
-            }
-            else if (this.dataset.url) window.open(this.dataset.url, '_blank');
-
-        });
-    });
-
-    $('.s-tabs-01__nav .nav-item').on('click', function (event) {
-        event.preventDefault()
-        let tabContent = this.parentElement.parentElement.querySelector(".tab-content");
-        let hasSuperBadgeTab = this.children[0].classList.contains("super-badge-tab");
-
-        if (hasSuperBadgeTab) {
-            tabContent.classList.add("super-badge-tab");
-        } else {
-            tabContent.classList.remove("super-badge-tab");
-        }
-        $(this).tab('show')
-    })
+    initSuperBadges();
 });
 
 let toggleRequiredClasses = (toggle, element) => {
@@ -84,6 +57,40 @@ const initModalMessages = () => {
     for (var i = 0; i < elements.length; i++) {
         OpenBootstrapModal(elements[i]);
     }
+}
+
+const initSuperBadges = () => {
+    $('.super-badge-badge').each(function (element) {
+        $(this).tooltip(
+            {
+                html: true,
+                placement: "bottom",
+                title: $('#tooltip-super-badge').html()
+            });
+    });
+
+    document.querySelectorAll('.siae-card[data-url]').forEach(function (card) {
+        card.addEventListener('click', function (event) {
+            if (event.target.className == 'ri-star-line ri-xl') {
+                // manage case of favorites
+                event.preventDefault();
+            }
+            else if (this.dataset.url) window.open(this.dataset.url, '_blank');
+
+        });
+    });
+    $('.s-tabs-01__nav .nav-item').on('click', function (event) {
+        event.preventDefault()
+        let tabContent = this.parentElement.parentElement.querySelector(".tab-content");
+        let hasSuperBadgeTab = this.children[0].classList.contains("super-badge-tab");
+
+        if (hasSuperBadgeTab) {
+            tabContent.classList.add("super-badge-tab");
+        } else {
+            tabContent.classList.remove("super-badge-tab");
+        }
+        $(this).tab('show');
+    })
 }
 
 function OpenBootstrapModal(elmt) {
