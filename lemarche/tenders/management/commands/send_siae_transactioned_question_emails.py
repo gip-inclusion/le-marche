@@ -13,9 +13,7 @@ class Command(BaseCommand):
     """
     Daily script to send an email to tender siaes
     Rules
-    - Tender must be "sent"
-    - Siae must be "interested"
-    - Siae must not have received a survey yet
+    - Tender must be "sent" + no info on "transactioned"
     When?
     - J+7 after tender start_working_date
 
@@ -31,8 +29,9 @@ class Command(BaseCommand):
     def handle(self, kind=None, reminder=False, dry_run=False, **options):
         self.stdout.write("Script to send email tender transactioned_question to interested siaes...")
 
-        # tender must be sent & start_working_date J+7
-        tender_qs = Tender.objects.sent().filter(start_working_date=seven_days_ago)
+        # tender must be sent & no info on transaction & start_working_date J+7
+        tender_qs = Tender.objects.sent().filter(siae_transactioned=None)
+        tender_qs = tender_qs.filter(start_working_date=seven_days_ago)
 
         self.stdout.write(f"Found {tender_qs.count()} tenders")
 

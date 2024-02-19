@@ -609,7 +609,7 @@ def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_questio
             # add timestamp
             tendersiae.survey_transactioned_send_date = timezone.now()
 
-            api_mailjet.send_transactional_email_many_recipient_with_template(
+            api_mailjet.send_transactional_email_with_template(
                 template_id=template_id,
                 subject=email_subject,
                 recipient_email=recipient_email,
