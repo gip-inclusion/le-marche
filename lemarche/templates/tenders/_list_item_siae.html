@@ -1,29 +1,30 @@
 {% load static humanize %}
 
-<div class="card c-card c-card--marche c-card--link siae-card" role="button" data-url="{% url 'tenders:detail' tender.slug %}">
+<div class="card c-card c-card--marche c-card--marche-{{ tender.kind|lower }}{% if tender.deadline_date_is_outdated_annotated %} c-card--marche-outdated{% endif %} c-card--link siae-card" role="button" data-url="{% url 'tenders:detail' tender.slug %}">
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
                 <p class="mb-1">
-                    Date de clôture : {{ tender.deadline_date|default:"" }}
                     {% if tender.deadline_date_is_outdated_annotated %}
-                        <span class="badge badge-sm badge-base badge-pill badge-pilotage">Clôturé</span>
+                        <span class="badge badge-sm badge-base badge-pill badge-nuance-08">Clôturé le {{ tender.deadline_date|default:"" }}</span>
+                    {% else %}
+                        <span class="badge badge-base badge-pill mr-1 badge-{{ tender.kind|lower }}">
+                            {% if tender.kind == "PROJ" %}
+                                {{ title_kind_sourcing_siae|default:tender.get_kind_display }}
+                            {% else %}
+                                {{ tender.get_kind_display }}
+                            {% endif %}
+                        </span>
+                        Disponible <strong>jusqu'au : {{ tender.deadline_date|default:"" }}</strong>
                     {% endif %}
                     {% if not tender.tendersiae_set.first.detail_display_date %}
-                        <span class="badge badge-sm badge-pill badge-important">Nouveau</span>
+                        <span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>
                     {% endif %}
-                    <span class="float-right badge badge-base badge-pill badge-emploi">
-                        {% if tender.kind == "PROJ" %}
-                            {{ title_kind_sourcing_siae|default:tender.get_kind_display }}
-                        {% else %}
-                            {{ tender.get_kind_display }}
-                        {% endif %}
-                    </span>
                 </p>
             </div>
         </div>
 
-        <h2 class="py-2">{{ tender.title }}</h2>
+        <h2 class="py-2{% if tender.deadline_date_is_outdated_annotated %} text-nuance-03{% endif %}">{{ tender.title }}</h2>
 
         <hr />
 
