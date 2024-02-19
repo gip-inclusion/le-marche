@@ -766,13 +766,13 @@ class TenderDetailViewTest(TestCase):
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Contraintes techniques spécifiques")
+        self.assertContains(response, "Comment répondre à cette demande ?")
         # tender without constraints: section should be hidden
         tender_2 = TenderFactory(author=self.user_buyer_2, constraints="")
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, "Contraintes techniques spécifiques")
+        self.assertNotContains(response, "Comment répondre à cette demande ?")
 
     def test_tender_amount_display(self):
         # tender with amount + accept_share_amount: section should be visible
