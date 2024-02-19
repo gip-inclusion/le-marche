@@ -18,7 +18,7 @@
                         Disponible <strong>jusqu'au : {{ tender.deadline_date|default:"" }}</strong>
                     {% endif %}
                     {% if not tender.tendersiae_set.first.detail_display_date %}
-                        <span class="float-right badge badge-sm badge-pill badge-communaute">Nouveau</span>
+                        <span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>
                     {% endif %}
                 </p>
             </div>
