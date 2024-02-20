@@ -164,13 +164,13 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     ]
 
     list_filter = [
+        AmountCustomFilter,
         ("kind", KindFilter),
         AuthorKindFilter,
         "status",
         ("scale_marche_useless", ScaleMarcheUselessFilter),
         ("source", SourceFilter),
         HasAmountFilter,
-        AmountCustomFilter,
         "deadline_date",
         "start_working_date",
         ResponseKindFilter,
