@@ -4,7 +4,7 @@ from uuid import uuid4
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import IntegrityError, models, transaction
-from django.db.models import BooleanField, Case, Count, ExpressionWrapper, F, IntegerField, Q, Sum, When
+from django.db.models import BooleanField, Case, Count, ExpressionWrapper, F, IntegerField, Q, Sum, Value, When
 from django.db.models.functions import Greatest
 from django.urls import reverse
 from django.utils import timezone
@@ -107,19 +107,46 @@ class TenderQuerySet(models.QuerySet):
         return self.sent().filter(deadline_date__gte=datetime.today())
 
     def has_amount(self):
-        return self.filter(Q(amount__isnull=False) | Q(amount_exact__isnull=False))
+        return self.filter(Q(amount__isnull=False) | Q(amount_exact__isnull=False)).annotate(
+            has_amount_exact=Case(
+                When(amount_exact__isnull=False, then=Value(True)), default=Value(False), output_field=BooleanField()
+            )
+        )
 
-    def filter_by_amount(self, amount, operation: str = "gte"):
+    def filter_by_amount(self, amount: int, operation: str = "gte"):
+        """
+        Filters records based on a monetary amount with a specified comparison operation.
+        It dynamically selects between filtering on an exact amount (`amount_exact`)
+        or predefined amount ranges when the exact amount is not available for a record.
+
+        Supported operations are 'gte' (>=), 'gt' (>), 'lte' (<=), and 'lt' (<).
+
+        Requires an annotated `has_amount_exact` in the queryset indicating the presence of `amount_exact`.
+
+        Args:
+            amount (int): Amount to filter by, in the smallest currency unit (e.g., cents).
+            operation (str, optional): Comparison operation ('gte', 'gt', 'lte', 'lt'). Defaults to 'gte'.
+
+        Returns:
+            QuerySet: Filtered queryset based on the amount and operation.
+
+        Example:
+            >>> filtered_queryset = MyModel.objects.all().filter_by_amount(5000, 'gte')
+            Filters for records with `amount_exact` >= 5000 or in the matching amount range.
+        """
         amounts_keys = find_amount_ranges(amount=amount, operation=operation)
         queryset = self.has_amount()
-        if operation == "gte":
-            return queryset.filter(Q(amount__in=amounts_keys) | Q(amount_exact__gte=amount))
-        elif operation == "gt":
-            return queryset.filter(Q(amount__in=amounts_keys) | Q(amount_exact__gt=amount))
-        elif operation == "lte":
-            return queryset.filter(Q(amount__in=amounts_keys) | Q(amount_exact__lte=amount))
-        elif operation == "lt":
-            return queryset.filter(Q(amount__in=amounts_keys) | Q(amount_exact__lt=amount))
+        filter_conditions = {
+            "gte": Q(has_amount_exact=True, amount_exact__gte=amount)
+            | Q(has_amount_exact=False, amount__in=amounts_keys),
+            "gt": Q(has_amount_exact=True, amount_exact__gt=amount)
+            | Q(has_amount_exact=False, amount__in=amounts_keys),
+            "lte": Q(has_amount_exact=True, amount_exact__lte=amount)
+            | Q(has_amount_exact=False, amount__in=amounts_keys),
+            "lt": Q(has_amount_exact=True, amount_exact__lt=amount)
+            | Q(has_amount_exact=False, amount__in=amounts_keys),
+        }
+        return queryset.filter(filter_conditions[operation])
 
     def in_perimeters(self, post_code, department, region):
         filters = (
