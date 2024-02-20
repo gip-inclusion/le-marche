@@ -244,7 +244,7 @@ class Tender(models.Model):
         "created_at",
         "updated_at",
     ]
-    FIELDS_STATS = FIELDS_STATS_COUNT + FIELDS_STATS_TIMESTAMPS + []
+    FIELDS_STATS = FIELDS_STATS_COUNT + FIELDS_STATS_TIMESTAMPS + ["marche_benefits"]
     READONLY_FIELDS = FIELDS_SURVEY_TRANSACTIONED + FIELDS_STATS
 
     # used in templates
