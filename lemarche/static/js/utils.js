@@ -82,14 +82,19 @@ const initSuperBadges = () => {
     $('#siaes_tabs .nav-item').on('click', function (event) {
         event.preventDefault()
         let tabContent = this.parentElement.parentElement.querySelector(".tab-content");
-        let hasSuperBadgeTab = this.children[0].classList.contains("super-badge-tab");
+        let childLink = this.children[0];
 
-        if (hasSuperBadgeTab) {
-            tabContent.classList.add("super-badge-tab");
+        if (childLink.classList.contains("nav-link-external")) { //edge case for external links
+            window.location = childLink.href;
         } else {
-            tabContent.classList.remove("super-badge-tab");
+            let hasSuperBadgeTab = childLink.classList.contains("super-badge-tab");
+
+            if (hasSuperBadgeTab) {
+                tabContent.classList.add("super-badge-tab");
+            } else {
+                tabContent.classList.remove("super-badge-tab");
+            }
         }
-        $(this).tab('show');
     })
 }
 
