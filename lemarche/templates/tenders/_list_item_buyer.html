@@ -5,10 +5,7 @@
         <div class="row">
             <div class="col-md-8" style="border-right:1px solid;">
                 <p class="mb-1">
-                    Date de clôture : {{ tender.deadline_date|default:"" }}
-                    {% if tender.deadline_date_is_outdated_annotated %}
-                        <span class="badge badge-sm badge-base badge-pill badge-pilotage">Clôturé</span>
-                    {% endif %}
+                    {% include "tenders/_closed_badge.html" with tender=tender %}
                     {% if tender.is_draft %}
                         <span class="badge badge-sm badge-base badge-pill badge-outline-warning float-right">
                             <i class="ri-draft-fill"></i>Brouillon
