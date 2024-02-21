@@ -1,4 +1,5 @@
 import json
+import locale
 from datetime import timedelta
 from unittest import mock
 
@@ -680,6 +681,12 @@ class TenderDetailViewTest(TestCase):
             detail_display_date=timezone.now(),
             detail_not_interested_click_date=timezone.now(),
         )
+        # set local in french for datetime human dispaly
+        locale.setlocale(locale.LC_TIME, "fr_FR")
+
+    @classmethod
+    def get_closed_verbatim(cls, tender: Tender):
+        return f"{tender.get_kind_display()} clôturé le {tender.deadline_date.strftime('%d %B %Y')}"
 
     def test_anyone_can_view_sent_tenders(self):
         for tender in Tender.objects.all():
@@ -810,12 +817,12 @@ class TenderDetailViewTest(TestCase):
         # tender is not outdated by default
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
-        self.assertNotContains(response, "Clôturé")
+        self.assertNotContains(response, self.get_closed_verbatim(tender=self.tender_1))
         # new tender with outdated deadline_date
         tender_2 = TenderFactory(deadline_date=timezone.now() - timedelta(days=1))
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
         response = self.client.get(url)
-        self.assertContains(response, "Clôturé")
+        self.assertContains(response, self.get_closed_verbatim(tender=tender_2))
 
     def test_tender_author_has_additional_stats(self):
         self.client.force_login(self.user_buyer_1)
@@ -849,7 +856,7 @@ class TenderDetailViewTest(TestCase):
         # anonymous user
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
         response = self.client.get(url)
-        self.assertNotContains(response, "Clôturé")
+        self.assertNotContains(response, self.get_closed_verbatim(tender=self.tender_1))
         self.assertContains(response, "Cet appel d'offres vous intéresse ?")
         self.assertContains(response, "Répondre en co-traitance ?")
         self.assertContains(response, "Cette demande ne vous intéresse pas ?")
@@ -908,7 +915,7 @@ class TenderDetailViewTest(TestCase):
         # anonymous user
         url = reverse("tenders:detail", kwargs={"slug": self.tender_3_response_is_anonymous.slug})
         response = self.client.get(url)
-        self.assertNotContains(response, "Clôturé")
+        self.assertNotContains(response, self.get_closed_verbatim(tender=self.tender_3_response_is_anonymous))
         self.assertContains(response, "Cet appel d'offres vous intéresse ?")
         self.assertContains(response, "Répondre en co-traitance ?")
         self.assertContains(response, "Cette demande ne vous intéresse pas ?")
@@ -970,33 +977,33 @@ class TenderDetailViewTest(TestCase):
         # anonymous user
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
         response = self.client.get(url)
-        self.assertContains(response, "Clôturé")
+        self.assertContains(response, self.get_closed_verbatim(tender=tender_2))
         self.assertNotContains(response, "Répondre à cette opportunité")
         # siae user interested
         self.client.force_login(self.siae_user_1)
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
         response = self.client.get(url)
-        self.assertContains(response, "Clôturé")
+        self.assertContains(response, self.get_closed_verbatim(tender=tender_2))
         self.assertNotContains(response, "Contactez le client dès maintenant")
         self.assertNotContains(response, "Répondre à cette opportunité")
         # siae user not concerned
         self.client.force_login(self.siae_user_6)
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
         response = self.client.get(url)
-        self.assertContains(response, "Clôturé")
+        self.assertContains(response, self.get_closed_verbatim(tender=tender_2))
         self.assertNotContains(response, "Répondre à cette opportunité")
         # siae user without siae
         self.client.force_login(self.siae_user_without_siae)
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
         response = self.client.get(url)
-        self.assertContains(response, "Clôturé")
+        self.assertContains(response, self.get_closed_verbatim(tender=tender_2))
         self.assertNotContains(response, "veuillez d'abord vous")
         self.assertNotContains(response, "Répondre à cette opportunité")
         # author
         self.client.force_login(self.user_buyer_1)
         url = reverse("tenders:detail", kwargs={"slug": tender_2.slug})
         response = self.client.get(url)
-        self.assertContains(response, "Clôturé")
+        self.assertContains(response, self.get_closed_verbatim(tender=tender_2))
         self.assertContains(response, "Coordonnées")
         self.assertNotContains(response, "Contactez le client dès maintenant")
         self.assertNotContains(response, "Répondre à cette opportunité")
