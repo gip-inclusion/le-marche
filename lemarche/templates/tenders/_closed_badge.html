@@ -1,0 +1,3 @@
+<span class="badge badge-xs badge-base badge-pill badge-{{ tender.kind|lower }}">
+    {{ tender_kind_display|default:tender.get_kind_display }} clôturé le {{ tender.deadline_date|default:"" }}
+</span>
