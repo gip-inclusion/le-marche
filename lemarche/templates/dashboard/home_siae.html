@@ -35,7 +35,7 @@
 {% if user.siaeuser_set.count %}
     <section class="s-tabs-01 mb-3 mb-lg-5">
         <div class="s-tabs-01__container container">
-            <div class="s-tabs-01__row row">
+            <div id="siaes_tabs" class="s-tabs-01__row row">
                 <div class="s-tabs-01__col col-12">
                     <ul class="s-tabs-01__nav nav nav-tabs" role="tablist">
                         {% for siaeuser in user.siaeuser_set.all %}
