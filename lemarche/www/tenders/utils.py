@@ -97,3 +97,26 @@ def get_or_create_user(request_user, tender_dict: dict, source=user_constants.SO
         if need_to_be_saved:
             user.save()
     return user
+
+
+def duplicate(tender: Tender) -> Tender:
+    FIELDS_TO_REMOVE = (
+        ["_state"] + ["id", "slug", "siae_transactioned", "extra_data", "import_raw_object"] + Tender.READONLY_FIELDS
+    )
+    FIELDS_TO_KEEP = [field for field in tender.__dict__.keys() if field not in FIELDS_TO_REMOVE]
+    # sectors  # managed post-create
+
+    new_tender_dict = dict()
+    for key in FIELDS_TO_KEEP:
+        new_tender_dict[key] = tender.__dict__[key]
+
+    # overwrite some fields
+    new_tender_dict["status"] = Tender.STATUS_PUBLISHED
+    new_tender_dict["source"] = Tender.SOURCE_STAFF_C4_CREATED
+    new_tender_dict["logs"] = [{"action": "tender_duplicated", "from": tender.id}]
+
+    # create duplicate tender
+    new_tender = Tender.objects.create(**new_tender_dict)
+    new_tender.sectors.set(tender.sectors.all())
+
+    return new_tender
