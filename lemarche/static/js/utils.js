@@ -23,7 +23,7 @@ window.addEventListener('DOMContentLoaded', function () {
     initModalMessages();
 
     // reload click events and tooltip after htmx content loading as in semantic search
-    document.addEventListener('htmx:afterSwap', function(event) {
+    document.addEventListener('htmx:afterSwap', function (event) {
         initSuperBadges();
     });
     initSuperBadges();
@@ -79,17 +79,22 @@ const initSuperBadges = () => {
 
         });
     });
-    $('.s-tabs-01__nav .nav-item').on('click', function (event) {
+    $('#siaes_tabs .nav-item').on('click', function (event) {
         event.preventDefault()
         let tabContent = this.parentElement.parentElement.querySelector(".tab-content");
-        let hasSuperBadgeTab = this.children[0].classList.contains("super-badge-tab");
+        let childLink = this.children[0];
 
-        if (hasSuperBadgeTab) {
-            tabContent.classList.add("super-badge-tab");
+        if (childLink.classList.contains("nav-link-external")) { //edge case for external links
+            window.location = childLink.href;
         } else {
-            tabContent.classList.remove("super-badge-tab");
+            let hasSuperBadgeTab = childLink.classList.contains("super-badge-tab");
+
+            if (hasSuperBadgeTab) {
+                tabContent.classList.add("super-badge-tab");
+            } else {
+                tabContent.classList.remove("super-badge-tab");
+            }
         }
-        $(this).tab('show');
     })
 }
 
