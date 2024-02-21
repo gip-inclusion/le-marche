@@ -35,7 +35,7 @@
 {% if user.siaeuser_set.count %}
     <section class="s-tabs-01 mb-3 mb-lg-5">
         <div class="s-tabs-01__container container">
-            <div class="s-tabs-01__row row">
+            <div id="siaes_tabs" class="s-tabs-01__row row">
                 <div class="s-tabs-01__col col-12">
                     <ul class="s-tabs-01__nav nav nav-tabs" role="tablist">
                         {% for siaeuser in user.siaeuser_set.all %}
@@ -53,7 +53,7 @@
                             </li>
                         {% endfor %}
                         <li class="nav-item" role="presentation">
-                            <a class="nav-link" id="add-siae-btn" href="{% url 'dashboard_siaes:siae_search_by_siret' %}" aria-selected="false">
+                            <a class="nav-link nav-link-external" id="add-siae-btn" href="{% url 'dashboard_siaes:siae_search_by_siret' %}" aria-selected="false">
                                 <i class="ri-add-line"></i>
                                 <span>Ajouter une structure</span>
                             </a>
