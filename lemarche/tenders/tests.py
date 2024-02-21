@@ -24,6 +24,7 @@ from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, 
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import MarcheAdminSite, get_admin_change_view_url
+from lemarche.www.tenders import utils as tender_utils
 
 
 date_tomorrow = timezone.now() + timedelta(days=1)
@@ -971,3 +972,29 @@ class TenderAdminTest(TestCase):
         self.assertTrue(hasattr(tender_response, "siae_count_annotated"))
         self.assertEqual(tender_response.siae_count_annotated, 1)
         self.assertEqual(tender_response.siae_count_annotated, self.tender.tendersiae_set.count())
+
+
+class TenderUtilsTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_siae = UserFactory(kind=User.KIND_SIAE)
+        cls.user_buyer = UserFactory(kind=User.KIND_BUYER)
+        cls.siae_with_tender_1 = SiaeFactory(users=[cls.user_siae])
+        siae_with_tender_2 = SiaeFactory(users=[cls.user_siae])
+        cls.sector = SectorFactory()
+        cls.tender_with_siae = TenderFactory(
+            siaes=[cls.siae_with_tender_1, siae_with_tender_2],
+            sectors=[cls.sector],
+            author=cls.user_buyer,
+            deadline_date=date_tomorrow,
+            status=tender_constants.STATUS_SENT,
+            first_sent_at=timezone.now(),
+        )
+
+    def test_duplicate(self):
+        new_tender = tender_utils.duplicate(self.tender_with_siae)
+        self.assertEqual(self.tender_with_siae.title, new_tender.title)
+        self.assertEqual(self.tender_with_siae.author, new_tender.author)
+        self.assertNotEqual(self.tender_with_siae.status, new_tender.status)
+        self.assertEqual(self.tender_with_siae.sectors.count(), new_tender.sectors.count())
+        self.assertNotEqual(self.tender_with_siae.siaes.count(), new_tender.siaes.count())
