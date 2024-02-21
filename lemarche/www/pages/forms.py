@@ -3,6 +3,7 @@ from django.db.models import Case, Count, F, IntegerField, Sum, When
 
 from lemarche.siaes.models import Siae
 from lemarche.utils.constants import EMPTY_CHOICE
+from lemarche.utils.mtcaptcha import check_captcha_token
 from lemarche.www.siaes.forms import SiaeFilterForm
 
 
@@ -35,6 +36,11 @@ class ContactForm(forms.Form):
     subject = forms.CharField(label="Sujet", max_length=150, required=True)
 
     message = forms.CharField(label="Message", widget=forms.Textarea(attrs={"data-expandable": "true"}), required=True)
+
+    def clean(self):
+        super().clean()
+        if not check_captcha_token(self.data):
+            raise forms.ValidationError("Le code de protection est incorrect. Veuillez réessayer.")
 
 
 class ImpactCalculatorForm(SiaeFilterForm):
