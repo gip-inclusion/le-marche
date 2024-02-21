@@ -100,17 +100,16 @@ def get_or_create_user(request_user, tender_dict: dict, source=user_constants.SO
     return user
 
 
-def duplicate(tender: Tender) -> Tender:
-    FIELDS_TO_REMOVE = (
-        ["_state", "_django_version"]
-        + ["id", "slug", "siae_transactioned", "extra_data", "import_raw_object"]
-        + Tender.READONLY_FIELDS
-    )
-    FIELDS_TO_KEEP = [field for field in tender.__dict__.keys() if field not in FIELDS_TO_REMOVE]
+FIELDS_TO_REMOVE = ["siae_transactioned", "extra_data", "import_raw_object"] + Tender.READONLY_FIELDS
+
+
+def duplicate(tender: Tender, fields_to_remove=FIELDS_TO_REMOVE) -> Tender:
+    fields_to_remove_full = ["_state", "_django_version", "id", "slug"] + fields_to_remove
+    fields_to_keep = [field for field in tender.__dict__.keys() if field not in fields_to_remove_full]
     # sectors  # managed post-create
 
     new_tender_dict = dict()
-    for key in FIELDS_TO_KEEP:
+    for key in fields_to_keep:
         new_tender_dict[key] = tender.__dict__[key]
 
     # overwrite some fields
