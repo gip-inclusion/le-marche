@@ -20,7 +20,7 @@ from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.admin import TenderAdmin
 from lemarche.tenders.factories import PartnerShareTenderFactory, TenderFactory, TenderQuestionFactory
-from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderSiae
+from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderSiae, find_amount_ranges
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import MarcheAdminSite, get_admin_change_view_url
@@ -998,3 +998,39 @@ class TenderUtilsTest(TestCase):
         self.assertNotEqual(self.tender_with_siae.status, new_tender.status)
         self.assertEqual(self.tender_with_siae.sectors.count(), new_tender.sectors.count())
         self.assertNotEqual(self.tender_with_siae.siaes.count(), new_tender.siaes.count())
+
+
+class FindAmountRangesTests(TestCase):
+    def test_gte_operation(self):
+        """Test the 'gte' operation."""
+        expected_keys = [
+            tender_constants.AMOUNT_RANGE_250_500,
+            tender_constants.AMOUNT_RANGE_500_750,
+            tender_constants.AMOUNT_RANGE_750_1000,
+            tender_constants.AMOUNT_RANGE_1000_MORE,
+        ]
+        self.assertListEqual(find_amount_ranges(250000, "gte"), expected_keys)
+
+    def test_lt_operation(self):
+        """Test the 'lt' operation."""
+        expected_keys = [
+            tender_constants.AMOUNT_RANGE_0_1,
+            tender_constants.AMOUNT_RANGE_1_5,
+            tender_constants.AMOUNT_RANGE_5_10,
+        ]
+        self.assertListEqual(find_amount_ranges(10000, "lt"), expected_keys)
+
+    def test_invalid_operation(self):
+        """Test using an invalid operation."""
+        with self.assertRaises(ValueError):
+            find_amount_ranges(5000, "invalid_op")
+
+    def test_edge_case(self):
+        """Test an edge case, such as exactly 1M€ for 'gt' operation."""
+        expected_keys = [tender_constants.AMOUNT_RANGE_1000_MORE]
+        self.assertListEqual(find_amount_ranges(1000000, "gt"), expected_keys)
+
+    def test_no_matching_ranges(self):
+        """Test when no ranges match the criteria."""
+        expected_keys = [tender_constants.AMOUNT_RANGE_0_1]
+        self.assertListEqual(find_amount_ranges(100, "lte"), expected_keys)
