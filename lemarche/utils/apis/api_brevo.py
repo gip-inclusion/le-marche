@@ -75,10 +75,15 @@ def create_company(siae: Siae):
         attributes={
             "id": siae.id,
             "siae": True,
+            "description": siae.description,
             "kind": siae.kind,
             "domain": siae.website,
-            "link_app": get_share_url_object(siae),
-            "link_admin": get_admin_url_object(siae),
+            "contact_email": siae.contact_email,
+            "contact_phone": siae.contact_phone,
+            "logo_url": siae.logo_url,
+            "geo_range": siae.geo_range,
+            "app_url": get_share_url_object(siae),
+            "admin_url": get_admin_url_object(siae),
         },
     )
 
