@@ -4,7 +4,7 @@ from uuid import uuid4
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import IntegrityError, models, transaction
-from django.db.models import BooleanField, Case, Count, ExpressionWrapper, F, IntegerField, Q, Sum, When
+from django.db.models import BooleanField, Case, Count, ExpressionWrapper, F, IntegerField, Q, Sum, Value, When
 from django.db.models.functions import Greatest
 from django.urls import reverse
 from django.utils import timezone
@@ -30,6 +30,35 @@ def get_perimeter_filter(siae):
         | Q(perimeters__insee_code=siae.department)
         | Q(perimeters__name=siae.region)
     )
+
+
+def find_amount_ranges(amount, operation):
+    """
+    Returns the keys from AMOUNT_RANGE that match a given operation on a specified amount.
+
+    :param amount: The amount to compare against.
+    :param operation: The operation to perform ('lt', 'lte', 'gt', 'gte').
+    :return: A list of matching keys.
+    """
+    amount = int(amount)
+    if operation == "lt":
+        if amount < tender_constants.AMOUNT_RANGE_CHOICE_EXACT.get(tender_constants.AMOUNT_RANGE_0_1):
+            return [tender_constants.AMOUNT_RANGE_0_1]
+        return [key for key, value in tender_constants.AMOUNT_RANGE_CHOICE_EXACT.items() if value < amount]
+    elif operation == "lte":
+        if amount <= tender_constants.AMOUNT_RANGE_CHOICE_EXACT.get(tender_constants.AMOUNT_RANGE_0_1):
+            return [tender_constants.AMOUNT_RANGE_0_1]
+        return [key for key, value in tender_constants.AMOUNT_RANGE_CHOICE_EXACT.items() if value <= amount]
+    elif operation == "gt":
+        if amount >= tender_constants.AMOUNT_RANGE_CHOICE_EXACT.get(tender_constants.AMOUNT_RANGE_1000_MORE):
+            return [tender_constants.AMOUNT_RANGE_1000_MORE]
+        return [key for key, value in tender_constants.AMOUNT_RANGE_CHOICE_EXACT.items() if value > amount]
+    elif operation == "gte":
+        if amount >= tender_constants.AMOUNT_RANGE_CHOICE_EXACT.get(tender_constants.AMOUNT_RANGE_1000_MORE):
+            return [tender_constants.AMOUNT_RANGE_1000_MORE]
+        return [key for key, value in tender_constants.AMOUNT_RANGE_CHOICE_EXACT.items() if value >= amount]
+    else:
+        raise ValueError("Unrecognized operation. Use 'lt', 'lte', 'gt', or 'gte'.")
 
 
 class TenderQuerySet(models.QuerySet):
@@ -78,7 +107,46 @@ class TenderQuerySet(models.QuerySet):
         return self.sent().filter(deadline_date__gte=datetime.today())
 
     def has_amount(self):
-        return self.filter(Q(amount__isnull=False) | Q(amount_exact__isnull=False))
+        return self.filter(Q(amount__isnull=False) | Q(amount_exact__isnull=False)).annotate(
+            has_amount_exact=Case(
+                When(amount_exact__isnull=False, then=Value(True)), default=Value(False), output_field=BooleanField()
+            )
+        )
+
+    def filter_by_amount_exact(self, amount: int, operation: str = "gte"):
+        """
+        Filters records based on a monetary amount with a specified comparison operation.
+        It dynamically selects between filtering on an exact amount (`amount_exact`)
+        or predefined amount ranges when the exact amount is not available for a record.
+
+        Supported operations are 'gte' (>=), 'gt' (>), 'lte' (<=), and 'lt' (<).
+
+        Requires an annotated `has_amount_exact` in the queryset indicating the presence of `amount_exact`.
+
+        Args:
+            amount (int): Amount to filter by, in the smallest currency unit (e.g., cents).
+            operation (str, optional): Comparison operation ('gte', 'gt', 'lte', 'lt'). Defaults to 'gte'.
+
+        Returns:
+            QuerySet: Filtered queryset based on the amount and operation.
+
+        Example:
+            >>> filtered_queryset = MyModel.objects.all().filter_by_amount_exact(5000, 'gte')
+            Filters for records with `amount_exact` >= 5000 or in the matching amount range.
+        """
+        amounts_keys = find_amount_ranges(amount=amount, operation=operation)
+        queryset = self.has_amount()
+        filter_conditions = {
+            "gte": Q(has_amount_exact=True, amount_exact__gte=amount)
+            | Q(has_amount_exact=False, amount__in=amounts_keys),
+            "gt": Q(has_amount_exact=True, amount_exact__gt=amount)
+            | Q(has_amount_exact=False, amount__in=amounts_keys),
+            "lte": Q(has_amount_exact=True, amount_exact__lte=amount)
+            | Q(has_amount_exact=False, amount__in=amounts_keys),
+            "lt": Q(has_amount_exact=True, amount_exact__lt=amount)
+            | Q(has_amount_exact=False, amount__in=amounts_keys),
+        }
+        return queryset.filter(filter_conditions[operation])
 
     def in_perimeters(self, post_code, department, region):
         filters = (
@@ -949,7 +1017,7 @@ class PartnerShareTenderQuerySet(models.QuerySet):
     def is_active(self):
         return self.filter(is_active=True)
 
-    def filter_by_amount(self, tender: Tender):
+    def filter_by_amount_exact(self, tender: Tender):
         """
         Return partners with:
         - an empty 'amount_in'
@@ -988,7 +1056,7 @@ class PartnerShareTenderQuerySet(models.QuerySet):
         return self.filter(conditions)
 
     def filter_by_tender(self, tender: Tender):
-        return self.is_active().filter_by_amount(tender).filter_by_perimeter(tender).distinct()
+        return self.is_active().filter_by_amount_exact(tender).filter_by_perimeter(tender).distinct()
 
 
 class PartnerShareTender(models.Model):
