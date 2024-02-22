@@ -8,7 +8,7 @@ from sib_api_v3_sdk.rest import ApiException
 
 from lemarche.siaes.models import Siae
 from lemarche.users.models import User
-from lemarche.utils.urls import get_admin_url_object, get_share_url_object
+from lemarche.utils.urls import get_object_admin_url, get_object_share_url
 
 
 logger = logging.getLogger(__name__)
@@ -82,8 +82,8 @@ def create_company(siae: Siae):
             "contact_phone": siae.contact_phone,
             "logo_url": siae.logo_url,
             "geo_range": siae.geo_range,
-            "app_url": get_share_url_object(siae),
-            "admin_url": get_admin_url_object(siae),
+            "app_url": get_object_share_url(siae),
+            "admin_url": get_object_admin_url(siae),
         },
     )
 
