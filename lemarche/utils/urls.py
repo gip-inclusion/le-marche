@@ -53,7 +53,7 @@ def get_safe_url(request, param_name=None, fallback_url=None, url=None):
     return fallback_url
 
 
-def get_share_url_object(obj: Model):
+def get_object_share_url(obj: Model):
     return f"https://{get_domain_url()}{obj.get_absolute_url()}"
 
 

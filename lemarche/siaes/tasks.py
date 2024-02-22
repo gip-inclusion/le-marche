@@ -7,7 +7,7 @@ from lemarche.users.models import User
 from lemarche.utils.apis import api_mailjet
 from lemarche.utils.apis.geocoding import get_geocoding_data
 from lemarche.utils.emails import whitelist_recipient_list
-from lemarche.utils.urls import get_domain_url, get_share_url_object
+from lemarche.utils.urls import get_domain_url, get_object_share_url
 
 
 @task()
@@ -46,7 +46,7 @@ def send_completion_reminder_email_to_siae(siae):
             variables = {
                 "SIAE_USER_FIRST_NAME": siae_user.first_name,
                 "SIAE_NAME": siae.name_display,
-                "SIAE_URL": get_share_url_object(siae),
+                "SIAE_URL": get_object_share_url(siae),
                 "SIAE_EDIT_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard_siaes:siae_edit_contact', args=[siae.slug])}",  # noqa
             }
 

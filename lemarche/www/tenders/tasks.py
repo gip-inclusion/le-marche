@@ -12,7 +12,7 @@ from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
 from lemarche.utils.apis import api_hubspot, api_mailjet, api_slack
 from lemarche.utils.data import date_to_string
 from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
-from lemarche.utils.urls import get_domain_url, get_object_admin_url, get_share_url_object
+from lemarche.utils.urls import get_domain_url, get_object_admin_url, get_object_share_url
 
 
 logger = logging.getLogger(__name__)
@@ -140,7 +140,7 @@ def send_tender_email_to_partner(email_subject: str, tender: Tender, partner: Pa
             "TENDER_SECTORS": tender.sectors_list_string(),
             "TENDER_PERIMETERS": tender.location_display,
             "TENDER_DEADLINE_DATE": date_to_string(tender.deadline_date),
-            "TENDER_URL": get_share_url_object(tender),
+            "TENDER_URL": get_object_share_url(tender),
         }
 
         api_mailjet.send_transactional_email_many_recipient_with_template(
@@ -189,7 +189,7 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, em
             "TENDER_PERIMETERS": tender.location_display,
             "TENDER_AMOUNT": tender.amount_display,
             "TENDER_DEADLINE_DATE": date_to_string(tender.deadline_date),
-            "TENDER_URL": f"{get_share_url_object(tender)}?siae_id={siae.id}",
+            "TENDER_URL": f"{get_object_share_url(tender)}?siae_id={siae.id}",
         }
 
         api_mailjet.send_transactional_email_with_template(
@@ -267,7 +267,7 @@ def send_tender_contacted_reminder_email_to_siae(
             "TENDER_PERIMETERS": tendersiae.tender.location_display,
             "TENDER_AMOUNT": tendersiae.tender.amount_display,
             "TENDER_DEADLINE_DATE": date_to_string(tendersiae.tender.deadline_date),
-            "TENDER_URL": f"{get_share_url_object(tendersiae.tender)}?siae_id={tendersiae.siae.id}&mtm_campaign=relance-esi-contactees",  # noqa
+            "TENDER_URL": f"{get_object_share_url(tendersiae.tender)}?siae_id={tendersiae.siae.id}&mtm_campaign=relance-esi-contactees",  # noqa
         }
 
         api_mailjet.send_transactional_email_with_template(
@@ -341,7 +341,7 @@ def send_tender_interested_reminder_email_to_siae(
             "TENDER_PERIMETERS": tendersiae.tender.location_display,
             "TENDER_AMOUNT": tendersiae.tender.amount_display,
             "TENDER_DEADLINE_DATE": date_to_string(tendersiae.tender.deadline_date),
-            "TENDER_URL": f"{get_share_url_object(tendersiae.tender)}?siae_id={tendersiae.siae.id}&mtm_campaign=relance-esi-interessees",  # noqa
+            "TENDER_URL": f"{get_object_share_url(tendersiae.tender)}?siae_id={tendersiae.siae.id}&mtm_campaign=relance-esi-interessees",  # noqa
         }
 
         api_mailjet.send_transactional_email_with_template(
@@ -386,7 +386,7 @@ def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes
             "TENDER_AMOUNT": tender.amount_display,
             "TENDER_DEADLINE_DATE": date_to_string(tender.deadline_date),
             "TENDER_NB_MATCH": nb_matched_siaes,
-            "TENDER_URL": get_share_url_object(tender),
+            "TENDER_URL": get_object_share_url(tender),
         }
 
         api_mailjet.send_transactional_email_with_template(
@@ -456,7 +456,7 @@ def send_siae_interested_email_to_author(tender: Tender):
                 variables = {
                     "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
                     "TENDER_TITLE": tender.title,
-                    "TENDER_SIAE_INTERESTED_LIST_URL": f"{get_share_url_object(tender)}/prestataires",  # noqa
+                    "TENDER_SIAE_INTERESTED_LIST_URL": f"{get_object_share_url(tender)}/prestataires",  # noqa
                 }
 
                 api_mailjet.send_transactional_email_with_template(
