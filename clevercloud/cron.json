@@ -17,6 +17,5 @@
     "30 8 * * * $ROOT/clevercloud/tenders_send_author_transactioned_question_emails.sh",
     "0 9 * * * $ROOT/clevercloud/tenders_send_siae_contacted_reminder_emails.sh",
     "10 9 * * * $ROOT/clevercloud/tenders_send_siae_interested_reminder_emails.sh",
-    "20 9 * * * $ROOT/clevercloud/tenders_send_author_incremental.sh",
     "*/5 8-15 * * 1-5 $ROOT/clevercloud/tenders_send_validated.sh"
 ]
