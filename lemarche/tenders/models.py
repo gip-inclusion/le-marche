@@ -183,6 +183,9 @@ class TenderQuerySet(models.QuerySet):
             "deadline_date_is_outdated_annotated", "deadline_date", "-updated_at"
         )
 
+    def order_by_last_published(self):
+        return self.order_by("-published_at", "-updated_at")
+
     def with_question_stats(self):
         return self.annotate(question_count_annotated=Count("questions", distinct=True))
 
