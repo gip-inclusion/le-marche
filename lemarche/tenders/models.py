@@ -948,6 +948,7 @@ class TenderSiae(models.Model):
         default=tender_constants.TENDER_SIAE_SOURCE_EMAIL,
     )
     found_with_ai = models.BooleanField("Trouvé par l'IA", default=False)
+    is_deleted_by_siae = models.BooleanField("Supprimé par l'utilisateur ?", default=False, db_index=True)
 
     # stats: relation
     email_send_date = models.DateTimeField("Date d'envoi de l'e-mail", blank=True, null=True)
