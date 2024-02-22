@@ -433,7 +433,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     title_with_link.admin_order_field = "title"
 
     def amount_display(self, tender):
-        return f"{tender.amount_exact} €" if tender.amount_exact else tender.get_amount_display()
+        return tender.amount_admin_display
 
     amount_display.short_description = "Budget"
     amount_display.admin_order_field = "amount_exact"

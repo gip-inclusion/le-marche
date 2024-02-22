@@ -661,6 +661,10 @@ class Tender(models.Model):
         else:
             return "Non renseigné"
 
+    @cached_property
+    def amount_admin_display(self) -> str:
+        return f"{self.amount_exact} €" if self.amount_exact else self.get_amount_display()
+
     def questions_list(self):
         return list(self.questions.values("id", "text"))
 
