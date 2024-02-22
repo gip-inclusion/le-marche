@@ -57,7 +57,7 @@ def get_share_url_object(obj: Model):
     return f"https://{get_domain_url()}{obj.get_absolute_url()}"
 
 
-def get_admin_url_object(obj: Model):
+def get_object_admin_url(obj: Model):
     admin_url = reverse_lazy(f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change", args=[obj.id])
     return f"https://{get_domain_url()}{admin_url}"
 

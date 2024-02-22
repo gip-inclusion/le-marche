@@ -12,7 +12,7 @@ from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
 from lemarche.utils.apis import api_hubspot, api_mailjet, api_slack
 from lemarche.utils.data import date_to_string
 from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
-from lemarche.utils.urls import get_admin_url_object, get_domain_url, get_share_url_object
+from lemarche.utils.urls import get_domain_url, get_object_admin_url, get_share_url_object
 
 
 logger = logging.getLogger(__name__)
@@ -481,7 +481,7 @@ def send_siae_interested_email_to_author(tender: Tender):
 
 def notify_admin_tender_created(tender: Tender):
     email_subject = f"Marché de l'inclusion : dépôt de besoin, ajout d'un nouveau {tender.get_kind_display()}"
-    tender_admin_url = get_admin_url_object(tender)
+    tender_admin_url = get_object_admin_url(tender)
     email_body = render_to_string(
         "tenders/create_notification_email_admin_body.txt",
         {
@@ -558,7 +558,7 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
 
 def notify_admin_siae_wants_cocontracting(tender: Tender, siae: Siae):
     email_subject = f"Marché de l'inclusion : la structure {siae.name} souhaite répondre en co-traitance"
-    tender_admin_url = get_admin_url_object(tender)
+    tender_admin_url = get_object_admin_url(tender)
     email_body = render_to_string(
         "tenders/cocontracting_notification_email_admin_body.txt",
         {
