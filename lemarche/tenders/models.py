@@ -240,6 +240,7 @@ class Tender(models.Model):
         "published_at",
         "validated_at",
         "first_sent_at",
+        "last_sent_at",
         "siae_list_last_seen_date",
         "created_at",
         "updated_at",
