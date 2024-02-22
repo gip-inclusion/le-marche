@@ -29,8 +29,10 @@ from lemarche.www.tenders import utils as tender_utils
 
 date_tomorrow = timezone.now() + timedelta(days=1)
 date_next_week = timezone.now() + timedelta(days=7)
+date_today = timezone.now() + timedelta(days=7)
 date_two_days_ago = timezone.now() - timedelta(days=2)
 date_last_week = timezone.now() - timedelta(days=7)
+date_last_month = timezone.now() - timedelta(days=30)
 
 
 class TenderModelTest(TestCase):
@@ -418,9 +420,9 @@ class TenderModelQuerysetTest(TestCase):
 class TenderModelQuerysetOrderTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.tender_1 = TenderFactory(deadline_date=date_next_week)
-        cls.tender_2 = TenderFactory(deadline_date=date_tomorrow)
-        cls.tender_3 = TenderFactory(deadline_date=date_last_week)
+        cls.tender_1 = TenderFactory(deadline_date=date_next_week, published_at=date_today)
+        cls.tender_2 = TenderFactory(deadline_date=date_tomorrow, published_at=date_two_days_ago)
+        cls.tender_3 = TenderFactory(deadline_date=date_last_week, published_at=date_last_month)
 
     def test_default_order(self):
         tender_queryset = Tender.objects.all()
@@ -431,6 +433,12 @@ class TenderModelQuerysetOrderTest(TestCase):
         tender_queryset = Tender.objects.order_by_deadline_date()
         self.assertEqual(tender_queryset.count(), 3)
         self.assertEqual(tender_queryset.first().id, self.tender_2.id)
+        self.assertEqual(tender_queryset.last().id, self.tender_3.id)
+
+    def test_order_by_last_published(self):
+        tender_queryset = Tender.objects.order_by_last_published()
+        self.assertEqual(tender_queryset.count(), 3)
+        self.assertEqual(tender_queryset.first().id, self.tender_1.id)
         self.assertEqual(tender_queryset.last().id, self.tender_3.id)
 
 
