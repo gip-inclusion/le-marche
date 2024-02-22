@@ -56,8 +56,6 @@ class HasAmountFilter(admin.SimpleListFilter):
 
 class AmountCustomFilter(admin.SimpleListFilter):
     title = "Montant du besoin"
-    # FILTER_LABEL = Tender._meta.get_field("amount").verbose_name
-    BUTTON_LABEL = "Appliquer"
     parameter_name = "amount"
 
     def lookups(self, request, model_admin):
@@ -71,11 +69,13 @@ class AmountCustomFilter(admin.SimpleListFilter):
         value = self.value()
         amount_10k = 10 * 10**3  # 10k
         if value == "<10k":
-            return queryset.filter_by_amount(amount_10k, operation="lt")
+            return queryset.filter_by_amount_exact(amount_10k, operation="lt")
         elif value == "5k-10k":
-            return queryset.filter_by_amount(amount_10k, operation="lte").filter_by_amount(amount_10k, operation="gte")
+            return queryset.filter_by_amount_exact(amount_10k, operation="lte").filter_by_amount_exact(
+                amount_10k, operation="gte"
+            )
         elif value == ">=10k":
-            return queryset.filter_by_amount(amount_10k, operation="gte")
+            return queryset.filter_by_amount_exact(amount_10k, operation="gte")
 
 
 class ResponseKindFilter(admin.SimpleListFilter):

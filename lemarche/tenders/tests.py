@@ -1032,4 +1032,5 @@ class FindAmountRangesTests(TestCase):
 
     def test_no_matching_ranges(self):
         """Test when no ranges match the criteria."""
-        self.assertListEqual(find_amount_ranges(100, "lte"), [tender_constants.AMOUNT_RANGE_0_1])
+        expected_keys = [tender_constants.AMOUNT_RANGE_0_1]
+        self.assertListEqual(find_amount_ranges(100, "lte"), expected_keys)

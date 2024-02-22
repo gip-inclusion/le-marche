@@ -113,7 +113,7 @@ class TenderQuerySet(models.QuerySet):
             )
         )
 
-    def filter_by_amount(self, amount: int, operation: str = "gte"):
+    def filter_by_amount_exact(self, amount: int, operation: str = "gte"):
         """
         Filters records based on a monetary amount with a specified comparison operation.
         It dynamically selects between filtering on an exact amount (`amount_exact`)
@@ -131,7 +131,7 @@ class TenderQuerySet(models.QuerySet):
             QuerySet: Filtered queryset based on the amount and operation.
 
         Example:
-            >>> filtered_queryset = MyModel.objects.all().filter_by_amount(5000, 'gte')
+            >>> filtered_queryset = MyModel.objects.all().filter_by_amount_exact(5000, 'gte')
             Filters for records with `amount_exact` >= 5000 or in the matching amount range.
         """
         amounts_keys = find_amount_ranges(amount=amount, operation=operation)
@@ -1017,7 +1017,7 @@ class PartnerShareTenderQuerySet(models.QuerySet):
     def is_active(self):
         return self.filter(is_active=True)
 
-    def filter_by_amount(self, tender: Tender):
+    def filter_by_amount_exact(self, tender: Tender):
         """
         Return partners with:
         - an empty 'amount_in'
@@ -1056,7 +1056,7 @@ class PartnerShareTenderQuerySet(models.QuerySet):
         return self.filter(conditions)
 
     def filter_by_tender(self, tender: Tender):
-        return self.is_active().filter_by_amount(tender).filter_by_perimeter(tender).distinct()
+        return self.is_active().filter_by_amount_exact(tender).filter_by_perimeter(tender).distinct()
 
 
 class PartnerShareTender(models.Model):
