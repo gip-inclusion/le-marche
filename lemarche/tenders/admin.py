@@ -132,28 +132,16 @@ class TenderForm(forms.ModelForm):
 @admin.register(Tender, site=admin_site)
 class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     list_display = [
-        "id",
-        "status",
-        "is_validated_or_sent",
-        "title",
-        "author_with_link",
-        "author_kind_detail",
+        "title_with_link",
         "kind",
-        "deadline_date",
-        "start_working_date",
-        "siae_count_annotated_with_link",
-        # "siae_email_send_count_annotated_with_link",
-        "siae_email_link_click_count_annotated_with_link",
-        "siae_detail_display_count_annotated_with_link",
-        # "siae_email_link_click_or_detail_display_count_annotated_with_link",
-        "siae_detail_contact_click_count_annotated_with_link",
-        "siae_detail_cocontracting_click_count_annotated_with_link",
-        "siae_transactioned",
-        "created_at",
-        "validated_at",
-        "first_sent_at",
-        "limit_send_to_siae_batch",
-        "limit_nb_siae_interested",
+        "amount_display",
+        "location_in_list",
+        "distance_location_in_list",
+        "deadline_date_in_list",
+        "start_working_date_in_list",
+        "siae_count_annotated_with_link_in_list",
+        "siae_detail_contact_click_count_annotated_with_link_in_list",
+        "is_validated_or_sent",
     ]
 
     list_filter = [
@@ -426,7 +414,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         return tender.is_validated_or_sent
 
     is_validated_or_sent.boolean = True
-    is_validated_or_sent.short_description = "Validé / Envoyé"
+    is_validated_or_sent.short_description = "Valider"
 
     def question_count_with_link(self, tender):
         url = reverse("admin:tenders_tenderquestion_changelist") + f"?tender__in={tender.id}"
@@ -434,12 +422,42 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     question_count_with_link.short_description = TenderQuestion._meta.verbose_name_plural
 
-    def author_with_link(self, tender):
-        url = reverse("admin:users_user_change", args=[tender.author_id])
-        return format_html(f'<a href="{url}">{tender.author}</a>')
+    def title_with_link(self, tender):
+        url = reverse("admin:tenders_tender_change", args=[tender.id])
+        return format_html(f'<a href="{url}">{tender.title}</a>')
 
-    author_with_link.short_description = "Client"
-    author_with_link.admin_order_field = "author"
+    title_with_link.short_description = "Titre du besoin"
+    title_with_link.admin_order_field = "title"
+
+    def amount_display(self, tender):
+        return tender.amount_admin_display
+
+    amount_display.short_description = "Budget"
+    amount_display.admin_order_field = "amount_exact"
+
+    def location_in_list(self, tender):
+        return tender.location
+
+    location_in_list.short_description = "Lieu d'inter"
+    location_in_list.admin_order_field = "location"
+
+    def distance_location_in_list(self, tender):
+        return tender.distance_location
+
+    distance_location_in_list.short_description = "Dist. d'inter"
+    distance_location_in_list.admin_order_field = "distance_location"
+
+    def deadline_date_in_list(self, tender):
+        return tender.deadline_date
+
+    deadline_date_in_list.short_description = "Clôture"
+    deadline_date_in_list.admin_order_field = "deadline_date"
+
+    def start_working_date_in_list(self, tender):
+        return tender.start_working_date
+
+    start_working_date_in_list.short_description = "Début"
+    start_working_date_in_list.admin_order_field = "start_working_date"
 
     def author_kind_detail(self, tender):
         return tender.author.kind_detail_display
@@ -459,7 +477,12 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         return format_html(f'<a href="{url}">{getattr(tender, "siae_count_annotated", 0)}</a>')
 
     siae_count_annotated_with_link.short_description = "S. concernées"
-    siae_count_annotated_with_link.admin_order_field = "siae_count_annotated"
+
+    def siae_count_annotated_with_link_in_list(self, tender):
+        return self.siae_count_annotated_with_link(tender)
+
+    siae_count_annotated_with_link_in_list.short_description = "S. concer."
+    siae_count_annotated_with_link_in_list.admin_order_field = "siae_count_annotated"
 
     def siae_ai_count_annotated_with_link(self, tender):
         url = (
@@ -523,7 +546,14 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         return format_html(f'<a href="{url}">{getattr(tender, "siae_detail_contact_click_count_annotated", 0)}</a>')
 
     siae_detail_contact_click_count_annotated_with_link.short_description = "S. intéressées"
-    siae_detail_contact_click_count_annotated_with_link.admin_order_field = "siae_detail_contact_click_count_annotated"
+
+    def siae_detail_contact_click_count_annotated_with_link_in_list(self, tender):
+        return self.siae_detail_contact_click_count_annotated_with_link(tender)
+
+    siae_detail_contact_click_count_annotated_with_link_in_list.short_description = "S. intér."
+    siae_detail_contact_click_count_annotated_with_link_in_list.admin_order_field = (
+        "siae_detail_contact_click_count_annotated"
+    )
 
     def siae_detail_cocontracting_click_count_annotated_with_link(self, tender):
         url = (
