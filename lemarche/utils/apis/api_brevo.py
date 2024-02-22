@@ -6,7 +6,9 @@ from django.conf import settings
 from huey.contrib.djhuey import task
 from sib_api_v3_sdk.rest import ApiException
 
+from lemarche.siaes.models import Siae
 from lemarche.users.models import User
+from lemarche.utils.urls import get_admin_url_object, get_share_url_object
 
 
 logger = logging.getLogger(__name__)
@@ -63,6 +65,28 @@ def remove_contact_from_list(user: User, list_id: int):
             logger.info("calling Brevo->ContactsApi->remove_contact_from_list: contact doesn't exist in this list")
         else:
             logger.error("Exception when calling Brevo->ContactsApi->remove_contact_from_list: %s\n" % e)
+
+
+def create_company(siae: Siae):
+    api_client = get_api_client()
+    api_instance = sib_api_v3_sdk.CompaniesApi(api_client)
+    new_company = sib_api_v3_sdk.Body(
+        name=siae.name,
+        attributes={
+            "id": siae.id,
+            "siae": True,
+            "kind": siae.kind,
+            "domain": siae.website,
+            "link_app": get_share_url_object(siae),
+            "link_admin": get_admin_url_object(siae),
+        },
+    )
+
+    try:
+        api_response = api_instance.companies_post(new_company)
+        logger.info("Succes Brevo->CompaniesApi->create_company: %s\n" % api_response)
+    except ApiException as e:
+        logger.error("Exception when calling Brevo->CompaniesApi->create_company: %s\n" % e)
 
 
 @task()
