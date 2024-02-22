@@ -1,5 +1,6 @@
 from django.conf import settings
 
+from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderQuestion
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
@@ -97,3 +98,27 @@ def get_or_create_user(request_user, tender_dict: dict, source=user_constants.SO
         if need_to_be_saved:
             user.save()
     return user
+
+
+FIELDS_TO_REMOVE = ["siae_transactioned", "extra_data", "import_raw_object"] + Tender.READONLY_FIELDS
+
+
+def duplicate(tender: Tender, fields_to_remove=FIELDS_TO_REMOVE) -> Tender:
+    fields_to_remove_full = ["_state", "_django_version", "id", "slug"] + fields_to_remove
+    fields_to_keep = [field for field in tender.__dict__.keys() if field not in fields_to_remove_full]
+    # sectors  # managed post-create
+
+    new_tender_dict = dict()
+    for key in fields_to_keep:
+        new_tender_dict[key] = tender.__dict__[key]
+
+    # overwrite some fields
+    new_tender_dict["status"] = tender_constants.STATUS_PUBLISHED
+    new_tender_dict["source"] = tender_constants.SOURCE_STAFF_C4_CREATED
+    new_tender_dict["logs"] = [{"action": "tender_duplicated", "from": tender.id}]
+
+    # create duplicate tender
+    new_tender = Tender.objects.create(**new_tender_dict)
+    new_tender.sectors.set(tender.sectors.all())
+
+    return new_tender
