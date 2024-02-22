@@ -74,6 +74,8 @@
                         {% bootstrap_field form.subject form_group_class="form-group" %}
                         {% bootstrap_field form.message form_group_class="form-group" %}
 
+                        <div class="mtcaptcha"></div>
+
                         <hr>
                         <div class="row">
                             <div class="col-12">
@@ -93,4 +95,17 @@
 		</div>
 	</div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+{% if MTCAPTCHA_PUBLIC_KEY %}
+    <script type="text/javascript">
+        // add captcha to contact form
+        var mtcaptchaConfig = {
+            "sitekey": "{{ MTCAPTCHA_PUBLIC_KEY }}",
+            "lang": "fr"
+        };
+    </script>
+    <script type="text/javascript" src="{% static 'js/mtcaptcha.js' %}"></script>
+{% endif %}
 {% endblock %}
