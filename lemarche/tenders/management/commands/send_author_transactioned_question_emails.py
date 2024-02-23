@@ -41,7 +41,7 @@ class Command(BaseCommand):
         if kind:
             tender_qs = tender_qs.filter(kind=kind)
         if reminder:
-            tender_qs = tender_qs.exclude(survey_transactioned_send_date=None).filter(start_working_date=one_day_ago)
+            tender_qs = tender_qs.filter(start_working_date=one_day_ago)
         else:
             tender_qs = tender_qs.filter(survey_transactioned_send_date=None).filter(deadline_date=seven_days_ago)
 
