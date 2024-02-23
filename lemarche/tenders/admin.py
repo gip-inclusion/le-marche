@@ -201,6 +201,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "siae_email_send_count_annotated_with_link",
         "siae_email_link_click_count_annotated_with_link",
         "siae_detail_display_count_annotated_with_link",
+        "siae_email_link_click_or_detail_display_count_annotated",
         "siae_email_link_click_or_detail_display_count_annotated_with_link",
         "siae_detail_contact_click_count_annotated_with_link",
         "siae_detail_cocontracting_click_count_annotated_with_link",
@@ -310,9 +311,10 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                 "fields": (
                     "siae_count_annotated_with_link",
                     "siae_email_send_count_annotated_with_link",
-                    # "siae_email_link_click_count_annotated_with_link",
-                    # "siae_detail_display_count_annotated_with_link",
-                    "siae_email_link_click_or_detail_display_count_annotated_with_link",
+                    "siae_email_link_click_count_annotated_with_link",
+                    "siae_detail_display_count_annotated_with_link",
+                    "siae_email_link_click_or_detail_display_count_annotated",
+                    # "siae_email_link_click_or_detail_display_count_annotated_with_link",
                     "siae_detail_contact_click_count_annotated_with_link",
                     "siae_detail_cocontracting_click_count_annotated_with_link",
                     "siae_detail_not_interested_click_count_annotated_with_link",
@@ -543,7 +545,16 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     siae_detail_display_count_annotated_with_link.short_description = "S. vues"
     siae_detail_display_count_annotated_with_link.admin_order_field = "siae_detail_display_count_annotated"
 
+    def siae_email_link_click_or_detail_display_count_annotated(self, tender):
+        return getattr(tender, "siae_email_link_click_or_detail_display_count_annotated", 0)
+
+    siae_email_link_click_or_detail_display_count_annotated.short_description = "S. cliquées ou vues"
+    siae_email_link_click_or_detail_display_count_annotated.admin_order_field = (
+        "siae_email_link_click_or_detail_display_count_annotated"
+    )
+
     def siae_email_link_click_or_detail_display_count_annotated_with_link(self, tender):
+        # TO FIX (if possible ?): wrong url, should be link_click OR detail_display
         url = (
             reverse("admin:siaes_siae_changelist")
             + f"?tenders__in={tender.id}&tendersiae__detail_display_date__isnull=False"
