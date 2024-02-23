@@ -556,6 +556,79 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
         tender.save()
 
 
+def send_tenders_siaes_survey(tender: Tender, kind="transactioned_question_7d"):
+    tendersiae_qs = TenderSiae.objects.filter(tender=tender)
+
+    if kind == "transactioned_question_7d":
+        # siae must be interested
+        tendersiae_qs = tendersiae_qs.filter(detail_contact_click_date__isnull=False)
+        # siae must not have received the survey yet
+        tendersiae_qs = tendersiae_qs.filter(survey_transactioned_answer=None, survey_transactioned_send_date=None)
+
+        for tendersiae in tendersiae_qs:
+            send_tenders_siae_survey(tendersiae, kind=kind)
+
+        # log email batch
+        log_item = {
+            "action": f"email_siaes_{kind}_sent",
+            "siae_count": tendersiae_qs.count(),
+            "email_timestamp": timezone.now().isoformat(),
+        }
+        tender.logs.append(log_item)
+        tender.save()
+
+
+def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_question_7d"):
+    email_subject = f"Suite à notre demande de {tendersiae.tender.title}"
+    template_id = settings.MAILJET_TENDERS_SIAE_TRANSACTIONED_QUESTION_7D_TEMPLATE_ID
+
+    for user in tendersiae.siae.users.all():
+        recipient_list = whitelist_recipient_list([user.email])
+        if recipient_list:
+            recipient_email = recipient_list[0] if recipient_list else ""
+            recipient_name = user.full_name
+
+            variables = {
+                "TENDER_AUTHOR_FULL_NAME": tendersiae.tender.contact_full_name,
+                "tender_author_company": tendersiae.tender.author.company_name,
+                "TENDER_TITLE": tendersiae.tender.title,
+                "TENDER_VALIDATE_AT": tendersiae.tender.first_sent_at.strftime("%d %B %Y"),  # TODO: TENDER_SENT_AT?
+                "TENDER_KIND": tendersiae.tender.get_kind_display(),
+            }
+
+            user_sesame_query_string = sesame_get_query_string(user)  # TODO: sesame scope parameter
+            answer_url_with_sesame_token = (
+                f"https://{get_domain_url()}"
+                + reverse(
+                    "tenders:detail-siae-survey-transactioned", args=[tendersiae.tender.slug, tendersiae.siae.slug]
+                )
+                + user_sesame_query_string
+            )
+            variables["ANSWER_YES_URL"] = answer_url_with_sesame_token + "&answer=True"
+            variables["ANSWER_NO_URL"] = answer_url_with_sesame_token + "&answer=False"
+            # add timestamp
+            tendersiae.survey_transactioned_send_date = timezone.now()
+
+            api_mailjet.send_transactional_email_with_template(
+                template_id=template_id,
+                subject=email_subject,
+                recipient_email=recipient_email,
+                recipient_name=recipient_name,
+                variables=variables,
+            )
+
+            # log email
+            log_item = {
+                "action": f"email_{kind}_sent",
+                "email_to": recipient_list,
+                "email_subject": email_subject,
+                # "email_body": email_body,
+                "email_timestamp": timezone.now().isoformat(),
+            }
+            tendersiae.logs.append(log_item)
+            tendersiae.save()
+
+
 def notify_admin_siae_wants_cocontracting(tender: Tender, siae: Siae):
     email_subject = f"Marché de l'inclusion : la structure {siae.name} souhaite répondre en co-traitance"
     tender_admin_url = get_object_admin_url(tender)

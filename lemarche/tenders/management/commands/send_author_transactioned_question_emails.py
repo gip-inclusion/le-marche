@@ -35,7 +35,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, kind=None, reminder=False, dry_run=False, **options):
-        self.stdout.write("Script to send email transactioned_question for tenders...")
+        self.stdout.write("Script to send email tender transactioned_question to authors...")
 
         tender_qs = Tender.objects.sent().filter(survey_transactioned_answer=None)
         if kind:
