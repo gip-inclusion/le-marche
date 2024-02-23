@@ -22,6 +22,7 @@ from lemarche.users.models import User
 from lemarche.utils.apis import api_elasticsearch
 from lemarche.utils.constants import ADMIN_FIELD_HELP_TEXT, MARCHE_BENEFIT_CHOICES, RECALCULATED_FIELD_HELP_TEXT
 from lemarche.utils.fields import ChoiceArrayField
+from lemarche.utils.urls import get_object_admin_url
 
 
 def get_perimeter_filter(siae):
@@ -845,6 +846,9 @@ class Tender(models.Model):
 
     def get_absolute_url(self):
         return reverse("tenders:detail", kwargs={"slug": self.slug})
+
+    def get_admin_url(self):
+        return get_object_admin_url(self)
 
     def set_hubspot_id(self, hubspot_deal_id, with_save=True):
         self.extra_data.update({"hubspot_deal_id": hubspot_deal_id})

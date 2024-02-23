@@ -1,7 +1,7 @@
 import xlwt
 
 from lemarche.siaes.models import Siae
-from lemarche.utils.urls import get_share_url_object
+from lemarche.utils.urls import get_object_share_url
 
 
 SIAE_FIELDS_TO_EXPORT = [
@@ -73,7 +73,7 @@ def generate_siae_row(siae: Siae, siae_field_list):
         elif field_name == "Inscrite":
             col_value = "Oui" if siae.user_count else "Non"
         elif field_name == "Lien vers le marché":
-            col_value = f"{get_share_url_object(siae)}?cmp=export-excel"
+            col_value = f"{get_object_share_url(siae)}?cmp=export-excel"
         else:
             col_value = getattr(siae, field_name, "")
         siae_row.append(col_value)
