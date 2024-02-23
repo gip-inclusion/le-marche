@@ -6,7 +6,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("siaes", "0066_siae_search_vector"),
+        ("siaes", "0072_siae_search_vector"),
     ]
 
     operations = [

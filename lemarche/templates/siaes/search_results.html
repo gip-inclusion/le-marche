@@ -201,9 +201,9 @@
                             </form>
                         </div>
                         <div class="tab-pane fade"
-                             id="search-full-text-1"
+                             id="search-text"
                              role="tabpanel"
-                             aria-labelledby="search-full-text-1-tab">
+                             aria-labelledby="search-text-tab">
                             <form method="GET"
                                   action="{% url 'siae:search_results' %}"
                                   id="text-search-form"
@@ -430,6 +430,9 @@ document.addEventListener("DOMContentLoaded", function() {
     // first tab
     let searchFilterTab = document.getElementById('search-filter-tab');
     let searchFilterContent = document.getElementById('search-filter');
+    // second tab
+    let searchTextTab = document.getElementById('search-text-tab');
+    let searchTextContent = document.getElementById('search-text');
     // third tab
     let searchFullText1Tab = document.getElementById('search-full-text-1-tab');
     let searchFullText1Content = document.getElementById('search-full-text-1');

@@ -21,7 +21,7 @@ class Command(BaseCommand):
         self.stdout_info("Reseting search_vector field...")
         progress = 0
         for i in range(0, SIAE_COUNT, RANGE_STEP):  # to avoid memory issues
-            for siae in Siae.objects.prefetch_related("sectors", "offers", "labels").all()[i, i + RANGE_STEP]:
+            for siae in Siae.objects.prefetch_related("sectors", "offers", "labels").all()[i : i + RANGE_STEP]:  # noqa
                 siae_search_vector = (
                     SearchVector(
                         Value(siae.name, output_field=models.CharField()),

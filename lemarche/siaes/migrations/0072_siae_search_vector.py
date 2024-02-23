@@ -6,7 +6,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("siaes", "0065_siae_legal_form"),
+        ("siaes", "0071_alter_siae_kind"),
     ]
 
     operations = [
