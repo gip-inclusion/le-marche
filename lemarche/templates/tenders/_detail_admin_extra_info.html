@@ -44,7 +44,7 @@
                     </li>
                 {% endif %}
                 <li>
-                    <a href="{% url 'admin:tenders_tender_change' tender.id %}" target="_blank" id="tender-detail-admin-btn" class="btn btn-sm btn-outline-primary btn-ico">
+                    <a href="{{ siae.get_admin_url }}" target="_blank" id="tender-detail-admin-btn" class="btn btn-sm btn-outline-primary btn-ico">
                         <span>
                             Lien vers l'admin&nbsp;
                             <i class="ri-external-link-line" aria-hidden="true"></i>

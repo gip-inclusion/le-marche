@@ -26,6 +26,7 @@ from lemarche.users.models import User
 from lemarche.utils.constants import DEPARTMENTS_PRETTY, RECALCULATED_FIELD_HELP_TEXT, REGIONS_PRETTY
 from lemarche.utils.data import round_by_base
 from lemarche.utils.fields import ChoiceArrayField
+from lemarche.utils.urls import get_object_admin_url
 
 
 def get_region_filter(perimeter):
@@ -1229,6 +1230,9 @@ class Siae(models.Model):
 
     def get_absolute_url(self):
         return reverse("siae:detail", kwargs={"slug": self.slug})
+
+    def get_admin_url(self):
+        return get_object_admin_url(self)
 
     def set_super_badge(self):
         update_fields_list = ["super_badge"]
