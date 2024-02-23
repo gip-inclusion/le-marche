@@ -33,24 +33,48 @@
                     <ul class="s-tabs-01__nav nav nav-tabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <a class="nav-link"
-                               id="search-filter-tab"
-                               data-toggle="tab"
-                               href="#search-filter"
-                               role="tab"
-                               aria-controls="search-filter"
-                               aria-selected="false">
+                                id="search-filter-tab"
+                                data-toggle="tab"
+                                href="#search-filter"
+                                role="tab"
+                                aria-controls="search-filter"
+                                aria-selected="false">
                                 Recherche par critères
                             </a>
                         </li>
                         <li class="nav-item" role="presentation">
                             <a class="nav-link"
-                               id="search-text-tab"
-                               data-toggle="tab"
-                               href="#search-text"
-                               role="tab"
-                               aria-controls="search-text"
-                               aria-selected="false">
+                                id="search-text-tab"
+                                data-toggle="tab"
+                                href="#search-text"
+                                role="tab"
+                                aria-controls="search-text"
+                                aria-selected="false">
                                 Recherche par SIRET / nom
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link"
+                                id="search-full-text-1-tab"
+                                data-toggle="tab"
+                                href="#search-full-text-1"
+                                role="tab"
+                                aria-controls="search-full-text-1"
+                                aria-selected="false">
+                                Recherche texte (v1)
+                                <span class="badge badge-sm badge-pill badge-important ml-2">Beta</span>
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link"
+                               id="search-full-text-2-tab"
+                               data-toggle="tab"
+                               href="#search-full-text-2"
+                               role="tab"
+                               aria-controls="search-full-text-2"
+                               aria-selected="false">
+                                Recherche texte (v2)
+                                <span class="badge badge-sm badge-pill badge-important ml-2">Beta</span>
                             </a>
                         </li>
                         <li class="nav-item" role="presentation">
@@ -205,6 +229,76 @@
                             </form>
                         </div>
                         <div class="tab-pane fade"
+                            id="search-full-text-1"
+                            role="tabpanel"
+                            aria-labelledby="search-full-text-1-tab">
+                            <form method="GET"
+                                  action="{% url 'siae:search_results' %}"
+                                  id="text-search-form"
+                                  aria-label="Rechercher des prestataires de l'insertion et du handicap"
+                                  role="search">
+                                {% bootstrap_form_errors form type="all" %}
+                                <div class="row">
+                                    <div class="col-12 col-lg-8">
+                                        <div class="row">
+                                            <div class="col-12">{% bootstrap_field form.search_1 %}</div>
+                                        </div>
+                                        <div class="alert alert-info">
+                                            <ul class="mb-0">
+                                                <li>Recherche effectuée en "live" (indéxation des champs à chaque recherche)</li>
+                                                <li>Recherche effectuée sur les champs suivants : name, brand, siret, address (city, department, region), kind, description, sectors (name), offers (name), labels (name)</li>
+                                                <li>Recherche "AND" ; pas de poids ; filtre rank > 0.01</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-lg-4">
+                                        <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
+                                        <button id="text-search-submit"
+                                                class="btn btn-primary btn-block btn-ico"
+                                                type="submit">
+                                            <span>Rechercher</span>
+                                            <i class="ri-search-line ri-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade"
+                             id="search-full-text-2"
+                             role="tabpanel"
+                             aria-labelledby="search-full-text-2-tab">
+                            <form method="GET"
+                                  action="{% url 'siae:search_results' %}"
+                                  id="text-search-form"
+                                  aria-label="Rechercher des prestataires de l'insertion et du handicap"
+                                  role="search">
+                                {% bootstrap_form_errors form type="all" %}
+                                <div class="row">
+                                    <div class="col-12 col-lg-8">
+                                        <div class="row">
+                                            <div class="col-12">{% bootstrap_field form.search_2 %}</div>
+                                        </div>
+                                        <div class="alert alert-info">
+                                            <ul class="mb-0">
+                                                <li>Recherche effectuée sur le champ "search_vector" (indéxé de façon asynchrone)</li>
+                                                <li>Recherche effectuée sur les champs suivants : name, brand, siret,  address (city, department, region), kind, description, sectors (name), offers (name), labels (name)</li>
+                                                <li>Recherche "OR" ; pas de poids ; filtre rank > 0.01</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-lg-4">
+                                        <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
+                                        <button id="text-search-submit"
+                                                class="btn btn-primary btn-block btn-ico"
+                                                type="submit">
+                                            <span>Rechercher</span>
+                                            <i class="ri-search-line ri-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade"
                             id="search-semantic"
                             role="tabpanel"
                             aria-labelledby="search-semantic-tab">
@@ -333,14 +427,21 @@ document.addEventListener('alpine:init', function() {
 });
 
 document.addEventListener("DOMContentLoaded", function() {
+    // first tab
     let searchFilterTab = document.getElementById('search-filter-tab');
     let searchFilterContent = document.getElementById('search-filter');
-    // let perimetersInput = document.getElementById('id_perimeters');
-    // let sectorsInput = document.getElementById('id_sectors');  // id_sectors_multiselect
-
+    // second tab
     let searchTextTab = document.getElementById('search-text-tab');
     let searchTextContent = document.getElementById('search-text');
-    let qInput = document.getElementById('id_q');
+    // third tab
+    let searchFullText1Tab = document.getElementById('search-full-text-1-tab');
+    let searchFullText1Content = document.getElementById('search-full-text-1');
+    let search1Input = document.getElementById('id_search_1');
+    // fourth tab
+    let searchFullText2Tab = document.getElementById('search-full-text-2-tab');
+    let searchFullText2Content = document.getElementById('search-full-text-2');
+    let search2Input = document.getElementById('id_search_2');
+    // other form elements
     let resetBtn = document.getElementById('form-reset-btn');
 
     if (resetBtn) {
@@ -348,9 +449,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // init search form
-    if (qInput.value) {
-        showSearchTextForm(searchTextTab, searchTextContent);
-        // hideSearchFilterForm(searchFilterTab, searchFilterContent);
+    if (search1Input.value) {
+        showSearchTextForm(searchFullText1Tab, searchFullText1Content);
+    } else if (search2Input.value) {
+        showSearchTextForm(searchFullText2Tab, searchFullText2Content);
     } else {
         showSearchFilterForm(searchFilterTab, searchFilterContent);
     }

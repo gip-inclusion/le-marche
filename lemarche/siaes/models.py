@@ -5,7 +5,8 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
-from django.contrib.postgres.search import TrigramSimilarity  # SearchVector
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector, SearchVectorField, TrigramSimilarity
 from django.db import IntegrityError, models, transaction
 from django.db.models import BooleanField, Case, CharField, Count, F, IntegerField, PositiveIntegerField, Q, Sum, When
 from django.db.models.functions import Greatest, Round
@@ -187,17 +188,47 @@ class SiaeQuerySet(models.QuerySet):
     def filter_siret_startswith(self, siret):
         return self.filter(siret__startswith=siret)
 
-    def filter_full_text(self, full_text_string):
+    def filter_on_siret_or_name_or_brand(self, search_string):
         # Simple method 1: SearchVectors
         #     return self.annotate(
         #         search=SearchVector("name", config="french") + SearchVector("brand", config="french")
-        #     ).filter(Q(search=full_text_string) | Q(siret__startswith=full_text_string))
+        #     ).filter(Q(search=search_string) | Q(siret__startswith=search_string))
         # Simple method 2: TrigramSimilarity
         return self.annotate(
-            similarity=Greatest(
-                TrigramSimilarity("name", full_text_string), TrigramSimilarity("brand", full_text_string)
-            )
-        ).filter(Q(similarity__gt=0.2) | Q(siret__startswith=full_text_string))
+            similarity=Greatest(TrigramSimilarity("name", search_string), TrigramSimilarity("brand", search_string))
+        ).filter(Q(similarity__gt=0.2) | Q(siret__startswith=search_string))
+
+    def filter_full_text(self, search_string):
+        search_vector = (
+            SearchVector("name")
+            + SearchVector("brand")
+            + SearchVector("siret")
+            + SearchVector("city")
+            + SearchVector("department")
+            + SearchVector("region")
+            + SearchVector("kind")
+            + SearchVector("description", config="french")
+            + SearchVector("sectors__name", config="french")
+            + SearchVector("offers__name", config="french")
+            + SearchVector("labels__name", config="french")
+        )
+        search_query = SearchQuery(search_string, config="french")
+
+        return self.annotate(rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.01)
+
+    def filter_full_text_on_search_vector_field(self, search_string):
+        # SearchQuery uses 'AND' by default. Change to 'OR' (and add full search_string as default)
+        search_string_list = search_string.split(" ")
+        filters = SearchQuery(search_string, config="french")
+        if len(search_string_list) > 1:
+            for search_term in search_string_list:
+                filters |= SearchQuery(search_term, config="french")
+
+        return (
+            self.filter(search_vector=filters)
+            .annotate(rank=SearchRank(F("search_vector"), filters))
+            .filter(rank__gte=0.01)
+        )
 
     def filter_sectors(self, sectors):
         return self.filter(sectors__in=sectors)
@@ -814,6 +845,8 @@ class Siae(models.Model):
     c1_last_sync_date = models.DateTimeField(blank=True, null=True)
     c1_sync_skip = models.BooleanField(blank=False, null=False, default=False)
 
+    search_vector = SearchVectorField("Search vector", null=True)
+
     # admin
     notes = GenericRelation("notes.Note", related_query_name="siae")
 
@@ -863,6 +896,9 @@ class Siae(models.Model):
     class Meta:
         verbose_name = "Structure"
         verbose_name_plural = "Structures"
+        indexes = [
+            GinIndex(fields=["search_vector"]),
+        ]
         ordering = ["name"]
 
     def __str__(self):

@@ -65,6 +65,16 @@ class SiaeFilterForm(forms.Form):
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "Votre recherche…"}),
     )
+    search_1 = forms.CharField(
+        label="Recherche via mots-clés ou une phrase (v1)",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Votre recherche…"}),
+    )
+    search_2 = forms.CharField(
+        label="Recherche via mots-clés ou une phrase (v2)",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Votre recherche…"}),
+    )
     sectors = GroupedModelMultipleChoiceField(
         label=Sector._meta.verbose_name_plural,
         queryset=Sector.objects.form_filter_queryset(),
@@ -203,12 +213,21 @@ class SiaeFilterForm(forms.Form):
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
 
-        full_text_string = self.cleaned_data.get("q", None)
-        if full_text_string:
-            # case where a siret search was done, strip all spaces
-            if full_text_string.replace(" ", "").isdigit():
-                full_text_string = full_text_string.replace(" ", "")
-            qs = qs.filter_full_text(full_text_string)
+        # "q": search by siret or name
+        q_string = self.cleaned_data.get("q", None)
+        if q_string:
+            # if the user is searching by siret, strip all spaces
+            if q_string.replace(" ", "").isdigit():
+                q_string = q_string.replace(" ", "")
+            qs = qs.filter_on_siret_or_name_or_brand(q_string)
+
+        # "search": full text search
+        search_1_string = self.cleaned_data.get("search_1", None)
+        if search_1_string:
+            qs = qs.filter_full_text(search_1_string)
+        search_2_string = self.cleaned_data.get("search_2", None)
+        if search_2_string:
+            qs = qs.filter_full_text_on_search_vector_field(search_2_string)
 
         sectors = self.cleaned_data.get("sectors", None)
         if sectors:
@@ -372,9 +391,14 @@ class SiaeFilterForm(forms.Form):
                 )
                 ORDER_BY_FIELDS = ["distance"] + ORDER_BY_FIELDS
 
-        full_text_string = self.cleaned_data.get("q", None)
-        if full_text_string:
+        q_string = self.cleaned_data.get("q", None)
+        if q_string:
             ORDER_BY_FIELDS = ["-similarity"]
+
+        search_1_string = self.cleaned_data.get("search_1", None)
+        search_2_string = self.cleaned_data.get("search_2", None)
+        if search_1_string or search_2_string:
+            ORDER_BY_FIELDS = ["-rank"]
 
         # final ordering
         qs = qs.order_by(*ORDER_BY_FIELDS)
