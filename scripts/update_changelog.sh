@@ -4,7 +4,7 @@
 # Will fetch all commits between two tags
 #
 # Usage:
-# ./scripts/update_change_log.sh
+# ./scripts/update_changelog.sh
 #
 # Other helpful commands:
 # git log --since "2023-03-10" --until "2023-03-31" --pretty=format:"%s"
