@@ -35,6 +35,14 @@
                         <i class="ri-add-fill ri-lg mr-2"></i>Publier un besoin d'achat
                     </a>
                 </div>
+            {% else %}
+                <div class="col-12 col-md-auto">
+                    <form method="GET" action="">
+                        <div class="form-group">
+                            {{ filter_form.kind }}
+                        </div>
+                    </form>
+                </div>
             {% endif %}
         </div>
         <div class="row">
@@ -110,7 +118,7 @@
                     {% include "includes/_pagination.html" %}
                     {% if not tenders %}
                         <p class="text-muted">
-                            Désolé, nous n'avons aucune opportunités à vous présenter pour le moment.
+                            Désolé, nous n'avons aucune opportunité à vous présenter pour le moment.
                             <br />
                             Si ce n'est pas déjà fait, pensez à <a href="{% url 'dashboard:home' %}">compléter votre fiche structure</a>
                             pour optimiser vos chances de trouver de nouvelles opportunités.
