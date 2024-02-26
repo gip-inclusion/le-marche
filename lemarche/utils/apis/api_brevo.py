@@ -46,9 +46,9 @@ def create_contact(user: User, list_id: int):
 
     try:
         api_response = api_instance.create_contact(new_contact)
-        logger.info("Succes Brevo->ContactsApi->create_contact: %s\n" % api_response)
+        logger.info("Success Brevo->ContactsApi->create_contact: %s" % api_response)
     except ApiException as e:
-        logger.error("Exception when calling Brevo->ContactsApi->create_contact: %s\n" % e)
+        logger.error("Exception when calling Brevo->ContactsApi->create_contact: %s" % e)
 
 
 def remove_contact_from_list(user: User, list_id: int):
@@ -58,22 +58,28 @@ def remove_contact_from_list(user: User, list_id: int):
 
     try:
         api_response = api_instance.remove_contact_from_list(list_id=list_id, contact_emails=contact_emails)
-        logger.info("Succes Brevo->ContactsApi->remove_contact_from_list: %s\n" % api_response)
+        logger.info("Success Brevo->ContactsApi->remove_contact_from_list: %s" % api_response)
     except ApiException as e:
         error_body = json.loads(e.body)
         if error_body.get("message") == "Contact already removed from list and/or does not exist":
             logger.info("calling Brevo->ContactsApi->remove_contact_from_list: contact doesn't exist in this list")
         else:
-            logger.error("Exception when calling Brevo->ContactsApi->remove_contact_from_list: %s\n" % e)
+            logger.error("Exception when calling Brevo->ContactsApi->remove_contact_from_list: %s" % e)
 
 
-def create_company(siae: Siae):
+def create_or_update_company(siae: Siae):
+    """
+    Brevo docs:
+    - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CompaniesApi.md
+    - API: https://developers.brevo.com/reference/get_companies
+    """
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.CompaniesApi(api_client)
-    new_company = sib_api_v3_sdk.Body(
+
+    siae_brevo_company_body = sib_api_v3_sdk.Body(
         name=siae.name,
         attributes={
-            "id": siae.id,
+            "app_id": siae.id,
             "siae": True,
             "description": siae.description,
             "kind": siae.kind,
@@ -83,15 +89,26 @@ def create_company(siae: Siae):
             "logo_url": siae.logo_url,
             "geo_range": siae.geo_range,
             "app_url": get_object_share_url(siae),
-            "admin_url": get_object_admin_url(siae),
+            "app_admin_url": get_object_admin_url(siae),
         },
     )
 
-    try:
-        api_response = api_instance.companies_post(new_company)
-        logger.info("Succes Brevo->CompaniesApi->create_company: %s\n" % api_response)
-    except ApiException as e:
-        logger.error("Exception when calling Brevo->CompaniesApi->create_company: %s\n" % e)
+    if siae.brevo_company_id:  # update
+        try:
+            api_response = api_instance.companies_id_patch(siae.brevo_company_id, siae_brevo_company_body)
+            logger.info("Success Brevo->CompaniesApi->create_or_update_company (update): %s" % api_response)
+            # api_response: {'attributes': None, 'id': None, 'linked_contacts_ids': None, 'linked_deals_ids': None}
+        except ApiException as e:
+            logger.error("Exception when calling Brevo->CompaniesApi->create_or_update_company (update): %s" % e)
+    else:  # create
+        try:
+            api_response = api_instance.companies_post(siae_brevo_company_body)
+            logger.info("Success Brevo->CompaniesApi->create_or_update_company (create): %s" % api_response)
+            print(api_response.id)
+            # api_response: {'id': '<brevo_company_id>'}
+            siae.set_brevo_id(api_response.id)
+        except ApiException as e:
+            logger.error("Exception when calling Brevo->CompaniesApi->create_or_update_company (create): %s" % e)
 
 
 @task()
@@ -120,6 +137,6 @@ def send_transactional_email_with_template(
             logger.info("Brevo: send transactional email with template")
             return response
         except ApiException as e:
-            print("Exception when calling SMTPApi->send_transac_email: %s\n" % e)
+            print("Exception when calling SMTPApi->send_transac_email: %s" % e)
     else:
         logger.info("Brevo: email not sent (DEV or TEST environment detected)")
