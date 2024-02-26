@@ -853,6 +853,7 @@ class Siae(models.Model):
     source = models.CharField(
         max_length=20, choices=siae_constants.SOURCE_CHOICES, default=siae_constants.SOURCE_STAFF_C4_CREATED
     )
+    extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)
     import_raw_object = models.JSONField(verbose_name="Donnée JSON brute", editable=False, null=True)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
@@ -1233,6 +1234,11 @@ class Siae(models.Model):
 
     def get_admin_url(self):
         return get_object_admin_url(self)
+
+    def set_brevo_id(self, brevo_company_id, with_save=True):
+        self.extra_data.update({"brevo_company_id": brevo_company_id})
+        if with_save:
+            self.save()
 
     def set_super_badge(self):
         update_fields_list = ["super_badge"]
