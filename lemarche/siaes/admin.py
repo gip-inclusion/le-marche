@@ -187,6 +187,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
             "tender_detail_display_count_annotated_with_link",
             "tender_detail_contact_click_count_annotated_with_link",
             "logs_display",
+            "extra_data_display",
             "import_raw_object_display",
         ]
     )
@@ -324,6 +325,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "signup_date",
                     "content_filled_basic_date",
                     "logs_display",
+                    "extra_data_display",
                 )
             },
         ),
@@ -611,6 +613,13 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         return "-"
 
     logs_display.short_description = Siae._meta.get_field("logs").verbose_name
+
+    def extra_data_display(self, instance: Siae = None):
+        if instance:
+            return pretty_print_readonly_jsonfield(instance.extra_data)
+        return "-"
+
+    extra_data_display.short_description = Siae._meta.get_field("extra_data").verbose_name
 
 
 @admin.register(SiaeUserRequest, site=admin_site)

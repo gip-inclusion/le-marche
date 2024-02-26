@@ -1204,6 +1204,10 @@ class Siae(models.Model):
     def sectors_full_list_string(self):
         return self.sectors_list_string(display_max=None)
 
+    @property
+    def brevo_company_id(self):
+        return self.extra_data.get("brevo_company_id")
+
     @cached_property
     def stat_view_count_last_3_months(self):
         try:
