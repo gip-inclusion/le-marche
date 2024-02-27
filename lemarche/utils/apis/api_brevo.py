@@ -46,9 +46,9 @@ def create_contact(user: User, list_id: int):
 
     try:
         api_response = api_instance.create_contact(new_contact)
-        logger.info("Success Brevo->ContactsApi->create_contact: %s" % api_response)
+        logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response}")
     except ApiException as e:
-        logger.error("Exception when calling Brevo->ContactsApi->create_contact: %s" % e)
+        logger.error(f"Exception when calling Brevo->ContactsApi->create_contact: {e}")
 
 
 def remove_contact_from_list(user: User, list_id: int):
@@ -58,13 +58,13 @@ def remove_contact_from_list(user: User, list_id: int):
 
     try:
         api_response = api_instance.remove_contact_from_list(list_id=list_id, contact_emails=contact_emails)
-        logger.info("Success Brevo->ContactsApi->remove_contact_from_list: %s" % api_response)
+        logger.info(f"Success Brevo->ContactsApi->remove_contact_from_list: {api_response}")
     except ApiException as e:
         error_body = json.loads(e.body)
         if error_body.get("message") == "Contact already removed from list and/or does not exist":
             logger.info("calling Brevo->ContactsApi->remove_contact_from_list: contact doesn't exist in this list")
         else:
-            logger.error("Exception when calling Brevo->ContactsApi->remove_contact_from_list: %s" % e)
+            logger.error(f"Exception when calling Brevo->ContactsApi->remove_contact_from_list: {e}")
 
 
 def create_or_update_company(siae: Siae):
@@ -83,7 +83,7 @@ def create_or_update_company(siae: Siae):
             "siae": True,
             "description": siae.description,
             "kind": siae.kind,
-            "address_road": siae.address,
+            "address_street": siae.address,
             "address_post_code": siae.post_code,
             "address_city": siae.city,
             "contact_email": siae.contact_email,
@@ -99,19 +99,18 @@ def create_or_update_company(siae: Siae):
     if siae.brevo_company_id:  # update
         try:
             api_response = api_instance.companies_id_patch(siae.brevo_company_id, siae_brevo_company_body)
-            logger.info("Success Brevo->CompaniesApi->create_or_update_company (update): %s" % api_response)
+            # logger.info(f"Success Brevo->CompaniesApi->create_or_update_company (update): {api_response}")
             # api_response: {'attributes': None, 'id': None, 'linked_contacts_ids': None, 'linked_deals_ids': None}
         except ApiException as e:
-            logger.error("Exception when calling Brevo->CompaniesApi->create_or_update_company (update): %s" % e)
+            logger.error(f"Exception when calling Brevo->CompaniesApi->create_or_update_company (update): {e}")
     else:  # create
         try:
             api_response = api_instance.companies_post(siae_brevo_company_body)
-            logger.info("Success Brevo->CompaniesApi->create_or_update_company (create): %s" % api_response)
-            print(api_response.id)
+            logger.info(f"Success Brevo->CompaniesApi->create_or_update_company (create): {api_response}")
             # api_response: {'id': '<brevo_company_id>'}
             siae.set_brevo_id(api_response.id)
         except ApiException as e:
-            logger.error("Exception when calling Brevo->CompaniesApi->create_or_update_company (create): %s" % e)
+            logger.error(f"Exception when calling Brevo->CompaniesApi->create_or_update_company (create): {e}")
 
 
 @task()
@@ -140,6 +139,6 @@ def send_transactional_email_with_template(
             logger.info("Brevo: send transactional email with template")
             return response
         except ApiException as e:
-            print("Exception when calling SMTPApi->send_transac_email: %s" % e)
+            print(f"Exception when calling SMTPApi->send_transac_email: {e}")
     else:
         logger.info("Brevo: email not sent (DEV or TEST environment detected)")
