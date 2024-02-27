@@ -147,6 +147,8 @@ LOCAL_APPS = [
     "lemarche.stats",
     # CMS (Wagtail)
     "lemarche.cms",
+    # Brevo CRM
+    "lemarche.crm",
 ]
 
 WAGTAIL_APPS = [
