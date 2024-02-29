@@ -1,3 +1,9 @@
+{% comment %}
+This page is an enhanced version of the original template found at
+https://github.com/django/django/blob/main/django/contrib/admin/templates/admin/includes/fieldset.html.
+We've updated it to include unique IDs for section titles, enabling direct navigation to specific sections.
+This modification makes it easier for users to quickly find the information they need by allowing direct links to jump to different parts of the page.
+{% endcomment %}
 <fieldset class="module aligned {{ fieldset.classes }}">
     {% if fieldset.name %}<h2 id="{{fieldset.name|slugify}}">{{ fieldset.name }}</h2>{% endif %}
     {% if fieldset.description %}
