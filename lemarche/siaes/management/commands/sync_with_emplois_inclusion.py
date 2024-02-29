@@ -1,6 +1,5 @@
 import os
 import re
-from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
@@ -37,7 +36,6 @@ UPDATE_FIELDS = [
     "admin_email",
     "asp_id",
     "is_active",
-    "is_delisted",
     "c1_last_sync_date",
 ]
 
@@ -121,15 +119,12 @@ class Command(BaseCommand):
         # count before
         siae_total_before = Siae.objects.all().count()
         siae_active_before = Siae.objects.filter(is_active=True).count()
-        siae_delisted_before = Siae.objects.filter(is_delisted=True).count()
 
         self.c4_update(c1_list_filtered, dry_run)
-        self.c4_delist_old_siae(dry_run)
 
         # count after
         siae_total_after = Siae.objects.all().count()
         siae_active_after = Siae.objects.filter(is_active=True).count()
-        siae_delisted_after = Siae.objects.filter(is_delisted=True).count()
 
         self.stdout_info("Done ! Some stats...")
         created_count = siae_total_after - siae_total_before
@@ -140,7 +135,6 @@ class Command(BaseCommand):
             f"Siae updated: {updated_count}",
             f"Siae active: before {siae_active_before} / after {siae_active_after}",
             f"Siae inactive: before {siae_total_before - siae_active_before} / after {siae_total_after - siae_active_after}",  # noqa
-            f"Siae delisted: before {siae_delisted_before} / after {siae_delisted_after}",
         ]
         self.stdout_messages_success(msg_success)
         api_slack.send_message_to_channel("\n".join(msg_success), service_id=settings.SLACK_WEBHOOK_C4_SUPPORT_CHANNEL)
@@ -173,11 +167,6 @@ class Command(BaseCommand):
                     "asp_id": c1_siae["convention_asp_id"],
                     "c1_last_sync_date": timezone.now(),
                 }
-
-                # make sure that non active siae are delisted as well
-                # but done seperately, because some active siae can be delisted
-                if not c1_siae_cleaned["is_active"]:
-                    c1_siae_cleaned["is_delisted"] = True
 
                 # set coords from latitude & longitude
                 c1_siae_cleaned["address"] = c1_siae_cleaned["address_line_1"]
@@ -239,8 +228,6 @@ class Command(BaseCommand):
             except Siae.DoesNotExist:
                 self.c4_create_siae(c1_siae, dry_run)
 
-        self.c4_delist_old_siae(dry_run)
-
     def c4_create_siae(self, c1_siae, dry_run):
         """
         Here we create a new Siae with les-emplois data
@@ -255,9 +242,6 @@ class Command(BaseCommand):
         c1_siae["contact_website"] = c1_siae["website"]
         c1_siae["contact_email"] = c1_siae["admin_email"] or c1_siae["email"]
         c1_siae["contact_phone"] = c1_siae["phone"]
-
-        # other fields
-        c1_siae["is_delisted"] = False
 
         # create object
         if not dry_run:
@@ -282,9 +266,6 @@ class Command(BaseCommand):
         Here we update an existing Siae with a subset of les-emplois data
         """
         if not dry_run:
-            # other fields
-            # c1_siae["is_delisted"] = True if not c1_siae["convention_is_active"] else False
-
             # keep only certain fields for update
             c1_siae_filtered = dict()
             for key in UPDATE_FIELDS:
@@ -293,16 +274,3 @@ class Command(BaseCommand):
 
             Siae.objects.filter(c1_id=c4_siae.c1_id).update(**c1_siae_filtered)  # avoid updated_at change
             # self.stdout_info(f"Siae updated / {c4_siae.id} / {c4_siae.siret}")
-
-    def c4_delist_old_siae(self, dry_run):
-        """
-        Which Siae should we delist?
-        - the existing ones who haven't been updated
-        - all the ones who have is_active as False
-        """
-        if not dry_run:
-            date_yesterday = timezone.now() - timedelta(days=1)
-            Siae.objects.exclude(c1_sync_skip=True).filter(c1_last_sync_date__lt=date_yesterday).update(
-                is_delisted=True
-            )
-            Siae.objects.filter(is_active=False).update(is_delisted=True)
