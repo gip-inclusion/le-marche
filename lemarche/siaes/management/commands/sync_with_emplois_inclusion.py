@@ -79,15 +79,6 @@ def set_is_active(siae):
     return True
 
 
-def set_is_delisted(siae):
-    """
-    le-marche field
-    Helps to track the number of Siae who were set from active to inactive during a sync.
-    """
-    is_active = set_is_active(siae)
-    return not is_active
-
-
 class Command(BaseCommand):
     """
     This command syncs the list of siae (creates new, updates existing) from les-emplois to le-marché.
@@ -180,9 +171,13 @@ class Command(BaseCommand):
                     "source": c1_siae["source"],
                     "is_active": set_is_active(c1_siae),
                     "asp_id": c1_siae["convention_asp_id"],
-                    "is_delisted": set_is_delisted(c1_siae),
                     "c1_last_sync_date": timezone.now(),
                 }
+
+                # make sure that non active siae are delisted as well
+                # but done seperately, because some active siae can be delisted
+                if not c1_siae_cleaned["is_active"]:
+                    c1_siae_cleaned["is_delisted"] = True
 
                 # set coords from latitude & longitude
                 c1_siae_cleaned["address"] = c1_siae_cleaned["address_line_1"]
