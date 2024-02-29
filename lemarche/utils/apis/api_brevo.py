@@ -81,6 +81,7 @@ def create_or_update_company(siae: Siae):
         attributes={
             "app_id": siae.id,
             "siae": True,
+            "active": siae.is_active,
             "description": siae.description,
             "kind": siae.kind,
             "address_street": siae.address,
