@@ -298,9 +298,9 @@ class TenderListView(LoginRequiredMixin, ListView):
             if self.status:
                 qs = qs.filter(status=self.status)
 
-        filter_form = TenderFilterForm(self.request.GET or None)
-        if filter_form.is_valid():
-            kind = filter_form.cleaned_data.get("kind")
+        self.filter_form = TenderFilterForm(data=self.request.GET)
+        if self.filter_form.is_valid():
+            kind = self.filter_form.cleaned_data.get("kind")
             if kind:
                 qs = qs.filter(kind=kind)
 
@@ -325,7 +325,7 @@ class TenderListView(LoginRequiredMixin, ListView):
         context["page_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
         context["title_kind_sourcing_siae"] = TITLE_KIND_SOURCING_SIAE
         context["tender_constants"] = tender_constants
-        context["filter_form"] = TenderFilterForm(self.request.GET or None)
+        context["filter_form"] = self.filter_form
         return context
 
 
