@@ -950,6 +950,10 @@ class Siae(models.Model):
                 raise e
 
     @property
+    def is_live(self) -> bool:
+        return self.is_active and not self.is_delisted
+
+    @property
     def kind_is_esat_or_ea_or_eatt(self) -> bool:
         return self.kind in [siae_constants.KIND_ESAT, siae_constants.KIND_EA, siae_constants.KIND_EATT]
 
