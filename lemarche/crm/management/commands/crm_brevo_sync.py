@@ -8,7 +8,7 @@ from lemarche.utils.apis import api_brevo
 from lemarche.utils.commands import BaseCommand
 
 
-ten_days_ago = timezone.now() - timedelta(days=4)
+ten_days_ago = timezone.now() - timedelta(days=10)
 
 
 class Command(BaseCommand):
@@ -25,7 +25,7 @@ class Command(BaseCommand):
 
         # SIAE --> companies
         # Update only the recently updated
-        siaes_qs = Siae.objects.filter(updated_at__lte=ten_days_ago)
+        siaes_qs = Siae.objects.filter(updated_at__gte=ten_days_ago)
         progress = 0
 
         self.stdout.write(
