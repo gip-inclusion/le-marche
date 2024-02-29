@@ -627,7 +627,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         if request.POST.get("_calculate_tender"):
             obj.set_siae_found_list()
             self.message_user(request, "Les structures concernées ont été mises à jour.")
-            return HttpResponseRedirect(".")
+            return HttpResponseRedirect("./#structures")  # redirect to structures sections
         if request.POST.get("_validate_tender"):
             obj.set_validated()
             self.message_user(request, "Ce dépôt de besoin a été validé. Il sera envoyé en temps voulu :)")
