@@ -491,7 +491,9 @@ class TenderListViewTest(TestCase):
             email_send_date=timezone.now(),
             detail_contact_click_date=timezone.now(),
         )
-        cls.tender_4 = TenderFactory(author=cls.user_buyer_1, perimeters=[perimeter])
+        cls.tender_4 = TenderFactory(
+            author=cls.user_buyer_1, perimeters=[perimeter], kind=tender_constants.KIND_TENDER
+        )
         cls.tendersiae_4_1 = TenderSiae.objects.create(
             tender=cls.tender_4, siae=cls.siae_1, email_send_date=timezone.now()
         )
@@ -576,6 +578,19 @@ class TenderListViewTest(TestCase):
         self.assertNotContains(
             response, '<span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>'
         )
+
+    def test_siae_user_should_only_see_filtered_kind(self):
+        self.client.force_login(self.siae_user_2)
+        url = reverse("tenders:list")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["tenders"]), 2)
+
+        url = reverse("tenders:list")
+        response = self.client.get(f"{url}?kind={tender_constants.KIND_TENDER}")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["tenders"]), 1)
+        self.assertEqual(response.context["tenders"][0], self.tender_4)
 
 
 class TenderDetailViewTest(TestCase):
