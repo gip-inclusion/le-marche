@@ -1,7 +1,6 @@
 #!/bin/bash
 
 initial_branch=`git branch --show-current`
-git_diff_between_master_and_master_clever=`git log master_clever..master --oneline`
 
 # Ensure working directory is clean
 if ! git diff-index --quiet HEAD; then
@@ -17,6 +16,7 @@ git pull origin master
 git checkout master_clever
 git pull origin master_clever
 echo "====="
+git_diff_between_master_and_master_clever=`git log master_clever..master --oneline`
 echo "$git_diff_between_master_and_master_clever"
 echo "====="
 git rebase master
