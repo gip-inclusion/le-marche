@@ -20,7 +20,8 @@ from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.admin import TenderAdmin
 from lemarche.tenders.factories import PartnerShareTenderFactory, TenderFactory, TenderQuestionFactory
-from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderSiae, find_amount_ranges
+from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderSiae
+from lemarche.tenders.utils import find_amount_ranges
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import MarcheAdminSite, get_admin_change_view_url
@@ -412,6 +413,24 @@ class TenderModelQuerysetTest(TestCase):
         )
         self.assertEqual(
             Tender.objects.in_perimeters(post_code="29000", department="29", region="Bretagne").count(), 0
+        )
+
+    def test_filter_by_amount_exact(self):
+        TenderFactory(amount_exact=1000)
+        TenderFactory(amount_exact=5000)
+        TenderFactory(amount_exact=7500)
+        TenderFactory(amount_exact=10000)
+        TenderFactory(amount_exact=100000)
+        tender_qs = Tender.objects.has_amount()
+        self.assertEqual(tender_qs.filter_by_amount_exact(1000, operation="lt").count(), 0)
+        self.assertEqual(tender_qs.filter_by_amount_exact(1000, operation="gte").count(), 5)
+        self.assertEqual(tender_qs.filter_by_amount_exact(100000, operation="gt").count(), 0)
+        self.assertEqual(tender_qs.filter_by_amount_exact(100000, operation="lte").count(), 5)
+        self.assertEqual(
+            tender_qs.filter_by_amount_exact(10000, operation="lte")
+            .filter_by_amount_exact(5000, operation="gte")
+            .count(),
+            3,
         )
 
 
@@ -1000,7 +1019,7 @@ class TenderUtilsTest(TestCase):
         self.assertNotEqual(self.tender_with_siae.siaes.count(), new_tender.siaes.count())
 
 
-class FindAmountRangesTests(TestCase):
+class TenderUtilsFindAmountRangesTests(TestCase):
     def test_gte_operation(self):
         """Test the 'gte' operation."""
         expected_keys = [
