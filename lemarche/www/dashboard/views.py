@@ -65,7 +65,7 @@ class DashboardHomeView(LoginRequiredMixin, DetailView):
         if user.kind == User.KIND_SIAE:
             siaes = user.siaes.all()
             if siaes:
-                context["last_3_tenders"] = Tender.objects.filter_with_siaes(siaes).order_by_deadline_date()[:3]
+                context["last_3_tenders"] = Tender.objects.filter_with_siaes(siaes).order_by_last_published()[:3]
         else:
             context["last_3_tenders"] = Tender.objects.filter(author=user).order_by_deadline_date()[:3]
             context["user_buyer_count"] = User.objects.filter(kind=User.KIND_BUYER).count()
