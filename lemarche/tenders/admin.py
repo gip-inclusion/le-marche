@@ -61,7 +61,7 @@ class AmountCustomFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         return (
             ("<10k", "Inférieur (<) à 10k €"),
-            ("5k-10k", "Entre 5k et 10k €"),
+            ("5k-10k", "Entre (>=) 5k et (<) 10k €"),
             (">=10k", "Supérieur (>=) à 10k €"),
         )
 
@@ -72,8 +72,8 @@ class AmountCustomFilter(admin.SimpleListFilter):
         if value == "<10k":
             return queryset.filter_by_amount_exact(amount_10k, operation="lt")
         elif value == "5k-10k":
-            return queryset.filter_by_amount_exact(amount_10k, operation="lte").filter_by_amount_exact(
-                amount_5k, operation="gte"
+            return queryset.filter_by_amount_exact(amount_5k, operation="gte").filter_by_amount_exact(
+                amount_10k, operation="lt"
             )
         elif value == ">=10k":
             return queryset.filter_by_amount_exact(amount_10k, operation="gte")

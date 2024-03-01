@@ -434,6 +434,12 @@ class TenderModelQuerysetTest(TestCase):
             .count(),
             3,
         )
+        self.assertEqual(
+            tender_qs.filter_by_amount_exact(10000, operation="lt")
+            .filter_by_amount_exact(5000, operation="gte")
+            .count(),
+            2,
+        )
 
 
 class TenderModelQuerysetOrderTest(TestCase):
