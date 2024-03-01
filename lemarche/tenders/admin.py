@@ -67,12 +67,13 @@ class AmountCustomFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         value = self.value()
-        amount_10k = 10 * 10**3  # 10k
+        amount_5k = 5 * 10**3
+        amount_10k = 10 * 10**3
         if value == "<10k":
             return queryset.filter_by_amount_exact(amount_10k, operation="lt")
         elif value == "5k-10k":
             return queryset.filter_by_amount_exact(amount_10k, operation="lte").filter_by_amount_exact(
-                amount_10k, operation="gte"
+                amount_5k, operation="gte"
             )
         elif value == ">=10k":
             return queryset.filter_by_amount_exact(amount_10k, operation="gte")
