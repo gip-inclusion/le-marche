@@ -340,3 +340,24 @@ class TenderSiaeSurveyTransactionedForm(forms.ModelForm):
             self.fields["survey_transactioned_answer"].disabled = True
             if tender_survey_transactioned_answer is False:
                 self.fields["survey_transactioned_amount"].widget = forms.HiddenInput()
+
+
+class TenderFilterForm(forms.Form):
+    FORM_KIND_CHOICES = (
+        ("", "Toutes les opportunités"),
+        (tender_constants.KIND_QUOTE, tender_constants.KIND_QUOTE_DISPLAY),
+        (tender_constants.KIND_TENDER, tender_constants.KIND_TENDER_DISPLAY),
+        (tender_constants.KIND_PROJECT, "Projets d'achats"),
+    )
+
+    kind = forms.ChoiceField(
+        label="Type de besoin",
+        choices=FORM_KIND_CHOICES,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control",
+                "onchange": "this.form.submit()",
+            }
+        ),
+        required=False,
+    )
