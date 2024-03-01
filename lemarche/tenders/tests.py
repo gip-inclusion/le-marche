@@ -27,12 +27,12 @@ from lemarche.utils.admin.admin_site import MarcheAdminSite, get_admin_change_vi
 from lemarche.www.tenders import utils as tender_utils
 
 
-date_tomorrow = timezone.now() + timedelta(days=1)
-date_next_week = timezone.now() + timedelta(days=7)
-date_today = timezone.now() + timedelta(days=7)
-date_two_days_ago = timezone.now() - timedelta(days=2)
-date_last_week = timezone.now() - timedelta(days=7)
-date_last_month = timezone.now() - timedelta(days=30)
+date_today = timezone.now()
+date_tomorrow = date_today + timedelta(days=1)
+date_next_week = date_today + timedelta(days=7)
+date_two_days_ago = date_today - timedelta(days=2)
+date_last_week = date_today - timedelta(days=7)
+date_last_month = date_today - timedelta(days=30)
 
 
 class TenderModelTest(TestCase):
