@@ -5,7 +5,6 @@ from lemarche.www.siaes.views import (
     SiaeFavoriteView,
     SiaeSearchResultsDownloadView,
     SiaeSearchResultsView,
-    SiaeSemanticSearchResultsView,
 )
 
 
@@ -14,7 +13,6 @@ app_name = "siae"
 
 urlpatterns = [
     path("", SiaeSearchResultsView.as_view(), name="search_results"),
-    path("semantic/search/", SiaeSemanticSearchResultsView.as_view(), name="semantic_search_results"),
     path("download/", SiaeSearchResultsDownloadView.as_view(), name="search_results_download"),
     path("<str:slug>/", SiaeDetailView.as_view(), name="detail"),
     path("<str:slug>/favoris/", SiaeFavoriteView.as_view(), name="favorite_lists"),
