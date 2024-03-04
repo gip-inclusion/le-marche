@@ -18,6 +18,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.forms import TenderAdminForm
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, TenderSiae, TenderStepsData
 from lemarche.users import constants as user_constants
+from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
 from lemarche.www.tenders.tasks import restart_send_tender_task
@@ -190,7 +191,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
     ordering = ["-created_at"]
 
     form = TenderForm
-    autocomplete_fields = ["sectors", "location", "perimeters", "author"]
+    autocomplete_fields = ["sectors", "location", "perimeters", "author", "admins"]
     readonly_fields = [field for field in Tender.READONLY_FIELDS] + [
         # slug
         # status
@@ -359,6 +360,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                 )
             },
         ),
+        ("Suivi", {"fields": ("admins")}),
         (
             "Stats",
             {
@@ -413,6 +415,11 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             if obj.status == tender_constants.STATUS_VALIDATED:
                 readonly_fields.append("slug")
         return readonly_fields
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == "admins":
+            kwargs["queryset"] = User.objects.filter(kind=User.KIND_ADMIN)
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     def save_model(self, request, obj: Tender, form, change):
         """
