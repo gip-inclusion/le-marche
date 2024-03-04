@@ -66,9 +66,15 @@
 {% endblock %}
 
 {% block modals %}
-{% include "auth/_login_or_signup_siae_tender_modal.html" %}
-{% include "tenders/_detail_contact_click_confirm_modal.html" %}
-{% include "tenders/_detail_not_interested_click_confirm_modal.html" %}
+{% if not siae_has_detail_contact_click_date %}
+    {% include "auth/_login_or_signup_siae_tender_modal.html" %}
+{% endif %}
+{% if not siae_has_detail_cocontracting_click_date %}
+    {% include "tenders/_detail_contact_click_confirm_modal.html" %}
+{% endif %}
+{% if not siae_has_detail_not_interested_click_date %}
+    {% include "tenders/_detail_not_interested_click_confirm_modal.html" %}
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}
