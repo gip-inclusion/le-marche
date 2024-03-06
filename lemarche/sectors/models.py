@@ -55,6 +55,9 @@ class SectorQuerySet(models.QuerySet):
     def with_siae_stats(self):
         return self.annotate(siae_count_annotated=Count("siaes", distinct=True))
 
+    def with_tender_stats(self):
+        return self.annotate(tender_count_annotated=Count("tenders", distinct=True))
+
 
 class Sector(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
