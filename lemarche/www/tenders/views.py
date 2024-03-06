@@ -409,7 +409,10 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
                     ).exists()
                 )
                 if show_nps:
-                    context["show_nps"] = True
+                    context["nps_form_id"] = settings.TALLY_SIAE_NPS_FORM_ID
+            elif user.kind == User.KIND_BUYER:
+                if show_nps:
+                    context["nps_form_id"] = settings.TALLY_BUYER_NPS_FORM_ID
             elif user.kind == User.KIND_PARTNER:
                 context["user_partner_can_display_tender_contact_details"] = user.can_display_tender_contact_details
             else:
@@ -646,10 +649,12 @@ class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, Updat
     def form_valid(self, form):
         super().form_valid(form)
         messages.add_message(self.request, messages.SUCCESS, self.get_success_message())
-        return HttpResponseRedirect(self.get_success_url())
+        return HttpResponseRedirect(self.get_success_url(survey_was_answered=True))
 
-    def get_success_url(self):
+    def get_success_url(self, survey_was_answered=None):
         success_url = reverse_lazy("tenders:detail", args=[self.kwargs.get("slug")])
+        if survey_was_answered:
+            success_url += "?nps=true"
         return success_url
 
     def get_success_message(self, already_answered=False):
