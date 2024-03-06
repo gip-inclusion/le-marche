@@ -24,13 +24,20 @@ class SectorGroupAdmin(admin.ModelAdmin):
         url = reverse("admin:sectors_sector_changelist") + f"?group__id__exact={sector_group.id}"
         return format_html(f'<a href="{url}">{sector_group.sector_count_annotated}</a>')
 
-    sector_count_annotated_with_link.short_description = "Nombre de secteurs d'activité"
+    sector_count_annotated_with_link.short_description = "Secteurs d'activité"
     sector_count_annotated_with_link.admin_order_field = "sector_count_annotated"
 
 
 @admin.register(Sector, site=admin_site)
 class SectorAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", "siae_count_annotated_with_link", "group", "created_at"]
+    list_display = [
+        "id",
+        "name",
+        "siae_count_annotated_with_link",
+        "tender_count_annotated_with_link",
+        "group",
+        "created_at",
+    ]
     list_filter = ["group"]
     search_fields = ["id", "name"]
     search_help_text = "Cherche sur les champs : ID, Nom"
@@ -41,11 +48,19 @@ class SectorAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.with_siae_stats()
+        qs = qs.with_tender_stats()
         return qs
 
     def siae_count_annotated_with_link(self, sector):
         url = reverse("admin:siaes_siae_changelist") + f"?sectors__id__exact={sector.id}"
         return format_html(f'<a href="{url}">{sector.siae_count_annotated}</a>')
 
-    siae_count_annotated_with_link.short_description = "Nombre de structures rattachées"
+    siae_count_annotated_with_link.short_description = "Structures rattachées"
     siae_count_annotated_with_link.admin_order_field = "siae_count_annotated"
+
+    def tender_count_annotated_with_link(self, sector):
+        url = reverse("admin:tenders_tender_changelist") + f"?sectors__id__exact={sector.id}"
+        return format_html(f'<a href="{url}">{sector.tender_count_annotated}</a>')
+
+    tender_count_annotated_with_link.short_description = "Besoins concernés"
+    tender_count_annotated_with_link.admin_order_field = "tender_count_annotated"
