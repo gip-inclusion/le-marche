@@ -4,7 +4,20 @@ from uuid import uuid4
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import IntegrityError, models, transaction
-from django.db.models import BooleanField, Case, Count, ExpressionWrapper, F, IntegerField, Q, Sum, Value, When
+from django.db.models import (
+    BooleanField,
+    Case,
+    Count,
+    Exists,
+    ExpressionWrapper,
+    F,
+    IntegerField,
+    OuterRef,
+    Q,
+    Sum,
+    Value,
+    When,
+)
 from django.db.models.functions import Greatest
 from django.urls import reverse
 from django.utils import timezone
@@ -136,13 +149,28 @@ class TenderQuerySet(models.QuerySet):
         else:
             return self
 
+    def with_is_new_for_siaes(self, siaes, limit_date=datetime.today()):
+        tender_siae_subquery = TenderSiae.objects.filter(
+            tender=OuterRef("pk"),
+            siae__in=siaes,
+            detail_display_date__isnull=False,
+        )
+        return self.annotate(
+            is_new_for_siaes=Exists(
+                # if the tender deadline_date is less than limite date the tender is not new
+                # that why we user this filter
+                tender_siae_subquery.filter(tender__deadline_date__lt=limit_date)
+            )
+        )
+
     def filter_with_siaes(self, siaes):
         """
         Return the list of tenders corresponding to the list of
         - we return only sent tenders
         - the tender-siae matching has already been done with filter_with_tender()
+        - with annotation to new if it's new for siaes
         """
-        return self.sent().filter(tendersiae__siae__in=siaes).distinct()
+        return self.sent().filter(tendersiae__siae__in=siaes).distinct().with_is_new_for_siaes(siaes)
 
     def with_deadline_date_is_outdated(self, limit_date=datetime.today()):
         return self.annotate(
