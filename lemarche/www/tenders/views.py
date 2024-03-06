@@ -289,7 +289,6 @@ class TenderListView(LoginRequiredMixin, ListView):
             siaes = user.siaes.all()
             if siaes:
                 # we get the first siae by default
-                self.siae = siaes[0]
                 qs = Tender.objects.filter_with_siaes(siaes)
         else:
             qs = Tender.objects.by_user(user).with_siae_stats()
@@ -324,8 +323,6 @@ class TenderListView(LoginRequiredMixin, ListView):
         context["title_kind_sourcing_siae"] = TITLE_KIND_SOURCING_SIAE
         context["tender_constants"] = tender_constants
         context["filter_form"] = self.filter_form
-        if self.siae:
-            context["current_siae"] = self.siae
         return context
 
 
