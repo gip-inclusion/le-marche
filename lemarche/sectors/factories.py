@@ -24,3 +24,8 @@ class SectorFactory(DjangoModelFactory):
     def siaes(self, create, extracted, **kwargs):
         if extracted:
             self.siaes.add(*extracted)
+
+    @factory.post_generation
+    def tenders(self, create, extracted, **kwargs):
+        if extracted:
+            self.tenders.add(*extracted)
