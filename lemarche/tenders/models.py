@@ -149,18 +149,24 @@ class TenderQuerySet(models.QuerySet):
         else:
             return self
 
-    def with_is_new_for_siaes(self, siaes, limit_date=datetime.today()):
+    def with_is_new_for_siaes(self, siaes, limit_date=None):
+        # Set limit_date to today if not specified.
+        if limit_date is None:
+            limit_date = datetime.today()
+
+        # Subquery to find TenderSiae instances linked to the Tender, part of the specified Siae,
+        # and without a detailed display date.
         tender_siae_subquery = TenderSiae.objects.filter(
             tender=OuterRef("pk"),
             siae__in=siaes,
-            detail_display_date__isnull=False,
+            detail_display_date__isnull=True,
         )
+
+        # Annotates each Tender with a boolean 'is_new_for_siaes'. A Tender is considered new for the Siae
+        # if there's at least one associated TenderSiae (meeting subquery criteria) with a deadline_date
+        # beyond the limit_date. This implies the Tender was introduced after the limit_date, marking it as new.
         return self.annotate(
-            is_new_for_siaes=Exists(
-                # if the tender deadline_date is less than limite date the tender is not new
-                # that why we user this filter
-                tender_siae_subquery.filter(tender__deadline_date__lt=limit_date)
-            )
+            is_new_for_siaes=Exists(tender_siae_subquery.filter(tender__deadline_date__gt=limit_date))
         )
 
     def filter_with_siaes(self, siaes):
