@@ -908,6 +908,20 @@ class TenderSiaeQuerySet(models.QuerySet):
             detail_contact_click_date__lt=lt_days_ago
         )
 
+    def unread_counts(self, user):
+        limit_date = datetime.today()
+        aggregates = {
+            f"count_{kind}": Count(Case(When(tender__kind=kind, then=1), output_field=IntegerField()), distinct=True)
+            for kind, _ in tender_constants.KIND_CHOICES
+        }
+        return (
+            self.filter(
+                siae__in=user.siaes.all(), tender__validated_at__isnull=False, tender__deadline_date__gt=limit_date
+            )
+            .filter(detail_display_date__isnull=True)
+            .aggregate(**aggregates)
+        )
+
 
 class TenderQuestion(models.Model):
     text = models.TextField(verbose_name="Intitulé de la question", blank=False)

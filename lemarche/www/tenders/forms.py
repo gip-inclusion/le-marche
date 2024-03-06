@@ -361,3 +361,17 @@ class TenderFilterForm(forms.Form):
         ),
         required=False,
     )
+
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        counts = TenderSiae.objects.unread_counts(user=user)
+        new_choices = []
+        for kind_key, kind_label in self.FORM_KIND_CHOICES:
+            count_key = f"count_{kind_key}"
+            if count_key in counts and counts[count_key] > 0:
+                new_choices.append((kind_key, f"{kind_label} ({counts[count_key]})"))
+            else:
+                new_choices.append((kind_key, kind_label))
+
+        self.fields["kind"].choices = new_choices

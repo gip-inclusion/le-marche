@@ -298,7 +298,7 @@ class TenderListView(LoginRequiredMixin, ListView):
             if self.status:
                 qs = qs.filter(status=self.status)
 
-        self.filter_form = TenderFilterForm(data=self.request.GET)
+        self.filter_form = TenderFilterForm(data=self.request.GET, user=self.request.user)
         if self.filter_form.is_valid():
             kind = self.filter_form.cleaned_data.get("kind")
             if kind:
