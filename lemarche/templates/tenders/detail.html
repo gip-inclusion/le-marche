@@ -93,11 +93,11 @@
         }
     </script>
 {% endif %}
-{% if TALLY_NPS_FORM_ID and show_nps %}
+{% if nps_form_id %}
     <script async type="text/javascript" src="https://tally.so/widgets/embed.js"></script>
     <script type="text/javascript">
         window.TallyConfig = {
-            "formId": "{{ TALLY_NPS_FORM_ID }}",
+            "formId": "{{ nps_form_id }}",
             "popup": {
                 "width": 400,
                 "emoji": {
