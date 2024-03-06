@@ -509,6 +509,9 @@ class Tender(models.Model):
         blank=True,
         null=True,
     )
+    siae_transactioned_last_updated = models.DateTimeField(
+        "Abouti à une transaction : date de mise à jour", blank=True, null=True
+    )
     amount_exact = models.PositiveIntegerField(
         verbose_name="Montant exact du besoin", help_text=ADMIN_FIELD_HELP_TEXT, blank=True, null=True
     )
