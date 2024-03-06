@@ -360,7 +360,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                 )
             },
         ),
-        ("Suivi", {"fields": ("admins")}),
+        ("Suivi", {"fields": ("admins",)}),
         (
             "Stats",
             {
