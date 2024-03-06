@@ -64,6 +64,12 @@ class TenderFactory(DjangoModelFactory):
             # Add the iterable of groups using bulk addition
             self.siaes.add(*extracted)
 
+    @factory.post_generation
+    def admins(self, create, extracted, **kwargs):
+        if extracted:
+            # Add the iterable of groups using bulk addition
+            self.admins.add(*extracted)
+
 
 class TenderQuestionFactory(DjangoModelFactory):
     class Meta:
