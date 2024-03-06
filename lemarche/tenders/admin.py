@@ -342,6 +342,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "survey_transactioned_feedback",
                     "survey_transactioned_answer_date",
                     "siae_transactioned",
+                    "siae_transactioned_last_updated",
                 )
             },
         ),
