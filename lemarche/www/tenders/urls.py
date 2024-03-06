@@ -10,6 +10,7 @@ from lemarche.www.tenders.views import (
     TenderDetailSurveyTransactionedView,
     TenderDetailView,
     TenderListView,
+    TenderSiaeDeleteView,
     TenderSiaeListView,
 )
 
@@ -44,6 +45,11 @@ urlpatterns = [
         "<str:slug>/not-interested-click",
         TenderDetailNotInterestedClickView.as_view(),
         name="detail-not-interested-click",
+    ),
+    path(
+        "<str:slug>/supprimer-depot-de-besoin",
+        TenderSiaeDeleteView.as_view(),
+        name="delete-tender-siae",
     ),
     path(
         "<str:slug>/sondage-transaction",

@@ -2,12 +2,12 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
-from django.views.generic import DetailView, ListView, UpdateView
+from django.views.generic import DetailView, ListView, UpdateView, View
 from django.views.generic.edit import FormMixin
 from formtools.wizard.views import SessionWizardView
 
@@ -728,3 +728,18 @@ class TenderDetailSiaeSurveyTransactionedView(SesameSiaeMemberRequiredMixin, Upd
         if already_answered:
             return "Votre réponse a déjà été prise en compte."
         return "Merci pour votre réponse !"
+
+
+class TenderSiaeDeleteView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        tender = get_object_or_404(Tender, slug=kwargs["slug"])
+        user = self.request.user
+        if user.kind == User.KIND_SIAE:
+            tender.tendersiae_set.filter(siae__in=user.siaes.all()).update(is_deleted_by_siae=True)
+            if request.htmx:
+                # status code 204 doesn't work with htmx
+                return HttpResponse("", status=200)
+            return HttpResponseRedirect(reverse_lazy("home"))
+        else:
+            # if the user is not SIAE kind, the post is not allowed
+            return HttpResponse(status=401)
