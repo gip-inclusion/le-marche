@@ -786,7 +786,9 @@ class TenderSiaeModelQuerysetTest(TestCase):
         siae_with_tender_5 = SiaeFactory()
         cls.siae_without_tender = SiaeFactory()
         cls.tender_with_siae_1 = TenderFactory(
-            siaes=[cls.siae_with_tender_1, siae_with_tender_2], deadline_date=date_tomorrow
+            siaes=[cls.siae_with_tender_1, siae_with_tender_2],
+            deadline_date=date_tomorrow,
+            kind=tender_constants.KIND_TENDER,
         )
         TenderSiae.objects.create(
             tender=cls.tender_with_siae_1, siae=siae_with_tender_3, email_send_date=date_last_week
@@ -829,6 +831,12 @@ class TenderSiaeModelQuerysetTest(TestCase):
             ).count(),
             1,
         )
+
+    def test_unread_counts(self):
+        counts = TenderSiae.objects.unread_counts(user=self.user_siae)
+        self.assertEqual(counts[f"count_{tender_constants.KIND_TENDER}"], 1)
+        self.assertEqual(counts[f"count_{tender_constants.KIND_QUOTE}"], 1)
+        self.assertEqual(counts[f"count_{tender_constants.KIND_PROJECT}"], 0)
 
 
 class TenderAdminTest(TestCase):

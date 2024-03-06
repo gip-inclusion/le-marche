@@ -585,12 +585,29 @@ class TenderListViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["tenders"]), 2)
+        self.assertContains(
+            response,
+            f'<option value="{tender_constants.KIND_QUOTE}">{tender_constants.KIND_QUOTE_DISPLAY}</option>',
+            1,
+            html=True,
+        )
+        self.assertContains(
+            response,
+            f'<option value="{tender_constants.KIND_TENDER}">{tender_constants.KIND_TENDER_DISPLAY} (1)</option>',
+            1,
+            html=True,
+        )
 
         url = reverse("tenders:list")
         response = self.client.get(f"{url}?kind={tender_constants.KIND_TENDER}")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["tenders"]), 1)
         self.assertEqual(response.context["tenders"][0], self.tender_4)
+        expected_option = (
+            f'<option value="{tender_constants.KIND_TENDER}" selected>'
+            f"{tender_constants.KIND_TENDER_DISPLAY} (1)</option>"
+        )
+        self.assertContains(response, expected_option, 1, html=True)
 
 
 class TenderDetailViewTest(TestCase):
