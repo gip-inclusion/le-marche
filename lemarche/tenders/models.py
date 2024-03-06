@@ -561,6 +561,14 @@ class Tender(models.Model):
     siae_list_last_seen_date = models.DateTimeField(
         "Date de dernière visite de l'auteur sur la page 'structures intéressées'", blank=True, null=True
     )
+
+    admins = models.ManyToManyField(
+        "users.User",
+        verbose_name="Admin(s) du besoin",
+        help_text=ADMIN_FIELD_HELP_TEXT,
+        related_name="tenders_admins",
+        blank=True,
+    )
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
     source = models.CharField(
         verbose_name="Source",
