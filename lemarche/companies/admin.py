@@ -41,12 +41,22 @@ class HasEmailDomainFilter(admin.SimpleListFilter):
 
 @admin.register(Company, site=admin_site)
 class CompanyAdmin(admin.ModelAdmin, DynamicArrayMixin):
-    list_display = ["id", "name", "user_count_annotated_with_link", "created_at"]
+    list_display = [
+        "id",
+        "name",
+        "user_count_annotated_with_link",
+        "user_tender_count_annotated_with_link",
+        "created_at",
+    ]
     list_filter = [HasUserFilter, HasEmailDomainFilter]
     search_fields = ["id", "name"]
     search_help_text = "Cherche sur les champs : ID, Nom"
 
-    readonly_fields = ["logo_url_display", "user_count_annotated_with_link", "created_at", "updated_at"]
+    readonly_fields = [
+        "logo_url_display",
+        "user_count_annotated_with_link",
+        "user_tender_count_annotated_with_link",
+    ] + Company.READONLY_FIELDS
 
     fieldsets = (
         (
@@ -57,6 +67,7 @@ class CompanyAdmin(admin.ModelAdmin, DynamicArrayMixin):
         ),
         ("Logo", {"fields": ("logo_url", "logo_url_display")}),
         ("Utilisateurs", {"fields": ("user_count_annotated_with_link",)}),
+        ("Besoins", {"fields": ("user_tender_count_annotated_with_link",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
 
@@ -93,5 +104,12 @@ class CompanyAdmin(admin.ModelAdmin, DynamicArrayMixin):
         url = reverse("admin:users_user_changelist") + f"?company__id__exact={company.id}"
         return format_html(f'<a href="{url}">{company.user_count_annotated}</a>')
 
-    user_count_annotated_with_link.short_description = "Nombre d'utilisateurs rattachés"
+    user_count_annotated_with_link.short_description = "Utilisateurs rattachés"
     user_count_annotated_with_link.admin_order_field = "user_count_annotated"
+
+    def user_tender_count_annotated_with_link(self, company):
+        url = reverse("admin:tenders_tender_changelist") + f"?author__company_id__exact={company.id}"
+        return format_html(f'<a href="{url}">{company.user_tender_count_annotated}</a>')
+
+    user_tender_count_annotated_with_link.short_description = "Besoins déposés par les utilisateurs"
+    user_tender_count_annotated_with_link.admin_order_field = "user_tender_count_annotated"
