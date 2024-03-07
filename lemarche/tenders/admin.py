@@ -782,21 +782,23 @@ class TenderSiaeSourceFilter(MultiChoice):
 
 @admin.register(TenderSiae, site=admin_site)
 class TenderSiaeAdmin(admin.ModelAdmin):
-    list_display = ["created_at", "siae_with_link", "tender", "source"]
+    list_display = ["created_at", "siae_with_app_link", "tender_with_link", "source"]
     list_filter = [
         ("source", TenderSiaeSourceFilter),
     ]
 
     readonly_fields = [field for field in TenderSiae.READONLY_FIELDS] + [
-        "tender",
         "siae",
+        "siae_with_app_link",
+        "tender",
+        "tender_with_link",
         "logs_display",
     ]
 
     fieldsets = (
         (
             None,
-            {"fields": ("tender", "siae", "source", "found_with_ai")},
+            {"fields": ("siae", "siae_with_app_link", "tender_with_link", "source", "found_with_ai")},
         ),
         ("Mise en relation", {"fields": TenderSiae.FIELDS_RELATION}),
         ("Transaction ?", {"fields": TenderSiae.FIELDS_SURVEY_TRANSACTIONED}),
@@ -810,14 +812,19 @@ class TenderSiaeAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
 
-    def siae_with_link(self, tendersiae_list):
-        url = reverse("siae:detail", args=[tendersiae_list.siae.slug])
-        return format_html(
-            f'<a href="{url}" target="_blank">{tendersiae_list.siae.brand} ({tendersiae_list.siae.name})</a>'
-        )
+    def siae_with_app_link(self, tendersiae):
+        url = reverse("siae:detail", args=[tendersiae.siae.slug])
+        return format_html(f'<a href="{url}" target="_blank">{tendersiae.siae.brand} ({tendersiae.siae.name})</a>')
 
-    siae_with_link.short_description = "Structure"
-    siae_with_link.admin_order_field = "siae"
+    siae_with_app_link.short_description = "Structure (lien vers l'app)"
+    siae_with_app_link.admin_order_field = "siae"
+
+    def tender_with_link(self, tendersiae):
+        url = reverse("admin:tenders_tender_change", args=[tendersiae.tender.slug])
+        return format_html(f'<a href="{url}">{tendersiae.tender}</a>')
+
+    tender_with_link.short_description = "Besoin d'achat (lien vers l'admin)"
+    tender_with_link.admin_order_field = "tender"
 
     def logs_display(self, tender=None):
         if tender:
