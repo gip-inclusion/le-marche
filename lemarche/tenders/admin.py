@@ -780,11 +780,25 @@ class TenderSiaeSourceFilter(MultiChoice):
     BUTTON_LABEL = "Appliquer"
 
 
+class TenderSiaeStatusFilter(admin.SimpleListFilter):
+    title = "Status"
+    parameter_name = "status"
+
+    def lookups(self, request, model_admin):
+        return tender_constants.TENDER_SIAE_STATUS_CHOICES
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        return queryset.filter(status_annotated=value)
+
+
 @admin.register(TenderSiae, site=admin_site)
 class TenderSiaeAdmin(admin.ModelAdmin):
-    list_display = ["created_at", "siae_with_app_link", "tender_with_link", "source"]
+    list_display = ["created_at", "siae_with_app_link", "tender_with_link", "source", "status"]
     list_filter = [
         ("source", TenderSiaeSourceFilter),
+        TenderSiaeStatusFilter,
+        "survey_transactioned_answer",
     ]
 
     readonly_fields = [field for field in TenderSiae.READONLY_FIELDS] + [
@@ -800,11 +814,17 @@ class TenderSiaeAdmin(admin.ModelAdmin):
             None,
             {"fields": ("siae", "siae_with_app_link", "tender_with_link", "source", "found_with_ai")},
         ),
-        ("Mise en relation", {"fields": TenderSiae.FIELDS_RELATION}),
+        ("Mise en relation", {"fields": (*TenderSiae.FIELDS_RELATION, "status")}),
         ("Transaction ?", {"fields": TenderSiae.FIELDS_SURVEY_TRANSACTIONED}),
         ("Stats", {"fields": ("logs_display",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.with_prefetch_related()
+        qs = qs.with_status()
+        return qs
 
     def has_add_permission(self, request):
         return False
@@ -825,6 +845,12 @@ class TenderSiaeAdmin(admin.ModelAdmin):
 
     tender_with_link.short_description = "Besoin d'achat (lien vers l'admin)"
     tender_with_link.admin_order_field = "tender"
+
+    def status(self, tendersiae):
+        return tendersiae.status
+
+    status.short_description = "Status"
+    status.admin_order_field = "status"
 
     def logs_display(self, tender=None):
         if tender:

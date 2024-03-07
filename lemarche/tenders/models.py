@@ -893,38 +893,6 @@ class Tender(models.Model):
         self.save()
 
 
-class TenderSiaeQuerySet(models.QuerySet):
-    def email_click_reminder(self, gte_days_ago, lt_days_ago):
-        return (
-            self.filter(email_send_date__gte=gte_days_ago)
-            .filter(email_send_date__lt=lt_days_ago)
-            .filter(email_link_click_date__isnull=True)
-            .filter(detail_display_date__isnull=True)
-            .filter(detail_contact_click_date__isnull=True)
-        )
-
-    def detail_contact_click_post_reminder(self, gte_days_ago, lt_days_ago):
-        return self.filter(detail_contact_click_date__gte=gte_days_ago).filter(
-            detail_contact_click_date__lt=lt_days_ago
-        )
-
-    def unread_stats(self, user):
-        limit_date = datetime.today()
-        aggregates = {
-            f"unread_count_{kind}_annotated": Count(
-                Case(When(tender__kind=kind, then=1), output_field=IntegerField()), distinct=True
-            )
-            for kind, _ in tender_constants.KIND_CHOICES
-        }
-        return (
-            self.filter(
-                siae__in=user.siaes.all(), tender__validated_at__isnull=False, tender__deadline_date__gt=limit_date
-            )
-            .filter(detail_display_date__isnull=True)
-            .aggregate(**aggregates)
-        )
-
-
 class TenderQuestion(models.Model):
     text = models.TextField(verbose_name="Intitulé de la question", blank=False)
 
@@ -941,6 +909,65 @@ class TenderQuestion(models.Model):
 
     def __str__(self):
         return self.text
+
+
+class TenderSiaeQuerySet(models.QuerySet):
+    def email_click_reminder(self, gte_days_ago, lt_days_ago):
+        return (
+            self.filter(email_send_date__gte=gte_days_ago)
+            .filter(email_send_date__lt=lt_days_ago)
+            .filter(email_link_click_date__isnull=True)
+            .filter(detail_display_date__isnull=True)
+            .filter(detail_contact_click_date__isnull=True)
+        )
+
+    def detail_contact_click_post_reminder(self, gte_days_ago, lt_days_ago):
+        return self.filter(detail_contact_click_date__gte=gte_days_ago).filter(
+            detail_contact_click_date__lt=lt_days_ago
+        )
+
+    def with_prefetch_related(self):
+        return self.prefetch_related("tender", "siae")
+
+    def with_status(self):
+        return self.annotate(
+            status_annotated=Case(
+                When(
+                    detail_not_interested_click_date__isnull=False,
+                    then=Value(tender_constants.TENDER_SIAE_STATUS_DETAIL_NOT_INTERESTED_CLICK_DATE),
+                ),
+                When(
+                    detail_contact_click_date__isnull=False,
+                    then=Value(tender_constants.TENDER_SIAE_STATUS_DETAIL_CONTACT_CLICK_DATE),
+                ),
+                When(
+                    detail_display_date__isnull=False,
+                    then=Value(tender_constants.TENDER_SIAE_STATUS_DETAIL_DISPLAY_DATE),
+                ),
+                When(
+                    email_link_click_date__isnull=False,
+                    then=Value(tender_constants.TENDER_SIAE_STATUS_EMAIL_LINK_CLICK_DATE),
+                ),
+                When(email_send_date__isnull=False, then=Value(tender_constants.TENDER_SIAE_STATUS_EMAIL_SEND_DATE)),
+                default=None,
+            )
+        )
+    
+    def unread_stats(self, user):
+        limit_date = datetime.today()
+        aggregates = {
+            f"unread_count_{kind}_annotated": Count(
+                Case(When(tender__kind=kind, then=1), output_field=IntegerField()), distinct=True
+            )
+            for kind, _ in tender_constants.KIND_CHOICES
+        }
+        return (
+            self.filter(
+                siae__in=user.siaes.all(), tender__validated_at__isnull=False, tender__deadline_date__gt=limit_date
+            )
+            .filter(detail_display_date__isnull=True)
+            .aggregate(**aggregates)
+        )
 
 
 class TenderSiae(models.Model):
@@ -1017,6 +1044,19 @@ class TenderSiae(models.Model):
         verbose_name = "Structure correspondant au besoin"
         verbose_name_plural = "Structures correspondantes au besoin"
         ordering = ["-created_at"]
+
+    @property
+    def status(self):
+        if self.detail_not_interested_click_date:
+            return "Pas intéressée"
+        if self.contact_click_date:
+            return "Intéressée"
+        if self.detail_display_date:
+            return "Vue"
+        if self.email_link_click_date:
+            return "Cliquée"
+        if self.email_send_date:
+            return "Contactée"
 
 
 class PartnerShareTenderQuerySet(models.QuerySet):
