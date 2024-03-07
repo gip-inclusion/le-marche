@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from lemarche.companies.factories import CompanyFactory
 from lemarche.companies.models import Company
+from lemarche.tenders.factories import TenderFactory
 from lemarche.users.factories import UserFactory
 
 
@@ -22,10 +23,16 @@ class CompanyQuerysetTest(TestCase):
     def setUpTestData(cls):
         cls.user_1 = UserFactory()
         cls.user_2 = UserFactory()
+        TenderFactory(author=cls.user_1)
+        TenderFactory(author=cls.user_1)
         cls.company_with_users = CompanyFactory(users=[cls.user_1, cls.user_2])
         cls.company = CompanyFactory()
 
     def test_with_user_stats(self):
         company_queryset = Company.objects.with_user_stats()
+        # user_count
         self.assertEqual(company_queryset.get(id=self.company.id).user_count_annotated, 0)
         self.assertEqual(company_queryset.get(id=self.company_with_users.id).user_count_annotated, 2)
+        # user_tender_count
+        self.assertEqual(company_queryset.get(id=self.company.id).user_tender_count_annotated, 0)
+        self.assertEqual(company_queryset.get(id=self.company_with_users.id).user_tender_count_annotated, 2)
