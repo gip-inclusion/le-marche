@@ -775,7 +775,7 @@ class TenderPartnerMatchingTest(TestCase):
         self.assertEqual(len(result_2), 4 + 1)
 
 
-class TenderSiaeModelQuerysetTest(TestCase):
+class TenderSiaeModelAndQuerysetTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user_siae = UserFactory(kind=User.KIND_SIAE)
@@ -790,20 +790,20 @@ class TenderSiaeModelQuerysetTest(TestCase):
             deadline_date=date_tomorrow,
             kind=tender_constants.KIND_TENDER,
         )
-        TenderSiae.objects.create(
+        cls.tendersiae_1 = TenderSiae.objects.create(
             tender=cls.tender_with_siae_1, siae=siae_with_tender_3, email_send_date=date_last_week
         )
-        TenderSiae.objects.create(
+        cls.tendersiae_2 = TenderSiae.objects.create(
             tender=cls.tender_with_siae_1, siae=siae_with_tender_4, email_send_date=date_two_days_ago
         )
-        TenderSiae.objects.create(
+        cls.tendersiae_3 = TenderSiae.objects.create(
             tender=cls.tender_with_siae_1,
             siae=siae_with_tender_5,
             email_send_date=date_two_days_ago,
             email_link_click_date=date_two_days_ago,
             detail_contact_click_date=date_two_days_ago,
         )
-        TenderSiae.objects.create(
+        cls.tendersiae_4 = TenderSiae.objects.create(
             tender=cls.tender_with_siae_1,
             siae=siae_with_tender_5,
             detail_display_date=date_last_week,
@@ -811,6 +811,17 @@ class TenderSiaeModelQuerysetTest(TestCase):
         )
         cls.tender_with_siae_2 = TenderFactory(
             siaes=[siae_with_tender_2, siae_with_tender_3], deadline_date=date_tomorrow
+        )
+
+    def test_with_status(self):
+        tendersiae_queryset = TenderSiae.objects.with_status()
+        self.assertEqual(
+            tendersiae_queryset.get(id=self.tendersiae_1.id).status_annotated,
+            tender_constants.TENDER_SIAE_STATUS_EMAIL_SEND_DATE,
+        )
+        self.assertEqual(
+            tendersiae_queryset.get(id=self.tendersiae_4.id).status_annotated,
+            tender_constants.TENDER_SIAE_STATUS_DETAIL_CONTACT_CLICK_DATE,
         )
 
     def test_email_click_reminder(self):
@@ -837,6 +848,16 @@ class TenderSiaeModelQuerysetTest(TestCase):
         self.assertEqual(stats[f"unread_count_{tender_constants.KIND_TENDER}_annotated"], 1)
         self.assertEqual(stats[f"unread_count_{tender_constants.KIND_QUOTE}_annotated"], 1)
         self.assertEqual(stats[f"unread_count_{tender_constants.KIND_PROJECT}_annotated"], 0)
+
+    def test_status_property(self):
+        self.assertEqual(
+            TenderSiae.objects.get(id=self.tendersiae_1.id).status,
+            tender_constants.TENDER_SIAE_STATUS_EMAIL_SEND_DATE_DISPLAY,
+        )
+        self.assertEqual(
+            TenderSiae.objects.get(id=self.tendersiae_4.id).status,
+            tender_constants.TENDER_SIAE_STATUS_DETAIL_CONTACT_CLICK_DATE_DISPLAY,
+        )
 
 
 class TenderAdminTest(TestCase):

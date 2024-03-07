@@ -912,20 +912,6 @@ class TenderQuestion(models.Model):
 
 
 class TenderSiaeQuerySet(models.QuerySet):
-    def email_click_reminder(self, gte_days_ago, lt_days_ago):
-        return (
-            self.filter(email_send_date__gte=gte_days_ago)
-            .filter(email_send_date__lt=lt_days_ago)
-            .filter(email_link_click_date__isnull=True)
-            .filter(detail_display_date__isnull=True)
-            .filter(detail_contact_click_date__isnull=True)
-        )
-
-    def detail_contact_click_post_reminder(self, gte_days_ago, lt_days_ago):
-        return self.filter(detail_contact_click_date__gte=gte_days_ago).filter(
-            detail_contact_click_date__lt=lt_days_ago
-        )
-
     def with_prefetch_related(self):
         return self.prefetch_related("tender", "siae")
 
@@ -952,7 +938,7 @@ class TenderSiaeQuerySet(models.QuerySet):
                 default=None,
             )
         )
-    
+
     def unread_stats(self, user):
         limit_date = datetime.today()
         aggregates = {
@@ -967,6 +953,20 @@ class TenderSiaeQuerySet(models.QuerySet):
             )
             .filter(detail_display_date__isnull=True)
             .aggregate(**aggregates)
+        )
+
+    def email_click_reminder(self, gte_days_ago, lt_days_ago):
+        return (
+            self.filter(email_send_date__gte=gte_days_ago)
+            .filter(email_send_date__lt=lt_days_ago)
+            .filter(email_link_click_date__isnull=True)
+            .filter(detail_display_date__isnull=True)
+            .filter(detail_contact_click_date__isnull=True)
+        )
+
+    def detail_contact_click_post_reminder(self, gte_days_ago, lt_days_ago):
+        return self.filter(detail_contact_click_date__gte=gte_days_ago).filter(
+            detail_contact_click_date__lt=lt_days_ago
         )
 
 
@@ -1048,15 +1048,15 @@ class TenderSiae(models.Model):
     @property
     def status(self):
         if self.detail_not_interested_click_date:
-            return "Pas intéressée"
-        if self.contact_click_date:
-            return "Intéressée"
+            return tender_constants.TENDER_SIAE_STATUS_DETAIL_NOT_INTERESTED_CLICK_DATE_DISPLAY
+        if self.detail_contact_click_date:
+            return tender_constants.TENDER_SIAE_STATUS_DETAIL_CONTACT_CLICK_DATE_DISPLAY
         if self.detail_display_date:
-            return "Vue"
+            return tender_constants.TENDER_SIAE_STATUS_DETAIL_DISPLAY_DATE_DISPLAY
         if self.email_link_click_date:
-            return "Cliquée"
+            return tender_constants.TENDER_SIAE_STATUS_EMAIL_LINK_CLICK_DATE_DISPLAY
         if self.email_send_date:
-            return "Contactée"
+            return tender_constants.TENDER_SIAE_STATUS_EMAIL_SEND_DATE_DISPLAY
 
 
 class PartnerShareTenderQuerySet(models.QuerySet):
