@@ -66,12 +66,33 @@
 {% endblock %}
 
 {% block modals %}
-{% include "auth/_login_or_signup_siae_tender_modal.html" %}
-{% include "tenders/_detail_contact_click_confirm_modal.html" %}
-{% include "tenders/_detail_not_interested_click_confirm_modal.html" %}
+{% if user.is_authenticated or siae_id %}
+    {% if not siae_has_detail_contact_click_date %}
+        {% include "auth/_login_or_signup_siae_tender_modal.html" %}
+    {% endif %}
+    {% if not siae_has_detail_cocontracting_click_date %}
+        {% include "tenders/_detail_contact_click_confirm_modal.html" %}
+    {% endif %}
+    {% if not siae_has_detail_not_interested_click_date %}
+        {% include "tenders/_detail_not_interested_click_confirm_modal.html" %}
+    {% endif %}
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}
+{% if not siae_has_detail_not_interested_click_date %}
+    <script type="text/javascript">
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('not_interested') && urlParams.get('not_interested') === 'True') {
+            // why click() instead of OpenBootstrapModal('#detail_not_interested_click_confirm_modal') ?
+            // why setTimeout ?
+            // --> to have the siae_id set in the modal
+            setTimeout(function() {
+                document.querySelector('#show-tender-not-interested-modal-btn').click();
+            }, 100);
+        }
+    </script>
+{% endif %}
 {% if TALLY_NPS_FORM_ID and show_nps %}
     <script async type="text/javascript" src="https://tally.so/widgets/embed.js"></script>
     <script type="text/javascript">

@@ -511,7 +511,7 @@ class TenderDetailNotInterestedClickView(SiaeUserRequiredOrSiaeIdParamMixin, Det
     Endpoint to handle 'not interested' button click
     """
 
-    template_name = "tenders/_detail_not_interested_click_confirm.html"
+    template_name = "tenders/_detail_not_interested_click_confirm_modal.html"
     model = Tender
 
     def get_object(self):

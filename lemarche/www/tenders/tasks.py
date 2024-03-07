@@ -190,6 +190,7 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, em
             "TENDER_AMOUNT": tender.amount_display,
             "TENDER_DEADLINE_DATE": date_to_string(tender.deadline_date),
             "TENDER_URL": f"{get_object_share_url(tender)}?siae_id={siae.id}",
+            "TENDER_NOT_INTERESTED_URL": f"{get_object_share_url(tender)}?siae_id={siae.id}&not_interested=True",
         }
 
         api_mailjet.send_transactional_email_with_template(

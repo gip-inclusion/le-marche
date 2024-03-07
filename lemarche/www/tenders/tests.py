@@ -1454,45 +1454,82 @@ class TenderDetailNotInterestedClickView(TestCase):
             "tenders:detail-not-interested-click", kwargs={"slug": self.tender.slug}
         )
 
-    def test_user_can_notify_not_interested_wish_with_siae_id(self):
+    def test_anonymous_user_cannot_notify_not_interested(self):
         response = self.client.get(self.tender_detail_url)
         self.assertContains(response, self.cta_message)
+        self.assertNotContains(response, 'id="detail_not_interested_click_confirm_modal"')
+        self.assertNotContains(response, self.cta_message_success)
         # anonymous user
         response = self.client.post(self.tender_not_interested_url, data={})
         self.assertEqual(response.status_code, 403)
-        # wrong siae_id
-        response = self.client.post(f"{self.tender_not_interested_url}?siae_id=999999", data={}, follow=True)
-        self.assertContains(response, self.cta_message)
-        # workflow
-        response = self.client.get(self.tender_detail_url)
-        self.assertContains(response, self.cta_message)
-        self.assertNotContains(response, self.cta_message_success)
-        tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
-        self.assertIsNone(tendersiae.detail_not_interested_click_date)
-        response = self.client.post(f"{self.tender_not_interested_url}?siae_id={self.siae.id}", data={}, follow=True)
-        self.assertContains(response, self.cta_message_success)
-        tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
-        self.assertIsNotNone(tendersiae.detail_not_interested_click_date)
-        response = self.client.get(f"{self.tender_detail_url}?siae_id={self.siae.id}")
-        self.assertContains(response, self.cta_message_success)
-        self.assertNotContains(response, self.cta_message)
 
     def test_user_can_notify_not_interested_wish_with_authenticated_user(self):
         self.client.force_login(self.siae_user)
         # workflow
         response = self.client.get(self.tender_detail_url)
         self.assertContains(response, self.cta_message)
+        self.assertContains(response, 'id="detail_not_interested_click_confirm_modal"')
         self.assertNotContains(response, self.cta_message_success)
         response = self.client.post(
             self.tender_not_interested_url, data={"detail_not_interested_feedback": "reason"}, follow=True
         )
         tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
+        self.assertNotContains(response, self.cta_message)
+        self.assertNotContains(response, 'id="detail_not_interested_click_confirm_modal"')
         self.assertContains(response, self.cta_message_success)
         self.assertIsNotNone(tendersiae.detail_not_interested_click_date)
         self.assertEqual(tendersiae.detail_not_interested_feedback, "reason")
         response = self.client.get(self.tender_detail_url)
-        self.assertContains(response, self.cta_message_success)
         self.assertNotContains(response, self.cta_message)
+        self.assertNotContains(response, 'id="detail_not_interested_click_confirm_modal"')
+        self.assertContains(response, self.cta_message_success)
+
+    def test_user_can_notify_not_interested_wish_with_siae_id_in_url(self):
+        # wrong siae_id
+        response = self.client.post(f"{self.tender_not_interested_url}?siae_id=999999", data={}, follow=True)
+        self.assertContains(response, self.cta_message)
+        self.assertContains(response, 'id="detail_not_interested_click_confirm_modal"')
+        self.assertNotContains(response, self.cta_message_success)
+        # workflow
+        tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
+        self.assertIsNone(tendersiae.detail_not_interested_click_date)
+        response = self.client.post(f"{self.tender_not_interested_url}?siae_id={self.siae.id}", data={}, follow=True)
+        self.assertNotContains(response, self.cta_message)
+        self.assertNotContains(response, 'id="detail_not_interested_click_confirm_modal"')
+        self.assertContains(response, self.cta_message_success)
+        tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
+        self.assertIsNotNone(tendersiae.detail_not_interested_click_date)
+        response = self.client.get(f"{self.tender_detail_url}?siae_id={self.siae.id}")
+        self.assertNotContains(response, self.cta_message)
+        self.assertNotContains(response, 'id="detail_not_interested_click_confirm_modal"')
+        self.assertContains(response, self.cta_message_success)
+
+
+def test_user_can_notify_not_interested_wish_with_siae_id_and_answer_in_url(self):
+    # wrong siae_id
+    response = self.client.post(
+        f"{self.tender_not_interested_url}?siae_id=999999&not_interested=True", data={}, follow=True
+    )
+    self.assertContains(response, self.cta_message)
+    self.assertContains(response, 'modal-siae" id="detail_not_interested_click_confirm_modal"')
+    self.assertNotContains(response, 'modal-siae show" id="detail_not_interested_click_confirm_modal"')
+    self.assertNotContains(response, self.cta_message_success)
+    # workflow
+    tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
+    self.assertIsNone(tendersiae.detail_not_interested_click_date)
+    response = self.client.post(
+        f"{self.tender_not_interested_url}?siae_id={self.siae.id}&not_interested=True", data={}, follow=True
+    )
+    self.assertContains(response, self.cta_message)
+    self.assertNotContains(response, 'modal-siae" id="detail_not_interested_click_confirm_modal"')
+    self.assertContains(response, 'modal-siae show" id="detail_not_interested_click_confirm_modal"')
+    self.assertNotContains(response, self.cta_message_success)
+    tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
+    self.assertIsNotNone(tendersiae.detail_not_interested_click_date)
+    response = self.client.get(f"{self.tender_detail_url}?siae_id={self.siae.id}")
+    self.assertNotContains(response, self.cta_message)
+    self.assertNotContains(response, 'id="detail_not_interested_click_confirm_modal"')
+    self.assertContains(response, self.cta_message_success)
 
 
 # TODO: this test doesn't work anymore. find a way to test logging post-email in non-prod environments?
