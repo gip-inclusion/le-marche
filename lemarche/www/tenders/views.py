@@ -46,7 +46,6 @@ from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_us
 
 TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
 TITLE_DETAIL_PAGE_OTHERS = "Mes besoins"
-TITLE_KIND_SOURCING_SIAE = "Consultation en vue d'un achat"
 
 
 class TenderCreateMultiStepView(SessionWizardView):
@@ -323,7 +322,11 @@ class TenderListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         user_kind = self.request.user.kind if self.request.user.is_authenticated else "anonymous"
         context["page_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
-        context["title_kind_sourcing_siae"] = TITLE_KIND_SOURCING_SIAE
+        context["title_kind_sourcing_siae"] = (
+            tender_constants.KIND_PROJECT_SIAE_DISPLAY
+            if user_kind == User.KIND_SIAE
+            else tender_constants.KIND_PROJECT_DISPLAY
+        )
         context["tender_constants"] = tender_constants
         context["filter_form"] = self.filter_form
         return context
@@ -373,7 +376,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
         context["is_admin"] = self.request.user.is_authenticated and self.request.user.is_admin
         context["parent_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
         context["tender_kind_display"] = (
-            TITLE_KIND_SOURCING_SIAE
+            tender_constants.KIND_PROJECT_SIAE_DISPLAY
             if user_kind == User.KIND_SIAE and self.object.kind == tender_constants.KIND_PROJECT
             else self.object.get_kind_display()
         )

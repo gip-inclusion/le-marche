@@ -347,7 +347,7 @@ class TenderFilterForm(forms.Form):
         ("", "Toutes les opportunités"),
         (tender_constants.KIND_QUOTE, tender_constants.KIND_QUOTE_DISPLAY),
         (tender_constants.KIND_TENDER, tender_constants.KIND_TENDER_DISPLAY),
-        (tender_constants.KIND_PROJECT, "Projets d'achats"),
+        (tender_constants.KIND_PROJECT, tender_constants.KIND_PROJECT_SIAE_DISPLAY),
     )
 
     kind = forms.ChoiceField(
