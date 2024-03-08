@@ -832,11 +832,11 @@ class TenderSiaeModelQuerysetTest(TestCase):
             1,
         )
 
-    def test_unread_counts(self):
-        counts = TenderSiae.objects.unread_counts(user=self.user_siae)
-        self.assertEqual(counts[f"count_{tender_constants.KIND_TENDER}"], 1)
-        self.assertEqual(counts[f"count_{tender_constants.KIND_QUOTE}"], 1)
-        self.assertEqual(counts[f"count_{tender_constants.KIND_PROJECT}"], 0)
+    def test_unread_stats(self):
+        stats = TenderSiae.objects.unread_stats(user=self.user_siae)
+        self.assertEqual(stats[f"unread_count_{tender_constants.KIND_TENDER}_annotated"], 1)
+        self.assertEqual(stats[f"unread_count_{tender_constants.KIND_QUOTE}_annotated"], 1)
+        self.assertEqual(stats[f"unread_count_{tender_constants.KIND_PROJECT}_annotated"], 0)
 
 
 class TenderAdminTest(TestCase):

@@ -908,10 +908,12 @@ class TenderSiaeQuerySet(models.QuerySet):
             detail_contact_click_date__lt=lt_days_ago
         )
 
-    def unread_counts(self, user):
+    def unread_stats(self, user):
         limit_date = datetime.today()
         aggregates = {
-            f"count_{kind}": Count(Case(When(tender__kind=kind, then=1), output_field=IntegerField()), distinct=True)
+            f"unread_count_{kind}_annotated": Count(
+                Case(When(tender__kind=kind, then=1), output_field=IntegerField()), distinct=True
+            )
             for kind, _ in tender_constants.KIND_CHOICES
         }
         return (
