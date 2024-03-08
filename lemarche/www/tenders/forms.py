@@ -347,7 +347,7 @@ class TenderFilterForm(forms.Form):
         ("", "Toutes les opportunités"),
         (tender_constants.KIND_QUOTE, tender_constants.KIND_QUOTE_DISPLAY),
         (tender_constants.KIND_TENDER, tender_constants.KIND_TENDER_DISPLAY),
-        (tender_constants.KIND_PROJECT, "Projets d'achats"),
+        (tender_constants.KIND_PROJECT, tender_constants.KIND_PROJECT_SIAE_DISPLAY),
     )
 
     kind = forms.ChoiceField(
@@ -361,3 +361,17 @@ class TenderFilterForm(forms.Form):
         ),
         required=False,
     )
+
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        stats = TenderSiae.objects.unread_stats(user=user)
+        new_choices = []
+        for kind_key, kind_label in self.FORM_KIND_CHOICES:
+            count_key = f"unread_count_{kind_key}_annotated"
+            if count_key in stats and stats[count_key] > 0:
+                new_choices.append((kind_key, f"{kind_label} ({stats[count_key]})"))
+            else:
+                new_choices.append((kind_key, kind_label))
+
+        self.fields["kind"].choices = new_choices
