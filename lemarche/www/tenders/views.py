@@ -409,7 +409,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
                     ).exists()
                 )
                 if show_nps:
-                    context["show_nps"] = True
+                    context["nps_form_id"] = settings.TALLY_SIAE_NPS_FORM_ID
             elif user.kind == User.KIND_PARTNER:
                 context["user_partner_can_display_tender_contact_details"] = user.can_display_tender_contact_details
             else:
@@ -636,6 +636,7 @@ class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, Updat
         context = super().get_context_data(**kwargs)
         context["tender"] = self.object
         context["parent_title"] = TITLE_DETAIL_PAGE_OTHERS
+        context["nps_form_id"] = settings.TALLY_BUYER_NPS_FORM_ID
         return context
 
     def get_form_kwargs(self):
