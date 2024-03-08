@@ -1781,7 +1781,7 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
             url, data={"survey_transactioned_amount": 1000, "survey_transactioned_feedback": "Feedback"}, follow=True
         )
         self.assertEqual(response.status_code, 200)  # redirect
-        self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}) + "?nps=true")
+        self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
         self.assertContains(response, "Merci pour votre réponse")
         self.assertTrue(Tender.objects.get(id=self.tender.id).survey_transactioned_answer)
         self.assertEqual(Tender.objects.get(id=self.tender.id).survey_transactioned_amount, 1000)
@@ -1804,7 +1804,7 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
         # fill in form
         response = self.client.post(url, data={"survey_transactioned_feedback": "Feedback"}, follow=True)
         self.assertEqual(response.status_code, 200)  # redirect
-        self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}) + "?nps=true")
+        self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
         self.assertContains(response, "Merci pour votre réponse")
         self.assertFalse(Tender.objects.get(id=self.tender.id).survey_transactioned_answer)
         self.assertIsNone(Tender.objects.get(id=self.tender.id).survey_transactioned_amount)
