@@ -616,13 +616,11 @@ class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, Updat
             if survey_transactioned_answer in ["True", "False"]:
                 # transform survey_transactioned_answer into bool
                 survey_transactioned_answer = survey_transactioned_answer == "True"
-                # update survey_transactioned_answer
-                Tender.objects.filter(id=self.object.id).update(
-                    survey_transactioned_answer=survey_transactioned_answer,
-                    survey_transactioned_answer_date=timezone.now(),
-                    siae_transactioned=survey_transactioned_answer,
-                    updated_at=timezone.now(),
-                )
+                # update tender
+                self.object.survey_transactioned_answer = survey_transactioned_answer
+                self.object.survey_transactioned_answer_date = timezone.now()
+                self.object.siae_transactioned = survey_transactioned_answer
+                self.object.save()
             else:
                 pass
                 # TODO or not? "answer" should always be passed
@@ -683,12 +681,10 @@ class TenderDetailSiaeSurveyTransactionedView(SesameSiaeMemberRequiredMixin, Upd
             if survey_transactioned_answer in ["True", "False"]:
                 # transform survey_transactioned_answer into bool
                 survey_transactioned_answer = survey_transactioned_answer == "True"
-                # update survey_transactioned_answer
-                TenderSiae.objects.filter(id=self.object.id).update(
-                    survey_transactioned_answer=survey_transactioned_answer,
-                    survey_transactioned_answer_date=timezone.now(),
-                    updated_at=timezone.now(),
-                )
+                # update tender
+                self.object.survey_transactioned_answer = survey_transactioned_answer
+                self.object.survey_transactioned_answer_date = timezone.now()
+                self.object.save()
             else:
                 pass
                 # TODO or not? "answer" should always be passed

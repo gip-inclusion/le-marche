@@ -292,6 +292,11 @@ class Tender(models.Model):
     FIELDS_STATS = FIELDS_STATS_COUNT + FIELDS_STATS_TIMESTAMPS + ["marche_benefits"]
     READONLY_FIELDS = FIELDS_SURVEY_TRANSACTIONED + FIELDS_STATS
 
+    TRACK_UPDATE_FIELDS = [
+        # set last_updated fields
+        "siae_transactioned",
+    ]
+
     # used in templates
     STATUS_DRAFT = tender_constants.STATUS_DRAFT
     STATUS_PUBLISHED = tender_constants.STATUS_PUBLISHED
@@ -596,6 +601,14 @@ class Tender(models.Model):
     def __str__(self):
         return self.title
 
+    def __init__(self, *args, **kwargs):
+        """
+        https://stackoverflow.com/a/23363123
+        """
+        super().__init__(*args, **kwargs)
+        for field_name in self.TRACK_UPDATE_FIELDS:
+            setattr(self, f"__previous_{field_name}", getattr(self, field_name))
+
     def set_slug(self, with_uuid=False):
         """
         The slug field should be unique.
@@ -604,6 +617,19 @@ class Tender(models.Model):
             self.slug = slugify(f"{self.title}-{str(self.author.company_name or '')}")[:40]
         if with_uuid:
             self.slug += f"-{str(uuid4())[:4]}"
+
+    def set_last_updated_fields(self):
+        """
+        We track changes on some fields, in order to update their 'last_updated' counterpart.
+        Where are the '__previous' fields set? In the __init__ method
+        """
+        for field_name in self.TRACK_UPDATE_FIELDS:
+            previous_field_name = f"__previous_{field_name}"
+            if getattr(self, field_name) and getattr(self, field_name) != getattr(self, previous_field_name):
+                try:
+                    setattr(self, f"{field_name}_last_updated", timezone.now())
+                except AttributeError:  # TRACK_UPDATE_FIELDS without last_updated fields
+                    pass
 
     def set_siae_found_list(self):
         """
@@ -648,10 +674,12 @@ class Tender(models.Model):
 
     def save(self, *args, **kwargs):
         """
+        - update the "last_updated" fields
         - update the object stats
         - update the object content_fill_dates
         - generate the slug field
         """
+        self.set_last_updated_fields()
         try:
             self.set_slug()
             with transaction.atomic():
