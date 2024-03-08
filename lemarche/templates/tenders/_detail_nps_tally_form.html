@@ -1,0 +1,24 @@
+{% if nps_form_id %}
+    <script async type="text/javascript" src="https://tally.so/widgets/embed.js"></script>
+    <script type="text/javascript">
+        window.TallyConfig = {
+            "formId": "{{ nps_form_id }}",
+            "popup": {
+                "width": 400,
+                "emoji": {
+                    "text": "👋",
+                    "animation": "wave"
+                },
+                "open": {
+                    "trigger": "time",
+                    "ms": 2000
+                },
+                // "showOnce": true,  // show the popup only once to the same visitor (even if he didn't submit)
+                "doNotShowAfterSubmit": true,  // after the visitor submits the form, don't show the popup again
+                "autoClose": 0,  // automatically hide the popup after the form is submitted. optionally set a delay in seconds.
+                "hideTitle": true,
+                "layout": "modal"  // display in the center instead of bottom right corner
+            },
+        };
+    </script>
+{% endif %}
