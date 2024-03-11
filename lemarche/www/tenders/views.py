@@ -691,13 +691,14 @@ class TenderDetailSiaeSurveyTransactionedView(SesameSiaeMemberRequiredMixin, Upd
                 self.object.survey_transactioned_answer = survey_transactioned_answer
                 self.object.survey_transactioned_answer_date = timezone.now()
                 self.object.save()
-                # update tender
-                if self.object.tender.siae_transactioned is None:
-                    self.object.tender.siae_transactioned = survey_transactioned_answer
-                    self.object.tender.siae_transactioned_source = (
-                        tender_constants.TENDER_SIAE_TRANSACTIONED_SOURCE_SIAE
-                    )
-                    self.object.tender.save()
+                # update tender if True
+                if self.object.survey_transactioned_answer:
+                    if self.object.tender.siae_transactioned is None:
+                        self.object.tender.siae_transactioned = survey_transactioned_answer
+                        self.object.tender.siae_transactioned_source = (
+                            tender_constants.TENDER_SIAE_TRANSACTIONED_SOURCE_SIAE
+                        )
+                        self.object.tender.save()
             else:
                 pass
                 # TODO or not? "answer" should always be passed
