@@ -21,7 +21,12 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.utils import find_amount_ranges
 from lemarche.users.models import User
 from lemarche.utils.apis import api_elasticsearch
-from lemarche.utils.constants import ADMIN_FIELD_HELP_TEXT, MARCHE_BENEFIT_CHOICES, RECALCULATED_FIELD_HELP_TEXT
+from lemarche.utils.constants import (
+    ADMIN_FIELD_HELP_TEXT,
+    AUTO_FIELD_HELP_TEXT,
+    MARCHE_BENEFIT_CHOICES,
+    RECALCULATED_FIELD_HELP_TEXT,
+)
 from lemarche.utils.fields import ChoiceArrayField
 from lemarche.utils.urls import get_object_admin_url
 
@@ -514,8 +519,19 @@ class Tender(models.Model):
         blank=True,
         null=True,
     )
+    siae_transactioned_source = models.CharField(
+        verbose_name="Abouti à une transaction : source",
+        help_text=AUTO_FIELD_HELP_TEXT,
+        max_length=20,
+        choices=tender_constants.TENDER_SIAE_TRANSACTIONED_SOURCE_CHOICES,
+        blank=True,
+        null=True,
+    )
     siae_transactioned_last_updated = models.DateTimeField(
-        "Abouti à une transaction : date de mise à jour", blank=True, null=True
+        verbose_name="Abouti à une transaction : date de mise à jour",
+        help_text=AUTO_FIELD_HELP_TEXT,
+        blank=True,
+        null=True,
     )
     amount_exact = models.PositiveIntegerField(
         verbose_name="Montant exact du besoin", help_text=ADMIN_FIELD_HELP_TEXT, blank=True, null=True
