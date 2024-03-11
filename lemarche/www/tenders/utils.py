@@ -104,8 +104,13 @@ FIELDS_TO_REMOVE = ["siae_transactioned", "extra_data", "import_raw_object"] + T
 
 
 def duplicate(tender: Tender, fields_to_remove=FIELDS_TO_REMOVE) -> Tender:
-    fields_to_remove_full = ["_state", "_django_version", "id", "slug"] + fields_to_remove
-    fields_to_keep = [field for field in tender.__dict__.keys() if field not in fields_to_remove_full]
+    fields_to_remove_full = ["id", "slug"] + fields_to_remove
+    # other rule: fields starting with "_" : "_state", "_django_version", "__previous_siae_transactioned",
+    fields_to_keep = [
+        field_name
+        for field_name in tender.__dict__.keys()
+        if (field_name not in fields_to_remove_full and not field_name.startswith("_"))
+    ]
     # sectors  # managed post-create
 
     new_tender_dict = dict()

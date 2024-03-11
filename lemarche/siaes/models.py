@@ -873,7 +873,7 @@ class Siae(models.Model):
         """
         https://stackoverflow.com/a/23363123
         """
-        super(Siae, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         for field_name in self.TRACK_UPDATE_FIELDS:
             setattr(self, f"__previous_{field_name}", getattr(self, field_name))
 
