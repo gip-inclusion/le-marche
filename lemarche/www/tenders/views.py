@@ -727,7 +727,7 @@ class TenderDetailSiaeSurveyTransactionedView(SesameSiaeMemberRequiredMixin, Upd
         return "Merci pour votre réponse !"
 
 
-class TenderSiaeDeleteView(LoginRequiredMixin, View):
+class TenderSiaeHideView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         tender = get_object_or_404(Tender, slug=kwargs["slug"])
         user = self.request.user

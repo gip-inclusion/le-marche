@@ -23,8 +23,8 @@
                 {% if tender.is_new_for_siaes %}
                     <span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>
                 {% elif tender.deadline_date_is_outdated_annotated %}
-                    <form action="{% url 'tenders:delete-tender-siae' tender.slug %}"
-                        method="post" hx-post="{% url 'tenders:delete-tender-siae' tender.slug %}"
+                    <form action="{% url 'tenders:hide-tender-siae' tender.slug %}"
+                        method="post" hx-post="{% url 'tenders:hide-tender-siae' tender.slug %}"
                         hx-target="#card-{{tender.slug}}" hx-swap="outerHTML"
                     >
                         {% csrf_token %}
