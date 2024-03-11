@@ -30,31 +30,37 @@ class Command(BaseCommand):
                 row["index"] = index + 2
                 siae_list.append(row)
 
+        self.stdout_info(f"Found {len(siae_list)} siae.")
+
         self.stdout_info("-" * 80)
-        self.stdout_info(f"Found {len(siae_list)} siae. Running for loop...")
+        self.stdout_info(f"Network to attach: {network.name}")
+        self.stdout_info(f"Siae already linked: {network.siaes.count()}")
+
+        self.stdout_info("-" * 80)
+        self.stdout_info("Running for loop...")
 
         siae_missing = 0
         siae_has_network = 0
         siae_network_added = 0
 
         for index, s in enumerate(siae_list):
-            siae = None
-            try:
-                siae = Siae.objects.get(siret=s[options["siret_column"]])
-                if network in siae.networks.all():
-                    # Siae Network already linked
-                    siae_has_network += 1
-                else:
-                    # Siae Network new link
-                    siae_network_added += 1
-                    if not options["dry_run"]:
-                        siae.networks.add(network)
-            except:  # noqa
+            siae_qs = Siae.objects.filter(siret=s[options["siret_column"]])
+            if siae_qs.count():
+                for siae in siae_qs:
+                    if network in siae.networks.all():
+                        # Siae Network already linked
+                        siae_has_network += 1
+                    else:
+                        # Siae Network new link
+                        siae_network_added += 1
+                        if not options["dry_run"]:
+                            siae.networks.add(network)
+            else:
                 # Siae missing
                 siae_missing += 1
 
-        print("====================")
-        print("Total", len(siae_list))
-        print("Siae missing", siae_missing)
-        print("Siae Network already linked", siae_has_network)
-        print("Siae Network new links", siae_network_added)
+        self.stdout_info("-" * 80)
+        self.stdout_info("Recap")
+        self.stdout_info(f"Siae not found: {siae_missing}")
+        self.stdout_info(f"Siae already linked: {siae_has_network}")
+        self.stdout_info(f"Siae new links: {siae_network_added}")
