@@ -176,12 +176,7 @@ class TenderQuerySet(models.QuerySet):
         - the tender-siae matching has already been done with filter_with_tender()
         - with annotation to new if it's new for siaes
         """
-        return (
-            self.sent()
-            .filter(tendersiae__is_deleted_by_siae=False, tendersiae__siae__in=siaes)
-            .distinct()
-            .with_is_new_for_siaes(siaes)
-        )
+        return self.sent().filter(tendersiae__is_deleted_by_siae=False, tendersiae__siae__in=siaes).distinct()
 
     def with_deadline_date_is_outdated(self, limit_date=datetime.today()):
         return self.annotate(

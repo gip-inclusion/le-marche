@@ -289,7 +289,7 @@ class TenderListView(LoginRequiredMixin, ListView):
             siaes = user.siaes.all()
             if siaes:
                 # we get the first siae by default
-                qs = Tender.objects.filter_with_siaes(siaes)
+                qs = Tender.objects.filter_with_siaes(siaes).with_is_new_for_siaes(siaes)
         else:
             qs = Tender.objects.by_user(user).with_siae_stats()
             if self.status:
