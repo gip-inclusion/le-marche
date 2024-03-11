@@ -209,6 +209,8 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "siae_detail_cocontracting_click_count_annotated_with_link",
         "siae_detail_not_interested_click_count_annotated_with_link",
         "siae_ai_count_annotated_with_link",
+        "siae_transactioned_source",
+        "siae_transactioned_last_updated",
         "logs_display",
         "extra_data_display",
         "source",
@@ -336,12 +338,9 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             "Transaction ?",
             {
                 "fields": (
-                    "survey_transactioned_send_date",
-                    "survey_transactioned_answer",
-                    "survey_transactioned_amount",
-                    "survey_transactioned_feedback",
-                    "survey_transactioned_answer_date",
+                    *Tender.FIELDS_SURVEY_TRANSACTIONED,
                     "siae_transactioned",
+                    "siae_transactioned_source",
                     "siae_transactioned_last_updated",
                 )
             },
