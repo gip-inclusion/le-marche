@@ -780,29 +780,51 @@ class TenderSiaeSourceFilter(MultiChoice):
     BUTTON_LABEL = "Appliquer"
 
 
+class TenderSiaeStatusFilter(admin.SimpleListFilter):
+    title = "Status"
+    parameter_name = "status"
+
+    def lookups(self, request, model_admin):
+        return tender_constants.TENDER_SIAE_STATUS_CHOICES
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        return queryset.filter(status_annotated=value)
+
+
 @admin.register(TenderSiae, site=admin_site)
 class TenderSiaeAdmin(admin.ModelAdmin):
-    list_display = ["created_at", "siae_with_link", "tender", "source"]
+    list_display = ["created_at", "siae_with_app_link", "tender_with_link", "source", "status"]
     list_filter = [
         ("source", TenderSiaeSourceFilter),
+        TenderSiaeStatusFilter,
+        "survey_transactioned_answer",
     ]
 
     readonly_fields = [field for field in TenderSiae.READONLY_FIELDS] + [
-        "tender",
         "siae",
+        "siae_with_app_link",
+        "tender",
+        "tender_with_link",
         "logs_display",
     ]
 
     fieldsets = (
         (
             None,
-            {"fields": ("tender", "siae", "source", "found_with_ai")},
+            {"fields": ("siae", "siae_with_app_link", "tender_with_link", "source", "found_with_ai")},
         ),
-        ("Mise en relation", {"fields": TenderSiae.FIELDS_RELATION}),
+        ("Mise en relation", {"fields": (*TenderSiae.FIELDS_RELATION, "status")}),
         ("Transaction ?", {"fields": TenderSiae.FIELDS_SURVEY_TRANSACTIONED}),
         ("Stats", {"fields": ("logs_display",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.with_prefetch_related()
+        qs = qs.with_status()
+        return qs
 
     def has_add_permission(self, request):
         return False
@@ -810,14 +832,25 @@ class TenderSiaeAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
 
-    def siae_with_link(self, tendersiae_list):
-        url = reverse("siae:detail", args=[tendersiae_list.siae.slug])
-        return format_html(
-            f'<a href="{url}" target="_blank">{tendersiae_list.siae.brand} ({tendersiae_list.siae.name})</a>'
-        )
+    def siae_with_app_link(self, tendersiae):
+        url = reverse("siae:detail", args=[tendersiae.siae.slug])
+        return format_html(f'<a href="{url}" target="_blank">{tendersiae.siae.brand} ({tendersiae.siae.name})</a>')
 
-    siae_with_link.short_description = "Structure"
-    siae_with_link.admin_order_field = "siae"
+    siae_with_app_link.short_description = "Structure (lien vers l'app)"
+    siae_with_app_link.admin_order_field = "siae"
+
+    def tender_with_link(self, tendersiae):
+        url = reverse("admin:tenders_tender_change", args=[tendersiae.tender.slug])
+        return format_html(f'<a href="{url}">{tendersiae.tender}</a>')
+
+    tender_with_link.short_description = "Besoin d'achat (lien vers l'admin)"
+    tender_with_link.admin_order_field = "tender"
+
+    def status(self, tendersiae):
+        return tendersiae.status
+
+    status.short_description = "Status"
+    status.admin_order_field = "status"
 
     def logs_display(self, tender=None):
         if tender:
