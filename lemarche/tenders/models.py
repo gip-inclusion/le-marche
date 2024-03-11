@@ -893,19 +893,50 @@ class Tender(models.Model):
         self.save()
 
 
-class TenderSiaeQuerySet(models.QuerySet):
-    def email_click_reminder(self, gte_days_ago, lt_days_ago):
-        return (
-            self.filter(email_send_date__gte=gte_days_ago)
-            .filter(email_send_date__lt=lt_days_ago)
-            .filter(email_link_click_date__isnull=True)
-            .filter(detail_display_date__isnull=True)
-            .filter(detail_contact_click_date__isnull=True)
-        )
+class TenderQuestion(models.Model):
+    text = models.TextField(verbose_name="Intitulé de la question", blank=False)
 
-    def detail_contact_click_post_reminder(self, gte_days_ago, lt_days_ago):
-        return self.filter(detail_contact_click_date__gte=gte_days_ago).filter(
-            detail_contact_click_date__lt=lt_days_ago
+    tender = models.ForeignKey(
+        "tenders.Tender", verbose_name="Besoin d'achat", related_name="questions", on_delete=models.CASCADE
+    )
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Question de l'acheteur"
+        verbose_name_plural = "Questions de l'acheteur"
+
+    def __str__(self):
+        return self.text
+
+
+class TenderSiaeQuerySet(models.QuerySet):
+    def with_prefetch_related(self):
+        return self.prefetch_related("tender", "siae")
+
+    def with_status(self):
+        return self.annotate(
+            status_annotated=Case(
+                When(
+                    detail_not_interested_click_date__isnull=False,
+                    then=Value(tender_constants.TENDER_SIAE_STATUS_DETAIL_NOT_INTERESTED_CLICK_DATE),
+                ),
+                When(
+                    detail_contact_click_date__isnull=False,
+                    then=Value(tender_constants.TENDER_SIAE_STATUS_DETAIL_CONTACT_CLICK_DATE),
+                ),
+                When(
+                    detail_display_date__isnull=False,
+                    then=Value(tender_constants.TENDER_SIAE_STATUS_DETAIL_DISPLAY_DATE),
+                ),
+                When(
+                    email_link_click_date__isnull=False,
+                    then=Value(tender_constants.TENDER_SIAE_STATUS_EMAIL_LINK_CLICK_DATE),
+                ),
+                When(email_send_date__isnull=False, then=Value(tender_constants.TENDER_SIAE_STATUS_EMAIL_SEND_DATE)),
+                default=None,
+            )
         )
 
     def unread_stats(self, user):
@@ -924,23 +955,19 @@ class TenderSiaeQuerySet(models.QuerySet):
             .aggregate(**aggregates)
         )
 
+    def email_click_reminder(self, gte_days_ago, lt_days_ago):
+        return (
+            self.filter(email_send_date__gte=gte_days_ago)
+            .filter(email_send_date__lt=lt_days_ago)
+            .filter(email_link_click_date__isnull=True)
+            .filter(detail_display_date__isnull=True)
+            .filter(detail_contact_click_date__isnull=True)
+        )
 
-class TenderQuestion(models.Model):
-    text = models.TextField(verbose_name="Intitulé de la question", blank=False)
-
-    tender = models.ForeignKey(
-        "tenders.Tender", verbose_name="Besoin d'achat", related_name="questions", on_delete=models.CASCADE
-    )
-
-    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
-    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
-
-    class Meta:
-        verbose_name = "Question de l'acheteur"
-        verbose_name_plural = "Questions de l'acheteur"
-
-    def __str__(self):
-        return self.text
+    def detail_contact_click_post_reminder(self, gte_days_ago, lt_days_ago):
+        return self.filter(detail_contact_click_date__gte=gte_days_ago).filter(
+            detail_contact_click_date__lt=lt_days_ago
+        )
 
 
 class TenderSiae(models.Model):
@@ -1017,6 +1044,19 @@ class TenderSiae(models.Model):
         verbose_name = "Structure correspondant au besoin"
         verbose_name_plural = "Structures correspondantes au besoin"
         ordering = ["-created_at"]
+
+    @property
+    def status(self):
+        if self.detail_not_interested_click_date:
+            return tender_constants.TENDER_SIAE_STATUS_DETAIL_NOT_INTERESTED_CLICK_DATE_DISPLAY
+        if self.detail_contact_click_date:
+            return tender_constants.TENDER_SIAE_STATUS_DETAIL_CONTACT_CLICK_DATE_DISPLAY
+        if self.detail_display_date:
+            return tender_constants.TENDER_SIAE_STATUS_DETAIL_DISPLAY_DATE_DISPLAY
+        if self.email_link_click_date:
+            return tender_constants.TENDER_SIAE_STATUS_EMAIL_LINK_CLICK_DATE_DISPLAY
+        if self.email_send_date:
+            return tender_constants.TENDER_SIAE_STATUS_EMAIL_SEND_DATE_DISPLAY
 
 
 class PartnerShareTenderQuerySet(models.QuerySet):
