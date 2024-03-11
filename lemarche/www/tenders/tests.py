@@ -1789,6 +1789,7 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
     def test_update_tender_stats_on_tender_survey_transactioned_answer_true(self):
         self.assertIsNone(Tender.objects.get(id=self.tender.id).survey_transactioned_answer)
         self.assertIsNone(Tender.objects.get(id=self.tender.id).siae_transactioned)
+        self.assertIsNone(Tender.objects.get(id=self.tender.id).siae_transactioned_source)
         self.assertIsNone(Tender.objects.get(id=self.tender.id).siae_transactioned_last_updated)
         # load with answer 'True': partial form
         url = self.url + self.user_buyer_1_sesame_query_string + "&answer=True"
@@ -1796,6 +1797,10 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(Tender.objects.get(id=self.tender.id).survey_transactioned_answer)
         self.assertTrue(Tender.objects.get(id=self.tender.id).siae_transactioned)
+        self.assertEqual(
+            Tender.objects.get(id=self.tender.id).siae_transactioned_source,
+            tender_constants.TENDER_SIAE_TRANSACTIONED_SOURCE_AUTHOR,
+        )
         self.assertIsNotNone(Tender.objects.get(id=self.tender.id).siae_transactioned_last_updated)
         # fill in form
         response = self.client.post(
@@ -1883,11 +1888,20 @@ class TenderDetailSiaeSurveyTransactionedViewTest(TestCase):
         # full form displayed (but should never happen)
 
     def test_update_tender_stats_on_tender_siae_survey_transactioned_answer_true(self):
+        ts = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
+        self.assertIsNone(ts.survey_transactioned_answer)
+        self.assertIsNone(ts.tender.siae_transactioned)
+        self.assertIsNone(ts.tender.siae_transactioned_source)
+        self.assertIsNone(ts.tender.siae_transactioned_last_updated)
         # load with answer 'True': partial form
         url = self.url + self.user_siae_1_sesame_query_string + "&answer=True"
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(TenderSiae.objects.get(tender=self.tender, siae=self.siae).survey_transactioned_answer)
+        ts = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
+        self.assertTrue(ts.survey_transactioned_answer)
+        self.assertTrue(ts.tender.siae_transactioned)
+        self.assertEqual(ts.tender.siae_transactioned_source, tender_constants.TENDER_SIAE_TRANSACTIONED_SOURCE_SIAE)
+        self.assertIsNotNone(ts.tender.siae_transactioned_last_updated)
         # fill in form
         response = self.client.post(
             url, data={"survey_transactioned_amount": 1000, "survey_transactioned_feedback": "Feedback"}, follow=True
