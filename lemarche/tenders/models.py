@@ -244,11 +244,9 @@ class TenderQuerySet(models.QuerySet):
         )
 
     def unread(self, user):
-        limit_date = datetime.today()
         return (
-            self.filter(
-                tendersiae__siae__in=user.siaes.all(), validated_at__isnull=False, deadline_date__gt=limit_date
-            )
+            self.is_live()
+            .filter(tendersiae__siae__in=user.siaes.all())
             .filter(tendersiae__detail_display_date__isnull=True)
             .distinct()
         )
