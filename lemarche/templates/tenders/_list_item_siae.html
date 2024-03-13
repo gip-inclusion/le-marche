@@ -1,9 +1,8 @@
 {% load static humanize %}
-
-<div class="card c-card c-card--marche c-card--marche-{{ tender.kind|lower }}{% if tender.deadline_date_is_outdated_annotated %} c-card--marche-outdated{% endif %} c-card--link siae-card" role="button" data-url="{% url 'tenders:detail' tender.slug %}">
+<div id="card-{{tender.slug}}" class="card c-card c-card--marche-{{ tender.kind|lower }}{% if tender.deadline_date_is_outdated_annotated %} c-card--marche-outdated{% endif %} mb-2">
     <div class="card-body">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-9">
                 <p class="mb-1">
                     {% if tender.deadline_date_is_outdated_annotated %}
                         <span class="badge badge-sm badge-base badge-pill badge-nuance-08">Clôturé le {{ tender.deadline_date|default:"" }}</span>
@@ -16,15 +15,29 @@
                             {% endif %}
                         </span>
                         Disponible <strong>jusqu'au : {{ tender.deadline_date|default:"" }}</strong>
-                        {% if not tender.tendersiae_set.first.detail_display_date %}
-                            <span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>
-                        {% endif %}
+
                     {% endif %}
                 </p>
             </div>
+            <div class="col-md-3">
+                {% if tender.is_new_for_siaes %}
+                    <span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>
+                {% elif tender.deadline_date_is_outdated_annotated %}
+                    <form action="{% url 'tenders:hide-tender-siae' tender.slug %}"
+                        method="post" hx-post="{% url 'tenders:hide-tender-siae' tender.slug %}"
+                        hx-target="#card-{{tender.slug}}" hx-swap="outerHTML"
+                    >
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-light btn-ico btn-sm float-right" aria-label="Supprimer">
+                            <i class="ri-delete-bin-2-line"></i>
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
         </div>
-
-        <h2 class="py-2{% if tender.deadline_date_is_outdated_annotated %} text-nuance-03{% endif %}">{{ tender.title }}</h2>
+        <a href="{% url 'tenders:detail' tender.slug %}">
+            <h2 class="py-2{% if tender.deadline_date_is_outdated_annotated %} text-nuance-03{% endif %}">{{ tender.title }}</h2>
+        </a>
 
         <hr />
 
