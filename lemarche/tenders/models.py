@@ -243,20 +243,22 @@ class TenderQuerySet(models.QuerySet):
             ),
         )
 
-    def unread_stats(self, user):
+    def unread(self, user):
         limit_date = datetime.today()
-        aggregates = {
-            f"unread_count_{kind}_annotated": Count(Case(When(kind=kind, then=1), output_field=IntegerField()))
-            for kind, _ in tender_constants.KIND_CHOICES
-        }
         return (
             self.filter(
                 tendersiae__siae__in=user.siaes.all(), validated_at__isnull=False, deadline_date__gt=limit_date
             )
             .filter(tendersiae__detail_display_date__isnull=True)
             .distinct()
-            .aggregate(**aggregates)
         )
+
+    def unread_stats(self, user):
+        aggregates = {
+            f"unread_count_{kind}_annotated": Count(Case(When(kind=kind, then=1), output_field=IntegerField()))
+            for kind, _ in tender_constants.KIND_CHOICES
+        }
+        return self.unread(user).aggregate(**aggregates)
 
     def with_network_siae_stats(self, network_siaes):
         return self.annotate(
