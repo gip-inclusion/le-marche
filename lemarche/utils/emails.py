@@ -5,11 +5,8 @@ from django.core.mail import send_mail
 from huey.contrib.djhuey import task
 
 from lemarche.users import constants as user_constants
-from lemarche.users.models import User
 from lemarche.utils.apis import api_brevo, api_hubspot, api_mailjet
-
-
-EMAIL_SUBJECT_PREFIX = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_ENV != "prod" else ""
+from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 
 
 def anonymize_email(email):
@@ -29,7 +26,7 @@ def whitelist_recipient_list(recipient_list):
     return [email for email in recipient_list if (email and email.endswith("beta.gouv.fr"))]
 
 
-def add_to_contact_list(user: User, type: str, source: str = user_constants.SOURCE_SIGNUP_FORM):
+def add_to_contact_list(user, type: str, source: str = user_constants.SOURCE_SIGNUP_FORM):
     """Add user to contactlist
 
     Args:

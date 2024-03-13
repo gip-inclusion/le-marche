@@ -2,7 +2,8 @@ from django.conf import settings
 from django.core.mail import EmailMessage, send_mail
 from django.template.loader import render_to_string
 
-from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX, whitelist_recipient_list
+from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
+from lemarche.utils.emails import whitelist_recipient_list
 
 
 # TODO: make async (celery)
