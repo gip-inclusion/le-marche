@@ -243,6 +243,21 @@ class TenderQuerySet(models.QuerySet):
             ),
         )
 
+    def unread_stats(self, user):
+        limit_date = datetime.today()
+        aggregates = {
+            f"unread_count_{kind}_annotated": Count(Case(When(kind=kind, then=1), output_field=IntegerField()))
+            for kind, _ in tender_constants.KIND_CHOICES
+        }
+        return (
+            self.filter(
+                tendersiae__siae__in=user.siaes.all(), validated_at__isnull=False, deadline_date__gt=limit_date
+            )
+            .filter(tendersiae__detail_display_date__isnull=True)
+            .distinct()
+            .aggregate(**aggregates)
+        )
+
     def with_network_siae_stats(self, network_siaes):
         return self.annotate(
             network_siae_email_send_count_annotated=Sum(
@@ -981,22 +996,6 @@ class TenderSiaeQuerySet(models.QuerySet):
                 When(email_send_date__isnull=False, then=Value(tender_constants.TENDER_SIAE_STATUS_EMAIL_SEND_DATE)),
                 default=None,
             )
-        )
-
-    def unread_stats(self, user):
-        limit_date = datetime.today()
-        aggregates = {
-            f"unread_count_{kind}_annotated": Count(
-                Case(When(tender__kind=kind, then=1), output_field=IntegerField()), distinct=True
-            )
-            for kind, _ in tender_constants.KIND_CHOICES
-        }
-        return (
-            self.filter(
-                siae__in=user.siaes.all(), tender__validated_at__isnull=False, tender__deadline_date__gt=limit_date
-            )
-            .filter(detail_display_date__isnull=True)
-            .aggregate(**aggregates)
         )
 
     def email_click_reminder(self, gte_days_ago, lt_days_ago):
