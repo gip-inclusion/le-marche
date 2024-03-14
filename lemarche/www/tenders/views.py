@@ -333,6 +333,8 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
     model = Tender
     template_name = "tenders/detail.html"
     context_object_name = "tender"
+    is_new_for_siaes: bool = False
+    object: Tender = None
 
     def get(self, request, *args, **kwargs):
         """
@@ -352,6 +354,8 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
             if user.kind == User.KIND_SIAE:
                 # user might not be concerned with this tender: we create TenderSiae stats
                 if not user.has_tender_siae(self.object):
+                    # if the user don't have the TenderSiae, the Tender is new
+                    self.is_new_for_siaes = True and not self.object.deadline_date_outdated
                     for siae in user.siaes.all():
                         TenderSiae.objects.create(
                             tender=self.object, siae=siae, source=tender_constants.TENDER_SIAE_SOURCE_LINK
@@ -408,6 +412,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
                         tender=self.object, siae__in=user.siaes.all(), detail_not_interested_click_date__isnull=False
                     ).exists()
                 )
+                context["is_new_for_siaes"] = self.is_new_for_siaes
                 if show_nps:
                     context["nps_form_id"] = settings.TALLY_SIAE_NPS_FORM_ID
             elif user.kind == User.KIND_PARTNER:

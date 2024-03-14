@@ -2,22 +2,9 @@
 <div id="card-{{tender.slug}}" class="card c-card c-card--marche-{{ tender.kind|lower }}{% if tender.deadline_date_is_outdated_annotated %} c-card--marche-outdated{% endif %} mb-2">
     <div class="card-body">
         <div class="row">
-            <div class="col-md-9">
-                <p class="mb-1">
-                    {% if tender.deadline_date_is_outdated_annotated %}
-                        <span class="badge badge-sm badge-base badge-pill badge-nuance-08">Clôturé le {{ tender.deadline_date|default:"" }}</span>
-                    {% else %}
-                        <span class="badge badge-base badge-pill mr-1 badge-{{ tender.kind|lower }}">
-                            {% if tender.kind == "PROJ" %}
-                                {{ title_kind_sourcing_siae|default:tender.get_kind_display }}
-                            {% else %}
-                                {{ tender.get_kind_display }}
-                            {% endif %}
-                        </span>
-                        Disponible <strong>jusqu'au : {{ tender.deadline_date|default:"" }}</strong>
-
-                    {% endif %}
-                </p>
+            <div class="col-md-12">
+                {% comment %} we set is_new_for_siaes to False because we have other conf in this view {% endcomment %}
+                {% include "tenders/_closed_badge.html" with tender=tender is_new_for_siaes=False %}
             </div>
             <div class="col-md-3">
                 {% if tender.is_new_for_siaes %}

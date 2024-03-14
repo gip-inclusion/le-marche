@@ -171,7 +171,7 @@ class TenderQuerySet(models.QuerySet):
         # if there's at least one associated TenderSiae (meeting subquery criteria) with a deadline_date
         # beyond the limit_date. This implies the Tender was introduced after the limit_date, marking it as new.
         return self.annotate(
-            is_new_for_siaes=Exists(tender_siae_subquery.filter(tender__deadline_date__gt=limit_date))
+            is_new_for_siaes=Exists(tender_siae_subquery.filter(tender__deadline_date__gt=limit_date.date()))
         )
 
     def filter_with_siaes(self, siaes):
