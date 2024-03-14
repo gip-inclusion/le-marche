@@ -3,8 +3,8 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
-                {% include "tenders/_closed_badge.html" with tender=tender %}
-
+                {% comment %} we set is_new_for_siaes to False because we have other conf in this view {% endcomment %}
+                {% include "tenders/_closed_badge.html" with tender=tender is_new_for_siaes=False %}
             </div>
             <div class="col-md-3">
                 {% if tender.is_new_for_siaes %}

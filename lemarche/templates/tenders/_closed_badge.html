@@ -13,7 +13,7 @@
             {% endif %}
         </span>
         Disponible <strong>jusqu'au : {{ tender.deadline_date|default:"" }}</strong>
-        {% if user.kind == "SIAE" and not tender.is_new_for_siaes %}
+        {% if is_new_for_siaes %}
             <span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>
         {% endif %}
     {% endif %}
