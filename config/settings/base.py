@@ -520,7 +520,7 @@ API_ENTREPRISE_TOKEN = env.str("API_ENTREPRISE_TOKEN", "")
 #   if SIAE.is_QPV was update after `today-API_QPV_RELATIVE_DAYS_TO_UPDATE`, we call the API to QPV
 API_QPV_RELATIVE_DAYS_TO_UPDATE = env.int("API_QPV_RELATIVE_DAYS_TO_UPDATE", 60)
 
-API_GOUV_URL = "https://api.gouv.fr/les-api/api-structures-inclusion"
+API_GOUV_URL = "https://api.gouv.fr/les-api/api-marche-inclusion"
 
 # API Mailjet
 # We also use the master api key (with the second api key), because we separate the sending message from application
