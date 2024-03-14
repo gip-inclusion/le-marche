@@ -1223,6 +1223,37 @@ class TenderDetailViewTest(TestCase):
         self.assertIsNotNone(self.tender_1.tendersiae_set.first().detail_display_date)
         self.assertContains(response, "Déjà 5 prestataires inclusifs")
 
+    def test_badge_is_new_for_siaes(self):
+        # assert the new badge is here
+        tender_outdated = TenderFactory(
+            kind=tender_constants.KIND_QUOTE,
+            author=self.user_buyer_1,
+            deadline_date=timezone.now() - timedelta(days=1),
+        )
+        self.client.force_login(self.siae_user_1)
+        url = reverse("tenders:detail", kwargs={"slug": tender_outdated.slug})
+        response = self.client.get(url)
+        self.assertNotContains(
+            response, '<span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>'
+        )
+
+        tender_new = TenderFactory(
+            kind=tender_constants.KIND_QUOTE,
+            author=self.user_buyer_1,
+            deadline_date=timezone.now() + timedelta(days=1),
+        )
+        self.client.force_login(self.siae_user_1)
+        url = reverse("tenders:detail", kwargs={"slug": tender_new.slug})
+        response = self.client.get(url)
+        self.assertContains(
+            response, '<span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>', 1
+        )
+
+        response = self.client.get(url)
+        self.assertNotContains(
+            response, '<span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>'
+        )
+
 
 class TenderDetailContactClickStatViewTest(TestCase):
     @classmethod
