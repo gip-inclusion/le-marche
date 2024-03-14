@@ -54,7 +54,7 @@
         <div class="row">
             <!-- Main tender card -->
             <div class="col-12 col-lg-8 order-2">
-                {% include "tenders/_detail_card.html" with tender=tender %}
+                {% include "tenders/_detail_card.html" with tender=tender is_new_for_siaes=is_new_for_siaes %}
             </div>
             <!-- Sidebar with actions -->
             <div class="col-12 col-lg-4 order-1 order-lg-2">
