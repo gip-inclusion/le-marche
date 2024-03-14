@@ -2,7 +2,7 @@
 <div id="card-{{tender.slug}}" class="card c-card c-card--marche-{{ tender.kind|lower }}{% if tender.deadline_date_is_outdated_annotated %} c-card--marche-outdated{% endif %} mb-2">
     <div class="card-body">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-9">
                 {% comment %} we set is_new_for_siaes to False because we have other conf in this view {% endcomment %}
                 {% include "tenders/_closed_badge.html" with tender=tender is_new_for_siaes=False %}
             </div>
