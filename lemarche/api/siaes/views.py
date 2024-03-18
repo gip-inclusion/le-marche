@@ -16,7 +16,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     Données d'une structure d'insertion par l'activité économique (SIAE).
     """
 
-    queryset = Siae.objects.prefetch_many_to_many()
+    queryset = Siae.objects.api_query_set()
     serializer_class = SiaeListSerializer
     filter_class = SiaeFilter
 
@@ -37,7 +37,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
             token = request.GET.get("token", None)
             if not token:
                 serializer = SiaeListSerializer(
-                    Siae.objects.all()[:10],
+                    self.get_queryset()[:10],
                     many=True,
                 )
                 return Response(serializer.data)
