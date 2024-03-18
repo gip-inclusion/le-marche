@@ -182,7 +182,7 @@ class SiaeQuerySet(models.QuerySet):
         return self.prefetch_related("offers", "client_references", "labels_old", "images")
 
     def api_query_set(self):
-        return self.exclude(kind="OPCS").prefetch_many_to_many()
+        return self.exclude(kind="OPCS")
 
     def search_query_set(self):
         return self.is_live().exclude(kind="OPCS").prefetch_many_to_many()
