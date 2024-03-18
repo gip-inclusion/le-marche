@@ -365,7 +365,7 @@ class TenderFilterForm(forms.Form):
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        stats = TenderSiae.objects.unread_stats(user=user)
+        stats = Tender.objects.unread_stats(user=user)
         new_choices = []
         for kind_key, kind_label in self.FORM_KIND_CHOICES:
             count_key = f"unread_count_{kind_key}_annotated"

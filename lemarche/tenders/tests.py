@@ -629,6 +629,35 @@ class TenderModelQuerysetStatsTest(TestCase):
     #     self.assertEqual(tender_with_siae_1.siae_detail_contact_click_since_last_seen_date_count_annotated, 1)
 
 
+class TenderModelQuerysetUnreadStatsTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_siae = UserFactory(kind=User.KIND_SIAE)
+        _ = UserFactory(kind=User.KIND_SIAE)
+
+        siae_with_tender_1 = SiaeFactory(users=[cls.user_siae])
+        siae_with_tender_2 = SiaeFactory(users=[cls.user_siae])
+        siae_with_tender_3 = SiaeFactory()
+        tender_with_siae_1 = TenderFactory(siaes=[siae_with_tender_1, siae_with_tender_2], deadline_date=date_tomorrow)
+        TenderSiae.objects.create(tender=tender_with_siae_1, siae=siae_with_tender_3)
+
+        tender_with_siae_2 = TenderFactory()
+        TenderSiae.objects.create(
+            tender=tender_with_siae_2,
+            siae=siae_with_tender_1,
+            detail_display_date=timezone.now(),  # the user read it
+        )
+        _ = TenderFactory(deadline_date=date_tomorrow)
+        _ = TenderFactory(siaes=[siae_with_tender_1], deadline_date=date_tomorrow, kind=tender_constants.KIND_QUOTE)
+        _ = TenderFactory(siaes=[siae_with_tender_1], deadline_date=date_tomorrow, kind=tender_constants.KIND_TENDER)
+
+    def test_unread_stats(self):
+        stats = Tender.objects.unread_stats(user=self.user_siae)
+        self.assertEqual(stats[f"unread_count_{tender_constants.KIND_TENDER}_annotated"], 1)
+        self.assertEqual(stats[f"unread_count_{tender_constants.KIND_QUOTE}_annotated"], 2)
+        self.assertEqual(stats[f"unread_count_{tender_constants.KIND_PROJECT}_annotated"], 0)
+
+
 class TenderMigrationToSelectTest(TestCase):
     def test_migrate_amount_to_select(self):
         # the migrations can't be imported directly, it's a syntax error.
@@ -842,12 +871,6 @@ class TenderSiaeModelAndQuerysetTest(TestCase):
             ).count(),
             1,
         )
-
-    def test_unread_stats(self):
-        stats = TenderSiae.objects.unread_stats(user=self.user_siae)
-        self.assertEqual(stats[f"unread_count_{tender_constants.KIND_TENDER}_annotated"], 1)
-        self.assertEqual(stats[f"unread_count_{tender_constants.KIND_QUOTE}_annotated"], 1)
-        self.assertEqual(stats[f"unread_count_{tender_constants.KIND_PROJECT}_annotated"], 0)
 
     def test_status_property(self):
         self.assertEqual(
