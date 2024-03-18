@@ -181,11 +181,14 @@ class SiaeQuerySet(models.QuerySet):
     def prefetch_many_to_one(self):
         return self.prefetch_related("offers", "client_references", "labels_old", "images")
 
-    def api_query_set(self):
-        return self.exclude(kind="OPCS")
-
     def search_query_set(self):
         return self.is_live().exclude(kind="OPCS").prefetch_many_to_many()
+
+    def tender_matching_query_set(self):
+        return self.is_live().exclude(kind="OPCS").has_contact_email().prefetch_related("sectors")
+
+    def api_query_set(self):
+        return self.exclude(kind="OPCS")
 
     def filter_siret_startswith(self, siret):
         return self.filter(siret__startswith=siret)
@@ -347,7 +350,7 @@ class SiaeQuerySet(models.QuerySet):
         Args:
             tender (Tender): Tender used to make the matching
         """
-        qs = self.prefetch_related("sectors").is_live().has_contact_email()
+        qs = self.tender_matching_query_set()
         # filter by sectors
         if tender.sectors.count():
             qs = qs.filter_sectors(tender.sectors.all())
