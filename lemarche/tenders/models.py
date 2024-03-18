@@ -820,7 +820,7 @@ class Tender(models.Model):
     @cached_property
     def external_link_title(self) -> str:
         if self.is_partner_approch:
-            return "Ça m'intéresse"
+            return "Accéder"
         elif self.kind == tender_constants.KIND_TENDER:
             return "Voir l'appel d'offres"
         return "Lien partagé"
