@@ -5,6 +5,7 @@ from lemarche.networks.factories import NetworkFactory
 from lemarche.sectors.factories import SectorFactory
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeFactory
+from lemarche.siaes.models import Siae
 from lemarche.users.factories import UserFactory
 
 
@@ -53,19 +54,13 @@ class SiaeListApiTest(TestCase):
 class SiaeListFilterApiTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        # default_siae = {"kind": siae_constants.KIND_EI, "presta_type": [siae_constants.PRESTA_DISP], "department": "01"}  # noqa
         SiaeFactory(
             kind=siae_constants.KIND_EI, presta_type=[siae_constants.PRESTA_DISP], department="01", is_active=False
         )
-        SiaeFactory(
-            kind=siae_constants.KIND_ETTI, presta_type=[siae_constants.PRESTA_DISP], department="01"
-        )  # siae_with_kind
-        SiaeFactory(
-            kind=siae_constants.KIND_ACI, presta_type=[siae_constants.PRESTA_BUILD], department="01"
-        )  # siae_with_presta_type
-        SiaeFactory(
-            kind=siae_constants.KIND_EI, presta_type=[siae_constants.PRESTA_PREST], department="38"
-        )  # siae_with_department
+        SiaeFactory(kind=siae_constants.KIND_ETTI, presta_type=[siae_constants.PRESTA_DISP], department="01")
+        SiaeFactory(kind=siae_constants.KIND_ACI, presta_type=[siae_constants.PRESTA_BUILD], department="01")
+        SiaeFactory(kind=siae_constants.KIND_EI, presta_type=[siae_constants.PRESTA_PREST], department="38")
+        SiaeFactory(kind="OPCS", presta_type=[siae_constants.PRESTA_PREST], department="38")
         cls.sector_1 = SectorFactory()
         cls.sector_2 = SectorFactory()
         siae_with_sector_1 = SiaeFactory(
@@ -87,6 +82,9 @@ class SiaeListFilterApiTest(TestCase):
         )
         siae_with_network_2.networks.add(cls.network_2)
         UserFactory(api_key="admin")
+
+    def test_siae_count(self):
+        self.assertEqual(Siae.objects.count(), 9)
 
     def test_should_return_siae_list(self):
         url = reverse("api:siae-list") + "?token=admin"
@@ -176,6 +174,16 @@ class SiaeDetailApiTest(TestCase):
         cls.siae = SiaeFactory()
         UserFactory(api_key="admin")
 
+    def test_should_return_4O4_if_siae_excluded(self):
+        siae_opcs = SiaeFactory(kind="OPCS")
+        for siae in [siae_opcs]:
+            url = reverse("api:siae-detail", args=[siae.id])  # anonymous
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 404)
+            url = reverse("api:siae-detail", args=[siae.id]) + "?token=admin"
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 404)
+
     def test_should_return_simple_siae_object_to_anonymous_users(self):
         url = reverse("api:siae-detail", args=[self.siae.id])  # anonymous user
         response = self.client.get(url)
@@ -220,6 +228,16 @@ class SiaeRetrieveBySlugApiTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
+    def test_should_return_4O4_if_siae_excluded(self):
+        siae_opcs = SiaeFactory(kind="OPCS")
+        for siae in [siae_opcs]:
+            url = reverse("api:siae-retrieve-by-slug", args=[siae.slug])  # anonymous
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 404)
+            url = reverse("api:siae-retrieve-by-slug", args=[siae.slug]) + "?token=admin"
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 404)
+
     def test_should_return_siae_if_slug_known(self):
         url = reverse("api:siae-retrieve-by-slug", args=["une-structure-38"])  # anonymous user
         response = self.client.get(url)
@@ -260,6 +278,16 @@ class SiaeRetrieveBySirenApiTest(TestCase):
         self.assertEqual(response.status_code, 200)
         # self.assertEqual(type(response.data), list)
         self.assertEqual(len(response.data), 0)
+
+    def test_should_return_4O4_if_siae_excluded(self):
+        siae_opcs = SiaeFactory(kind="OPCS", siret="99999999999999")
+        for siae in [siae_opcs]:
+            url = reverse("api:siae-retrieve-by-siren", args=[siae.siren])  # anonymous
+            response = self.client.get(url)
+            self.assertEqual(len(response.data), 0)
+            url = reverse("api:siae-retrieve-by-siren", args=[siae.siren]) + "?token=admin"
+            response = self.client.get(url)
+            self.assertEqual(len(response.data), 0)
 
     def test_should_return_siae_list_if_siren_known(self):
         # anonymous user
@@ -320,6 +348,16 @@ class SiaeRetrieveBySiretApiTest(TestCase):
         self.assertEqual(response.status_code, 200)
         # self.assertEqual(type(response.data), list)
         self.assertEqual(len(response.data), 0)
+
+    def test_should_return_4O4_if_siae_excluded(self):
+        siae_opcs = SiaeFactory(kind="OPCS", siret="99999999999999")
+        for siae in [siae_opcs]:
+            url = reverse("api:siae-retrieve-by-siret", args=[siae.siret])  # anonymous
+            response = self.client.get(url)
+            self.assertEqual(len(response.data), 0)
+            url = reverse("api:siae-retrieve-by-siret", args=[siae.siret]) + "?token=admin"
+            response = self.client.get(url)
+            self.assertEqual(len(response.data), 0)
 
     def test_should_return_siae_list_if_siret_known(self):
         # anonymous user
