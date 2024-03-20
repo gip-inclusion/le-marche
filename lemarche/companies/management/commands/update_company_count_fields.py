@@ -5,8 +5,7 @@ from lemarche.utils.commands import BaseCommand
 
 class Command(BaseCommand):
     """
-    Command to attach users to their company, depending on their e-mail address
-    Only for companies that have their 'email_domain_list' field set
+    Goal: update the '_count' fields of each Company
 
     Usage:
     - poetry run python manage.py update_company_count_fields
