@@ -19,7 +19,7 @@ class CompanyQuerySet(models.QuerySet):
 
 
 class Company(models.Model):
-    FIELDS_STATS_COUNT = ["user_count"]
+    FIELDS_STATS_COUNT = ["user_count", "user_tender_count"]
     FIELDS_STATS_TIMESTAMPS = ["created_at", "updated_at"]
     READONLY_FIELDS = FIELDS_STATS_COUNT + FIELDS_STATS_TIMESTAMPS
 
@@ -40,6 +40,7 @@ class Company(models.Model):
 
     # stats
     user_count = models.IntegerField("Nombre d'utilisateurs", default=0)
+    user_tender_count = models.IntegerField("Nombre de besoins déposés par les utilisateurs", default=0)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)

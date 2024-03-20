@@ -12,7 +12,6 @@ class Command(BaseCommand):
     Usage:
     - poetry run python manage.py set_company_users --dry-run
     - poetry run python manage.py set_company_users --only-add
-    - poetry run python manage.py set_company_users --only-add --with-count
     - poetry run python manage.py set_company_users
     """
 
@@ -20,9 +19,6 @@ class Command(BaseCommand):
         parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Dry run (no changes to the DB)")
         parser.add_argument(
             "--only-add", dest="only_add", action="store_true", help="Only add new users, don't delete existing"
-        )
-        parser.add_argument(
-            "--with-count", dest="with_count", action="store_true", help="Update user_count at the end"
         )
 
     def handle(self, *args, **options):
@@ -71,14 +67,6 @@ class Command(BaseCommand):
             f"Users with company: before {old_users_with_company_count} / after {new_users_with_company_count} / {new_users_with_company_count-old_users_with_company_count}",  # noqa
             f"Companies with user: before {old_companies_with_user_count} / after {new_companies_with_user_count} / {new_companies_with_user_count-old_companies_with_user_count}",  # noqa
         ]
-
-        if options["with_count"]:
-            self.stdout_info("-" * 80)
-            self.stdout_info("Updating Company.user_count fields")
-            for company in Company.objects.prefetch_related("users").all():
-                company.user_count = company.users.count()
-                company.save()
-            msg_success.append("Also updated Company.user_count field")
 
         self.stdout_messages_success(msg_success)
         api_slack.send_message_to_channel("\n".join(msg_success))
