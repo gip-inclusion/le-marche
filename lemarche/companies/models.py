@@ -40,6 +40,7 @@ class Company(models.Model):
 
     # stats
     user_count = models.IntegerField("Nombre d'utilisateurs", default=0)
+    user_tender_count = models.IntegerField("Nombre de besoins déposés par les utilisateurs", default=0)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
