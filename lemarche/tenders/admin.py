@@ -108,6 +108,26 @@ class AuthorKindFilter(admin.SimpleListFilter):
         return queryset
 
 
+class UserAdminFilter(admin.SimpleListFilter):
+    title = "Suivi bizdev"
+    parameter_name = "admins"
+
+    def lookups(self, request, model_admin):
+        admins = User.objects.is_admin_bizdev().values("id", "first_name")
+        admins_choices = [(admin["id"], admin["first_name"]) for admin in admins]
+        admins_choices += [("None", "Sans bizdev")]
+        return admins_choices
+
+    def queryset(self, request, queryset):
+        lookup_value = self.value()
+        if lookup_value:
+            if lookup_value == "None":
+                queryset = queryset.filter(admins__isnull=True)
+            else:
+                queryset = queryset.filter(admins__id__exact=lookup_value)
+        return queryset
+
+
 class TenderNoteInline(GenericTabularInline):
     model = Note
     fields = ["text", "author", "created_at", "updated_at"]
@@ -206,6 +226,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "start_working_date",
         ResponseKindFilter,
         "siae_transactioned",
+        UserAdminFilter,
     ]
     advanced_filter_fields = (
         "kind",
