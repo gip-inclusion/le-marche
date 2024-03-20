@@ -21,7 +21,7 @@ class UserQueryset(models.QuerySet):
     """
 
     def is_admin_bizdev(self):
-        return self.filter(kind=user_constants.KIND_ADMIN, position="Bizdev", is_staff=True)
+        return self.filter(kind=user_constants.KIND_ADMIN, position__iexact="Bizdev", is_staff=True)
 
     def has_company(self):
         return self.filter(company__isnull=False).distinct()

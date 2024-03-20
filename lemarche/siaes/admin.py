@@ -413,7 +413,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        # qs = qs.with_tender_stats()
+        qs = qs.with_tender_stats()
         return qs
 
     def get_readonly_fields(self, request, obj=None):
