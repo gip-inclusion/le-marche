@@ -19,4 +19,16 @@ class Migration(migrations.Migration):
                 verbose_name="Abouti à une transaction avec l'acheteur",
             ),
         ),
+        migrations.AddField(
+            model_name="tendersiae",
+            name="transactioned_source",
+            field=models.CharField(
+                blank=True,
+                choices=[("ADMIN", "Admin"), ("AUTHOR", "Auteur"), ("SIAE", "Structure")],
+                help_text="Champ mis à jour automatiquement",
+                max_length=20,
+                null=True,
+                verbose_name="Abouti à une transaction avec l'acheteur : source",
+            ),
+        ),
     ]

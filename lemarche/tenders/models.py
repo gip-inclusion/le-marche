@@ -1118,6 +1118,14 @@ class TenderSiae(models.Model):
         blank=True,
         null=True,
     )
+    transactioned_source = models.CharField(
+        verbose_name="Abouti à une transaction avec l'acheteur : source",
+        help_text=AUTO_FIELD_HELP_TEXT,
+        max_length=20,
+        choices=tender_constants.TENDER_SIAE_TRANSACTIONED_SOURCE_CHOICES,
+        blank=True,
+        null=True,
+    )
 
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
 

@@ -836,6 +836,7 @@ class TenderSiaeAdmin(admin.ModelAdmin):
         "siae_with_app_link",
         "tender",
         "tender_with_link",
+        "transactioned_source",
         "logs_display",
     ]
 
@@ -845,7 +846,10 @@ class TenderSiaeAdmin(admin.ModelAdmin):
             {"fields": ("siae", "siae_with_app_link", "tender_with_link", "source", "found_with_ai")},
         ),
         ("Mise en relation", {"fields": (*TenderSiae.FIELDS_RELATION, "status")}),
-        ("Transaction ?", {"fields": (*TenderSiae.FIELDS_SURVEY_TRANSACTIONED, "transactioned")}),
+        (
+            "Transaction ?",
+            {"fields": (*TenderSiae.FIELDS_SURVEY_TRANSACTIONED, "transactioned", "transactioned_source")},
+        ),
         ("Stats", {"fields": ("logs_display",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
