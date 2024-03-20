@@ -114,12 +114,17 @@ class UserAdminFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         admins = User.objects.is_admin_bizdev().values("id", "first_name")
-        return [(admin["id"], admin["first_name"]) for admin in admins]
+        admins_choices = [(admin["id"], admin["first_name"]) for admin in admins]
+        admins_choices += [("None", "Sans bizdev")]
+        return admins_choices
 
     def queryset(self, request, queryset):
         lookup_value = self.value()
         if lookup_value:
-            queryset = queryset.filter(admins__id__exact=lookup_value)
+            if lookup_value == "None":
+                queryset = queryset.filter(admins__isnull=True)
+            else:
+                queryset = queryset.filter(admins__id__exact=lookup_value)
         return queryset
 
 
