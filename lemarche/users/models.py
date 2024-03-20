@@ -20,6 +20,9 @@ class UserQueryset(models.QuerySet):
     Custom queryset with additional filtering methods for users.
     """
 
+    def is_admin_bizdev(self):
+        return self.filter(kind=user_constants.KIND_ADMIN, position="Bizdev", is_staff=True)
+
     def has_company(self):
         return self.filter(company__isnull=False).distinct()
 
@@ -87,6 +90,9 @@ class UserManager(BaseUserManager):
             raise ValueError("Un superuser doit avoir is_superuser=True.")
 
         return self.create_user(email, password, **extra_fields)
+
+    def is_admin_bizdev(self):
+        return self.get_queryset().is_admin_bizdev()
 
     def has_company(self):
         return self.get_queryset().has_company()
