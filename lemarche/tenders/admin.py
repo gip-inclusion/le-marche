@@ -126,6 +126,34 @@ class TenderQuestionInline(admin.TabularInline):
     extra = 0
 
 
+class TenderSiaeInterestedInline(admin.TabularInline):
+    model = TenderSiae
+    verbose_name = "Structure intéressée"
+    verbose_name_plural = "Structures intéressées"
+    fields = [
+        "id",
+        "siae",
+        "source",
+        "found_with_ai",
+        "detail_contact_click_date",
+        "survey_transactioned_send_date",
+        "survey_transactioned_answer",
+    ]
+    readonly_fields = [field.name for field in TenderSiae._meta.fields]
+    extra = 0
+    show_change_link = True
+    can_delete = False
+    classes = ["collapse"]
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.filter(detail_contact_click_date__isnull=False)
+        return qs
+
+
 class TenderForm(forms.ModelForm):
     class Meta:
         model = Tender
@@ -334,6 +362,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                 )
             },
         ),
+        TenderSiaeInterestedInline,
         (
             "Transaction ?",
             {
