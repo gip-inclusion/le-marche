@@ -138,8 +138,9 @@ class TenderSiaeInterestedInline(admin.TabularInline):
         "detail_contact_click_date",
         "survey_transactioned_send_date",
         "survey_transactioned_answer",
+        "transactioned",
     ]
-    readonly_fields = [field.name for field in TenderSiae._meta.fields]
+    readonly_fields = [field.name for field in TenderSiae._meta.fields if field.name not in ["transactioned"]]
     extra = 0
     show_change_link = True
     can_delete = False
@@ -822,11 +823,12 @@ class TenderSiaeStatusFilter(admin.SimpleListFilter):
 
 @admin.register(TenderSiae, site=admin_site)
 class TenderSiaeAdmin(admin.ModelAdmin):
-    list_display = ["created_at", "siae_with_app_link", "tender_with_link", "source", "status"]
+    list_display = ["created_at", "siae_with_app_link", "tender_with_link", "source", "status", "transactioned"]
     list_filter = [
         ("source", TenderSiaeSourceFilter),
         TenderSiaeStatusFilter,
         "survey_transactioned_answer",
+        "transactioned",
     ]
 
     readonly_fields = [field for field in TenderSiae.READONLY_FIELDS] + [
@@ -834,6 +836,7 @@ class TenderSiaeAdmin(admin.ModelAdmin):
         "siae_with_app_link",
         "tender",
         "tender_with_link",
+        "transactioned_source",
         "logs_display",
     ]
 
@@ -843,7 +846,10 @@ class TenderSiaeAdmin(admin.ModelAdmin):
             {"fields": ("siae", "siae_with_app_link", "tender_with_link", "source", "found_with_ai")},
         ),
         ("Mise en relation", {"fields": (*TenderSiae.FIELDS_RELATION, "status")}),
-        ("Transaction ?", {"fields": TenderSiae.FIELDS_SURVEY_TRANSACTIONED}),
+        (
+            "Transaction ?",
+            {"fields": (*TenderSiae.FIELDS_SURVEY_TRANSACTIONED, "transactioned", "transactioned_source")},
+        ),
         ("Stats", {"fields": ("logs_display",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )

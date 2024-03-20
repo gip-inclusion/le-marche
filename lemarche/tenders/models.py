@@ -1094,7 +1094,7 @@ class TenderSiae(models.Model):
     detail_not_interested_click_date = models.DateTimeField("Date de clic sur Pas intéressé", blank=True, null=True)
     detail_not_interested_feedback = models.TextField(verbose_name="Clic sur Pas intéréssé : explication", blank=True)
 
-    # stats: transaction
+    # survey
     survey_transactioned_send_date = models.DateTimeField(
         verbose_name="Sondage transaction : date d'envoi de l'e-mail", blank=True, null=True
     )
@@ -1109,6 +1109,22 @@ class TenderSiae(models.Model):
     )
     survey_transactioned_answer_date = models.DateTimeField(
         "Sondage transaction : date de réponse", blank=True, null=True
+    )
+
+    # admin
+    transactioned = models.BooleanField(
+        verbose_name="Abouti à une transaction avec l'acheteur",
+        help_text=ADMIN_FIELD_HELP_TEXT,
+        blank=True,
+        null=True,
+    )
+    transactioned_source = models.CharField(
+        verbose_name="Abouti à une transaction avec l'acheteur : source",
+        help_text=AUTO_FIELD_HELP_TEXT,
+        max_length=20,
+        choices=tender_constants.TENDER_SIAE_TRANSACTIONED_SOURCE_CHOICES,
+        blank=True,
+        null=True,
     )
 
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
