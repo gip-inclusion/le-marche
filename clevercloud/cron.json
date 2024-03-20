@@ -11,7 +11,7 @@
     "20 7 * * 1 $ROOT/clevercloud/siaes_update_api_zrr_fields.sh",
     "25 7 * * 1 $ROOT/clevercloud/siaes_update_count_fields.sh",
     "30 7 * * 1 $ROOT/clevercloud/siaes_update_super_badge_field.sh",
-    "50 7 * * 1 $ROOT/clevercloud/companies_update_users.sh",
+    "50 7 * * 1 $ROOT/clevercloud/companies_update_users_and_count_fields.sh",
     "55 7 * * 1 $ROOT/clevercloud/crm_brevo_sync.sh",
     "0 7 * * 2 $ROOT/clevercloud/siaes_send_completion_reminder_emails.sh",
     "0 8 * * * $ROOT/clevercloud/siaes_send_user_request_reminder_emails.sh",

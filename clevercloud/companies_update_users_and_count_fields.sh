@@ -19,5 +19,5 @@ fi
 # $APP_HOME is set by default by clever cloud.
 cd $APP_HOME
 
-# django-admin set_company_users --with-count
-django-admin set_company_users --only-add --with-count
+django-admin set_company_users --only-add
+django-admin update_company_count_fields
