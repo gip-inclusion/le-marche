@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+from lemarche.companies.factories import CompanyFactory
 from lemarche.favorites.factories import FavoriteListFactory
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.tenders.factories import TenderFactory
@@ -49,10 +50,22 @@ class UserModelQuerysetTest(TestCase):
     def setUpTestData(cls):
         cls.user = UserFactory()
 
+    def test_is_admin_bizdev(self):
+        UserFactory(kind=user_constants.KIND_ADMIN, is_staff=True)
+        UserFactory(kind=user_constants.KIND_ADMIN, is_staff=True, position="BizDev")
+        UserFactory(kind=user_constants.KIND_ADMIN, is_staff=True, position="Bizdev")
+        self.assertEqual(User.objects.count(), 1 + 3)
+        self.assertEqual(User.objects.is_admin_bizdev().count(), 2)
+
+    def test_has_company(self):
+        user_2 = UserFactory()
+        CompanyFactory(users=[user_2])
+        self.assertEqual(User.objects.count(), 1 + 1)
+        self.assertEqual(User.objects.has_company().count(), 1)
+
     def test_has_siae(self):
         user_2 = UserFactory()
-        siae = SiaeFactory()
-        siae.users.add(user_2)
+        SiaeFactory(users=[user_2])
         self.assertEqual(User.objects.count(), 1 + 1)
         self.assertEqual(User.objects.has_siae().count(), 1)
 
@@ -75,8 +88,7 @@ class UserModelQuerysetTest(TestCase):
 
     def test_with_siae_stats(self):
         user_2 = UserFactory()
-        siae = SiaeFactory()
-        siae.users.add(user_2)
+        SiaeFactory(users=[user_2])
         self.assertEqual(User.objects.count(), 1 + 1)
         self.assertEqual(User.objects.with_siae_stats().filter(id=self.user.id).first().siae_count_annotated, 0)
         self.assertEqual(User.objects.with_siae_stats().filter(id=user_2.id).first().siae_count_annotated, 1)
