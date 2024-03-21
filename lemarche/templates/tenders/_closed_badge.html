@@ -6,11 +6,7 @@
         </span>
     {% else %}
         <span class="badge badge-base badge-pill mr-1 badge-{{ tender.kind|lower }}">
-            {% if tender.kind == "PROJ" %}
-                {{ title_kind_sourcing_siae|default:tender.get_kind_display }}
-            {% else %}
-                {{ tender.get_kind_display }}
-            {% endif %}
+            {{ tender_kind_display|default:tender.get_kind_display }}
         </span>
         Disponible <strong>jusqu'au : {{ tender.deadline_date|default:"" }}</strong>
         {% if is_new_for_siaes %}

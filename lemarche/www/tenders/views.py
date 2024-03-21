@@ -319,7 +319,7 @@ class TenderListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         user_kind = self.request.user.kind if self.request.user.is_authenticated else "anonymous"
         context["page_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
-        context["title_kind_sourcing_siae"] = (
+        context["tender_kind_display"] = (
             tender_constants.KIND_PROJECT_SIAE_DISPLAY
             if user_kind == User.KIND_SIAE
             else tender_constants.KIND_PROJECT_DISPLAY
