@@ -92,8 +92,26 @@ class OurRessourcesSection(blocks.StructBlock):
         label = "Nos ressources"
 
 
+class WhatFindHereCardBlock(blocks.StructBlock):
+    ico = blocks.CharBlock(
+        label="Icone bicro", help_text="Ico du thème (Ex: ico-bicro-marche-recyclage)", required=True, max_length=100
+    )
+    text = blocks.CharBlock(required=True, max_length=200)
+
+
 class WhatFindHereSection(blocks.StructBlock):
     title = blocks.CharBlock(default="Sur le marché", required=True, max_length=120)
+
+    cards = blocks.StreamBlock(
+        [
+            (
+                "card",
+                WhatFindHereCardBlock(),
+            )
+        ],
+        min_num=3,
+        max_num=3,
+    )
 
     class Meta:
         template = "cms/streams/section_what_find_here.html"
