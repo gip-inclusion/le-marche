@@ -692,6 +692,10 @@ class TenderDetailSiaeSurveyTransactionedView(SesameSiaeMemberRequiredMixin, Upd
                 # update tendersiae
                 self.object.survey_transactioned_answer = survey_transactioned_answer
                 self.object.survey_transactioned_answer_date = timezone.now()
+                if self.object.survey_transactioned_answer:
+                    if self.object.tender.siae_transactioned is None:
+                        self.object.transactioned = survey_transactioned_answer
+                        self.object.transactioned_source = tender_constants.TENDER_SIAE_TRANSACTIONED_SOURCE_SIAE
                 self.object.save()
                 # update tender if True
                 if self.object.survey_transactioned_answer:
