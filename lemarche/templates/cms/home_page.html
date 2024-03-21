@@ -39,17 +39,22 @@
                         {% endfor %}
                     </ul>
                     <p class="mb-0 mt-5">
-                        <a href="{% url 'tenders:create' %}"
-                           id="{{ page.banner_cta_id }}"
-                           class="btn btn-primary d-block d-md-inline-block mb-2">
-                            <i class="ri-mail-send-line ri-lg mr-2"></i>{{ page.banner_cta_text }}
-                        </a>
-                        <span class="d-block d-sm-inline pl-4 py-2">ou</span>
-                        <a href="{% url 'siae:search_results' %}"
-                           id="home-siae-search"
-                           class="btn btn-link">
-                            <i class="ri-search-line ri-xl mr-2"></i>Rechercher un prestataire
-                        </a>
+                        {% for block in page.banner_cta_section %}
+                            {% if user.is_authenticated and block.block_type == 'cta_primary_auth' or not user.is_authenticated and block.block_type == 'cta_primary' %}
+                                <a href="{{ block.value.cta_href }}"
+                                    id="{{ block.value.cta_id }}"
+                                    class="btn btn-primary d-block d-md-inline-block mb-2">
+                                    <i class="{{ block.value.cta_icon }} ri-lg mr-2"></i>{{ block.value.cta_text }}
+                                </a>
+                            {% elif user.is_authenticated and block.block_type == 'cta_secondary_auth' or not user.is_authenticated and block.block_type == 'cta_secondary' %}
+                                <span class="d-block d-sm-inline pl-4 py-2">ou</span>
+                                <a href="{{ block.value.cta_href }}"
+                                id="{{ block.value.cta_id }}"
+                                class="btn btn-link">
+                                    <i class="{{ block.value.cta_icon }} ri-xl mr-2"></i>{{ block.value.cta_text }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
                     </p>
                 </div>
             </div>

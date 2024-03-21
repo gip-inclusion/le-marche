@@ -3,6 +3,22 @@ from wagtail import blocks
 from wagtail.images.blocks import ImageChooserBlock
 
 
+class CallToAction(blocks.StructBlock):
+    cta_id = blocks.CharBlock(
+        label="slug",
+        help_text="id du call to action (pour le suivi)",
+    )
+    cta_href = blocks.CharBlock(
+        label="Lien du call to action",
+    )
+    cta_text = blocks.CharBlock(label="Titre du call to action")
+    cta_icon = blocks.CharBlock(
+        label="Icone du call to action",
+        help_text='Bibliothèque <a href="https://remixicon.com/" target="_blanck">remixicon</a>',
+        required=False,
+    )
+
+
 class StatsWebsite(blocks.StructBlock):
     """A stats of marche website section"""
 

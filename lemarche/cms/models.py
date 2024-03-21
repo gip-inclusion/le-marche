@@ -152,7 +152,7 @@ class PaidArticleList(ArticleList):
 
 
 class HomePage(Page):
-    max_count = 1
+    max_count = 2
     banner_title = models.CharField(
         default="Votre recherche de prestataires inclusifs est chronophage ?", max_length=120
     )
@@ -167,22 +167,17 @@ class HomePage(Page):
         max_num=3,
         use_json_field=True,
     )
-    # banner_image = models.ForeignKey(
-    #     "wagtailimages.Image",
-    #     null=True,
-    #     blank=False,
-    #     on_delete=models.SET_NULL,
-    #     # related_name=''
-    # )
-    banner_cta_id = models.SlugField(
-        default="home-demande",
-        verbose_name="slug",
-        allow_unicode=True,
-        max_length=255,
-        help_text="id du call to action (pour le suivi)",
-    )
-    banner_cta_text = models.CharField(
-        default="Publier un besoin d'achat", max_length=255, verbose_name="Titre du call to action"
+    banner_cta_section = StreamField(
+        [
+            ("cta_primary", blocks.CallToAction(label="CTA primaire")),
+            ("cta_secondary", blocks.CallToAction(label="CTA secondaire")),
+            ("cta_primary_auth", blocks.CallToAction(label="CTA primaire connecté")),
+            ("cta_secondary_auth", blocks.CallToAction(label="CTA secondaire connecté")),
+        ],
+        min_num=1,
+        max_num=4,
+        use_json_field=True,
+        null=True,
     )
 
     content = StreamField(
@@ -215,13 +210,12 @@ class HomePage(Page):
     content_panels = Page.content_panels + [
         FieldPanel("banner_title"),
         FieldPanel("banner_subtitle"),
-        FieldPanel("banner_cta_id"),
-        FieldPanel("banner_cta_text"),
+        FieldPanel("banner_cta_section"),
         FieldPanel("banner_arguments_list"),
         FieldPanel("content"),
     ]
 
-    parent_page_types = ["wagtailcore.Page"]
+    parent_page_types = ["wagtailcore.Page", "cms.HomePage"]
 
     def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
