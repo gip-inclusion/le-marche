@@ -68,14 +68,16 @@
 {% block modals %}
 {% if user.is_authenticated or siae_id %}
     {% if not siae_has_detail_contact_click_date %}
-        {% include "auth/_login_or_signup_siae_tender_modal.html" %}
+        {% include "tenders/_detail_contact_click_confirm_modal.html" %}
     {% endif %}
     {% if not siae_has_detail_cocontracting_click_date %}
-        {% include "tenders/_detail_contact_click_confirm_modal.html" %}
+        <!-- no confirmation modal for cocontracting -->
     {% endif %}
     {% if not siae_has_detail_not_interested_click_date %}
         {% include "tenders/_detail_not_interested_click_confirm_modal.html" %}
     {% endif %}
+{% else %}
+    {% include "auth/_login_or_signup_siae_tender_modal.html" %}
 {% endif %}
 {% endblock %}
 
