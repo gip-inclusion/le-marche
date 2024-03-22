@@ -66,7 +66,7 @@ class CompanyAdmin(admin.ModelAdmin, DynamicArrayMixin):
             },
         ),
         ("Logo", {"fields": ("logo_url", "logo_url_display")}),
-        ("LinkedIn", {"fields": ("linkedin_url", "linkedin_buyer_count")}),
+        ("LinkedIn", {"fields": ("linkedin_buyer_count",)}),
         ("Impact", {"fields": ("user_count_annotated_with_link", "user_tender_count_annotated_with_link")}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )

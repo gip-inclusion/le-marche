@@ -16,11 +16,6 @@ class Migration(migrations.Migration):
                 default=0, help_text="Champ renseigné par un ADMIN", verbose_name="Nombre d'acheteurs sur LinkedIn"
             ),
         ),
-        migrations.AddField(
-            model_name="company",
-            name="linkedin_url",
-            field=models.URLField(blank=True, verbose_name="Lien vers la page LinkedIn"),
-        ),
         migrations.AlterField(
             model_name="company",
             name="user_count",

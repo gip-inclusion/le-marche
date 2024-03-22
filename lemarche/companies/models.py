@@ -40,12 +40,10 @@ class Company(models.Model):
         default=list,
     )
 
+    # stats
     linkedin_buyer_count = models.IntegerField(
         "Nombre d'acheteurs sur LinkedIn", help_text=ADMIN_FIELD_HELP_TEXT, default=0
     )
-    linkedin_url = models.URLField(verbose_name="Lien vers la page LinkedIn", blank=True)
-
-    # stats
     user_count = models.IntegerField("Nombre d'utilisateurs", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0)
     user_tender_count = models.IntegerField(
         "Nombre de besoins déposés par les utilisateurs", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
