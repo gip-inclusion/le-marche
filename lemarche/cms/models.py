@@ -185,7 +185,8 @@ class HomePage(Page):
             ("website_stats", blocks.StatsWebsite()),
             ("section_they_publish_tenders", blocks.TendersTestimonialsSection()),
             ("section_studies_cases_tenders", blocks.TendersStudiesCasesSection()),
-            ("section_our_siaes", blocks.OurSiaesSection()),
+            ("section_our_siaes", blocks.OurSiaesSection()),  # TODO: to be remove after deploy
+            ("section_ecosystem", blocks.EcosystemSection()),
             ("section_our_ressources", blocks.OurRessourcesSection()),
             ("section_what_find_here", blocks.WhatFindHereSection()),
             ("section_our_partners", blocks.OurPartnersSection()),
