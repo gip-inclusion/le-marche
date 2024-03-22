@@ -1,0 +1,18 @@
+{% load wagtailcore_tags  wagtailimages_tags %}
+
+<div class="col-sm-6 col-md-3 my-4 my-sm-auto">
+    <div class="card c-card has-one-link-inside">
+        {% image self.image original class="card-img-top" alt="" %}
+        <div class="card-body">
+            <a href="{{ self.link }}" class="btn btn-link text-left pl-0 stretched-link">
+                {{ self.title }}
+            </a>
+        </div>
+        <div class="card-footer">
+            <p class="display-1 mb-1">
+                <i class="ri-arrow-right-line ri-xl"></i> {{ self.number }}
+            </p>
+            <p class="display-4">{{ self.number_of }}</p>
+        </div>
+    </div>
+</div>
