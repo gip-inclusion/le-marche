@@ -34,11 +34,12 @@ class StatsWebsite(blocks.StructBlock):
 
 class TendersTestimonialsSection(blocks.StructBlock):
     title = blocks.CharBlock(default="Ils ont publié un besoin sur le marché", required=True, max_length=120)
+    images = blocks.StreamBlock([("images", ImageChooserBlock(required=True))], min_num=6, max_num=12)
 
     class Meta:
-        template = "cms/streams/section_they_publish_tenders.html"
+        template = "cms/streams/section_testimonials.html"
         icon = "pen"
-        label = "Ils ont publié un besoin sur le marché"
+        label = "Ils sont sur le marché"
 
 
 class TendersStudiesCase(blocks.StructBlock):
