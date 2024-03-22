@@ -4,6 +4,8 @@ from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django_better_admin_arrayfield.models.fields import ArrayField
 
+from lemarche.utils.constants import ADMIN_FIELD_HELP_TEXT, RECALCULATED_FIELD_HELP_TEXT
+
 
 class CompanyQuerySet(models.QuerySet):
     def has_user(self):
@@ -39,8 +41,13 @@ class Company(models.Model):
     )
 
     # stats
-    user_count = models.IntegerField("Nombre d'utilisateurs", default=0)
-    user_tender_count = models.IntegerField("Nombre de besoins déposés par les utilisateurs", default=0)
+    linkedin_buyer_count = models.IntegerField(
+        "Nombre d'acheteurs sur LinkedIn", help_text=ADMIN_FIELD_HELP_TEXT, default=0
+    )
+    user_count = models.IntegerField("Nombre d'utilisateurs", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0)
+    user_tender_count = models.IntegerField(
+        "Nombre de besoins déposés par les utilisateurs", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
+    )
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
