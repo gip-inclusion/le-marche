@@ -211,8 +211,8 @@ class HomePage(Page):
     content_panels = Page.content_panels + [
         FieldPanel("banner_title"),
         FieldPanel("banner_subtitle"),
-        FieldPanel("banner_cta_section"),
         FieldPanel("banner_arguments_list"),
+        FieldPanel("banner_cta_section"),
         FieldPanel("content"),
     ]
 
