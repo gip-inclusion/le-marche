@@ -73,7 +73,7 @@ class TendersStudiesCasesSection(blocks.StructBlock):
         label = "Etude de cas"
 
 
-class OurSiaesSection(blocks.StructBlock):
+class OurSiaesSection(blocks.StructBlock):  # TODO:  to be remove after deploy of EcosystemSection
     """An external or internal URL."""
 
     title = blocks.CharBlock(
@@ -103,6 +103,27 @@ class OurSiaesSection(blocks.StructBlock):
         template = "cms/streams/section_our_siaes.html"
         icon = "pen"
         label = "Section nos structures"
+
+
+class EcosystemSection(blocks.StructBlock):
+    image = ImageChooserBlock(required=True)
+    title = blocks.CharBlock(
+        default="Les prestataires inclusifs, des partenaires d'excellence", required=True, max_length=60
+    )
+    subtitle = blocks.RichTextBlock(
+        default="""
+            Faire appel à nos 8500 prestataires inclusifs, c'est la garantie d'être accompagné
+            par des professionnels reconnus et certifiés dans leur domaine.
+        """,
+        required=True,
+        features=["bold", "italic"],
+    )
+    cta = CallToAction(label="Call to action")
+
+    class Meta:
+        template = "cms/streams/section_ecosystem.html"
+        icon = "pen"
+        label = "Section écosystème"
 
 
 class OurRessourcesSection(blocks.StructBlock):
@@ -175,7 +196,7 @@ class FeatureBlock(blocks.StructBlock):
     class Meta:
         template = "cms/streams/card_feature.html"
         icon = "pen"
-        label = "Section nos structures"
+        label = "Fonctionnalité"
 
 
 class OurFeaturesSection(blocks.StructBlock):
