@@ -41,9 +41,31 @@ class TendersTestimonialsSection(blocks.StructBlock):
         label = "Ils ont publié un besoin sur le marché"
 
 
+class TendersStudiesCase(blocks.StructBlock):
+    image = ImageChooserBlock(required=True)
+    title = blocks.CharBlock(label="Titre du cas", required=True, max_length=120)
+    link = blocks.CharBlock(label="Lien", required=True, max_length=200)
+    number = blocks.CharBlock(label="Le nombre", required=True, max_length=20)
+    number_of = blocks.CharBlock(label="Nombre de", required=True, max_length=120)
+
+    class Meta:
+        template = "cms/streams/section_studies_cases_tenders_case.html"
+
+
 class TendersStudiesCasesSection(blocks.StructBlock):
     title = blocks.CharBlock(default="100% des besoins ont reçu des réponses en 24h", required=True, max_length=120)
     subtitle = blocks.CharBlock(default="Gagnez du temps en utilisant le marché.", required=True, max_length=120)
+    cta = CallToAction(label="Call to action")
+    cases = blocks.StreamBlock(
+        [
+            (
+                "case",
+                TendersStudiesCase(),
+            )
+        ],
+        min_num=3,
+        max_num=3,
+    )
 
     class Meta:
         template = "cms/streams/section_studies_cases_tenders.html"
