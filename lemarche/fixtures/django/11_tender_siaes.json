@@ -5,6 +5,7 @@
         "fields": {
             "tender": 1,
             "siae": 2653,
+            "user": 5,
             "source": "EMAIL",
             "email_send_date": "2021-07-02T12:44:39Z",
             "email_link_click_date": "2021-07-02T12:44:39Z",
