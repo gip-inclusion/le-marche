@@ -175,6 +175,48 @@ class TenderSiaeInterestedInline(admin.TabularInline):
         return qs
 
 
+class TenderSiaeUserInterestedInline(admin.TabularInline):
+    model = TenderSiae
+    verbose_name = "Utilisateur intéressé"
+    verbose_name_plural = "Utilisateurs intéressés"
+    fields = [
+        "id",
+        "user_full_name",
+        "user_phone",
+        "user",
+        "siae",
+        "detail_contact_click_date",
+    ]
+    readonly_fields = [field.name for field in TenderSiae._meta.fields if field.name not in ["transactioned"]] + [
+        "user_full_name",
+        "user_phone",
+    ]
+    extra = 0
+    show_change_link = True
+    can_delete = False
+    classes = ["collapse"]
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.filter(user__isnull=False, detail_contact_click_date__isnull=False)
+        return qs
+
+    def user_full_name(self, obj):
+        return obj.full_name
+
+    user_full_name.admin_order_field = "user_full_name"
+    user_full_name.short_description = "Prénom Nom"
+
+    def user_phone(self, obj):
+        return obj.phone
+
+    user_phone.admin_order_field = "user_phone"
+    user_phone.short_description = User._meta.get_field("phone").verbose_name
+
+
 class TenderForm(forms.ModelForm):
     class Meta:
         model = Tender
@@ -385,6 +427,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             },
         ),
         TenderSiaeInterestedInline,
+        TenderSiaeUserInterestedInline,
         (
             "Transaction ?",
             {
@@ -871,6 +914,7 @@ class TenderSiaeAdmin(admin.ModelAdmin):
             "Transaction ?",
             {"fields": (*TenderSiae.FIELDS_SURVEY_TRANSACTIONED, "transactioned", "transactioned_source")},
         ),
+        ("Utilisateur", {"fields": ("user",)}),
         ("Stats", {"fields": ("logs_display",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
