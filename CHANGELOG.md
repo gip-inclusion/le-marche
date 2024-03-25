@@ -6,6 +6,56 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2024.2.0](https://github.com/gip-inclusion/le-marche/compare/v2024.1.0...v2024.2.0) (2024-03-22)
+
+
+### Features
+
+* **admin_tenders:** Rediriger vers la section structures après la validation des DDB ([#1111](https://github.com/gip-inclusion/le-marche/issues/1111)) ([e29a3d4](https://github.com/gip-inclusion/le-marche/commit/e29a3d43b6291cab0bf9d965a7fe6ff1f1792647))
+* **Admin:** Secteurs : afficher le nombre de besoins concernés ([#1118](https://github.com/gip-inclusion/le-marche/issues/1118)) ([8674309](https://github.com/gip-inclusion/le-marche/commit/8674309a229f30b657f2ae50f721b74889ea564d))
+* **Besoins:** Admin : Avoir le status de la mise en relation ([#1121](https://github.com/gip-inclusion/le-marche/issues/1121)) ([9b5926c](https://github.com/gip-inclusion/le-marche/commit/9b5926c0aef4f950ad69760c9148436d1a2ed462))
+* **Besoins:** Admin : Connaitre le nombre de besoins déposés par chaque entreprise ([#1120](https://github.com/gip-inclusion/le-marche/issues/1120)) ([9181d37](https://github.com/gip-inclusion/le-marche/commit/9181d37d7399c276b4c5ee50361b8c0d4017a7d3))
+* **Besoins:** Admin : filtre de la liste par bizdev ([#1134](https://github.com/gip-inclusion/le-marche/issues/1134)) ([078b95a](https://github.com/gip-inclusion/le-marche/commit/078b95a40c5d91eeb690e2aee005ca125a618a52))
+* **Besoins:** Admin: afficher la liste des structures intéressées ([#1131](https://github.com/gip-inclusion/le-marche/issues/1131)) ([9e801e9](https://github.com/gip-inclusion/le-marche/commit/9e801e92989e15809fa892a4bfa23bc774237ba1))
+* **Besoins:** Admin: pouvoir indiquer quelle structure a effectivement transactionnée ([#1133](https://github.com/gip-inclusion/le-marche/issues/1133)) ([7438756](https://github.com/gip-inclusion/le-marche/commit/74387568638691c154cdbb83e99855b9b4fae6e8))
+* **Besoins:** Ajout d'un filtre par type de besoin ([#1104](https://github.com/gip-inclusion/le-marche/issues/1104)) ([d2054a6](https://github.com/gip-inclusion/le-marche/commit/d2054a6eeb3cf41f4dd2919ee4f6f79e4a9358e0))
+* **Besoins:** Ajout du nombre d'occurences en status Nouveau sur le filtre par type ([#1117](https://github.com/gip-inclusion/le-marche/issues/1117)) ([feaf563](https://github.com/gip-inclusion/le-marche/commit/feaf56369d5628fb6159f2c23bf10cb3c6600c46))
+* **Besoins:** Connaitre la source de la transaction ([#1124](https://github.com/gip-inclusion/le-marche/issues/1124)) ([1e9539f](https://github.com/gip-inclusion/le-marche/commit/1e9539f05fa74b49e36003472cf9d7318b73510a))
+* **Besoins:** Détail : afficher l'entreprise de l'acheteur en gras ([#1138](https://github.com/gip-inclusion/le-marche/issues/1138)) ([2d6c3ab](https://github.com/gip-inclusion/le-marche/commit/2d6c3abaeb47201af51657826153ca12e604fb7a))
+* **Besoins:** Détail : mieux afficher l'email d'equipe ([#1137](https://github.com/gip-inclusion/le-marche/issues/1137)) ([f090cbc](https://github.com/gip-inclusion/le-marche/commit/f090cbcd6622371750c8f4490a751d9a38dea53e))
+* **Besoins:** Détail : répare l'affichage de la modale d'inscription pour les utilisateurs inconnus ([#1136](https://github.com/gip-inclusion/le-marche/issues/1136)) ([666513f](https://github.com/gip-inclusion/le-marche/commit/666513f59213eaeeb2bcf2a5f63d772c5c94e40e))
+* **Besoins:** Mesure du NPS des acheteurs ([#1119](https://github.com/gip-inclusion/le-marche/issues/1119)) ([82e3e14](https://github.com/gip-inclusion/le-marche/commit/82e3e14324186affa80f89e3c125b3d78493da74))
+* **Besoins:** mettre à jour automatiquement la date de transaction ([#1122](https://github.com/gip-inclusion/le-marche/issues/1122)) ([4f502e7](https://github.com/gip-inclusion/le-marche/commit/4f502e7ea5a0237479ac2bbbd1d5c2020fe2be67))
+* **Besoins:** Nouveau champ M2M 'admins' pour aider le suivi ([#1113](https://github.com/gip-inclusion/le-marche/issues/1113)) ([e042239](https://github.com/gip-inclusion/le-marche/commit/e0422390f0663172bd277904cef3f21dfddf12f2))
+* **Besoins:** nouveau champ pour stocker la date de transaction ([#1116](https://github.com/gip-inclusion/le-marche/issues/1116)) ([7c52702](https://github.com/gip-inclusion/le-marche/commit/7c52702edd097471ca48d956f178d872d40631d5))
+* **Besoins:** Permettre à une structure contactée de décliner dès l'e-mail ([#1114](https://github.com/gip-inclusion/le-marche/issues/1114)) ([fe8ec03](https://github.com/gip-inclusion/le-marche/commit/fe8ec0300aa41908ad6cd221a63c6bf0d52ba5c6))
+* **Besoins:** Sondage transaction : mettre à jour le TenderSiae en fonction de la réponse ([#1139](https://github.com/gip-inclusion/le-marche/issues/1139)) ([2e358ba](https://github.com/gip-inclusion/le-marche/commit/2e358baa725ee721d5d8a4639cbf4b9c733c34c9))
+* **Brevo:** Commande pour synchroniser toutes les semaines les entreprises (SIAE) ([#1106](https://github.com/gip-inclusion/le-marche/issues/1106)) ([5880917](https://github.com/gip-inclusion/le-marche/commit/5880917b59815a94252435745b88b22024d5b955))
+* **Brevo:** méthode pour créer (et maj) des entreprises (SIAE) ([#1099](https://github.com/gip-inclusion/le-marche/issues/1099)) ([1225a0c](https://github.com/gip-inclusion/le-marche/commit/1225a0cad121df3eb6c26b037e121da5c4c8acb0))
+* **Dashboard SIAE:** Réordonner les besoins (derniers publiés en premier) ([#1098](https://github.com/gip-inclusion/le-marche/issues/1098)) ([df3fd2f](https://github.com/gip-inclusion/le-marche/commit/df3fd2f3523007f732ed965b825ba02542b9a6fc))
+* **Dépôt de besoins:** Permettre aux structures de supprimer les dépôts de besoins expirés ([#1110](https://github.com/gip-inclusion/le-marche/issues/1110)) ([4404359](https://github.com/gip-inclusion/le-marche/commit/4404359a26bdaa3312660becc270df649a25a08a))
+* **Entreprises:** nouveau champ pour stocker le nombre d'acheteurs sur LinkedIn ([#1140](https://github.com/gip-inclusion/le-marche/issues/1140)) ([1fd1fc3](https://github.com/gip-inclusion/le-marche/commit/1fd1fc379c375e747fa213a1cc60242aa6de18ef))
+* **Entreprises:** nouveau champ user_tender_count, nouvelle commande pour mettre les count à jour ([#1132](https://github.com/gip-inclusion/le-marche/issues/1132)) ([a58f4af](https://github.com/gip-inclusion/le-marche/commit/a58f4af6191ca8e0fba5a096e61249df7c585d61))
+* **SIAE:** nouveau champ 'extra_data' ([#1105](https://github.com/gip-inclusion/le-marche/issues/1105)) ([047a321](https://github.com/gip-inclusion/le-marche/commit/047a321c5547334ab75c2bf17b6d4607001ba8d8))
+* **SIAE:** nouvelle property is_live ([#1107](https://github.com/gip-inclusion/le-marche/issues/1107)) ([019cac8](https://github.com/gip-inclusion/le-marche/commit/019cac8bd9531a5a952150c6a1011e224c211447))
+* **SIAE:** script pour aider le rattachement à leur réseau (grâce à des import csv) ([#1109](https://github.com/gip-inclusion/le-marche/issues/1109)) ([464cde5](https://github.com/gip-inclusion/le-marche/commit/464cde563d3aa1c75e3788e0f92f35bf994a1e3b))
+
+
+### Bug Fixes
+
+* **Admin:** Besoins : répare le filtre par montant exact ([#1112](https://github.com/gip-inclusion/le-marche/issues/1112)) ([31208bb](https://github.com/gip-inclusion/le-marche/commit/31208bba82c0d7ae9f3976e656aa0db6ae8c9e6b))
+* **Admin:** Besoins: ajuste les règles de filtrage pour le montant exact. ref [#1112](https://github.com/gip-inclusion/le-marche/issues/1112) ([fa21009](https://github.com/gip-inclusion/le-marche/commit/fa210093091f17b4bb392d42b77dd1df5749da87))
+* Affichage du header droit de la liste des dépôt de besoins ([#1128](https://github.com/gip-inclusion/le-marche/issues/1128)) ([df3b452](https://github.com/gip-inclusion/le-marche/commit/df3b452c9260df54c44d45c482abf752f8d917a4))
+* **API:** Exclure les structures OPCS des résultats ([#1129](https://github.com/gip-inclusion/le-marche/issues/1129)) ([b79133e](https://github.com/gip-inclusion/le-marche/commit/b79133e49f202073e0db13d203aa5d43ed33afd2))
+* **API:** mise à jour du lien vers api.gouv ([#1127](https://github.com/gip-inclusion/le-marche/issues/1127)) ([b95885d](https://github.com/gip-inclusion/le-marche/commit/b95885d40134e24d2dc08a2b167a3697893df4e0))
+* **APProch:** Améliore le wording du bouton CTA des besoins provenant d'APProch. ref [#923](https://github.com/gip-inclusion/le-marche/issues/923) ([9844546](https://github.com/gip-inclusion/le-marche/commit/9844546b49fa530beb4eedb20d74046a36c55601))
+* **Besoins:** Correction sur le nombre d'occurrences en status Nouveau sur le filtre par type ([#1126](https://github.com/gip-inclusion/le-marche/issues/1126)) ([6bc052b](https://github.com/gip-inclusion/le-marche/commit/6bc052b5d1608b587a350c92cad4338f97ee4d00))
+* **Besoins:** Exclure les structures OPCS du matching ([#1130](https://github.com/gip-inclusion/le-marche/issues/1130)) ([b0fb1c9](https://github.com/gip-inclusion/le-marche/commit/b0fb1c91bda4ad4a11a464b13dc6c9cfd45e0cbd))
+* **CI:** affiche mieux les diff dans le script de déploiement. ref [#1063](https://github.com/gip-inclusion/le-marche/issues/1063) ([6f014b3](https://github.com/gip-inclusion/le-marche/commit/6f014b301fa3e8fc667b805718203866e19fc30a))
+* **Dépôt de besoin:** Réparation du badge de clôture ([#1125](https://github.com/gip-inclusion/le-marche/issues/1125)) ([af0bd82](https://github.com/gip-inclusion/le-marche/commit/af0bd823965a5a15f48c461415e0412d8e640385))
+* on TenderSiae survey_transaction answer, only update Tender if True. ref [#1124](https://github.com/gip-inclusion/le-marche/issues/1124) ([14c2e05](https://github.com/gip-inclusion/le-marche/commit/14c2e05436fb194a348f74a6575a3bd6db97109f))
+* **SIAE:** Evite que le champ is_delisted soit écrasé à chaque synchro avec les emplois ([#1108](https://github.com/gip-inclusion/le-marche/issues/1108)) ([57a6093](https://github.com/gip-inclusion/le-marche/commit/57a60939cffd28b1f06d41eadfa6c685130429ec))
+
 ## [2024.1.0](https://github.com/gip-inclusion/le-marche/compare/v2023.12.29...v2024.1.0) (2024-02-23)
 
 - fix(tender): Suppression de l'affichage du badge "Nouveau" sur les DDB clôturés (#1088)
