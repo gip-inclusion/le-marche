@@ -358,7 +358,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
                     self.is_new_for_siaes = True and not self.object.deadline_date_outdated
                     for siae in user.siaes.all():
                         TenderSiae.objects.create(
-                            tender=self.object, siae=siae, source=tender_constants.TENDER_SIAE_SOURCE_LINK
+                            tender=self.object, siae=siae, user=user, source=tender_constants.TENDER_SIAE_SOURCE_LINK
                         )
                 # update stats
                 TenderSiae.objects.filter(
@@ -445,7 +445,7 @@ class TenderDetailContactClickStatView(SiaeUserRequiredOrSiaeIdParamMixin, Updat
                 if user.is_authenticated:
                     TenderSiae.objects.filter(
                         tender=self.object, siae__in=user.siaes.all(), detail_contact_click_date__isnull=True
-                    ).update(detail_contact_click_date=timezone.now(), updated_at=timezone.now())
+                    ).update(user=user, detail_contact_click_date=timezone.now(), updated_at=timezone.now())
                 else:
                     TenderSiae.objects.filter(
                         tender=self.object, siae_id=int(siae_id), detail_contact_click_date__isnull=True
@@ -531,6 +531,7 @@ class TenderDetailNotInterestedClickView(SiaeUserRequiredOrSiaeIdParamMixin, Det
                 TenderSiae.objects.filter(
                     tender=self.object, siae__in=user.siaes.all(), detail_not_interested_click_date__isnull=True
                 ).update(
+                    user=user,
                     detail_not_interested_feedback=self.request.POST.get("detail_not_interested_feedback", ""),
                     detail_not_interested_click_date=timezone.now(),
                     updated_at=timezone.now(),
