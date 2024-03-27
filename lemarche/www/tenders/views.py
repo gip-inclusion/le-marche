@@ -347,7 +347,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
         self.user_id = request.GET.get("user_id", None)
         # update 'email_link_click_date'
         if self.siae_id:
-            if self.user_id:
+            if self.user_id:  # TODO: check if user in siae ?
                 TenderSiae.objects.filter(tender=self.object, siae_id=self.siae_id, email_link_click_date=None).update(
                     user_id=self.user_id, email_link_click_date=timezone.now(), updated_at=timezone.now()
                 )
