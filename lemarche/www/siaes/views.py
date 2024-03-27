@@ -20,10 +20,10 @@ from lemarche.conversations.models import Conversation
 from lemarche.favorites.models import FavoriteList
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis import api_elasticsearch
+from lemarche.utils.emails import add_to_contact_list
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
 from lemarche.utils.urls import get_domain_url, get_encoded_url_from_params
-from lemarche.www.auth.tasks import add_to_contact_list
 from lemarche.www.conversations.forms import ContactForm
 from lemarche.www.siaes.forms import (
     SiaeDownloadForm,

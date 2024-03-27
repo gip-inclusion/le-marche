@@ -6,8 +6,6 @@ from django.conf import settings
 from huey.contrib.djhuey import task
 from sib_api_v3_sdk.rest import ApiException
 
-from lemarche.siaes.models import Siae
-from lemarche.users.models import User
 from lemarche.utils.urls import get_object_admin_url, get_object_share_url
 
 
@@ -27,7 +25,7 @@ def get_api_client():
     return sib_api_v3_sdk.ApiClient(config)
 
 
-def create_contact(user: User, list_id: int):
+def create_contact(user, list_id: int):
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
     new_contact = sib_api_v3_sdk.CreateContact(
@@ -51,7 +49,7 @@ def create_contact(user: User, list_id: int):
         logger.error(f"Exception when calling Brevo->ContactsApi->create_contact: {e}")
 
 
-def remove_contact_from_list(user: User, list_id: int):
+def remove_contact_from_list(user, list_id: int):
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
     contact_emails = sib_api_v3_sdk.RemoveContactFromList(emails=[user.email])
@@ -67,7 +65,7 @@ def remove_contact_from_list(user: User, list_id: int):
             logger.error(f"Exception when calling Brevo->ContactsApi->remove_contact_from_list: {e}")
 
 
-def create_or_update_company(siae: Siae):
+def create_or_update_company(siae):
     """
     Brevo docs:
     - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CompaniesApi.md

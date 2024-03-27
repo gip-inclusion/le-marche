@@ -6,9 +6,6 @@ from django.conf import settings
 from hubspot import Client
 from hubspot.crm.contacts import ApiException, SimplePublicObject, SimplePublicObjectInput
 
-from lemarche.tenders.models import Tender
-from lemarche.users.models import User
-
 
 # from huey.contrib.djhuey import task
 
@@ -85,7 +82,7 @@ def add_to_contacts(
         logger.info("Hubspot: not add contact to the crm (STAGING or TEST environment detected)")
 
 
-def add_user_to_crm(user: User):
+def add_user_to_crm(user):
     result = add_to_contacts(
         email=user.email,
         company=user.company_name,
@@ -100,7 +97,7 @@ def add_user_to_crm(user: User):
 
 
 # @task
-def create_deal_from_tender(tender: Tender):
+def create_deal_from_tender(tender):
     tender_author_hubspot_contact_id = tender.author.hubspot_contact_id
     if not tender_author_hubspot_contact_id:
         user_added_in_crm = add_user_to_crm(tender.author)
