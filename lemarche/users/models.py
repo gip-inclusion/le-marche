@@ -355,6 +355,24 @@ class User(AbstractUser):
         return self.siaes.exists()
 
     @property
+    def is_buyer(self):
+        return self.kind == self.KIND_BUYER
+
+    @property
+    def is_buyer_pro(self):
+        return (
+            self.is_buyer
+            and self.buyer_kind_detail
+            and (
+                self.buyer_kind_detail
+                not in [
+                    user_constants.BUYER_KIND_DETAIL_PRIVATE_TPE,
+                    user_constants.BUYER_KIND_DETAIL_PUBLIC_ASSOCIATION,
+                ]
+            )
+        )
+
+    @property
     def is_admin(self) -> bool:
         return self.kind == self.KIND_ADMIN
 
