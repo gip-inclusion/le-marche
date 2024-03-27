@@ -344,11 +344,17 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
         self.object = self.get_object()
         user = self.request.user
         self.siae_id = request.GET.get("siae_id", None)
+        self.user_id = request.GET.get("user_id", None)
         # update 'email_link_click_date'
         if self.siae_id:
-            TenderSiae.objects.filter(tender=self.object, siae_id=self.siae_id, email_link_click_date=None).update(
-                email_link_click_date=timezone.now(), updated_at=timezone.now()
-            )
+            if self.user_id:
+                TenderSiae.objects.filter(tender=self.object, siae_id=self.siae_id, email_link_click_date=None).update(
+                    user_id=self.user_id, email_link_click_date=timezone.now(), updated_at=timezone.now()
+                )
+            else:
+                TenderSiae.objects.filter(tender=self.object, siae_id=self.siae_id, email_link_click_date=None).update(
+                    email_link_click_date=timezone.now(), updated_at=timezone.now()
+                )
         # update 'detail_display_date'
         if user.is_authenticated:
             if user.kind == User.KIND_SIAE:
