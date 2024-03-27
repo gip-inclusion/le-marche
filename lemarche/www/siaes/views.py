@@ -64,6 +64,13 @@ class SiaeSearchResultsView(FormMixin, ListView):
             self.filter_form = SiaeFilterForm(data=self.request.GET, advanced_search=user.is_authenticated)
         return self.filter_form
 
+    def get(self, request, *args, **kwargs):
+        user = self.request.user
+        if user.is_authenticated and user.is_buyer_pro:
+            if len(self.request.GET.keys()):
+                add_to_contact_list(self.request.user, "buyer_search")
+        return super().get(request, *args, **kwargs)
+
     def get_queryset(self):
         """
         Filter results.
