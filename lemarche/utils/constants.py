@@ -1,3 +1,6 @@
+from django.conf import settings
+
+
 EMPTY_CHOICE = (("", ""),)
 
 ADMIN_FIELD_HELP_TEXT = "Champ renseigné par un ADMIN"
@@ -261,3 +264,6 @@ def format_district(post_code, department):
     # Could use ordinal from humanize but it would be overkill
     number = int(post_code) - (int(department) * 1000)
     return "1er" if number == 1 else f"{number}e"
+
+
+EMAIL_SUBJECT_PREFIX = f"[{settings.BITOUBI_ENV.upper()}] " if settings.BITOUBI_ENV != "prod" else ""

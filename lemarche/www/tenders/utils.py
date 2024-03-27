@@ -4,7 +4,8 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderQuestion
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
-from lemarche.www.auth.tasks import add_to_contact_list, send_new_user_password_reset_link
+from lemarche.utils.emails import add_to_contact_list
+from lemarche.www.auth.tasks import send_new_user_password_reset_link
 
 
 def create_questions_list(tender, questions_list):

@@ -4,7 +4,8 @@ import requests
 from django.conf import settings
 from huey.contrib.djhuey import task
 
-from lemarche.utils.emails import EMAIL_SUBJECT_PREFIX
+from lemarche.users import constants as user_constants
+from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 
 
 logger = logging.getLogger(__name__)
@@ -32,6 +33,28 @@ def get_default_client(params={}):
     client.headers = headers
     client.auth = (settings.MAILJET_MASTER_API_KEY, settings.MAILJET_MASTER_API_SECRET)
     return client
+
+
+def get_mailjet_cl_on_signup(user, source: str = user_constants.SOURCE_SIGNUP_FORM):
+    if user.kind == user_constants.KIND_SIAE:
+        return settings.MAILJET_NL_CL_SIAE_ID
+    elif user.kind == user_constants.KIND_BUYER:
+        if source == user_constants.SOURCE_SIGNUP_FORM:
+            return settings.MAILJET_NL_CL_BUYER_ID
+        elif source == user_constants.SOURCE_TALLY_FORM:
+            return settings.MAILJET_NL_CL_BUYER_TALLY_ID
+        elif source == user_constants.SOURCE_TENDER_FORM:
+            return settings.MAILJET_NL_CL_BUYER_TENDER_ID
+    elif user.kind == user_constants.KIND_PARTNER:
+        if user.partner_kind == user_constants.PARTNER_KIND_FACILITATOR:
+            return settings.MAILJET_NL_CL_PARTNER_FACILITATORS_ID
+        elif user.partner_kind in (
+            user_constants.PARTNER_KIND_NETWORD_IAE,
+            user_constants.PARTNER_KIND_NETWORK_HANDICAP,
+        ):
+            return settings.MAILJET_NL_CL_PARTNER_NETWORKS_IAE_HANDICAP_ID
+        elif user.partner_kind == user_constants.PARTNER_KIND_DREETS:
+            return settings.MAILJET_NL_CL_PARTNER_DREETS_ID
 
 
 @task()

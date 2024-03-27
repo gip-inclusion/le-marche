@@ -7,9 +7,10 @@ from django.utils.safestring import mark_safe
 from django.views.generic import CreateView
 
 from lemarche.users.models import User
+from lemarche.utils.emails import add_to_contact_list
 from lemarche.utils.urls import get_safe_url
 from lemarche.www.auth.forms import LoginForm, PasswordResetForm, SignupForm
-from lemarche.www.auth.tasks import add_to_contact_list, send_signup_notification_email
+from lemarche.www.auth.tasks import send_signup_notification_email
 
 
 class LoginView(auth_views.LoginView):
