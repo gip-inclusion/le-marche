@@ -29,8 +29,8 @@ class DashboardNetworkViewTest(TestCase):
         cls.user_network_2 = UserFactory(kind=User.KIND_PARTNER, partner_network=cls.network_2)
         cls.user_buyer = UserFactory(kind=User.KIND_BUYER, company_name="Entreprise Buyer")
         cls.user_without_network = UserFactory(kind=User.KIND_PARTNER)
-        cls.siae_1 = SiaeFactory(networks=[cls.network_1])
-        cls.siae_2 = SiaeFactory()
+        cls.siae_1 = SiaeFactory(name="ABC Insertion", networks=[cls.network_1])
+        cls.siae_2 = SiaeFactory(name="ZZ ESI")
         cls.tender_1 = TenderFactory(
             author=cls.user_buyer,
             amount=tender_constants.AMOUNT_RANGE_100_150,
