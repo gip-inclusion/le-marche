@@ -166,7 +166,7 @@ class SiaeFilterForm(forms.Form):
         widget=forms.TextInput(attrs={"placeholder": "Votre entreprise…"}),
     )
 
-    # name/brand or siret/siren search
+    # name/brand/siret/siren search
     q = forms.CharField(
         label="Recherche via le numéro de SIRET, SIREN ou le nom de votre structure",
         required=False,
@@ -314,7 +314,7 @@ class SiaeFilterForm(forms.Form):
                 client_references__name__icontains=company_client_reference
             )
 
-        # name/brand or siret/siren search
+        # name/brand/siret/siren search
         full_text_string = self.cleaned_data.get("q", None)
         if full_text_string:
             # case where a siret/siren search was done, strip all spaces
@@ -400,9 +400,15 @@ class SiaeFilterForm(forms.Form):
                 )
                 ORDER_BY_FIELDS = ["distance"] + ORDER_BY_FIELDS
 
+        # if name/brand/siret/siren search, order by postgres similarity
         full_text_string = self.cleaned_data.get("q", None)
         if full_text_string:
             ORDER_BY_FIELDS = ["-similarity"]
+
+        # if semantic search, no ordering
+        semantic_q = self.cleaned_data.get("semantic_q", None)
+        if semantic_q:
+            return qs
 
         # final ordering
         qs = qs.order_by(*ORDER_BY_FIELDS)
