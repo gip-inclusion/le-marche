@@ -1072,6 +1072,9 @@ class TenderSiae(models.Model):
 
     tender = models.ForeignKey("tenders.Tender", verbose_name="Besoin d'achat", on_delete=models.CASCADE)
     siae = models.ForeignKey("siaes.Siae", verbose_name="Structure", on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL, verbose_name="Utilisateur", null=True, blank=True, on_delete=models.SET_NULL
+    )
 
     source = models.CharField(
         max_length=20,
