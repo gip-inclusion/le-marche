@@ -6,6 +6,22 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2024.3.0](https://github.com/gip-inclusion/le-marche/compare/v2024.2.0...v2024.3.0) (2024-03-28)
+
+
+### Features
+
+* **Besoins:** pouvoir rattacher un utilisateur à une mise en relation ([#1143](https://github.com/gip-inclusion/le-marche/issues/1143)) ([a4e2f1f](https://github.com/gip-inclusion/le-marche/commit/a4e2f1f766adaae1de271816f5c2fe38f9ee0dd2))
+* **Brevo:** après une recherche d'un acheteur, ajouter à une liste Brevo ([#1135](https://github.com/gip-inclusion/le-marche/issues/1135)) ([ec146dc](https://github.com/gip-inclusion/le-marche/commit/ec146dc199856b7a7644ad5f4f1e174a82e271ec))
+* **Home:** Rendre les sections de l'accueil davantage modifiable ([#1141](https://github.com/gip-inclusion/le-marche/issues/1141)) ([551c39a](https://github.com/gip-inclusion/le-marche/commit/551c39ae45c079cca171c3fc30c9d0821f9643ec))
+
+
+### Bug Fixes
+
+* **Besoins:** répare l'ouverture au clic de 2 liens dfférents ([#1148](https://github.com/gip-inclusion/le-marche/issues/1148)) ([f8b741e](https://github.com/gip-inclusion/le-marche/commit/f8b741e6415e8f79c47ccea7c710d0d393d25209))
+* erreur sur une variable non définie. ref [#1102](https://github.com/gip-inclusion/le-marche/issues/1102) ([ecadcd0](https://github.com/gip-inclusion/le-marche/commit/ecadcd011f0511cc36a2b1f042a68202ec4c27fc))
+* Répare des tests qui cassent parfois ([#1147](https://github.com/gip-inclusion/le-marche/issues/1147)) ([48fa4fe](https://github.com/gip-inclusion/le-marche/commit/48fa4fe9cb703d9e9760a3068521b9787829102a))
+
 ## [2024.2.0](https://github.com/gip-inclusion/le-marche/compare/v2024.1.0...v2024.2.0) (2024-03-22)
 
 
