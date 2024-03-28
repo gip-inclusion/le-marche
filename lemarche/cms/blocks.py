@@ -3,6 +3,22 @@ from wagtail import blocks
 from wagtail.images.blocks import ImageChooserBlock
 
 
+class CallToAction(blocks.StructBlock):
+    cta_id = blocks.CharBlock(
+        label="slug",
+        help_text="id du call to action (pour le suivi)",
+    )
+    cta_href = blocks.CharBlock(
+        label="Lien du call to action",
+    )
+    cta_text = blocks.CharBlock(label="Titre du call to action")
+    cta_icon = blocks.CharBlock(
+        label="Icone du call to action",
+        help_text='Bibliothèque <a href="https://remixicon.com/" target="_blanck">remixicon</a>',
+        required=False,
+    )
+
+
 class StatsWebsite(blocks.StructBlock):
     """A stats of marche website section"""
 
@@ -18,16 +34,39 @@ class StatsWebsite(blocks.StructBlock):
 
 class TendersTestimonialsSection(blocks.StructBlock):
     title = blocks.CharBlock(default="Ils ont publié un besoin sur le marché", required=True, max_length=120)
+    images = blocks.StreamBlock([("images", ImageChooserBlock(required=True))], min_num=6, max_num=12)
 
     class Meta:
-        template = "cms/streams/section_they_publish_tenders.html"
+        template = "cms/streams/section_testimonials.html"
         icon = "pen"
-        label = "Ils ont publié un besoin sur le marché"
+        label = "Ils sont sur le marché"
+
+
+class TendersStudiesCase(blocks.StructBlock):
+    image = ImageChooserBlock(required=True)
+    title = blocks.CharBlock(label="Titre du cas", required=True, max_length=120)
+    link = blocks.CharBlock(label="Lien", required=True, max_length=200)
+    number = blocks.CharBlock(label="Le nombre", required=True, max_length=20)
+    number_of = blocks.CharBlock(label="Nombre de", required=True, max_length=120)
+
+    class Meta:
+        template = "cms/streams/section_studies_cases_tenders_case.html"
 
 
 class TendersStudiesCasesSection(blocks.StructBlock):
     title = blocks.CharBlock(default="100% des besoins ont reçu des réponses en 24h", required=True, max_length=120)
     subtitle = blocks.CharBlock(default="Gagnez du temps en utilisant le marché.", required=True, max_length=120)
+    cta = CallToAction(label="Call to action")
+    cases = blocks.StreamBlock(
+        [
+            (
+                "case",
+                TendersStudiesCase(),
+            )
+        ],
+        min_num=3,
+        max_num=3,
+    )
 
     class Meta:
         template = "cms/streams/section_studies_cases_tenders.html"
@@ -35,7 +74,7 @@ class TendersStudiesCasesSection(blocks.StructBlock):
         label = "Etude de cas"
 
 
-class OurSiaesSection(blocks.StructBlock):
+class OurSiaesSection(blocks.StructBlock):  # TODO:  to be remove after deploy of EcosystemSection
     """An external or internal URL."""
 
     title = blocks.CharBlock(
@@ -67,6 +106,27 @@ class OurSiaesSection(blocks.StructBlock):
         label = "Section nos structures"
 
 
+class EcosystemSection(blocks.StructBlock):
+    image = ImageChooserBlock(required=True)
+    title = blocks.CharBlock(
+        default="Les prestataires inclusifs, des partenaires d'excellence", required=True, max_length=60
+    )
+    subtitle = blocks.RichTextBlock(
+        default="""
+            Faire appel à nos 8500 prestataires inclusifs, c'est la garantie d'être accompagné
+            par des professionnels reconnus et certifiés dans leur domaine.
+        """,
+        required=True,
+        features=["bold", "italic"],
+    )
+    cta = CallToAction(label="Call to action")
+
+    class Meta:
+        template = "cms/streams/section_ecosystem.html"
+        icon = "pen"
+        label = "Section écosystème"
+
+
 class OurRessourcesSection(blocks.StructBlock):
     title = blocks.CharBlock(default="Nos ressources", required=True, max_length=120)
 
@@ -76,8 +136,26 @@ class OurRessourcesSection(blocks.StructBlock):
         label = "Nos ressources"
 
 
+class WhatFindHereCardBlock(blocks.StructBlock):
+    ico = blocks.CharBlock(
+        label="Icone bicro", help_text="Ico du thème (Ex: ico-bicro-marche-recyclage)", required=True, max_length=100
+    )
+    text = blocks.CharBlock(required=True, max_length=200)
+
+
 class WhatFindHereSection(blocks.StructBlock):
     title = blocks.CharBlock(default="Sur le marché", required=True, max_length=120)
+
+    cards = blocks.StreamBlock(
+        [
+            (
+                "card",
+                WhatFindHereCardBlock(),
+            )
+        ],
+        min_num=3,
+        max_num=3,
+    )
 
     class Meta:
         template = "cms/streams/section_what_find_here.html"
@@ -119,7 +197,7 @@ class FeatureBlock(blocks.StructBlock):
     class Meta:
         template = "cms/streams/card_feature.html"
         icon = "pen"
-        label = "Section nos structures"
+        label = "Fonctionnalité"
 
 
 class OurFeaturesSection(blocks.StructBlock):
