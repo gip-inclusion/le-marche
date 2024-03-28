@@ -33,6 +33,7 @@ def add_to_contact_list(user, type: str, source: str = user_constants.SOURCE_SIG
         user (User): the user how will be added in the contact list
         type (String): "signup", OR "buyer_download" or "buyer_search" else raise ValueError
     """
+    contact_list_id = None
     if type == "signup":
         contact_list_id = api_mailjet.get_mailjet_cl_on_signup(user, source)
         if user.kind == user.KIND_BUYER:
