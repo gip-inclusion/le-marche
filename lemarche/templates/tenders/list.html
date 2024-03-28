@@ -130,11 +130,3 @@
     </div>
 </section>
 {% endblock %}
-
-{% block extra_js %}
-<script type="text/javascript">
-    $(document).on("click", ".c-card--link", function(e) {
-        window.location.href = $(this).data("url");
-    });
-</script>
-{% endblock %}
