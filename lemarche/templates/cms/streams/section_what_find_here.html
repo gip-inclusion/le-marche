@@ -10,39 +10,21 @@
             </div>
         </div>
         <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3 justify-content-center">
-            <div class="s-cards-grid-01__col col mb-3 mb-md-5">
-                <div class="card c-card h-100 w-100 c-card--marche">
-                    <div class="card-header text-center">
-                        <img height="80" src="{% static_theme_images 'ico-bicro-marche-local.svg' %}" alt="" />
+            {% for card in self.cards  %}
+                <div class="s-cards-grid-01__col col mb-3 mb-md-5">
+                    <div class="card c-card h-100 w-100 c-card--marche">
+                        <div class="card-header text-center">
+                            {% with card.value.ico|add:".svg" as ico %}
+                                <img height="80" src="{% static_theme_images ico %}" alt="" />
+                            {% endwith %}
+                        </div>
+                        <div class="card-body">
+                            <p class="h3 lh-base">{{ card.value.text }}</p>
+                        </div>
+                        <div class="card-footer"></div>
                     </div>
-                    <div class="card-body">
-                        <p class="h3 lh-base">Participez à la dynamique économique et sociale de votre territoire avec des partenaires de proximité.</p>
-                    </div>
-                    <div class="card-footer"></div>
                 </div>
-            </div>
-            <div class="s-cards-grid-01__col col mb-3 mb-md-5">
-                <div class="card c-card h-100 w-100 c-card--marche">
-                    <div class="card-header text-center">
-                        <img height="80" src="{% static_theme_images 'ico-bicro-marche-recyclage.svg' %}" alt="" />
-                    </div>
-                    <div class="card-body">
-                        <p class="h3 lh-base">Mesurer vos achats inclusifs, renforcez votre politique d’achats responsables et valorisez votre image d’entreprise.</p>
-                    </div>
-                    <div class="card-footer"></div>
-                </div>
-            </div>
-            <div class="s-cards-grid-01__col col mb-3 mb-md-5">
-                <div class="card c-card h-100 w-100 c-card--marche">
-                    <div class="card-header text-center">
-                        <img height="80" src="{% static_theme_images 'ico-bicro-marche-ouvrier.svg' %}" alt="" />
-                    </div>
-                    <div class="card-body">
-                        <p class="h3 lh-base">Trouvez des prestataires et palliez efficacement vos besoins de main-d'œuvre, métiers en tension, et vos besoins de services.</p>
-                    </div>
-                    <div class="card-footer"></div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
 </section>
