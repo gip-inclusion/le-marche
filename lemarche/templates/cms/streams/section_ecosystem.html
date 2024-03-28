@@ -1,10 +1,10 @@
-{% load static %}
+{% load wagtailimages_tags %}
 
 <section class="bg-gray-light py-5">
     <div class="container">
         <div class="row">
             <div class="col-sm-6 col-md-8 my-sm-auto">
-                <img src="{% static 'images/hp-logos-labels.min.png' %}" class="img-fluid" loading="lazy" alt="Logos de différents labels et certifications">
+                {% image self.image original class="card-img-top" class="img-fluid" loading="lazy" %}
             </div>
             <div class="col-sm-6 col-md-4 my-4 my-sm-auto">
                 <h2 class="h2 mb-3 mb-lg-5">{{self.title}}</h2>
