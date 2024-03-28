@@ -27,6 +27,11 @@ window.addEventListener('DOMContentLoaded', function () {
         initSuperBadges();
     });
     initSuperBadges();
+
+    // some elements have their url in data-url attribute
+    $(document).on("click", ".with-data-url", function(e) {
+        window.location.href = $(this).data("url");
+    });
 });
 
 let toggleRequiredClasses = (toggle, element) => {
