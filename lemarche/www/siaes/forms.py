@@ -10,6 +10,7 @@ from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae, SiaeClientReference, SiaeGroup
 from lemarche.tenders.models import Tender
+from lemarche.utils.apis import api_elasticsearch
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.www.siaes.widgets import CustomLocationWidget
 
@@ -60,11 +61,20 @@ EMPLOYEES_API_ENTREPRISE_MAPPING = {
 
 
 class SiaeFilterForm(forms.Form):
-    q = forms.CharField(
-        label="Recherche via le numéro de SIRET, SIREN ou le nom de votre structure",
-        required=False,
-        widget=forms.TextInput(attrs={"placeholder": "Votre recherche…"}),
-    )
+    ADVANCED_SEARCH_FIELDS = [
+        "kind",
+        "presta_type",
+        "territory",
+        "networks",
+        "locations",
+        "has_client_references",
+        "has_groups",
+        "ca",
+        "legal_form",
+        "employees",
+        "labels",
+    ]
+
     sectors = GroupedModelMultipleChoiceField(
         label=Sector._meta.verbose_name_plural,
         queryset=Sector.objects.form_filter_queryset(),
@@ -72,13 +82,12 @@ class SiaeFilterForm(forms.Form):
         to_field_name="slug",
         required=False,
     )
-    # The `perimeters` field is displayed with a JS autocomplete library (see `perimeter_autocomplete_field.js`)
     perimeters = forms.ModelMultipleChoiceField(
         label=Perimeter._meta.verbose_name_plural,
         queryset=Perimeter.objects.all(),
         to_field_name="slug",
         required=False,
-        # widget=forms.HiddenInput()
+        # widget=forms.HiddenInput()  # displayed with a JS autocomplete library (see `perimeter_autocomplete_field.js`)  # noqa
     )
     kind = forms.MultipleChoiceField(
         label=Siae._meta.get_field("kind").verbose_name,
@@ -102,13 +111,12 @@ class SiaeFilterForm(forms.Form):
         required=False,
     )
 
-    # The `locations` field is displayed with a JS autocomplete library (see `perimeter_autocomplete_field.js`)
     locations = forms.ModelMultipleChoiceField(
         label="Localisation",
         queryset=Perimeter.objects.all(),
         to_field_name="slug",
         required=False,
-        widget=CustomLocationWidget(
+        widget=CustomLocationWidget(  # displayed with a JS autocomplete library (see `perimeter_autocomplete_field.js`)  # noqa
             attrs={
                 "placeholder": "Région, département, ville",
             }
@@ -158,6 +166,28 @@ class SiaeFilterForm(forms.Form):
         widget=forms.TextInput(attrs={"placeholder": "Votre entreprise…"}),
     )
 
+    # name/brand/siret/siren search
+    q = forms.CharField(
+        label="Recherche via le numéro de SIRET, SIREN ou le nom de votre structure",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Votre recherche…"}),
+    )
+
+    # semantic search
+    semantic_q = forms.CharField(
+        label="Prestation recherchée",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Nettoyage de locaux"}),
+        min_length=5,
+    )
+    semantic_city = forms.ModelChoiceField(
+        label="Localisation de votre besoin",
+        queryset=Perimeter.objects.cities(),
+        to_field_name="slug",
+        required=False,
+        widget=forms.HiddenInput(),  # displayed with a JS autocomplete library (see `perimeter_autocomplete_field.js`)  # noqa
+    )
+
     # other hidden filters
     tender = forms.ModelChoiceField(
         queryset=Tender.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
@@ -166,19 +196,6 @@ class SiaeFilterForm(forms.Form):
     favorite_list = forms.ModelChoiceField(
         queryset=FavoriteList.objects.all(), to_field_name="slug", required=False, widget=forms.HiddenInput()
     )
-    ADVANCED_SEARCH_FIELDS = [
-        "kind",
-        "presta_type",
-        "territory",
-        "networks",
-        "locations",
-        "has_client_references",
-        "has_groups",
-        "ca",
-        "legal_form",
-        "employees",
-        "labels",
-    ]
 
     def __init__(self, advanced_search=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -202,13 +219,6 @@ class SiaeFilterForm(forms.Form):
 
         if not hasattr(self, "cleaned_data"):
             self.full_clean()
-
-        full_text_string = self.cleaned_data.get("q", None)
-        if full_text_string:
-            # case where a siret search was done, strip all spaces
-            if full_text_string.replace(" ", "").isdigit():
-                full_text_string = full_text_string.replace(" ", "")
-            qs = qs.filter_full_text(full_text_string)
 
         sectors = self.cleaned_data.get("sectors", None)
         if sectors:
@@ -304,6 +314,24 @@ class SiaeFilterForm(forms.Form):
                 client_references__name__icontains=company_client_reference
             )
 
+        # name/brand/siret/siren search
+        full_text_string = self.cleaned_data.get("q", None)
+        if full_text_string:
+            # case where a siret/siren search was done, strip all spaces
+            if full_text_string.replace(" ", "").isdigit():
+                full_text_string = full_text_string.replace(" ", "")
+            qs = qs.filter_full_text(full_text_string)
+
+        # semantic search
+        semantic_q = self.cleaned_data.get("semantic_q", None)
+        semantic_city = self.cleaned_data.get("semantic_city", None)
+        if semantic_q:
+            if semantic_city:
+                siaes_id = api_elasticsearch.siaes_similarity_search_with_city(semantic_q, semantic_city)
+            else:
+                siaes_id = api_elasticsearch.siaes_similarity_search(semantic_q)
+            qs = qs.filter(pk__in=siaes_id)
+
         # a Tender author can export its Siae list
         tender = self.cleaned_data.get("tender", None)
         if tender:
@@ -372,9 +400,15 @@ class SiaeFilterForm(forms.Form):
                 )
                 ORDER_BY_FIELDS = ["distance"] + ORDER_BY_FIELDS
 
+        # if name/brand/siret/siren search, order by postgres similarity
         full_text_string = self.cleaned_data.get("q", None)
         if full_text_string:
             ORDER_BY_FIELDS = ["-similarity"]
+
+        # if semantic search, no ordering
+        semantic_q = self.cleaned_data.get("semantic_q", None)
+        if semantic_q:
+            return qs
 
         # final ordering
         qs = qs.order_by(*ORDER_BY_FIELDS)
@@ -493,24 +527,3 @@ class NetworkSiaeFilterForm(forms.Form):
         qs = qs.distinct()
 
         return qs
-
-
-class SiaeSemanticForm(forms.Form):
-    search_query = forms.CharField(
-        label="Prestation recherchée",
-        required=False,
-        widget=forms.TextInput(attrs={"placeholder": "Nettoyage de locaux"}),
-        min_length=5,
-    )
-    city = forms.ModelChoiceField(
-        label="Localisation de votre besoin",
-        queryset=Perimeter.objects.cities(),
-        to_field_name="slug",
-        required=False,
-        widget=forms.HiddenInput(),
-    )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # this field are autocompletes
-        self.fields["city"].choices = []
