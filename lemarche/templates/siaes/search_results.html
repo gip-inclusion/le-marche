@@ -209,24 +209,23 @@
                             role="tabpanel"
                             aria-labelledby="search-semantic-tab">
                             <form method="GET"
-                                hx-get="{% url 'siae:semantic_search_results' %}"
-                                hx-target="#searchResults"
-                                hx-indicator="#spinner"
-                                action=""
-                                id="text-semantic-search-form">
-                                {% bootstrap_form_errors form_semantic type="all" %}
+                                action="{% url 'siae:search_results' %}"
+                                id="semantic-search-form"
+                                aria-label="Rechercher des prestataires de l'insertion et du handicap"
+                                role="search">
+                                {% bootstrap_form_errors form type="all" %}
                                 <div class="row">
-                                    <div class="col-12 col-lg-5">
-                                        {% bootstrap_field form_semantic.search_query %}
+                                    <div class="col-12 col-lg-4">
+                                        {% bootstrap_field form.semantic_q %}
                                     </div>
-                                    <div class="col-12 col-lg-5">
+                                    <div class="col-12 col-lg-4">
                                         <div class="form-group">
-                                            <label for="id_city">{{ form_semantic.city.label }}</label>
-                                            <div id="dir_form_city" data-input-name="{{ form_semantic.city.name }}"></div>
-                                            {{ form_semantic.city }}
+                                            <label for="id_semantic_city">{{ form.semantic_city.label }}</label>
+                                            <div id="dir_form_semantic_city" data-input-name="{{ form.semantic_city.name }}"></div>
+                                            {{ form.semantic_city }}
                                         </div>
                                     </div>
-                                    <div class="col-12 col-lg-2">
+                                    <div class="col-12 col-lg-4">
                                         <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
                                         <button id="text-search-submit"
                                                 class="btn btn-primary btn-block btn-ico"
@@ -245,7 +244,6 @@
     </section>
     <section class="s-siae-02">
         <div class="container">
-            <img  id="spinner" class="htmx-indicator" src="{% static 'img/spinner-bars.svg' %}"/>
             <div id="dir_list">
                 <div id="searchResults" class="row dir_list-row">
                     <div class="col-12 col-lg-8">
@@ -341,6 +339,11 @@ document.addEventListener("DOMContentLoaded", function() {
     let searchTextTab = document.getElementById('search-text-tab');
     let searchTextContent = document.getElementById('search-text');
     let qInput = document.getElementById('id_q');
+
+    let searchSemanticTab = document.getElementById('search-semantic-tab');
+    let searchSemanticContent = document.getElementById('search-semantic');
+    let semanticqInput = document.getElementById('id_semantic_q');
+
     let resetBtn = document.getElementById('form-reset-btn');
 
     if (resetBtn) {
@@ -348,7 +351,9 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // init search form
-    if (qInput.value) {
+    if (semanticqInput.value) {
+        showSearchTextForm(searchSemanticTab, searchSemanticContent);
+    } else if (qInput.value) {
         showSearchTextForm(searchTextTab, searchTextContent);
         // hideSearchFilterForm(searchFilterTab, searchFilterContent);
     } else {
@@ -369,7 +374,7 @@ document.addEventListener("DOMContentLoaded", function() {
     {% endif %}
 
     // init city form fields
-    const cityAutoComplete = new PerimeterAutocomplete("dir_form_city", "id_city", "Ville", "CITY");
+    const cityAutoComplete = new PerimeterAutocomplete("dir_form_semantic_city", "id_semantic_city", "Ville", "CITY");
     cityAutoComplete.init();
 });
     </script>
