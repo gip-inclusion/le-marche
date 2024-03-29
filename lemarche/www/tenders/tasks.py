@@ -9,6 +9,7 @@ from sesame.utils import get_query_string as sesame_get_query_string
 
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
+from lemarche.users.models import User
 from lemarche.utils.apis import api_hubspot, api_mailjet, api_slack
 from lemarche.utils.data import date_to_string
 from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
@@ -79,7 +80,7 @@ def send_tender_emails_to_siaes(tender: Tender):
         for user in siae.users.all():
             siae_users_count += 1
             if user.email != siae.contact_email:
-                send_tender_email_to_siae(tender, siae, email_subject, email_to_override=user.email)
+                send_tender_email_to_siae(tender, siae, email_subject, recipient_to_override=user)
                 siae_users_send_count += 1
 
     # log email batch
@@ -167,13 +168,19 @@ def send_tender_email_to_partner(email_subject: str, tender: Tender, partner: Pa
 
 
 # @task()
-def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, email_to_override=None):
+def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, recipient_to_override: User = None):
     # override siae.contact_email if email_to_override is provided
-    email_to = email_to_override or siae.contact_email
+    email_to = recipient_to_override.email if recipient_to_override else siae.contact_email
     recipient_list = whitelist_recipient_list([email_to])
     if recipient_list:
         recipient_email = recipient_list[0] if recipient_list else ""
         recipient_name = siae.contact_full_name
+
+        tender_url = f"{get_object_share_url(tender)}?siae_id={siae.id}"
+        tender_not_interested_url = f"{get_object_share_url(tender)}?siae_id={siae.id}&not_interested=True"
+        if recipient_to_override:
+            tender_url += f"&user_id={recipient_to_override.id}"
+            tender_not_interested_url += f"&user_id={recipient_to_override.id}"
 
         variables = {
             "SIAE_CONTACT_FIRST_NAME": siae.contact_first_name,
@@ -186,8 +193,8 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, em
             "TENDER_PERIMETERS": tender.location_display,
             "TENDER_AMOUNT": tender.amount_display,
             "TENDER_DEADLINE_DATE": date_to_string(tender.deadline_date),
-            "TENDER_URL": f"{get_object_share_url(tender)}?siae_id={siae.id}",
-            "TENDER_NOT_INTERESTED_URL": f"{get_object_share_url(tender)}?siae_id={siae.id}&not_interested=True",
+            "TENDER_URL": tender_url,
+            "TENDER_NOT_INTERESTED_URL": tender_not_interested_url,
         }
 
         api_mailjet.send_transactional_email_with_template(

@@ -1134,10 +1134,11 @@ class TenderDetailViewTest(TestCase):
         self.assertNotContains(response, "Voir l'appel d'offres")
         self.assertContains(response, "Lien partagé")
 
-    def test_update_tendersiae_stats_on_tender_view(self):
-        self.tender_1.siaes.add(self.siae_2)
+    def test_update_tendersiae_stats_on_tender_view_with_siae_id(self):
+        self.tender_1.siaes.add(self.siae_2)  # create new tendersiae
         self.assertEqual(self.tender_1.tendersiae_set.count(), 3 + 1)
         self.assertEqual(self.tender_1.tendersiae_set.first().siae, self.siae_2)
+        self.assertIsNone(self.tender_1.tendersiae_set.first().user)
         self.assertIsNone(self.tender_1.tendersiae_set.first().email_link_click_date)
         self.assertIsNone(self.tender_1.tendersiae_set.first().detail_display_date)
         self.assertEqual(self.tender_1.tendersiae_set.last().siae, self.siae_1)
@@ -1148,18 +1149,19 @@ class TenderDetailViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Déjà 3 prestataires inclusifs")
-        # reload anonymous user with ?siae_id= (already in tendersiae)
+        # reload anonymous user with siae_id (already in tendersiae)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug}) + f"?siae_id={self.siae_2.id}"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.tender_1.tendersiae_set.count(), 4)  # unchanged
         siae_2_email_link_click_date = self.tender_1.tendersiae_set.first().email_link_click_date
         self.assertIsNotNone(siae_2_email_link_click_date)  # email_link_click_date updated
+        self.assertIsNone(self.tender_1.tendersiae_set.first().user)
         self.assertIsNone(self.tender_1.tendersiae_set.first().detail_display_date)
         self.assertIsNotNone(self.tender_1.tendersiae_set.last().detail_display_date)
         self.assertContains(response, "Déjà 4 prestataires inclusifs")
         self.assertNotContains(response, "contactez dès maintenant le client")
-        # reload logged in with ?siae_id= (updats detail_display_date, but not email_link_click_date)
+        # reload logged in user with siae_id (updates detail_display_date, but not email_link_click_date)
         self.client.force_login(self.siae_user_2)
         url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug}) + f"?siae_id={self.siae_2.id}"
         response = self.client.get(url)
@@ -1177,6 +1179,37 @@ class TenderDetailViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.tender_1.tendersiae_set.count(), 4)  # unchanged
         self.assertEqual(self.tender_1.tendersiae_set.first().detail_display_date, siae_2_detail_display_date)
+        self.assertContains(response, "Déjà 4 prestataires inclusifs")
+        self.assertNotContains(response, "contactez dès maintenant le client")
+
+    def test_update_tendersiae_stats_on_tender_view_with_siae_id_and_user_id(self):
+        self.tender_1.siaes.add(self.siae_2)  # create new tendersiae
+        self.assertEqual(self.tender_1.tendersiae_set.count(), 3 + 1)
+        self.assertEqual(self.tender_1.tendersiae_set.first().siae, self.siae_2)
+        self.assertIsNone(self.tender_1.tendersiae_set.first().user)
+        self.assertIsNone(self.tender_1.tendersiae_set.first().email_link_click_date)
+        self.assertIsNone(self.tender_1.tendersiae_set.first().detail_display_date)
+        self.assertEqual(self.tender_1.tendersiae_set.last().siae, self.siae_1)
+        self.assertIsNotNone(self.tender_1.tendersiae_set.last().email_link_click_date)
+        self.assertIsNotNone(self.tender_1.tendersiae_set.last().detail_display_date)
+        # first load anonymous user
+        url = reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Déjà 3 prestataires inclusifs")
+        # reload anonymous user with siae_id & user_id (already in tendersiae)
+        url = (
+            reverse("tenders:detail", kwargs={"slug": self.tender_1.slug})
+            + f"?siae_id={self.siae_2.id}&user_id={self.siae_user_2.id}"
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.tender_1.tendersiae_set.count(), 4)  # unchanged
+        siae_2_email_link_click_date = self.tender_1.tendersiae_set.first().email_link_click_date
+        self.assertIsNotNone(siae_2_email_link_click_date)  # email_link_click_date updated
+        self.assertIsNotNone(self.tender_1.tendersiae_set.first().user)  # user updated
+        self.assertIsNone(self.tender_1.tendersiae_set.first().detail_display_date)
+        self.assertIsNotNone(self.tender_1.tendersiae_set.last().detail_display_date)
         self.assertContains(response, "Déjà 4 prestataires inclusifs")
         self.assertNotContains(response, "contactez dès maintenant le client")
 
