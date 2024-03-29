@@ -56,7 +56,9 @@ def track(page: str = "", action: str = "load", meta: dict = {}):  # noqa B006
     # Don't log in dev
     if settings.BITOUBI_ENV not in ("dev", "test"):
         date_created = timezone.now()
-        user_id = int(meta.get("user_id")) if meta.get("user_id", None) else None
+        user_id = meta.get("user_id", None)
+        if user_id:
+            user_id = int(user_id[0]) if (type(user_id) is list) else int(user_id)
         user_kind = meta.get("user_kind") if meta.get("user_kind", "") else ""
         siae_id = meta.get("siae_id", None)
         if siae_id:
