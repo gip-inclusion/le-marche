@@ -81,9 +81,6 @@ def send_tender_emails_to_siaes(tender: Tender):
             if user.email != siae.contact_email:
                 send_tender_email_to_siae(tender, siae, email_subject, email_to_override=user.email)
                 siae_users_send_count += 1
-    TenderSiae.objects.filter(tender=tender, siae__in=siaes).update(
-        email_send_date=timezone.now(), updated_at=timezone.now()
-    )
 
     # log email batch
     siaes_log_item = {
@@ -202,6 +199,18 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, em
             from_email=settings.TEAM_CONTACT_EMAIL,
             from_name="Pauline du Marché de l'inclusion",
         )
+
+        # update tendersiae
+        tendersiae = TenderSiae.objects.get(tender=tender, siae=siae)
+        tendersiae.email_send_date = timezone.now()
+        log_item = {
+            "action": "email_sent",
+            "email_to": recipient_email,
+            "email_subject": email_subject,
+            "email_timestamp": timezone.now().isoformat(),
+        }
+        tendersiae.logs.append(log_item)
+        tendersiae.save()
 
 
 def send_tender_contacted_reminder_email_to_siaes(
@@ -607,8 +616,6 @@ def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_questio
             )
             variables["ANSWER_YES_URL"] = answer_url_with_sesame_token + "&answer=True"
             variables["ANSWER_NO_URL"] = answer_url_with_sesame_token + "&answer=False"
-            # add timestamp
-            tendersiae.survey_transactioned_send_date = timezone.now()
 
             api_mailjet.send_transactional_email_with_template(
                 template_id=template_id,
@@ -618,10 +625,12 @@ def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_questio
                 variables=variables,
             )
 
+            # update tendersiae
+            tendersiae.survey_transactioned_send_date = timezone.now()
             # log email
             log_item = {
                 "action": f"email_{kind}_sent",
-                "email_to": recipient_list,
+                "email_to": recipient_email,
                 "email_subject": email_subject,
                 # "email_body": email_body,
                 "email_timestamp": timezone.now().isoformat(),
