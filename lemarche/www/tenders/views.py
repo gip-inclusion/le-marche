@@ -348,13 +348,13 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
         # update 'email_link_click_date'
         if self.siae_id:
             if self.user_id:  # TODO: check if user in siae ?
-                TenderSiae.objects.filter(tender=self.object, siae_id=self.siae_id, email_link_click_date=None).update(
-                    user_id=self.user_id, email_link_click_date=timezone.now(), updated_at=timezone.now()
-                )
+                TenderSiae.objects.filter(
+                    tender=self.object, siae_id=int(self.siae_id), email_link_click_date=None
+                ).update(user_id=int(self.user_id), email_link_click_date=timezone.now(), updated_at=timezone.now())
             else:
-                TenderSiae.objects.filter(tender=self.object, siae_id=self.siae_id, email_link_click_date=None).update(
-                    email_link_click_date=timezone.now(), updated_at=timezone.now()
-                )
+                TenderSiae.objects.filter(
+                    tender=self.object, siae_id=int(self.siae_id), email_link_click_date=None
+                ).update(email_link_click_date=timezone.now(), updated_at=timezone.now())
         # update 'detail_display_date'
         if user.is_authenticated:
             if user.kind == User.KIND_SIAE:
