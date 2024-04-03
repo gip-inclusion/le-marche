@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.html import format_html
@@ -175,17 +176,18 @@ class TenderSiaeInterestedInline(admin.TabularInline):
         return qs
 
 
-class TenderSiaeUserInterestedInline(admin.TabularInline):
+class TenderSiaeUserSeenInline(admin.TabularInline):
     model = TenderSiae
-    verbose_name = "Utilisateur intéressé"
-    verbose_name_plural = "Utilisateurs intéressés"
+    verbose_name = "Utilisateur vu"
+    verbose_name_plural = "Utilisateurs vus"
     fields = [
         "id",
         "user_full_name",
         "user_phone",
         "user",
         "siae",
-        "detail_contact_click_date",
+        "email_link_click_date",
+        "detail_display_date",
     ]
     readonly_fields = [field.name for field in TenderSiae._meta.fields if field.name not in ["transactioned"]] + [
         "user_full_name",
@@ -201,7 +203,9 @@ class TenderSiaeUserInterestedInline(admin.TabularInline):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.filter(user__isnull=False, detail_contact_click_date__isnull=False)
+        qs = qs.filter(user__isnull=False).filter(
+            Q(email_link_click_date__isnull=False) | Q(detail_display_date__isnull=False)
+        )
         return qs
 
     def user_full_name(self, obj):
@@ -215,6 +219,24 @@ class TenderSiaeUserInterestedInline(admin.TabularInline):
 
     user_phone.admin_order_field = "user_phone"
     user_phone.short_description = User._meta.get_field("phone").verbose_name
+
+
+class TenderSiaeUserInterestedInline(TenderSiaeUserSeenInline):
+    verbose_name = "Utilisateur intéressé"
+    verbose_name_plural = "Utilisateurs intéressés"
+    fields = [
+        "id",
+        "user_full_name",
+        "user_phone",
+        "user",
+        "siae",
+        "detail_contact_click_date",
+    ]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.filter(user__isnull=False, detail_contact_click_date__isnull=False)
+        return qs
 
 
 class TenderForm(forms.ModelForm):
@@ -426,6 +448,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                 )
             },
         ),
+        TenderSiaeUserSeenInline,
         TenderSiaeInterestedInline,
         TenderSiaeUserInterestedInline,
         (
