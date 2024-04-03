@@ -12,7 +12,7 @@ URL_WITH_USER = (
 )
 
 
-def siaes_similarity_search(search_text: str, search_filter: dict = {}):
+def siaes_similarity_search(search_text: str, search_filter: list = [], siae_kinds: list = []):
     """Performs semantic search with Elasticsearch as a vector db
 
     Args:
@@ -21,6 +21,10 @@ def siaes_similarity_search(search_text: str, search_filter: dict = {}):
     Returns:
         list: list of siaes id that match the search query
     """
+
+    if siae_kinds:
+        search_filter.append({"terms": {"metadata.kind.keyword": siae_kinds}})
+
     db = ElasticsearchStore(
         embedding=OpenAIEmbeddings(),
         es_user=settings.ELASTICSEARCH_USERNAME,
@@ -40,7 +44,7 @@ def siaes_similarity_search(search_text: str, search_filter: dict = {}):
 
 
 def siaes_similarity_search_with_geo_distance(
-    search_text: str, geo_distance: int = None, geo_lat: float = None, geo_lon: float = None
+    search_text: str, geo_distance: int = None, geo_lat: float = None, geo_lon: float = None, siae_kinds: list = []
 ):
     search_filter = []
     if geo_distance and geo_lat and geo_lon:
@@ -56,10 +60,10 @@ def siaes_similarity_search_with_geo_distance(
             }
         ]
 
-    return siaes_similarity_search(search_text, search_filter)
+    return siaes_similarity_search(search_text, search_filter, siae_kinds)
 
 
-def siaes_similarity_search_with_city(search_text: str, city: Perimeter):
+def siaes_similarity_search_with_city(search_text: str, city: Perimeter, siae_kinds: list = []):
     search_filter = [
         {
             "bool": {
@@ -88,4 +92,4 @@ def siaes_similarity_search_with_city(search_text: str, city: Perimeter):
             }
         }
     ]
-    return siaes_similarity_search(search_text, search_filter)
+    return siaes_similarity_search(search_text, search_filter, siae_kinds)
