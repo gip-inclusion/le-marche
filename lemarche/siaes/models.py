@@ -1186,6 +1186,7 @@ class Siae(models.Model):
             "id": self.id,
             "name": self.name,
             "website": self.website if self.website else "",
+            "kind": self.kind,
         }
         if self.latitude and self.longitude:
             metadata["geo_location"] = {
