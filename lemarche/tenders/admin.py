@@ -205,13 +205,13 @@ class TenderSiaeUserInterestedInline(admin.TabularInline):
         return qs
 
     def user_full_name(self, obj):
-        return obj.full_name
+        return obj.user.full_name
 
     user_full_name.admin_order_field = "user_full_name"
     user_full_name.short_description = "Prénom Nom"
 
     def user_phone(self, obj):
-        return obj.phone
+        return obj.user.phone
 
     user_phone.admin_order_field = "user_phone"
     user_phone.short_description = User._meta.get_field("phone").verbose_name
