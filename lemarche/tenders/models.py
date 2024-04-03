@@ -716,9 +716,10 @@ class Tender(models.Model):
                     geo_distance=self.distance_location,
                     geo_lat=self.location.coords.y,
                     geo_lon=self.location.coords.x,
+                    siae_kinds=self.siae_kind,
                 )
             else:
-                siae_ids = api_elasticsearch.siaes_similarity_search(self.description)
+                siae_ids = api_elasticsearch.siaes_similarity_search(self.description, siae_kinds=self.siae_kind)
 
             siaes_had_found_by_ia = Siae.objects.filter(id__in=siae_ids)
             siaes_had_found_by_ia_too = []
