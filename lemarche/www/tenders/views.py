@@ -364,12 +364,12 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
                     self.is_new_for_siaes = True and not self.object.deadline_date_outdated
                     for siae in user.siaes.all():
                         TenderSiae.objects.create(
-                            tender=self.object, siae=siae, user=user, source=tender_constants.TENDER_SIAE_SOURCE_LINK
+                            tender=self.object, siae=siae, source=tender_constants.TENDER_SIAE_SOURCE_LINK
                         )
                 # update stats
                 TenderSiae.objects.filter(
                     tender=self.object, siae__in=user.siaes.all(), detail_display_date__isnull=True
-                ).update(detail_display_date=timezone.now(), updated_at=timezone.now())
+                ).update(user=user, detail_display_date=timezone.now(), updated_at=timezone.now())
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
