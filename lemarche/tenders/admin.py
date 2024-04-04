@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.html import format_html
@@ -175,22 +176,20 @@ class TenderSiaeInterestedInline(admin.TabularInline):
         return qs
 
 
-class TenderSiaeUserInterestedInline(admin.TabularInline):
+class TenderSiaeUserInline(admin.TabularInline):
     model = TenderSiae
-    verbose_name = "Utilisateur intéressé"
-    verbose_name_plural = "Utilisateurs intéressés"
     fields = [
         "id",
         "user_full_name",
         "user_phone",
         "user",
         "siae",
-        "detail_contact_click_date",
     ]
     readonly_fields = [field.name for field in TenderSiae._meta.fields if field.name not in ["transactioned"]] + [
         "user_full_name",
         "user_phone",
     ]
+
     extra = 0
     show_change_link = True
     can_delete = False
@@ -199,22 +198,55 @@ class TenderSiaeUserInterestedInline(admin.TabularInline):
     def has_add_permission(self, request, obj=None):
         return False
 
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        qs = qs.filter(user__isnull=False, detail_contact_click_date__isnull=False)
-        return qs
-
     def user_full_name(self, obj):
-        return obj.full_name
+        return obj.user.full_name
 
     user_full_name.admin_order_field = "user_full_name"
     user_full_name.short_description = "Prénom Nom"
 
     def user_phone(self, obj):
-        return obj.phone
+        return obj.user.phone
 
     user_phone.admin_order_field = "user_phone"
     user_phone.short_description = User._meta.get_field("phone").verbose_name
+
+    class Meta:
+        abstract = True
+
+
+class TenderSiaeUserSeenButNotYetInterestedInline(TenderSiaeUserInline):
+    model = TenderSiae
+    verbose_name = "Utilisateur vu"
+    verbose_name_plural = "Utilisateurs vus"
+
+    def get_fields(self, request, obj=None):
+        return self.fields + ["email_link_click_date", "detail_display_date"]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = (
+            qs.filter(user__isnull=False)
+            .filter(Q(email_link_click_date__isnull=False) | Q(detail_display_date__isnull=False))
+            .filter(
+                detail_contact_click_date__isnull=True,
+                detail_cocontracting_click_date__isnull=True,
+                detail_not_interested_click_date__isnull=True,
+            )
+        )
+        return qs
+
+
+class TenderSiaeUserInterestedInline(TenderSiaeUserInline):
+    verbose_name = "Utilisateur intéressé"
+    verbose_name_plural = "Utilisateurs intéressés"
+
+    def get_fields(self, request, obj=None):
+        return self.fields + ["detail_contact_click_date"]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.filter(user__isnull=False, detail_contact_click_date__isnull=False)
+        return qs
 
 
 class TenderForm(forms.ModelForm):
@@ -426,6 +458,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                 )
             },
         ),
+        TenderSiaeUserSeenButNotYetInterestedInline,
         TenderSiaeInterestedInline,
         TenderSiaeUserInterestedInline,
         (

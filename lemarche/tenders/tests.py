@@ -956,6 +956,12 @@ class TenderAdminTest(TestCase):
             "tendersiae_set-2-MAX_NUM_FORMS": "1000",
             "tendersiae_set-2-__prefix__-id": "",
             "tendersiae_set-2-__prefix__-text": "",
+            "tendersiae_set-3-TOTAL_FORMS": "0",
+            "tendersiae_set-3-INITIAL_FORMS": "0",
+            "tendersiae_set-3-MIN_NUM_FORMS": "0",
+            "tendersiae_set-3-MAX_NUM_FORMS": "1000",
+            "tendersiae_set-3-__prefix__-id": "",
+            "tendersiae_set-3-__prefix__-text": "",
         }
         for key, value in cls.form_data.items():
             if value is None:
