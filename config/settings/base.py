@@ -863,7 +863,7 @@ WAGTAIL_FRONTEND_LOGIN_URL = LOGIN_URL
 
 # Increase throttling to avoid Bad request errors when saving large pages
 # https://docs.djangoproject.com/en/4.2/ref/settings/#data-upload-max-number-fields
-DATA_UPLOAD_MAX_NUMBER_FIELDS = os.getenv("DATA_UPLOAD_MAX_NUMBER_FIELDS", 10000)
+DATA_UPLOAD_MAX_NUMBER_FIELDS = env.int("DATA_UPLOAD_MAX_NUMBER_FIELDS", 10000)
 
 
 # Shell Plus (django-extensions)
