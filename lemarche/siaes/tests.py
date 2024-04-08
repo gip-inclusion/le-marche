@@ -570,8 +570,8 @@ class SiaeModelPerimeterQuerysetTest(TestCase):
 class SiaeLabelModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.label_1 = LabelFactory()
-        cls.label_2 = LabelFactory()
+        cls.label_1 = LabelFactory(name="Un label")
+        cls.label_2 = LabelFactory(name="Un autre label")
 
     def test_siae_labels(self):
         siae = SiaeFactory()
