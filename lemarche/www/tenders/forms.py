@@ -7,6 +7,7 @@ from lemarche.sectors.models import Sector
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
+from lemarche.utils import constants
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 
 
@@ -313,7 +314,7 @@ class TenderSurveyTransactionedForm(forms.ModelForm):
         )
         if tender_survey_transactioned_answer is not None:
             self.fields["survey_transactioned_answer"].disabled = True
-            if tender_survey_transactioned_answer is False:
+            if tender_survey_transactioned_answer in constants.FALSE_VALUES + [constants.DONT_KNOW]:
                 self.fields["survey_transactioned_amount"].widget = forms.HiddenInput()
 
 
@@ -338,7 +339,7 @@ class TenderSiaeSurveyTransactionedForm(forms.ModelForm):
         )
         if tender_survey_transactioned_answer is not None:
             self.fields["survey_transactioned_answer"].disabled = True
-            if tender_survey_transactioned_answer is False:
+            if tender_survey_transactioned_answer in constants.FALSE_VALUES:
                 self.fields["survey_transactioned_amount"].widget = forms.HiddenInput()
 
 

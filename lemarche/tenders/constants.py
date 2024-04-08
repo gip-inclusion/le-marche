@@ -1,3 +1,6 @@
+from lemarche.utils import constants
+
+
 KIND_TENDER = "TENDER"
 KIND_TENDER_DISPLAY = "Appel d'offres"
 KIND_QUOTE = "QUOTE"
@@ -82,37 +85,6 @@ WHY_AMOUNT_IS_BLANK_CHOICES = (
     (WHY_AMOUNT_IS_BLANK_DONT_WANT_TO_SHARE, "Je ne souhaite pas communiquer le montant"),
 )
 
-SURVEY_SCALE_QUESTION_0 = "0"
-SURVEY_SCALE_QUESTION_1 = "1"
-SURVEY_SCALE_QUESTION_2 = "2"
-SURVEY_SCALE_QUESTION_3 = "3"
-
-SURVEY_SCALE_QUESTION_CHOICES = (
-    (SURVEY_SCALE_QUESTION_0, "Non"),
-    (SURVEY_SCALE_QUESTION_1, "Peu probablement"),
-    (SURVEY_SCALE_QUESTION_2, "Très probablement"),
-    (SURVEY_SCALE_QUESTION_3, "Oui"),
-)
-
-# survey choices for yes, no or don't know
-SURVEY_NO = "0"
-SURVEY_YES = "1"
-SURVEY_DONT_KNOW = "?"
-
-SURVEY_YES_NO_DONT_KNOW_CHOICES = (
-    (SURVEY_NO, "Non"),
-    (SURVEY_YES, "Oui"),
-    (SURVEY_DONT_KNOW, "Je ne sais pas"),
-)
-
-
-SURVEY_NOT_ENCOURAGED_ONLY_BY_US = "+"
-
-SURVEY_ENCOURAGED_BY_US_CHOICES = (
-    (SURVEY_NO, "Non"),
-    (SURVEY_NOT_ENCOURAGED_ONLY_BY_US, "Un outil parmi d'autres"),
-    (SURVEY_YES, "Oui"),
-)
 
 STATUS_DRAFT = "DRAFT"
 STATUS_PUBLISHED = "PUBLISHED"
@@ -194,3 +166,38 @@ TENDER_SIAE_STATUS_CHOICES = (
     (TENDER_SIAE_STATUS_DETAIL_CONTACT_CLICK_DATE, TENDER_SIAE_STATUS_DETAIL_CONTACT_CLICK_DATE_DISPLAY),
     (TENDER_SIAE_STATUS_DETAIL_NOT_INTERESTED_CLICK_DATE, TENDER_SIAE_STATUS_DETAIL_NOT_INTERESTED_CLICK_DATE_DISPLAY),
 )
+
+
+SURVEY_SCALE_QUESTION_0 = "0"
+SURVEY_SCALE_QUESTION_1 = "1"
+SURVEY_SCALE_QUESTION_2 = "2"
+SURVEY_SCALE_QUESTION_3 = "3"
+
+SURVEY_SCALE_QUESTION_CHOICES = (
+    (SURVEY_SCALE_QUESTION_0, "Non"),
+    (SURVEY_SCALE_QUESTION_1, "Peu probablement"),
+    (SURVEY_SCALE_QUESTION_2, "Très probablement"),
+    (SURVEY_SCALE_QUESTION_3, "Oui"),
+)
+
+# survey choices
+SURVEY_YES_NO_DONT_KNOW_CHOICES = (
+    (constants.NO, "Non"),
+    (constants.YES, "Oui"),
+    (constants.DONT_KNOW, "Je ne sais pas"),
+)
+
+SURVEY_NOT_ENCOURAGED_ONLY_BY_US = "+"
+
+SURVEY_ENCOURAGED_BY_US_CHOICES = (
+    (constants.NO, "Non"),
+    (SURVEY_NOT_ENCOURAGED_ONLY_BY_US, "Un outil parmi d'autres"),
+    (constants.YES, "Oui"),
+)
+
+SURVEY_TRANSACTIONED_ANSWER_CHOICES = (
+    (constants.YES, "Oui"),
+    (constants.NO, "Non"),
+    (constants.DONT_KNOW, "Pas encore"),
+)
+SURVEY_TRANSACTIONED_ANSWER_CHOICE_LIST = [choice[0] for choice in SURVEY_TRANSACTIONED_ANSWER_CHOICES]
