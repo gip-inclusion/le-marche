@@ -631,8 +631,8 @@ class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, Updat
                 self.object.survey_transactioned_answer = survey_transactioned_answer
                 self.object.survey_transactioned_answer_date = timezone.now()
                 if self.object.siae_transactioned is None:
-                    if survey_transactioned_answer in tender_constants.NO_YES_CHOICE_LIST:
-                        self.object.siae_transactioned = constants.NO_YES_MAPPING[survey_transactioned_answer]
+                    if survey_transactioned_answer in constants.YES_NO_CHOICE_LIST:
+                        self.object.siae_transactioned = constants.YES_NO_MAPPING[survey_transactioned_answer]
                         self.object.siae_transactioned_source = (
                             tender_constants.TENDER_SIAE_TRANSACTIONED_SOURCE_AUTHOR
                         )

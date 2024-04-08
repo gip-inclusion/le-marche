@@ -3,10 +3,10 @@ from django.conf import settings
 
 EMPTY_CHOICE = (("", ""),)
 
-NO = "0"
 YES = "1"
-NO_YES_CHOICE_LIST = [NO, YES]
-NO_YES_MAPPING = {NO: False, YES: True}
+NO = "0"
+YES_NO_CHOICE_LIST = [YES, NO]
+YES_NO_MAPPING = {YES: True, NO: False}
 DONT_KNOW = "?"
 
 TRUE_VALUES = ["true", "True", "TRUE", NO, 1, True, "Oui", "oui", "OUI"]

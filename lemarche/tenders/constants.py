@@ -196,8 +196,8 @@ SURVEY_ENCOURAGED_BY_US_CHOICES = (
 )
 
 SURVEY_TRANSACTIONED_ANSWER_CHOICES = (
-    (constants.NO, "Non"),
     (constants.YES, "Oui"),
+    (constants.NO, "Non"),
     (constants.DONT_KNOW, "Pas encore"),
 )
 SURVEY_TRANSACTIONED_ANSWER_CHOICE_LIST = [choice[0] for choice in SURVEY_TRANSACTIONED_ANSWER_CHOICES]

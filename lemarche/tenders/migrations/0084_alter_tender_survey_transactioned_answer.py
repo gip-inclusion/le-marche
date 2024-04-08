@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
             name="survey_transactioned_answer",
             field=models.CharField(
                 blank=True,
-                choices=[("0", "Non"), ("1", "Oui"), ("?", "Pas encore")],
+                choices=[("1", "Oui"), ("0", "Non"), ("?", "Pas encore")],
                 null=True,
                 verbose_name="Sondage transaction : réponse",
             ),
