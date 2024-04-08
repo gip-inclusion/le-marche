@@ -1,6 +1,7 @@
 # https://github.com/betagouv/itou/blob/master/config/settings/_sentry.py
 
 import logging
+import os
 
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -35,13 +36,18 @@ sentry_logging = LoggingIntegration(
 
 
 def sentry_init(dsn):
+    try:
+        traces_sample_rate = float(os.getenv("SENTRY_TRACES_SAMPLE_RATE", ""))
+    except ValueError:
+        traces_sample_rate = 0
+
     sentry_sdk.init(
         dsn=dsn,
         integrations=[sentry_logging, DjangoIntegration()],
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
         # We recommend adjusting this value in production.
-        traces_sample_rate=0,
+        traces_sample_rate=traces_sample_rate,
         # Associate users (ID+email+username+IP) to errors.
         # https://docs.sentry.io/platforms/python/django/
         send_default_pii=True,

@@ -1,7 +1,7 @@
 import environ
 
-from ._sentry import sentry_init
 from .base import *  # noqa
+from .sentry import sentry_init
 
 
 env = environ.Env()
@@ -27,7 +27,7 @@ MEDIA_URL = f"https://{S3_STORAGE_ENDPOINT_DOMAIN}/"  # noqa
 DEFAULT_FILE_STORAGE = "lemarche.utils.s3boto.S3BotoStorage"
 
 
-# Sentry.
+# Sentry
 # ------------------------------------------------------------------------------
 
 sentry_init(dsn=env.str("SENTRY_DSN_STAGING"))

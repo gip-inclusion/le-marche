@@ -1,7 +1,7 @@
 import environ
 
-from ._sentry import sentry_init
 from .base import *  # noqa
+from .sentry import sentry_init
 
 
 env = environ.Env()
@@ -20,7 +20,7 @@ MEDIA_URL = f"https://{S3_STORAGE_ENDPOINT_DOMAIN}/"  # noqa
 DEFAULT_FILE_STORAGE = "lemarche.utils.s3boto.S3BotoStorage"
 
 
-# Sentry.
+# Sentry
 # ------------------------------------------------------------------------------
 
 sentry_init(dsn=env.str("SENTRY_DSN_PROD"))
@@ -29,6 +29,7 @@ sentry_init(dsn=env.str("SENTRY_DSN_PROD"))
 # Active Elastic APM metrics
 # See https://www.elastic.co/guide/en/apm/agent/python/current/configuration.html
 # ------------------------------------------------------------------------------
+
 INSTALLED_APPS += ["elasticapm.contrib.django"]  # noqa F405
 MIDDLEWARE += ["elasticapm.contrib.django.middleware.TracingMiddleware"]  # noqa
 
