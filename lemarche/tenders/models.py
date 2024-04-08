@@ -537,8 +537,11 @@ class Tender(models.Model):
     survey_transactioned_send_date = models.DateTimeField(
         verbose_name="Sondage transaction : date d'envoi de l'e-mail", blank=True, null=True
     )
-    survey_transactioned_answer = models.BooleanField(
-        verbose_name="Sondage transaction : réponse", blank=True, null=True
+    survey_transactioned_answer = models.CharField(
+        verbose_name="Sondage transaction : réponse",
+        blank=True,
+        null=True,
+        choices=tender_constants.SURVEY_TRANSACTIONED_ANSWER_CHOICES,
     )
     survey_transactioned_amount = models.PositiveIntegerField(
         verbose_name="Sondage transaction : montant du besoin", blank=True, null=True
