@@ -21,6 +21,7 @@ from lemarche.tenders.factories import TenderFactory, TenderQuestionFactory
 from lemarche.tenders.models import Tender, TenderSiae, TenderStepsData
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
+from lemarche.utils import constants
 from lemarche.www.tenders.views import TenderCreateMultiStepView
 
 
@@ -1883,12 +1884,12 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
         self.assertIsNone(t.siae_transactioned)
         self.assertIsNone(t.siae_transactioned_source)
         self.assertIsNone(t.siae_transactioned_last_updated)
-        # load with answer 'True': partial form
-        url = self.url + self.user_buyer_1_sesame_query_string + "&answer=True"
+        # load with answer True: partial form
+        url = f"{self.url}{self.user_buyer_1_sesame_query_string}&answer={constants.YES}"
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
         t = Tender.objects.get(id=self.tender.id)
-        self.assertTrue(t.survey_transactioned_answer)
+        self.assertEqual(t.survey_transactioned_answer, constants.YES)
         self.assertTrue(t.siae_transactioned)
         self.assertEqual(
             t.siae_transactioned_source,
@@ -1903,25 +1904,25 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
         t = Tender.objects.get(id=self.tender.id)
         self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
         self.assertContains(response, "Merci pour votre réponse")
-        self.assertTrue(t.survey_transactioned_answer)
+        self.assertEqual(t.survey_transactioned_answer, constants.YES)
         self.assertEqual(t.survey_transactioned_amount, 1000)
-        # reload with answer, ignore changes and redirect
-        url = self.url + self.user_buyer_1_sesame_query_string + "&answer=False"
+        # reload with new answer, ignore changes and redirect
+        url = f"{self.url}{self.user_buyer_1_sesame_query_string}&answer={constants.NO}"
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)  # redirect
         t = Tender.objects.get(id=self.tender.id)
         self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
         self.assertContains(response, "Votre réponse a déjà été prise en compte")
-        self.assertTrue(t.survey_transactioned_answer)
+        self.assertEqual(t.survey_transactioned_answer, constants.YES)
         self.assertTrue(t.siae_transactioned)
 
     def test_update_tender_stats_on_tender_survey_transactioned_answer_false(self):
-        # load with answer 'False': partial form
-        url = self.url + self.user_buyer_1_sesame_query_string + "&answer=False"
+        # load with answer False: partial form
+        url = f"{self.url}{self.user_buyer_1_sesame_query_string}&answer={constants.NO}"
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
         t = Tender.objects.get(id=self.tender.id)
-        self.assertFalse(t.survey_transactioned_answer)
+        self.assertEqual(t.survey_transactioned_answer, constants.NO)
         self.assertFalse(t.siae_transactioned)
         # fill in form
         response = self.client.post(url, data={"survey_transactioned_feedback": "Feedback"}, follow=True)
@@ -1929,17 +1930,42 @@ class TenderDetailSurveyTransactionedViewTest(TestCase):
         t = Tender.objects.get(id=self.tender.id)
         self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
         self.assertContains(response, "Merci pour votre réponse")
-        self.assertFalse(t.survey_transactioned_answer)
+        self.assertEqual(t.survey_transactioned_answer, constants.NO)
         self.assertIsNone(t.survey_transactioned_amount)
-        # reload with answer, ignore changes
-        url = self.url + self.user_buyer_1_sesame_query_string + "&answer=True"
+        # reload with new answer, ignore changes
+        url = f"{self.url}{self.user_buyer_1_sesame_query_string}&answer={constants.YES}"
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)  # redirect
         t = Tender.objects.get(id=self.tender.id)
         self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
         self.assertContains(response, "Votre réponse a déjà été prise en compte")
-        self.assertFalse(t.survey_transactioned_answer)
+        self.assertEqual(t.survey_transactioned_answer, constants.NO)
         self.assertFalse(t.siae_transactioned)
+
+    def test_update_tender_stats_on_tender_survey_transactioned_answer_dont_know(self):
+        # load with answer ?: partial form
+        url = f"{self.url}{self.user_buyer_1_sesame_query_string}&answer={constants.DONT_KNOW}"
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        t = Tender.objects.get(id=self.tender.id)
+        self.assertEqual(t.survey_transactioned_answer, constants.DONT_KNOW)
+        self.assertIsNone(t.siae_transactioned)
+        # fill in form
+        response = self.client.post(url, data={"survey_transactioned_feedback": "Feedback"}, follow=True)
+        self.assertEqual(response.status_code, 200)  # redirect
+        t = Tender.objects.get(id=self.tender.id)
+        self.assertRedirects(response, reverse("tenders:detail", kwargs={"slug": self.tender.slug}))
+        self.assertContains(response, "Merci pour votre réponse")
+        self.assertEqual(t.survey_transactioned_answer, constants.DONT_KNOW)
+        self.assertIsNone(t.survey_transactioned_amount)
+        # reload with new answer, update
+        url = f"{self.url}{self.user_buyer_1_sesame_query_string}&answer={constants.YES}"
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        t = Tender.objects.get(id=self.tender.id)
+        self.assertNotContains(response, "Votre réponse a déjà été prise en compte")
+        self.assertEqual(t.survey_transactioned_answer, constants.YES)
+        self.assertTrue(t.siae_transactioned)
 
 
 class TenderDetailSiaeSurveyTransactionedViewTest(TestCase):

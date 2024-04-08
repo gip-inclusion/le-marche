@@ -10,6 +10,7 @@ from sesame.utils import get_query_string as sesame_get_query_string
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
 from lemarche.users.models import User
+from lemarche.utils import constants
 from lemarche.utils.apis import api_hubspot, api_mailjet, api_slack
 from lemarche.utils.data import date_to_string
 from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
@@ -546,8 +547,9 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
                 + reverse("tenders:detail-survey-transactioned", args=[tender.slug])
                 + user_sesame_query_string
             )
-            variables["ANSWER_YES_URL"] = answer_url_with_sesame_token + "&answer=True"
-            variables["ANSWER_NO_URL"] = answer_url_with_sesame_token + "&answer=False"
+            variables["ANSWER_YES_URL"] = f"{answer_url_with_sesame_token}&answer={constants.YES}"
+            variables["ANSWER_NO_URL"] = f"{answer_url_with_sesame_token}&answer={constants.NO}"
+            variables["ANSWER_DONT_KNOW_URL"] = f"{answer_url_with_sesame_token}&answer={constants.DONT_KNOW}"
             # add timestamp
             tender.survey_transactioned_send_date = timezone.now()
         else:

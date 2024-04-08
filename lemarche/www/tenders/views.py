@@ -16,6 +16,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderSiae, TenderStepsData
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
+from lemarche.utils import constants
 from lemarche.utils.data import get_choice
 from lemarche.utils.mixins import (
     SesameSiaeMemberRequiredMixin,
@@ -624,16 +625,17 @@ class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, Updat
         self.object = self.get_object()
         survey_transactioned_answer = request.GET.get("answer", None)
         # first time answering
-        if self.object.survey_transactioned_answer is None:
-            if survey_transactioned_answer in ["True", "False"]:
-                # transform survey_transactioned_answer into bool
-                survey_transactioned_answer = survey_transactioned_answer == "True"
+        if self.object.survey_transactioned_answer in [None, constants.DONT_KNOW]:
+            if survey_transactioned_answer in tender_constants.SURVEY_TRANSACTIONED_ANSWER_CHOICE_LIST:
                 # update tender
                 self.object.survey_transactioned_answer = survey_transactioned_answer
                 self.object.survey_transactioned_answer_date = timezone.now()
                 if self.object.siae_transactioned is None:
-                    self.object.siae_transactioned = survey_transactioned_answer
-                    self.object.siae_transactioned_source = tender_constants.TENDER_SIAE_TRANSACTIONED_SOURCE_AUTHOR
+                    if survey_transactioned_answer in constants.YES_NO_CHOICE_LIST:
+                        self.object.siae_transactioned = constants.YES_NO_MAPPING[survey_transactioned_answer]
+                        self.object.siae_transactioned_source = (
+                            tender_constants.TENDER_SIAE_TRANSACTIONED_SOURCE_AUTHOR
+                        )
                 self.object.save()
             else:
                 pass
