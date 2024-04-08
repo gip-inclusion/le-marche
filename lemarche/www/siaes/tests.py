@@ -792,8 +792,8 @@ class SiaeLabelsFilterTest(TestCase):
     def setUpTestData(cls):
         cls.url = reverse("siae:search_results")
         cls.user = UserFactory()
-        cls.first_label = LabelFactory()
-        cls.second_label = LabelFactory()
+        cls.first_label = LabelFactory(name="Un label")
+        cls.second_label = LabelFactory(name="Un autre label")
         cls.siae_without_label = SiaeFactory()
         cls.siae_with_first_label = SiaeFactory()
         cls.siae_with_first_label.labels.add(cls.first_label)
