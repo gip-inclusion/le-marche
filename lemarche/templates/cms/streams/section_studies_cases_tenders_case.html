@@ -1,8 +1,8 @@
-{% load wagtailcore_tags  wagtailimages_tags %}
+{% load wagtailimages_tags %}
 
 <div class="col-sm-6 col-md-3 my-4 my-sm-auto">
     <div class="card c-card has-one-link-inside">
-        {% image self.image original class="card-img-top" alt="" %}
+        {% image self.image original class="card-img-top" %}
         <div class="card-body">
             <a href="{{ self.link }}" class="btn btn-link text-left pl-0 stretched-link">
                 {{ self.title }}
