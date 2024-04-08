@@ -625,7 +625,7 @@ class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, Updat
         self.object = self.get_object()
         survey_transactioned_answer = request.GET.get("answer", None)
         # first time answering
-        if self.object.survey_transactioned_answer is None:
+        if self.object.survey_transactioned_answer in [None, constants.DONT_KNOW]:
             if survey_transactioned_answer in tender_constants.SURVEY_TRANSACTIONED_ANSWER_CHOICE_LIST:
                 # update tender
                 self.object.survey_transactioned_answer = survey_transactioned_answer
