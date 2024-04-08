@@ -1,3 +1,6 @@
+from lemarche.utils import constants
+
+
 KIND_TENDER = "TENDER"
 KIND_TENDER_DISPLAY = "Appel d'offres"
 KIND_QUOTE = "QUOTE"
@@ -177,28 +180,24 @@ SURVEY_SCALE_QUESTION_CHOICES = (
     (SURVEY_SCALE_QUESTION_3, "Oui"),
 )
 
-# survey choices for yes, no or don't know
-SURVEY_NO = "0"
-SURVEY_YES = "1"
-SURVEY_DONT_KNOW = "?"
-
+# survey choices
 SURVEY_YES_NO_DONT_KNOW_CHOICES = (
-    (SURVEY_NO, "Non"),
-    (SURVEY_YES, "Oui"),
-    (SURVEY_DONT_KNOW, "Je ne sais pas"),
+    (constants.NO, "Non"),
+    (constants.YES, "Oui"),
+    (constants.DONT_KNOW, "Je ne sais pas"),
 )
-
 
 SURVEY_NOT_ENCOURAGED_ONLY_BY_US = "+"
 
 SURVEY_ENCOURAGED_BY_US_CHOICES = (
-    (SURVEY_NO, "Non"),
+    (constants.NO, "Non"),
     (SURVEY_NOT_ENCOURAGED_ONLY_BY_US, "Un outil parmi d'autres"),
-    (SURVEY_YES, "Oui"),
+    (constants.YES, "Oui"),
 )
 
 SURVEY_TRANSACTIONED_ANSWER_CHOICES = (
-    (SURVEY_NO, "Non"),
-    (SURVEY_YES, "Oui"),
-    (SURVEY_DONT_KNOW, "Pas encore"),
+    (constants.NO, "Non"),
+    (constants.YES, "Oui"),
+    (constants.DONT_KNOW, "Pas encore"),
 )
+SURVEY_TRANSACTIONED_ANSWER_CHOICE_LIST = [choice[0] for choice in SURVEY_TRANSACTIONED_ANSWER_CHOICES]

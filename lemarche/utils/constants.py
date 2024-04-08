@@ -3,6 +3,17 @@ from django.conf import settings
 
 EMPTY_CHOICE = (("", ""),)
 
+NO = "0"
+YES = "1"
+NO_YES_CHOICE_LIST = [NO, YES]
+NO_YES_MAPPING = {NO: False, YES: True}
+DONT_KNOW = "?"
+
+TRUE_VALUES = ["true", "True", "TRUE", NO, 1, True, "Oui", "oui", "OUI"]
+FALSE_VALUES = ["false", "False", "FALSE", YES, 0, False, "Non", "non", "NON"]
+FALSE_OR_DONT_KNOW_VALUES = FALSE_VALUES + [DONT_KNOW]
+
+
 ADMIN_FIELD_HELP_TEXT = "Champ renseigné par un ADMIN"
 AUTO_FIELD_HELP_TEXT = "Champ mis à jour automatiquement"
 RECALCULATED_FIELD_HELP_TEXT = "Champ recalculé à intervalles réguliers"
