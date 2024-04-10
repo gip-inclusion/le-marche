@@ -513,6 +513,33 @@
         }
     },
     {
+        "model": "wagtailcore.page",
+        "pk": 26,
+        "fields": {
+            "path": "000100030002",
+            "depth": 3,
+            "numchild": 0,
+            "translation_key": "0130778f-b6be-4452-b77e-7e77caa90905",
+            "locale": 1,
+            "live": true,
+            "first_published_at": "2024-03-21T13:54:56.071Z",
+            "last_published_at": "2024-04-10T09:25:21.128Z",
+            "title": "accueil-structure",
+            "draft_title": "accueil-structure",
+            "slug": "accueil-structure",
+            "content_type": [
+                "cms",
+                "homepage"
+            ],
+            "url_path": "/accueil/accueil-structure/",
+            "owner": null,
+            "seo_title": "",
+            "show_in_menus": false,
+            "search_description": "",
+            "alias_of": null
+        }
+    },
+    {
         "model": "cms.articlecategory",
         "pk": 1,
         "fields": {
@@ -728,6 +755,17 @@
             "banner_arguments_list": "[{\"id\": \"59cc2723-3e85-483d-85af-680111db6cf9\", \"type\": \"item\", \"value\": \"2500 fournisseurs labellis\\u00e9s Handicap (EA & ESAT)\"}, {\"id\": \"c03a7ab3-2b95-4f86-80f6-11e1fdd80665\", \"type\": \"item\", \"value\": \"4000 fournisseurs labellis\\u00e9s Insertion par l'activit\\u00e9 \\u00e9conomique (IAE)\"}, {\"id\": \"64bb4d69-f2b9-4bdf-9309-e063274395f6\", \"type\": \"item\", \"value\": \"R\\u00e9duisez le temps consacr\\u00e9 \\u00e0 vos sourcing achat inclusif\"}]",
             "banner_cta_section": "[{\"id\": \"3db2bf05-a9c7-4e38-b81f-e49c4fcf56e3\", \"type\": \"cta_primary\", \"value\": {\"cta_id\": \"home-demande\", \"cta_href\": \"/besoins/ajouter/\", \"cta_icon\": \"ri-mail-send-line\", \"cta_text\": \"Publier votre besoin d'achat\"}}, {\"id\": \"b736600e-2ef4-4ae3-8c29-3f0eabbfe59d\", \"type\": \"cta_secondary\", \"value\": {\"cta_id\": \"home-siae-search\", \"cta_href\": \"/prestataires/\", \"cta_icon\": \"ri-search-line\", \"cta_text\": \"Rechercher un prestataire\"}}]",
             "content": "[{\"id\": \"bd7d5806-3595-4326-b296-056ab6d32f14\", \"type\": \"website_stats\", \"value\": {}}, {\"id\": \"d7a2467a-3cb9-4523-873c-0db0d6390a78\", \"type\": \"section_why_call_siaes\", \"value\": {\"title\": \"Pourquoi faire appel \\u00e0 un prestataire inclusif ?\"}}, {\"id\": \"a7c18544-3e7b-466a-addc-b0322aec9018\", \"type\": \"section_our_ressources\", \"value\": {\"title\": \"Nos ressources\"}}]"
+        }
+    },
+    {
+        "model": "cms.homepage",
+        "pk": 26,
+        "fields": {
+            "banner_title": "Recevez gratuitement des opportunités commerciales",
+            "banner_subtitle": "",
+            "banner_arguments_list": "[{\"id\": \"af0cf07b-f716-4783-a89a-9013f41ae692\", \"type\": \"item\", \"value\": \"R\\u00e9f\\u00e9rencez votre structure inclusive gratuitement\"}, {\"id\": \"d73c95ef-5fef-47c4-9ea6-5d8240961a27\", \"type\": \"item\", \"value\": \"Recevez des demandes de clients directement dans votre bo\\u00eete e-mail\"}, {\"id\": \"768e3efd-aebe-40b6-a9c3-7461c66423be\", \"type\": \"item\", \"value\": \"D\\u00e9veloppez votre activit\\u00e9 commerciale\"}]",
+            "banner_cta_section": "[{\"id\": \"da4ce9a4-14fa-4392-ba81-44e212ff06b7\", \"type\": \"cta_primary\", \"value\": {\"cta_id\": \"accueil-deconnecte-btn-referencer-structure\", \"cta_href\": \"/accounts/signup/\", \"cta_icon\": \"ri-building-4-line\", \"cta_text\": \"R\\u00e9f\\u00e9rencer ma structure\"}}, {\"id\": \"03a01e39-c9b7-4084-8b95-37d4566983f2\", \"type\": \"cta_secondary\", \"value\": {\"cta_id\": \"accueil-deconnecte-btn-reserver-demo\", \"cta_href\": \"/\", \"cta_icon\": \"ri-calendar-line\", \"cta_text\": \"R\\u00e9server une d\\u00e9mo\"}}, {\"id\": \"b3ae7b98-9b43-4729-aabc-c7e6793fbda0\", \"type\": \"cta_primary_auth\", \"value\": {\"cta_id\": \"accueil-connecte-btn-reserver-demo\", \"cta_href\": \"/\", \"cta_icon\": \"ri-calendar-line\", \"cta_text\": \"R\\u00e9server une d\\u00e9mo\"}}]",
+            "content": "[{\"id\": \"474fec81-6fa7-4044-b161-e065a84600bf\", \"type\": \"section_what_find_here\", \"value\": {\"cards\": [{\"id\": \"06fabc8c-6159-457b-aa89-0fe15d679f21\", \"type\": \"card\", \"value\": {\"ico\": \"ico-bicro-marche-main\", \"text\": \"Recevez des opportunit\\u00e9s commerciales directement dans votre boite email\"}}, {\"id\": \"fc38faca-24d7-4f86-9b07-4a1e2207b9eb\", \"type\": \"card\", \"value\": {\"ico\": \"ico-bicro-marche-presta\", \"text\": \"Acc\\u00e9dez aux coordonn\\u00e9es de contact du client et contactez-le rapidement\"}}, {\"id\": \"9b58a8de-af3f-4415-b9ec-16898a7a0ade\", \"type\": \"card\", \"value\": {\"ico\": \"ico-bicro-marche-contrat\", \"text\": \"Mettez toutes les chances de votre c\\u00f4t\\u00e9 en envoyant votre meilleure offre au client.\"}}], \"title\": \"Comment \\u00e7a marche ?\"}}]"
         }
     }
 ]
