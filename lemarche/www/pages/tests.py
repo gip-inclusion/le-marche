@@ -23,6 +23,9 @@ class PagesHeaderLinkTest(TestCase):
     def test_anonymous_user_home(self):
         response = self.client.get("/")
 
+        self.assertContains(response, "Vous êtes une structure inclusive")
+        self.assertContains(response, "/accueil-structure/")
+
         self.assertContains(response, "Publier un besoin d'achat")
         self.assertContains(response, reverse("tenders:create"))
 
@@ -41,6 +44,9 @@ class PagesHeaderLinkTest(TestCase):
 
     def test_anonymous_user_home_for_siae(self):
         response = self.client.get("/accueil-structure/")
+
+        self.assertNotContains(response, "Vous êtes une structure inclusive")
+        self.assertNotContains(response, "/accueil-structure/")
 
         self.assertContains(response, "Publier un besoin d")
         self.assertContains(response, reverse("tenders:create"))
@@ -62,6 +68,9 @@ class PagesHeaderLinkTest(TestCase):
         self.client.force_login(self.siae_user)
         response = self.client.get("/")
 
+        self.assertNotContains(response, "Vous êtes une structure inclusive")
+        self.assertNotContains(response, "/accueil-structure/")
+
         self.assertContains(response, "Publier un besoin d'achat")
         self.assertContains(response, reverse("tenders:create"))
 
@@ -81,6 +90,9 @@ class PagesHeaderLinkTest(TestCase):
     def test_buyer_user_home(self):
         self.client.force_login(self.user_buyer)
         response = self.client.get("/")
+
+        self.assertNotContains(response, "Vous êtes une structure inclusive")
+        self.assertNotContains(response, "/accueil-structure/")
 
         self.assertContains(response, "Publier un besoin d'achat")
         self.assertContains(response, reverse("tenders:create"))

@@ -5,6 +5,10 @@
     {% include "includes/_header_env_notice.html" %}
 {% endif %}
 
+{% if not user.is_authenticated and page.slug != "accueil-structure" %}
+    {% include "includes/_header_for_siaes.html" %}
+{% endif %}
+
 <header role="banner" id="header">
     {% with tender_siae_unread_count=user.tender_siae_unread_count %}
         <section class="s-header">
