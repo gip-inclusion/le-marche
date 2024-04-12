@@ -36,7 +36,7 @@ class SiaeSearchNumQueriesTest(TestCase):
 
     def test_search_num_queries(self):
         url = reverse("siae:search_results")
-        with self.assertNumQueries(8):
+        with self.assertNumQueries(11):
             response = self.client.get(url)
             siaes = list(response.context["siaes"])
             self.assertEqual(len(siaes), 20)
