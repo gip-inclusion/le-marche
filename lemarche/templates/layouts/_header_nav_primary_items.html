@@ -6,13 +6,14 @@
 					Demandes reçues{% if tender_siae_unread_count %} <span class="badge badge-pill badge-important fs-xs">{{ tender_siae_unread_count }}</span>{% endif %}
 				</a>
 			</li>
+		{% else %}
+			<li>
+				<a href="{% url 'tenders:create' %}" id="header-demande" class="btn btn-primary btn-ico">
+					<i class="ri-mail-send-line ri-lg"></i>
+					<span>Publier un besoin d'achat</span>
+				</a>
+			</li>
 		{% endif %}
-		<li>
-			<a href="{% url 'tenders:create' %}" id="header-demande" class="btn btn-primary btn-ico">
-				<i class="ri-mail-send-line ri-lg"></i>
-				<span>Publier un besoin d'achat</span>
-			</a>
-		</li>
 		<li>
 			<div class="dropdown">
 				<button class="btn btn-outline-primary dropdown-toggle{% if is_mobile %} mb-3" type="button{% endif %}"
@@ -42,24 +43,39 @@
 			</div>
 		</li>
 	{% else %}
-		<li>
-			<a href="{% url 'tenders:create' %}" id="header-demande"
-				class="btn btn-link btn-ico {% if is_mobile %}mh-auto p-0{% endif %}">
-				<i class="ri-mail-send-line ri-lg"></i>
-				<span>Publier un besoin d'achat</span>
-			</a>
-		</li>
-		<li>
-			<a href="{% url 'auth:signup' %}" id="h_signup" class="btn btn-outline-primary btn-ico">
-				<i class="ri-user-add-line ri-lg"></i>
-				<span>S'inscrire</span>
-			</a>
-		</li>
-		<li>
-			<a href="{% url 'auth:login' %}" id="h_login" class="btn btn-primary btn-ico">
-				<i class="ri-login-box-line ri-lg"></i>
-				<span>Se connecter</span>
-			</a>
-		</li>
+		{% if page and page.slug == "accueil-structure" %}
+			<li>
+				<a href="{% url 'auth:signup' %}" id="header-signup-siae" class="btn btn-primary btn-ico">
+					<i class="ri-building-line ri-lg"></i>
+					<span>Référencer ma structure</span>
+				</a>
+			</li>
+			<li>
+				<a href="{% url 'auth:login' %}" id="h_login" class="btn btn-outline-primary btn-ico">
+					<i class="ri-login-box-line ri-lg"></i>
+					<span>Se connecter</span>
+				</a>
+			</li>
+		{% else %}
+			<li>
+				<a href="{% url 'tenders:create' %}" id="header-demande"
+					class="btn btn-link btn-ico {% if is_mobile %}mh-auto p-0{% endif %}">
+					<i class="ri-mail-send-line ri-lg"></i>
+					<span>Publier un besoin d'achat</span>
+				</a>
+			</li>
+			<li>
+				<a href="{% url 'auth:signup' %}" id="h_signup" class="btn btn-outline-primary btn-ico">
+					<i class="ri-user-add-line ri-lg"></i>
+					<span>S'inscrire</span>
+				</a>
+			</li>
+			<li>
+				<a href="{% url 'auth:login' %}" id="h_login" class="btn btn-primary btn-ico">
+					<i class="ri-login-box-line ri-lg"></i>
+					<span>Se connecter</span>
+				</a>
+			</li>
+		{% endif %}
 	{% endif %}
 </ul>
