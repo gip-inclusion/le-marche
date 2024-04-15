@@ -89,7 +89,7 @@ class SiaeNotMemberRequiredMixin(LoginRequiredUserPassesTestMixin):
     def test_func(self):
         user = self.request.user
         siae_slug = self.kwargs.get("slug")
-        return user.is_authenticated and not (siae_slug in user.siaes.values_list("slug", flat=True))
+        return user.is_authenticated and siae_slug not in user.siaes.values_list("slug", flat=True)
 
     def handle_no_permission(self):
         messages.add_message(self.request, messages.WARNING, "Vous êtes déjà rattaché à cette structure.")
