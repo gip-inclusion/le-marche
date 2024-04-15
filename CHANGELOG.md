@@ -6,6 +6,29 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2024.3.0](https://github.com/gip-inclusion/le-marche/compare/v2024.2.0...v2024.3.0) (2024-04-08)
+
+
+### Features
+
+* **Besoins:** Admin: afficher les utilisateurs qui ont vu le besoin ([#1151](https://github.com/gip-inclusion/le-marche/issues/1151)) ([a543999](https://github.com/gip-inclusion/le-marche/commit/a543999f36579e6e78ccd370360cc81b9e397656))
+* **Besoins:** Filtre par type de structure dans le ciblage des structures par recherche sémantique ([#1152](https://github.com/gip-inclusion/le-marche/issues/1152)) ([d3a0e1a](https://github.com/gip-inclusion/le-marche/commit/d3a0e1ae725af7d8a70e5942502f02e1a672bd33))
+* **Besoins:** mettre à jour l'utilisateur de la mise en relation ([#1144](https://github.com/gip-inclusion/le-marche/issues/1144)) ([0adc957](https://github.com/gip-inclusion/le-marche/commit/0adc957c4c25883cb175b380b35e78443f71327a))
+* **Besoins:** pouvoir rattacher un utilisateur à une mise en relation ([#1143](https://github.com/gip-inclusion/le-marche/issues/1143)) ([a4e2f1f](https://github.com/gip-inclusion/le-marche/commit/a4e2f1f766adaae1de271816f5c2fe38f9ee0dd2))
+* **Besoins:** Sondage transaction : ajouter une option "Pas encore" ([#1154](https://github.com/gip-inclusion/le-marche/issues/1154)) ([bf8a23d](https://github.com/gip-inclusion/le-marche/commit/bf8a23dfcdbffd794822493bc69de6383af4a9cb))
+* **Brevo:** après une recherche d'un acheteur, ajouter à une liste Brevo ([#1135](https://github.com/gip-inclusion/le-marche/issues/1135)) ([ec146dc](https://github.com/gip-inclusion/le-marche/commit/ec146dc199856b7a7644ad5f4f1e174a82e271ec))
+* **Home:** Rendre les sections de l'accueil davantage modifiable ([#1141](https://github.com/gip-inclusion/le-marche/issues/1141)) ([551c39a](https://github.com/gip-inclusion/le-marche/commit/551c39ae45c079cca171c3fc30c9d0821f9643ec))
+
+
+### Bug Fixes
+
+* **Besoins:** répare l'ouverture au clic de 2 liens dfférents ([#1148](https://github.com/gip-inclusion/le-marche/issues/1148)) ([f8b741e](https://github.com/gip-inclusion/le-marche/commit/f8b741e6415e8f79c47ccea7c710d0d393d25209))
+* erreur sur une variable non définie. ref [#1102](https://github.com/gip-inclusion/le-marche/issues/1102) ([ecadcd0](https://github.com/gip-inclusion/le-marche/commit/ecadcd011f0511cc36a2b1f042a68202ec4c27fc))
+* L'image de la section Ecosystème ne change pas ([#1149](https://github.com/gip-inclusion/le-marche/issues/1149)) ([fe2ae2d](https://github.com/gip-inclusion/le-marche/commit/fe2ae2deb0012244a33ef284b91e4dc8c4c77a65))
+* Répare des tests qui cassent parfois ([#1147](https://github.com/gip-inclusion/le-marche/issues/1147)) ([48fa4fe](https://github.com/gip-inclusion/le-marche/commit/48fa4fe9cb703d9e9760a3068521b9787829102a))
+* Répare encore des tests qui cassent parfois ([#1155](https://github.com/gip-inclusion/le-marche/issues/1155)) ([84547bb](https://github.com/gip-inclusion/le-marche/commit/84547bbf1c61858f90a543e9741a5b9c09387da4))
+* **Tracker:** errors linked to user_id ([e309d59](https://github.com/gip-inclusion/le-marche/commit/e309d598800acfb735cdf46b6b5016678d10f1f0))
+
 ## [2024.2.0](https://github.com/gip-inclusion/le-marche/compare/v2024.1.0...v2024.2.0) (2024-03-22)
 
 
