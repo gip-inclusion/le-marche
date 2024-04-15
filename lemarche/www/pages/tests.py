@@ -27,7 +27,7 @@ class PagesHeaderLinkTest(TestCase):
         self.assertContains(response, reverse("tenders:create"))
 
         self.assertContains(response, "S'inscrire")
-        self.assertNotContains(response, "Référencé ma structure")
+        self.assertNotContains(response, "Référencer ma structure")
         self.assertContains(response, reverse("auth:signup"))
 
         self.assertContains(response, "Se connecter")
@@ -46,7 +46,7 @@ class PagesHeaderLinkTest(TestCase):
         self.assertContains(response, reverse("tenders:create"))
 
         self.assertNotContains(response, "S'inscrire")
-        self.assertContains(response, "Référencé ma structure")
+        self.assertContains(response, "Référencer ma structure")
         self.assertContains(response, reverse("auth:signup"))
 
         self.assertContains(response, "Se connecter")
@@ -66,7 +66,7 @@ class PagesHeaderLinkTest(TestCase):
         self.assertContains(response, reverse("tenders:create"))
 
         self.assertNotContains(response, "S'inscrire")
-        self.assertNotContains(response, "Référencé ma structure")
+        self.assertNotContains(response, "Référencer ma structure")
         self.assertNotContains(response, reverse("auth:signup"))
 
         self.assertNotContains(response, "Se connecter")
@@ -86,7 +86,7 @@ class PagesHeaderLinkTest(TestCase):
         self.assertContains(response, reverse("tenders:create"))
 
         self.assertNotContains(response, "S'inscrire")
-        self.assertNotContains(response, "Référencé ma structure")
+        self.assertNotContains(response, "Référencer ma structure")
         self.assertNotContains(response, reverse("auth:signup"))
 
         self.assertNotContains(response, "Se connecter")
