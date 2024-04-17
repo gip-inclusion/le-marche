@@ -20,13 +20,13 @@ from django.utils.text import slugify
 from lemarche.perimeters.models import Perimeter
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.tasks import set_siae_coords
-from lemarche.siaes.validators import validate_naf, validate_post_code, validate_siret
 from lemarche.stats.models import Tracker
 from lemarche.users.models import User
 from lemarche.utils.constants import DEPARTMENTS_PRETTY, RECALCULATED_FIELD_HELP_TEXT, REGIONS_PRETTY
 from lemarche.utils.data import round_by_base
 from lemarche.utils.fields import ChoiceArrayField
 from lemarche.utils.urls import get_object_admin_url
+from lemarche.utils.validators import validate_naf, validate_post_code, validate_siret
 
 
 def get_region_filter(perimeter):

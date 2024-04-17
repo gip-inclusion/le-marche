@@ -3,7 +3,7 @@
 import django.contrib.postgres.fields
 from django.db import migrations, models
 
-import lemarche.siaes.validators
+import lemarche.utils.validators
 
 
 class Migration(migrations.Migration):
@@ -180,7 +180,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 max_length=5,
                 null=True,
-                validators=[lemarche.siaes.validators.validate_naf],
+                validators=[lemarche.utils.validators.validate_naf],
                 verbose_name="Naf",
             ),
         ),
@@ -340,7 +340,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 max_length=5,
                 null=True,
-                validators=[lemarche.siaes.validators.validate_post_code],
+                validators=[lemarche.utils.validators.validate_post_code],
                 verbose_name="Code Postal",
             ),
         ),
