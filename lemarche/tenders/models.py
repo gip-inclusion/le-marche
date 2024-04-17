@@ -42,6 +42,7 @@ from lemarche.utils.constants import (
 )
 from lemarche.utils.fields import ChoiceArrayField
 from lemarche.utils.urls import get_object_admin_url
+from lemarche.utils.validators import OptionalSchemeURLValidator
 
 
 def get_perimeter_filter(siae):
@@ -377,8 +378,11 @@ class Tender(models.Model):
         verbose_name="Comment répondre à cette demande ?",
         blank=True,
     )
-    external_link = models.URLField(
-        verbose_name="Lien vers l'appel d'offres", help_text="Ajoutez ici l'URL de votre appel d'offres", blank=True
+    external_link = models.CharField(
+        verbose_name="Lien vers l'appel d'offres",
+        help_text="Ajoutez ici l'URL de votre appel d'offres",
+        validators=[OptionalSchemeURLValidator()],
+        blank=True,
     )
     deadline_date = models.DateField(
         verbose_name="Date de clôture des réponses",
@@ -1081,24 +1085,29 @@ class TenderSiae(models.Model):
     )
 
     source = models.CharField(
+        verbose_name="Source de la mise en relation",
         max_length=20,
         choices=tender_constants.TENDER_SIAE_SOURCE_CHOICES,
         default=tender_constants.TENDER_SIAE_SOURCE_EMAIL,
     )
-    found_with_ai = models.BooleanField("Trouvé par l'IA", default=False)
-    is_deleted_by_siae = models.BooleanField("Supprimé par l'utilisateur ?", default=False, db_index=True)
+    found_with_ai = models.BooleanField(verbose_name="Trouvé par l'IA", default=False)
+    is_deleted_by_siae = models.BooleanField(verbose_name="Supprimé par l'utilisateur ?", default=False, db_index=True)
 
     # stats: relation
-    email_send_date = models.DateTimeField("Date d'envoi de l'e-mail", blank=True, null=True)
-    email_link_click_date = models.DateTimeField("Date de clic sur le lien dans l'e-mail", blank=True, null=True)
-    detail_display_date = models.DateTimeField("Date de visualisation du besoin", blank=True, null=True)
+    email_send_date = models.DateTimeField(verbose_name="Date d'envoi de l'e-mail", blank=True, null=True)
+    email_link_click_date = models.DateTimeField(
+        verbose_name="Date de clic sur le lien dans l'e-mail", blank=True, null=True
+    )
+    detail_display_date = models.DateTimeField(verbose_name="Date de visualisation du besoin", blank=True, null=True)
     detail_contact_click_date = models.DateTimeField(
-        "Date de clic sur les coordonnées du besoin", blank=True, null=True
+        verbose_name="Date de clic sur les coordonnées du besoin", blank=True, null=True
     )
     detail_cocontracting_click_date = models.DateTimeField(
-        "Date de clic sur Répondre en co-traitance", blank=True, null=True
+        verbose_name="Date de clic sur Répondre en co-traitance", blank=True, null=True
     )
-    detail_not_interested_click_date = models.DateTimeField("Date de clic sur Pas intéressé", blank=True, null=True)
+    detail_not_interested_click_date = models.DateTimeField(
+        verbose_name="Date de clic sur Pas intéressé", blank=True, null=True
+    )
     detail_not_interested_feedback = models.TextField(verbose_name="Clic sur Pas intéréssé : explication", blank=True)
 
     # survey

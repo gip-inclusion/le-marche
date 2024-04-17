@@ -1,10 +1,25 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from lemarche.utils.validators import validate_naf, validate_post_code, validate_siren, validate_siret
+from lemarche.utils.validators import (
+    OptionalSchemeURLValidator,
+    validate_naf,
+    validate_post_code,
+    validate_siren,
+    validate_siret,
+)
 
 
 class ValidatorsTest(TestCase):
+    def test_optional_scheme_url_validator(self):
+        validator = OptionalSchemeURLValidator()
+        URL_OK = ["example.com", "www.example.com", "http://www.example.com", "https://www.example.com"]
+        for item in URL_OK:
+            validator(item)
+        URL_NOT_OK = ["test"]
+        for item in URL_NOT_OK:
+            self.assertRaises(ValidationError, validator, item)
+
     def test_post_code_validator(self):
         validator = validate_post_code
         POST_CODE_OK = ["00000", "12345", "38000"]
