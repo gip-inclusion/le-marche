@@ -1,6 +1,16 @@
 # https://github.com/betagouv/itou/blob/master/itou/utils/validators.py
 
 from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
+
+
+class OptionalSchemeURLValidator(URLValidator):
+    # https://stackoverflow.com/a/49983649/4293684
+    def __call__(self, value):
+        if "://" not in value:
+            # Validate as if it were https://
+            value = "https://" + value
+        super(OptionalSchemeURLValidator, self).__call__(value)
 
 
 def validate_post_code(post_code):
