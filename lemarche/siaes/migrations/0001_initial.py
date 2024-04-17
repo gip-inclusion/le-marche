@@ -3,7 +3,7 @@
 import django.utils.timezone
 from django.db import migrations, models
 
-import lemarche.siaes.validators
+import lemarche.utils.validators
 
 
 class Migration(migrations.Migration):
@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
                             models.CharField(
                                 db_index=True,
                                 max_length=14,
-                                validators=[lemarche.siaes.validators.validate_siret],
+                                validators=[lemarche.utils.validators.validate_siret],
                                 verbose_name="Siret",
                             ),
                         ),
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                             models.CharField(
                                 blank=True,
                                 max_length=5,
-                                validators=[lemarche.siaes.validators.validate_naf],
+                                validators=[lemarche.utils.validators.validate_naf],
                                 verbose_name="Naf",
                             ),
                         ),

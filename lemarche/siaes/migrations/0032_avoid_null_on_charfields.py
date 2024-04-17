@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 
-import lemarche.siaes.validators
+import lemarche.utils.validators
 
 
 class Migration(migrations.Migration):
@@ -241,7 +241,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 default="",
                 max_length=5,
-                validators=[lemarche.siaes.validators.validate_naf],
+                validators=[lemarche.utils.validators.validate_naf],
                 verbose_name="Naf",
             ),
             preserve_default=False,
@@ -274,7 +274,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 default="",
                 max_length=5,
-                validators=[lemarche.siaes.validators.validate_post_code],
+                validators=[lemarche.utils.validators.validate_post_code],
                 verbose_name="Code Postal",
             ),
             preserve_default=False,
