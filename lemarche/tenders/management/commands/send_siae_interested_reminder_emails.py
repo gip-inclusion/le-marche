@@ -37,7 +37,7 @@ class Command(BaseCommand):
         self.stdout.write("Script to send Siae interested reminder emails...")
 
         current_weekday = timezone.now().weekday()
-        if current_weekday >= 5:
+        if current_weekday > 4:
             self.stdout.write("Weekend... Stopping. Come back on Monday :)")
         else:
             self.stdout.write("-" * 80)
@@ -46,10 +46,10 @@ class Command(BaseCommand):
 
             lt_days_ago = timezone.now() - timedelta(days=options["days_since_detail_contact_click_date"])
             gte_days_ago = timezone.now() - timedelta(days=options["days_since_detail_contact_click_date"] + 1)
-            # Monday: special case (the script doesn't run during on weekends)
+            # Monday: special case (the script doesn't run on weekends)
             # gte_days_ago = gte_days_ago+2 to account for Saturday & Sunday
             if current_weekday == 0:
-                gte_days_ago = timezone.now() - timedelta(days=options["days_since_detail_contact_click_date"] + 1 + 2)
+                gte_days_ago = gte_days_ago - timedelta(days=2)
             tendersiae_interested_reminder_list = TenderSiae.objects.detail_contact_click_post_reminder(
                 gte_days_ago=gte_days_ago, lt_days_ago=lt_days_ago
             )
