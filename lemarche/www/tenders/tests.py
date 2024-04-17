@@ -146,8 +146,17 @@ class TenderCreateViewTest(TestCase):
     def test_tender_wizard_form_external_link_validation(self):
         self.client.force_login(self.user_buyer)
         tenders_step_data = self._generate_fake_data_form(_step_1={"general-kind": tender_constants.KIND_TENDER})
-        # set an external_link with a wrong format
+        # set a wrong external_link (should be a valid url)
         tenders_step_data[1]["detail-external_link"] = "test"
+        with self.assertRaises(AssertionError):
+            self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+
+    def test_tender_wizard_form_tender_with_external_link_response_kind_validation(self):
+        self.client.force_login(self.user_buyer)
+        tenders_step_data = self._generate_fake_data_form(_step_1={"general-kind": tender_constants.KIND_TENDER})
+        tenders_step_data[1]["detail-external_link"] = "example.com"
+        # set a wrong reponse_kind (should have RESPONSE_KIND_EXTERNAL)
+        tenders_step_data[2]["contact-response_kind"] = []
         with self.assertRaises(AssertionError):
             self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
 
