@@ -15,6 +15,19 @@ class Command(BaseCommand):
     """
     Usage:
     - poetry run python manage.py create_companies
+
+    Common rules:
+    "ville", "commune" --> Commune (138)
+    "agglo" --> Communauté d'agglomération (121)
+    "metropole" --> Métropole (123)
+    "@cc" --> Communauté de communes (131)
+    "départe" --> Département (31)
+    "région" --> Région (111)
+    "hospital" --> CHU (36)
+    "pnr", "parc" --> Parc naturel régional (195)
+    "@ac-" --> Académie (177)
+    "@univ-" --> Université (139)
+    ...
     """
 
     def handle(self, *args, **options):
@@ -40,12 +53,21 @@ class Command(BaseCommand):
             # check that no company already exist
             company_qs = Company.objects.filter(email_domain_list__contains=[user_email_suffix])
             if not company_qs.count():
-                result = input(f"Create company: {user_email_suffix} / {user.company_name} ? (y/n) ")
-                if result == "y":
+                result = input(f"Create company: {user_email_suffix} / {user.company_name} ? (y/n/id) ")
+                if result == "n":
+                    pass
+                elif result == "y":
                     company = Company.objects.create(name=user.company_name, email_domain_list=[user_email_suffix])
                     company.users.add(user)
                     self.stdout_info(f"Company created for {user_email_suffix}")
                     companies_created += 1
+                elif result.isdigit():
+                    company = Company.objects.get(id=int(result))
+                    company.email_domain_list += [user_email_suffix]
+                    company.save()
+                    company.users.add(user)
+                    self.stdout_info(f"User added to existing company {company.name} (and email_domain_list updated)")
+
             elif company_qs.count() == 1:
                 company = company_qs.first()
                 company.users.add(user)
