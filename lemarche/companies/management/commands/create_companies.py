@@ -8,33 +8,7 @@ from lemarche.users.models import User
 
 # from lemarche.utils.apis import api_slack
 from lemarche.utils.commands import BaseCommand
-
-
-GENERIC_EMAIL_DOMAIN_SUFFIX_LIST = [
-    "gmail.com",
-    "orange.fr",
-    "wanadoo.fr",
-    "hotmail.fr",
-    "hotmail.com",
-    "live.fr",
-    "yahoo.fr",
-    "yahoo.com",
-    "outlook.fr",
-    "outlook.com",
-    "laposte.net",
-    "free.fr",
-    "sfr.fr",
-    "icloud.com",
-    "yandex.com",
-    "msn.com",
-    "cegetel.net",
-    "bbox.fr",
-    "yopmail.com",
-    "neuf.fr",
-    "numericable.fr",
-    "gmx.fr",
-    "googlemail.com",
-]
+from lemarche.utils.emails import GENERIC_EMAIL_DOMAIN_SUFFIX_LIST
 
 
 class Command(BaseCommand):
