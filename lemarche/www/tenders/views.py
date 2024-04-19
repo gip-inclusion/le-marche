@@ -112,6 +112,7 @@ class TenderCreateMultiStepView(SessionWizardView):
             if self.instance.id:
                 kwargs["questions_list"] = list(self.instance.questions_list())
         if step == self.STEP_CONTACT:
+            kwargs["kind"] = self.get_cleaned_data_for_step(self.STEP_GENERAL).get("kind")
             kwargs["external_link"] = self.get_cleaned_data_for_step(self.STEP_DETAIL).get("external_link")
             kwargs["user"] = self.request.user
         return kwargs
