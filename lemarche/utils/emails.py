@@ -9,6 +9,33 @@ from lemarche.utils.apis import api_brevo, api_hubspot, api_mailjet
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 
 
+GENERIC_EMAIL_DOMAIN_SUFFIX_LIST = [
+    "gmail.com",
+    "orange.fr",
+    "wanadoo.fr",
+    "hotmail.fr",
+    "hotmail.com",
+    "live.fr",
+    "yahoo.fr",
+    "yahoo.com",
+    "outlook.fr",
+    "outlook.com",
+    "laposte.net",
+    "free.fr",
+    "sfr.fr",
+    "icloud.com",
+    "yandex.com",
+    "msn.com",
+    "cegetel.net",
+    "bbox.fr",
+    "yopmail.com",
+    "neuf.fr",
+    "numericable.fr",
+    "gmx.fr",
+    "googlemail.com",
+]
+
+
 def anonymize_email(email):
     email_split = email.split("@")
     email_username = email_split[0]
