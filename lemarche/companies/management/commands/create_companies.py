@@ -5,8 +5,7 @@ from django.db.models import Q
 
 from lemarche.companies.models import Company
 from lemarche.users.models import User
-
-# from lemarche.utils.apis import api_slack
+from lemarche.utils.apis import api_slack
 from lemarche.utils.commands import BaseCommand
 from lemarche.utils.emails import GENERIC_EMAIL_DOMAIN_SUFFIX_LIST
 
@@ -53,10 +52,8 @@ class Command(BaseCommand):
             # check that no company already exist
             company_qs = Company.objects.filter(email_domain_list__contains=[user_email_suffix])
             if not company_qs.count():
-                result = input(f"Create company: {user_email_suffix} / {user.company_name} ? (y/n/id) ")
-                if result == "n":
-                    pass
-                elif result == "y":
+                result = input(f"Create company: {user_email_suffix} / {user.company_name} ? (y/<id>/n) ")
+                if result == "y":
                     company = Company.objects.create(name=user.company_name, email_domain_list=[user_email_suffix])
                     company.users.add(user)
                     self.stdout_info(f"Company created for {user_email_suffix}")
@@ -67,6 +64,8 @@ class Command(BaseCommand):
                     company.save()
                     company.users.add(user)
                     self.stdout_info(f"User added to existing company {company.name} (and email_domain_list updated)")
+                else:
+                    pass
 
             elif company_qs.count() == 1:
                 company = company_qs.first()
@@ -79,4 +78,4 @@ class Command(BaseCommand):
             f"Created {companies_created} companies",
         ]
         self.stdout_messages_success(msg_success)
-        # api_slack.send_message_to_channel("\n".join(msg_success))
+        api_slack.send_message_to_channel("\n".join(msg_success))
