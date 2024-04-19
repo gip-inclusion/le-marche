@@ -90,8 +90,6 @@ class TenderCreateStepDetailForm(forms.ModelForm):
 
     def __init__(self, kind, questions_list=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.kind = kind
-
         # required fields
         self.fields["deadline_date"].required = True
 
@@ -105,11 +103,11 @@ class TenderCreateStepDetailForm(forms.ModelForm):
             self.initial["start_working_date"] = self.instance.start_working_date.isoformat()
 
         # label, placeholder & help_text
-        if self.kind != tender_constants.KIND_TENDER:
+        if kind != tender_constants.KIND_TENDER:
             self.fields["external_link"].label = "Lien à partager"
             self.fields["external_link"].help_text = None
 
-        if self.kind == tender_constants.KIND_TENDER:
+        if kind == tender_constants.KIND_TENDER:
             self.fields["external_link"].required = True
 
         self.fields["amount"].label = "Montant € estimé de votre besoin"
@@ -154,8 +152,6 @@ class TenderCreateStepDetailForm(forms.ModelForm):
 class TenderCreateStepContactForm(forms.ModelForm):
     # fields from previous step
     external_link = None
-    user_is_anonymous = None
-    user_does_not_have_company_name = None
     user: User = None
 
     response_kind = forms.MultipleChoiceField(
@@ -183,15 +179,20 @@ class TenderCreateStepContactForm(forms.ModelForm):
             "contact_phone": "Téléphone",
         }
 
-    def __init__(self, external_link, user: User, *args, **kwargs):
+    def __init__(self, kind, external_link, user: User, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.kind = kind
         self.external_link = external_link
         self.user = user
         user_is_anonymous = not user.is_authenticated
+        user_does_not_have_company_name = user_is_anonymous or not user.company_name
 
-        # display response_is_anonymous if the tender is a project
-        if self.instance and self.instance.kind != tender_constants.KIND_PROJECT:
+        # display response_is_anonymous only if the tender is a project
+        if self.instance and (self.instance.kind != tender_constants.KIND_PROJECT):
             self.fields["response_is_anonymous"].widget = forms.HiddenInput()
+        # if TENDER & external_link, then response_kind should have RESPONSE_KIND_EXTERNAL
+        if self.instance and (self.instance.kind == tender_constants.KIND_TENDER) and self.external_link:
+            self.initial["response_kind"] = [tender_constants.RESPONSE_KIND_EXTERNAL]
         # required fields
         if user_is_anonymous:
             self.fields["contact_first_name"].required = True
@@ -203,8 +204,7 @@ class TenderCreateStepContactForm(forms.ModelForm):
             del self.fields["contact_last_name"]
             del self.fields["contact_email"]
             del self.fields["contact_phone"]
-
-        user_does_not_have_company_name = user_is_anonymous or not user.company_name
+        # user company_name field
         if user_does_not_have_company_name:
             self.fields["contact_company_name"].widget = forms.TextInput()  # HiddenInput() by default
             self.fields["contact_company_name"].required = True
@@ -245,6 +245,13 @@ class TenderCreateStepContactForm(forms.ModelForm):
             self.add_error(
                 "response_kind", "Lien externe sélectionné mais aucun lien renseigné (à l'étape précédente)."
             )
+        if (
+            self.kind == tender_constants.KIND_TENDER
+            and self.external_link
+            and self.cleaned_data.get("response_kind")
+            and not (tender_constants.RESPONSE_KIND_EXTERNAL in self.cleaned_data.get("response_kind"))
+        ):
+            self.add_error("response_kind", "Appel d'offre avec lien renseigné.")
 
 
 class TenderCreateStepSurveyForm(forms.ModelForm):
