@@ -115,7 +115,6 @@ def create_or_update_company(siae):
 @task()
 def send_transactional_email_with_template(
     template_id: int,
-    subject: str,
     recipient_email: str,
     recipient_name: str,
     variables: dict,
@@ -127,7 +126,6 @@ def send_transactional_email_with_template(
     send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
         sender={"email": from_email, "name": from_name},
         to=[{"email": recipient_email, "name": recipient_name}],
-        subject=subject,
         template_id=template_id,
         params=variables,
     )
