@@ -82,6 +82,6 @@ class Command(BaseCommand):
                                 ]
                             )
                 else:
-                    self.stdout_error("Not enough siaes to send an email")
+                    self.stdout_error(f"Not enough siaes to send an email for #{tender.id}")
 
             self.stdout_messages_success("Done!")
