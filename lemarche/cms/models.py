@@ -152,7 +152,7 @@ class PaidArticleList(ArticleList):
 
 
 class HomePage(Page):
-    max_count = 2
+    max_count = 3
     banner_title = models.CharField(
         default="Votre recherche de prestataires inclusifs est chronophage ?", max_length=120
     )
