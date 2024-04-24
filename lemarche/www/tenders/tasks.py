@@ -11,7 +11,7 @@ from lemarche.siaes.models import Siae
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils import constants
-from lemarche.utils.apis import api_hubspot, api_mailjet, api_slack
+from lemarche.utils.apis import api_brevo, api_hubspot, api_mailjet, api_slack
 from lemarche.utils.data import date_to_string
 from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url, get_object_admin_url, get_object_share_url
@@ -670,3 +670,47 @@ def notify_admin_siae_wants_cocontracting(tender: Tender, siae: Siae):
 
     if settings.BITOUBI_ENV == "prod":
         api_slack.send_message_to_channel(text=email_body, service_id=settings.SLACK_WEBHOOK_C4_TENDER_CHANNEL)
+
+
+def send_super_siaes_email_to_author(tender: Tender, top_siaes: list[Siae]):
+    recipient_list = whitelist_recipient_list([tender.author.email])
+    if recipient_list:
+        recipient_email = recipient_list[0] if recipient_list else ""
+        recipient_name = tender.author.full_name
+
+        # Use transaction parameters of Brevo with loop for siaes, documentation :
+        # https://help.brevo.com/hc/en-us/articles/4402386448530-Customize-your-emails-using-transactional-parameters
+        variables = {
+            "author_name": recipient_name,
+            "tender_title": tender.title,
+            "tender_kind": tender.get_kind_display().lower(),
+            "siaes_count": len(top_siaes),
+            "siaes": [],
+        }
+        for siae in top_siaes:
+            variables["siaes"].append(
+                {
+                    "name": siae.name_display,
+                    "kind": siae.get_kind_display(),
+                    "contact_name": siae.contact_full_name,
+                    "contact_phone": siae.contact_phone,
+                    "contact_email": siae.contact_email,
+                }
+            )
+
+        api_brevo.send_transactional_email_with_template(
+            template_id=settings.BREVO_TENDERS_AUTHOR_SUPER_SIAES_TEMPLATE_ID,
+            recipient_email=recipient_email,
+            recipient_name=recipient_name,
+            variables=variables,
+        )
+
+        # log email
+        log_item = {
+            "action": "email_super_siaes",
+            "email_to": recipient_email,
+            "email_timestamp": timezone.now().isoformat(),
+            "email_variables": variables,
+        }
+        tender.logs.append(log_item)
+        tender.save()
