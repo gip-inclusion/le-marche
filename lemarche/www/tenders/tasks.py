@@ -8,6 +8,7 @@ from django.utils import timezone
 from sesame.utils import get_query_string as sesame_get_query_string
 
 from lemarche.siaes.models import Siae
+from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils import constants
@@ -65,14 +66,19 @@ def send_tender_emails_to_siaes(tender: Tender):
 
     previous email_subject: f"{tender.get_kind_display()} : {tender.title} ({tender.author.company_name})"
     """
-    email_subject = "J'ai une opportunité commerciale pour vous sur le Marché de l'inclusion"
-    siae_users_count = 0
-    siae_users_send_count = 0
+    if tender.source == tender_constants.SOURCE_TALLY:
+        tender_title_splitted = " ".join(tender.title.split()[:3])
+        email_subject = f"{tender.get_kind_display()} : {tender_title_splitted}..."
+    else:
+        email_subject = "J'ai une opportunité commerciale pour vous sur le Marché de l'inclusion"
 
     # queryset
     all_siaes = tender.siaes.filter(tendersiae__email_send_date=None).order_by_super_siaes()
     logger.info(f"total siaes {all_siaes.count()}")
     siaes = all_siaes[: tender.limit_send_to_siae_batch]
+
+    siae_users_count = 0
+    siae_users_send_count = 0
 
     for siae in siaes:
         # send to siae 'contact_email'
