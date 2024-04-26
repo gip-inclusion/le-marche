@@ -25,8 +25,9 @@ class PagesHeaderLinkTest(TestCase):
 
         # top header banner
         self.assertContains(response, "Vous êtes une structure inclusive")
-        self.assertContains(response, "/accueil-structure/")
+        self.assertContains(response, "header-for-siaes-link")
         self.assertNotContains(response, "Vous êtes acheteur")
+        self.assertNotContains(response, "header-for-buyers-link")
 
         self.assertContains(response, "Publier un besoin d'achat")
         self.assertContains(response, reverse("tenders:create"))
@@ -49,8 +50,9 @@ class PagesHeaderLinkTest(TestCase):
 
         # top header banner
         self.assertNotContains(response, "Vous êtes une structure inclusive")
-        self.assertNotContains(response, "/accueil-structure/")
+        self.assertNotContains(response, "header-for-siaes-link")
         self.assertContains(response, "Vous êtes acheteur")
+        self.assertContains(response, "header-for-buyers-link")
 
         self.assertContains(response, "Publier un besoin d")
         self.assertContains(response, reverse("tenders:create"))
@@ -74,8 +76,9 @@ class PagesHeaderLinkTest(TestCase):
 
         # top header banner
         self.assertNotContains(response, "Vous êtes une structure inclusive")
-        self.assertNotContains(response, "/accueil-structure/")
+        self.assertNotContains(response, "header-for-siaes-link")
         self.assertNotContains(response, "Vous êtes acheteur")
+        self.assertNotContains(response, "header-for-buyers-link")
 
         self.assertContains(response, "Publier un besoin d'achat")
         self.assertContains(response, reverse("tenders:create"))
@@ -99,8 +102,9 @@ class PagesHeaderLinkTest(TestCase):
 
         # top header banner
         self.assertNotContains(response, "Vous êtes une structure inclusive")
-        self.assertNotContains(response, "/accueil-structure/")
+        self.assertNotContains(response, "header-for-siaes-link")
         self.assertNotContains(response, "Vous êtes acheteur")
+        self.assertNotContains(response, "header-for-buyers-link")
 
         self.assertContains(response, "Publier un besoin d'achat")
         self.assertContains(response, reverse("tenders:create"))
