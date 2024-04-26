@@ -608,7 +608,7 @@ class Tender(models.Model):
     limit_nb_siae_interested = models.PositiveSmallIntegerField(
         verbose_name="Limite des SIAES intéressées",
         help_text=ADMIN_FIELD_HELP_TEXT,
-        default=5,
+        default=6,
     )
     # partner data
     partner_approch_id = models.IntegerField("Partenaire APProch : ID", blank=True, null=True)
