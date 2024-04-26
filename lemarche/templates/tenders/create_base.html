@@ -9,7 +9,7 @@
                     <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
-                                <a href="{% url 'wagtail_serve' '' %}">Accueil</a>
+                                <a href="{{ HOME_PAGE_PATH }}">Accueil</a>
                             </li>
                             {% if user.is_authenticated %}
                                 <li class="breadcrumb-item">

@@ -8,7 +8,7 @@
                     <strong>Accès rapides</strong>
                     <div class="s-footer-quick__gridlist">
                         <ul>
-                            <li><a href="{% url 'wagtail_serve' '' %}">Accueil</a></li>
+                            <li><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
                             <li><a href="{% url 'tenders:create' %}">Publier un besoin d'achat</li>
                             <li><a href="{% url 'siae:search_results' %}">Rechercher un prestataire</a></li>
                             <li><a href="{% url 'siae:search_results' %}">Moteur de recherche multicritères</a></li>
