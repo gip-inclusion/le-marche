@@ -865,7 +865,7 @@ WAGTAILADMIN_BASE_URL = DEPLOY_URL or "http://localhost/"
 WAGTAIL_FRONTEND_LOGIN_URL = LOGIN_URL
 
 # Specific home page is setted here to avoid one query on every page
-SIAE_HOME_PAGE = "/accueil-structure/"
+SIAE_HOME_PAGE = env.str("SIAE_HOME_PAGE", "/accueil-structure/")
 
 # Increase throttling to avoid Bad request errors when saving large pages
 # https://docs.djangoproject.com/en/4.2/ref/settings/#data-upload-max-number-fields
