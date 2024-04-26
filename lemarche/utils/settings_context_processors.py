@@ -29,4 +29,5 @@ def expose_settings(request):
         "TYPEFORM_GROUPEMENT_AJOUT": settings.TYPEFORM_GROUPEMENT_AJOUT,
         "FORM_PARTENAIRES": settings.FORM_PARTENAIRES,
         "MTCAPTCHA_PUBLIC_KEY": settings.MTCAPTCHA_PUBLIC_KEY,
+        "SIAE_HOME_PAGE": settings.SIAE_HOME_PAGE,
     }
