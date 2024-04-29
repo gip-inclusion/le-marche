@@ -223,6 +223,8 @@ class TemplateTransactional(models.Model):
         verbose_name_plural = "Templates transactionnels"
 
     def __str__(self):
+        if self.code:
+            return f"{self.name} ({self.code})"
         return self.name
 
     @property
