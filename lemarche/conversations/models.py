@@ -238,7 +238,6 @@ class TemplateTransactional(models.Model):
         return None
 
     def send_transactional_email(self, recipient_email, recipient_name, variables):
-        print("send_transactional_email", self.source)
         if self.source == conversation_constants.SOURCE_MAILJET:
             api_mailjet.send_transactional_email_with_template(
                 template_id=self.get_template_id,
@@ -252,7 +251,7 @@ class TemplateTransactional(models.Model):
         elif self.source == conversation_constants.SOURCE_BREVO:
             api_brevo.send_transactional_email_with_template(
                 template_id=self.get_template_id,
-                subject=self.email_subject,
+                # subject=self.email_subject,
                 recipient_email=recipient_email,
                 recipient_name=recipient_name,
                 variables=variables,

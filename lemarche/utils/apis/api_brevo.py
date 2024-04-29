@@ -128,6 +128,7 @@ def send_transactional_email_with_template(
         to=[{"email": recipient_email, "name": recipient_name}],
         template_id=template_id,
         params=variables,
+        # subject is managed in Brevo
     )
 
     if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
