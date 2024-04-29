@@ -142,6 +142,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         "tender_email_send_count_annotated_with_link",
         "tender_detail_display_count_annotated_with_link",
         "tender_detail_contact_click_count_annotated_with_link",
+        "tender_detail_not_interested_count_annotated_with_link",
         "offer_count_with_link",
         "label_count_with_link",
         "client_reference_count_with_link",
@@ -186,6 +187,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
             "tender_email_link_click_count_annotated_with_link",
             "tender_detail_display_count_annotated_with_link",
             "tender_detail_contact_click_count_annotated_with_link",
+            "tender_detail_not_interested_count_annotated_with_link",
             "logs_display",
             "extra_data_display",
             "import_raw_object_display",
@@ -306,6 +308,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
                     "tender_email_link_click_count_annotated_with_link",
                     "tender_detail_display_count_annotated_with_link",
                     "tender_detail_contact_click_count_annotated_with_link",
+                    "tender_detail_not_interested_count_annotated_with_link",
                 )
             },
         ),
@@ -605,6 +608,18 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
     tender_detail_contact_click_count_annotated_with_link.short_description = "Besoins intéressés"
     tender_detail_contact_click_count_annotated_with_link.admin_order_field = (
         "tender_detail_contact_click_count_annotated"
+    )
+
+    def tender_detail_not_interested_count_annotated_with_link(self, siae):
+        url = (
+            reverse("admin:tenders_tender_changelist")
+            + f"?siaes__in={siae.id}&tendersiae__detail_not_interested_click_date__isnull=False"
+        )
+        return format_html(f'<a href="{url}">{getattr(siae, "tender_detail_not_interested_count_annotated", 0)}</a>')
+
+    tender_detail_not_interested_count_annotated_with_link.short_description = "Besoins pas intéressés"
+    tender_detail_not_interested_count_annotated_with_link.admin_order_field = (
+        "tender_detail_not_interested_count_annotated"
     )
 
     def logs_display(self, siae=None):
