@@ -692,6 +692,7 @@ def send_super_siaes_email_to_author(tender: Tender, top_siaes: list[Siae]):
             "tender_kind": tender.get_kind_display().lower(),
             "siaes_count": len(top_siaes),
             "siaes": [],
+            "tender_siae_interested_list_url": f"{get_object_share_url(tender)}/prestataires",
         }
         for siae in top_siaes:
             variables["siaes"].append(
