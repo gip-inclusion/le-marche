@@ -74,7 +74,6 @@ class TenderQuerySet(models.QuerySet):
 
     def validated_sent_batch(self):
         yesterday = timezone.now() - timedelta(days=1)
-
         return (
             self.with_siae_stats()
             .validated()
@@ -95,8 +94,11 @@ class TenderQuerySet(models.QuerySet):
             ]
         )
 
+    def is_not_outdated(self):
+        return self.filter(deadline_date__gte=datetime.today())
+
     def is_live(self):
-        return self.sent().filter(deadline_date__gte=datetime.today())
+        return self.sent().is_not_outdated()
 
     def has_amount(self):
         return self.filter(Q(amount__isnull=False) | Q(amount_exact__isnull=False)).annotate(
