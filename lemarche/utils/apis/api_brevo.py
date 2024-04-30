@@ -6,6 +6,7 @@ from django.conf import settings
 from huey.contrib.djhuey import task
 from sib_api_v3_sdk.rest import ApiException
 
+from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 from lemarche.utils.urls import get_object_admin_url, get_object_share_url
 
 
@@ -118,21 +119,25 @@ def send_transactional_email_with_template(
     recipient_email: str,
     recipient_name: str,
     variables: dict,
-    from_email=settings.DEFAULT_FROM_EMAIL,
-    from_name=settings.DEFAULT_FROM_NAME,
+    subject: str,
+    from_email: str,
+    from_name: str,
 ):
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.TransactionalEmailsApi(api_client)
-    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-        sender={"email": from_email, "name": from_name},
-        to=[{"email": recipient_email, "name": recipient_name}],
-        template_id=template_id,
-        params=variables,
-        # subject is managed in Brevo
-    )
+    data = {
+        "sender": {"email": from_email, "name": from_name},
+        "to": [{"email": recipient_email, "name": recipient_name}],
+        "template_id": template_id,
+        "params": variables,
+    }
+    # if subject empty, defaults to Brevo's template subject
+    if subject:
+        data["subject"] = EMAIL_SUBJECT_PREFIX + subject
 
     if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
         try:
+            send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
             response = api_instance.send_transac_email(send_smtp_email)
             logger.info("Brevo: send transactional email with template")
             return response

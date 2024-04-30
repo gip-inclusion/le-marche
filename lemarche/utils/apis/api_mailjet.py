@@ -96,12 +96,12 @@ def add_to_contact_list_async(email_address, properties, contact_list_id, client
 @task()
 def send_transactional_email_with_template(
     template_id: int,
-    subject: str,
     recipient_email: str,
     recipient_name: str,
     variables: dict,
-    from_email=settings.DEFAULT_FROM_EMAIL,
-    from_name=settings.DEFAULT_FROM_NAME,
+    subject: str,
+    from_email: str,
+    from_name: str,
     client=None,
 ):
     data = {
@@ -111,12 +111,14 @@ def send_transactional_email_with_template(
                 "To": [{"Email": recipient_email, "Name": recipient_name}],
                 "TemplateID": template_id,
                 "TemplateLanguage": True,
-                "Subject": EMAIL_SUBJECT_PREFIX + subject,
                 "Variables": variables,
-                # "Variables": {}
             }
         ]
     }
+    # if subject empty, defaults to Mailjet's template subject
+    if subject:
+        data["Messages"][0]["Subject"] = EMAIL_SUBJECT_PREFIX + subject
+
     if not client:
         client = get_default_client()
 

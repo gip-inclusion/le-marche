@@ -137,11 +137,10 @@ class TemplateTransactionalAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "code", "mailjet_id", "brevo_id", "source", "is_active", "created_at", "updated_at"]
     search_fields = ["id", "name", "code", "mailjet_id", "brevo_id"]
 
-    readonly_fields = ["code", "email_subject", "email_from_email", "email_from_name", "created_at", "updated_at"]
+    readonly_fields = ["code", "created_at", "updated_at"]
 
     fieldsets = (
         (None, {"fields": ("name", "code", "description")}),
-        ("Paramètres de l'e-mail", {"fields": ("email_subject", "email_from_email", "email_from_name")}),
         ("Paramètres d'envoi", {"fields": ("mailjet_id", "brevo_id", "source", "is_active")}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
