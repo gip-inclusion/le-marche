@@ -458,6 +458,13 @@ class SiaeQuerySet(models.QuerySet):
                     output_field=IntegerField(),
                 )
             ),
+            tender_detail_not_interested_count_annotated=Sum(
+                Case(
+                    When(tendersiae__detail_not_interested_click_date__isnull=False, then=1),
+                    default=0,
+                    output_field=IntegerField(),
+                )
+            ),
         )
 
     def with_brand_or_name(self, with_order_by=False):
