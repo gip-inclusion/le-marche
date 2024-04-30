@@ -10,6 +10,7 @@ from django_extensions.db.fields import ShortUUIDField
 from shortuuid import uuid
 
 from lemarche.conversations import constants as conversation_constants
+from lemarche.utils.apis import api_brevo, api_mailjet
 
 
 class ConversationQuerySet(models.QuerySet):
@@ -202,9 +203,26 @@ class TemplateTransactional(models.Model):
     )
     description = models.TextField(verbose_name="Description", blank=True)
 
-    email_subject = models.CharField(verbose_name="E-mail : objet", max_length=255, blank=True, null=True)
-    email_from_email = models.EmailField(verbose_name="E-mail : expéditeur (e-mail)", blank=True, null=True)
-    email_from_name = models.CharField(verbose_name="E-mail : expéditeur (nom)", max_length=255, blank=True, null=True)
+    # email_subject = models.CharField(
+    #     verbose_name="E-mail : objet",
+    #     help_text="Laisser vide pour utiliser l'objet présent dans Mailjet/Brevo",
+    #     max_length=255,
+    #     blank=True,
+    #     null=True,
+    # )
+    # email_from_email = models.EmailField(
+    #     verbose_name="E-mail : expéditeur (e-mail)",
+    #     help_text=f"Laisser vide pour utiliser l'e-mail expéditeur par défaut ({settings.DEFAULT_FROM_EMAIL})",
+    #     blank=True,
+    #     null=True,
+    # )
+    # email_from_name = models.CharField(
+    #     verbose_name="E-mail : expéditeur (nom)",
+    #     help_text=f"Laisser vide pour utiliser le nom expéditeur par défaut ({settings.DEFAULT_FROM_NAME})",
+    #     max_length=255,
+    #     blank=True,
+    #     null=True,
+    # )
 
     mailjet_id = models.IntegerField(
         verbose_name="Identifiant Mailjet", unique=True, db_index=True, blank=True, null=True
@@ -235,3 +253,33 @@ class TemplateTransactional(models.Model):
             elif self.source == conversation_constants.SOURCE_BREVO:
                 return self.brevo_id
         return None
+
+    def send_transactional_email(
+        self,
+        recipient_email,
+        recipient_name,
+        variables,
+        subject=None,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        from_name=settings.DEFAULT_FROM_NAME,
+    ):
+        if self.source == conversation_constants.SOURCE_MAILJET:
+            api_mailjet.send_transactional_email_with_template(
+                template_id=self.get_template_id,
+                recipient_email=recipient_email,
+                recipient_name=recipient_name,
+                variables=variables,
+                subject=subject,
+                from_email=from_email,
+                from_name=from_name,
+            )
+        elif self.source == conversation_constants.SOURCE_BREVO:
+            api_brevo.send_transactional_email_with_template(
+                template_id=self.get_template_id,
+                recipient_email=recipient_email,
+                recipient_name=recipient_name,
+                variables=variables,
+                subject=subject,
+                from_email=from_email,
+                from_name=from_name,
+            )

@@ -206,10 +206,10 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, re
 
         api_mailjet.send_transactional_email_with_template(
             template_id=settings.MAILJET_TENDERS_SIAE_PRESENTATION_TEMPLATE_ID,
-            subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            subject=email_subject,
             from_email=settings.TEAM_CONTACT_EMAIL,
             from_name="Pauline du Marché de l'inclusion",
         )
@@ -296,10 +296,10 @@ def send_tender_contacted_reminder_email_to_siae(
 
         api_mailjet.send_transactional_email_with_template(
             template_id=template_id,
-            subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            subject=email_subject,
         )
 
         # log email
@@ -370,10 +370,10 @@ def send_tender_interested_reminder_email_to_siae(
 
         api_mailjet.send_transactional_email_with_template(
             template_id=settings.MAILJET_TENDERS_SIAE_INTERESTED_REMINDER_2D_TEMPLATE_ID,
-            subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            subject=email_subject,
         )
 
         # log email
@@ -415,10 +415,10 @@ def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes
 
         api_mailjet.send_transactional_email_with_template(
             template_id=settings.MAILJET_TENDERS_AUTHOR_CONFIRMATION_VALIDATED_TEMPLATE_ID,
-            subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            subject=email_subject,
         )
 
         # log email
@@ -485,10 +485,10 @@ def send_siae_interested_email_to_author(tender: Tender):
 
                 api_mailjet.send_transactional_email_with_template(
                     template_id=template_id,
-                    subject=email_subject,
                     recipient_email=recipient_email,
                     recipient_name=recipient_name,
                     variables=variables,
+                    subject=email_subject,
                 )
 
                 # log email
@@ -563,10 +563,10 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
 
         api_mailjet.send_transactional_email_with_template(
             template_id=template_id,
-            subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            subject=email_subject,
         )
 
         # log email
@@ -634,10 +634,10 @@ def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_questio
 
             api_mailjet.send_transactional_email_with_template(
                 template_id=template_id,
-                subject=email_subject,
                 recipient_email=recipient_email,
                 recipient_name=recipient_name,
                 variables=variables,
+                subject=email_subject,
             )
 
             # update tendersiae

@@ -52,10 +52,10 @@ def send_completion_reminder_email_to_siae(siae):
 
             api_mailjet.send_transactional_email_with_template(
                 template_id=settings.MAILJET_SIAE_COMPLETION_REMINDER_TEMPLATE_ID,
-                subject=email_subject,
                 recipient_email=siae_user_email,
                 recipient_name=recipient_name,
                 variables=variables,
+                subject=email_subject,
             )
 
         # log email
