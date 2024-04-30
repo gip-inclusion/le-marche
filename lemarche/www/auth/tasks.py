@@ -55,8 +55,8 @@ def send_new_user_password_reset_link(user: User):
 
         api_mailjet.send_transactional_email_with_template(
             template_id=settings.MAILJET_NEW_USER_PASSWORD_RESET_ID,
-            subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            subject=email_subject,
         )

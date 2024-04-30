@@ -26,10 +26,10 @@ def send_siae_user_request_email_to_assignee(siae_user_request):
 
         api_mailjet.send_transactional_email_with_template(
             template_id=settings.MAILJET_SIAEUSERREQUEST_ASSIGNEE_TEMPLATE_ID,
-            subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            subject=email_subject,
         )
 
         # log email
@@ -68,10 +68,10 @@ def send_siae_user_request_response_email_to_initiator(siae_user_request, respon
 
         api_mailjet.send_transactional_email_with_template(
             template_id=email_template_id,
-            subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            subject=email_subject,
         )
 
         # log email
@@ -112,10 +112,10 @@ def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
 
         api_mailjet.send_transactional_email_with_template(
             template_id=settings.MAILJET_SIAEUSERREQUEST_REMINDER_1_ASSIGNEE_TEMPLATE_ID,
-            subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            subject=email_subject,
         )
 
         # log email
@@ -145,10 +145,10 @@ def send_siae_user_request_reminder_3_days_email_to_initiator(siae_user_request)
 
         api_mailjet.send_transactional_email_with_template(
             template_id=settings.MAILJET_SIAEUSERREQUEST_REMINDER_1_INITIATOR_TEMPLATE_ID,
-            subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            subject=email_subject,
         )
 
         # log email
@@ -189,10 +189,10 @@ def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
 
         api_mailjet.send_transactional_email_with_template(
             template_id=settings.MAILJET_SIAEUSERREQUEST_REMINDER_2_ASSIGNEE_TEMPLATE_ID,
-            subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            subject=email_subject,
         )
 
         # log email
@@ -223,10 +223,10 @@ def send_siae_user_request_reminder_8_days_email_to_initiator(siae_user_request)
 
         api_mailjet.send_transactional_email_with_template(
             template_id=settings.MAILJET_SIAEUSERREQUEST_REMINDER_2_INITIATOR_TEMPLATE_ID,
-            subject=email_subject,
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            subject=email_subject,
         )
 
         # log email
