@@ -19,14 +19,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # First send newly validated tenders
-        validated_tenders_to_send = Tender.objects.validated_but_not_sent()
+        validated_tenders_to_send = Tender.objects.validated_but_not_sent().is_not_outdated()
         if validated_tenders_to_send.count():
             self.stdout.write(f"Found {validated_tenders_to_send.count()} validated tender(s) to send")
             for tender in validated_tenders_to_send:
                 send_validated_tender(tender)
 
         # Then look at already sent tenders (batch mode)
-        validated_sent_tenders_batch_to_send = Tender.objects.validated_sent_batch()
+        validated_sent_tenders_batch_to_send = Tender.objects.validated_sent_batch().is_not_outdated()
         if validated_sent_tenders_batch_to_send.count():
             self.stdout.write(
                 f"Found {validated_sent_tenders_batch_to_send.count()} validated sent tender(s) to batch"

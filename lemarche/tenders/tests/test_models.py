@@ -360,8 +360,17 @@ class TenderModelQuerysetTest(TestCase):
         )
         self.assertEqual(Tender.objects.validated_sent_batch().count(), 1)
 
+    def test_is_not_outdated(self):
+        TenderFactory(deadline_date=timezone.now() + timedelta(days=1))
+        TenderFactory(deadline_date=timezone.now() - timedelta(days=1))
+        # TenderFactory(deadline_date=None)  # cannot be None
+        self.assertEqual(Tender.objects.is_not_outdated().count(), 1)
+
     def test_is_live(self):
         TenderFactory(deadline_date=timezone.now() + timedelta(days=1))
+        TenderFactory(
+            deadline_date=timezone.now() + timedelta(days=1), first_sent_at=None, status=tender_constants.STATUS_DRAFT
+        )
         TenderFactory(deadline_date=timezone.now() - timedelta(days=1))
         # TenderFactory(deadline_date=None)  # cannot be None
         self.assertEqual(Tender.objects.is_live().count(), 1)
