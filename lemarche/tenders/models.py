@@ -903,6 +903,12 @@ class Tender(models.Model):
             return True
         return False
 
+    @cached_property
+    def start_working_date_outdated(self):
+        if self.start_working_date and self.start_working_date < timezone.now().date():
+            return True
+        return False
+
     @property
     def hubspot_deal_id(self):
         return self.extra_data.get("hubspot_deal_id")

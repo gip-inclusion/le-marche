@@ -41,16 +41,22 @@ No need to repeat them under fieldsets!
                 <input type="submit" class="button" name="_calculate_tender" value="Sauvegarder et chercher les structures correspondantes" />
             </div>
         {% endif %}
-        <div class="submit-row">
+        <div class="submit-row" style="display:block">
             {% if original.validated_at %}
-                <i>Validé le {{ original.validated_at }}.&nbsp;</i>
+                <p><i>Validé le {{ original.validated_at }}.</i></p>
                 {% if original.first_sent_at %}
-                    <i>Envoyé le {{ original.first_sent_at }}.</i>
-                    <input type="submit" class="button" name="_restart_tender" value="Renvoyer aux structures" />
+                    <p><i>Envoyé le {{ original.first_sent_at }}.</i></p>
+                    <input type="submit" name="_restart_tender" value="Renvoyer aux structures" {% if original.deadline_date_outdated %}disabled{% endif %} />
+                    {% if original.deadline_date_outdated %}
+                        <p><i>Date de clôture dépassée ({{ original.deadline_date }})</i></p>
+                    {% endif %}
+                    {% if original.start_working_date_outdated %}
+                        <p><i>Date idéale de début des prestations dépassée ({{ original.start_working_date }})</i></p>
+                    {% endif %}
                 {% endif %}
             {% else %}
-                <input type="submit" class="button" name="_validate_tender" value="Valider (sauvegarder) et envoyer aux structures" />
-                <i>L'envoi des besoins 'validés' se fait toutes les 5 minutes, du Lundi au Vendredi, entre 9h et 17h</i>
+                <p><i>L'envoi des besoins 'validés' se fait toutes les 5 minutes, du Lundi au Vendredi, entre 9h et 17h</i></p>
+                <input type="submit" name="_validate_tender" value="Valider (sauvegarder) et envoyer aux structures 🚀" />
             {% endif %}
         </div>
     {% endif %}
