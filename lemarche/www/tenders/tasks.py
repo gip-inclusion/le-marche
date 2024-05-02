@@ -12,7 +12,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils import constants
-from lemarche.utils.apis import api_brevo, api_hubspot, api_mailjet, api_n8n, api_slack
+from lemarche.utils.apis import api_brevo, api_hubspot, api_mailjet, api_slack
 from lemarche.utils.data import date_to_string
 from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url, get_object_admin_url, get_object_share_url
@@ -527,7 +527,6 @@ def notify_admin_tender_created(tender: Tender):
         recipient_list=[settings.NOTIFY_EMAIL],
     )
     api_slack.send_message_to_channel(text=email_body, service_id=settings.SLACK_WEBHOOK_C4_TENDER_CHANNEL)
-    api_n8n.send_data_to_webhook(data=data_to_send)
 
 
 def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
