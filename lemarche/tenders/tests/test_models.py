@@ -65,7 +65,7 @@ class TenderModelPropertyTest(TestCase):
             # coords=Point(5.8862, 45.1106),
         )
 
-    def test_sectors_list(self):
+    def test_sectors_list_property(self):
         sector_group = SectorGroupFactory(name="Bricolage")
         sector_1 = SectorFactory(name="Autre", group=sector_group)
         sector_2 = SectorFactory(name="Un secteur", group=sector_group)
@@ -78,7 +78,7 @@ class TenderModelPropertyTest(TestCase):
         self.assertEqual(tender_with_sectors.sectors_list()[0], sector_2.name)  # Autre at the end
         self.assertEqual(tender_with_sectors.sectors_list_string(), "Un secteur, Autre")
 
-    def test_perimeters_list(self):
+    def test_perimeters_list_property(self):
         tender_whithout_perimeters = TenderFactory()
         self.assertEqual(len(tender_whithout_perimeters.perimeters_list()), 0)
         self.assertEqual(tender_whithout_perimeters.perimeters_list_string, "")
@@ -89,7 +89,7 @@ class TenderModelPropertyTest(TestCase):
         self.assertEqual(tender_with_perimeters.perimeters_list()[0], self.grenoble_perimeter.name)
         self.assertEqual(tender_with_perimeters.perimeters_list_string, "Grenoble, Chamrousse")
 
-    def test_location_display(self):
+    def test_location_display_property(self):
         tender_country_area = TenderFactory(title="Besoin 1", is_country_area=True)
         self.assertEqual(tender_country_area.location_display, "France entière")
         tender_location = TenderFactory(title="Besoin 2", location=self.grenoble_perimeter)
@@ -100,7 +100,7 @@ class TenderModelPropertyTest(TestCase):
         self.assertTrue("Grenoble" in tender_with_perimeters.location_display)
         self.assertTrue("Chamrousse" in tender_with_perimeters.location_display)
 
-    def test_questions_list(self):
+    def test_questions_list_property(self):
         tender_without_questions = TenderFactory()
         self.assertEqual(len(tender_without_questions.questions_list()), 0)
         tender_with_questions = TenderFactory()
@@ -109,7 +109,23 @@ class TenderModelPropertyTest(TestCase):
         self.assertEqual(len(tender_with_questions.questions_list()), 2)
         self.assertEqual(tender_with_questions.questions_list()[0].get("text"), tender_question_1.text)
 
-    def test_status(self):
+    def test_deadline_date_outdated_property(self):
+        tender_without_deadline_date = TenderFactory(deadline_date=None)
+        tender_not_outdated = TenderFactory(deadline_date=date_next_week.date())
+        tender_outdated = TenderFactory(deadline_date=date_last_week.date())
+        self.assertFalse(tender_without_deadline_date.deadline_date_outdated)
+        self.assertFalse(tender_not_outdated.deadline_date_outdated)
+        self.assertTrue(tender_outdated.deadline_date_outdated)
+
+    def test_start_working_date_outdated(self):
+        tender_without_start_working_date = TenderFactory(start_working_date=None)
+        tender_not_outdated = TenderFactory(start_working_date=date_next_week.date())
+        tender_outdated = TenderFactory(start_working_date=date_last_week.date())
+        self.assertFalse(tender_without_start_working_date.start_working_date_outdated)
+        self.assertFalse(tender_not_outdated.start_working_date_outdated)
+        self.assertTrue(tender_outdated.start_working_date_outdated)
+
+    def test_status_property(self):
         tender_draft = TenderFactory(status=tender_constants.STATUS_DRAFT)
         tender_pending_validation = TenderFactory(status=tender_constants.STATUS_PUBLISHED)
         tender_validated_half = TenderFactory(status=tender_constants.STATUS_VALIDATED)
@@ -121,7 +137,7 @@ class TenderModelPropertyTest(TestCase):
         self.assertTrue(tender_validated_full.is_validated)
         self.assertTrue(tender_sent.is_sent)
 
-    def test_amount_display(self):
+    def test_amount_display_property(self):
         tender_with_amount = TenderFactory(amount=tender_constants.AMOUNT_RANGE_0_1, accept_share_amount=True)
         tender_with_amount_2 = TenderFactory(amount=tender_constants.AMOUNT_RANGE_10_15, accept_share_amount=True)
         tender_with_amount_exact = TenderFactory(
