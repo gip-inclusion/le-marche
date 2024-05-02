@@ -6,6 +6,7 @@ from django.conf import settings
 from huey.contrib.djhuey import task
 from sib_api_v3_sdk.rest import ApiException
 
+from lemarche.tenders.constants import AMOUNT_RANGE_CHOICE_EXACT
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 from lemarche.utils.urls import get_object_admin_url, get_object_share_url
 
@@ -145,3 +146,31 @@ def send_transactional_email_with_template(
             print(f"Exception when calling SMTPApi->send_transac_email: {e}")
     else:
         logger.info("Brevo: email not sent (DEV or TEST environment detected)")
+
+
+def create_deal(tender, author_email: str):
+    api_client = get_api_client()
+    api_instance = sib_api_v3_sdk.DealsApi(api_client)
+    body = sib_api_v3_sdk.Body3(
+        name=tender.title,
+        attributes={
+            "deal_description": tender.description,
+            # "deal_pipeline": "...",
+            # "deal_stage": "...",
+            "deal_owner": author_email,
+            "amount": AMOUNT_RANGE_CHOICE_EXACT.get(tender.amount, 0),
+            "tender_admin_url": tender.get_admin_url(),
+            "close_date": tender.deadline_date.strftime("%Y-%m-%d"),
+        },
+    )
+
+    try:
+        # create deal
+        new_deal = api_instance.crm_deals_post(body)
+        logger.info("Succes Brevo->Create a deal : %s\n" % new_deal)
+
+        # get user id brevo
+
+        # link user with deal
+    except ApiException as e:
+        logger.error("Exception when calling Brevo->ContactsApi->create_contact: %s\n" % e)
