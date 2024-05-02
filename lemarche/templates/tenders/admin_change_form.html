@@ -48,10 +48,10 @@ No need to repeat them under fieldsets!
                     <p><i>Envoyé le {{ original.first_sent_at }}.</i></p>
                     <input type="submit" name="_restart_tender" value="Renvoyer aux structures" {% if original.deadline_date_outdated %}disabled{% endif %} />
                     {% if original.deadline_date_outdated %}
-                        <p><i>date de clôture dépassée ({{ original.deadline_date }})</i></p>
+                        <p><i>Date de clôture dépassée ({{ original.deadline_date }})</i></p>
                     {% endif %}
                     {% if original.start_working_date_outdated %}
-                        <p><i>date de début des prestation dépassée ({{ original.start_working_date }})</i></p>
+                        <p><i>Date idéale de début des prestations dépassée ({{ original.start_working_date }})</i></p>
                     {% endif %}
                 {% endif %}
             {% else %}
