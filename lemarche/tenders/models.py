@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
+from django.core.validators import MinLengthValidator
 from django.db import IntegrityError, models, transaction
 from django.db.models import (
     BooleanField,
@@ -612,6 +613,9 @@ class Tender(models.Model):
     )
     # partner data
     partner_approch_id = models.IntegerField("Partenaire APProch : ID", blank=True, null=True)
+
+    # services data
+    crm_id = models.CharField("Brevo crm id", max_length=80, validators=[MinLengthValidator(8)], blank=True, null=True)
     # stats
     siae_count = models.IntegerField(
         "Nombre de structures concernées", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
