@@ -12,7 +12,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils import constants
-from lemarche.utils.apis import api_brevo, api_hubspot, api_mailjet, api_slack
+from lemarche.utils.apis import api_brevo, api_hubspot, api_mailjet, api_n8n, api_slack
 from lemarche.utils.data import date_to_string
 from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url, get_object_admin_url, get_object_share_url
@@ -503,7 +503,8 @@ def send_siae_interested_email_to_author(tender: Tender):
                 tender.save()
 
 
-def get_data_to_notify_admin_tender(tender: Tender):
+def notify_admin_tender_created(tender: Tender):
+    email_subject = f"Marché de l'inclusion : dépôt de besoin, ajout d'un nouveau {tender.get_kind_display()}"
     tender_admin_url = get_object_admin_url(tender)
     data_to_send = {
         "tender_id": tender.id,
@@ -519,12 +520,6 @@ def get_data_to_notify_admin_tender(tender: Tender):
         "tender_source": tender.get_source_display(),
         "tender_admin_url": tender_admin_url,
     }
-    return data_to_send
-
-
-def notify_admin_tender_created(tender: Tender):
-    email_subject = f"Marché de l'inclusion : dépôt de besoin, ajout d'un nouveau {tender.get_kind_display()}"
-    data_to_send = get_data_to_notify_admin_tender(tender=tender)
     email_body = render_to_string("tenders/create_notification_email_admin_body.txt", data_to_send)
     send_mail_async(
         email_subject=email_subject,

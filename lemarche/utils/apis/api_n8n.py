@@ -8,9 +8,6 @@ from huey.contrib.djhuey import task
 logger = logging.getLogger(__name__)
 
 
-BASE_URL = "https://hooks.slack.com/services/"
-
-
 def get_default_params():
     return {}
 
@@ -33,21 +30,19 @@ def send_data_to_webhook(
     """Huey task to send message to specific payload for specific slack service
 
     Args:
-        payload (dict): payload for serivce
-        service_id (str): service id of the service (ex of service: Webhook)
+        data (dict): data for webhook
+        webhook_url (str): webhook url of the service
         client (requests.Session, optional): client to send requests. Defaults to None.
 
     Raises:
         e: requests.HTTPStatusError
     """
-    # if settings.SLACK_NOTIF_IS_ACTIVE:
     if not client:
         client = get_default_client()
 
     try:
-        response = client.post(f"{webhook_url}", data=data)
+        response = client.post(webhook_url, data=data)
         response.raise_for_status()
-        print("N8N: send data to webhook")
         logger.info("N8N: send data to webhook")
         # logger.info(response.json())  // you'll receive a "HTTP 200" response with a plain text ok indicating that your message posted successfully  # noqa
         return True
