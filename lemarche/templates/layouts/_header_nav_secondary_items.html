@@ -1,6 +1,6 @@
 <ul>
 	<li>
-		<a href="{% url 'wagtail_serve' '' %}" class="{% if request.path == '/' %}is-active{% endif %}">Accueil</a>
+		<a href="{{ HOME_PAGE_PATH }}" class="{% if request.path == HOME_PAGE_PATH %}is-active{% endif %}">Accueil</a>
 	</li>
 	<li>
 		<a href="/ressources/quest-ce-quun-prestataire-inclusif/" id="header-ressource-prestataire" class="{% if request.path == '/ressources/quest-ce-quun-prestataire-inclusif/' %}is-active{% endif %}">
