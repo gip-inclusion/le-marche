@@ -168,7 +168,9 @@ def create_deal(tender, author_email: str):
         # create deal
         new_deal = api_instance.crm_deals_post(body)
         logger.info("Succes Brevo->Create a deal : %s\n" % new_deal)
-
+        # save brevo deal id
+        tender.crm_id = new_deal.get("id")
+        tender.save()
         # get user id brevo
 
         # link user with deal
