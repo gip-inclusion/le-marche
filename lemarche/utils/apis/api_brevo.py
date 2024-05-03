@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 
 import sib_api_v3_sdk
 from django.conf import settings
@@ -45,7 +46,7 @@ def create_contact(user, list_id: int):
     )
 
     try:
-        api_response = api_instance.create_contact(new_contact)
+        api_response = api_instance.create_contact(new_contact).to_dict()
         logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response}")
     except ApiException as e:
         logger.error(f"Exception when calling Brevo->ContactsApi->create_contact: {e}")
@@ -221,3 +222,56 @@ def link_deal_with_list_contact(tender, contact_list: list = None):
 
     except ApiException as e:
         logger.error("Exception when calling Brevo->DealApi->crm_deals_link_unlink_id_patch: %s\n" % e)
+
+
+def get_all_users_from_list(
+    list_id: int = settings.BREVO_CL_SIGNUP_BUYER_ID, limit=500, offset=0, max_retries=3, verbose=False
+):
+    """
+    Fetches all users from a specified Brevo CRM list, using pagination and retry strategies.
+
+    Args:
+        list_id (int): ID of the list to fetch users from. Defaults to BREVO_CL_SIGNUP_BUYER_ID.
+        limit (int): Number of users to fetch per request. Defaults to 500.
+        offset (int): Initial offset for fetching users. Defaults to 0.
+        max_retries (int): Maximum number of retries on API failure. Defaults to 3.
+
+    Returns:
+        dict: Maps user emails to their IDs.
+
+    Raises:
+        ApiException: On API failures exceeding retry limit.
+        Exception: On unexpected errors.
+
+    This function attempts to retrieve all contacts from the given list and handles API errors
+    by retrying up to `max_retries` times with exponential backoff.
+    """
+    api_client = get_api_client()
+    api_instance = sib_api_v3_sdk.ContactsApi(api_client)
+    result = {}
+    is_finished = False
+    retry_count = 0
+    while not is_finished:
+        try:
+            api_response = api_instance.get_contacts_from_list(list_id=list_id, limit=limit, offset=offset).to_dict()
+            contacts = api_response.get("contacts", [])
+            if verbose:
+                logger.info(f"Contacts fetched: {len(contacts)} at offset {offset}")
+            for contact in contacts:
+                result[contact.get("email")] = contact.get("id")
+            # Update the loop exit condition
+            if len(contacts) < limit:
+                is_finished = True
+            else:
+                offset += limit
+        except ApiException as e:
+            logger.error(f"Exception when calling ContactsApi->get_contacts_from_list: {e}")
+            retry_count += 1
+            if retry_count > max_retries:
+                logger.error("Max retries exceeded. Exiting function.")
+                break
+            time.sleep(2**retry_count)  # Exponential backoff
+        except Exception as e:
+            logger.error(f"Unexpected error: {e}")
+            break
+    return result
