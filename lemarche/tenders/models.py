@@ -981,6 +981,16 @@ class Tender(models.Model):
     def is_partner_approch(self) -> bool:
         return self.author_id == settings.PARTNER_APPROCH_USER_ID
 
+    @property
+    def amount_int(self) -> int:
+        if self.amount_exact:
+            return self.amount_exact
+        elif self.amount:
+            return tender_constants.AMOUNT_RANGE_CHOICE_EXACT.get(self.amount)
+        else:
+            # else return -1 for unknown
+            return -1
+
     def set_validated(self):
         self.validated_at = timezone.now()
         self.status = tender_constants.STATUS_VALIDATED

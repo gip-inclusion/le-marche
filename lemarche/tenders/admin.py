@@ -1,5 +1,6 @@
 from ckeditor.widgets import CKEditorWidget
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.core.exceptions import ValidationError
@@ -21,6 +22,7 @@ from lemarche.tenders.models import PartnerShareTender, Tender, TenderQuestion, 
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import admin_site
+from lemarche.utils.apis import api_brevo
 from lemarche.utils.fields import ChoiceArrayField, pretty_print_readonly_jsonfield
 from lemarche.www.tenders.tasks import restart_send_tender_task
 
@@ -764,7 +766,12 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             self.message_user(request, "Les structures concernées ont été mises à jour.")
             return HttpResponseRedirect("./#structures")  # redirect to structures sections
         if request.POST.get("_validate_tender"):
-            obj.set_validated()
+            # obj.set_validated()
+            if obj.amount_int > settings.BREVO_TENDERS_MIN_AMOUNT_TO_SEND:
+                api_brevo.create_deal(tender=obj, owner_email=request.user.email)
+                # we link deal(tender) with author contact
+                api_brevo.link_deal_with_list_contact(tender=obj)
+                self.message_user(request, "Ce dépôt de besoin a été synchronisé avec Brevo")
             self.message_user(request, "Ce dépôt de besoin a été validé. Il sera envoyé en temps voulu :)")
             return HttpResponseRedirect(".")
         elif request.POST.get("_restart_tender"):
