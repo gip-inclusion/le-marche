@@ -766,7 +766,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             self.message_user(request, "Les structures concernées ont été mises à jour.")
             return HttpResponseRedirect("./#structures")  # redirect to structures sections
         if request.POST.get("_validate_tender"):
-            # obj.set_validated()
+            obj.set_validated()
             if obj.amount_int > settings.BREVO_TENDERS_MIN_AMOUNT_TO_SEND:
                 api_brevo.create_deal(tender=obj, owner_email=request.user.email)
                 # we link deal(tender) with author contact
