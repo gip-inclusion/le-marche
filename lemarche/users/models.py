@@ -254,6 +254,9 @@ class User(AbstractUser):
     c4_email_verified = models.BooleanField(default=False)
     c4_id_card_verified = models.BooleanField(default=False)
 
+    # services data
+    brevo_contact_id = models.PositiveIntegerField("Brevo contact id", blank=True, null=True)
+
     # admin
     notes = GenericRelation("notes.Note", related_query_name="user")
 
