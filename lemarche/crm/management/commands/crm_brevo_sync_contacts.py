@@ -14,12 +14,14 @@ class Command(BaseCommand):
     Command script to send Users to Brevo CRM (companies) or set Brevo CRM IDs to Users models
 
     Usage:
-    python manage.py crm_brevo_sync
+    python manage.py crm_brevo_sync_contacts --dry-run
+    python manage.py crm_brevo_sync_contacts --brevo-list-id=23 --kind-users=SIAE
+    python manage.py crm_brevo_sync_contacts --brevo-list-id=10 --kind-users=SIAE --dry-run
     """
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--kind-users", dest="kind_users", type=str, default=User.KIND_BUYER, help="set kind of users"
+            "--kind-users", dest="kind_users", type=str, default=User.KIND_SIAE, help="set kind of users"
         )
         parser.add_argument(
             "--brevo-list-id",
@@ -32,7 +34,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--with-existing-contacts",
             dest="with_existing_contacts",
-            action="store_true",
+            type=bool,
             default=True,
             help="make it with existing contacts in brevo",
         )
@@ -41,26 +43,32 @@ class Command(BaseCommand):
         self.stdout.write("-" * 80)
         self.stdout.write("Script to sync with Contact Brevo CRM...")
 
-        # SIAE --> companies
-        # Update only the recently updated
         users_qs = User.objects.filter(kind=kind_users)
         progress = 0
 
-        self.stdout.write(f"User: updating our {users_qs.count()} users.")
+        self.stdout.write(f"User: find {users_qs.count()} users {kind_users}.")
         existing_contacts = None
         if with_existing_contacts:
             existing_contacts = api_brevo.get_all_users_from_list(list_id=brevo_list_id)
             self.stdout.write(f"Contacts in brevo list: find {len(existing_contacts)} contacts.")
 
-        for user in users_qs:
-            if not dry_run:
+        if not dry_run:
+            for user in users_qs:
                 brevo_contact_id = None
+                # if we have existing_contacts in brevo
                 if existing_contacts:
+                    # try to get id by dictionnary of existing contacts
                     brevo_contact_id = existing_contacts.get(user.email)
-                if brevo_contact_id:
-                    user.brevo_contact_id = brevo_contact_id
-                else:
+                # if we still not have contact id
+                if not brevo_contact_id:
+                    self.stdout.write(f"Create and save contact {user.email} in Brevo.")
                     api_brevo.create_contact(user=user, list_id=brevo_list_id, with_user_save=True)
-            progress += 1
-            if (progress % 10) == 0:  # avoid API rate-limiting
-                time.sleep(1)
+                # if we already have the brevo_contact_id, we can simply save it
+                else:
+                    self.stdout.write(f"Save existing contact {user.email}.")
+                    user.brevo_contact_id = brevo_contact_id
+                    user.save()
+
+                progress += 1
+                if (progress % 10) == 0:  # avoid API rate-limiting
+                    time.sleep(1)
