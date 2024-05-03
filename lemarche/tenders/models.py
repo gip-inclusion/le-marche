@@ -614,6 +614,9 @@ class Tender(models.Model):
     )
     # partner data
     partner_approch_id = models.IntegerField("Partenaire APProch : ID", blank=True, null=True)
+
+    # services data
+    brevo_deal_id = models.CharField("Brevo deal id", max_length=80, blank=True, null=True)
     # stats
     siae_count = models.IntegerField(
         "Nombre de structures concernées", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0

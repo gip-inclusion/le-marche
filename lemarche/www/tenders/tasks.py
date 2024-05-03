@@ -506,28 +506,26 @@ def send_siae_interested_email_to_author(tender: Tender):
 def notify_admin_tender_created(tender: Tender):
     email_subject = f"Marché de l'inclusion : dépôt de besoin, ajout d'un nouveau {tender.get_kind_display()}"
     tender_admin_url = get_object_admin_url(tender)
-    email_body = render_to_string(
-        "tenders/create_notification_email_admin_body.txt",
-        {
-            "tender_id": tender.id,
-            "tender_title": tender.title,
-            "tender_kind": tender.get_kind_display(),
-            "tender_location": tender.location_display,
-            "tender_deadline_date": tender.deadline_date,
-            "tender_author_full_name": tender.contact_full_name,
-            "tender_author_company": tender.author.company_name,
-            "tender_scale_marche_useless": tender.get_scale_marche_useless_display(),
-            "tender_status": tender.get_status_display(),
-            "tender_source": tender.get_source_display(),
-            "tender_admin_url": tender_admin_url,
-        },
-    )
+    data_to_send = {
+        "tender_id": tender.id,
+        "tender_title": tender.title,
+        "tender_kind": tender.get_kind_display(),
+        "tender_location": tender.location_display,
+        "tender_deadline_date": tender.deadline_date,
+        "tender_author_full_name": tender.contact_full_name,
+        "tender_author_email": tender.author.email,
+        "tender_author_company": tender.author.company_name,
+        "tender_scale_marche_useless": tender.get_scale_marche_useless_display(),
+        "tender_status": tender.get_status_display(),
+        "tender_source": tender.get_source_display(),
+        "tender_admin_url": tender_admin_url,
+    }
+    email_body = render_to_string("tenders/create_notification_email_admin_body.txt", data_to_send)
     send_mail_async(
         email_subject=email_subject,
         email_body=email_body,
         recipient_list=[settings.NOTIFY_EMAIL],
     )
-
     api_slack.send_message_to_channel(text=email_body, service_id=settings.SLACK_WEBHOOK_C4_TENDER_CHANNEL)
 
 
