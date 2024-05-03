@@ -149,9 +149,22 @@ def send_transactional_email_with_template(
 
 
 def create_deal(tender, owner_email: str):
+    """
+    Creates a new deal in Brevo CRM from a tender and logs the result.
+
+    This function configures a deal using the tender's details and the owner's email, and posts it to the Brevo CRM.
+    If successful, it updates the tender with the new deal ID. If it encounters issues, it logs an error.
+
+    Args:
+        tender (Tender): Object with tender details like title, description, amount, and deadlines.
+        owner_email (str): The email address of the deal's owner.
+
+    Raises:
+        ApiException: If the Brevo API encounters an error during deal creation.
+    """
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.DealsApi(api_client)
-    body = sib_api_v3_sdk.Body3(
+    body_deal = sib_api_v3_sdk.Body3(
         name=tender.title,
         attributes={
             "deal_description": tender.description,
@@ -166,34 +179,45 @@ def create_deal(tender, owner_email: str):
 
     try:
         # create deal
-        new_deal = api_instance.crm_deals_post(body).to_dict()
+        new_deal = api_instance.crm_deals_post(body_deal).to_dict()
         logger.info("Succes Brevo->Create a deal : %s\n" % new_deal)
         # save brevo deal id
-        tender.crm_id = new_deal.get("id")
+        tender.brevo_deal_id = new_deal.get("id")
         tender.save()
     except ApiException as e:
         logger.error("Exception when calling Brevo->DealApi->create_deal: %s\n" % e)
 
 
 def link_deal_with_list_contact(tender, contact_list: list = None):
-    """Link brevo deal with contact list
+    """
+    Links a Brevo deal to a list of contacts. If no contact list is provided, it defaults
+    to linking the deal with the tender's author.
+
+    This function uses the tender's stored deal ID and either a provided list of contact IDs or the
+    tender author's contact ID to link contacts to the deal in the Brevo CRM.
+
     Args:
-        tender (_type_): Tender to link
-        contact_list (list<int>, optional): List integer of brevo contact ids. Defaults to None.
+        tender (Tender): The tender object containing the Brevo deal ID and author's contact ID.
+        contact_list (list of int, optional): List of contact IDs to be linked with the deal. Defaults to None.
+
+    Raises:
+        ApiException: If an error occurs during the linking process in the Brevo API.
     """
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.DealsApi(api_client)
 
     try:
         # get brevo ids
-        brevo_crm_deal_id = tender.crm_id
-        brevo_crm_author_deal_id = tender.author.crm_id
+        brevo_crm_deal_id = tender.brevo_deal_id
+        # Default to the author's contact ID if no contact list is provided
         if not contact_list:
+            brevo_crm_author_deal_id = tender.author.brevo_contact_id
             contact_list = [brevo_crm_author_deal_id]
+
         # link deal with author
         # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body5.md
-        body = sib_api_v3_sdk.Body5(link_contact_ids=[int(brevo_crm_author_deal_id)])
-        api_instance.crm_deals_link_unlink_id_patch(brevo_crm_deal_id, body)
+        body_link_deal_contact = sib_api_v3_sdk.Body5(link_contact_ids=contact_list)
+        api_instance.crm_deals_link_unlink_id_patch(brevo_crm_deal_id, body_link_deal_contact)
 
     except ApiException as e:
         logger.error("Exception when calling Brevo->DealApi->crm_deals_link_unlink_id_patch: %s\n" % e)
