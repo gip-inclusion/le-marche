@@ -28,7 +28,7 @@ def get_api_client():
     return sib_api_v3_sdk.ApiClient(config)
 
 
-def create_contact(user, list_id: int):
+def create_contact(user, list_id: int, with_user_save=True):
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
     new_contact = sib_api_v3_sdk.CreateContact(
@@ -47,6 +47,9 @@ def create_contact(user, list_id: int):
 
     try:
         api_response = api_instance.create_contact(new_contact).to_dict()
+        if with_user_save:
+            user.brevo_contact_id = api_response.get("id")
+            user.save()
         logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response}")
     except ApiException as e:
         logger.error(f"Exception when calling Brevo->ContactsApi->create_contact: {e}")
