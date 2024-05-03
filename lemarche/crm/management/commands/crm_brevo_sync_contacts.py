@@ -59,6 +59,10 @@ class Command(BaseCommand):
                 if existing_contacts:
                     # try to get id by dictionnary of existing contacts
                     brevo_contact_id = existing_contacts.get(user.email)
+                    if brevo_contact_id == user.brevo_contact_id:
+                        # if brevo contact id and user brevo contact id we skip user
+                        self.stdout.write(f"Contact {user.email} already in Brevo.")
+                        continue
                 # if we still not have contact id
                 if not brevo_contact_id:
                     self.stdout.write(f"Create and save contact {user.email} in Brevo.")
