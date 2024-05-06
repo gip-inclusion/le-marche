@@ -278,7 +278,7 @@ class SiaeUserRequestConfirmView(SiaeMemberRequiredMixin, SuccessMessageMixin, U
         self.object.response_date = timezone.now()
         self.object.logs.append({"action": "response_true", "timestamp": self.object.response_date.isoformat()})
         self.object.save()
-        send_siae_user_request_response_email_to_initiator(self.object, response=True)
+        send_siae_user_request_response_email_to_initiator(self.object)
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -305,7 +305,7 @@ class SiaeUserRequestCancelView(SiaeMemberRequiredMixin, SuccessMessageMixin, Up
         self.object.response_date = timezone.now()
         self.object.logs.append({"action": "response_false", "timestamp": self.object.response_date.isoformat()})
         self.object.save()
-        send_siae_user_request_response_email_to_initiator(self.object, response=False)
+        send_siae_user_request_response_email_to_initiator(self.object)
         return super().form_valid(form)
 
     def get_success_url(self):
