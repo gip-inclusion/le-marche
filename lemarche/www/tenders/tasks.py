@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 from sesame.utils import get_query_string as sesame_get_query_string
 
+from lemarche.conversations.models import TemplateTransactional
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
@@ -25,7 +26,7 @@ def send_validated_tender(tender: Tender):
     # find the matching Siaes? done in Tender post_save signal
     # notify author
     # TODO: we still notify author for each send ?
-    send_confirmation_published_email_to_author(tender, nb_matched_siaes=tender.siaes.count())
+    send_confirmation_published_email_to_author(tender)
     # send the tender to all matching Siaes & Partners
     send_tender_emails_to_siaes(tender)
     send_tender_emails_to_partners(tender)
@@ -388,49 +389,45 @@ def send_tender_interested_reminder_email_to_siae(
         tendersiae.save()
 
 
-def send_confirmation_published_email_to_author(tender: Tender, nb_matched_siaes: int):
-    """Send email to the author when the tender is published to the siaes
-
-    Args:
-        tender (Tender): Tender published
-        nb_matched (int): number of siaes match
+def send_confirmation_published_email_to_author(tender: Tender):
     """
-    email_subject = f"Votre {tender.get_kind_display().lower()} a été publié !"
-    recipient_list = whitelist_recipient_list([tender.author.email])
-    if recipient_list and not tender.contact_notifications_disabled:
-        recipient_email = recipient_list[0] if recipient_list else ""
-        recipient_name = tender.author.full_name
+    Send email to the author when the tender is published to the siaes
+    """
+    if not tender.contact_notifications_disabled:
+        email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_CONFIRMATION_VALIDATED")
+        recipient_list = whitelist_recipient_list([tender.author.email])
+        if len(recipient_list):
+            recipient_email = recipient_list[0]
+            recipient_name = tender.author.full_name
 
-        variables = {
-            "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
-            "TENDER_TITLE": tender.title,
-            "TENDER_KIND": tender.get_kind_display(),
-            "TENDER_SECTORS": tender.sectors_list_string(),
-            "TENDER_PERIMETERS": tender.location_display,
-            "TENDER_AMOUNT": tender.amount_display,
-            "TENDER_DEADLINE_DATE": date_to_string(tender.deadline_date),
-            "TENDER_NB_MATCH": nb_matched_siaes,
-            "TENDER_URL": get_object_share_url(tender),
-        }
+            variables = {
+                "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
+                "TENDER_TITLE": tender.title,
+                "TENDER_KIND": tender.get_kind_display().lower(),
+                "TENDER_SECTORS": tender.sectors_list_string(),
+                "TENDER_PERIMETERS": tender.location_display,
+                "TENDER_AMOUNT": tender.amount_display,
+                "TENDER_DEADLINE_DATE": date_to_string(tender.deadline_date),
+                "TENDER_NB_MATCH": tender.siaes.count(),
+                "TENDER_URL": get_object_share_url(tender),
+            }
 
-        api_mailjet.send_transactional_email_with_template(
-            template_id=settings.MAILJET_TENDERS_AUTHOR_CONFIRMATION_VALIDATED_TEMPLATE_ID,
-            recipient_email=recipient_email,
-            recipient_name=recipient_name,
-            variables=variables,
-            subject=email_subject,
-        )
+            email_template.send_transactional_email(
+                recipient_email=recipient_email,
+                recipient_name=recipient_name,
+                variables=variables,
+            )
 
-        # log email
-        log_item = {
-            "action": "email_publish_confirmation",
-            "email_to": recipient_email,
-            "email_subject": email_subject,
-            # "email_body": email_body,
-            "email_timestamp": timezone.now().isoformat(),
-        }
-        tender.logs.append(log_item)
-        tender.save()
+            # log email
+            log_item = {
+                "action": "email_publish_confirmation",
+                "email_template": email_template.code,
+                "email_to": recipient_email,
+                # "email_body": email_body,
+                "email_timestamp": timezone.now().isoformat(),
+            }
+            tender.logs.append(log_item)
+            tender.save()
 
 
 def send_siae_interested_email_to_author(tender: Tender):
