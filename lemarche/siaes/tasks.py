@@ -1,10 +1,9 @@
-from django.conf import settings
 from django.urls import reverse_lazy
 from django.utils import timezone
 from huey.contrib.djhuey import task
 
+from lemarche.conversations.models import TemplateTransactional
 from lemarche.users.models import User
-from lemarche.utils.apis import api_mailjet
 from lemarche.utils.apis.geocoding import get_geocoding_data
 from lemarche.utils.emails import whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url, get_object_share_url
@@ -35,12 +34,12 @@ def set_siae_coords(model, siae):
 
 
 def send_completion_reminder_email_to_siae(siae):
-    email_subject = "Vous avez raté des opportunités commerciales !"
+    email_template = TemplateTransactional.objects.get(code="SIAE_COMPLETION_REMINDER")
     siae_user_emails = list(siae.users.values_list("email", flat=True))
     recipient_list = whitelist_recipient_list(siae_user_emails)
-    if recipient_list:
-        for siae_user_email in recipient_list:
-            siae_user = User.objects.get(email=siae_user_email)
+    if len(recipient_list):
+        for recipient_email in recipient_list:
+            siae_user = User.objects.get(email=recipient_email)
             recipient_name = siae_user.full_name
 
             variables = {
@@ -50,19 +49,16 @@ def send_completion_reminder_email_to_siae(siae):
                 "SIAE_EDIT_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard_siaes:siae_edit_contact', args=[siae.slug])}",  # noqa
             }
 
-            api_mailjet.send_transactional_email_with_template(
-                template_id=settings.MAILJET_SIAE_COMPLETION_REMINDER_TEMPLATE_ID,
-                recipient_email=siae_user_email,
+            email_template.send_transactional_email(
+                recipient_email=recipient_email,
                 recipient_name=recipient_name,
                 variables=variables,
-                subject=email_subject,
             )
 
         # log email
         log_item = {
             "action": "email_completion_reminder",
             "email_to": recipient_list,
-            "email_subject": email_subject,
             # "email_body": email_body,
             "email_timestamp": timezone.now().isoformat(),
             "metadata": {
