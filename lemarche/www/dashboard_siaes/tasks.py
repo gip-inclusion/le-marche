@@ -1,9 +1,7 @@
-from django.conf import settings
 from django.urls import reverse_lazy
 from django.utils import timezone
 
 from lemarche.conversations.models import TemplateTransactional
-from lemarche.utils.apis import api_mailjet
 from lemarche.utils.emails import whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url
 
@@ -94,10 +92,10 @@ def send_siae_user_request_reminder_3_days_emails(siae_user_request):
 
 
 def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
-    email_subject = "Nouveau collaborateur"
+    email_template = TemplateTransactional.objects.get(code="SIAEUSERREQUEST_REMINDER_1_ASSIGNEE")
     recipient_list = whitelist_recipient_list([siae_user_request.assignee.email])
-    if recipient_list:
-        recipient_email = recipient_list[0] if recipient_list else ""
+    if len(recipient_list):
+        recipient_email = recipient_list[0]
         recipient_name = siae_user_request.assignee.full_name
 
         variables = {
@@ -107,19 +105,17 @@ def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
             "SIAE_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard_siaes:siae_users', args=[siae_user_request.siae.slug])}",  # noqa
         }
 
-        api_mailjet.send_transactional_email_with_template(
-            template_id=settings.MAILJET_SIAEUSERREQUEST_REMINDER_1_ASSIGNEE_TEMPLATE_ID,
+        email_template.send_transactional_email(
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            subject=email_subject,
         )
 
         # log email
         log_item = {
             "action": "email_sent",
+            "email_template": email_template.code,
             "email_to": recipient_email,
-            "email_subject": email_subject,
             # "email_body": email_body,
             "email_timestamp": timezone.now().isoformat(),
         }
@@ -128,10 +124,10 @@ def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
 
 
 def send_siae_user_request_reminder_3_days_email_to_initiator(siae_user_request):
-    email_subject = "Rattachement sans réponse"
+    email_template = TemplateTransactional.objects.get(code="SIAEUSERREQUEST_REMINDER_1_INITIATOR")
     recipient_list = whitelist_recipient_list([siae_user_request.initiator.email])
-    if recipient_list:
-        recipient_email = recipient_list[0] if recipient_list else ""
+    if len(recipient_list):
+        recipient_email = recipient_list[0]
         recipient_name = siae_user_request.initiator.full_name
 
         variables = {
@@ -140,19 +136,17 @@ def send_siae_user_request_reminder_3_days_email_to_initiator(siae_user_request)
             "SIAE_NAME": siae_user_request.siae.name_display,
         }
 
-        api_mailjet.send_transactional_email_with_template(
-            template_id=settings.MAILJET_SIAEUSERREQUEST_REMINDER_1_INITIATOR_TEMPLATE_ID,
+        email_template.send_transactional_email(
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            subject=email_subject,
         )
 
         # log email
         log_item = {
             "action": "email_sent",
+            "email_template": email_template.code,
             "email_to": recipient_email,
-            "email_subject": email_subject,
             # "email_body": email_body,
             "email_timestamp": timezone.now().isoformat(),
         }
@@ -171,10 +165,10 @@ def send_siae_user_request_reminder_8_days_emails(siae_user_request):
 
 
 def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
-    email_subject = "Nouveau collaborateur"
+    email_template = TemplateTransactional.objects.get(code="SIAEUSERREQUEST_REMINDER_2_ASSIGNEE")
     recipient_list = whitelist_recipient_list([siae_user_request.assignee.email])
-    if recipient_list:
-        recipient_email = recipient_list[0] if recipient_list else ""
+    if len(recipient_list):
+        recipient_email = recipient_list[0]
         recipient_name = siae_user_request.assignee.full_name
 
         variables = {
@@ -184,19 +178,17 @@ def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
             "SIAE_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard_siaes:siae_users', args=[siae_user_request.siae.slug])}",  # noqa
         }
 
-        api_mailjet.send_transactional_email_with_template(
-            template_id=settings.MAILJET_SIAEUSERREQUEST_REMINDER_2_ASSIGNEE_TEMPLATE_ID,
+        email_template.send_transactional_email(
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            subject=email_subject,
         )
 
         # log email
         log_item = {
             "action": "email_sent",
+            "email_template": email_template.code,
             "email_to": recipient_email,
-            "email_subject": email_subject,
             # "email_body": email_body,
             "email_timestamp": timezone.now().isoformat(),
         }
@@ -205,10 +197,10 @@ def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
 
 
 def send_siae_user_request_reminder_8_days_email_to_initiator(siae_user_request):
-    email_subject = "Rattachement sans réponse"
+    email_template = TemplateTransactional.objects.get(code="SIAEUSERREQUEST_REMINDER_2_INITIATOR")
     recipient_list = whitelist_recipient_list([siae_user_request.initiator.email])
-    if recipient_list:
-        recipient_email = recipient_list[0] if recipient_list else ""
+    if len(recipient_list):
+        recipient_email = recipient_list[0]
         recipient_name = siae_user_request.initiator.full_name
 
         variables = {
@@ -218,19 +210,17 @@ def send_siae_user_request_reminder_8_days_email_to_initiator(siae_user_request)
             "SUPPORT_URL": f"https://{get_domain_url()}{reverse_lazy('pages:contact')}?siret={siae_user_request.siae.siret}",  # noqa
         }
 
-        api_mailjet.send_transactional_email_with_template(
-            template_id=settings.MAILJET_SIAEUSERREQUEST_REMINDER_2_INITIATOR_TEMPLATE_ID,
+        email_template.send_transactional_email(
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            subject=email_subject,
         )
 
         # log email
         log_item = {
             "action": "email_sent",
+            "email_template": email_template.code,
             "email_to": recipient_email,
-            "email_subject": email_subject,
             # "email_body": email_body,
             "email_timestamp": timezone.now().isoformat(),
         }
