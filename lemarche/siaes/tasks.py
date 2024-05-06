@@ -58,6 +58,7 @@ def send_completion_reminder_email_to_siae(siae):
         # log email
         log_item = {
             "action": "email_completion_reminder",
+            "email_template": email_template.code,
             "email_to": recipient_list,
             # "email_body": email_body,
             "email_timestamp": timezone.now().isoformat(),
