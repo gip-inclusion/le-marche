@@ -125,8 +125,8 @@ def send_transactional_email_with_template(
     recipient_name: str,
     variables: dict,
     subject: str,
-    from_email: str,
-    from_name: str,
+    from_email=settings.DEFAULT_FROM_EMAIL,
+    from_name=settings.DEFAULT_FROM_NAME,
 ):
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.TransactionalEmailsApi(api_client)
