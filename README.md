@@ -27,11 +27,10 @@ Voici un tableau explicatif de la nomenclature utilisée dans le code (par rappo
 ## Installation
 
 Étapes d'une installation en local à des fins de développement.
-L'environnement fourni permet de fonctionner de 3 manières différentes :
+L'environnement fourni permet de fonctionner de deux manières différentes :
 
 1. Poetry + Postgres (sans Docker)
-2. Dockerfile + Postgres
-3. docker-compose (installe tout l'environnement nécessaire)
+2. Docker + Docker Compose (installe tout l'environnement nécessaire)
 
 ### Poetry (sans Docker)
 
@@ -70,9 +69,7 @@ $ env PYTHONPATH=./lemarche:./lemarche/c4_directory poetry run python manage.py 
 
 ### Docker
 
-L'application utilise un Dockerfile multistage, permettant de fonctionner en "Dev" et "Prod" avec le même [Dockerfile](./Dockerfile).
-
-Pour l'environnement de développement, un `docker-compose` est fourni (voir ci-dessous).
+Pour l'environnement de développement, un ficher `docker-compose.yml` est fourni et utilisable avec le plugin [Docker Compose](https://docs.docker.com/compose/).
 
 Pour la configuration Django, vérifiez le fichier [config/settings/dev.py](./config/settings/dev.py).
 
@@ -82,41 +79,27 @@ Pour un déploiement local **avec Docker**, dupliquez le fichier `env.docker_def
 
 > :information_source: pour accéder à l'environnemnt depuis une autre machine, pensez à définir la variable d'environnemnt `CURRENT_HOST` dans le fichier d'environnement
 
-#### Lancement docker-compose
+#### Lancement Docker Compose
 
 Après création du fichier `env.docker.local` :
 
 ```bash
  # Démarrage
- > docker-compose up
+ > docker compose up
  # Après démarrage, le serveur est disponible sur http://localhost:8880/
 
  # Se connecter au containeur django
- > docker exec -it bitoubi_django /bin/bash
+ > docker compose exec -it app /bin/bash
  # ou
  > make shell_on_django_container
 
  # Re-création de l'environnement (en cas de modification)
- > docker-compose down
- > docker-compose build --no-cache
- > docker-compose up --force-recreate
+ > docker compose down
+ > docker compose build --no-cache
+ > docker compose up --force-recreate
 
  # Effacement complet des images dockers
- > ./scripts/delete_docker.sh
-```
-
-#### Lancement Dockerfile
-
-Le script [start_docker.sh](./start_docker.sh) permet de lancer les environnements en local, en mode **dev** ou **prod** :
-
-```bash
- > ./start_docker.sh -h
-
--p|--prod    run full docker (Prod config)
--d|--dev     run dev docker (Dev config and local mounts)
-
-# Pour lancer l'environnement de développement
-> ./start_docker.sh --dev
+ > docker compose down -v
 ```
 
 ## Utilisation
