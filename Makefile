@@ -1,6 +1,6 @@
 # Global tasks.
 # =============================================================================
-PYTHON_VERSION := python3.10
+PYTHON_VERSION := python3.11
 
 .PHONY: shell_on_django_container shell_on_django_container_as_root shell_on_postgres_container
 # DOCKER commands
