@@ -152,7 +152,6 @@ class PaidArticleList(ArticleList):
 
 
 class HomePage(Page):
-    max_count = 3
     banner_title = models.CharField(
         default="Votre recherche de prestataires inclusifs est chronophage ?", max_length=120
     )
@@ -216,6 +215,7 @@ class HomePage(Page):
         FieldPanel("content"),
     ]
 
+    page_description = "Use this page type like a landing page"
     parent_page_types = ["wagtailcore.Page", "cms.HomePage"]
 
     def get_context(self, request, *args, **kwargs):
