@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   db:
     # The default memory setting (64M) is not enough anymore due to the size of the database we import

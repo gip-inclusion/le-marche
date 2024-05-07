@@ -2,7 +2,7 @@
 set -e
 echo ""
 echo "================================================"
-echo "= Le marché de l'inclusion Dev docker-compose  ="
+echo "= Le marché de l'inclusion Dev Docker Compose  ="
 echo "================================================"
 echo ""
 

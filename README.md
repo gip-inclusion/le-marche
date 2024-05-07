@@ -30,7 +30,7 @@ Voici un tableau explicatif de la nomenclature utilisée dans le code (par rappo
 L'environnement fourni permet de fonctionner de deux manières différentes :
 
 1. Poetry + Postgres (sans Docker)
-2. Docker + docker-compose (installe tout l'environnement nécessaire)
+2. Docker + Docker Compose (installe tout l'environnement nécessaire)
 
 ### Poetry (sans Docker)
 
@@ -69,7 +69,7 @@ $ env PYTHONPATH=./lemarche:./lemarche/c4_directory poetry run python manage.py 
 
 ### Docker
 
-Pour l'environnement de développement, un ficher `docker-compose.yml` est fourni.
+Pour l'environnement de développement, un ficher `docker-compose.yml` est fourni et utilisable avec le plugin [Docker Compose](https://docs.docker.com/compose/).
 
 Pour la configuration Django, vérifiez le fichier [config/settings/dev.py](./config/settings/dev.py).
 
@@ -79,27 +79,27 @@ Pour un déploiement local **avec Docker**, dupliquez le fichier `env.docker_def
 
 > :information_source: pour accéder à l'environnemnt depuis une autre machine, pensez à définir la variable d'environnemnt `CURRENT_HOST` dans le fichier d'environnement
 
-#### Lancement docker-compose
+#### Lancement Docker Compose
 
 Après création du fichier `env.docker.local` :
 
 ```bash
  # Démarrage
- > docker-compose up
+ > docker compose up
  # Après démarrage, le serveur est disponible sur http://localhost:8880/
 
  # Se connecter au containeur django
- > docker-compose exec -it app /bin/bash
+ > docker compose exec -it app /bin/bash
  # ou
  > make shell_on_django_container
 
  # Re-création de l'environnement (en cas de modification)
- > docker-compose down
- > docker-compose build --no-cache
- > docker-compose up --force-recreate
+ > docker compose down
+ > docker compose build --no-cache
+ > docker compose up --force-recreate
 
  # Effacement complet des images dockers
- > docker-compose down -v
+ > docker compose down -v
 ```
 
 ## Utilisation
