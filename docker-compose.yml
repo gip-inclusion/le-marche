@@ -1,11 +1,6 @@
-version: "3.7"
-
 services:
-  postgres:
-    container_name: bitoubi_postgres
-    env_file:
-      - env.docker.local
-        # The default memory setting (64M) is not enough anymore due to the size of the database we import
+  db:
+    # The default memory setting (64M) is not enough anymore due to the size of the database we import
     # https://stackoverflow.com/questions/56839975/docker-shm-size-dev-shm-resizing-shared-memory
     shm_size: 1g
     build:
@@ -13,30 +8,24 @@ services:
       dockerfile: ./docker/dev/postgres/Dockerfile
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./docker/dev/postgres/psql_init.sh:/docker-entrypoint-initdb.d/postgres-init.sh
-    restart: always
+    env_file:
+      - env.docker.local
     ports:
       - "${POSTGRESQL_PORT:-5432}:5432"
-
-  bitoubi:
-    container_name: bitoubi_django
-    restart: always
+  app:
     build:
         context: .
-        target: dev
         dockerfile: ./docker/dev/django/Dockerfile
     command: ./docker/dev/django/entrypoint.sh
     volumes:
       - ./lemarche:/app/lemarche
       - ./config:/app/config
-    environment:
-        - DEBUG=true
     env_file:
       - env.docker.local
     ports:
       - "8880:8880"
     depends_on:
-      - postgres
+      - db
 
 volumes:
   postgres_data:
