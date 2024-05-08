@@ -99,7 +99,7 @@ def send_transactional_email_with_template(
     recipient_email: str,
     recipient_name: str,
     variables: dict,
-    subject: str,
+    subject=None,
     from_email=settings.DEFAULT_FROM_EMAIL,
     from_name=settings.DEFAULT_FROM_NAME,
     client=None,
