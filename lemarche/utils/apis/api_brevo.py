@@ -211,20 +211,21 @@ def link_deal_with_contact_list(tender, contact_list: list = None):
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.DealsApi(api_client)
 
-    try:
-        # get brevo ids
-        brevo_crm_deal_id = tender.brevo_deal_id
-        # Default to the author's contact ID if no contact list is provided
-        if not contact_list:
-            contact_list = [tender.author.brevo_contact_id]
+    if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
+        try:
+            # get brevo ids
+            brevo_crm_deal_id = tender.brevo_deal_id
+            # Default to the author's contact ID if no contact list is provided
+            if not contact_list:
+                contact_list = [tender.author.brevo_contact_id]
 
-        # link deal with contact_list
-        # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body5.md
-        body_link_deal_contact = sib_api_v3_sdk.Body5(link_contact_ids=contact_list)
-        api_instance.crm_deals_link_unlink_id_patch(brevo_crm_deal_id, body_link_deal_contact)
+            # link deal with contact_list
+            # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body5.md
+            body_link_deal_contact = sib_api_v3_sdk.Body5(link_contact_ids=contact_list)
+            api_instance.crm_deals_link_unlink_id_patch(brevo_crm_deal_id, body_link_deal_contact)
 
-    except ApiException as e:
-        logger.error("Exception when calling Brevo->DealApi->crm_deals_link_unlink_id_patch: %s\n" % e)
+        except ApiException as e:
+            logger.error("Exception when calling Brevo->DealApi->crm_deals_link_unlink_id_patch: %s\n" % e)
 
 
 def link_company_with_contact_list(siae, contact_list: list = None):
@@ -245,20 +246,21 @@ def link_company_with_contact_list(siae, contact_list: list = None):
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.CompaniesApi(api_client)
 
-    try:
-        # get brevo ids
-        brevo_crm_company_id = siae.brevo_company_id
-        # Default to the siae's user(s) ID(s) if no contact list is provided
-        if not contact_list:
-            contact_list = siae.users.values_list("brevo_contact_id", flat=True)
+    if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
+        try:
+            # get brevo ids
+            brevo_crm_company_id = siae.brevo_company_id
+            # Default to the siae's user(s) ID(s) if no contact list is provided
+            if not contact_list:
+                contact_list = siae.users.values_list("brevo_contact_id", flat=True)
 
-        # link company with contact_list
-        # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body2.md
-        body_link_company_contact = sib_api_v3_sdk.Body2(link_contact_ids=contact_list)
-        api_instance.companies_link_unlink_id_patch(brevo_crm_company_id, body_link_company_contact)
+            # link company with contact_list
+            # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body2.md
+            body_link_company_contact = sib_api_v3_sdk.Body2(link_contact_ids=contact_list)
+            api_instance.companies_link_unlink_id_patch(brevo_crm_company_id, body_link_company_contact)
 
-    except ApiException as e:
-        logger.error("Exception when calling Brevo->DealApi->companies_link_unlink_id_patch: %s\n" % e)
+        except ApiException as e:
+            logger.error("Exception when calling Brevo->DealApi->companies_link_unlink_id_patch: %s\n" % e)
 
 
 def get_all_users_from_list(

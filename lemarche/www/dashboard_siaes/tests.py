@@ -16,9 +16,9 @@ class DashboardSiaeSearchAdoptViewTest(TestCase):
         cls.user_buyer = UserFactory(kind=User.KIND_BUYER)
         cls.user_partner = UserFactory(kind=User.KIND_PARTNER)
         cls.user_admin = UserFactory(kind=User.KIND_ADMIN)
-        cls.siae_with_user = SiaeFactory(brevo_company_id="123abc1")
+        cls.siae_with_user = SiaeFactory()
         cls.siae_with_user.users.add(cls.user_siae)
-        cls.siae_without_user = SiaeFactory(brevo_company_id="123abc2")
+        cls.siae_without_user = SiaeFactory()
         TemplateTransactional.objects.create(code="SIAEUSERREQUEST_ASSIGNEE")
 
     def test_anonymous_user_cannot_adopt_siae(self):
