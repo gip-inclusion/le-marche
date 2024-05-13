@@ -9,6 +9,7 @@ from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
 from lemarche.siaes.models import Siae, SiaeUser, SiaeUserRequest
+from lemarche.utils.apis import api_brevo
 from lemarche.utils.mixins import SiaeMemberRequiredMixin, SiaeUserAndNotMemberRequiredMixin, SiaeUserRequiredMixin
 from lemarche.utils.s3 import S3Upload
 from lemarche.www.dashboard_siaes.forms import (
@@ -76,6 +77,7 @@ class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, SuccessMessa
         """
         if not self.object.users.count():
             self.object.users.add(self.request.user)
+            api_brevo.link_company_with_contact_list(self.object)
             return super().form_valid(form)
         else:
             # create SiaeUserRequest + send request email to assignee
@@ -279,6 +281,7 @@ class SiaeUserRequestConfirmView(SiaeMemberRequiredMixin, SuccessMessageMixin, U
         self.object.logs.append({"action": "response_true", "timestamp": self.object.response_date.isoformat()})
         self.object.save()
         send_siae_user_request_response_email_to_initiator(self.object)
+        api_brevo.link_company_with_contact_list(self.object.siae)
         return super().form_valid(form)
 
     def get_success_url(self):
