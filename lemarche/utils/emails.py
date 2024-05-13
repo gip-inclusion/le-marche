@@ -67,6 +67,8 @@ def add_to_contact_list(user, type: str, source: str = user_constants.SOURCE_SIG
             # TODO: we still use it ?
             api_hubspot.add_user_to_crm(user)
             api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_BUYER_ID)
+        elif user.kind == user.KIND_SIAE:
+            api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_SIAE_ID)
     elif type == "buyer_search":
         # contact_list_id = settings.MAILJET_NL_CL_BUYER_SEARCH_SIAE_LIST_ID
         api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_BUYER_SEARCH_SIAE_LIST_ID)
