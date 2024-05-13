@@ -23,5 +23,5 @@ class Migration(migrations.Migration):
             name="brevo_company_id",
             field=models.CharField(blank=True, max_length=80, null=True, verbose_name="Brevo company id"),
         ),
-        migrations.RunPython(populate_brevo_company_id),
+        migrations.RunPython(populate_brevo_company_id, reverse_code=migrations.RunPython.noop),
     ]
