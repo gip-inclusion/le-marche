@@ -101,9 +101,9 @@ def create_or_update_company(siae):
         },
     )
 
-    if siae.extra_data_brevo_company_id:  # update
+    if siae.brevo_company_id:  # update
         try:
-            api_response = api_instance.companies_id_patch(siae.extra_data_brevo_company_id, siae_brevo_company_body)
+            api_response = api_instance.companies_id_patch(siae.brevo_company_id, siae_brevo_company_body)
             # logger.info(f"Success Brevo->CompaniesApi->create_or_update_company (update): {api_response}")
             # api_response: {'attributes': None, 'id': None, 'linked_contacts_ids': None, 'linked_deals_ids': None}
         except ApiException as e:
@@ -113,7 +113,8 @@ def create_or_update_company(siae):
             api_response = api_instance.companies_post(siae_brevo_company_body)
             logger.info(f"Success Brevo->CompaniesApi->create_or_update_company (create): {api_response}")
             # api_response: {'id': '<brevo_company_id>'}
-            siae.set_brevo_id(api_response.id)
+            siae.brevo_company_id = api_response.id
+            siae.save(update_fields=["brevo_company_id"])
         except ApiException as e:
             logger.error(f"Exception when calling Brevo->CompaniesApi->create_or_update_company (create): {e}")
 
