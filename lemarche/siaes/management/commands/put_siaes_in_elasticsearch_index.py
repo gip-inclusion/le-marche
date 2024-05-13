@@ -3,8 +3,8 @@ import time
 from django.conf import settings
 from django.db.models import TextField
 from django.db.models.functions import Length
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import ElasticVectorSearch
+from langchain_community.embeddings.openai import OpenAIEmbeddings
+from langchain_community.vectorstores import ElasticVectorSearch
 
 from lemarche.siaes.models import Siae
 from lemarche.utils.apis.api_elasticsearch import URL_WITH_USER

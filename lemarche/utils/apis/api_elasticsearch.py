@@ -1,6 +1,6 @@
 from django.conf import settings
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores.elasticsearch import ElasticsearchStore
+from langchain_community.embeddings.openai import OpenAIEmbeddings
+from langchain_community.vectorstores.elasticsearch import ElasticsearchStore
 
 from lemarche.perimeters.models import Perimeter
 
