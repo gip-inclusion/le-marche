@@ -193,7 +193,7 @@ def create_deal(tender, owner_email: str):
         logger.error("Exception when calling Brevo->DealApi->create_deal: %s\n" % e)
 
 
-def link_deal_with_list_contact(tender, contact_list: list = None):
+def link_deal_with_contact_list(tender, contact_list: list = None):
     """
     Links a Brevo deal to a list of contacts. If no contact list is provided, it defaults
     to linking the deal with the tender's author.
@@ -216,16 +216,49 @@ def link_deal_with_list_contact(tender, contact_list: list = None):
         brevo_crm_deal_id = tender.brevo_deal_id
         # Default to the author's contact ID if no contact list is provided
         if not contact_list:
-            brevo_crm_author_deal_id = tender.author.brevo_contact_id
-            contact_list = [brevo_crm_author_deal_id]
+            contact_list = [tender.author.brevo_contact_id]
 
-        # link deal with author
+        # link deal with contact_list
         # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body5.md
         body_link_deal_contact = sib_api_v3_sdk.Body5(link_contact_ids=contact_list)
         api_instance.crm_deals_link_unlink_id_patch(brevo_crm_deal_id, body_link_deal_contact)
 
     except ApiException as e:
         logger.error("Exception when calling Brevo->DealApi->crm_deals_link_unlink_id_patch: %s\n" % e)
+
+
+def link_company_with_contact_list(siae, contact_list: list = None):
+    """
+    Links a Brevo company to a list of contacts. If no contact list is provided, it defaults
+    to linking the company with the siae's users.
+
+    This function uses the siae's stored company ID and either a provided list of contact IDs or the
+    siae author's user(s) ID(s) to link contacts to the company in the Brevo CRM.
+
+    Args:
+        siae (Siae): The siae object containing the Brevo company ID and author's contact ID.
+        contact_list (list of int, optional): List of contact IDs to be linked with the company. Defaults to None.
+
+    Raises:
+        ApiException: If an error occurs during the linking process in the Brevo API.
+    """
+    api_client = get_api_client()
+    api_instance = sib_api_v3_sdk.CompaniesApi(api_client)
+
+    try:
+        # get brevo ids
+        brevo_crm_company_id = siae.brevo_company_id
+        # Default to the siae's user(s) ID(s) if no contact list is provided
+        if not contact_list:
+            contact_list = siae.users.values_list("brevo_contact_id", flat=True)
+
+        # link company with contact_list
+        # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body2.md
+        body_link_company_contact = sib_api_v3_sdk.Body2(link_contact_ids=contact_list)
+        api_instance.companies_link_unlink_id_patch(brevo_crm_company_id, body_link_company_contact)
+
+    except ApiException as e:
+        logger.error("Exception when calling Brevo->DealApi->companies_link_unlink_id_patch: %s\n" % e)
 
 
 def get_all_users_from_list(
