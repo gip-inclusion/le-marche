@@ -830,6 +830,9 @@ class Siae(models.Model):
     # admin
     notes = GenericRelation("notes.Note", related_query_name="siae")
 
+    # services data
+    brevo_company_id = models.CharField("Brevo company id", max_length=80, blank=True, null=True)
+
     # stats
     user_count = models.IntegerField("Nombre d'utilisateurs", default=0)
     sector_count = models.IntegerField("Nombre de secteurs d'activité", default=0)
@@ -1222,10 +1225,6 @@ class Siae(models.Model):
     def sectors_full_list_string(self):
         return self.sectors_list_string(display_max=None)
 
-    @property
-    def brevo_company_id(self):
-        return self.extra_data.get("brevo_company_id")
-
     @cached_property
     def stat_view_count_last_3_months(self):
         try:
@@ -1256,11 +1255,6 @@ class Siae(models.Model):
 
     def get_admin_url(self):
         return get_object_admin_url(self)
-
-    def set_brevo_id(self, brevo_company_id, with_save=True):
-        self.extra_data.update({"brevo_company_id": brevo_company_id})
-        if with_save:
-            self.save()
 
     def set_super_badge(self):
         update_fields_list = ["super_badge"]

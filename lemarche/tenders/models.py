@@ -569,6 +569,7 @@ class Tender(models.Model):
     validated_at = models.DateTimeField("Date de validation", blank=True, null=True)
     first_sent_at = models.DateTimeField("Date du premier envoi", blank=True, null=True)
     last_sent_at = models.DateTimeField("Date du dernier envoi", blank=True, null=True)
+
     # admin
     notes = GenericRelation("notes.Note", related_query_name="tender")
     siae_transactioned = models.BooleanField(
@@ -612,11 +613,13 @@ class Tender(models.Model):
         help_text=ADMIN_FIELD_HELP_TEXT,
         default=6,
     )
+
     # partner data
     partner_approch_id = models.IntegerField("Partenaire APProch : ID", blank=True, null=True)
 
     # services data
     brevo_deal_id = models.CharField("Brevo deal id", max_length=80, blank=True, null=True)
+
     # stats
     siae_count = models.IntegerField(
         "Nombre de structures concernées", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
