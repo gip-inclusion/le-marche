@@ -252,7 +252,7 @@ def link_company_with_contact_list(siae, contact_list: list = None):
             brevo_crm_company_id = siae.brevo_company_id
             # Default to the siae's user(s) ID(s) if no contact list is provided
             if not contact_list:
-                contact_list = siae.users.values_list("brevo_contact_id", flat=True)
+                contact_list = list(siae.users.values_list("brevo_contact_id", flat=True))
 
             # link company with contact_list
             # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body2.md
