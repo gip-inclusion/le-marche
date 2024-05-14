@@ -219,10 +219,14 @@ def link_deal_with_contact_list(tender, contact_list: list = None):
             if not contact_list:
                 contact_list = [tender.author.brevo_contact_id]
 
+            # cleanup
+            contact_list = [id for id in contact_list if id is not None]
+
             # link deal with contact_list
-            # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body5.md
-            body_link_deal_contact = sib_api_v3_sdk.Body5(link_contact_ids=contact_list)
-            api_instance.crm_deals_link_unlink_id_patch(brevo_crm_deal_id, body_link_deal_contact)
+            if len(contact_list):
+                # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body5.md
+                body_link_deal_contact = sib_api_v3_sdk.Body5(link_contact_ids=contact_list)
+                api_instance.crm_deals_link_unlink_id_patch(brevo_crm_deal_id, body_link_deal_contact)
 
         except ApiException as e:
             logger.error("Exception when calling Brevo->DealApi->crm_deals_link_unlink_id_patch: %s\n" % e)
@@ -254,10 +258,14 @@ def link_company_with_contact_list(siae, contact_list: list = None):
             if not contact_list:
                 contact_list = list(siae.users.values_list("brevo_contact_id", flat=True))
 
+            # cleanup
+            contact_list = [id for id in contact_list if id is not None]
+
             # link company with contact_list
-            # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body2.md
-            body_link_company_contact = sib_api_v3_sdk.Body2(link_contact_ids=contact_list)
-            api_instance.companies_link_unlink_id_patch(brevo_crm_company_id, body_link_company_contact)
+            if len(contact_list):
+                # https://github.com/sendinblue/APIv3-python-library/blob/master/docs/Body2.md
+                body_link_company_contact = sib_api_v3_sdk.Body2(link_contact_ids=contact_list)
+                api_instance.companies_link_unlink_id_patch(brevo_crm_company_id, body_link_company_contact)
 
         except ApiException as e:
             logger.error("Exception when calling Brevo->DealApi->companies_link_unlink_id_patch: %s\n" % e)
