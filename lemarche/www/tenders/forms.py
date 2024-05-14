@@ -249,7 +249,7 @@ class TenderCreateStepContactForm(forms.ModelForm):
             self.kind == tender_constants.KIND_TENDER
             and self.external_link
             and self.cleaned_data.get("response_kind")
-            and not (tender_constants.RESPONSE_KIND_EXTERNAL in self.cleaned_data.get("response_kind"))
+            and tender_constants.RESPONSE_KIND_EXTERNAL not in self.cleaned_data.get("response_kind")
         ):
             self.add_error("response_kind", "Appel d'offre avec lien renseigné.")
 

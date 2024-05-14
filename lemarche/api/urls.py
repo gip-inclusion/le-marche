@@ -3,6 +3,7 @@ from django.views.generic import RedirectView, TemplateView
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework import routers
 
+from lemarche.api.datacube.views import SimpleTenderList
 from lemarche.api.emails.views import InboundParsingEmailView
 from lemarche.api.networks.views import NetworkViewSet
 from lemarche.api.perimeters.views import PerimeterAutocompleteViewSet, PerimeterKindViewSet, PerimeterViewSet
@@ -39,6 +40,7 @@ urlpatterns = [
         name="old_api_siae_siret",
     ),
     path("inbound-email-parsing/", InboundParsingEmailView.as_view(), name="inbound-email-parsing"),
+    path("datacube/tenders/", SimpleTenderList.as_view(), name="datacube-tenders"),
     # Swagger / OpenAPI documentation
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path("docs/", SpectacularSwaggerView.as_view(url_name="api:schema"), name="swagger-ui"),
