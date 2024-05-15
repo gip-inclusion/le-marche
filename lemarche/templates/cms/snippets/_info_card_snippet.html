@@ -1,0 +1,8 @@
+{% if info_card %}
+    <div class="alert alert-info ">
+        <p>
+            <b><i class="ri-information-line"></i> Conseil</b>
+        </p>
+        {{info_card.content_card|linebreaks}}
+    </div>
+{% endif %}
