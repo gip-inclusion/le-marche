@@ -10,9 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import datetime
 import locale
 import os
-import datetime
 
 import environ
 from django.contrib.messages import constants as messages
@@ -122,6 +122,7 @@ THIRD_PARTY_APPS = [
     "formtools",  # django-formtools (Multistep and preview forms)
     "huey.contrib.djhuey",  # huey (Async tasks)
     "rest_framework",  # djangorestframework
+    "phonenumber_field",  # django-phonenumber-field
 ]
 
 LOCAL_APPS = [
