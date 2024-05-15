@@ -11,6 +11,9 @@ class BaseCommand(BaseCommand):
     def stdout_info(self, message):
         return self.stdout.write(self.style.HTTP_INFO(message))
 
+    def stdout_warning(self, message):
+        return self.stdout.write(self.style.WARNING(message))
+
     def stdout_messages_info(self, messages):
         self.stdout_info("-" * 80)
         messages = messages if (type(messages) is list) else [messages]
