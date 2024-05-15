@@ -302,6 +302,8 @@ USE_TZ = True
 
 SITE_ID = 1
 
+PHONENUMBER_DEFAULT_REGION = "FR"
+
 
 # Emails
 # ------------------------------------------------------------------------------
