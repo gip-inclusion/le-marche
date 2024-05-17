@@ -32,7 +32,7 @@ TENDER_JSON = {
     "contact_first_name": "Prénom",
     "contact_last_name": "Nom",
     "contact_email": USER_CONTACT_EMAIL,
-    "contact_phone": "string",
+    "contact_phone": "0123456789",
     "response_kind": ["EMAIL"],
     "deadline_date": "2023-03-14",
     # "extra_data": {}
