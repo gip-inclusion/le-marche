@@ -12,7 +12,7 @@
                             <li><a href="{% url 'tenders:create' %}">Publier un besoin d'achat</li>
                             <li><a href="{% url 'siae:search_results' %}">Rechercher un prestataire</a></li>
                             <li><a href="{% url 'siae:search_results' %}">Moteur de recherche multicritères</a></li>
-                            <li><a href="{% url 'pages:valoriser_achats' %}">Auditer vos achats</a></li>
+                            <li><a href="{{ PURCHASING_IMPACT_PAGE }}">Auditer vos achats</a></li>
                         </ul>
                         <ul>
                             <li><a href="{% url 'pages:impact_calculator' %}">Calibrer vos achats</a></li>

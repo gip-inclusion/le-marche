@@ -10,9 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import datetime
 import locale
 import os
-import datetime
 
 import environ
 from django.contrib.messages import constants as messages
@@ -841,8 +841,9 @@ WAGTAILADMIN_BASE_URL = DEPLOY_URL or "http://localhost/"
 
 WAGTAIL_FRONTEND_LOGIN_URL = LOGIN_URL
 
-# Specific home page is setted here to avoid one query on every page
+# Specific home and purchasing impact page is setted here to avoid queries on every page
 SIAE_HOME_PAGE = env.str("SIAE_HOME_PAGE", "/accueil-structure/")
+PURCHASING_IMPACT_PAGE = env.str("PURCHASING_IMPACT_PAGE", "/impact-rse/")
 
 # Increase throttling to avoid Bad request errors when saving large pages
 # https://docs.djangoproject.com/en/4.2/ref/settings/#data-upload-max-number-fields
