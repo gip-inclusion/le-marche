@@ -113,10 +113,12 @@
 .multiCarousel .multiCarousel-inner {
 	transition: 1s ease all;
 	float: left;
+	display: flex;
 }
 
 .multiCarousel .multiCarousel-inner .item {
 	float: left;
+	display: flex;
 }
 
 .multiCarousel .multiCarousel-inner .item>div {
