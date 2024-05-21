@@ -15,7 +15,8 @@ class Command(BaseCommand):
     Usage:
     python manage.py cleanup_phone_field --model users.User --field phone --dry-run
     python manage.py cleanup_phone_field --model tenders.Tender --field contact_phone --dry-run
-
+    python manage.py cleanup_phone_field --model siaes.Siae --field contact_phone --dry-run
+    python manage.py cleanup_phone_field --model siaes.SiaeGroup --field contact_phone --dry-run
     """
 
     def add_arguments(self, parser):

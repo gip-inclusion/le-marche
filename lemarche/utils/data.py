@@ -1,8 +1,6 @@
 import io
 
 import phonenumbers
-
-# from phonenumber_field.phonenumber import PhoneNumber
 from django.core.management import call_command
 from django.db import connection
 
@@ -53,8 +51,12 @@ def date_to_string(date, format="%d/%m/%Y"):
 def phone_number_is_valid(phone_number):
     """
     Ways to check if a phone number is valid:
-    - phonenumbers.is_valid_number(number_string) / returns True or False
-    - PhoneNumber.from_string(number_string).is_valid() / returns True or NumberParseException.INVALID_COUNTRY_CODE  # noqa
+    - with phonenumbers
+        import phonenumbers
+        phonenumbers.is_valid_number(number_string) / returns True or False
+    - with PhoneNumber
+        from phonenumber_field.phonenumber import PhoneNumber
+        PhoneNumber.from_string(number_string).is_valid() / returns True or NumberParseException.INVALID_COUNTRY_CODE  # noqa
 
     A number without a country code (example: +33) will be considered invalid.
     """
