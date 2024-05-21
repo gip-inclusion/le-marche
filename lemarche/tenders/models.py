@@ -25,6 +25,7 @@ from django.utils.functional import cached_property
 from django.utils.text import slugify
 from django_better_admin_arrayfield.models.fields import ArrayField
 from django_extensions.db.fields import ShortUUIDField
+from phonenumber_field.modelfields import PhoneNumberField
 from shortuuid import uuid
 
 from lemarche.perimeters.models import Perimeter
@@ -432,7 +433,7 @@ class Tender(models.Model):
     contact_email = models.EmailField(
         verbose_name="E-mail du contact", help_text="Renseignez votre adresse e-mail professionnelle", blank=True
     )
-    contact_phone = models.CharField(
+    contact_phone = PhoneNumberField(
         verbose_name="Téléphone du contact",
         help_text="Renseignez votre numéro de téléphone professionnel",
         max_length=20,
