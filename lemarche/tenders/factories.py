@@ -1,5 +1,4 @@
 import random
-import string
 from datetime import date, timedelta
 
 import factory.fuzzy
@@ -39,7 +38,7 @@ class TenderFactory(DjangoModelFactory):
     contact_first_name = factory.Sequence("first_name{0}".format)
     contact_last_name = factory.Sequence("last_name{0}".format)
     contact_email = factory.Sequence("email_contact_tender{0}@example.com".format)
-    contact_phone = factory.fuzzy.FuzzyText(length=10, chars=string.digits)
+    contact_phone = "0123456789"  # factory.fuzzy.FuzzyText(length=10, chars=string.digits)
     # amount = tender_constants.AMOUNT_RANGE_100_150
     # marche_benefits = factory.fuzzy.FuzzyChoice([key for (key, _) in constants.MARCHE_BENEFIT_CHOICES])
     status = tender_constants.STATUS_SENT
