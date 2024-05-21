@@ -30,4 +30,5 @@ def expose_settings(request):
         "FORM_PARTENAIRES": settings.FORM_PARTENAIRES,
         "MTCAPTCHA_PUBLIC_KEY": settings.MTCAPTCHA_PUBLIC_KEY,
         "SIAE_HOME_PAGE": settings.SIAE_HOME_PAGE,
+        "PURCHASING_IMPACT_PAGE": settings.PURCHASING_IMPACT_PAGE,
     }
