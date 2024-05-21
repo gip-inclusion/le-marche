@@ -9,6 +9,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.forms.models import model_to_dict
 from django.utils import timezone
+from phonenumber_field.modelfields import PhoneNumberField
 
 from lemarche.stats.models import StatsUser
 from lemarche.users import constants as user_constants
@@ -165,7 +166,7 @@ class User(AbstractUser):
     kind = models.CharField(
         verbose_name="Type", max_length=20, choices=user_constants.KIND_CHOICES_WITH_ADMIN, blank=True
     )
-    phone = models.CharField(verbose_name="Téléphone", max_length=20, blank=True)
+    phone = PhoneNumberField(verbose_name="Téléphone", max_length=20, blank=True)
 
     company = models.ForeignKey(
         "companies.Company",

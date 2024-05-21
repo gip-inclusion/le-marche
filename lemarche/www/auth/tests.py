@@ -15,7 +15,7 @@ SIAE = {
     "id_kind": 0,  # required
     "first_name": "Prenom",
     "last_name": "Nom",
-    "phone": "012345678",  # not required
+    "phone": "+33123456789",  # not required
     # "company_name": "",  # not asked here
     "email": "siae@example.com",
     "password1": "Erls92#32",
@@ -27,7 +27,7 @@ BUYER = {
     "id_kind": 1,  # required
     "first_name": "Prenom",
     "last_name": "Nom",
-    "phone": "012345678",
+    "phone": "0123456789",
     # "buyer_kind_detail": "PRIVATE_BIG_CORP",
     "company_name": "Ma boite",
     "position": "Role important",
@@ -44,7 +44,7 @@ PARTNER = {
     "id_kind": 2,  # required
     "first_name": "Prenom",
     "last_name": "Nom",
-    "phone": "012345678",  # not required
+    "phone": "01 23 45 67 89",  # not required
     # "partner_kind": "RESEAU_IAE",
     "company_name": "Ma boite",
     "email": "partner@example.com",
@@ -58,7 +58,7 @@ PARTNER_2 = {
     "id_kind": 2,  # required
     "first_name": "Prenom",
     "last_name": "Nom",
-    "phone": "012345678",  # not required
+    "phone": "+33123456789",  # not required
     # "partner_kind": "RESEAU_IAE",
     "company_name": "Ma boite",
     "email": "partner2@example.com",

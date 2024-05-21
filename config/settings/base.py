@@ -122,6 +122,7 @@ THIRD_PARTY_APPS = [
     "formtools",  # django-formtools (Multistep and preview forms)
     "huey.contrib.djhuey",  # huey (Async tasks)
     "rest_framework",  # djangorestframework
+    "phonenumber_field",  # django-phonenumber-field
 ]
 
 LOCAL_APPS = [
@@ -300,6 +301,8 @@ USE_L10N = True
 USE_TZ = True
 
 SITE_ID = 1
+
+PHONENUMBER_DEFAULT_REGION = "FR"
 
 
 # Emails
