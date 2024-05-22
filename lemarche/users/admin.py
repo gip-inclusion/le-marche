@@ -192,6 +192,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             "favorite_list_count_with_link",
             "image_url",
             "image_url_display",
+            "brevo_contact_id",
             "extra_data",
         ]
     )
@@ -255,11 +256,12 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         ("API", {"fields": ("api_key", "api_key_last_updated")}),
         (
             "Permissions",
-            {"fields": ("is_active", "is_staff", "is_superuser", "groups")},
+            {"classes": ["collapse"], "fields": ("is_active", "is_staff", "is_superuser", "groups")},
         ),
         (
             "Données C4 Cocorico",
             {
+                "classes": ["collapse"],
                 "fields": (
                     "c4_id",
                     "c4_website",
@@ -272,10 +274,16 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
                     "c4_id_card_verified",
                     "image_url",
                     "image_url_display",
-                )
+                ),
             },
         ),
-        ("Stats", {"fields": ("dashboard_last_seen_date", "tender_list_last_seen_date", "extra_data")}),
+        (
+            "Stats",
+            {
+                "classes": ["collapse"],
+                "fields": ("dashboard_last_seen_date", "tender_list_last_seen_date", "brevo_contact_id", "extra_data"),
+            },
+        ),
         (
             "Dates",
             {
@@ -287,6 +295,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             },
         ),
     )
+
     add_fieldsets = (
         (
             None,
