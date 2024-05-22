@@ -28,7 +28,11 @@ def get_api_client():
     return sib_api_v3_sdk.ApiClient(config)
 
 
-def create_contact(user, list_id: int, with_user_save=True):
+def create_contact(user, list_id: int):
+    """
+    Brevo docs
+    - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CreateContact.md
+    """
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
     new_contact = sib_api_v3_sdk.CreateContact(
@@ -40,6 +44,8 @@ def create_contact(user, list_id: int, with_user_save=True):
             "DATE_INSCRIPTION": user.created_at,
             "TYPE_ORGANISATION": user.buyer_kind_detail,
             "NOM_ENTREPRISE": user.company_name,
+            "SMS": str(user.phone),
+            # WHATSAPP, TYPE_ORGANISATION, LIEN_FICHE_COMMERCIALE, TAUX_DE_COMPLETION
         },
         ext_id=str(user.id),
         update_enabled=True,
@@ -47,7 +53,7 @@ def create_contact(user, list_id: int, with_user_save=True):
 
     try:
         api_response = api_instance.create_contact(new_contact).to_dict()
-        if with_user_save:
+        if not user.brevo_contact_id:
             user.brevo_contact_id = api_response.get("id")
             user.save()
         logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response}")
@@ -73,7 +79,7 @@ def remove_contact_from_list(user, list_id: int):
 
 def create_or_update_company(siae):
     """
-    Brevo docs:
+    Brevo docs
     - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CompaniesApi.md
     - API: https://developers.brevo.com/reference/get_companies
     """
