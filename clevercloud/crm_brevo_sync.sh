@@ -3,8 +3,8 @@
 # Sync with Brevo CRM (Siae companies, ...)
 
 # Do not run if this env var is not set:
-if [[ -z "$CRON_CRM_BREVO_SYNC_ENABLED" ]]; then
-    echo "CRON_CRM_BREVO_SYNC_ENABLED not set. Exiting..."
+if [[ -z "$CRON_CRM_BREVO_SYNC_COMPANIES_ENABLED" ]]; then
+    echo "CRON_CRM_BREVO_SYNC_COMPANIES_ENABLED not set. Exiting..."
     exit 0
 fi
 
@@ -19,4 +19,4 @@ fi
 # $APP_HOME is set by default by clever cloud.
 cd $APP_HOME
 
-django-admin crm_brevo_sync
+django-admin crm_brevo_sync_companies --recently-updated
