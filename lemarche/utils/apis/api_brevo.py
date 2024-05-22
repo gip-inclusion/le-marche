@@ -83,6 +83,11 @@ def create_or_update_company(siae):
     siae_brevo_company_body = sib_api_v3_sdk.Body(
         name=siae.name,
         attributes={
+            # default attributes
+            # name, owner, linked_contacts, revenue, number_of_employees, created_at, last_updated_at, next_activity_date, owner_assign_date, number_of_contacts, number_of_activities, industry  # noqa
+            "domain": siae.website,
+            "phone_number": siae.contact_phone_display,
+            # custom attributes
             "app_id": siae.id,
             "siae": True,
             "active": siae.is_active,
@@ -92,8 +97,6 @@ def create_or_update_company(siae):
             "address_post_code": siae.post_code,
             "address_city": siae.city,
             "contact_email": siae.contact_email,
-            "contact_phone": siae.contact_phone_display,
-            "domain": siae.website,
             "logo_url": siae.logo_url,
             "geo_range": siae.geo_range,
             "app_url": get_object_share_url(siae),
