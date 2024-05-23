@@ -13,6 +13,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 from lemarche.stats.models import StatsUser
 from lemarche.users import constants as user_constants
+from lemarche.utils.data import phone_number_display
 from lemarche.utils.emails import anonymize_email
 
 
@@ -353,6 +354,10 @@ class User(AbstractUser):
         elif self.partner_kind:
             kind_detail_display_string += f" : {self.get_partner_kind_display()}"
         return kind_detail_display_string
+
+    @property
+    def phone_display(self):
+        return phone_number_display(self.phone)
 
     @property
     def has_siae(self):

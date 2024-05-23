@@ -88,7 +88,7 @@ def add_user_to_crm(user):
         company=user.company_name,
         firstname=user.first_name,
         lastname=user.last_name,
-        phone=str(user.phone),
+        phone=user.phone_display,
         website=user.c4_website,
     )
     if result and result.id:

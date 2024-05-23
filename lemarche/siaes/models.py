@@ -24,7 +24,7 @@ from lemarche.siaes.tasks import set_siae_coords
 from lemarche.stats.models import Tracker
 from lemarche.users.models import User
 from lemarche.utils.constants import DEPARTMENTS_PRETTY, RECALCULATED_FIELD_HELP_TEXT, REGIONS_PRETTY
-from lemarche.utils.data import round_by_base
+from lemarche.utils.data import phone_number_display, round_by_base
 from lemarche.utils.fields import ChoiceArrayField
 from lemarche.utils.urls import get_object_admin_url
 from lemarche.utils.validators import validate_naf, validate_post_code, validate_siret
@@ -167,6 +167,10 @@ class SiaeGroup(models.Model):
         self.set_slug()
         self.set_last_updated_fields()
         super().save(*args, **kwargs)
+
+    @property
+    def contact_phone_display(self):
+        return phone_number_display(self.contact_phone)
 
 
 class SiaeQuerySet(models.QuerySet):
@@ -1079,6 +1083,10 @@ class Siae(models.Model):
         if self.contact_first_name and self.contact_last_name:
             return f"{self.contact_first_name.upper()[:1]}. {self.contact_last_name.upper()}"
         return ""
+
+    @property
+    def contact_phone_display(self):
+        return phone_number_display(self.contact_phone)
 
     @property
     def geo_range_pretty_display(self):

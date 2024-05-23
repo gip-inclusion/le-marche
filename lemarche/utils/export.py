@@ -69,6 +69,9 @@ def generate_siae_row(siae: Siae, siae_field_list):
         # ManyToManyFields
         elif field_name == "sectors":
             col_value = siae.sectors_full_list_string()
+        # Complex fields
+        elif field_name == "contact_phone":
+            col_value = siae.contact_phone_display
         # Custom fields
         elif field_name == "Inscrite":
             col_value = "Oui" if siae.user_count else "Non"

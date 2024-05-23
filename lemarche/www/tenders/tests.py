@@ -133,7 +133,7 @@ class TenderCreateViewTest(TestCase):
         self.assertEqual(tender.contact_first_name, self.user_buyer.first_name)
         self.assertEqual(tender.contact_last_name, self.user_buyer.last_name)
         self.assertEqual(tender.contact_email, self.user_buyer.email)
-        self.assertEqual(tender.contact_phone, self.user_buyer.phone)
+        self.assertEqual(tender.contact_phone_display, self.user_buyer.phone_display)
 
     def test_tender_wizard_form_not_created(self):
         self.client.force_login(self.user_buyer)
