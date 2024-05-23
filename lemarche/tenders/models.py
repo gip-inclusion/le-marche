@@ -41,6 +41,7 @@ from lemarche.utils.constants import (
     MARCHE_BENEFIT_CHOICES,
     RECALCULATED_FIELD_HELP_TEXT,
 )
+from lemarche.utils.data import phone_number_display
 from lemarche.utils.fields import ChoiceArrayField
 from lemarche.utils.urls import get_object_admin_url
 from lemarche.utils.validators import OptionalSchemeURLValidator
@@ -778,6 +779,10 @@ class Tender(models.Model):
     @cached_property
     def contact_full_name(self) -> str:
         return f"{self.contact_first_name} {self.contact_last_name}"
+
+    @property
+    def contact_phone_display(self):
+        return phone_number_display(self.contact_phone)
 
     def contact_company_name_display(self) -> str:
         if self.contact_company_name:
