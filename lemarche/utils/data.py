@@ -64,3 +64,15 @@ def phone_number_is_valid(phone_number):
         return phonenumbers.is_valid_number(phonenumbers.parse(phone_number))
     except phonenumbers.phonenumberutil.NumberParseException:
         return False
+
+
+def phone_number_display(phone_number_model_field):
+    """
+    https://django-phonenumber-field.readthedocs.io/en/latest/reference.html
+    phone.as_international --> +33 1 23 45 67 89
+    phone.as_national --> 01 23 45 67 89
+    phone.as_e164 --> +33123456789
+    phone.as_rfc3966 --> tel:+33-1-23-45-67-89
+    str(phone) --> +33123456789
+    """
+    return phone_number_model_field.as_e164

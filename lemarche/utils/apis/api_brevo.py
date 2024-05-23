@@ -92,7 +92,7 @@ def create_or_update_company(siae):
             "address_post_code": siae.post_code,
             "address_city": siae.city,
             "contact_email": siae.contact_email,
-            "contact_phone": siae.contact_phone,
+            "contact_phone": siae.contact_phone_display,
             "domain": siae.website,
             "logo_url": siae.logo_url,
             "geo_range": siae.geo_range,
