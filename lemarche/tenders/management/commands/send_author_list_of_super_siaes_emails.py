@@ -77,7 +77,7 @@ class Command(BaseCommand):
                                     siae.name_display,
                                     siae.get_kind_display(),
                                     siae.contact_full_name,
-                                    siae.contact_phone,
+                                    siae.contact_phone_display,
                                     siae.contact_email,
                                 ]
                             )
