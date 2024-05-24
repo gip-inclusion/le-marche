@@ -28,7 +28,12 @@ def get_api_client():
     return sib_api_v3_sdk.ApiClient(config)
 
 
-def create_contact(user, list_id: int, with_user_save=True):
+def create_contact(user, list_id: int):
+    """
+    Brevo docs
+    - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CreateContact.md
+    - API: https://developers.brevo.com/reference/createcontact
+    """
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
     new_contact = sib_api_v3_sdk.CreateContact(
@@ -40,6 +45,8 @@ def create_contact(user, list_id: int, with_user_save=True):
             "DATE_INSCRIPTION": user.created_at,
             "TYPE_ORGANISATION": user.buyer_kind_detail,
             "NOM_ENTREPRISE": user.company_name,
+            "SMS": user.phone_display,
+            # WHATSAPP, TYPE_ORGANISATION, LIEN_FICHE_COMMERCIALE, TAUX_DE_COMPLETION
         },
         ext_id=str(user.id),
         update_enabled=True,
@@ -47,7 +54,7 @@ def create_contact(user, list_id: int, with_user_save=True):
 
     try:
         api_response = api_instance.create_contact(new_contact).to_dict()
-        if with_user_save:
+        if not user.brevo_contact_id:
             user.brevo_contact_id = api_response.get("id")
             user.save()
         logger.info(f"Success Brevo->ContactsApi->create_contact: {api_response}")
@@ -73,9 +80,9 @@ def remove_contact_from_list(user, list_id: int):
 
 def create_or_update_company(siae):
     """
-    Brevo docs:
+    Brevo docs
     - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CompaniesApi.md
-    - API: https://developers.brevo.com/reference/get_companies
+    - API: https://developers.brevo.com/reference/post_companies
     """
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.CompaniesApi(api_client)
@@ -122,46 +129,16 @@ def create_or_update_company(siae):
             logger.error(f"Exception when calling Brevo->CompaniesApi->create_or_update_company (create): {e}")
 
 
-@task()
-def send_transactional_email_with_template(
-    template_id: int,
-    recipient_email: str,
-    recipient_name: str,
-    variables: dict,
-    subject=None,
-    from_email=settings.DEFAULT_FROM_EMAIL,
-    from_name=settings.DEFAULT_FROM_NAME,
-):
-    api_client = get_api_client()
-    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(api_client)
-    data = {
-        "sender": {"email": from_email, "name": from_name},
-        "to": [{"email": recipient_email, "name": recipient_name}],
-        "template_id": template_id,
-        "params": variables,
-    }
-    # if subject empty, defaults to Brevo's template subject
-    if subject:
-        data["subject"] = EMAIL_SUBJECT_PREFIX + subject
-
-    if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
-        try:
-            send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
-            response = api_instance.send_transac_email(send_smtp_email)
-            logger.info("Brevo: send transactional email with template")
-            return response
-        except ApiException as e:
-            print(f"Exception when calling SMTPApi->send_transac_email: {e}")
-    else:
-        logger.info("Brevo: email not sent (DEV or TEST environment detected)")
-
-
 def create_deal(tender, owner_email: str):
     """
     Creates a new deal in Brevo CRM from a tender and logs the result.
 
     This function configures a deal using the tender's details and the owner's email, and posts it to the Brevo CRM.
     If successful, it updates the tender with the new deal ID. If it encounters issues, it logs an error.
+
+    Brevo docs
+    - https://github.com/sendinblue/APIv3-python-library/blob/master/docs/DealsApi.md
+    - https://developers.brevo.com/reference/post_crm-deals
 
     Args:
         tender (Tender): Object with tender details like title, description, amount, and deadlines.
@@ -175,13 +152,14 @@ def create_deal(tender, owner_email: str):
     body_deal = sib_api_v3_sdk.Body3(
         name=tender.title,
         attributes={
+            # default attributes
+            # pipeline, deal_stage, closed_won_reason, closed_lost_reason, total_revenue, lost_reason
             "deal_description": tender.description,
-            # "deal_pipeline": "...",
-            # "deal_stage": "...",
             "deal_owner": owner_email,
+            "close_date": tender.deadline_date.strftime("%Y-%m-%d"),
+            # custom attributes
             "amount": AMOUNT_RANGE_CHOICE_EXACT.get(tender.amount, 0),
             "tender_admin_url": tender.get_admin_url(),
-            "close_date": tender.deadline_date.strftime("%Y-%m-%d"),
         },
     )
 
@@ -325,3 +303,37 @@ def get_all_users_from_list(
             logger.error(f"Unexpected error: {e}")
             break
     return result
+
+
+@task()
+def send_transactional_email_with_template(
+    template_id: int,
+    recipient_email: str,
+    recipient_name: str,
+    variables: dict,
+    subject=None,
+    from_email=settings.DEFAULT_FROM_EMAIL,
+    from_name=settings.DEFAULT_FROM_NAME,
+):
+    api_client = get_api_client()
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(api_client)
+    data = {
+        "sender": {"email": from_email, "name": from_name},
+        "to": [{"email": recipient_email, "name": recipient_name}],
+        "template_id": template_id,
+        "params": variables,
+    }
+    # if subject empty, defaults to Brevo's template subject
+    if subject:
+        data["subject"] = EMAIL_SUBJECT_PREFIX + subject
+
+    if settings.BITOUBI_ENV not in ENV_NOT_ALLOWED:
+        try:
+            send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
+            response = api_instance.send_transac_email(send_smtp_email)
+            logger.info("Brevo: send transactional email with template")
+            return response
+        except ApiException as e:
+            print(f"Exception when calling SMTPApi->send_transac_email: {e}")
+    else:
+        logger.info("Brevo: email not sent (DEV or TEST environment detected)")

@@ -7,11 +7,12 @@ from lemarche.utils.commands import BaseCommand
 
 class Command(BaseCommand):
     """
-    Command script to send Users to Brevo CRM and/or save their Brevo contact ID
+    Script to send Users to Brevo CRM and/or save their Brevo contact ID
 
     Usage:
+    python manage.py crm_brevo_sync_contacts --kind-users=BUYER --brevo-list-id=10 --with-existing-contacts --dry-run
     python manage.py crm_brevo_sync_contacts --kind-users=SIAE --brevo-list-id=23
-    python manage.py crm_brevo_sync_contacts --kind-users=BUYER --brevo-list-id=10 --dry-run
+    python manage.py crm_brevo_sync_contacts --kind-users=SIAE --brevo-list-id=23
     """
 
     def add_arguments(self, parser):
@@ -23,14 +24,13 @@ class Command(BaseCommand):
             required=True,
             help="set brevo list id",
         )
-        parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Dry run (no changes to the DB)")
         parser.add_argument(
             "--with-existing-contacts",
             dest="with_existing_contacts",
-            type=bool,
-            default=True,
-            help="make it with existing contacts in brevo",
+            action="store_true",
+            help="Check existing contact in brevo list",
         )
+        parser.add_argument("--dry-run", dest="dry_run", action="store_true", help="Dry run (no changes to the DB)")
 
     def handle(self, dry_run: bool, kind_users: str, brevo_list_id: int, with_existing_contacts: bool, **options):
         self.stdout.write("-" * 80)
@@ -38,11 +38,11 @@ class Command(BaseCommand):
 
         users_qs = User.objects.filter(kind=kind_users)
 
-        self.stdout.write(f"User: find {users_qs.count()} users {kind_users}.")
+        self.stdout.write(f"Sync User > Brevo: found {users_qs.count()} users {kind_users}.")
         existing_contacts = None
         if with_existing_contacts:
             existing_contacts = api_brevo.get_all_users_from_list(list_id=brevo_list_id)
-            self.stdout.write(f"Contacts in brevo list: find {len(existing_contacts)} contacts.")
+            self.stdout.write(f"Contacts in brevo list: found {len(existing_contacts)} contacts.")
 
         if not dry_run:
             for index, user in enumerate(users_qs):
@@ -64,8 +64,8 @@ class Command(BaseCommand):
                     user.save(update_fields=["brevo_contact_id"])
                 # we still don't have a contact id, add to brevo
                 else:
-                    self.stdout.write(f"Create and save contact {user.email} in Brevo.")
-                    api_brevo.create_contact(user=user, list_id=brevo_list_id, with_user_save=True)
+                    self.stdout.write(f"Create (or update) and save contact {user.email} in Brevo.")
+                    api_brevo.create_contact(user=user, list_id=brevo_list_id)
 
                 if (index % 10) == 0:  # avoid API rate-limiting
                     time.sleep(1)
