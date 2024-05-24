@@ -75,4 +75,7 @@ def phone_number_display(phone_number_model_field):
     phone.as_rfc3966 --> tel:+33-1-23-45-67-89
     str(phone) --> +33123456789
     """
-    return phone_number_model_field.as_e164
+    try:
+        return phone_number_model_field.as_e164
+    except AttributeError:
+        return phone_number_model_field
