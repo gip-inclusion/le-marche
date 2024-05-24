@@ -74,9 +74,7 @@ class Command(BaseCommand):
                             siae_same_city, data["Email 1"], options["dry_run"]
                         )
 
-                        phone_updated += self.update_phone_if_different(
-                            siae_same_city, data["Téléphone"], options["dry_run"]
-                        )
+                        phone_updated += self.update_phone(siae_same_city, data["Téléphone"], options["dry_run"])
 
                         # add other
                         for data in datas:
@@ -127,9 +125,7 @@ class Command(BaseCommand):
                             email_updated += self.update_email_if_different(
                                 siae_same_siret, data["Email 1"], options["dry_run"]
                             )
-                            phone_updated += self.update_phone_if_different(
-                                siae_same_siret, data["Téléphone"], options["dry_run"]
-                            )
+                            phone_updated += self.update_phone(siae_same_siret, data["Téléphone"], options["dry_run"])
                     except Siae.DoesNotExist:
                         added += 1
                         if options["dry_run"]:
@@ -176,15 +172,13 @@ class Command(BaseCommand):
             return 1
         return 0
 
-    def update_phone_if_different(self, siae, phone, dry_run):
-        phone_before = siae.contact_phone.replace(" ", "")
+    def update_phone(self, siae, phone, dry_run):
+        phone_before = siae.contact_phone
         phone = phone.replace(" ", "")
-        if phone_before != phone:
-            if dry_run:
-                self.stdout_info(f"Contact phone need update : {phone_before} <- {phone}")
-            else:
-                siae.contact_phone = phone
-                siae.save()
-                self.stdout_success(f"Phone updated :{phone_before} <- {phone}")
-            return 1
-        return 0
+        if dry_run:
+            self.stdout_info(f"Contact phone need update : {phone_before} <- {phone}")
+        else:
+            siae.contact_phone = phone
+            siae.save()
+            self.stdout_success(f"Phone updated :{phone_before} <- {phone}")
+        return 1

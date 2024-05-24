@@ -47,8 +47,8 @@ class Command(BaseCommand):
                         already_exists += 1
 
                         contact_email_before = siae.contact_email
-                        if email and email != contact_email_before:
-                            if siae.user_count == 0:  # update only if siae has no user
+                        if siae.user_count == 0:  # update only if siae has no user
+                            if email and email != contact_email_before:
                                 email_updated += 1
                                 if options["dry_run"]:
                                     self.stdout_info(f"Email need update :{contact_email_before} <- {email}")
@@ -57,9 +57,8 @@ class Command(BaseCommand):
                                     siae.save()
                                     self.stdout_success(f"Email updated :{contact_email_before} <- {email}")
 
-                        contact_phone_before = siae.contact_phone.replace(" ", "")
-                        if phone and phone != contact_phone_before:
-                            if siae.user_count == 0:  # update only if siae has no user
+                            contact_phone_before = siae.contact_phone
+                            if phone:
                                 phone_updated += 1
                                 if options["dry_run"]:
                                     self.stdout_info(f"Phone need update :{contact_phone_before} <- {phone}")
