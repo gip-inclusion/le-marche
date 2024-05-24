@@ -133,17 +133,24 @@ class Command(BaseCommand):
         self.stdout_warning(f"multiple_for_siret : {multiple_for_siret}")
 
         if options["dry_run"]:
-            self.stdout_success(f"Email needs update : {email_updated}")
-            self.stdout_success(f"Phone needs update : {phone_updated}")
-            self.stdout_success(f"Employees count needs update : {employees_count_updated}")
-            self.stdout_success(f"{new} new siaes needs to be added : ")
-            self.stdout_success(news)
+            self.stdout_messages_success(
+                [
+                    f"Email needs update : {email_updated}",
+                    f"Phone needs update : {phone_updated}",
+                    f"Employees count needs update : {employees_count_updated}",
+                    f"{new} new siaes needs to be added : ",
+                    news,
+                ]
+            )
         else:
-            self.stdout_success(f"{email_updated} email updated !")
-            self.stdout_success(f"{phone_updated} phone updated !")
-            self.stdout_success(f"{employees_count_updated} employees count updated !")
-
-            self.stdout_success(f"{new} new siaes has been added : ")
-            self.stdout_success(news)
+            self.stdout_messages_success(
+                [
+                    f"{email_updated} email updated !",
+                    f"{phone_updated} phone updated !",
+                    f"{employees_count_updated} employees count updated !",
+                    f"{new} new siaes has been added : ",
+                    news,
+                ]
+            )
 
         self.stdout_info("-" * 80)
