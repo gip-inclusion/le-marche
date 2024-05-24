@@ -188,9 +188,10 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
             "tender_detail_display_count_annotated_with_link",
             "tender_detail_contact_click_count_annotated_with_link",
             "tender_detail_not_interested_count_annotated_with_link",
-            "logs_display",
+            "brevo_company_id",
             "extra_data_display",
             "import_raw_object_display",
+            "logs_display",
         ]
     )
     formfield_overrides = {
@@ -324,15 +325,17 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
         (
             "Stats",
             {
+                "classes": ["collapse"],
                 "fields": (
                     "signup_date",
                     "content_filled_basic_date",
-                    "logs_display",
+                    "brevo_company_id",
                     "extra_data_display",
-                )
+                ),
             },
         ),
-        ("Si importé", {"fields": ("import_raw_object_display",)}),
+        ("Si importé", {"classes": ["collapse"], "fields": ("import_raw_object_display",)}),
+        ("Logs", {"classes": ["collapse"], "fields": ("logs_display",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     ]
 
