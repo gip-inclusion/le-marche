@@ -1,6 +1,6 @@
 #!/bin/bash -l
 
-# Sync with Brevo CRM (Siae companies, ...)
+# Sync Siae with Brevo CRM (Companies)
 
 # Do not run if this env var is not set:
 if [[ -z "$CRON_CRM_BREVO_SYNC_COMPANIES_ENABLED" ]]; then
