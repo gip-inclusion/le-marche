@@ -337,10 +337,11 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "siae_ai_count_annotated_with_link",
         "siae_transactioned_source",
         "siae_transactioned_last_updated",
-        "logs_display",
-        "extra_data_display",
         "source",
+        "brevo_deal_id",
+        "extra_data_display",
         "import_raw_object_display",
+        "logs_display",
     ]
     formfield_overrides = {
         models.TextField: {"widget": CKEditorWidget},
@@ -498,13 +499,14 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "marche_benefits",
                     "siae_list_last_seen_date",
                     "source",
-                    "logs_display",
+                    "brevo_deal_id",
                     "extra_data_display",
                 ),
             },
         ),
         ("Si importé", {"classes": ["collapse"], "fields": ("import_raw_object_display",)}),
-        ("Dates", {"classes": ["collapse"], "fields": ("created_at", "updated_at")}),
+        ("Logs", {"classes": ["collapse"], "fields": ("logs_display",)}),
+        ("Dates", {"fields": ("created_at", "updated_at")}),
     ]
 
     change_form_template = "tenders/admin_change_form.html"
