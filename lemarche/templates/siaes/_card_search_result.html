@@ -14,7 +14,7 @@
             <div class="col">
                 <h2 class="h4 mb-0">
                     {{ siae.name_display }}
-                    {% if not siae.user_count %}
+                    {% if user.is_authenticated and user.is_admin and not siae.user_count %}
                         <span class="fs-sm font-weight-normal">(bientôt inscrite sur le marché)</span>
                     {% endif %}
                 </h2>
