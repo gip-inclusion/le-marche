@@ -15,7 +15,9 @@
                 <h2 class="h4 mb-0">
                     {{ siae.name_display }}
                     {% if user.is_authenticated and user.is_admin and not siae.user_count %}
-                        <span class="fs-sm font-weight-normal">(bientôt inscrite sur le marché)</span>
+                        <span class="badge badge-base rounded-pill text-warning fs-sm">
+                            pas encore inscrite
+                        </span>
                     {% endif %}
                 </h2>
                 {% if siae.super_badge %}

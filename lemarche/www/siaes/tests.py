@@ -39,16 +39,16 @@ class SiaeSearchDisplayResultsTest(TestCase):
         url = reverse("siae:search_results")
         # anonymous
         response = self.client.get(url)
-        self.assertNotContains(response, "bientôt inscrite")
+        self.assertNotContains(response, "pas encore inscrite")
         # other users
         for user in [self.user_buyer, self.user_partner, self.user_siae]:
             self.client.force_login(user)
             response = self.client.get(url)
-            self.assertNotContains(response, "bientôt inscrite")
+            self.assertNotContains(response, "pas encore inscrite")
         # admin
         self.client.force_login(self.user_admin)
         response = self.client.get(url)
-        self.assertContains(response, "bientôt inscrite")
+        self.assertContains(response, "pas encore inscrite")
 
 
 class SiaeSearchNumQueriesTest(TestCase):
