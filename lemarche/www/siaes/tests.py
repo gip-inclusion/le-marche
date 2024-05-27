@@ -16,17 +16,39 @@ from lemarche.users.factories import UserFactory
 from lemarche.www.siaes.forms import SiaeFilterForm
 
 
-class SiaeSearchFilterTest(TestCase):
+class SiaeSearchDisplayResultsTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        SiaeFactory(is_active=True)
+        cls.user_buyer = UserFactory(kind="BUYER")
+        cls.user_partner = UserFactory(kind="PARTNER")
+        cls.user_siae = UserFactory(kind="SIAE")
+        cls.user_admin = UserFactory(kind="ADMIN")
+        cls.siae_with_user = SiaeFactory(is_active=True, user_count=0)
+        cls.siae_without_user = SiaeFactory(is_active=True, user_count=1)
         SiaeFactory(is_active=False)
 
     def test_search_should_return_live_siaes(self):
         url = reverse("siae:search_results")
         response = self.client.get(url)
         siaes = list(response.context["siaes"])
-        self.assertEqual(len(siaes), 1)
+        self.assertEqual(len(siaes), 2)
+        self.assertContains(response, self.siae_with_user.name_display)
+        self.assertContains(response, self.siae_without_user.name_display)
+
+    def test_admin_has_extra_info(self):
+        url = reverse("siae:search_results")
+        # anonymous
+        response = self.client.get(url)
+        self.assertNotContains(response, "bientôt inscrite")
+        # other users
+        for user in [self.user_buyer, self.user_partner, self.user_siae]:
+            self.client.force_login(user)
+            response = self.client.get(url)
+            self.assertNotContains(response, "bientôt inscrite")
+        # admin
+        self.client.force_login(self.user_admin)
+        response = self.client.get(url)
+        self.assertContains(response, "bientôt inscrite")
 
 
 class SiaeSearchNumQueriesTest(TestCase):
