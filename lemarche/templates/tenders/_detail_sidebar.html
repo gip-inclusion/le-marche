@@ -1,6 +1,6 @@
 <!-- admin info -->
 {% load info_card_cms %}
-{% if is_admin %}
+{% if user.is_authenticated and user.is_admin %}
     {% include "tenders/_detail_admin_extra_info.html" with tender=tender %}
 {% endif %}
 <!-- author stats info -->
