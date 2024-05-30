@@ -15,6 +15,11 @@
                     <div class="col-sm-12">
                         <h1 class="h2 mb-0">
                             {{ siae.name_display }}
+                            {% if user.is_authenticated and user.is_admin and not siae.user_count %}
+                                <span class="badge badge-base rounded-pill text-warning fs-sm">
+                                    pas encore inscrite
+                                </span>
+                            {% endif %}
                         </h1>
                         {% if siae.super_badge %}
                             <span class="badge badge-base rounded-pill super-badge-badge text-primary mt-2 font-weight-bold">
@@ -22,7 +27,7 @@
                                 Super prestataire
                             </span>
                         {% endif %}
-                        <p class="mt-3 mb-1 font-italic">(Dernière activité il y a {{ siae.latest_activity_at|timesince }})</p>
+                        <p class="mt-3 mb-2 font-italic">(Dernière activité il y a {{ siae.latest_activity_at|timesince }})</p>
                         {% if user.is_authenticated %}
                             {% if siae.in_user_favorite_list_count_annotated %}
                                 <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_remove_modal" title="Dans votre liste d'achat">
