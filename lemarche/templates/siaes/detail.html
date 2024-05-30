@@ -64,25 +64,23 @@
                 <article id="user_detail" class="profile-detail">
 
                     <!-- First row : Description -->
-                    {% if siae.description %}
-                        <div class="row">
-                            <div class="col-sm-12 img-left">
-                                <div class="il-l">
-                                    <img src="{% static_theme_images 'ico-bicro-marche-descript-act.svg' %}" alt="" height="32" />
-                                </div>
-                                <div class="il-r">
-                                    <h3 class="h2 mb-1 mt-1">Présentation du prestataire</h3>
-                                    <div>
-                                        {% if siae.description %}
-                                            {{ siae.description|linebreaks }}
-                                        {% else %}
-                                            Non renseigné
-                                        {% endif %}
-                                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 img-left">
+                            <div class="il-l">
+                                <img src="{% static_theme_images 'ico-bicro-marche-descript-act.svg' %}" alt="" height="32" />
+                            </div>
+                            <div class="il-r">
+                                <h3 class="h2 mb-1 mt-1">Présentation du prestataire</h3>
+                                <div>
+                                    {% if siae.description %}
+                                        {{ siae.description|linebreaks }}
+                                    {% else %}
+                                        Non renseigné
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
-                    {% endif %}
+                    </div>
 
                     <!-- Second & Third Row : Secteurs, Références -->
                     <hr />
