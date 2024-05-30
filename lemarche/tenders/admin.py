@@ -547,11 +547,6 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                 readonly_fields.append("slug")
         return readonly_fields
 
-    def formfield_for_manytomany(self, db_field, request, **kwargs):
-        if db_field.name == "admins":
-            kwargs["queryset"] = User.objects.filter(kind=User.KIND_ADMIN)
-        return super().formfield_for_manytomany(db_field, request, **kwargs)
-
     def save_model(self, request, obj: Tender, form, change):
         """
         Set Tender author on create
