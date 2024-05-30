@@ -382,7 +382,6 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
         user_kind = user.kind if user.is_authenticated else "anonymous"
         show_nps = self.request.GET.get("nps", None)
         # enrich context
-        context["is_admin"] = self.request.user.is_authenticated and self.request.user.is_admin
         context["parent_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
         context["tender_kind_display"] = (
             tender_constants.KIND_PROJECT_SIAE_DISPLAY
