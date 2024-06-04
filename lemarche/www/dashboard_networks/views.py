@@ -97,7 +97,7 @@ class DashboardNetworkTenderListView(NetworkMemberRequiredMixin, ListView):
         qs = qs.prefetch_many_to_many().select_foreign_keys()
         qs = qs.filter_with_siaes(self.network_siaes)
         qs = qs.with_network_siae_stats(self.network_siaes)
-        qs = qs.order_by_deadline_date()
+        qs = qs.order_by_last_published()
         return qs
 
     def get_context_data(self, **kwargs):
