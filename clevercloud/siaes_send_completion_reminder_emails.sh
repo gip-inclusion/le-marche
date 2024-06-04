@@ -9,7 +9,7 @@ if [[ -z "$CRON_SIAE_SEND_COMPLETION_REMINDER_EMAILS_ENABLED" ]]; then
 fi
 
 # About clever cloud cronjobs:
-# https://www.clever-cloud.com/doc/tools/crons/
+# https://developers.clever-cloud.com/doc/administrate/cron/
 
 if [[ "$INSTANCE_NUMBER" != "0" ]]; then
     echo "Instance number is ${INSTANCE_NUMBER}. Stop here."
