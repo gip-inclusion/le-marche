@@ -7,7 +7,7 @@ from langchain_community.embeddings.openai import OpenAIEmbeddings
 from langchain_community.vectorstores import ElasticVectorSearch
 
 from lemarche.siaes.models import Siae
-from lemarche.utils.apis import api_elasticsearch
+from lemarche.utils.apis import api_elasticsearch, api_slack
 from lemarche.utils.commands import BaseCommand
 
 
@@ -35,6 +35,7 @@ class Command(BaseCommand):
         TextField.register_lookup(Length)  # at least 10 characters
         siaes = Siae.objects.filter(description__length__gt=9).all()
 
+        created_documents = 0
         for siae in siaes:
             db.from_texts(
                 [siae.elasticsearch_index_text],
@@ -45,3 +46,11 @@ class Command(BaseCommand):
             )
             time.sleep(1)
             self.stdout_success(f"{siae.name} added !")
+            created_documents += 1
+
+        msg_success = [
+            f"----- Elasticsearch {settings.ELASTICSEARCH_INDEX_SIAES} index update -----",
+            f"Done! Deleted {deleted_documents} documents / created {created_documents} documents",
+        ]
+        self.stdout_messages_success(msg_success)
+        api_slack.send_message_to_channel("\n".join(msg_success))
