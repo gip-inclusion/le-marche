@@ -7,7 +7,7 @@ from langchain_community.embeddings.openai import OpenAIEmbeddings
 from langchain_community.vectorstores import ElasticVectorSearch
 
 from lemarche.siaes.models import Siae
-from lemarche.utils.apis.api_elasticsearch import URL_WITH_USER
+from lemarche.utils.apis import api_elasticsearch
 from lemarche.utils.commands import BaseCommand
 
 
@@ -17,10 +17,18 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout_success("put siae to elasticsearch index started..")
 
+        # Delete old Elasticsearch documents from siaes index before new indexing
+        deleted_documents = api_elasticsearch.siaes_delete_all_documents()
+        self.stdout_success(
+            f"The {deleted_documents} documents in the index {settings.ELASTICSEARCH_INDEX_SIAES} have been deleted"
+        )
+
         # Elasticsearch as a vector db
         embeddings = OpenAIEmbeddings()
         db = ElasticVectorSearch(
-            embedding=embeddings, elasticsearch_url=URL_WITH_USER, index_name=settings.ELASTICSEARCH_INDEX_SIAES
+            embedding=embeddings,
+            elasticsearch_url=api_elasticsearch.URL_WITH_USER,
+            index_name=settings.ELASTICSEARCH_INDEX_SIAES,
         )
 
         # Siaes with completed description
@@ -32,7 +40,7 @@ class Command(BaseCommand):
                 [siae.elasticsearch_index_text],
                 metadatas=[siae.elasticsearch_index_metadata],
                 embedding=embeddings,
-                elasticsearch_url=URL_WITH_USER,
+                elasticsearch_url=api_elasticsearch.URL_WITH_USER,
                 index_name=settings.ELASTICSEARCH_INDEX_SIAES,
             )
             time.sleep(1)
