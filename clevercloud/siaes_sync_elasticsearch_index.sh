@@ -1,10 +1,10 @@
 #!/bin/bash -l
 
-# Update tender count fields
+# Update Elasticsearch index for semantic search and IA Matching
 
 # Do not run if this env var is not set:
-if [[ -z "$CRON_UPDATE_TENDER_COUNT_FIELDS_ENABLED" ]]; then
-    echo "CRON_UPDATE_TENDER_COUNT_FIELDS_ENABLED not set. Exiting..."
+if [[ -z "$CRON_SIAES_SYNC_ELASTICSEARCH_INDEX_ENABLED" ]]; then
+    echo "CRON_SIAES_SYNC_ELASTICSEARCH_INDEX_ENABLED not set. Exiting..."
     exit 0
 fi
 
@@ -19,5 +19,4 @@ fi
 # $APP_HOME is set by default by clever cloud.
 cd $APP_HOME
 
-# django-admin update_tender_count_fields
-django-admin update_tender_count_fields
+django-admin put_siaes_in_elasticsearch_index
