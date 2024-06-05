@@ -340,7 +340,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         queryset, use_distinct = super().get_search_results(request, queryset, search_term)
         pattern = r"^\/admin\/autocomplete\/\?.*app_label=tenders&model_name=tender&field_name=admins$"
         if re.search(pattern, request.get_full_path()):
-            queryset = queryset.filter(kind=User.KIND_ADMIN)
+            queryset = queryset.is_admin_bizdev()
         return queryset, use_distinct
 
     def save_formset(self, request, form, formset, change):
