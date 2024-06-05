@@ -9,7 +9,7 @@ if [[ -z "$CRON_CRM_BREVO_SYNC_COMPANIES_ENABLED" ]]; then
 fi
 
 # About clever cloud cronjobs:
-# https://www.clever-cloud.com/doc/tools/crons/
+# https://developers.clever-cloud.com/doc/administrate/cron/
 
 if [[ "$INSTANCE_NUMBER" != "0" ]]; then
     echo "Instance number is ${INSTANCE_NUMBER}. Stop here."

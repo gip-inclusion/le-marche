@@ -1,4 +1,5 @@
 from django.conf import settings
+from elasticsearch import Elasticsearch
 from langchain_community.embeddings.openai import OpenAIEmbeddings
 from langchain_community.vectorstores.elasticsearch import ElasticsearchStore
 
@@ -10,6 +11,17 @@ URL = f"{settings.ELASTICSEARCH_SCHEME}://{BASE_URL}"
 URL_WITH_USER = (
     f"{settings.ELASTICSEARCH_SCHEME}://{settings.ELASTICSEARCH_USERNAME}:{settings.ELASTICSEARCH_PASSWORD}@{BASE_URL}"
 )
+
+
+def siaes_delete_all_documents():
+    """Delete all documents from the siaes index
+
+    Returns:
+        int: number of deleted documents
+    """
+    es = Elasticsearch(hosts=[URL], http_auth=(settings.ELASTICSEARCH_USERNAME, settings.ELASTICSEARCH_PASSWORD))
+    result = es.delete_by_query(index=settings.ELASTICSEARCH_INDEX_SIAES, body={"query": {"match_all": {}}})
+    return result["deleted"]
 
 
 def siaes_similarity_search(search_text: str, search_filter: list = [], siae_kinds: list = []):

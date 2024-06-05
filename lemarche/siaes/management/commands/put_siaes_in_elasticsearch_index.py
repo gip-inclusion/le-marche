@@ -7,7 +7,7 @@ from langchain_community.embeddings.openai import OpenAIEmbeddings
 from langchain_community.vectorstores import ElasticVectorSearch
 
 from lemarche.siaes.models import Siae
-from lemarche.utils.apis.api_elasticsearch import URL_WITH_USER
+from lemarche.utils.apis import api_elasticsearch, api_slack
 from lemarche.utils.commands import BaseCommand
 
 
@@ -17,23 +17,40 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout_success("put siae to elasticsearch index started..")
 
+        # Delete old Elasticsearch documents from siaes index before new indexing
+        deleted_documents = api_elasticsearch.siaes_delete_all_documents()
+        self.stdout_success(
+            f"The {deleted_documents} documents in the index {settings.ELASTICSEARCH_INDEX_SIAES} have been deleted"
+        )
+
         # Elasticsearch as a vector db
         embeddings = OpenAIEmbeddings()
         db = ElasticVectorSearch(
-            embedding=embeddings, elasticsearch_url=URL_WITH_USER, index_name=settings.ELASTICSEARCH_INDEX_SIAES
+            embedding=embeddings,
+            elasticsearch_url=api_elasticsearch.URL_WITH_USER,
+            index_name=settings.ELASTICSEARCH_INDEX_SIAES,
         )
 
         # Siaes with completed description
         TextField.register_lookup(Length)  # at least 10 characters
         siaes = Siae.objects.filter(description__length__gt=9).all()
 
+        created_documents = 0
         for siae in siaes:
             db.from_texts(
                 [siae.elasticsearch_index_text],
                 metadatas=[siae.elasticsearch_index_metadata],
                 embedding=embeddings,
-                elasticsearch_url=URL_WITH_USER,
+                elasticsearch_url=api_elasticsearch.URL_WITH_USER,
                 index_name=settings.ELASTICSEARCH_INDEX_SIAES,
             )
             time.sleep(1)
             self.stdout_success(f"{siae.name} added !")
+            created_documents += 1
+
+        msg_success = [
+            f"----- Elasticsearch {settings.ELASTICSEARCH_INDEX_SIAES} index update -----",
+            f"Done! Deleted {deleted_documents} documents / created {created_documents} documents",
+        ]
+        self.stdout_messages_success(msg_success)
+        api_slack.send_message_to_channel("\n".join(msg_success))
