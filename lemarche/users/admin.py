@@ -1,3 +1,5 @@
+import re
+
 from ckeditor.widgets import CKEditorWidget
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
@@ -327,6 +329,19 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         qs = qs.with_siae_stats()
         qs = qs.with_tender_stats()
         return qs
+
+    def get_search_results(self, request, queryset, search_term):
+        """
+        We have a usecase where we want to return only admins
+        We need to match strings like:
+        - /admin/autocomplete/?app_label=tenders&model_name=tender&field_name=admins
+        - /admin/autocomplete/?term=raph&app_label=tenders&model_name=tender&field_name=admins
+        """
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+        pattern = r"^\/admin\/autocomplete\/\?.*app_label=tenders&model_name=tender&field_name=admins$"
+        if re.search(pattern, request.get_full_path()):
+            queryset = queryset.filter(kind=User.KIND_ADMIN)
+        return queryset, use_distinct
 
     def save_formset(self, request, form, formset, change):
         """
