@@ -303,7 +303,7 @@ class TenderListView(LoginRequiredMixin, ListView):
                 qs = qs.filter(kind=kind)
 
         qs = qs.prefetch_many_to_many().select_foreign_keys()
-        qs = qs.order_by_deadline_date()
+        qs = qs.order_by_last_published()
         return qs
 
     def get(self, request, status=None, *args, **kwargs):

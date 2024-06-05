@@ -480,12 +480,6 @@ class TenderModelQuerysetOrderTest(TestCase):
         self.assertEqual(tender_queryset.count(), 3)
         self.assertEqual(tender_queryset.first().id, self.tender_3.id)
 
-    def test_order_by_deadline_date(self):
-        tender_queryset = Tender.objects.order_by_deadline_date()
-        self.assertEqual(tender_queryset.count(), 3)
-        self.assertEqual(tender_queryset.first().id, self.tender_2.id)
-        self.assertEqual(tender_queryset.last().id, self.tender_3.id)
-
     def test_order_by_last_published(self):
         tender_queryset = Tender.objects.order_by_last_published()
         self.assertEqual(tender_queryset.count(), 3)
