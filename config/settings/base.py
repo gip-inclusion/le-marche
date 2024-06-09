@@ -123,6 +123,7 @@ THIRD_PARTY_APPS = [
     "huey.contrib.djhuey",  # huey (Async tasks)
     "rest_framework",  # djangorestframework
     "phonenumber_field",  # django-phonenumber-field
+    "simple_history",  # django-simple-history
 ]
 
 LOCAL_APPS = [
@@ -185,7 +186,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Third-party Middlewares
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    "django_htmx.middleware.HtmxMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",  # django-htmx
+    "simple_history.middleware.HistoryRequestMiddleware",  # django-simple-history
     # wagtail
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     # Custom Middlewares
@@ -748,6 +750,7 @@ LOGGING = {
 # django-ckeditor
 # https://django-ckeditor.readthedocs.io/en/latest/#optional-customizing-ckeditor-editor
 # ------------------------------------------------------------------------------
+
 DEFAULT_CKEDITOR_CONFIG = {
     "toolbar": "Custom",
     "toolbar_Custom": [
@@ -783,6 +786,13 @@ CKEDITOR_CONFIGS = {
     "admin_note_text": DEFAULT_CKEDITOR_CONFIG | {"height": 100},
     "frontuser": DEFAULT_CKEDITOR_CONFIG_USER,
 }
+
+
+# Django Simple History
+# https://django-simple-history.readthedocs.io/
+# ------------------------------------------------------------------------------
+
+SIMPLE_HISTORY_HISTORY_ID_USE_UUID = True
 
 
 # Internal & external
