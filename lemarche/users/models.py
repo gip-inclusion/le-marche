@@ -223,7 +223,7 @@ class User(AbstractUser):
         verbose_name="Date de dernière mise à jour de la clé API", blank=True, null=True
     )
 
-    accept_rgpd = models.BooleanField(help_text="J'accepte les conditions d'utilisation du service", default=False)
+    accept_rgpd = models.BooleanField(default=False)
     accept_survey = models.BooleanField(
         help_text="J'accepte de répondre à une enquête deux fois par an afin de permettre de mesurer la progression des achats inclusifs en France",  # noqa
         default=False,

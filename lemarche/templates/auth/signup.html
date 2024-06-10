@@ -91,7 +91,14 @@
                             </div>
                         </fieldset>
                         <div class="form-group">
-                            {% bootstrap_field form.accept_rgpd %}
+                            <div class="form-group form-group-required">
+                                <div class="form-check">
+                                    {{ form.accept_rgpd }}
+                                    <label class="form-check-label" for="{{ form.accept_rgpd.id_for_label }}">
+                                        J'accepte les <a href="{% url 'pages:cgu' %}" target="_blank">Conditions Générales d'Utilisation</a>
+                                    </label>
+                                </div>
+                            </div>
                             {% bootstrap_field form.accept_survey form_group_class="form-group accept-survey-form-group d-none" %}
                             {% bootstrap_field form.accept_share_contact_to_external_partners form_group_class="form-group accept-survey-form-group d-none" %}
                         </div>
