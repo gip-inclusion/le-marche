@@ -15,6 +15,7 @@ from lemarche.notes.models import Note
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import (
     Siae,
+    SiaeActivity,
     SiaeClientReference,
     SiaeGroup,
     SiaeImage,
@@ -676,6 +677,24 @@ class SiaeUserRequestAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+@admin.register(SiaeActivity, site=admin_site)
+class SiaeActivityAdmin(admin.ModelAdmin):
+    list_display = ["id", "siae_with_link", "created_at"]
+    list_filter = ["sectors"]
+    search_fields = ["id", "siae__id", "siae__name"]
+    search_help_text = "Cherche sur les champs : ID, Structure (ID, Nom)"
+
+    autocomplete_fields = ["siae"]
+    readonly_fields = ["created_at", "updated_at"]
+
+    def siae_with_link(self, siae_offer):
+        url = reverse("admin:siaes_siae_change", args=[siae_offer.siae_id])
+        return format_html(f'<a href="{url}">{siae_offer.siae}</a>')
+
+    siae_with_link.short_description = Siae._meta.verbose_name
+    siae_with_link.admin_order_field = "siae"
 
 
 @admin.register(SiaeOffer, site=admin_site)
