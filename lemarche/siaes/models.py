@@ -1393,6 +1393,41 @@ class SiaeUserRequest(models.Model):
         ordering = ["-created_at"]
 
 
+class SiaeActivity(models.Model):
+    siae = models.ForeignKey(
+        "siaes.Siae", verbose_name="Structure", related_name="activities", on_delete=models.CASCADE
+    )
+
+    sectors = models.ManyToManyField(
+        "sectors.Sector", verbose_name="Secteurs d'activité", related_name="siae_activities", blank=True
+    )
+    presta_type = ChoiceArrayField(
+        verbose_name="Type de prestation",
+        base_field=models.CharField(max_length=20, choices=siae_constants.PRESTA_CHOICES),
+        blank=True,
+        null=True,
+        db_index=True,
+    )
+    geo_range = models.CharField(
+        verbose_name="Périmètre d'intervention",
+        max_length=20,
+        choices=siae_constants.GEO_RANGE_CHOICES,
+        blank=True,
+        db_index=True,
+    )
+    geo_range_custom_distance = models.IntegerField(
+        verbose_name="Distance en kilomètres (périmètre d'intervention)", blank=True, null=True
+    )
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Activité"
+        verbose_name_plural = "Activités"
+        ordering = ["-created_at"]
+
+
 class SiaeOffer(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
     description = models.TextField(verbose_name="Description", blank=True)
