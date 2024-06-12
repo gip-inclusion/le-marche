@@ -23,6 +23,7 @@ class SiaeGroupFactory(DjangoModelFactory):
 class SiaeFactory(DjangoModelFactory):
     class Meta:
         model = Siae
+        skip_postgeneration_save = True
 
     name = factory.Faker("company", locale="fr_FR")
     # slug auto-generated
