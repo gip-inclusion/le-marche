@@ -203,9 +203,3 @@ SIAE_COMPLETION_SCORE_GRID = {
     },
     # groupements 1
 }
-
-
-# https://django-simple-history.readthedocs.io/en/latest/quick_start.html#what-is-django-simple-history-doing-behind-the-scenes
-SIAE_HISTORY_TYPE_CREATE = "+"
-SIAE_HISTORY_TYPE_UPDATE = "~"
-SIAE_HISTORY_TYPE_DELETE = "-"

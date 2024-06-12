@@ -17,6 +17,7 @@ from lemarche.siaes.factories import (
 )
 from lemarche.siaes.models import Siae, SiaeGroup, SiaeLabel, SiaeUser
 from lemarche.users.factories import UserFactory
+from lemarche.utils.history import HISTORY_TYPE_CREATE, HISTORY_TYPE_UPDATE
 
 
 class SiaeGroupModelTest(TestCase):
@@ -576,7 +577,7 @@ class SiaeHistoryTest(TestCase):
     def test_history_object_on_create(self):
         self.assertEqual(self.siae_1.history.count(), 1)
         siae_1_create_history_item = self.siae_1.history.last()
-        self.assertEqual(siae_1_create_history_item.history_type, siae_constants.SIAE_HISTORY_TYPE_CREATE)
+        self.assertEqual(siae_1_create_history_item.history_type, HISTORY_TYPE_CREATE)
         self.assertEqual(siae_1_create_history_item.name, self.siae_1.name)
 
     def test_history_object_on_update(self):
@@ -584,10 +585,10 @@ class SiaeHistoryTest(TestCase):
         self.siae_2.save()
         self.assertEqual(self.siae_2.history.count(), 1 + 1)
         siae_2_create_history_item = self.siae_2.history.last()
-        self.assertEqual(siae_2_create_history_item.history_type, siae_constants.SIAE_HISTORY_TYPE_CREATE)
+        self.assertEqual(siae_2_create_history_item.history_type, HISTORY_TYPE_CREATE)
         self.assertEqual(siae_2_create_history_item.brand, "")
         siae_2_update_history_item = self.siae_2.history.first()
-        self.assertEqual(siae_2_update_history_item.history_type, siae_constants.SIAE_HISTORY_TYPE_UPDATE)
+        self.assertEqual(siae_2_update_history_item.history_type, HISTORY_TYPE_UPDATE)
         self.assertEqual(siae_2_update_history_item.brand, self.siae_2.brand)
 
 
