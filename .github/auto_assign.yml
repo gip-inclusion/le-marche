@@ -15,4 +15,4 @@ reviewers:  # gip-inclusion/admins-le-marche
 numberOfReviewers: 0
 
 # Set addAssignees to 'author' to set the PR creator as the assignee.
-# addAssignees: author  # done in another workflow
+addAssignees: author

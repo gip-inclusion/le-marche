@@ -1,4 +1,4 @@
-name: PR Auto Reviewers (team)
+name: PR Auto Reviewers (team) & Assignee (author)
 
 on:
   pull_request:
