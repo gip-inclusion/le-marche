@@ -80,6 +80,17 @@ class Migration(migrations.Migration):
                         verbose_name="Structure",
                     ),
                 ),
+                (
+                    "location",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="siae_activities_location",
+                        to="perimeters.perimeter",
+                        verbose_name="Localisation",
+                    ),
+                ),
             ],
             options={
                 "verbose_name": "Activité",

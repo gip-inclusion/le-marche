@@ -686,7 +686,7 @@ class SiaeActivityAdmin(admin.ModelAdmin):
     search_fields = ["id", "siae__id", "siae__name"]
     search_help_text = "Cherche sur les champs : ID, Structure (ID, Nom)"
 
-    autocomplete_fields = ["siae"]
+    autocomplete_fields = ["siae", "sectors", "location"]
     readonly_fields = ["created_at", "updated_at"]
 
     def siae_with_link(self, siae_offer):

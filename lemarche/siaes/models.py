@@ -1408,6 +1408,14 @@ class SiaeActivity(models.Model):
         null=True,
         db_index=True,
     )
+    location: Perimeter = models.ForeignKey(
+        to="perimeters.Perimeter",
+        verbose_name="Localisation",
+        related_name="siae_activities_location",
+        on_delete=models.DO_NOTHING,
+        blank=True,
+        null=True,
+    )
     geo_range = models.CharField(
         verbose_name="Périmètre d'intervention",
         max_length=20,
