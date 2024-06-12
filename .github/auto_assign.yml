@@ -13,3 +13,6 @@ reviewers:  # gip-inclusion/admins-le-marche
 # A number of reviewers added to the pull request
 # Set 0 to add all the reviewers (default: 0)
 numberOfReviewers: 0
+
+# Set addAssignees to 'author' to set the PR creator as the assignee.
+# addAssignees: author  # done in another workflow

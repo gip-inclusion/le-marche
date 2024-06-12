@@ -2,7 +2,7 @@ name: PR Auto Reviewers (team)
 
 on:
   pull_request:
-    types: [opened, ready_for_review]  # will not run on drafts
+    types: [opened, ready_for_review, reopened]  # will not run on drafts
 
 jobs:
   add-reviews:
