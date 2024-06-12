@@ -1,4 +1,4 @@
-name: PR Auto Author Assign
+name: PR Auto Assignees (author)
 
 on:
   pull_request_target:
