@@ -1398,8 +1398,16 @@ class SiaeActivity(models.Model):
         "siaes.Siae", verbose_name="Structure", related_name="activities", on_delete=models.CASCADE
     )
 
+    sector_group = models.ForeignKey(
+        "sectors.SectorGroup",
+        verbose_name="Secteur d'activité",
+        related_name="siae_activities",
+        on_delete=models.SET_NULL,
+        null=True,
+        # blank=True,
+    )
     sectors = models.ManyToManyField(
-        "sectors.Sector", verbose_name="Secteurs d'activité", related_name="siae_activities", blank=True
+        "sectors.Sector", verbose_name="Activités", related_name="siae_activities", blank=True
     )
     presta_type = ChoiceArrayField(
         verbose_name="Type de prestation",
@@ -1411,7 +1419,7 @@ class SiaeActivity(models.Model):
     location: Perimeter = models.ForeignKey(
         to="perimeters.Perimeter",
         verbose_name="Localisation",
-        related_name="siae_activities_location",
+        related_name="siae_activities",
         on_delete=models.DO_NOTHING,
         blank=True,
         null=True,

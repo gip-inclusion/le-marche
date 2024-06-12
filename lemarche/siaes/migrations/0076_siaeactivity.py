@@ -10,6 +10,7 @@ import lemarche.utils.fields
 class Migration(migrations.Migration):
     dependencies = [
         ("sectors", "0003_sector_sectorgroup_ordering"),
+        ("perimeters", "0005_alter_perimeter_post_codes"),
         ("siaes", "0075_historicalsiae"),
     ]
 
@@ -68,7 +69,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         related_name="siae_activities",
                         to="sectors.sector",
-                        verbose_name="Secteurs d'activité",
+                        verbose_name="Activités",
                     ),
                 ),
                 (
@@ -81,12 +82,22 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "sector_group",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="siae_activities",
+                        to="sectors.sectorgroup",
+                        verbose_name="Secteur d'activité",
+                    ),
+                ),
+                (
                     "location",
                     models.ForeignKey(
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name="siae_activities_location",
+                        related_name="siae_activities",
                         to="perimeters.perimeter",
                         verbose_name="Localisation",
                     ),
