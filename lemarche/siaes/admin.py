@@ -7,6 +7,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
+from simple_history.admin import SimpleHistoryAdmin
 
 from lemarche.conversations.models import Conversation
 from lemarche.labels.models import Label
@@ -129,7 +130,7 @@ class ConversationsInline(admin.TabularInline):
 
 
 @admin.register(Siae, site=admin_site)
-class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin):
+class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin):
     actions = [export_as_xls]
     list_display = [
         "id",

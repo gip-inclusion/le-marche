@@ -17,6 +17,7 @@ from django.utils.encoding import force_str
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 from phonenumber_field.modelfields import PhoneNumberField
+from simple_history.models import HistoricalRecords
 
 from lemarche.perimeters.models import Perimeter
 from lemarche.siaes import constants as siae_constants
@@ -876,6 +877,8 @@ class Siae(models.Model):
     )
     extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)
     import_raw_object = models.JSONField(verbose_name="Donnée JSON brute", editable=False, null=True)
+
+    history = HistoricalRecords()
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de mise à jour", auto_now=True)
