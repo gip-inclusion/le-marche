@@ -1,0 +1,18 @@
+# Set to true to add reviewers to pull requests
+addReviewers: true
+
+# Set to true to add assignees to pull requests
+addAssignees: false
+
+# A list of reviewers to be added to pull requests (GitHub user name)
+reviewers:  # gip-inclusion/admins-le-marche
+  - madjid-asa
+  - raphodn
+  - SebastienReuiller
+
+# A number of reviewers added to the pull request
+# Set 0 to add all the reviewers (default: 0)
+numberOfReviewers: 0
+
+# Set addAssignees to 'author' to set the PR creator as the assignee.
+addAssignees: author
