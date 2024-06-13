@@ -3,7 +3,9 @@
 
 from django.contrib.gis.db import models as gis_models
 from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import TrigramSimilarity
 from django.db import models
+from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 
@@ -17,6 +19,34 @@ class PerimeterQuerySet(models.QuerySet):
 
     def regions(self):
         return self.filter(kind="REGION")
+
+    def name_search(self, value):
+        return (
+            self.annotate(similarity=TrigramSimilarity("name", value))
+            .filter(similarity__gt=0.1)
+            .order_by("-similarity")
+        )
+
+    def post_code_search(self, value):
+        # city post_code
+        if len(value) == 5:
+            qs = self.filter(post_codes__contains=[value])
+            # if we wanted to allow search on insee_code as well
+            # return queryset.filter(Q(insee_code=value) | Q(post_codes__contains=[value]))
+        # department code or beginning of city post_code
+        elif len(value) == 2:
+            qs = self.filter(Q(insee_code=value) | Q(post_codes__0__startswith=value))
+        # city post_code
+        else:
+            qs = self.filter(post_codes__0__startswith=value)
+        return qs.order_by("insee_code")
+
+    def name_or_post_code_autocomplete_search(self, value):
+        if not value:
+            return self
+        if value.isnumeric():
+            return self.post_code_search(value)
+        return self.name_search(value)
 
 
 class Perimeter(models.Model):
