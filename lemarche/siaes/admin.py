@@ -11,10 +11,12 @@ from simple_history.admin import SimpleHistoryAdmin
 
 from lemarche.conversations.models import Conversation
 from lemarche.labels.models import Label
+from lemarche.networks.models import Network
 from lemarche.notes.models import Note
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import (
     Siae,
+    SiaeActivity,
     SiaeClientReference,
     SiaeGroup,
     SiaeImage,
@@ -66,6 +68,26 @@ class HasUserFilter(admin.SimpleListFilter):
         return queryset
 
 
+class SiaeActivityInline(admin.TabularInline):
+    model = SiaeActivity
+    fields = [
+        "sector_group",
+        "sectors",
+        "presta_type",
+        "location",
+        "geo_range",
+        "geo_range_custom_distance",
+        "created_at",
+    ]
+    show_change_link = True
+    can_delete = False
+    extra = 0
+    max_num = 0
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
 class SiaeLabelInline(admin.TabularInline):
     model = SiaeLabel
     fields = ["label", "label_with_link", "created_at", "updated_at"]
@@ -107,12 +129,11 @@ class SiaeUserInline(admin.TabularInline):
 
 class ConversationsInline(admin.TabularInline):
     model = Conversation
-    can_delete = False
-
     fields = ["id", "title_with_link", "nb_message_with_link", "kind", "created_at"]
-
     # autocomplete_fields = ["user"]
     readonly_fields = ["id", "title_with_link", "nb_message_with_link", "kind", "created_at"]
+    show_change_link = True
+    can_delete = False
     extra = 0
     max_num = 0
 
@@ -144,6 +165,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin)
         "tender_detail_display_count_annotated_with_link",
         "tender_detail_contact_click_count_annotated_with_link",
         "tender_detail_not_interested_count_annotated_with_link",
+        "activity_count_with_link",
         "offer_count_with_link",
         "label_count_with_link",
         "client_reference_count_with_link",
@@ -175,6 +197,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin)
             "sector_count_with_link",
             "network_count_with_link",
             "group_count_with_link",
+            "activity_count_with_link",
             "offer_count_with_link",
             "label_count_with_link",
             "client_reference_count_with_link",
@@ -253,10 +276,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin)
                     "description",
                     "sectors",
                     "sector_count_with_link",
-                    "networks",
-                    "network_count_with_link",
-                    "groups",
-                    "group_count_with_link",
+                    "activity_count_with_link",
                     "offer_count_with_link",
                     "label_count_with_link",
                     "client_reference_count_with_link",
@@ -265,6 +285,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin)
                 )
             },
         ),
+        SiaeActivityInline,
         SiaeLabelInline,
         (
             "Périmètre d'intervention",
@@ -286,6 +307,17 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin)
                     "contact_website",
                     "contact_social_website",
                     "user_count_with_link",
+                )
+            },
+        ),
+        (
+            "Réseaux & Groupements",
+            {
+                "fields": (
+                    "networks",
+                    "network_count_with_link",
+                    "groups",
+                    "group_count_with_link",
                 )
             },
         ),
@@ -488,7 +520,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin)
         url = reverse("admin:users_user_changelist") + f"?siaes__in={siae.id}"
         return format_html(f'<a href="{url}">{siae.user_count}</a>')
 
-    user_count_with_link.short_description = "Utilisateurs"
+    user_count_with_link.short_description = User._meta.verbose_name_plural
     user_count_with_link.admin_order_field = "user_count"
 
     def sector_count_with_link(self, siae):
@@ -502,21 +534,28 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin)
         url = reverse("admin:networks_network_changelist") + f"?siaes__in={siae.id}"
         return format_html(f'<a href="{url}">{siae.network_count}</a>')
 
-    network_count_with_link.short_description = "Réseaux"
+    network_count_with_link.short_description = Network._meta.verbose_name_plural
     network_count_with_link.admin_order_field = "network_count"
 
     def group_count_with_link(self, siae):
         url = reverse("admin:siaes_siaegroup_changelist") + f"?siaes__in={siae.id}"
         return format_html(f'<a href="{url}">{siae.group_count}</a>')
 
-    group_count_with_link.short_description = "Groupements"
+    group_count_with_link.short_description = SiaeGroup._meta.verbose_name_plural
     group_count_with_link.admin_order_field = "group_count"
+
+    def activity_count_with_link(self, siae):
+        url = reverse("admin:siaes_siaeactivity_changelist") + f"?siae__id__exact={siae.id}"
+        return format_html(f'<a href="{url}">{siae.offer_count}</a>')
+
+    activity_count_with_link.short_description = SiaeActivity._meta.verbose_name_plural
+    activity_count_with_link.admin_order_field = "offer_count"
 
     def offer_count_with_link(self, siae):
         url = reverse("admin:siaes_siaeoffer_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.offer_count}</a>')
 
-    offer_count_with_link.short_description = "Prestations"
+    offer_count_with_link.short_description = SiaeOffer._meta.verbose_name_plural
     offer_count_with_link.admin_order_field = "offer_count"
 
     def label_count_with_link(self, siae):
@@ -537,7 +576,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin)
         url = reverse("admin:siaes_siaeimage_changelist") + f"?siae__id__exact={siae.id}"
         return format_html(f'<a href="{url}">{siae.image_count}</a>')
 
-    image_count_with_link.short_description = "Images"
+    image_count_with_link.short_description = SiaeImage._meta.verbose_name_plural
     image_count_with_link.admin_order_field = "image_count"
 
     def coords_display(self, siae):
@@ -676,6 +715,46 @@ class SiaeUserRequestAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+@admin.register(SiaeActivity, site=admin_site)
+class SiaeActivityAdmin(admin.ModelAdmin):
+    list_display = ["id", "siae_with_link", "sector_group", "created_at"]
+    list_filter = ["sectors"]
+    search_fields = ["id", "siae__id", "siae__name"]
+    search_help_text = "Cherche sur les champs : ID, Structure (ID, Nom)"
+
+    autocomplete_fields = ["siae", "sectors", "location"]
+    readonly_fields = ["created_at", "updated_at"]
+
+    fieldsets = (
+        (
+            "Structure",
+            {
+                "fields": ("siae",),
+            },
+        ),
+        (
+            "Prestation",
+            {
+                "fields": ("sector_group", "sectors", "presta_type"),
+            },
+        ),
+        (
+            "Localisation et périmètre d'intervention",
+            {
+                "fields": ("location", "geo_range", "geo_range_custom_distance"),
+            },
+        ),
+        ("Dates", {"fields": ("created_at", "updated_at")}),
+    )
+
+    def siae_with_link(self, siae_offer):
+        url = reverse("admin:siaes_siae_change", args=[siae_offer.siae_id])
+        return format_html(f'<a href="{url}">{siae_offer.siae}</a>')
+
+    siae_with_link.short_description = Siae._meta.verbose_name
+    siae_with_link.admin_order_field = "siae"
 
 
 @admin.register(SiaeOffer, site=admin_site)

@@ -4,7 +4,15 @@ import factory.fuzzy
 from factory.django import DjangoModelFactory
 
 from lemarche.siaes import constants as siae_constants
-from lemarche.siaes.models import Siae, SiaeClientReference, SiaeGroup, SiaeImage, SiaeLabelOld, SiaeOffer
+from lemarche.siaes.models import (
+    Siae,
+    SiaeActivity,
+    SiaeClientReference,
+    SiaeGroup,
+    SiaeImage,
+    SiaeLabelOld,
+    SiaeOffer,
+)
 
 
 class SiaeGroupFactory(DjangoModelFactory):
@@ -55,6 +63,18 @@ class SiaeFactory(DjangoModelFactory):
     def networks(self, create, extracted, **kwargs):
         if extracted:
             self.networks.add(*extracted)
+
+
+class SiaeActivityFactory(DjangoModelFactory):
+    class Meta:
+        model = SiaeActivity
+
+    presta_type = factory.List([factory.fuzzy.FuzzyChoice([key for (key, value) in siae_constants.PRESTA_CHOICES])])
+
+    @factory.post_generation
+    def sectors(self, create, extracted, **kwargs):
+        if extracted:
+            self.sectors.add(*extracted)
 
 
 class SiaeOfferFactory(DjangoModelFactory):
