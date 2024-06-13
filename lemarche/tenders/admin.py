@@ -164,9 +164,9 @@ class TenderSiaeInterestedInline(admin.TabularInline):
         "transactioned",
     ]
     readonly_fields = [field.name for field in TenderSiae._meta.fields if field.name not in ["transactioned"]]
-    extra = 0
     show_change_link = True
     can_delete = False
+    extra = 0
     classes = ["collapse"]
 
     def has_add_permission(self, request, obj=None):
@@ -191,10 +191,9 @@ class TenderSiaeUserInline(admin.TabularInline):
         "user_full_name",
         "user_phone",
     ]
-
-    extra = 0
     show_change_link = True
     can_delete = False
+    extra = 0
     classes = ["collapse"]
 
     def has_add_permission(self, request, obj=None):
