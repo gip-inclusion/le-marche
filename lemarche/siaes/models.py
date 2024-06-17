@@ -1439,6 +1439,10 @@ class SiaeActivity(models.Model):
         verbose_name_plural = "Activités"
         ordering = ["-created_at"]
 
+    @property
+    def presta_type_display(self) -> str:
+        return choice_array_to_string(siae_constants.PRESTA_CHOICES, self.presta_type)
+
 
 class SiaeOffer(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
