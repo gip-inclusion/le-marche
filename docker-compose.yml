@@ -12,6 +12,11 @@ services:
       - env.docker.local
     ports:
       - "${POSTGRESQL_PORT:-5432}:5432"
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - 6379:6379
   app:
     build:
         context: .
