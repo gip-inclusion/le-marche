@@ -388,6 +388,37 @@ BREVO_TENDERS_MIN_AMOUNT_TO_SEND = env.int("BREVO_TENDERS_MIN_AMOUNT_TO_SEND", 3
 HUBSPOT_API_KEY = env.str("HUBSPOT_API_KEY", "set-it")
 HUBSPOT_IS_ACTIVATED = env.bool("HUBSPOT_IS_ACTIVATED", False)
 
+# Caching
+# https://docs.djangoproject.com/en/4.0/topics/cache/
+# ------------------------------------------------------------------------------
+
+# Redis database to use with async (must be different for each environement)
+# 1 <= REDIS_DB <= 100 (number of dbs available on CleverCloud)
+REDIS_DB = env.int("REDIS_DB", 1)
+# Complete URL (containing the instance password)
+REDIS_URL = env.str("REDIS_URL", "localhost")
+REDIS_PORT = env.int("REDIS_PORT", 6379)
+REDIS_PASSWORD = env.str("REDIS_PASSWORD", "")
+REDIS_CACHE_ENABLED = env.bool("REDIS_CACHE_ENABLED", False)
+
+if REDIS_CACHE_ENABLED:
+    # use Redis cache backend (also needed for session storage perf)
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": f"redis://:{REDIS_PASSWORD}@{REDIS_URL}:{REDIS_PORT}",
+        }
+    }
+else:
+    # Simple DB caching, we need it for Select2 (don't ask me why...)
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+            "LOCATION": "django_cache",
+        }
+    }
+
+SELECT2_CACHE_BACKEND = "default"
 
 # Security
 # ------------------------------------------------------------------------------
@@ -407,13 +438,19 @@ SECURE_HSTS_SECONDS = 30
 
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", False)
 
-SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+if REDIS_CACHE_ENABLED:
+    # Session reads use the cache, or the database if the data has been evicted from the cache.
+    # https://docs.djangoproject.com/en/5.0/topics/http/sessions/#using-database-backed-sessions
+    SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+
 
 SESSION_COOKIE_HTTPONLY = True
 
 SESSION_COOKIE_SECURE = True
 
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = env.int("SESSION_COOKIE_AGE", 604800)  # one week
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 X_FRAME_OPTIONS = "DENY"
 
@@ -650,17 +687,6 @@ MESSAGE_TAGS = {
 # Async Configuration Options: Huey
 # Workers are run in prod via `CC_WORKER_COMMAND = django-admin run_huey`.
 # ------------------------------------------------------------------------------
-
-# Redis server URL:
-# Provided by the Redis addon (itou-redis)
-# Redis database to use with async (must be different for each environement)
-# 1 <= REDIS_DB <= 100 (number of dbs available on CleverCloud)
-REDIS_DB = env.int("REDIS_DB", 1)
-# Complete URL (containing the instance password)
-REDIS_URL = env.str("REDIS_URL", "localhost")
-REDIS_PORT = env.int("REDIS_PORT", 6379)
-REDIS_PASSWORD = env.str("REDIS_PASSWORD", "")
-
 CONNECTION_MODES_HUEY = {
     # immediate mode
     "direct": {"immediate": True},
@@ -699,21 +725,6 @@ if CONNECTION_MODE_TASKS in ("sqlite", "redis") and CC_WORKER_ENV:
         "connection": CONF_HUEY.get("connection"),
         "consumer": {"workers": 2, "worker_type": "thread"},
     }
-
-
-# Caching
-# https://docs.djangoproject.com/en/4.0/topics/cache/
-# ------------------------------------------------------------------------------
-
-# Simple DB caching, we need it for Select2 (don't ask me why...)
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-        "LOCATION": "django_cache",
-    }
-}
-
-SELECT2_CACHE_BACKEND = "default"
 
 
 # Logging
