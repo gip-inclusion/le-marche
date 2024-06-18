@@ -399,8 +399,9 @@ REDIS_DB = env.int("REDIS_DB", 1)
 REDIS_URL = env.str("REDIS_URL", "localhost")
 REDIS_PORT = env.int("REDIS_PORT", 6379)
 REDIS_PASSWORD = env.str("REDIS_PASSWORD", "")
+REDIS_CACHE_ENABLED = env.bool("REDIS_CACHE_ENABLED", False)
 
-if env.bool("REDIS_CACHE_ENABLED", False):
+if REDIS_CACHE_ENABLED:
     # use Redis cache backend (also needed for session storage perf)
     CACHES = {
         "default": {
@@ -437,7 +438,7 @@ SECURE_HSTS_SECONDS = 30
 
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", False)
 
-if env.bool("REDIS_CACHE_ENABLED", False):
+if REDIS_CACHE_ENABLED:
     # Session reads use the cache, or the database if the data has been evicted from the cache.
     # https://docs.djangoproject.com/en/5.0/topics/http/sessions/#using-database-backed-sessions
     SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
