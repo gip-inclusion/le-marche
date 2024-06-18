@@ -88,3 +88,6 @@ class PerimeterQuerysetTest(TestCase):
         self.assertEqual(qs.first(), self.perimeter_city)
         qs = Perimeter.objects.post_code_search("38")
         self.assertEqual(qs.count(), 2)
+        qs = Perimeter.objects.post_code_search("38185", include_insee_code=True)
+        self.assertEqual(qs.count(), 1)
+        self.assertEqual(qs.first(), self.perimeter_city)
