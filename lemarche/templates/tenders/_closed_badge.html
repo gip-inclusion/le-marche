@@ -1,11 +1,11 @@
 <p class="mb-1">
     {% if tender.deadline_date_is_outdated_annotated %}
-        <span class="badge badge-xs badge-base badge-pill badge-{{ tender.kind|lower }}">
+        <span class="badge badge-xs badge-pill badge-nuance-08 font-weight-bold">
             {{ tender_kind_display|default:tender.get_kind_display }} clôturé{% if tender.kind == "QUOTE" %}e{% endif %}
             le {{ tender.deadline_date|default:"" }}
         </span>
     {% else %}
-        <span class="badge badge-base badge-pill mr-1 badge-{{ tender.kind|lower }}">
+        <span class="badge badge-xs badge-pill mr-1 badge-{{ tender.kind|lower }} font-weight-bold">
             {% if tender.kind == "PROJ" %}
                 {{ title_kind_sourcing_siae|default:tender.get_kind_display }}
             {% else %}
