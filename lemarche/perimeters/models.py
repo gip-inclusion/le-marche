@@ -27,12 +27,13 @@ class PerimeterQuerySet(models.QuerySet):
             .order_by("-similarity")
         )
 
-    def post_code_search(self, value):
+    def post_code_search(self, value, include_insee_code=False):
         # city post_code
         if len(value) == 5:
-            qs = self.filter(post_codes__contains=[value])
-            # if we wanted to allow search on insee_code as well
-            # return queryset.filter(Q(insee_code=value) | Q(post_codes__contains=[value]))
+            if include_insee_code:
+                qs = self.filter(Q(insee_code=value) | Q(post_codes__contains=[value]))
+            else:
+                qs = self.filter(post_codes__contains=[value])
         # department code or beginning of city post_code
         elif len(value) == 2:
             qs = self.filter(Q(insee_code=value) | Q(post_codes__0__startswith=value))
