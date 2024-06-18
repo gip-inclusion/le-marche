@@ -13,7 +13,6 @@ from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.encoding import force_str
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 from phonenumber_field.modelfields import PhoneNumberField
@@ -25,7 +24,7 @@ from lemarche.siaes.tasks import set_siae_coords
 from lemarche.stats.models import Tracker
 from lemarche.users.models import User
 from lemarche.utils.constants import DEPARTMENTS_PRETTY, RECALCULATED_FIELD_HELP_TEXT, REGIONS_PRETTY
-from lemarche.utils.data import phone_number_display, round_by_base
+from lemarche.utils.data import choice_array_to_string, phone_number_display, round_by_base
 from lemarche.utils.fields import ChoiceArrayField
 from lemarche.utils.urls import get_object_admin_url
 from lemarche.utils.validators import validate_naf, validate_post_code, validate_siret
@@ -1014,10 +1013,7 @@ class Siae(models.Model):
         if self.kind == siae_constants.KIND_AI:
             return "Mise à disposition du personnel"
         if self.presta_type:
-            presta_type_values = [
-                force_str(dict(siae_constants.PRESTA_CHOICES).get(key, "")) for key in self.presta_type
-            ]
-            return ", ".join(filter(None, presta_type_values))
+            return choice_array_to_string(siae_constants.PRESTA_CHOICES, self.presta_type)
         return ""
 
     @property

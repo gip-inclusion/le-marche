@@ -1,8 +1,8 @@
 from django import template
-from django.utils.encoding import force_str
 from django.utils.html import mark_safe
 
 from lemarche.siaes import constants as siae_constants
+from lemarche.utils.data import choice_array_to_string
 
 
 register = template.Library()
@@ -22,8 +22,7 @@ def array_choices_display(obj, field, output_format="string"):
     except:  # noqa
         keys = getattr(obj, field, [])
 
-    values = [force_str(choices_dict.get(key, "")) for key in (keys or [])]
-    values = filter(None, values)
+    values = choice_array_to_string(choices_dict, keys)
 
     # output format
     if output_format == "list":
