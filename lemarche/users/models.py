@@ -161,7 +161,11 @@ class User(AbstractUser):
     KIND_ADMIN = user_constants.KIND_ADMIN
 
     username = None
-    email = models.EmailField(verbose_name="Adresse e-mail", unique=True)
+    email = models.EmailField(
+        verbose_name="Adresse e-mail",
+        unique=True,
+        error_messages={"unique": "Cette adresse e-mail est déjà utilisée."},
+    )
     first_name = models.CharField(verbose_name="Prénom", max_length=150)
     last_name = models.CharField(verbose_name="Nom", max_length=150)
     kind = models.CharField(
@@ -286,6 +290,7 @@ class User(AbstractUser):
             models.UniqueConstraint(
                 Lower("email"),
                 name="user_email_ci_uniqueness",
+                violation_error_message="",  # Mute this message, it duplicates the unique constraint on the field
             ),
         ]
 
