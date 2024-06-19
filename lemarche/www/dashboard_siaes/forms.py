@@ -7,6 +7,7 @@ from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import (
     Siae,
+    SiaeActivity,
     SiaeClientReference,
     SiaeGroup,
     SiaeImage,
@@ -230,3 +231,22 @@ class SiaeUserRequestForm(forms.ModelForm):
     class Meta:
         model = SiaeUserRequest
         fields = []
+
+
+class SiaeActivitiesCreateForm(forms.ModelForm):
+    presta_type = forms.MultipleChoiceField(
+        label=Siae._meta.get_field("presta_type").verbose_name,
+        choices=siae_constants.PRESTA_CHOICES,
+        required=True,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    geo_range = forms.ChoiceField(
+        label=Siae._meta.get_field("geo_range").verbose_name,
+        choices=siae_constants.GEO_RANGE_CHOICES,
+        required=True,
+        widget=forms.RadioSelect,
+    )
+
+    class Meta:
+        model = SiaeActivity
+        fields = ["sector_group", "presta_type", "geo_range", "geo_range_custom_distance"]

@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
-from django.views.generic import DeleteView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
 from lemarche.siaes.models import Siae, SiaeActivity, SiaeUser, SiaeUserRequest
@@ -13,6 +13,7 @@ from lemarche.utils.apis import api_brevo
 from lemarche.utils.mixins import SiaeMemberRequiredMixin, SiaeUserAndNotMemberRequiredMixin, SiaeUserRequiredMixin
 from lemarche.utils.s3 import S3Upload
 from lemarche.www.dashboard_siaes.forms import (
+    SiaeActivitiesCreateForm,
     SiaeClientReferenceFormSet,
     SiaeEditContactForm,
     SiaeEditInfoForm,
@@ -143,6 +144,40 @@ class SiaeEditActivitiesDeleteView(SiaeMemberRequiredMixin, SuccessMessageMixin,
 
     def get_success_message(self, cleaned_data):
         return mark_safe(f"Votre activité <strong>{self.object.sector_group}</strong> a été supprimée avec succès.")
+
+
+class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, CreateView):
+    template_name = "dashboard/siae_edit_activities_create.html"
+    form_class = SiaeActivitiesCreateForm
+    # success_url = reverse_lazy("dashboard_siaes:siae_edit_activities")
+    # success_message = "Votre activité a été crée avec succès."
+
+    def get(self, request, *args, **kwargs):
+        self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
+        return super().get(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        siae_activity = form.save(commit=False)
+        siae_activity.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
+        siae_activity.save()
+
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            self.get_success_message(form.cleaned_data),
+        )
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["siae"] = self.siae
+        return context
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard_siaes:siae_edit_activities", args=[self.kwargs.get("slug")])
+
+    def get_success_message(self, cleaned_data):
+        return mark_safe(f"Votre activité <strong>{cleaned_data['sector_group']}</strong> a été crée avec succès.")
 
 
 class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
