@@ -122,15 +122,10 @@ class SiaeEditSearchView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateVie
         return reverse_lazy("dashboard_siaes:siae_edit_search", args=[self.kwargs.get("slug")])
 
 
-class SiaeEditSearch2View(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
-    form_class = SiaeEditSearchForm
-    template_name = "dashboard/siae_edit_search_2.html"
+class SiaeEditActivitiesView(SiaeMemberRequiredMixin, DetailView):
+    template_name = "dashboard/siae_edit_activities.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
-    success_message = "Vos modifications ont bien été prises en compte."
-
-    def get_success_url(self):
-        return reverse_lazy("dashboard_siaes:siae_edit_search_2", args=[self.kwargs.get("slug")])
 
 
 class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
