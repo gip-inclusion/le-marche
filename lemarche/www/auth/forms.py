@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, UserCreationForm
+from django.utils import timezone
 
 from lemarche.sectors.models import Sector
 from lemarche.users import constants as user_constants
@@ -62,17 +63,16 @@ class SignupForm(UserCreationForm):
         required=False,
     )
 
-    # help_text="Nous enverrons un e-mail de confirmation à cette adresse avant de valider le compte.")
-    nb_of_inclusive_provider_2022 = forms.ChoiceField(
+    nb_of_inclusive_provider_last_year = forms.ChoiceField(
         # flake8: noqa E501
-        label="En 2022, avec combien de prestataires inclusifs relevant du secteur de l'Insertion avez-vous déjà travaillé ?",
+        label=f"En {timezone.now().year-1}, avec combien de prestataires inclusifs relevant du secteur de l'Insertion avez-vous déjà travaillé ?",
         choices=HOW_MANY_CHOICES,
         widget=forms.RadioSelect(),
         required=False,
     )
-    nb_of_handicap_provider_2022 = forms.ChoiceField(
+    nb_of_handicap_provider_last_year = forms.ChoiceField(
         # flake8: noqa E501
-        label="En 2022, avec combien de prestataires inclusifs relevant du secteur du Handicap avez-vous déjà travaillé ?",
+        label=f"En {timezone.now().year-1}, avec combien de prestataires inclusifs relevant du secteur du Handicap avez-vous déjà travaillé ?",
         choices=HOW_MANY_CHOICES,
         widget=forms.RadioSelect(),
         required=False,
@@ -124,11 +124,15 @@ class SignupForm(UserCreationForm):
     def save(self, commit=True):
         instance = super(SignupForm, self).save(commit=False)
         extra_data = {}
-        if self.cleaned_data.get("nb_of_inclusive_provider_2022"):
-            extra_data["nb_of_inclusive_provider_2022"] = self.cleaned_data.get("nb_of_inclusive_provider_2022")
+        if self.cleaned_data.get("nb_of_inclusive_provider_last_year"):
+            extra_data["nb_of_inclusive_provider_last_year"] = self.cleaned_data.get(
+                "nb_of_inclusive_provider_last_year"
+            )
 
-        if self.cleaned_data.get("nb_of_handicap_provider_2022"):
-            extra_data["nb_of_handicap_provider_2022"] = self.cleaned_data.get("nb_of_handicap_provider_2022")
+        if self.cleaned_data.get("nb_of_handicap_provider_last_year"):
+            extra_data["nb_of_handicap_provider_last_year"] = self.cleaned_data.get(
+                "nb_of_handicap_provider_last_year"
+            )
 
         instance.extra_data = extra_data
 
