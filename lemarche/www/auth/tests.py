@@ -184,6 +184,18 @@ class SignupFormTest(StaticLiveServerTestCase):
         # should not submit form (last_name field is required)
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
+    def test_siae_submits_signup_form_email_already_exists(self):
+        UserFactory(email=SIAE["email"], kind=User.KIND_SIAE)
+
+        user_profile = SIAE.copy()
+        self._complete_form(user_profile=user_profile, with_submit=True)
+
+        # should not submit form (email field already used)
+        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+
+        alerts = self.driver.find_element(By.CSS_SELECTOR, "form")
+        self.assertTrue("Cette adresse e-mail est déjà utilisée." in alerts.text)
+
     def test_buyer_submits_signup_form_success(self):
         self._complete_form(user_profile=BUYER, with_submit=False)
 
