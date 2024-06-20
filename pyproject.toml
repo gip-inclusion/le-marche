@@ -46,7 +46,7 @@ shortuuid = "^1.0.13"
 sib-api-v3-sdk = "^7.6.0"
 tiktoken = "^0.5.2"
 wagtail = "^5.1.3"
-whitenoise = "^6.6.0"
+whitenoise = "^6.7.0"
 xlwt = "^1.3.0"
 django-phonenumber-field = {extras = ["phonenumbers"], version = "^7.3.0"}
 django-simple-history = "^3.7.0"
