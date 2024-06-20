@@ -44,6 +44,10 @@
                                 <fieldset>
                                     {% bootstrap_field form.sector_group %}
                                 </fieldset>
+                                <fieldset>
+                                    <legend class="h5">{{ form.sectors.label }} <strong class="fs-base">*</strong></legend>
+                                    {% bootstrap_field form.sectors show_label=False form_check_class="form-check checkbox-title" %}
+                                </fieldset>
                             </div>
                         </div>
                         <div class="col-12 col-lg-4">
@@ -116,4 +120,39 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+// dynamic sector display based on sector group selection
+document.addEventListener('DOMContentLoaded', function() {
+    let sectorGroupSelect = document.getElementById('id_sector_group');
+    let sectorGroupSelectOptions = sectorGroupSelect.children;
+    let sectorRadios = document.querySelectorAll('#id_sectors input[type="checkbox"][name="sectors"]');
+    let sectorGroupLabels = Array.from(document.querySelectorAll('#id_sectors label[class="form-check-label"]')).filter(label => !label.htmlFor);
+    let sectorLabels = Array.from(document.querySelectorAll('#id_sectors label[class="form-check-label"]')).filter(label => label.htmlFor);
+    // hide all sector group titles
+    sectorGroupLabels.forEach(label => label.style.display = 'none');
+    // init: hide all sector titles
+    sectorLabels.forEach(label => label.style.display = 'none');
+    // on sector group change
+    sectorGroupSelect.addEventListener('change', (event) => {
+        // unselect all sectors + hide them
+        sectorRadios.forEach(checkbox => checkbox.checked = false);
+        sectorLabels.forEach(label => label.style.display = 'none');
+        // show only sectors of selected sector group
+        if (event.target.value) {
+            let selectedSectorGroupName = Array.from(sectorGroupSelectOptions).filter(option => option.value === event.target.value)[0].innerText;
+            let selectedSectorGroupLabel = sectorGroupLabels.find(label => label.innerText === selectedSectorGroupName);
+            Array.from(selectedSectorGroupLabel.parentNode.children).forEach(child => {
+                if (child.firstElementChild && child.firstElementChild.htmlFor) {
+                    // child.firstElementChild.style.display = 'block';
+                    let selectedSectorGroupLabelSectorLabel = sectorLabels.find(label => label.htmlFor === child.firstElementChild.htmlFor);
+                    selectedSectorGroupLabelSectorLabel.style.display = 'block';
+                }
+            });
+        }
+    })
+});
+</script>
 {% endblock %}

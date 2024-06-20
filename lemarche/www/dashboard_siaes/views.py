@@ -160,6 +160,7 @@ class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, CreateView):
         siae_activity = form.save(commit=False)
         siae_activity.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
         siae_activity.save()
+        form.save_m2m()
 
         messages.add_message(
             self.request,

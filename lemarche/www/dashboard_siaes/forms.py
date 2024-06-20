@@ -234,6 +234,13 @@ class SiaeUserRequestForm(forms.ModelForm):
 
 
 class SiaeActivitiesCreateForm(forms.ModelForm):
+    sectors = GroupedModelMultipleChoiceField(
+        label="Activités",
+        queryset=Sector.objects.form_filter_queryset(),
+        choices_groupby="group",
+        required=True,
+        widget=forms.CheckboxSelectMultiple,
+    )
     presta_type = forms.MultipleChoiceField(
         label=Siae._meta.get_field("presta_type").verbose_name,
         choices=siae_constants.PRESTA_CHOICES,
@@ -249,4 +256,4 @@ class SiaeActivitiesCreateForm(forms.ModelForm):
 
     class Meta:
         model = SiaeActivity
-        fields = ["sector_group", "presta_type", "geo_range", "geo_range_custom_distance"]
+        fields = ["sector_group", "sectors", "presta_type", "geo_range", "geo_range_custom_distance"]  # location
