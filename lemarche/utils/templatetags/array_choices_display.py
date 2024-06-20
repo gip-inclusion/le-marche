@@ -2,7 +2,7 @@ from django import template
 from django.utils.html import mark_safe
 
 from lemarche.siaes import constants as siae_constants
-from lemarche.utils.data import choice_array_to_string
+from lemarche.utils.data import array_to_string, choice_array_to_values
 
 
 register = template.Library()
@@ -22,7 +22,9 @@ def array_choices_display(obj, field, output_format="string"):
     except:  # noqa
         keys = getattr(obj, field, [])
 
-    values = choice_array_to_string(choices_dict, keys)
+    print(obj, field, keys)
+    values = choice_array_to_values(choices_dict, keys, output_format="list")
+    print(values, len(values))
 
     # output format
     if output_format == "list":
@@ -30,6 +32,6 @@ def array_choices_display(obj, field, output_format="string"):
     elif output_format == "li":
         return mark_safe("".join([f"<li>{elem_name}</li>" for elem_name in values]))
     elif output_format == "br":
-        return mark_safe("<br />".join(values))
+        return mark_safe(array_to_string(values, seperator="<br />"))
     else:  # "string"
-        return ", ".join(values)
+        return array_to_string(values)
