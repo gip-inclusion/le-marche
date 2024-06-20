@@ -22,6 +22,9 @@
         </div>
 
         <div class="col-12 col-lg-4 text-right">
+            <a href="{% url 'dashboard_siaes:siae_edit_activities_edit' activity.siae.slug activity.id %}" id="siae-activity-edit-btn" class="btn" title="Modifier l'activité">
+                <i class="ri-pencil-fill ri-xl"></i>
+            </a>
             <a href="#" id="siae-activity-delete-modal-btn" class="btn" data-toggle="modal" data-target="#siae_activity_delete_modal" data-siae-id="{{ activity.siae.id }}" data-siae-slug="{{ activity.siae.slug }}" data-siae-activity-id="{{ activity.id }}" data-siae-activity-name-display="{{ activity.sector_group }}" title="Supprimer l'activité">
                 <i class="ri-delete-bin-line ri-xl"></i>
             </a>
