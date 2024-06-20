@@ -171,6 +171,7 @@ class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["page_title"] = "Ajouter une activité"
         context["siae"] = self.siae
         return context
 
@@ -191,13 +192,15 @@ class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, SuccessMessageMixin, U
         self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
         return super().get(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["siae"] = self.siae
-        return context
-
     def get_object(self):
         return get_object_or_404(SiaeActivity, siae__slug=self.kwargs.get("slug"), id=self.kwargs.get("activity_id"))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Modifier une activité"
+        context["siae"] = self.siae
+        context["activity"] = self.object
+        return context
 
     def get_success_url(self):
         return reverse_lazy("dashboard_siaes:siae_edit_activities", args=[self.kwargs.get("slug")])
