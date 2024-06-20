@@ -88,7 +88,9 @@
                         <div class="col-12 col-lg-8">
                             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                                 <fieldset>
-                                    {% bootstrap_field form.geo_range %}
+                                    <legend class="h4">{{ form.geo_range.label }} <strong class="fs-base">*</strong></legend>
+                                    {% bootstrap_field form.geo_range show_label=False %}
+                                    {{ form.geo_range_custom_distance }}
                                 </fieldset>
                             </div>
                         </div>
@@ -123,6 +125,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<script type="text/javascript" src="{% static 'js/siae_geo_range_field.js' %}"></script>
 <script type="text/javascript">
 // dynamic sector display based on sector group selection
 document.addEventListener('DOMContentLoaded', function() {
