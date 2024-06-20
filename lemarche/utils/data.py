@@ -34,14 +34,20 @@ def get_choice(choices, key):
     return None
 
 
-def choice_array_to_string(choices, array=[]):
+def array_to_string(array=[], seperator=", "):
+    return seperator.join(filter(None, array))
+
+
+def choice_array_to_values(choices, array=[], output_format="string"):
     """
     choices = [(1, 'One'), (2, 'Two'), (3, 'Three')]
     array = [1, 3]
-    choice_array_to_string(choices, array) --> 'One, Three'
+    choice_array_to_values(choices, array) --> 'One, Three'
     """
     choice_array_values = [force_str(dict(choices).get(key, "")) for key in array]
-    return ", ".join(filter(None, choice_array_values))
+    if output_format == "list":
+        return choice_array_values
+    return array_to_string(choice_array_values)
 
 
 def round_by_base(x, base=5):

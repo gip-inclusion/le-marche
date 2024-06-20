@@ -24,7 +24,7 @@ from lemarche.siaes.tasks import set_siae_coords
 from lemarche.stats.models import Tracker
 from lemarche.users.models import User
 from lemarche.utils.constants import DEPARTMENTS_PRETTY, RECALCULATED_FIELD_HELP_TEXT, REGIONS_PRETTY
-from lemarche.utils.data import choice_array_to_string, phone_number_display, round_by_base
+from lemarche.utils.data import choice_array_to_values, phone_number_display, round_by_base
 from lemarche.utils.fields import ChoiceArrayField
 from lemarche.utils.urls import get_object_admin_url
 from lemarche.utils.validators import validate_naf, validate_post_code, validate_siret
@@ -1013,7 +1013,7 @@ class Siae(models.Model):
         if self.kind == siae_constants.KIND_AI:
             return "Mise à disposition du personnel"
         if self.presta_type:
-            return choice_array_to_string(siae_constants.PRESTA_CHOICES, self.presta_type)
+            return choice_array_to_values(siae_constants.PRESTA_CHOICES, self.presta_type)
         return ""
 
     @property
