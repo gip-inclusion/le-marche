@@ -21,7 +21,7 @@ django-extensions = "^3.2.3"
 django-fieldsets-with-inlines = { git = "https://github.com/raphodn/django-fieldsets-with-inlines.git", branch = "master" }
 django-filter = "^21.1"
 django-formtools = "^2.5.1"
-django-htmx = "^1.17.3"
+django-htmx = "^1.18.0"
 django-libsass = "^0.9"
 django-select2 = "^7.11.1"
 django-sesame = "^3.2.2"
