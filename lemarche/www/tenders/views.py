@@ -196,25 +196,21 @@ class TenderCreateMultiStepView(SessionWizardView):
             sectors = None
             for step, model_form in form_dict.items():
                 if model_form.has_changed():
-                    if step != self.STEP_SURVEY:
-                        for attribute in model_form.changed_data:
-                            match attribute:
-                                case "sectors":
-                                    sectors = tender_dict.get("sectors", None)
-                                    self.instance.sectors.set(sectors)
-                                case "location":
-                                    location = tender_dict.get("location")
-                                    self.instance.location = location
-                                    self.instance.perimeters.set([location])
-                                case "questions_list":
-                                    update_or_create_questions_list(
-                                        tender=self.instance, questions_list=tender_dict.get("questions_list")
-                                    )
-                                case _:
-                                    setattr(self.instance, attribute, tender_dict.get(attribute))
-                    elif step == self.STEP_SURVEY:
-                        setattr(self.instance, "scale_marche_useless", tender_dict.get("scale_marche_useless"))
-                        self.instance.extra_data.update(tender_dict.get("extra_data"))
+                    for attribute in model_form.changed_data:
+                        match attribute:
+                            case "sectors":
+                                sectors = tender_dict.get("sectors", None)
+                                self.instance.sectors.set(sectors)
+                            case "location":
+                                location = tender_dict.get("location")
+                                self.instance.location = location
+                                self.instance.perimeters.set([location])
+                            case "questions_list":
+                                update_or_create_questions_list(
+                                    tender=self.instance, questions_list=tender_dict.get("questions_list")
+                                )
+                            case _:
+                                setattr(self.instance, attribute, tender_dict.get(attribute))
             self.instance.save()
         else:
             tender_dict |= {"status": tender_status, "published_at": tender_published_at}

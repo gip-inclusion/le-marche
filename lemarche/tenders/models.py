@@ -531,6 +531,13 @@ class Tender(models.Model):
         choices=tender_constants.SURVEY_SCALE_QUESTION_CHOICES,
         default=tender_constants.SURVEY_SCALE_QUESTION_0,
     )
+    le_marche_doesnt_exist_how_to_find_siae = models.CharField(
+        verbose_name="Sans le marché de l'inclusion",
+        help_text="Comment auriez-vous fait pour consulter des prestataires inclusifs ?",
+        max_length=15,
+        choices=tender_constants.SURVEY_DOESNT_EXIST_QUESTION_CHOICES,
+        default=tender_constants.SURVEY_DOESNT_EXIST_QUESTION_DONT_KNOW,
+    )
 
     marche_benefits = ChoiceArrayField(
         verbose_name="Bénéfices du marché de l'inclusion",

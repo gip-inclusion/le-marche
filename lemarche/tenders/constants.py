@@ -180,6 +180,40 @@ SURVEY_SCALE_QUESTION_CHOICES = (
     (SURVEY_SCALE_QUESTION_3, "Oui"),
 )
 
+SURVEY_DOESNT_EXIST_QUESTION_DONT_KNOW = "i-dont-know"
+SURVEY_DOESNT_EXIST_QUESTION_INTERNET_SEARCH = "internet-search"
+SURVEY_DOESNT_EXIST_QUESTION_NETWORKS = "networks"
+SURVEY_DOESNT_EXIST_QUESTION_DIRECTORY = "directory"
+SURVEY_DOESNT_EXIST_QUESTION_RECOMMENDATIONS = "recommendations"
+SURVEY_DOESNT_EXIST_QUESTION_KNOWN_PROVIDERS = "known-providers"
+SURVEY_DOESNT_EXIST_QUESTION_PUBLIC_TENDERS = "public-tenders"
+SURVEY_DOESNT_EXIST_QUESTION_FACILITATORS = "facilitators"
+SURVEY_DOESNT_EXIST_QUESTION_LOCAL_SOURCING = "local-sourcing"
+
+SURVEY_DOESNT_EXIST_QUESTION_CHOICES = (
+    (SURVEY_DOESNT_EXIST_QUESTION_DONT_KNOW, "Je ne sais pas"),
+    (
+        SURVEY_DOESNT_EXIST_QUESTION_INTERNET_SEARCH,
+        "Recherche sur Internet (Google, page jaune, recherche sur le web)",
+    ),
+    (SURVEY_DOESNT_EXIST_QUESTION_NETWORKS, "Réseaux professionnels et partenariats"),
+    (SURVEY_DOESNT_EXIST_QUESTION_DIRECTORY, "Annuaire spécialisé (GESAT, UNEA, Handeco)"),
+    (
+        SURVEY_DOESNT_EXIST_QUESTION_RECOMMENDATIONS,
+        "Recommandations et bouche-à-oreille (Réseaux sociaux, recommandations personnelles, collègues)",
+    ),
+    (SURVEY_DOESNT_EXIST_QUESTION_KNOWN_PROVIDERS, "Prestataires connus et habituels (Fournisseurs actuels)"),
+    (
+        SURVEY_DOESNT_EXIST_QUESTION_PUBLIC_TENDERS,
+        "Appel d'offres et consultations publiques (BOAMP, JOUE, AWS, appels d'offres)",
+    ),
+    (SURVEY_DOESNT_EXIST_QUESTION_FACILITATORS, "Facilitateurs de clauses sociales"),
+    (
+        SURVEY_DOESNT_EXIST_QUESTION_LOCAL_SOURCING,
+        "Sourcing local et salons professionnels (Recherche locale, salons, événements professionnels)",
+    ),
+)
+
 # survey choices
 SURVEY_YES_NO_DONT_KNOW_CHOICES = (
     (constants.NO, "Non"),
