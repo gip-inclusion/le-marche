@@ -1,10 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, UserCreationForm
-from django.utils import timezone
 
 from lemarche.sectors.models import Sector
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
+from lemarche.utils import time
 from lemarche.utils.constants import EMPTY_CHOICE, HOW_MANY_CHOICES
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.utils.password_validation import CnilCompositionPasswordValidator
@@ -65,14 +65,14 @@ class SignupForm(UserCreationForm):
 
     nb_of_inclusive_provider_last_year = forms.ChoiceField(
         # flake8: noqa E501
-        label=f"En {timezone.now().year-1}, avec combien de prestataires inclusifs relevant du secteur de l'Insertion avez-vous déjà travaillé ?",
+        label=f"En {time.last_year()}, avec combien de prestataires inclusifs relevant du secteur de l'Insertion avez-vous déjà travaillé ?",
         choices=HOW_MANY_CHOICES,
         widget=forms.RadioSelect(),
         required=False,
     )
     nb_of_handicap_provider_last_year = forms.ChoiceField(
         # flake8: noqa E501
-        label=f"En {timezone.now().year-1}, avec combien de prestataires inclusifs relevant du secteur du Handicap avez-vous déjà travaillé ?",
+        label=f"En {time.last_year()}, avec combien de prestataires inclusifs relevant du secteur du Handicap avez-vous déjà travaillé ?",
         choices=HOW_MANY_CHOICES,
         widget=forms.RadioSelect(),
         required=False,
