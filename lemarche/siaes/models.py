@@ -536,6 +536,9 @@ class SiaeQuerySet(models.QuerySet):
             ),
         )
 
+    def get_avg_of_field(self, field_name) -> float:
+        return self.aggregate(field_avg=models.Avg(field_name)).get("field_avg")
+
     def order_by_super_siaes(self):
         return self.order_by(
             "-super_badge", "-tender_detail_contact_click_count", "-tender_detail_display_count", "-completion_rate"
