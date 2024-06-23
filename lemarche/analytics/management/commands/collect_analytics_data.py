@@ -1,11 +1,8 @@
 import datetime
 
-from django import db
-from django.db import transaction
 from django.utils import timezone
 
-from lemarche.analytics.models import Datum, DatumCode
-from lemarche.analytics.siae_records import collect_siae_analytics_data
+from lemarche.analytics.utils import get_all_data_collectors
 from lemarche.utils.commands import BaseCommand
 
 
@@ -22,37 +19,20 @@ class Command(BaseCommand):
         )
         self.stderr.write(f"Collecting analytics data before '{before!s}'.")
 
-        data = self._get_data(before)
+        self._get_data(before)
         self.stderr.write("Analytics data computed.")
 
-        self.show_data(data)
-        if options["save"]:
-            self.save_data(data, before)
+        # self.show_data(data)
+        # if options["save"]:
+        #     self.save_data(data, before)
 
     @staticmethod
     def _get_data(before):
-        return {
-            DatumCode.SIAE_RECORD_COMPLETION_COUNT: collect_siae_analytics_data().get("completion_rate__avg"),
-        }
+        data_collectors = get_all_data_collectors()
+        for collector_class in data_collectors:
+            collector_instance = collector_class()
+            collector_instance.collect_data()
 
     def show_data(self, data):
         for code, value in data.items():
             self.stdout.write(f"{code}: {value}")
-
-    def save_data(self, data, before):
-        bucket = (before.date() - datetime.timedelta(days=1)).isoformat()
-        self.stderr.write(f"Saving analytics data in bucket '{bucket}'.")
-
-        for code, value in data.items():
-            datum = Datum(
-                code=code.value,
-                bucket=bucket,
-                value=value,
-            )
-            try:
-                with transaction.atomic():
-                    datum.save()
-            except db.IntegrityError:
-                self.stderr.write(f"Failed to save code={code.value} for bucket={bucket} because it already exists.")
-            else:
-                self.stdout.write(f"Successfully saved code={code.value} bucket={bucket} value={value}.")
