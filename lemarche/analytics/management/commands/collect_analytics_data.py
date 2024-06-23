@@ -19,20 +19,8 @@ class Command(BaseCommand):
         )
         self.stderr.write(f"Collecting analytics data before '{before!s}'.")
 
-        self._get_data(before)
-        self.stderr.write("Analytics data computed.")
-
-        # self.show_data(data)
-        # if options["save"]:
-        #     self.save_data(data, before)
-
-    @staticmethod
-    def _get_data(before):
         data_collectors = get_all_data_collectors()
+        save = options.get("save", False)
         for collector_class in data_collectors:
             collector_instance = collector_class()
-            collector_instance.collect_data()
-
-    def show_data(self, data):
-        for code, value in data.items():
-            self.stdout.write(f"{code}: {value}")
+            collector_instance.collect_and_save_data(before=before, save=save)
