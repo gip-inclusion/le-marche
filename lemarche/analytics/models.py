@@ -15,3 +15,6 @@ class Datum(models.Model):
         verbose_name_plural = "data"
         unique_together = ["code", "bucket"]
         indexes = [models.Index(fields=["measured_at", "code"])]
+
+    def __str__(self) -> str:
+        return f"{self.code}({self.bucket}) : {self.value}"
