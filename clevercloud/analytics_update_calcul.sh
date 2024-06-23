@@ -3,8 +3,8 @@
 # Calculate the historics fields
 
 # Do not run if this env var is not set:
-if [[ -z "$CRON_SIAE_UPDATE_CALCUL" ]]; then
-    echo "CRON_SIAE_UPDATE_CALCUL not set. Exiting..."
+if [[ -z "$CRON_ANALYTICS_UPDATE_CALCUL" ]]; then
+    echo "CRON_ANALYTICS_UPDATE_CALCUL not set. Exiting..."
     exit 0
 fi
 
