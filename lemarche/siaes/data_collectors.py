@@ -19,7 +19,7 @@ class DatumCode(models.TextChoices):
 
 
 class SiaeDataCollector(DataCollector):
-    def collect_data(self, before=None):
+    def collect_and_save_data(self, before=None, save=True):
         # Collect data for Model A
         data = {
             DatumCode.SIAE_RECORD_COMPLETION_COUNT: Siae.objects.is_live()
@@ -37,6 +37,7 @@ class SiaeDataCollector(DataCollector):
                 bucket=bucket,
                 value=value,
             )
+            logger.info(f"Try to save {datum}")
             try:
                 with transaction.atomic():
                     datum.save()
