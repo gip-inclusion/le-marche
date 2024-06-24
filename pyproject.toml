@@ -64,7 +64,7 @@ poethepoet = "^0.12.3"
 pre-commit = "^2.21.0"
 pyproject-flake8 = "^6.1.0"
 pytest-django = "^4.8.0"
-selenium = "^4.20.0"
+selenium = "^4.22.0"
 tblib = "^2.0.0"
 
 [tool.poetry.scripts]
