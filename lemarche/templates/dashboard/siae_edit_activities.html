@@ -19,5 +19,10 @@
 {% endif %}
 {% endblock %}
 
+{% block modals %}
+    {% include "dashboard/_siae_activity_delete_modal.html" %}
+{% endblock %}
+
 {% block extra_js %}
+<script type="text/javascript" src="{% static 'js/siae_activity_delete.js' %}"></script>
 {% endblock %}
