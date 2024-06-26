@@ -22,9 +22,7 @@ def array_choices_display(obj, field, output_format="string"):
     except:  # noqa
         keys = getattr(obj, field, [])
 
-    print(obj, field, keys)
     values = choice_array_to_values(choices_dict, keys, output_format="list")
-    print(values, len(values))
 
     # output format
     if output_format == "list":

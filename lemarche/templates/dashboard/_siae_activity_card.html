@@ -1,0 +1,24 @@
+{% load static siae_sectors_display %}
+
+<div class="bg-white d-block rounded-lg shadow-lg p-3 mb-3">
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <p class="h4 lh-sm">{{ activity.sector_group }}</p>
+
+            <ul>
+                {% siae_sectors_display activity display_max=6 output_format='li' %}
+            </ul>
+
+            <p class="mb-0">
+                <i class="ri-briefcase-4-line mr-1"></i>
+                <span class="sr-only">Type(s) de prestation :</span>
+                <span>{{ activity.presta_type_display }}</span>
+            </p>
+            <p class="mb-0">
+                <i class="ri-map-2-line"></i>
+                <span class="sr-only">Intervient sur : {{ siae.geo_range_pretty_title }}</span>
+                <span>{{ siae.geo_range_pretty_display }}</span>
+            </p>
+        </div>
+    </div>
+</div>
