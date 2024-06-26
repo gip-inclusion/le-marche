@@ -17,6 +17,7 @@ from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
+from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
 from lemarche.tenders.factories import TenderFactory, TenderQuestionFactory
 from lemarche.tenders.models import Tender, TenderSiae, TenderStepsData
 from lemarche.users.factories import UserFactory
@@ -67,8 +68,8 @@ class TenderCreateViewTest(TestCase):
         } | _step_3
         step_4 = {
             "tender_create_multi_step_view-current_step": "survey",
-            "survey-scale_marche_useless": tender_constants.SURVEY_SCALE_QUESTION_0,
-            "survey-le_marche_doesnt_exist_how_to_find_siae": tender_constants.SURVEY_DOESNT_EXIST_QUESTION_INTERNET_SEARCH,  # noqa E501
+            "survey-scale_marche_useless": SurveyScaleQuestionChoices.NON,
+            "survey-le_marche_doesnt_exist_how_to_find_siae": SurveyDoesNotExistQuestionChoices.INTERNET_SEARCH,
         } | _step_4
 
         step_5 = {

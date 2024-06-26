@@ -5,6 +5,7 @@ from django import forms
 
 from lemarche.sectors.models import Sector
 from lemarche.tenders import constants as tender_constants
+from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils import constants
@@ -257,14 +258,14 @@ class TenderCreateStepContactForm(forms.ModelForm):
 class TenderCreateStepSurveyForm(forms.ModelForm):
     scale_marche_useless = forms.ChoiceField(
         label=Tender._meta.get_field("scale_marche_useless").help_text,
-        choices=tender_constants.SURVEY_SCALE_QUESTION_CHOICES,
+        choices=SurveyScaleQuestionChoices.choices,
         widget=forms.RadioSelect,
         required=True,
     )
 
     le_marche_doesnt_exist_how_to_find_siae = forms.ChoiceField(
         label=Tender._meta.get_field("le_marche_doesnt_exist_how_to_find_siae").help_text,
-        choices=tender_constants.SURVEY_DOESNT_EXIST_QUESTION_CHOICES,
+        choices=SurveyDoesNotExistQuestionChoices.choices,
         required=False,
     )
 
