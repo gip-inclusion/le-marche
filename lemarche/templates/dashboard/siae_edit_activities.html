@@ -3,8 +3,13 @@
 
 {% block content_siae_form %}
 <div class="row mb-3">
-    <div class="col-12">
+    <div class="col-lg-8">
         <h3>Ajoutez vos secteurs d'activité et recevez des opportunités commerciales ciblées</h3>
+    </div>
+    <div class="col-lg-4">
+        <a href="{% url 'dashboard_siaes:siae_edit_activities_create' siae.slug %}" id="siae-activities-create-btn" class="btn btn-primary w-100 btn-ico mt-2">
+            <i class="ri-add-fill ri-lg mr-2"></i>Ajouter un secteur d'activité
+        </a>
     </div>
 </div>
 
