@@ -34,7 +34,7 @@ urlpatterns = [
                 ),
                 path("contact/", SiaeEditContactView.as_view(), name="siae_edit_contact"),
                 path("recherche/", SiaeEditSearchView.as_view(), name="siae_edit_search"),
-                path("activite/", SiaeEditActivitiesView.as_view(), name="siae_edit_activities"),
+                path("activites/", SiaeEditActivitiesView.as_view(), name="siae_edit_activities"),
                 path("info/", SiaeEditInfoView.as_view(), name="siae_edit_info"),
                 path("offre/", SiaeEditOfferView.as_view(), name="siae_edit_offer"),
                 path("liens/", SiaeEditLinksView.as_view(), name="siae_edit_links"),
