@@ -4,6 +4,7 @@ from django.views.generic.base import RedirectView
 from lemarche.www.dashboard_siaes.views import (
     SiaeEditActivitiesDeleteView,
     SiaeEditActivitiesCreateView,
+    SiaeEditActivitiesEditView,
     SiaeEditActivitiesView,
     SiaeEditContactView,
     SiaeEditInfoView,
@@ -42,6 +43,11 @@ urlpatterns = [
                     "activites/<str:activity_id>/supprimer/",
                     SiaeEditActivitiesDeleteView.as_view(),
                     name="siae_edit_activities_delete",
+                ),
+                path(
+                    "activites/<str:activity_id>/modifier/",
+                    SiaeEditActivitiesEditView.as_view(),
+                    name="siae_edit_activities_edit",
                 ),
                 path("info/", SiaeEditInfoView.as_view(), name="siae_edit_info"),
                 path("offre/", SiaeEditOfferView.as_view(), name="siae_edit_offer"),

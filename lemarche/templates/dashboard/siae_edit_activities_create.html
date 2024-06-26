@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load static bootstrap4 %}
 
-{% block title %}Ajouter une activité{{ block.super }}{% endblock %}
+{% block title %}{{ page_title }}{{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
 <section>
@@ -13,7 +13,7 @@
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
                         <li class="breadcrumb-item" title="{{ siae.name_display }} : modifier"><a href="{% url 'dashboard_siaes:siae_edit_activities' siae.slug %}">{{ siae.name_display }} : modifier</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Ajouter une activité</li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
                     </ol>
                 </nav>
             </div>
@@ -34,9 +34,17 @@
 
                     <div class="row mb-3 mb-lg-5">
                         <div class="col-12">
-                            <h3>Ajouter une activité</h3>
+                            <h3>{{ page_title }}</h3>
                         </div>
                     </div>
+
+                    {% if activity %}
+                        <div class="row mb-3 mb-lg-5">
+                            <div class="col-12 col-lg-8">
+                                {% include "dashboard/_siae_activity_card.html" with activity=activity hide_actions=True %}
+                            </div>
+                        </div>
+                    {% endif %}
 
                     <div class="row mb-3 mb-lg-5">
                         <div class="col-12 col-lg-8">
@@ -134,26 +142,41 @@ document.addEventListener('DOMContentLoaded', function() {
     let sectorRadios = document.querySelectorAll('#id_sectors input[type="checkbox"][name="sectors"]');
     let sectorGroupLabels = Array.from(document.querySelectorAll('#id_sectors label[class="form-check-label"]')).filter(label => !label.htmlFor);
     let sectorLabels = Array.from(document.querySelectorAll('#id_sectors label[class="form-check-label"]')).filter(label => label.htmlFor);
+
     // hide all sector group titles
     sectorGroupLabels.forEach(label => label.style.display = 'none');
-    // init: hide all sector titles
-    sectorLabels.forEach(label => label.style.display = 'none');
+
+    function hideAllSectors() {
+        sectorLabels.forEach(label => label.style.display = 'none');
+    }
+
+    function showSectorsOfSelectedSectorGroup(selectedSectorGroupValue) {
+        hideAllSectors();
+        let selectedSectorGroupName = Array.from(sectorGroupSelectOptions).filter(option => option.value === selectedSectorGroupValue)[0].innerText;
+        let selectedSectorGroupLabel = sectorGroupLabels.find(label => label.innerText === selectedSectorGroupName);
+        Array.from(selectedSectorGroupLabel.parentNode.children).forEach(child => {
+            if (child.firstElementChild && child.firstElementChild.htmlFor) {
+                let selectedSectorGroupLabelSectorLabel = sectorLabels.find(label => label.htmlFor === child.firstElementChild.htmlFor);
+                selectedSectorGroupLabelSectorLabel.style.display = 'block';
+            }
+        });
+    }
+
+    if (sectorGroupSelect.value) {
+        showSectorsOfSelectedSectorGroup(sectorGroupSelect.value);
+    } else {
+        // init: hide all sector checkboxes
+        sectorLabels.forEach(label => label.style.display = 'none');
+    }
+
     // on sector group change
     sectorGroupSelect.addEventListener('change', (event) => {
         // unselect all sectors + hide them
         sectorRadios.forEach(checkbox => checkbox.checked = false);
-        sectorLabels.forEach(label => label.style.display = 'none');
+        hideAllSectors();
         // show only sectors of selected sector group
         if (event.target.value) {
-            let selectedSectorGroupName = Array.from(sectorGroupSelectOptions).filter(option => option.value === event.target.value)[0].innerText;
-            let selectedSectorGroupLabel = sectorGroupLabels.find(label => label.innerText === selectedSectorGroupName);
-            Array.from(selectedSectorGroupLabel.parentNode.children).forEach(child => {
-                if (child.firstElementChild && child.firstElementChild.htmlFor) {
-                    // child.firstElementChild.style.display = 'block';
-                    let selectedSectorGroupLabelSectorLabel = sectorLabels.find(label => label.htmlFor === child.firstElementChild.htmlFor);
-                    selectedSectorGroupLabelSectorLabel.style.display = 'block';
-                }
-            });
+            showSectorsOfSelectedSectorGroup(event.target.value);
         }
     })
 });
