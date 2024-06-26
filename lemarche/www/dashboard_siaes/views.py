@@ -8,7 +8,7 @@ from django.utils.safestring import mark_safe
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
-from lemarche.siaes.models import Siae, SiaeUser, SiaeUserRequest
+from lemarche.siaes.models import Siae, SiaeActivity, SiaeUser, SiaeUserRequest
 from lemarche.utils.apis import api_brevo
 from lemarche.utils.mixins import SiaeMemberRequiredMixin, SiaeUserAndNotMemberRequiredMixin, SiaeUserRequiredMixin
 from lemarche.utils.s3 import S3Upload
@@ -126,6 +126,23 @@ class SiaeEditActivitiesView(SiaeMemberRequiredMixin, DetailView):
     template_name = "dashboard/siae_edit_activities.html"
     context_object_name = "siae"
     queryset = Siae.objects.all()
+
+
+class SiaeEditActivitiesDeleteView(SiaeMemberRequiredMixin, SuccessMessageMixin, DeleteView):
+    template_name = "dashboard/_siae_activity_delete_modal.html"
+    model = SiaeActivity
+    # success_url = reverse_lazy("dashboard_siaes:siae_edit_activities")
+    # success_message = "Votre activité a été supprimée avec succès."
+
+    def get_object(self):
+        siae = Siae.objects.get(slug=self.kwargs.get("slug"))
+        return get_object_or_404(SiaeActivity, id=self.kwargs.get("activity_id"), siae=siae)
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard_siaes:siae_edit_activities", args=[self.kwargs.get("slug")])
+
+    def get_success_message(self, cleaned_data):
+        return mark_safe(f"Votre activité <strong>{self.object.sector_group}</strong> a été supprimée avec succès.")
 
 
 class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
