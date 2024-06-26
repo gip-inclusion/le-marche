@@ -20,6 +20,17 @@ from lemarche.users.factories import UserFactory
 from lemarche.utils.history import HISTORY_TYPE_CREATE, HISTORY_TYPE_UPDATE
 
 
+PERIMETER_GRENOBLE = {
+    "name": "Grenoble",
+    "kind": Perimeter.KIND_CITY,
+    "insee_code": "38185",
+    "department_code": "38",
+    "region_code": "84",
+    "post_codes": ["38000", "38100", "38700"],
+    # coords=Point(5.7301, 45.1825),
+}
+
+
 class SiaeGroupModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -516,15 +527,7 @@ class SiaeModelPerimeterQuerysetTest(TestCase):
         cls.finistere_perimeter = PerimeterFactory(
             name="Finistère", kind=Perimeter.KIND_DEPARTMENT, insee_code="29", region_code="53"
         )
-        cls.grenoble_perimeter = PerimeterFactory(
-            name="Grenoble",
-            kind=Perimeter.KIND_CITY,
-            insee_code="38185",
-            department_code="38",
-            region_code="84",
-            post_codes=["38000", "38100", "38700"],
-            # coords=Point(5.7301, 45.1825),
-        )
+        cls.grenoble_perimeter = PerimeterFactory(**PERIMETER_GRENOBLE)
         cls.chamrousse_perimeter = PerimeterFactory(
             name="Chamrousse",
             kind=Perimeter.KIND_CITY,
@@ -612,12 +615,24 @@ class SiaeLabelModelTest(TestCase):
 class SiaeUtilsTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.siae_with_siret_1 = SiaeFactory(siret="12312312312345", is_active=True)
-        cls.siae_with_siret_2 = SiaeFactory(siret="12312312312346", is_active=True)
-        cls.siae_with_siret_inactive = SiaeFactory(siret="12312312312347", is_active=False)
+        pass
 
     def test_calculate_etablissement_count(self):
+        self.siae_with_siret_1 = SiaeFactory(siret="12312312312345", is_active=True)
+        self.siae_with_siret_2 = SiaeFactory(siret="12312312312346", is_active=True)
+        self.siae_with_siret_inactive = SiaeFactory(siret="12312312312347", is_active=False)
         self.assertEqual(siae_utils.calculate_etablissement_count(self.siae_with_siret_1), 2)
+
+    def test_match_location_to_perimeter(self):
+        self.siae_grenoble_from_post_code = SiaeFactory(post_code="38000")
+        self.siae_grenoble_from_insee_code = SiaeFactory(post_code="38185")
+        self.grenoble_perimeter = PerimeterFactory(**PERIMETER_GRENOBLE)
+        self.assertEqual(
+            siae_utils.match_location_to_perimeter(self.siae_grenoble_from_post_code), self.grenoble_perimeter
+        )
+        self.assertEqual(
+            siae_utils.match_location_to_perimeter(self.siae_grenoble_from_insee_code), self.grenoble_perimeter
+        )
 
 
 class SiaeActivitiesTest(TestCase):

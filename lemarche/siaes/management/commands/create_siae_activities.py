@@ -1,5 +1,6 @@
 from lemarche.perimeters.models import Perimeter
 from lemarche.siaes.models import Siae, SiaeActivity
+from lemarche.siaes.utils import match_location_to_perimeter
 from lemarche.utils.commands import BaseCommand
 from lemarche.utils.data import reset_app_sql_sequences
 
@@ -47,8 +48,8 @@ class Command(BaseCommand):
             self.stdout_info("-" * 80)
             self.stdout_info("Creating SiaeActivities")
             for index, siae in enumerate(siae_qs):
-                siae_location: Perimeter = self.match_siae_location(siae)
-                self.create_siae_activities(siae, location=siae_location)
+                siae_location: Perimeter | None = match_location_to_perimeter(siae)
+                self.create_siae_activities(siae, siae_location=siae_location)
                 if (index % 500) == 0:
                     self.stdout_info(f"{index}...")
 
@@ -61,36 +62,6 @@ class Command(BaseCommand):
                 f"Created {siae_activities_created} SiaeActivities",
             ]
             self.stdout_messages_success(msg_success)
-
-    def match_siae_location(self, siae: Siae):
-        """
-        Find the Siae's location based on the post_code (and city)
-        """
-        if siae.post_code:
-            location_results_from_siae_post_code = Perimeter.objects.post_code_search(
-                siae.post_code, include_insee_code=True
-            )
-
-            if not location_results_from_siae_post_code.exists():
-                self.stdout_warning(f"No location found for {siae} (with post_code {siae.post_code})")
-                return None
-            elif location_results_from_siae_post_code.count() == 1:
-                return location_results_from_siae_post_code.first()
-            else:
-                # found multiple locations with the post_code, try to match with the city
-                if siae.city:
-                    location_results_from_siae_city = Perimeter.objects.name_search(siae.city)
-                    if location_results_from_siae_city.count():
-                        if (
-                            location_results_from_siae_post_code.first()
-                            == location_results_from_siae_post_code.first()
-                        ):
-                            return location_results_from_siae_post_code.first()
-                        else:
-                            self.stdout_warning(
-                                f"Multiple locations found for {siae} (with post_code {siae.post_code})"
-                            )
-                            return None
 
         self.stdout_warning(f"No location found for {siae} (post_code empty)")
         return None
