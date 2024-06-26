@@ -1439,6 +1439,36 @@ class SiaeActivity(models.Model):
         verbose_name_plural = "Activités"
         ordering = ["-created_at"]
 
+    @property
+    def presta_type_display(self) -> str:
+        return choice_array_to_values(siae_constants.PRESTA_CHOICES, self.presta_type)
+
+    @property
+    def geo_range_pretty_display(self):
+        if self.geo_range == siae_constants.GEO_RANGE_COUNTRY:
+            return self.get_geo_range_display()
+        elif self.geo_range == siae_constants.GEO_RANGE_REGION:
+            return f"{self.get_geo_range_display().lower()} ({self.siae.region})"
+        elif self.geo_range == siae_constants.GEO_RANGE_DEPARTMENT:
+            return f"{self.get_geo_range_display().lower()} ({self.siae.department})"
+        elif self.geo_range == siae_constants.GEO_RANGE_CUSTOM:
+            if self.geo_range_custom_distance:
+                return f"{self.geo_range_custom_distance} km"
+        return "non disponible"
+
+    @property
+    def geo_range_pretty_title(self):
+        if self.geo_range == siae_constants.GEO_RANGE_COUNTRY:
+            return self.geo_range_pretty_display
+        elif self.geo_range == siae_constants.GEO_RANGE_REGION:
+            return self.siae.region
+        elif self.geo_range == siae_constants.GEO_RANGE_DEPARTMENT:
+            return self.siae.get_department_display()
+        elif self.geo_range == siae_constants.GEO_RANGE_CUSTOM:
+            if self.geo_range_custom_distance:
+                return f"{self.geo_range_pretty_display} de {self.siae.city}"
+        return self.geo_range_pretty_display
+
 
 class SiaeOffer(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)

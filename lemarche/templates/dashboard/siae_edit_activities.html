@@ -1,0 +1,23 @@
+{% extends "dashboard/siae_edit_base.html" %}
+{% load static bootstrap4 %}
+
+{% block content_siae_form %}
+<div class="row mb-3">
+    <div class="col-12">
+        <h3>Ajoutez vos secteurs d'activité et recevez des opportunités commerciales ciblées</h3>
+    </div>
+</div>
+
+{% if siae.activities.count %}
+    <div class="row mb-3 mb-lg-5">
+        {% for activity in siae.activities.all %}
+            <div class="col-12 col-lg-8">
+                {% include "dashboard/_siae_activity_card.html" with activity=activity %}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}

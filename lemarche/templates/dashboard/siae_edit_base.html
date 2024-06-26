@@ -79,6 +79,13 @@
                             Votre référencement
                         </a>
                     </li>
+                    {% if user.is_authenticated and user.is_admin %}
+                        <li class="nav-item" role="presentation">
+                            <a href="{% url 'dashboard_siaes:siae_edit_activities' siae.slug %}#editTabs" id="siae-edit-search-2-tab" class="nav-link {% if 'siae_edit_activities' in request.resolver_match.url_name %}active{% endif %}" aria-selected="{% if 'siae_edit_activities' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
+                                Votre référencement (2)
+                            </a>
+                        </li>
+                    {% endif %}
                     <li class="nav-item" role="presentation">
                         <a href="{% url 'dashboard_siaes:siae_edit_info' siae.slug %}#editTabs" id="siae-edit-info-tab" class="nav-link {% if 'siae_edit_info' in request.resolver_match.url_name %}active{% endif %}" aria-selected="{% if 'siae_edit_info' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
                             Votre structure
