@@ -5,7 +5,7 @@ from django.core.mail import send_mail
 from huey.contrib.djhuey import task
 
 from lemarche.users import constants as user_constants
-from lemarche.utils.apis import api_brevo, api_hubspot, api_mailjet
+from lemarche.utils.apis import api_brevo, api_mailjet
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
 
 
@@ -64,8 +64,6 @@ def add_to_contact_list(user, type: str, source: str = user_constants.SOURCE_SIG
     if type == "signup":
         contact_list_id = api_mailjet.get_mailjet_cl_on_signup(user, source)
         if user.kind == user.KIND_BUYER:
-            # TODO: we still use it ?
-            api_hubspot.add_user_to_crm(user)
             api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_BUYER_ID)
         elif user.kind == user.KIND_SIAE:
             api_brevo.create_contact(user=user, list_id=settings.BREVO_CL_SIGNUP_SIAE_ID)

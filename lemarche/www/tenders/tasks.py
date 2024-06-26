@@ -12,7 +12,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils import constants
-from lemarche.utils.apis import api_brevo, api_hubspot, api_mailjet, api_slack
+from lemarche.utils.apis import api_brevo, api_mailjet, api_slack
 from lemarche.utils.data import date_to_string
 from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url, get_object_admin_url, get_object_share_url
@@ -31,9 +31,6 @@ def send_validated_tender(tender: Tender):
     send_tender_emails_to_partners(tender)
     # set first_sent_at & last_sent_at, log
     tender.set_sent()
-    # hubspot
-    if settings.BITOUBI_ENV == "prod":
-        api_hubspot.create_deal_from_tender(tender=tender)
 
 
 def send_validated_sent_batch_tender(tender: Tender):
