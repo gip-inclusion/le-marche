@@ -40,8 +40,8 @@ def create_contact(user, list_id: int):
         email=user.email,
         list_ids=[list_id],
         attributes={
-            "NOM": user.first_name,
-            "PRENOM": user.last_name,
+            "NOM": user.last_name,
+            "PRENOM": user.first_name,
             "DATE_INSCRIPTION": user.created_at,
             "TYPE_ORGANISATION": user.buyer_kind_detail,
             "NOM_ENTREPRISE": user.company_name,
