@@ -62,6 +62,17 @@ def create_contact(user, list_id: int):
         logger.error(f"Exception when calling Brevo->ContactsApi->create_contact: {e}")
 
 
+def update_contact(user_identifier: str, attributes_to_update: dict):
+    api_client = get_api_client()
+    api_instance = sib_api_v3_sdk.ContactsApi(api_client)
+    update_contact = sib_api_v3_sdk.UpdateContact(attributes=attributes_to_update)
+    try:
+        api_response = api_instance.update_contact(identifier=user_identifier, update_contact=update_contact)
+        logger.info(f"Success Brevo->ContactsApi->update_contact: {api_response}")
+    except ApiException as e:
+        logger.error(f"Exception when calling Brevo->ContactsApi->update_contact: {e}")
+
+
 def remove_contact_from_list(user, list_id: int):
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
