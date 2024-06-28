@@ -42,9 +42,11 @@
     <link rel="stylesheet" href="{% static 'vendor/bootstrap-multiselect-1.1.1/bootstrap-multiselect.min.css' %}" type="text/css" />
     <link rel="stylesheet" href="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.css' %}" type="text/css" />
     <link rel="stylesheet" href="{% static 'vendor/leaflet-1.7.1/leaflet.css' %}" type="text/css" />
+
     <!-- custom css -->
     <link rel="stylesheet" href="{% static 'itou_marche/itou_marche.scss' %}" type="text/x-scss" />
     {% endcompress %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shepherd.js/8.0.0/css/shepherd.css">
 
     {% block extra_css %}{% endblock %}
 
@@ -128,7 +130,9 @@
     <script type="text/javascript" src="{% static 'js/territory_multiselect_field.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/network_multiselect_field.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/label_multiselect_field.js' %}"></script>
+    <script src="{% static 'django_shepherd/user_guide.js' %}"></script>
     {% endcompress %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shepherd.js/8.0.0/js/shepherd.min.js"></script>
     <script type="text/javascript" src="{% static 'js/utils.js'%}"></script>
     {% if BITOUBI_ENV not in "dev" %}
         {% include "includes/_tracker_tarteaucitron.html" %}
