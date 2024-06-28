@@ -4,7 +4,10 @@ class UserGuide {
             useModalOverlay: true,
             defaultStepOptions: {
                 classes: 'shepherd-theme-arrows',
-                scrollTo: true
+                scrollTo: {
+                    behavior: 'smooth',
+                    block: 'center'
+                },
             }
         });
     }
@@ -29,7 +32,9 @@ class UserGuide {
             .then(response => response.json())
             .then(data => {
                 this.tour.steps = []; // Clear previous steps
-                data.steps.forEach(step => {
+                data.steps.forEach((step, index) => {
+                    const isFirstStep = index === 0;
+                    const isLastStep = index === data.steps.length - 1;
                     this.tour.addStep({
                         title: step.title,
                         text: step.text,
@@ -39,10 +44,21 @@ class UserGuide {
                         },
                         buttons: [
                             {
-                                text: 'Next',
-                                action: this.tour.next
+                                text: 'Ignorer',
+                                action: this.tour.cancel,
+                                classes: 'btn btn-secondary'
+                            },
+                            !isFirstStep && {
+                                text: 'Précédent',
+                                action: this.tour.back,
+                                classes: 'btn btn-primary'
+                            },
+                            {
+                                text: isLastStep ? 'Finir' : 'Suivant',
+                                action: this.tour.next,
+                                classes: 'btn ' + (isLastStep ? 'btn-success' : 'btn-primary')
                             }
-                        ]
+                        ].filter(Boolean)
                     });
                 });
                 this.tour.start();
