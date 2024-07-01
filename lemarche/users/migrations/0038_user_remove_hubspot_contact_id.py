@@ -13,7 +13,7 @@ def remove_hubspot_contact_id(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("users", "0035_alter_user_accept_rgpd"),
+        ("users", "0037_rename_extra_data_last_year_key"),
     ]
 
     operations = [

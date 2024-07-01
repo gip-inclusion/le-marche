@@ -13,7 +13,7 @@ def remove_hubspot_deal_id(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("tenders", "0088_alter_tender_contact_phone"),
+        ("tenders", "0089_tender_le_marche_doesnt_exist_how_to_find_siae"),
     ]
 
     operations = [
