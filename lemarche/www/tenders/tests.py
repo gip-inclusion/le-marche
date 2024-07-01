@@ -17,6 +17,7 @@ from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
+from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
 from lemarche.tenders.factories import TenderFactory, TenderQuestionFactory
 from lemarche.tenders.models import Tender, TenderSiae, TenderStepsData
 from lemarche.users.factories import UserFactory
@@ -67,8 +68,8 @@ class TenderCreateViewTest(TestCase):
         } | _step_3
         step_4 = {
             "tender_create_multi_step_view-current_step": "survey",
-            "survey-scale_marche_useless": tender_constants.SURVEY_SCALE_QUESTION_0,
-            "survey-le_marche_doesnt_exist_how_to_find_siae": "TEST",
+            "survey-scale_marche_useless": SurveyScaleQuestionChoices.NON,
+            "survey-le_marche_doesnt_exist_how_to_find_siae": SurveyDoesNotExistQuestionChoices.INTERNET_SEARCH,
         } | _step_4
 
         step_5 = {
@@ -134,6 +135,11 @@ class TenderCreateViewTest(TestCase):
         self.assertEqual(tender.contact_last_name, self.user_buyer.last_name)
         self.assertEqual(tender.contact_email, self.user_buyer.email)
         self.assertEqual(tender.contact_phone_display, self.user_buyer.phone_display)
+        self.assertEqual(tender.scale_marche_useless, tenders_step_data[3].get("survey-scale_marche_useless"))
+        self.assertEqual(
+            tender.le_marche_doesnt_exist_how_to_find_siae,
+            tenders_step_data[3].get("survey-le_marche_doesnt_exist_how_to_find_siae"),
+        )
 
     def test_tender_wizard_form_not_created(self):
         self.client.force_login(self.user_buyer)
@@ -1516,7 +1522,7 @@ class TenderDetailCocontractingClickView(TestCase):
         self.assertContains(response, self.cta_message_success)
         mock_send_mail_async.assert_called_once()
         email_body = mock_send_mail_async.call_args[1]["email_body"]
-        self.assertTrue(f"La structure {self.siae.name } souhaite répondre en co-traitance" in email_body)
+        self.assertTrue(f"La structure {self.siae.name} souhaite répondre en co-traitance" in email_body)
         self.assertIsNotNone(tendersiae.detail_cocontracting_click_date)
         response = self.client.get(self.tender_detail_url)
         self.assertNotContains(response, self.cta_message)

@@ -5,6 +5,7 @@ from django import forms
 
 from lemarche.sectors.models import Sector
 from lemarche.tenders import constants as tender_constants
+from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
 from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils import constants
@@ -257,15 +258,15 @@ class TenderCreateStepContactForm(forms.ModelForm):
 class TenderCreateStepSurveyForm(forms.ModelForm):
     scale_marche_useless = forms.ChoiceField(
         label=Tender._meta.get_field("scale_marche_useless").help_text,
-        choices=tender_constants.SURVEY_SCALE_QUESTION_CHOICES,
+        choices=SurveyScaleQuestionChoices.choices,
         widget=forms.RadioSelect,
         required=True,
     )
 
-    le_marche_doesnt_exist_how_to_find_siae = forms.CharField(
-        label="Si le Marché de l'inclusion n'existait pas, comment auriez-vous fait pour trouver un prestataire inclusif ?",  # noqa
+    le_marche_doesnt_exist_how_to_find_siae = forms.ChoiceField(
+        label=Tender._meta.get_field("le_marche_doesnt_exist_how_to_find_siae").help_text,
+        choices=SurveyDoesNotExistQuestionChoices.choices,
         required=False,
-        widget=forms.Textarea(attrs={"rows": 2, "cols": 15, "data-expandable": "true"}),
     )
 
     class Meta:
@@ -276,22 +277,8 @@ class TenderCreateStepSurveyForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance.id:
-            self.initial["le_marche_doesnt_exist_how_to_find_siae"] = self.instance.extra_data.get(
-                "le_marche_doesnt_exist_how_to_find_siae"
-            )
-        else:
+        if not self.instance.id:
             self.initial["scale_marche_useless"] = None
-
-    def clean(self) -> dict[str, any]:
-        if not self.errors:
-            super_cleaned_data = super().clean()
-            if super_cleaned_data:
-                cleaned_data = {
-                    "scale_marche_useless": super_cleaned_data.pop("scale_marche_useless"),
-                    "extra_data": super_cleaned_data,
-                }
-                return cleaned_data
 
 
 class TenderCreateStepConfirmationForm(forms.Form):

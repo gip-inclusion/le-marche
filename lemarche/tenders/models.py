@@ -32,6 +32,7 @@ from lemarche.perimeters.models import Perimeter
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import Siae
 from lemarche.tenders import constants as tender_constants
+from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
 from lemarche.tenders.utils import find_amount_ranges
 from lemarche.users.models import User
 from lemarche.utils.apis import api_elasticsearch
@@ -528,8 +529,15 @@ class Tender(models.Model):
         verbose_name="Utilité du marché de l'inclusion",
         help_text="Si le Marché de l'inclusion n'existait pas, auriez-vous consulté des prestataires inclusifs* pour ce besoin ?",  # noqa
         max_length=2,
-        choices=tender_constants.SURVEY_SCALE_QUESTION_CHOICES,
-        default=tender_constants.SURVEY_SCALE_QUESTION_0,
+        choices=SurveyScaleQuestionChoices.choices,
+        default=SurveyScaleQuestionChoices.NON,
+    )
+    le_marche_doesnt_exist_how_to_find_siae = models.CharField(
+        verbose_name="Sans le marché de l'inclusion",
+        help_text="Comment auriez-vous fait pour consulter des prestataires inclusifs ?",
+        max_length=2,
+        choices=SurveyDoesNotExistQuestionChoices.choices,
+        default=SurveyDoesNotExistQuestionChoices.DONT_KNOW,
     )
 
     marche_benefits = ChoiceArrayField(
