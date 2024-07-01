@@ -91,11 +91,18 @@
                             </div>
                             <div class="il-r">
                                 <h3 class="h2 mb-1 mt-1">Secteurs d'activité</h3>
-                                <ul>
-                                    {% siae_sectors_display siae display_max=6 current_search_query=current_search_query output_format='li' %}
-                                </ul>
-                                {% if not siae.sector_count %}
-                                    <p>Non renseigné</p>
+                                {% if user.is_authenticated and user.is_admin %}
+                                    {% for activity in siae.activities.all %}
+                                        {% include "siaes/_siae_activity_content.html" with activity=activity with_collapse=True %}
+                                    {% endfor %}
+                                {% else %}
+                                    {% if not siae.sector_count %}
+                                        <p>Non renseigné</p>
+                                    {% else %}
+                                        <ul>
+                                            {% siae_sectors_display siae display_max=6 current_search_query=current_search_query output_format='li' %}
+                                        </ul>
+                                    {% endif %}
                                 {% endif %}
                             </div>
                         </div>
@@ -122,7 +129,7 @@
                                             </li>
                                         {% endfor %}
                                         </ul>
-                                        <div class="collapse" id="collapseMoreRefClients">
+                                        <div id="collapseMoreRefClients" class="collapse">
                                             <ul class="list-unstyled row row-cols-3 align-items-center mb-0">
                                             {% for image in siae.client_references.all|slice:"6:" %}
                                                 <li class="col">
