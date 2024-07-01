@@ -34,8 +34,8 @@ BUYER = {
     "email": "buyer@example.com",
     "password1": "Erls92#32",
     "password2": "Erls92#32",
-    # "nb_of_handicap_provider_2022": "3",
-    # "nb_of_inclusive_provider_2022": "4",
+    # "nb_of_handicap_provider_last_year": "3",
+    # "nb_of_inclusive_provider_last_year": "4",
     # "id_accept_rgpd"  # required
     # "id_accept_survey"  # not required
 }
@@ -184,6 +184,18 @@ class SignupFormTest(StaticLiveServerTestCase):
         # should not submit form (last_name field is required)
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
 
+    def test_siae_submits_signup_form_email_already_exists(self):
+        UserFactory(email=SIAE["email"], kind=User.KIND_SIAE)
+
+        user_profile = SIAE.copy()
+        self._complete_form(user_profile=user_profile, with_submit=True)
+
+        # should not submit form (email field already used)
+        self.assertEqual(self.driver.current_url, f"{self.live_server_url}{reverse('auth:signup')}")
+
+        alerts = self.driver.find_element(By.CSS_SELECTOR, "form")
+        self.assertTrue("Cette adresse e-mail est déjà utilisée." in alerts.text)
+
     def test_buyer_submits_signup_form_success(self):
         self._complete_form(user_profile=BUYER, with_submit=False)
 
@@ -204,22 +216,22 @@ class SignupFormTest(StaticLiveServerTestCase):
 
         nb_of_handicap = "3"
         nb_of_inclusive = "4"
-        nb_of_handicap_provider_2022_element = self.driver.find_element(
-            By.CSS_SELECTOR, f"input#id_nb_of_handicap_provider_2022_{nb_of_handicap}"
+        nb_of_handicap_provider_last_year_element = self.driver.find_element(
+            By.CSS_SELECTOR, f"input#id_nb_of_handicap_provider_last_year_{nb_of_handicap}"
         )
-        scroll_to_and_click_element(self.driver, nb_of_handicap_provider_2022_element)
-        nb_of_inclusive_provider_2022_element = self.driver.find_element(
-            By.CSS_SELECTOR, f"input#id_nb_of_inclusive_provider_2022_{nb_of_inclusive}"
+        scroll_to_and_click_element(self.driver, nb_of_handicap_provider_last_year_element)
+        nb_of_inclusive_provider_last_year_element = self.driver.find_element(
+            By.CSS_SELECTOR, f"input#id_nb_of_inclusive_provider_last_year_{nb_of_inclusive}"
         )
-        scroll_to_and_click_element(self.driver, nb_of_inclusive_provider_2022_element)
+        scroll_to_and_click_element(self.driver, nb_of_inclusive_provider_last_year_element)
         submit_element = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
         scroll_to_and_click_element(self.driver, submit_element)
         # should get created User
         user = User.objects.get(email=BUYER.get("email"))
 
         # assert extra_data are inserted
-        self.assertEqual(user.extra_data.get("nb_of_handicap_provider_2022"), nb_of_handicap)
-        self.assertEqual(user.extra_data.get("nb_of_inclusive_provider_2022"), nb_of_inclusive)
+        self.assertEqual(user.extra_data.get("nb_of_handicap_provider_last_year"), nb_of_handicap)
+        self.assertEqual(user.extra_data.get("nb_of_inclusive_provider_last_year"), nb_of_inclusive)
 
     def test_buyer_submits_signup_form_error(self):
         user_profile = BUYER.copy()
