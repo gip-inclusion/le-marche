@@ -34,7 +34,7 @@ django-cors-headers==3.14.0 ; python_full_version >= "3.10.4" and python_full_ve
 django-debug-toolbar==3.8.1 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 django-environ==0.9.0 ; python_full_version >= "3.10.4" and python_version < "4"
 django-extensions==3.2.3 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
-django-fieldsets-with-inlines @ git+https://github.com/raphodn/django-fieldsets-with-inlines.git@master ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
+django-fieldsets-with-inlines @ git+https://github.com/raphodn/django-fieldsets-with-inlines.git@068dd492fdf53f245a6c5666fa136f6df214b1a5 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 django-filter==21.1 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 django-formtools==2.5.1 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 django-htmx==1.17.3 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
@@ -67,10 +67,9 @@ filetype==1.2.0 ; python_full_version >= "3.10.4" and python_full_version < "4.0
 flake8==6.1.0 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 freezegun==1.5.1 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 frozenlist==1.4.1 ; python_full_version >= "3.10.4" and python_version < "4.0"
-greenlet==3.0.3 ; python_full_version >= "3.10.4" and python_version < "4.0" and (platform_machine == "win32" or platform_machine == "WIN32" or platform_machine == "AMD64" or platform_machine == "amd64" or platform_machine == "x86_64" or platform_machine == "ppc64le" or platform_machine == "aarch64")
+greenlet==3.0.3 ; python_full_version >= "3.10.4" and python_version < "4.0" and (platform_machine == "aarch64" or platform_machine == "ppc64le" or platform_machine == "x86_64" or platform_machine == "amd64" or platform_machine == "AMD64" or platform_machine == "win32" or platform_machine == "WIN32")
 h11==0.14.0 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 html5lib==1.1 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
-hubspot-api-client==6.1.0 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 huey==2.5.0 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 identify==2.5.36 ; python_full_version >= "3.10.4" and python_full_version < "4.0.0"
 idna==3.7 ; python_full_version >= "3.10.4" and python_version < "4.0"
