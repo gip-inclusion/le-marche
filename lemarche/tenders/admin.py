@@ -476,7 +476,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         ),
         (
             "Utilité du marché de l'inclusion",
-            {"fields": ("scale_marche_useless",)},
+            {"fields": ("scale_marche_useless", "le_marche_doesnt_exist_how_to_find_siae")},
         ),
         (
             "Status",
