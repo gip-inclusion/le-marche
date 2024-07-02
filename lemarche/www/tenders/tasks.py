@@ -150,8 +150,8 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, re
             recipient_name=recipient_name,
             variables=variables,
             subject=email_subject,
-            from_email=settings.TEAM_CONTACT_EMAIL,
-            from_name=settings.CUSTOM_FROM_NAME,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            from_name=settings.DEFAULT_FROM_NAME,
         )
 
         # update tendersiae
@@ -208,8 +208,8 @@ def send_tender_email_to_partner(email_subject: str, tender: Tender, partner: Pa
             subject=email_subject,
             recipient_email_list=recipient_list,
             variables=variables,
-            from_email=settings.TEAM_CONTACT_EMAIL,
-            from_name=settings.CUSTOM_FROM_NAME,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            from_name=settings.DEFAULT_FROM_NAME,
         )
 
         # log email
@@ -294,8 +294,8 @@ def send_tender_contacted_reminder_email_to_siae(tendersiae: TenderSiae, email_t
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            from_email=settings.TEAM_CONTACT_EMAIL,
-            from_name=settings.CUSTOM_FROM_NAME,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            from_name=settings.DEFAULT_FROM_NAME,
         )
 
         # log email
@@ -369,8 +369,8 @@ def send_tender_interested_reminder_email_to_siae(
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            from_email=settings.TEAM_CONTACT_EMAIL,
-            from_name=settings.CUSTOM_FROM_NAME,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            from_name=settings.DEFAULT_FROM_NAME,
         )
 
         # log email
