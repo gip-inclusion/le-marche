@@ -103,6 +103,11 @@ DJANGO_APPS = [
     "django.contrib.flatpages",
     "django.contrib.gis",
     "django.contrib.humanize",
+]
+
+DJANGO_DSFR_APPS = [
+    "widget_tweaks",  # django-widget-tweaks
+    "dsfr",  # django-dsfr
     "django.forms",
 ]
 
@@ -173,7 +178,7 @@ WAGTAIL_APPS = [
     "storages",
 ]
 
-INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS + WAGTAIL_APPS
+INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + DJANGO_DSFR_APPS + THIRD_PARTY_APPS + LOCAL_APPS + WAGTAIL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
