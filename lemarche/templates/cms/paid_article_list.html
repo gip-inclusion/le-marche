@@ -23,7 +23,7 @@
 {% endblock breadcrumbs %}
 {% block content %}
     <section class=" mb-0">
-        <div class="s-title-01__container fr-container">
+        <div class="fr-container">
             <div class="fr-grid-row">
                 <div class="fr-col-12 fr-col-lg-9">
                     <h1 class="s-title-01__title h1">
@@ -34,7 +34,7 @@
         </div>
     </section>
     <section class="s-section mt-0 has-illustration-bg-02">
-        <div class=" fr-container">
+        <div class="fr-container">
             <div class="fr-grid-row row-cols-1 row-cols-md-2 row-cols-lg-3 mt-5">
                 {% for article in article_list %}
                     <div class="s-section__col fr-col mb-3 mb-lg-5">{% include "cms/article_item.html" with article=article %}</div>

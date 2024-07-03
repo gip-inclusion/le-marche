@@ -23,7 +23,7 @@
 
 {% block content %}
 <section class="">
-    <div class="s-title-01__container fr-container">
+    <div class="fr-container">
         <div class="fr-grid-row">
             <div class="fr-col-12">
                 <h1 class="s-title-01__title h1"><strong>Tableau de bord</strong></h1>
@@ -34,7 +34,7 @@
 
 {% if user.siaeuser_set.count %}
     <section class="s-tabs-01 mb-3 mb-lg-5">
-        <div class="s-tabs-01__container fr-container">
+        <div class="s-tabs-01__containerfr-container">
             <div id="siaes_tabs" class="s-tabs-01__row fr-grid-row">
                 <div class="s-tabs-01__col fr-col-12">
                     <ul class="s-tabs-01__nav nav nav-tabs" role="tablist">
@@ -82,7 +82,7 @@
     </section>
 {% else %}
     <section class="s-section mb-0">
-        <div class=" fr-container">
+        <div class="fr-container">
             <div class="fr-grid-row">
                 <div class="s-section__col fr-col-12 pb-5">
                     {% include "dashboard/_add_siae_card.html" %}
@@ -93,7 +93,7 @@
 {% endif %}
 
 <section class="s-section mt-0 mb-0">
-    <div class=" fr-container">
+    <div class="fr-container">
         <div class="fr-grid-row">
             <div class="s-section__col fr-col-12 fr-col-lg-6 pb-5">
                 <div class="card h-100 w-100">
@@ -128,7 +128,7 @@
 
 {% if user.api_key %}
 <section class="s-section mt-0 mb-5">
-    <div class=" fr-container">
+    <div class="fr-container">
         <div class="fr-grid-row">
             <div class="fr-col-12 fr-col-lg-6">
                 {% include "dashboard/_api_key_card.html" with user_kind="SIAE" api_key=user.api_key %}
