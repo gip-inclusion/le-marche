@@ -1,10 +1,10 @@
 {% if tender.is_draft %}
     <div class="alert alert-warning fade show" role="status">
         <div class="row">
-            <div class="col-auto pr-0">
+            <div class="fr-col-auto pr-0">
                 <i class="ri-information-line ri-xl text-warning"></i>
             </div>
-            <div class="col">
+            <div class="fr-col">
                 <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} est encore en brouillon. Modifiez-le pour le publier.</p>
             </div>
         </div>
@@ -17,10 +17,10 @@
 {% if tender.is_pending_validation %}
     <div class="alert alert-info fade show" role="status">
         <div class="row">
-            <div class="col-auto pr-0">
+            <div class="fr-col-auto pr-0">
                 <i class="ri-information-line ri-xl text-info"></i>
             </div>
-            <div class="col">
+            <div class="fr-col">
                 <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} est en cours de validation.</p>
             </div>
         </div>
@@ -29,10 +29,10 @@
 {% if tender.is_sent %}
     <div class="alert alert-success fade show" role="status">
         <div class="row">
-            <div class="col-auto pr-0">
+            <div class="fr-col-auto pr-0">
                 <i class="ri-checkbox-circle ri-xl text-info"></i>
             </div>
-            <div class="col">
+            <div class="fr-col">
                 <p class="mb-0">Votre {{ tender_kind_display|default:tender.get_kind_display }} est validé et envoyé !</p>
             </div>
         </div>

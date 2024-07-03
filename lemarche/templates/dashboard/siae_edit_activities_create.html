@@ -7,7 +7,7 @@
 <section>
     <div class="fr-container">
         <div class="row">
-            <div class="col-12 col-lg">
+            <div class="fr-col-12 fr-col-lg">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -26,28 +26,28 @@
 <section class="s-section mb-0">
     <div class=" fr-container">
         <div class="row">
-            <div class="s-section__col col-12">
+            <div class="s-section__col fr-col-12">
                 <form method="POST" action="" class="mb-3 mb-lg-5">
                     {% csrf_token %}
 
                     {% bootstrap_form_errors form type="all" %}
 
                     <div class="fr-grid-row mb-3 mb-lg-5">
-                        <div class="col-12">
+                        <div class="fr-col-12">
                             <h3>{{ page_title }}</h3>
                         </div>
                     </div>
 
                     {% if activity %}
                         <div class="fr-grid-row mb-3 mb-lg-5">
-                            <div class="col-12 col-lg-8">
-                                {% include "siaes/_siae_activity_card.html" with activity=activity hide_actions=True %}
+                            <div class="fr-col-12 fr-col-lg-8">
+                                {% include "dashboard/_siae_activity_card.html" with activity=activity hide_actions=True %}
                             </div>
                         </div>
                     {% endif %}
 
                     <div class="fr-grid-row mb-3 mb-lg-5">
-                        <div class="col-12 col-lg-8">
+                        <div class="fr-col-12 fr-col-lg-8">
                             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                                 <fieldset>
                                     {% bootstrap_field form.sector_group %}
@@ -58,7 +58,7 @@
                                 </fieldset>
                             </div>
                         </div>
-                        <div class="col-12 col-lg-4">
+                        <div class="fr-col-12 fr-col-lg-4">
                             <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                                 <p class="mb-1">
                                     <i class="ri-information-line ri-lg"></i>
@@ -72,14 +72,14 @@
                     </div>
 
                     <div class="fr-grid-row mb-3 mb-lg-5">
-                        <div class="col-12 col-lg-8">
+                        <div class="fr-col-12 fr-col-lg-8">
                             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                                 <fieldset>
                                     {% bootstrap_field form.presta_type %}
                                 </fieldset>
                             </div>
                         </div>
-                        <div class="col-12 col-lg-4">
+                        <div class="fr-col-12 fr-col-lg-4">
                             <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                                 <p class="mb-1">
                                     <i class="ri-information-line ri-lg"></i>
@@ -93,7 +93,7 @@
                     </div>
 
                     <div class="fr-grid-row mb-3 mb-lg-5">
-                        <div class="col-12 col-lg-8">
+                        <div class="fr-col-12 fr-col-lg-8">
                             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                                 <fieldset>
                                     <legend class="h4">{{ form.geo_range.label }} <strong class="fs-base">*</strong></legend>
@@ -102,7 +102,7 @@
                                 </fieldset>
                             </div>
                         </div>
-                        <div class="col-12 col-lg-4">
+                        <div class="fr-col-12 fr-col-lg-4">
                             <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                                 <p class="mb-1">
                                     <i class="ri-information-line ri-lg"></i>
@@ -116,7 +116,7 @@
                     </div>
 
                     <div class="fr-grid-row mt-3 mt-lg-5">
-                        <div class="col-12 col-lg-8">
+                        <div class="fr-col-12 fr-col-lg-8">
                             <button type="submit" class="btn btn-primary">
                                 <span>Enregistrer</span>
                             </button>

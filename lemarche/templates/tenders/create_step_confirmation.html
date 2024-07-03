@@ -9,10 +9,10 @@
 {% endblock %}
 {% block recap_section %}
 <div class="row">
-    <div class="col-12 col-lg-7 order-2 order-lg-1">
+    <div class="fr-col-12 fr-col-lg-7 order-2 order-lg-1">
         {% include "tenders/_detail_card.html" with tender=tender source_form="true" %}
     </div>
-    <div class="col-12 col-lg-5 order-1 order-lg-2">
+    <div class="fr-col-12 fr-col-lg-5 order-1 order-lg-2">
         <button type="submit" id="tender-create-form-submit-above-btn" class="btn btn-primary btn-ico">
             <i class="ri-mail-send-line ri-lg"></i>
             <span>Publier ce besoin</span>
@@ -28,7 +28,7 @@
 </div>
 {% endblock %}
 {% block submit_btn %}
-    <div class="form-group col-6 col-lg-auto order-1 order-lg-2">
+    <div class="form-group fr-col-6 fr-col-lg-auto order-1 order-lg-2">
         <button type="submit"
                 id="tender-create-draft-form-btn"
                 class="btn btn-block btn-ico btn-outline-primary"
@@ -38,7 +38,7 @@
             <span>Enregistrer le brouillon</span>
         </button>
     </div>
-    <div class="form-group col-6 col-lg-auto order-2 order-lg-3">
+    <div class="form-group fr-col-6 fr-col-lg-auto order-2 order-lg-3">
         <button type="submit"
                 id="tender-create-form-submit-btn"
                 class="btn btn-primary btn-ico btn-block">

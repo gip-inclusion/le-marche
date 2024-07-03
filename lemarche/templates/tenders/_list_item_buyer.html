@@ -3,7 +3,7 @@
 <div class="card c-card c-card--marche siae-card">
     <div class="card-body">
         <div class="row">
-            <div class="col-md-8 with-data-url" style="border-right:1px solid;cursor:pointer;" data-url="{% url 'tenders:detail' tender.slug %}">
+            <div class="fr-col-md-8 with-data-url" style="border-right:1px solid;cursor:pointer;" data-url="{% url 'tenders:detail' tender.slug %}">
                 <p class="mb-1">
                     {% include "tenders/_closed_badge.html" with tender=tender %}
                     {% if tender.is_draft %}
@@ -24,19 +24,19 @@
                 <h2 class="py-2">{{ tender.title }}</h2>
 
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="fr-col-md-4">
                         <i class="ri-time-line"></i>
                         Créé le {{ tender.created_at|date }}
                     </div>
                     {% if tender.is_sent %}
-                        <div class="col-md-4">
+                        <div class="fr-col-md-4">
                             <i class="ri-time-line"></i>
                             Publié le {{ tender.first_sent_at|date }}
                         </div>
                     {% endif %}
                 </div>
             </div>
-            <div class="col-md-4 text-center my-auto">
+            <div class="fr-col-md-4 text-center my-auto">
                 <hr class="d-md-none" />
                 {% if tender.is_sent %}
                     {% if tender.siae_detail_contact_click_since_last_seen_date_count_annotated %}
@@ -45,7 +45,7 @@
                         </span>
                     {% endif %}
                     <div class="row">
-                        <div class="col-6" style="border-right:1px solid;">
+                        <div class="fr-col-6" style="border-right:1px solid;">
                             <p class="font-weight-bold mt-2">
                                 <i class="ri-focus-2-line font-weight-light"></i>&nbsp;{{ tender.siae_email_send_count_annotated|default:0 }} prestataire{{ tender.siae_email_send_count_annotated|pluralize }} ciblé{{ tender.siae_email_send_count_annotated|pluralize }}
                             </p>
@@ -55,7 +55,7 @@
                                 </a>
                             {% endif %}
                         </div>
-                        <div class="col-6">
+                        <div class="fr-col-6">
                             <p class="font-weight-bold mt-2">
                                 <i class="ri-thumb-up-line font-weight-light"></i>&nbsp;{{ tender.siae_detail_contact_click_count_annotated|default:0 }} prestataire{{ tender.siae_detail_contact_click_count_annotated|pluralize }} intéressé{{ tender.siae_detail_contact_click_count_annotated|pluralize }}
                             </p>

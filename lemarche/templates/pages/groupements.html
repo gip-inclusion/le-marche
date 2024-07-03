@@ -11,7 +11,7 @@
 <section>
     <div class="fr-container">
         <div class="row">
-            <div class="col-12">
+            <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -28,7 +28,7 @@
 <section class="s-page-menu-01 s-page-menu-01--marche has-illustration-bg-01">
     <div class="s-page-menu-01__container fr-container">
         <div class="s-page-menu-01__row fr-grid-row align-items-center">
-            <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-lg-10">
+            <div class="s-page-menu-01__col s-page-menu-01__col--title fr-col-12 fr-col-lg-10">
                 <h1 class="h1-hero">
                     <strong>Retrouver les groupements <br class="d-none d-lg-inline">commerciaux des SIAE</strong>
                 </h1>
@@ -41,7 +41,7 @@
     <div class="s-cards-grid-01__container fr-container">
         <div class="s-cards-grid-01__row fr-grid-row row-cols-1 row-cols-md-2 row-cols-lg-3 justify-content-start">
             {% for group in siaegroups %}
-                <div class="s-cards-grid-01__col col mb-3 mb-md-5">
+                <div class="s-cards-grid-01__col fr-col mb-3 mb-md-5">
                     <div class="card c-card has-links-inside h-100 w-100 c-card--marche">
                         <div class="card-header">
                             {% if group.logo_url %}
@@ -106,7 +106,7 @@
 <section class="s-partenaires-01">
     <div class="s-partenaires-01__container fr-container">
         <div class="s-partenaires-01__row fr-grid-row justify-content-center">
-            <div class="s-partenaires-01__col col-12 col-lg-8">
+            <div class="s-partenaires-01__col fr-col-12 fr-col-lg-8">
                 <div class="card c-card c-card--mini h-100 p-3 p-lg-5 pr-lg-7">
                     <div class="card-body">
                         <h3 class="h2 m-0">
