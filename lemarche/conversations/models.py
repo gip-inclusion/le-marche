@@ -247,7 +247,7 @@ class TemplateTransactional(models.Model):
 
     @property
     def get_template_id(self):
-        if self.is_active and self.source and self.code:
+        if self.source and self.code:
             if self.source == conversation_constants.SOURCE_MAILJET:
                 return self.mailjet_id
             elif self.source == conversation_constants.SOURCE_BREVO:
@@ -263,23 +263,24 @@ class TemplateTransactional(models.Model):
         from_email=settings.DEFAULT_FROM_EMAIL,
         from_name=settings.DEFAULT_FROM_NAME,
     ):
-        if self.source == conversation_constants.SOURCE_MAILJET:
-            api_mailjet.send_transactional_email_with_template(
-                template_id=self.get_template_id,
-                recipient_email=recipient_email,
-                recipient_name=recipient_name,
-                variables=variables,
-                subject=subject,
-                from_email=from_email,
-                from_name=from_name,
-            )
-        elif self.source == conversation_constants.SOURCE_BREVO:
-            api_brevo.send_transactional_email_with_template(
-                template_id=self.get_template_id,
-                recipient_email=recipient_email,
-                recipient_name=recipient_name,
-                variables=variables,
-                subject=subject,
-                from_email=from_email,
-                from_name=from_name,
-            )
+        if self.is_active:
+            if self.source == conversation_constants.SOURCE_MAILJET:
+                api_mailjet.send_transactional_email_with_template(
+                    template_id=self.get_template_id,
+                    recipient_email=recipient_email,
+                    recipient_name=recipient_name,
+                    variables=variables,
+                    subject=subject,
+                    from_email=from_email,
+                    from_name=from_name,
+                )
+            elif self.source == conversation_constants.SOURCE_BREVO:
+                api_brevo.send_transactional_email_with_template(
+                    template_id=self.get_template_id,
+                    recipient_email=recipient_email,
+                    recipient_name=recipient_name,
+                    variables=variables,
+                    subject=subject,
+                    from_email=from_email,
+                    from_name=from_name,
+                )
