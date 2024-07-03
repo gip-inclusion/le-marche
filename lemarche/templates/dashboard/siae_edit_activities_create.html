@@ -5,7 +5,7 @@
 
 {% block breadcrumbs %}
 <section>
-    <div class="container">
+    <div class="fr-container">
         <div class="row">
             <div class="col-12 col-lg">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
@@ -24,12 +24,12 @@
 
 {% block content %}
 <section class="s-section mb-0">
-    <div class="s-section__container container">
+    <div class=" fr-container">
         <div class="s-section__row row">
             <div class="s-section__col col-12">
                 <form method="POST" action="" class="mb-3 mb-lg-5">
                     {% csrf_token %}
-                
+
                     {% bootstrap_form_errors form type="all" %}
 
                     <div class="row mb-3 mb-lg-5">

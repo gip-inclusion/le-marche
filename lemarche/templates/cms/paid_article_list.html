@@ -5,7 +5,7 @@
 {% block body_class %}p-ressources{{ block.super }}{% endblock %}
 {% block breadcrumbs %}
     <section>
-        <div class="container">
+        <div class="fr-container">
             <div class="row">
                 <div class="col-12">
                     <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
@@ -23,7 +23,7 @@
 {% endblock breadcrumbs %}
 {% block content %}
     <section class="s-title-01 mb-0">
-        <div class="s-title-01__container container">
+        <div class="s-title-01__container fr-container">
             <div class="s-title-01__row row">
                 <div class="s-title-01__col col-12 col-lg-9">
                     <h1 class="s-title-01__title h1">
@@ -34,7 +34,7 @@
         </div>
     </section>
     <section class="s-section mt-0 has-illustration-bg-02">
-        <div class="s-section__container container">
+        <div class=" fr-container">
             <div class="s-section__row row row-cols-1 row-cols-md-2 row-cols-lg-3 mt-5">
                 {% for article in article_list %}
                     <div class="s-section__col col mb-3 mb-lg-5">{% include "cms/article_item.html" with article=article %}</div>
