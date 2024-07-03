@@ -7,7 +7,7 @@
 <section>
     <div class="fr-container">
         <div class="row">
-            <div class="col-12 col-lg">
+            <div class="fr-col-12 fr-col-lg">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -16,7 +16,7 @@
                     </ol>
                 </nav>
             </div>
-            <div class="col-12 col-lg-auto pt-3">
+            <div class="fr-col-12 fr-col-lg-auto pt-3">
                 <a href="{% url 'siae:detail' siae.slug %}" target="_blank" class="btn btn-outline-primary btn-sm btn-block btn-ico">
                     <span>Voir votre fiche</span>
                     <i class="ri-eye-line ri-lg"></i>
@@ -33,7 +33,7 @@
     <section class="s-section mb-0">
         <div class=" fr-container">
             <div class="row">
-                <div class="s-section__col col-12">
+                <div class="s-section__col fr-col-12">
                     <div class="alert alert-warning" role="alert">
                         <p class="mb-1">
                             <i class="ri-information-line ri-xl"></i>
@@ -67,7 +67,7 @@
 <section class="s-tabs-01 mb-3 mb-lg-5">
     <div class="s-tabs-01__container fr-container">
         <div class="s-tabs-01__row row">
-            <div class="s-tabs-01__col col-12">
+            <div class="s-tabs-01__col fr-col-12">
                 <ul class="s-tabs-01__nav nav nav-tabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <a href="{% url 'dashboard_siaes:siae_edit_contact' siae.slug %}#editTabs" id="siae-edit-contact-tab" class="nav-link {% if 'siae_edit_contact' in request.resolver_match.url_name %}active{% endif %}" aria-selected="{% if 'siae_edit_contact' in request.resolver_match.url_name %}true{% else %}false{% endif %}">

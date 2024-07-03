@@ -7,7 +7,7 @@
 <section>
     <div class="fr-container">
         <div class="row">
-            <div class="col-12">
+            <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -27,7 +27,7 @@
             <strong>Modifier mon profil</strong>
         </h1>
         <div class="row">
-            <div class="col-12 col-lg-8">
+            <div class="fr-col-12 fr-col-lg-8">
                 <form method="POST" action="" class="mb-3 mb-lg-5">
                     {% csrf_token %}
 
@@ -39,12 +39,12 @@
                             {% bootstrap_field form.phone %}
                             {% if user.kind != 'SIAE' %}
                                 <div class="row">
-                                    <div class="form-group col">
+                                    <div class="form-group fr-col">
                                         <label>Structure</label>
                                         <input class="form-control" value="{{ user.company_name|default:'' }}" disabled />
                                     </div>
                                     {% if user.kind == 'BUYER' %}
-                                        <div class="form-group col">
+                                        <div class="form-group fr-col">
                                             <label>Poste</label>
                                             <input class="form-control" value="{{ user.position|default:'' }}" disabled />
                                         </div>
@@ -72,7 +72,7 @@
                     </div>
 
                     <div class="fr-grid-row mt-3 mt-lg-5 justify-content-end">
-                        <div class="col-12 col-lg-auto px-5 px-lg-6">
+                        <div class="fr-col-12 fr-col-lg-auto px-5 px-lg-6">
                             <button type="submit" class="btn btn-primary btn-block">
                                 <span>Sauvegarder</span>
                             </button>
@@ -81,7 +81,7 @@
                 </form>
             </div>
             {% if user.kind == 'SIAE' %}
-            <div class="col-12 col-lg-4">
+            <div class="fr-col-12 fr-col-lg-4">
                 <div class="alert alert-info mt-3 mt-lg-0" role="status">
                     <p>
                         <strong>Vous souhaitez changer les champs "contact" de votre structure ?</strong><br />
