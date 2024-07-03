@@ -1084,6 +1084,10 @@ class Siae(models.Model):
         return ""
 
     @property
+    def contact_email_name_display(self):
+        return self.contact_full_name or self.name_display
+
+    @property
     def contact_phone_display(self):
         return phone_number_display(self.contact_phone)
 
