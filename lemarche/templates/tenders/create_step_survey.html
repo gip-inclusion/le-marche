@@ -11,10 +11,10 @@
     {% csrf_token %}
     <div id="serveyTender">
         <div class="row">
-            <div class="col-12 col-lg-7">
+            <div class="fr-col-12 fr-col-lg-7">
                 {% bootstrap_field form.scale_marche_useless wrapper_class="form-check-inline" form_group_class="form-group mb-lg-5" %}
             </div>
-            <div class="col-12 col-lg-5">
+            <div class="fr-col-12 fr-col-lg-5">
                 <div class="c-form-conseil">
                     <div>
                         <p>
@@ -28,14 +28,14 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-12 col-lg-7">
+            <div class="fr-col-12 fr-col-lg-7">
                 {% bootstrap_field form.le_marche_doesnt_exist_how_to_find_siae form_group_class="form-group mb-lg-5" %}
             </div>
         </div>
     </div>
 {% endblock %}
 {% block submit_btn %}
-    <div class="form-group col-6 col-lg-auto order-2 order-lg-3">
+    <div class="form-group fr-col-6 fr-col-lg-auto order-2 order-lg-3">
         <button type="submit"
                 id="tender-create-{{ wizard.steps.current }}-form-next-step-btn"
                 class="btn btn-primary btn-block"

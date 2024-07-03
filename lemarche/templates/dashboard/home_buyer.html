@@ -9,7 +9,7 @@
 <section>
     <div class="fr-container">
         <div class="row">
-            <div class="col-12">
+            <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -23,10 +23,10 @@
 {% endblock %}
 
 {% block content %}
-<section class="s-title-01">
+<section class="">
     <div class="s-title-01__container fr-container">
         <div class="s-title-01__row row">
-            <div class="s-title-01__col col-12">
+            <div class="fr-col-12">
                 <h1 class="s-title-01__title h1"><strong>Tableau de bord</strong></h1>
             </div>
         </div>
@@ -36,15 +36,15 @@
 <section class="s-section">
     <div class=" fr-container">
         <div class="row">
-            <div class="s-section__col col-12 col-lg-7 mb-3 mb-lg-5">
+            <div class="s-section__col fr-col-12 fr-col-lg-7 mb-3 mb-lg-5">
                 {% if user.tenders.count %}
                     <div class="card h-100 w-100">
                         <div class="card-body">
                             <div class="fr-grid-row mb-sm-4">
-                                <div class="col-12 col-md">
+                                <div class="fr-col-12 fr-col-md">
                                     <p class="h4 lh-sm">Mes besoins</p>
                                 </div>
-                                <div class="col-12 col-md-auto">
+                                <div class="fr-col-12 fr-col-md-auto">
                                     <a href="{% url 'tenders:create' %}" id="dashboard-tender-create-btn" class="btn btn-primary width-100 width-md-auto">
                                         <i class="ri-add-fill ri-lg mr-2"></i>Publier un besoin d'achat
                                     </a>
@@ -69,7 +69,7 @@
                     {% include "dashboard/_add_tender_card.html" %}
                 {% endif %}
             </div>
-            <div class="s-section__col col-12 col-lg-5">
+            <div class="s-section__col fr-col-12 fr-col-lg-5">
                 <div class="card h-45 w-100 mb-3 mb-lg-5">
                     <div class="card-body">
                         <p class="h4 lh-sm mb-lg-4">M'informer sur le marché</p>
@@ -134,7 +134,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="s-section__col col-12 col-lg-5">
+            <div class="s-section__col fr-col-12 fr-col-lg-5">
                 <div class="card h-45 w-100 mb-3 mb-lg-5">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -178,12 +178,12 @@
                     </div>
                 </div>
             </div>
-            <div class="s-section__col col-12 col-lg-7 mb-3 mb-lg-5">
+            <div class="s-section__col fr-col-12 fr-col-lg-7 mb-3 mb-lg-5">
                 {% include "dashboard/_ressource_card.html" with user_kind="BUYER" ressources=last_3_ressources category_slug=category_slug_cat %}
             </div>
         </div>
         <div class="row">
-            <div class="s-section__col col-12 col-lg-6">
+            <div class="s-section__col fr-col-12 fr-col-lg-6">
                 <div class="card h-45 w-100 mb-3 mb-lg-5">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -206,7 +206,7 @@
                     </div>
                 </div>
             </div>
-            <div class="s-section__col col-12 col-lg-6">
+            <div class="s-section__col fr-col-12 fr-col-lg-6">
                 {% include "dashboard/_api_key_card.html" with api_key=user.api_key user_kind="BUYER" %}
             </div>
         </div>

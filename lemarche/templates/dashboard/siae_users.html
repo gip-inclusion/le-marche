@@ -7,7 +7,7 @@
 <section>
     <div class="fr-container">
         <div class="row">
-            <div class="col-12 col-lg">
+            <div class="fr-col-12 fr-col-lg">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -28,13 +28,13 @@
             <strong>Mes collaborateurs</strong>
         </h1>
         <div class="row">
-            <div class="col-12 col-lg-8">
+            <div class="fr-col-12 fr-col-lg-8">
                 <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                     {% if siae.siaeuserrequest_set.pending.count %}
                         <div class="bg-white d-block rounded-lg shadow-lg p-3 mb-5">
                         {% for siaeuserrequest in siae.siaeuserrequest_set.pending %}
                             <div class="row">
-                                <div class="col">
+                                <div class="fr-col">
                                     <p class="mb-0">
                                         <span class="prof_icon"><i class="ri-user-line"></i></span>
                                         <span><strong>{{ siaeuserrequest.initiator.full_name }}</strong></span>
@@ -43,10 +43,10 @@
                                         <span style="margin-left:23px;white-space:nowrap">{{ siaeuserrequest.initiator.email }}</span>
                                     </p>
                                 </div>
-                                <div class="col">
+                                <div class="fr-col">
                                     <span class="badge badge-pill badge-warning mt-2" title="{{ siaeuserrequest.created_at|date:'d/m/Y H:i' }}">Nouveau collaborateur</span>
                                 </div>
-                                <div class="col">
+                                <div class="fr-col">
                                     <div class="float-right">
                                         <button class="btn btn-outline-success btn-ico" data-toggle="modal" data-target="#siae_user_request_confirm_modal" data-siae-slug="{{ siae.slug }}" data-initiator-full-name="{{ siaeuserrequest.initiator.full_name }}" data-siae-user-request-id="{{ siaeuserrequest.id }}" title="Confirmer la demande">
                                             <i class="ri-check-fill ri-lg font-weight-light"></i>
@@ -62,14 +62,14 @@
                     {% endif %}
 
                     <div class="row">
-                        <div class="col">
+                        <div class="fr-col">
                             <h2 class="mb-0">Mes collaborateurs</h2>
                         </div>
                     </div>
                     {% for siaeuser in siae.siaeuser_set.all %}
                         <hr class="mb-2" />
                         <div class="row">
-                            <div class="col">
+                            <div class="fr-col">
                                 <p class="mb-0">
                                     <span class="prof_icon"><i class="ri-user-line"></i></span>
                                     <span><strong>{{ siaeuser.user.full_name }}</strong></span>
@@ -79,7 +79,7 @@
                                 </p>
                             </div>
                             {% if siaeuser.user != user %}
-                                <div class="col">
+                                <div class="fr-col">
                                     <div class="float-right mt-2">
                                         <button class="btn btn-link btn-ico" data-toggle="modal" data-target="#siae_user_delete_modal" data-siae-slug="{{ siae.slug }}" data-user-full-name="{{ siaeuser.user.full_name }}" data-siae-user-id="{{ siaeuser.id }}" title="Supprimer le collaborateur">
                                             <i class="ri-delete-bin-line ri-xl font-weight-light"></i>
@@ -91,7 +91,7 @@
                     {% endfor %}
                 </div>
             </div>
-            <div class="col-12 col-lg-4">
+            <div class="fr-col-12 fr-col-lg-4">
                 <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                     <p class="mb-1">
                         <i class="ri-information-line ri-lg"></i>

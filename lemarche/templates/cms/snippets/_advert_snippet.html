@@ -6,10 +6,10 @@
         <div class="fr-container">
             <div class="card my-3">
                 <div class="fr-grid-row no-gutters">
-                    <div class="col-md-6">
+                    <div class="fr-col-md-6">
                         {% image advert.image fill-600x200 class="img-fluid" %}
                     </div>
-                    <div class="col-md-6">
+                    <div class="fr-col-md-6">
                         <div class="card-body h-100 pt-6 px-6">
                             <h2>{{advert.title}}</h2>
                             <a id="{{advert.cta_id}}" href="{{advert.cta_url}}" class="btn btn-link px-0" {% if advert.cta_open_in_new_tab %}target="_blank"{% endif %}>

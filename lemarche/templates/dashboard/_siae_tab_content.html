@@ -1,16 +1,16 @@
 {% load static %}
 
 <div class="row">
-    <div class="col-12 col-md-7">
+    <div class="fr-col-12 fr-col-md-7">
         <div class="fr-grid-row mb-3">
-            <div class="col-auto">
+            <div class="fr-col-auto">
                 {% if siae.logo_url %}
                     <img class="img-fluid" style="width:50px" src="{{ siae.logo_url }}" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
                 {% else %}
                     <img class="img-fluid" style="width:50px" src="{% static 'img/default-listing.png' %}" alt="{{ siae.name }}" loading="lazy" />
                 {% endif %}
             </div>
-            <div class="col">
+            <div class="fr-col">
                 <h2 class="mb-0">{{ siae.name_display }}</h2>
                 {% if siae.super_badge %}
                     <span class="badge badge-base rounded-pill super-badge-badge text-primary mt-2 font-weight-bold">
@@ -22,7 +22,7 @@
         </div>
         {% include "includes/_completion_progress_bar.html" with completion_percent=siae.completion_rate_calculated %}
     </div>
-    <div class="col-12 col-md-auto ml-auto d-flex flex-column">
+    <div class="fr-col-12 fr-col-md-auto ml-auto d-flex flex-column">
         <a href="{% url 'dashboard_siaes:siae_edit' siae.slug %}" id="dashboard-siae-edit-btn" class="btn btn-important btn-sm btn-ico mb-2">
             <i class="ri-pencil-fill ri-lg"></i>
             <span>Compléter votre fiche</span>
@@ -41,7 +41,7 @@
 <hr />
 
 <div class="row">
-    <div class="col-lg-6">
+    <div class="fr-col-lg-6">
         <p class="h4 lh-sm mb-lg-4">Statistiques liées à votre structure <span class="fs-sm font-weight-normal">(3 derniers mois)</span></p>
         <div class="d-flex">
             <div class="flex-fill text-center">

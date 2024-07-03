@@ -5,7 +5,7 @@
     <section>
         <div class="fr-container">
             <div class="row">
-                <div class="col-12">
+                <div class="fr-col-12">
                     <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
@@ -28,10 +28,10 @@
     </section>
 {% endblock %}
 {% block content %}
-    <section class="s-title-01">
+    <section class="">
         <div class="s-title-01__container fr-container">
             <div class="s-title-01__row row">
-                <div class="s-title-01__col col-12">
+                <div class="fr-col-12">
                     <h1 class="s-title-01__title h1 mb-0">
                         <strong>
                             {% if wizard.steps.step1 != wizard.steps.count %}{{ wizard.steps.step1 }}.{% endif %}
@@ -49,7 +49,7 @@
         <div class=" fr-container">
             {% if wizard.steps.step1 != wizard.steps.count %}
                 <div class="fr-grid-row mb-3 mb-lg-5">
-                    <div class="s-section__col col-12 col-lg-7">
+                    <div class="s-section__col fr-col-12 fr-col-lg-7">
                         <div class="c-stepper">
                             <div class="progress progress--marche">
                                 <div class="progress-bar"
@@ -70,7 +70,7 @@
             {% endif %}
             {% block form_section %}
                 <div class="row">
-                    <div class="s-section__col col-12">
+                    <div class="s-section__col fr-col-12">
                         <div class="c-form">
                             <form method="POST"
                                   action=""
@@ -90,15 +90,15 @@
                                 {% block action_form %}
                                     {% block recap_section %}{% endblock %}
                                     <div class="row">
-                                        <div class="col-12 col-lg-7">
+                                        <div class="fr-col-12 fr-col-lg-7">
                                             <hr />
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-12 col-lg-7">
+                                        <div class="fr-col-12 fr-col-lg-7">
                                             <div class="form-row align-items-center {% if wizard.steps.prev %}justify-content-between{% else %}justify-content-end{% endif %}">
                                                 {% block submit_btn %}
-                                                    <div class="form-group col-6 col-lg-auto order-2 order-lg-3">
+                                                    <div class="form-group fr-col-6 fr-col-lg-auto order-2 order-lg-3">
                                                         <button type="submit"
                                                                 id="tender-create-{{ wizard.steps.current }}-form-next-step-btn"
                                                                 class="btn btn-primary btn-block"
@@ -108,7 +108,7 @@
                                                     </div>
                                                 {% endblock submit_btn %}
                                                 {% if wizard.steps.prev %}
-                                                    <div class="form-group col-12 col-lg order-3 order-lg-1">
+                                                    <div class="form-group fr-col-12 fr-col-lg order-3 order-lg-1">
                                                         <button type="submit"
                                                                 id="tender-create-{{ wizard.steps.current }}-form-previous-step-btn"
                                                                 class="btn btn-link btn-ico pl-0"
