@@ -6,7 +6,7 @@
 {% block breadcrumbs %}
 <section>
     <div class="fr-container">
-        <div class="row">
+        <div class="fr-grid-row">
             <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
@@ -26,7 +26,7 @@
 {% block content %}
 <section class="s-section">
     <div class=" fr-container">
-        <div class="row">
+        <div class="fr-grid-row">
             <div class="fr-col-12">
                 <div class="card mb-3">
                     <div class="card-body">
@@ -105,7 +105,7 @@
                 </li>
             </ul>
 
-            <div class="row">
+            <div class="fr-grid-row">
                 <div class="fr-col-12 fr-col-lg-8">
                     <h1 class="mb-3 mb-lg-5">{{ siaes.count }} prestataire{{ siaes.count|pluralize }}</h1>
                 </div>
@@ -125,7 +125,7 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="fr-grid-row">
                 <div class="fr-col-12">
                     {% for siae in siaes %}
                         {% include "siaes/_card_tender.html" with siae=siae %}

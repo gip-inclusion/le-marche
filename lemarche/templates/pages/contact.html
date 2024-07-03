@@ -9,7 +9,7 @@
 {% block breadcrumbs %}
 <section>
     <div class="fr-container">
-        <div class="row">
+        <div class="fr-grid-row">
             <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
@@ -26,7 +26,7 @@
 {% block content %}
 <section class="">
 	<div class="s-title-01__container fr-container">
-		<div class="s-title-01__row row">
+		<div class="fr-grid-row">
 			<div class="fr-col-12">
 				<h1 class="s-title-01__title h1"><strong>Nous contacter</strong></h1>
 				<h2 class="h2">
@@ -46,14 +46,14 @@
 
 <section class="s-section">
 	<div class=" fr-container">
-		<div class="row">
+		<div class="fr-grid-row">
 			<div class="s-section__col fr-col-12 fr-col-lg-7">
 				<div class="c-form">
                     <form method="POST" action="">
                         {% csrf_token %}
                         {% bootstrap_form_errors form type="all" %}
 
-                        <div class="row">
+                        <div class="fr-grid-row">
                             <div class="fr-col-sm-6">
                                 {% bootstrap_field form.first_name form_group_class="form-group" %}
                             </div>
@@ -63,7 +63,7 @@
                         </div>
                         {% bootstrap_field form.email form_group_class="form-group" %}
                         {% bootstrap_field form.kind  form_group_class="form-group"%}
-                        <div class="row">
+                        <div class="fr-grid-row">
                             <div class="fr-col-sm-6">
                                 {% bootstrap_field form.siret form_group_class="form-group" %}
                             </div>
@@ -77,7 +77,7 @@
                         <div class="mtcaptcha"></div>
 
                         <hr>
-                        <div class="row">
+                        <div class="fr-grid-row">
                             <div class="fr-col-12">
                                 <div class="form-row align-items-center justify-content-end">
                                     <div class="form-group fr-col-12 fr-col-lg-auto">

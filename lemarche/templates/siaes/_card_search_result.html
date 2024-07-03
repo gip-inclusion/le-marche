@@ -3,7 +3,7 @@
 
 <div class="card c-card c-card--hovershadow siae-card {% if siae.super_badge %}super-badge-card{% endif %}" data-url="{% url 'siae:detail' siae.slug %}" role="button">
     <div class="card-header">
-        <div class="row">
+        <div class="fr-grid-row">
             <div class="fr-col-auto">
                 {% if siae.logo_url %}
                     <img src="{{ siae.logo_url }}" width="50" alt="Logo de la structure {{ siae.name }}" loading="lazy" />

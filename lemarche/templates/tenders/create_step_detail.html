@@ -7,13 +7,13 @@
 {% endblock %}
 {% block content_form %}
     {% csrf_token %}
-    <div class="row">
+    <div class="fr-grid-row">
         <div class="fr-col-12 fr-col-lg-7">{% bootstrap_field form.start_working_date %}</div>
     </div>
-    <div class="row">
+    <div class="fr-grid-row">
         <div class="fr-col-12 fr-col-lg-7">{% bootstrap_field form.deadline_date %}</div>
     </div>
-    <div class="row">
+    <div class="fr-grid-row">
         <div class="fr-col-12 fr-col-lg-7">{% bootstrap_field form.external_link %}</div>
     </div>
     <div class="fr-grid-row mb-4" x-data="TenderQuestionForm">
@@ -44,7 +44,7 @@
             <button type="button" class="btn btn-info" x-on:click="addNewQuestion()">Ajouter une question</button>
         </div>
     </div>
-    <div class="row">
+    <div class="fr-grid-row">
         <div class="fr-col-12 fr-col-lg-7">
             <span x-data="SocialImpactCalculatorComponent">
                 {% bootstrap_field form.amount %}

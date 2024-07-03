@@ -3,7 +3,7 @@
 {% block after_related_objects %}
     {{ block.super }}
     {% if original %}
-        <div class="submit-row">
+        <div class="submit-fr-grid-row">
             {% if original.is_validated %}
                 <i>Validée et envoyée le {{ original.validated_at }}</i><br>
             {% else %}

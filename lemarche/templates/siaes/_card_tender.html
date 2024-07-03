@@ -2,7 +2,7 @@
 
 <div class="card c-card siae-card {% if siae.super_badge %}super-badge-card{% endif %}">
     <div class="card-header">
-        <div class="row">
+        <div class="fr-grid-row">
             <div class="fr-col-auto">
                 {% if siae.logo_url %}
                     <img src="{{ siae.logo_url }}" width="50" alt="Logo de {{ siae.name }}" />
@@ -22,9 +22,9 @@
         </div>
     </div>
     <div class="card-body">
-        <div class="row">
+        <div class="fr-grid-row">
             <div class="fr-col-md-8">
-                <!-- <div class="row">
+                <!-- <div class="fr-grid-row">
                     <div class="fr-col-12">
                         <span title="{{ siae.tendersiae_set.first.created_at }}">{{ siae.tendersiae_set.first.created_at|date }}</span>
                     </div>
@@ -43,7 +43,7 @@
                         <a href="mailto:{{ siae.contact_email }}" id="tender_siae_company_email">{{ siae.contact_email }}</a>
                     </div>
                 </div>
-                <div class="row">
+                <div class="fr-grid-row">
                     <div class="fr-col-md-6 has-ellipsis">
                         <i class="ri-window-2-line"></i>
                         <a href="{{ siae.contact_website }}" id="tender_siae_company_website" target="_blank" rel="noopener">{{ siae.contact_website }}</a>
