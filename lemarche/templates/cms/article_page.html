@@ -12,7 +12,7 @@
 {% block breadcrumbs %}
 <section>
     <div class="fr-container">
-        <div class="row">
+        <div class="fr-grid-row">
             <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
@@ -46,13 +46,13 @@
 <section class="s-cms has-illustration-bg-02">
     <div class="s-cms__container fr-container fr-container-max-lg">
         {% if page.image %}
-            <div class="s-cms__row row">
+            <div class="s-cms__row fr-grid-row">
                 <div class="s-cms__col fr-col-12 mb-3 mb-lg-5">
                     {% image page.image width-960 class="img-fluid img-fitcover" loading="lazy" %}
                 </div>
             </div>
         {% endif %}
-        <div class="s-cms__row row">
+        <div class="s-cms__row fr-grid-row">
             <div class="s-cms__col fr-col-12">
                 {{ page.body | richtext }}
             </div>

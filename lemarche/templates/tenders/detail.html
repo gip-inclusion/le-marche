@@ -6,7 +6,7 @@
 {% block breadcrumbs %}
 <section>
     <div class="fr-container">
-        <div class="row">
+        <div class="fr-grid-row">
             <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
@@ -30,7 +30,7 @@
         <!-- Contact details above + help -->
         {% if not tender.deadline_date_outdated and not tender.response_is_anonymous %}
             {% if siae_has_detail_contact_click_date %}
-                <div class="row">
+                <div class="fr-grid-row">
                     <div class="fr-col-12 fr-col-lg-8">
                         <div class="alert alert-info fade show" role="status">
                             {% include "tenders/_detail_contact.html" with tender=tender source="alert" %}
@@ -51,7 +51,7 @@
                 </div>
             {% endif %}
         {% endif %}
-        <div class="row">
+        <div class="fr-grid-row">
             <!-- Main tender card -->
             <div class="fr-col-12 fr-col-lg-8 order-2">
                 {% include "tenders/_detail_card.html" with tender=tender is_new_for_siaes=is_new_for_siaes %}

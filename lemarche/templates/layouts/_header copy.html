@@ -17,7 +17,7 @@
     {% with tender_siae_unread_count=user.tender_siae_unread_count %}
         <section class="s-header">
             <div class="s-header__container fr-container">
-                <div class="s-header__row row">
+                <div class="s-header__row fr-grid-row">
                     <div class="s-header__col s-header__col--logo-ministere fr-col col-md-auto d-flex align-items-center pr-0">
                         <a href="{{ HOME_PAGE_PATH }}" class="s-header__logo-ministere"><img src="{% static_theme_images 'logo-republique-francaise.svg' %}" alt="Rébublique Française"></a>
                     </div>
@@ -45,7 +45,7 @@
     {% endwith %}
     <section class="s-postheader d-none d-xl-block">
         <div class="s-postheader__container fr-container">
-            <div class="s-postheader__row row">
+            <div class="s-postheader__row fr-grid-row">
                 <div class="s-postheader__col col-12 d-flex align-items-center">
                     <nav role="navigation" aria-label="Navigation secondaire">
                         {% include 'layouts/_header_nav_secondary_items.html' %}

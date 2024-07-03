@@ -1,9 +1,7 @@
 {% load siae_sectors_display %}
 
 <div class="bg-white d-block rounded-lg shadow-lg p-3 mb-3">
-    <div class="row">
-        <div class="col-12 col-lg-8">
-            {% include "siaes/_siae_activity_content.html" with activity=activity with_collapse=with_collapse %}
+    <div class="fr-grid-row">
         <div class="fr-col-12 fr-col-lg-8">
             <p class="h4 lh-sm">{{ activity.sector_group }}</p>
 

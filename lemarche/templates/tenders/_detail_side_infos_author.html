@@ -1,6 +1,6 @@
 {% if tender.is_draft %}
     <div class="alert alert-warning fade show" role="status">
-        <div class="row">
+        <div class="fr-grid-row">
             <div class="fr-col-auto pr-0">
                 <i class="ri-information-line ri-xl text-warning"></i>
             </div>
@@ -16,7 +16,7 @@
 {% endif %}
 {% if tender.is_pending_validation %}
     <div class="alert alert-info fade show" role="status">
-        <div class="row">
+        <div class="fr-grid-row">
             <div class="fr-col-auto pr-0">
                 <i class="ri-information-line ri-xl text-info"></i>
             </div>
@@ -28,7 +28,7 @@
 {% endif %}
 {% if tender.is_sent %}
     <div class="alert alert-success fade show" role="status">
-        <div class="row">
+        <div class="fr-grid-row">
             <div class="fr-col-auto pr-0">
                 <i class="ri-checkbox-circle ri-xl text-info"></i>
             </div>
