@@ -83,7 +83,7 @@
 {% else %}
     <section class="s-section mb-0">
         <div class=" fr-container">
-            <div class="s-section__row row">
+            <div class="row">
                 <div class="s-section__col col-12 pb-5">
                     {% include "dashboard/_add_siae_card.html" %}
                 </div>
@@ -94,7 +94,7 @@
 
 <section class="s-section mt-0 mb-0">
     <div class=" fr-container">
-        <div class="s-section__row row">
+        <div class="row">
             <div class="s-section__col col-12 col-lg-6 pb-5">
                 <div class="card h-100 w-100">
                     <div class="card-body">
@@ -129,7 +129,7 @@
 {% if user.api_key %}
 <section class="s-section mt-0 mb-5">
     <div class=" fr-container">
-        <div class="s-section__row row">
+        <div class="row">
             <div class="col-12 col-lg-6">
                 {% include "dashboard/_api_key_card.html" with user_kind="SIAE" api_key=user.api_key %}
             </div>
