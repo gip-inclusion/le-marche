@@ -11,7 +11,8 @@ DISCLAIMER_ATTACHMENTS = (
 
 def send_first_email_from_conversation(conv: Conversation):
     siae: Siae = conv.siae
-    from_email = f"{conv.sender_first_name} {conv.sender_last_name} <{conv.sender_email_buyer_encoded}>"
+    from_name = f"{conv.sender_first_name} {conv.sender_last_name}"
+    from_email = f"{from_name} <{conv.sender_email_buyer_encoded}>"
 
     sender_company_name = ""
     if conv.sender_user and conv.sender_user.company_name:
@@ -38,7 +39,8 @@ def send_email_from_conversation(
 ):
     if user_kind == Conversation.USER_KIND_SENDER_TO_SIAE:
         # from the buyer to the siae
-        from_email = f"{conv.sender_first_name} {conv.sender_last_name} <{conv.sender_email_buyer_encoded}>"
+        from_name = f"{conv.sender_first_name} {conv.sender_last_name}"
+        from_email = f"{from_name} <{conv.sender_email_buyer_encoded}>"
         send_mail_async(
             email_subject=email_subject,
             email_body=email_body + DISCLAIMER_ATTACHMENTS,
@@ -49,7 +51,7 @@ def send_email_from_conversation(
     elif user_kind == Conversation.USER_KIND_SENDER_TO_BUYER:
         # from the siae to the buyer
         siae: Siae = conv.siae
-        from_email = f"{siae.contact_full_name} <{conv.sender_email_siae_encoded}>"
+        from_email = f"{siae.contact_email_name_display} <{conv.sender_email_siae_encoded}>"
         send_mail_async(
             email_subject=email_subject,
             email_body=email_body + DISCLAIMER_ATTACHMENTS,

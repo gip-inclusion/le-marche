@@ -122,7 +122,7 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, re
     recipient_list = whitelist_recipient_list([email_to])
     if len(recipient_list):
         recipient_email = recipient_list[0]
-        recipient_name = siae.contact_full_name
+        recipient_name = siae.contact_email_name_display
 
         tender_url = f"{get_object_share_url(tender)}?siae_id={siae.id}"
         tender_not_interested_url = f"{get_object_share_url(tender)}?siae_id={siae.id}&not_interested=True"
@@ -273,7 +273,7 @@ def send_tender_contacted_reminder_email_to_siae(tendersiae: TenderSiae, email_t
     recipient_list = whitelist_recipient_list([tendersiae.siae.contact_email])
     if len(recipient_list):
         recipient_email = recipient_list[0]
-        recipient_name = tendersiae.tender.author.full_name
+        recipient_name = tendersiae.siae.contact_email_name_display
 
         variables = {
             "SIAE_CONTACT_FIRST_NAME": tendersiae.siae.contact_first_name,
@@ -348,7 +348,7 @@ def send_tender_interested_reminder_email_to_siae(
     recipient_list = whitelist_recipient_list([tendersiae.siae.contact_email])
     if len(recipient_list):
         recipient_email = recipient_list[0]
-        recipient_name = tendersiae.tender.author.full_name
+        recipient_name = tendersiae.siae.contact_email_name_display
 
         variables = {
             "SIAE_CONTACT_FIRST_NAME": tendersiae.siae.contact_first_name,
