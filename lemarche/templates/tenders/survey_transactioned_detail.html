@@ -34,7 +34,7 @@
                 <form method="POST" action="" class="mb-3 mb-lg-5">
                     {% csrf_token %}
 
-                    <div class="row mb-3 mb-lg-5">
+                    <div class="fr-grid-row mb-3 mb-lg-5">
                         <div class="col-12 col-lg-8">
                             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                                 <fieldset>
@@ -54,7 +54,7 @@
                     </div>
 
                     {% if tender.survey_transactioned_answer == None or tender.survey_transactioned_answer == True %}
-                        <div class="row mb-3 mb-lg-5">
+                        <div class="fr-grid-row mb-3 mb-lg-5">
                             <div class="col-12 col-lg-8">
                                 <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                                     <fieldset>
@@ -74,7 +74,7 @@
                         </div>
                     {% endif %}
 
-                    <div class="row mb-3 mb-lg-5">
+                    <div class="fr-grid-row mb-3 mb-lg-5">
                         <div class="col-12 col-lg-8">
                             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                                 <fieldset>
@@ -85,7 +85,7 @@
                         </div>
                     </div>
 
-                    <div class="row mt-3 mt-lg-5">
+                    <div class="fr-grid-row mt-3 mt-lg-5">
                         <div class="col-12 col-lg-8 text-right">
                             <button type="submit" class="btn btn-primary">
                                 <span>Envoyer ma réponse</span>
