@@ -3,14 +3,14 @@
 <div class="card c-card siae-card {% if siae.super_badge %}super-badge-card{% endif %}">
     <div class="card-header">
         <div class="row">
-            <div class="col-auto">
+            <div class="fr-col-auto">
                 {% if siae.logo_url %}
                     <img src="{{ siae.logo_url }}" width="50" alt="Logo de {{ siae.name }}" />
                 {% else %}
                     <img src="{% static 'img/default-listing.png' %}" width="50" alt="{{ siae.name }}" />
                 {% endif %}
             </div>
-            <div class="col">
+            <div class="fr-col">
                 <h2 class="h4 mb-0">{{ siae.name_display }}</h2>
                 {% if siae.super_badge %}
                     <span class="badge badge-base rounded-pill super-badge-badge text-primary mt-2 font-weight-bold">
@@ -23,38 +23,38 @@
     </div>
     <div class="card-body">
         <div class="row">
-            <div class="col-md-8">
+            <div class="fr-col-md-8">
                 <!-- <div class="row">
-                    <div class="col-12">
+                    <div class="fr-col-12">
                         <span title="{{ siae.tendersiae_set.first.created_at }}">{{ siae.tendersiae_set.first.created_at|date }}</span>
                     </div>
                 </div> -->
                 <div class="fr-grid-row mb-2">
-                    <div class="col-md-4">
+                    <div class="fr-col-md-4">
                         <i class="ri-user-line"></i>
                         <span>{{ siae.contact_short_name }}</span>
                     </div>
-                    <div class="col-md-4">
+                    <div class="fr-col-md-4">
                         <i class="ri-phone-line"></i>
                         <a href="tel:{{ siae.contact_phone }}" id="tender_siae_company_phone" style="text-overflow:ellipsis">{{ siae.contact_phone }}</a>
                     </div>
-                    <div class="col-md-4 has-ellipsis">
+                    <div class="fr-col-md-4 has-ellipsis">
                         <i class="ri-at-line"></i>
                         <a href="mailto:{{ siae.contact_email }}" id="tender_siae_company_email">{{ siae.contact_email }}</a>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6 has-ellipsis">
+                    <div class="fr-col-md-6 has-ellipsis">
                         <i class="ri-window-2-line"></i>
                         <a href="{{ siae.contact_website }}" id="tender_siae_company_website" target="_blank" rel="noopener">{{ siae.contact_website }}</a>
                     </div>
-                    <div class="col-md-6 has-ellipsis">
+                    <div class="fr-col-md-6 has-ellipsis">
                         <i class="ri-earth-line"></i>
                         <a href="{{ siae.contact_social_website }}" id="tender_siae_company_social_website" target="_blank" rel="noopener">{{ siae.contact_social_website }}</a>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 text-center my-auto">
+            <div class="fr-col-md-4 text-center my-auto">
                 <a href="{% url 'siae:detail' siae.slug %}" class="btn btn-primary" target="_blank" rel="noopener">
                     <span>Accéder à la fiche commerciale</span>
                 </a>

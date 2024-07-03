@@ -7,7 +7,7 @@
 <section>
     <div class="fr-container">
         <div class="row">
-            <div class="col-12">
+            <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -25,18 +25,18 @@
 <section>
     <div class="fr-container py-4">
         <div class="row">
-            <div class="col-12 col-lg">
+            <div class="fr-col-12 fr-col-lg">
                 <h1>{{ page_title }}</h1>
             </div>
             <!-- "buyer": can create new tenders -->
             {% if user.kind != user.KIND_SIAE %}
-                <div class="col-12 col-md-auto">
+                <div class="fr-col-12 fr-col-md-auto">
                     <a href="{% url 'tenders:create' %}" id="tender-list-create" class="btn btn-primary">
                         <i class="ri-add-fill ri-lg mr-2"></i>Publier un besoin d'achat
                     </a>
                 </div>
             {% else %}
-                <div class="col-12 col-md-auto">
+                <div class="fr-col-12 fr-col-md-auto">
                     <form method="GET" action="">
                         <div class="form-group">
                             {{ filter_form.kind }}
@@ -46,7 +46,7 @@
             {% endif %}
         </div>
         <div class="row">
-            <div class="col-12 my-5">
+            <div class="fr-col-12 my-5">
                 <!-- "buyer": display tenders which the user is the author -->
                 {% if user.kind != user.KIND_SIAE %}
                     {% block htmx %}

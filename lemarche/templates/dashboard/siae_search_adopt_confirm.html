@@ -7,7 +7,7 @@
 <section>
     <div class="fr-container">
         <div class="row">
-            <div class="col-12">
+            <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -26,7 +26,7 @@
 <section class="s-section">
     <div class=" fr-container">
         <div class="row">
-            <div class="col-12 col-lg-8">
+            <div class="fr-col-12 fr-col-lg-8">
                 <h2 class="h1 mb-3 mb-lg-5"><strong>Dernière vérification</strong></h2>
 
                 <p class="lead mb-0">
@@ -96,12 +96,12 @@
                 <form method="POST" class="mt-3 mt-lg-5">
                     {% csrf_token %}
                     <div class="fr-grid-row justify-content-end">
-                        <div class="col-12 col-md-auto pr-lg-2">
+                        <div class="fr-col-12 fr-col-md-auto pr-lg-2">
                             <a href="{% url 'dashboard_siaes:siae_search_by_siret' %}" class="btn btn-outline-primary btn-block">
                                 Non, refaire une recherche
                             </a>
                         </div>
-                        <div class="col-12 col-md-auto pl-lg-2 pt-3 pt-lg-0">
+                        <div class="fr-col-12 fr-col-md-auto pl-lg-2 pt-3 pt-lg-0">
                             {% if siae.users.count %}
                                 <button type="submit" class="btn btn-primary btn-block" {% if siae_user_pending_request %}disabled{% endif %}>
                                     Demander le rattachement

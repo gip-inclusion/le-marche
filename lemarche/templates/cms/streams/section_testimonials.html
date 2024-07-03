@@ -3,13 +3,13 @@
 <section class="s-hp-slider-partners-tenders">
     <div class="s-hp-slider-partners-tenders__container fr-container">
         <div class="s-hp-slider-partners__row row">
-            <div class="col-12">
+            <div class="fr-col-12">
                 <h2 class="h2 mb-3 mb-lg-5 px-8 text-center">{{self.title}}</h2>
             </div>
         </div>
         <div class="fr-grid-row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6">
             {% for testimonial_image in self.images %}
-                <div class="col py-3 d-flex justify-content-center align-items-center">
+                <div class="fr-col py-3 d-flex justify-content-center align-items-center">
                     {% image testimonial_image.value width-120 class="img-fluid" loading="lazy" %}
                 </div>
             {% endfor %}

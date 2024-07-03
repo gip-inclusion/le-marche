@@ -12,7 +12,7 @@
     <section>
         <div class="fr-container">
             <div class="row">
-                <div class="col-12">
+                <div class="fr-col-12">
                     <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
@@ -36,7 +36,7 @@
     <section class="s-siae-03">
         <div class="fr-container">
             <div id="dir-profile" class="dir-profile-row row">
-                <div id="content" class="col-12 listing-area">
+                <div id="content" class="fr-col-12 listing-area">
                     <!-- profile-detail basic info -->
                     <div id="user_profile">{% include "siaes/_card_detail.html" with siae=siae %}</div>
                     <!-- profile-detail sidebar -->
@@ -63,7 +63,7 @@
                     <article id="user_detail" class="profile-detail">
                         <!-- First fr-grid-row : Description -->
                         <div class="row">
-                            <div class="col-sm-12 img-left">
+                            <div class="fr-col-sm-12 img-left">
                                 <div class="il-l">
                                     <img src="{% static_theme_images 'ico-bicro-marche-descript-act.svg' %}"
                                          alt=""
@@ -84,7 +84,7 @@
                         <!-- Second & Third Row : Secteurs, Références -->
                         <hr />
                         <div class="row">
-                            <div class="col-sm-6 img-left">
+                            <div class="fr-col-sm-6 img-left">
                                 <div class="il-l">
                                     <img src="{% static_theme_images 'ico-bicro-marche-secteur.svg' %}"
                                          alt=""
@@ -92,23 +92,14 @@
                                 </div>
                                 <div class="il-r">
                                     <h3 class="h2 mb-1 mt-1">Secteurs d'activité</h3>
-                                    {% if user.is_authenticated and user.is_admin %}
-                                        {% for activity in siae.activities.all %}
-                                            {% include "siaes/_siae_activity_content.html" with activity=activity with_collapse=True %}
-                                        {% endfor %}
-                                    {% else %}
-                                        {% if not siae.sector_count %}
-                                            <p>Non renseigné</p>
-                                        {% else %}
-                                            <ul>
-                                                {% siae_sectors_display siae display_max=6 current_search_query=current_search_query output_format='li' %}
-                                            </ul>
-                                        {% endif %}
-                                    {% endif %}
+                                    <ul>
+                                        {% siae_sectors_display siae display_max=6 current_search_query=current_search_query output_format='li' %}
+                                    </ul>
+                                    {% if not siae.sector_count %}<p>Non renseigné</p>{% endif %}
                                 </div>
                             </div>
                             {% if siae.client_reference_count %}
-                                <div class="col-sm-6 img-left">
+                                <div class="fr-col-sm-6 img-left">
                                     <div class="il-l">
                                         <img src="{% static_theme_images 'ico-bicro-marche-ref-clients.svg' %}"
                                              alt=""
@@ -119,7 +110,7 @@
                                         {% if siae.client_reference_count <= 6 %}
                                             <ul class="list-unstyled fr-grid-row row-cols-3 align-items-center">
                                                 {% for image in siae.client_references.all %}
-                                                    <li class="col">
+                                                    <li class="fr-col">
                                                         <img class="img-fluid img-fitcover"
                                                              src="{{ image.logo_url }}"
                                                              alt="{{ image.name }}" />
@@ -129,7 +120,7 @@
                                         {% else %}
                                             <ul class="list-unstyled fr-grid-row row-cols-3 align-items-center mb-0">
                                                 {% for image in siae.client_references.all|slice:":6" %}
-                                                    <li class="col">
+                                                    <li class="fr-col">
                                                         <img class="img-fluid img-fitcover"
                                                              src="{{ image.logo_url }}"
                                                              alt="{{ image.name }}" />
@@ -139,7 +130,7 @@
                                             <div class="collapse" id="collapseMoreRefClients">
                                                 <ul class="list-unstyled fr-grid-row row-cols-3 align-items-center mb-0">
                                                     {% for image in siae.client_references.all|slice:"6:" %}
-                                                        <li class="col">
+                                                        <li class="fr-col">
                                                             <img class="img-fluid img-fitcover"
                                                                  src="{{ image.logo_url }}"
                                                                  alt="{{ image.name }}" />
@@ -163,7 +154,7 @@
                         {% if siae.offer_count %}
                             <hr />
                             <div class="row">
-                                <div class="col-sm-12 img-left">
+                                <div class="fr-col-sm-12 img-left">
                                     <div class="il-l">
                                         <img src="{% static_theme_images 'ico-bicro-marche-detail.svg' %}"
                                              alt=""
@@ -175,7 +166,7 @@
                                         </h3>
                                         <div class="row">
                                             {% for offer in siae.offers.all %}
-                                                <article class="prests-post col-12 {% if siae.offer_count > 1 %}col-lg-6{% endif %} mt-2">
+                                                <article class="prests-post fr-col-12 {% if siae.offer_count > 1 %}col-lg-6{% endif %} mt-2">
                                                     <h3>
                                                         <img src="{% static 'img/prof_dot.png' %}" alt="" />
                                                         <span>{{ offer.name }}</span>
@@ -193,7 +184,7 @@
                             <hr />
                             <div class="row">
                                 {% if siae.network_count %}
-                                    <div class="col-12 col-md-6 img-left">
+                                    <div class="fr-col-12 fr-col-md-6 img-left">
                                         <div class="il-l">
                                             <img src="{% static_theme_images 'ico-bicro-marche-reseaux.svg' %}"
                                                  alt=""
@@ -218,7 +209,7 @@
                                     </div>
                                 {% endif %}
                                 {% if siae.label_count %}
-                                    <div class="col-12 col-md-6 img-left">
+                                    <div class="fr-col-12 fr-col-md-6 img-left">
                                         <div class="il-l">
                                             <img src="{% static_theme_images 'ico-bicro-marche-labels.svg' %}"
                                                  alt=""
@@ -238,7 +229,7 @@
                         {% if siae.images.count %}
                             <hr />
                             <div class="row">
-                                <div class="col-12 img-left">
+                                <div class="fr-col-12 img-left">
                                     <div class="il-l">
                                         <img src="{% static_theme_images 'ico-bicro-marche-realisation.svg' %}"
                                              alt=""
@@ -251,7 +242,7 @@
                             </div>
                             <div id="image-grid" class="row">
                                 {% for image in siae.images.all %}
-                                    <div class="col-12 col-sm-4 pb-3">
+                                    <div class="fr-col-12 fr-col-sm-4 pb-3">
                                         <!-- 3 per row -->
                                         <img src="{{ image.image_url }}"
                                              class="img-fluid"
@@ -264,7 +255,7 @@
                         {% if not siae.user_count and not user.is_authenticated %}
                             <div id="user_update_cta"
                                  class="fr-grid-row justify-content-center mb-5 mb-lg-3 mt-lg-5">
-                                <div class="col-12 col-lg-10">
+                                <div class="fr-col-12 fr-col-lg-10">
                                     <div class="card c-card c-card--mini h-100 p-3 p-lg-5 pr-lg-7">
                                         <div class="card-body text-center">
                                             <h3 class="h2 m-0">C'est votre structure et vous souhaitez modifier ses informations.</h3>
@@ -287,7 +278,7 @@
                 </div>
             </div>
             <div class="fr-grid-row partners-md d-lg-none">
-                <div class="col-12">
+                <div class="fr-col-12">
                     <hr />
                     {% include "siaes/_detail_partner_cta.html" with siae=siae %}
                 </div>
@@ -342,9 +333,7 @@ document.addEventListener("DOMContentLoaded", function() {
     .bindPopup(`<p class="h6">${siaeDisplayName}</p></a>`)
     .addTo(map);
 
-    {% if form.errors %}
-        $('#form_contact_modal').modal('show');
-    {% endif %}
+    {% if form.errors %}$('#form_contact_modal').modal('show');{% endif %}
 });
     </script>
     {% if MTCAPTCHA_PUBLIC_KEY %}

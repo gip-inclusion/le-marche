@@ -12,7 +12,7 @@
     {% bootstrap_form_errors form type="all" %}
 
     <div class="fr-grid-row mb-3 mb-lg-5">
-        <div class="col-12 col-lg-8">
+        <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                 <fieldset>
                     <legend class="h4">Vos prestations commerciales <small class="text-muted">(services rendus, produits vendus, activités exercées par vos salariés…)</small></legend>
@@ -31,7 +31,7 @@
                 </fieldset>
             </div>
         </div>
-        <div class="col-12 col-lg-4">
+        <div class="fr-col-12 fr-col-lg-4">
             <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                 <p class="mb-1">
                     <i class="ri-information-line ri-lg"></i>
@@ -48,7 +48,7 @@
     </div>
 
     <div class="fr-grid-row mb-3 mb-lg-5">
-        <div class="col-12 col-lg-8">
+        <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                 <fieldset>
                     <legend class="h4">Références clients</legend>
@@ -65,7 +65,7 @@
                             {% bootstrap_field form.name %}
                             <!-- Logo -->
                             <div class="row">
-                                <div class="col-12 col-sm-6">
+                                <div class="fr-col-12 fr-col-sm-6">
                                     <div class="form-group">
                                         {{ form.logo_url.as_hidden }}
                                         {% with "id_client_references-"|addstr:forloop.counter0|addstr:"-logo_form" as id_logo_form %}
@@ -74,7 +74,7 @@
                                         {% endwith %}
                                     </div>
                                 </div>
-                                <div class="col-12 col-sm-6">
+                                <div class="fr-col-12 fr-col-sm-6">
                                     <div class="form-group">
                                         <label>Logo actuel</label>
                                         {% if form.logo_url.value %}
@@ -98,7 +98,7 @@
                             <input type="text" name="client_references-__prefix__-name" maxlength="255" class="form-control" title="" id="id_client_references-__prefix__-name">
                         </div>
                         <div class="row">
-                            <div class="col-12 col-sm-6">
+                            <div class="fr-col-12 fr-col-sm-6">
                                 <div class="form-group">
                                     <!-- <label for="id_client_references-__prefix__-logo_url">Lien vers le logo</label> -->
                                     <input type="hidden" name="client_references-__prefix__-logo_url" maxlength="500" class="form-control" title="" id="id_client_references-__prefix__-logo_url">
@@ -123,7 +123,7 @@
                 </fieldset>
             </div>
         </div>
-        <div class="col-12 col-lg-4">
+        <div class="fr-col-12 fr-col-lg-4">
             <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                 <p class="mb-1">
                     <i class="ri-information-line ri-lg"></i>
@@ -140,7 +140,7 @@
     </div>
 
     <div class="fr-grid-row mb-3 mb-lg-5">
-        <div class="col-12 col-lg-8">
+        <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                 <fieldset>
                     <legend class="h4">Vos réalisations</legend>
@@ -157,7 +157,7 @@
                             {% bootstrap_field form.name %}
                             <!-- Image -->
                             <div class="row">
-                                <div class="col-12 col-sm-6">
+                                <div class="fr-col-12 fr-col-sm-6">
                                     <div class="form-group">
                                         {{ form.image_url.as_hidden }}
                                         {% with "id_images-"|addstr:forloop.counter0|addstr:"-image_form" as id_image_form %}
@@ -166,7 +166,7 @@
                                         {% endwith %}
                                     </div>
                                 </div>
-                                <div class="col-12 col-sm-6">
+                                <div class="fr-col-12 fr-col-sm-6">
                                     <div class="form-group">
                                         <label>Image actuelle</label>
                                         {% if form.image_url.value %}
@@ -190,7 +190,7 @@
                             <input type="text" name="images-__prefix__-name" maxlength="255" class="form-control" title="" id="id_images-__prefix__-name">
                         </div>
                         <div class="row">
-                            <div class="col-12 col-sm-6">
+                            <div class="fr-col-12 fr-col-sm-6">
                                 <div class="form-group">
                                     <!-- <label for="id_images-__prefix__-image_url">Lien vers l'image</label> -->
                                     <input type="hidden" name="images-__prefix__-image_url" maxlength="500" class="form-control" title="" id="id_images-__prefix__-image_url">
@@ -215,7 +215,7 @@
                 </fieldset>
             </div>
         </div>
-        <div class="col-12 col-lg-4">
+        <div class="fr-col-12 fr-col-lg-4">
             <div role="alert" class="alert alert-info mt-3 mt-lg-0">
                 <p class="mb-1">
                     <i class="ri-information-line ri-lg"></i>
@@ -232,12 +232,12 @@
     </div>
 
     <div class="fr-grid-row mt-3 mt-lg-5 justify-content-end">
-        <div class="col-12 col-lg-auto px-5 px-lg-6">
+        <div class="fr-col-12 fr-col-lg-auto px-5 px-lg-6">
             <button type="submit" class="btn btn-primary btn-block">
                 <span>Enregistrer mes modifications</span>
             </button>
         </div>
-        <div class="col-12 col-lg-4"></div>
+        <div class="fr-col-12 fr-col-lg-4"></div>
     </div>
 </form>
 {% endblock %}

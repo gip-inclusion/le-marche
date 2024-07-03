@@ -7,7 +7,7 @@
 <section>
     <div class="fr-container">
         <div class="row">
-            <div class="col-12">
+            <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -30,12 +30,12 @@
             <strong>Avez-vous contractualisé ?</strong>
         </h1>
         <div class="row">
-            <div class="col-12">
+            <div class="fr-col-12">
                 <form method="POST" action="" class="mb-3 mb-lg-5">
                     {% csrf_token %}
 
                     <div class="fr-grid-row mb-3 mb-lg-5">
-                        <div class="col-12 col-lg-8">
+                        <div class="fr-col-12 fr-col-lg-8">
                             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                                 <fieldset>
                                     <legend class="h5">{{ form.survey_transactioned_answer.label }}</legend>
@@ -43,7 +43,7 @@
                                 </fieldset>
                             </div>
                         </div>
-                        <div class="col-12 col-lg-4">
+                        <div class="fr-col-12 fr-col-lg-4">
                             <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                                 <p class="mb-0">
                                     <i class="ri-information-line ri-lg"></i>
@@ -55,7 +55,7 @@
 
                     {% if tender.survey_transactioned_answer == None or tender.survey_transactioned_answer == True %}
                         <div class="fr-grid-row mb-3 mb-lg-5">
-                            <div class="col-12 col-lg-8">
+                            <div class="fr-col-12 fr-col-lg-8">
                                 <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                                     <fieldset>
                                         <legend class="h5">{{ form.survey_transactioned_amount.label }}</legend>
@@ -63,7 +63,7 @@
                                     </fieldset>
                                 </div>
                             </div>
-                            <div class="col-12 col-lg-4">
+                            <div class="fr-col-12 fr-col-lg-4">
                                 <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                                     <p class="mb-0">
                                         <i class="ri-information-line ri-lg"></i>
@@ -75,7 +75,7 @@
                     {% endif %}
 
                     <div class="fr-grid-row mb-3 mb-lg-5">
-                        <div class="col-12 col-lg-8">
+                        <div class="fr-col-12 fr-col-lg-8">
                             <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
                                 <fieldset>
                                     <legend class="h5">{{ form.survey_transactioned_feedback.label }}</legend>
@@ -86,7 +86,7 @@
                     </div>
 
                     <div class="fr-grid-row mt-3 mt-lg-5">
-                        <div class="col-12 col-lg-8 text-right">
+                        <div class="fr-col-12 fr-col-lg-8 text-right">
                             <button type="submit" class="btn btn-primary">
                                 <span>Envoyer ma réponse</span>
                             </button>

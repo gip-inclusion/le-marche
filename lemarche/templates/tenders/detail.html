@@ -7,7 +7,7 @@
 <section>
     <div class="fr-container">
         <div class="row">
-            <div class="col-12">
+            <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -31,12 +31,12 @@
         {% if not tender.deadline_date_outdated and not tender.response_is_anonymous %}
             {% if siae_has_detail_contact_click_date %}
                 <div class="row">
-                    <div class="col-12 col-lg-8">
+                    <div class="fr-col-12 fr-col-lg-8">
                         <div class="alert alert-info fade show" role="status">
                             {% include "tenders/_detail_contact.html" with tender=tender source="alert" %}
                         </div>
                     </div>
-                    <div class="col-12 col-lg-4">
+                    <div class="fr-col-12 fr-col-lg-4">
                         <div class="alert alert-info mt-3 mt-lg-0" role="alert">
                             <p class="mb-1">
                                 <i class="ri-information-line ri-lg"></i>
@@ -53,11 +53,11 @@
         {% endif %}
         <div class="row">
             <!-- Main tender card -->
-            <div class="col-12 col-lg-8 order-2">
+            <div class="fr-col-12 fr-col-lg-8 order-2">
                 {% include "tenders/_detail_card.html" with tender=tender is_new_for_siaes=is_new_for_siaes %}
             </div>
             <!-- Sidebar with actions -->
-            <div class="col-12 col-lg-4 order-1 order-lg-2">
+            <div class="fr-col-12 fr-col-lg-4 order-1 order-lg-2">
                 {% include "tenders/_detail_sidebar.html" with tender=tender %}
             </div>
         </div>
