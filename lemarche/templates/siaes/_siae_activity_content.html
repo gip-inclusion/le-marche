@@ -1,0 +1,28 @@
+{% load siae_sectors_display %}
+
+<p class="h4 lh-sm">
+    {% if with_collapse %}
+        <a href="#collapseSiaeActiviyContent{{ activity.id }}" class="text-decoration-none has-collapse-caret collapsed" data-toggle="collapse">
+            {{ activity.sector_group }}
+        </a>
+    {% else %}
+        {{ activity.sector_group }}
+    {% endif %}
+</p>
+
+<div id="collapseSiaeActiviyContent{{ activity.id }}" class="{% if with_collapse %}pb-3 collapse{% endif %}">
+    <ul style="padding-left:1.5rem">
+        {% siae_sectors_display activity display_max=6 output_format='li' %}
+    </ul>
+
+    <p class="mb-0">
+        <i class="ri-briefcase-4-line mr-1"></i>
+        <span class="sr-only">Type(s) de prestation :</span>
+        <span>{{ activity.presta_type_display }}</span>
+    </p>
+    <p class="mb-0">
+        <i class="ri-map-2-line"></i>
+        <span class="sr-only">Intervient sur : {{ siae.geo_range_pretty_title }}</span>
+        <span>{{ siae.geo_range_pretty_display }}</span>
+    </p>
+</div>
