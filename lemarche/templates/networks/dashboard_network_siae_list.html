@@ -7,7 +7,7 @@
 <section>
     <div class="fr-container">
         <div class="row">
-            <div class="col-12">
+            <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -26,7 +26,7 @@
 <section class="s-section">
     <div class=" fr-container">
         <div class="row">
-            <div class="col-12">
+            <div class="fr-col-12">
                 <h1 class="h1 mb-3 mb-lg-5">
                     <strong>Mes adhérents</strong>
                     <br />
@@ -36,20 +36,20 @@
         </div>
 
         <div class="row">
-            <div class="col-12">
+            <div class="fr-col-12">
                 <div class="card mb-3">
                     <div class="card-body">
                         <form method="GET" role="search">
                             {% bootstrap_form_errors form type="all" %}
                             <div class="row">
-                                <div class="col-12 col-lg-8">
+                                <div class="fr-col-12 fr-col-lg-8">
                                     <div class="row">
-                                        <div class="col-12">
+                                        <div class="fr-col-12">
                                             {% bootstrap_field form.perimeter %}
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-12 col-lg-4">
+                                <div class="fr-col-12 fr-col-lg-4">
                                     <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
                                     <button id="text-search-submit" class="btn btn-primary btn-block btn-ico" type="submit">
                                         <span>Filtrer</span>
@@ -64,7 +64,7 @@
         </div>
 
         <div class="row">
-            <div class="col-12">
+            <div class="fr-col-12">
                 <h2>
                     {{ siaes.count }} structure{{ siaes.count|pluralize }}
                     {% if siaes.count != network.siaes.count %}trouvée{{ siaes.count|pluralize }}{% endif %}

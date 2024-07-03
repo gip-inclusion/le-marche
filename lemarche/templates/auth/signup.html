@@ -7,7 +7,7 @@
 <section>
     <div class="fr-container">
         <div class="row">
-            <div class="col-12">
+            <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -19,10 +19,10 @@
     </div>
 </section>
 
-<section class="s-title-01">
+<section class="">
     <div class="s-title-01__container fr-container">
         <div class="s-title-01__row row">
-            <div class="s-title-01__col col-12">
+            <div class="fr-col-12">
                 <h1 class="s-title-01__title h1">Inscription</h1>
             </div>
         </div>
@@ -32,7 +32,7 @@
 <section class="s-section">
     <div class=" fr-container">
         <div class="row">
-            <div class="s-section__col col-12 col-lg-7">
+            <div class="s-section__col fr-col-12 fr-col-lg-7">
                 <form method="POST" action="" id="signup-form">
                     {% csrf_token %}
 
@@ -106,9 +106,9 @@
 
                         <!-- Submit -->
                         <div class="row">
-                            <div class="col-12">
+                            <div class="fr-col-12">
                                 <div class="form-row justify-content-end align-items-center">
-                                    <div class="form-group col-12 col-lg-auto">
+                                    <div class="form-group fr-col-12 fr-col-lg-auto">
                                         <button type="submit" id="signup-submit-btn" class="btn btn-block btn-primary">
                                             <span>Valider</span>
                                         </button>

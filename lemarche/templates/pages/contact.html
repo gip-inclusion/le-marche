@@ -10,7 +10,7 @@
 <section>
     <div class="fr-container">
         <div class="row">
-            <div class="col-12">
+            <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -24,10 +24,10 @@
 {% endblock %}
 
 {% block content %}
-<section class="s-title-01">
+<section class="">
 	<div class="s-title-01__container fr-container">
 		<div class="s-title-01__row row">
-			<div class="s-title-01__col col-12">
+			<div class="fr-col-12">
 				<h1 class="s-title-01__title h1"><strong>Nous contacter</strong></h1>
 				<h2 class="h2">
 					Vous êtes sur le point de contacter l'équipe Support du <strong>Marché de l'inclusion</strong>.
@@ -47,27 +47,27 @@
 <section class="s-section">
 	<div class=" fr-container">
 		<div class="row">
-			<div class="s-section__col col-12 col-lg-7">
+			<div class="s-section__col fr-col-12 fr-col-lg-7">
 				<div class="c-form">
                     <form method="POST" action="">
                         {% csrf_token %}
                         {% bootstrap_form_errors form type="all" %}
 
                         <div class="row">
-                            <div class="col-sm-6">
+                            <div class="fr-col-sm-6">
                                 {% bootstrap_field form.first_name form_group_class="form-group" %}
                             </div>
-                            <div class="col-sm-6">
+                            <div class="fr-col-sm-6">
                                 {% bootstrap_field form.last_name form_group_class="form-group" %}
                             </div>
                         </div>
                         {% bootstrap_field form.email form_group_class="form-group" %}
                         {% bootstrap_field form.kind  form_group_class="form-group"%}
                         <div class="row">
-                            <div class="col-sm-6">
+                            <div class="fr-col-sm-6">
                                 {% bootstrap_field form.siret form_group_class="form-group" %}
                             </div>
-                            <div class="col-sm-6">
+                            <div class="fr-col-sm-6">
                                 {% bootstrap_field form.phone form_group_class="form-group" %}
                             </div>
                         </div>
@@ -78,9 +78,9 @@
 
                         <hr>
                         <div class="row">
-                            <div class="col-12">
+                            <div class="fr-col-12">
                                 <div class="form-row align-items-center justify-content-end">
-                                    <div class="form-group col-12 col-lg-auto">
+                                    <div class="form-group fr-col-12 fr-col-lg-auto">
                                         <button type="submit" class="btn btn-ico btn-block btn-primary">
                                             <i class="ri-send-plane-line ri-lg"></i>
                                             <span>Envoyer</span>

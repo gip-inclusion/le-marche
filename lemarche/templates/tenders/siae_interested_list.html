@@ -7,7 +7,7 @@
 <section>
     <div class="fr-container">
         <div class="row">
-            <div class="col-12">
+            <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -27,13 +27,13 @@
 <section class="s-section">
     <div class=" fr-container">
         <div class="row">
-            <div class="col-12">
+            <div class="fr-col-12">
                 <div class="card mb-3">
                     <div class="card-body">
                         <form method="GET" role="search" id="filter-search-form">
                             {% bootstrap_form_errors form type="all" %}
                             <div class="fr-grid-row align-items-start">
-                                <div class="col-12 col-md-6 col-lg-3">
+                                <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
                                     <div class="form-group">
                                         <label for="id_locations">{{ form.locations.label }}</label>
                                         <div id="dir_form_locations" data-input-name="{{ form.locations.name }}"></div>
@@ -41,19 +41,19 @@
                                         {{ current_locations|json_script:"current-locations" }}
                                     </div>
                                 </div>
-                                <div class="col-12 col-md-6 col-lg-3">
+                                <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
                                     {% bootstrap_field form.kind %}
                                 </div>
-                                <div class="col-12 col-md-6 col-lg-3">
+                                <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
                                     {% bootstrap_field form.territory %}
                                 </div>
-                                <div class="col-12 col-md-6 col-lg-3">
+                                <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
                                     {% bootstrap_field form.employees %}
                                 </div>
-                                <div class="col-12 col-md-6 col-lg-3">
+                                <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
                                     {% bootstrap_field form.ca %}
                                 </div>
-                                <div class="col-12 col-md-6 col-lg-3">
+                                <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
                                     <span class="mb-2 d-none d-md-inline-block">&nbsp;</span>
                                     <button id="text-search-submit" class="btn btn-primary btn-block btn-ico" type="submit">
                                         <span>Filtrer</span>
@@ -106,10 +106,10 @@
             </ul>
 
             <div class="row">
-                <div class="col-12 col-lg-8">
+                <div class="fr-col-12 fr-col-lg-8">
                     <h1 class="mb-3 mb-lg-5">{{ siaes.count }} prestataire{{ siaes.count|pluralize }}</h1>
                 </div>
-                <div class="col-12 col-lg-4">
+                <div class="fr-col-12 fr-col-lg-4">
                     <button type="button" class="btn btn-ico white-space-nowrap text-decoration-none btn-link text-important px-0 float-right {% if tendersiaes.count == 0 %}disabled{% endif %}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="text-decoration-none ml-0">Télécharger la liste</span>
                         <i class="ri-download-line ri-lg"></i>
@@ -126,7 +126,7 @@
             </div>
 
             <div class="row">
-                <div class="col-12">
+                <div class="fr-col-12">
                     {% for siae in siaes %}
                         {% include "siaes/_card_tender.html" with siae=siae %}
                     {% endfor %}
