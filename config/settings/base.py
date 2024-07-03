@@ -568,6 +568,11 @@ MARCHE_APPROCH_TOKEN_RECETTE = env.str("MARCHE_APPROCH_TOKEN_RECETTE", "set-it")
 API_EMPLOIS_INCLUSION_URL = "https://emplois.inclusion.beta.gouv.fr/api/v1"
 API_EMPLOIS_INCLUSION_TOKEN = env.str("API_EMPLOIS_INCLUSION_TOKEN", "set-it")
 
+DATACUBE_API_TOKEN = env.str("DATACUBE_API_TOKEN", "")
+DATACUBE_API_TENDER_START_DATE = datetime.datetime(2023, 1, 1, tzinfo=datetime.timezone.utc)
+
+EMPLOIS_INCLUSION_HELP_URL = "https://aide.emplois.inclusion.beta.gouv.fr"
+
 
 # Django REST Framework (DRF)
 # https://www.django-rest-framework.org/
@@ -889,6 +894,3 @@ ELASTICSEARCH_USERNAME = env.str("ELASTICSEARCH_USERNAME", "")
 ELASTICSEARCH_PASSWORD = env.str("ELASTICSEARCH_PASSWORD", "")
 ELASTICSEARCH_INDEX_SIAES = env.str("ELASTICSEARCH_INDEX_SIAES", "")
 ELASTICSEARCH_MIN_SCORE = env.float("ELASTICSEARCH_MIN_SCORE", 0.9)
-
-DATACUBE_API_TOKEN = env.str("DATACUBE_API_TOKEN", "")
-DATACUBE_API_TENDER_START_DATE = datetime.datetime(2023, 1, 1, tzinfo=datetime.timezone.utc)
