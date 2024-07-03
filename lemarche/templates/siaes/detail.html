@@ -164,137 +164,148 @@
                                         <h3 class="h2 mb-1 mt-1">
                                             Détails des prestations effectuées <small>(matériels, lieux, savoir-faire)</small>
                                         </h3>
-                                        <div class="fr-grid-row">
-                                            {% for offer in siae.offers.all %}
-                                                <article class="prests-post fr-col-12 {% if siae.offer_count > 1 %}col-lg-6{% endif %} mt-2">
-                                                    <h3>
-                                                        <img src="{% static 'img/prof_dot.png' %}" alt="" />
-                                                        <span>{{ offer.name }}</span>
-                                                    </h3>
-                                                    <div>{{ offer.description|linebreaks }}</div>
-                                                </article>
-                                            {% endfor %}
-                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        {% endif %}
-                        <!-- Fifth Row : Réseaux, Labels -->
-                        {% if siae.network_count or siae.label_count %}
-                            <hr />
-                            <div class="fr-grid-row">
-                                {% if siae.network_count %}
-                                    <div class="fr-col-12 fr-col-md-6 img-left">
-                                        <div class="il-l">
-                                            <img src="{% static_theme_images 'ico-bicro-marche-reseaux.svg' %}"
-                                                 alt=""
-                                                 height="32" />
-                                        </div>
-                                        <div class="il-r">
-                                            <h3 class="h2 mb-1 mt-1">Réseaux</h3>
-                                            <ul>
-                                                {% for network in siae.networks.all %}
-                                                    <li>
-                                                        <a href="{{ network.website }}"
-                                                           class="network_link"
-                                                           rel="noopener"
-                                                           target="_blank">
-                                                            <span>{{ network.name }}</span>
-                                                            {% if network.brand %}<span>({{ network.brand }})</span>{% endif %}
-                                                        </a>
-                                                    </li>
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                                {% if siae.label_count %}
-                                    <div class="fr-col-12 fr-col-md-6 img-left">
-                                        <div class="il-l">
-                                            <img src="{% static_theme_images 'ico-bicro-marche-labels.svg' %}"
-                                                 alt=""
-                                                 height="32" />
-                                        </div>
-                                        <div class="il-r">
-                                            <h3 class="h2 mb-1 mt-1">Labels & certifications</h3>
-                                            <ul>
-                                                {% for label in siae.labels_old.all %}<li>{{ label.name }}</li>{% endfor %}
-                                            </ul>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        {% endif %}
-                        <!-- Sixth Row : Réalisations -->
-                        {% if siae.images.count %}
-                            <hr />
-                            <div class="fr-grid-row">
-                                <div class="fr-col-12 img-left">
-                                    <div class="il-l">
-                                        <img src="{% static_theme_images 'ico-bicro-marche-realisation.svg' %}"
-                                             alt=""
-                                             height="32" />
-                                    </div>
-                                    <div class="il-r">
-                                        <h3 class="h2 mb-1 mt-1">Nos réalisations</h3>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="image-grid" class="fr-grid-row">
-                                {% for image in siae.images.all %}
-                                    <div class="fr-col-12 fr-col-sm-4 pb-3">
-                                        <!-- 3 per row -->
-                                        <img src="{{ image.image_url }}"
-                                             class="img-fluid"
-                                             title="{{ image.name|default:'' }}"
-                                             loading="lazy" />
-                                    </div>
-                                {% endfor %}
                             </div>
                         {% endif %}
                         {% if not siae.user_count and not user.is_authenticated %}
                             <div id="user_update_cta"
                                  class="fr-grid-row justify-content-center mb-5 mb-lg-3 mt-lg-5">
                                 <div class="fr-col-12 fr-col-lg-10">
-                                    <div class="card c-card c-card--mini h-100 p-3 p-lg-5 pr-lg-7">
+                                    <div class="card c-card c-card--mini h-100 fr-p-3 p-lg-5 pr-lg-7">
                                         <div class="card-body text-center">
-                                            <h3 class="h2 m-0">C'est votre structure et vous souhaitez modifier ses informations.</h3>
-                                        </div>
-                                        <div class="card-footer text-center">
-                                            <a href="{% url 'auth:signup' %}"
-                                               class="btn btn-primary btn-ico stretched-link">
-                                                <span>Inscrivez-vous dès maintenant</span>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-                                                    <path fill="currentColor" fill-rule="nonzero" stroke="currentColor" d="M1.964 8.95h11.03L9.51 12.737a.451.451 0 00.037.646.474.474 0 00.66-.037L14.386 8.8l.035-.043.033-.05.013-.05V8.539c0-.012.033-.02.033-.044v-.151l-.014-.05-.019-.03-.034-.045-4.193-4.566a.474.474 0 00-.66-.037.452.452 0 00-.036.646l3.45 3.777H1.963a.46.46 0 00-.464.455.46.46 0 00.464.455z">
-                                                    </path>
-                                                </svg>
-                                            </a>
+                                            <h3 class="h2 fr-m-0">C'est votre structure et vous souhaitez modifier ses informations.</h3>
+                                            <div class="fr-grid-row">
+                                                {% for offer in siae.offers.all %}
+                                                    <article class="prests-post fr-col-12 {% if siae.offer_count > 1 %}col-lg-6{% endif %} mt-2">
+                                                        <h3>
+                                                            <img src="{% static 'img/prof_dot.png' %}" alt="" />
+                                                            <span>{{ offer.name }}</span>
+                                                        </h3>
+                                                        <div>{{ offer.description|linebreaks }}</div>
+                                                    </article>
+                                                {% endfor %}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        {% endif %}
-                    </article>
+                            {% endif %}
+                            <!-- Fifth Row : Réseaux, Labels -->
+                            {% if siae.network_count or siae.label_count %}
+                                <hr />
+                                <div class="fr-grid-row">
+                                    {% if siae.network_count %}
+                                        <div class="fr-col-12 fr-col-md-6 img-left">
+                                            <div class="il-l">
+                                                <img src="{% static_theme_images 'ico-bicro-marche-reseaux.svg' %}"
+                                                     alt=""
+                                                     height="32" />
+                                            </div>
+                                            <div class="il-r">
+                                                <h3 class="h2 mb-1 mt-1">Réseaux</h3>
+                                                <ul>
+                                                    {% for network in siae.networks.all %}
+                                                        <li>
+                                                            <a href="{{ network.website }}"
+                                                               class="network_link"
+                                                               rel="noopener"
+                                                               target="_blank">
+                                                                <span>{{ network.name }}</span>
+                                                                {% if network.brand %}<span>({{ network.brand }})</span>{% endif %}
+                                                            </a>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    {% if siae.label_count %}
+                                        <div class="fr-col-12 fr-col-md-6 img-left">
+                                            <div class="il-l">
+                                                <img src="{% static_theme_images 'ico-bicro-marche-labels.svg' %}"
+                                                     alt=""
+                                                     height="32" />
+                                            </div>
+                                            <div class="il-r">
+                                                <h3 class="h2 mb-1 mt-1">Labels & certifications</h3>
+                                                <ul>
+                                                    {% for label in siae.labels_old.all %}<li>{{ label.name }}</li>{% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            <!-- Sixth Row : Réalisations -->
+                            {% if siae.images.count %}
+                                <hr />
+                                <div class="fr-grid-row">
+                                    <div class="fr-col-12 img-left">
+                                        <div class="il-l">
+                                            <img src="{% static_theme_images 'ico-bicro-marche-realisation.svg' %}"
+                                                 alt=""
+                                                 height="32" />
+                                        </div>
+                                        <div class="il-r">
+                                            <h3 class="h2 mb-1 mt-1">Nos réalisations</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="image-grid" class="fr-grid-row">
+                                    {% for image in siae.images.all %}
+                                        <div class="fr-col-12 fr-col-sm-4 pb-3">
+                                            <!-- 3 per row -->
+                                            <img src="{{ image.image_url }}"
+                                                 class="img-fluid"
+                                                 title="{{ image.name|default:'' }}"
+                                                 loading="lazy" />
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if not siae.user_count and not user.is_authenticated %}
+                                <div id="user_update_cta"
+                                     class="fr-grid-row justify-content-center mb-5 mb-lg-3 mt-lg-5">
+                                    <div class="fr-col-12 fr-col-lg-10">
+                                        <div class="card c-card c-card--mini h-100 p-3 p-lg-5 pr-lg-7">
+                                            <div class="card-body text-center">
+                                                <h3 class="h2 m-0">C'est votre structure et vous souhaitez modifier ses informations.</h3>
+                                            </div>
+                                            <div class="card-footer text-center">
+                                                <a href="{% url 'auth:signup' %}"
+                                                   class="btn btn-primary btn-ico stretched-link">
+                                                    <span>Inscrivez-vous dès maintenant</span>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+                                                        <path fill="currentColor" fill-rule="nonzero" stroke="currentColor" d="M1.964 8.95h11.03L9.51 12.737a.451.451 0 00.037.646.474.474 0 00.66-.037L14.386 8.8l.035-.043.033-.05.013-.05V8.539c0-.012.033-.02.033-.044v-.151l-.014-.05-.019-.03-.034-.045-4.193-4.566a.474.474 0 00-.66-.037.452.452 0 00-.036.646l3.45 3.777H1.963a.46.46 0 00-.464.455.46.46 0 00.464.455z">
+                                                        </path>
+                                                    </svg>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </article>
+                    </div>
+                </div>
+                <div class="fr-grid-row partners-md d-lg-none">
+                    <div class="fr-col-12">
+                        <hr />
+                        {% include "siaes/_detail_partner_cta.html" with siae=siae %}
+                    </div>
                 </div>
             </div>
-            <div class="fr-grid-row partners-md d-lg-none">
-                <div class="fr-col-12">
-                    <hr />
-                    {% include "siaes/_detail_partner_cta.html" with siae=siae %}
-                </div>
-            </div>
-        </div>
-    </section>
-    {% include "includes/_super_siae_arguments_badge.html" %}
-{% endblock %}
-{% block modals %}
-    {% include "auth/_login_or_signup_modal.html" %}
-    {% include "conversations/_form_contact_modal.html" %}
-    {% include "favorites/_favorite_item_add_modal.html" with siae=siae %}
-    {% include "favorites/_favorite_item_remove_modal.html" with siae=siae %}
-{% endblock %}
-{% block extra_js %}
-    <script type="text/javascript">
+        </section>
+        {% include "includes/_super_siae_arguments_badge.html" %}
+    {% endblock %}
+    {% block modals %}
+        {% include "auth/_login_or_signup_modal.html" %}
+        {% include "conversations/_form_contact_modal.html" %}
+        {% include "favorites/_favorite_item_add_modal.html" with siae=siae %}
+        {% include "favorites/_favorite_item_remove_modal.html" with siae=siae %}
+    {% endblock %}
+    {% block extra_js %}
+        <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
     // map
     // siae coords output as floats with commas. We need to transform them into floats.
@@ -335,19 +346,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
     {% if form.errors %}$('#form_contact_modal').modal('show');{% endif %}
 });
-    </script>
-    {% if MTCAPTCHA_PUBLIC_KEY %}
-        <script type="text/javascript">
+        </script>
+        {% if MTCAPTCHA_PUBLIC_KEY %}
+            <script type="text/javascript">
         // add captcha to contact form
         var mtcaptchaConfig = {
             "sitekey": "{{ MTCAPTCHA_PUBLIC_KEY }}",
             "lang": "fr"
         };
-        </script>
-        <script type="text/javascript" src="{% static 'js/mtcaptcha.js' %}"></script>
-    {% endif %}
-    {% if user.is_authenticated %}
-        <script type="text/javascript"
-                src="{% static 'js/favorite_item_remove.js' %}"></script>
-    {% endif %}
-{% endblock %}
+            </script>
+            <script type="text/javascript" src="{% static 'js/mtcaptcha.js' %}"></script>
+        {% endif %}
+        {% if user.is_authenticated %}
+            <script type="text/javascript"
+                    src="{% static 'js/favorite_item_remove.js' %}"></script>
+        {% endif %}
+    {% endblock %}

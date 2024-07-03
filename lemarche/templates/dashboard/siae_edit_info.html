@@ -13,7 +13,7 @@
 
     <div class="fr-grid-row mb-3 mb-lg-5">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+            <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
                 <fieldset>
                     {% bootstrap_field form.description %}
                     <!-- Logo -->
@@ -63,7 +63,7 @@
 
     <div class="fr-grid-row mb-3 mb-lg-5">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+            <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
                 <fieldset>
                     <legend class="h5">Indiquez le chiffre d'affaires de votre structure</legend>
                     {% bootstrap_field form.ca show_label=False %}
@@ -86,7 +86,7 @@
 
     <div class="fr-grid-row mb-3 mb-lg-5">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+            <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
                 <fieldset>
                     <legend class="h5">Année de création de votre structure</legend>
                     {% bootstrap_field form.year_constitution show_label=False %}
@@ -97,7 +97,7 @@
 
     <div class="fr-grid-row mb-3 mb-lg-5">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+            <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
                 <fieldset>
                     <legend class="h5">Nombre de {{ siae.etp_count_label_display | lower }}</legend>
                     {% bootstrap_field form.employees_insertion_count show_label=False %}
@@ -119,7 +119,7 @@
 
     <div class="fr-grid-row mb-3 mb-lg-5">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+            <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
                 <fieldset>
                     <legend class="h5">{% get_verbose_name siae 'employees_permanent_count' %}</legend>
                     {% bootstrap_field form.employees_permanent_count show_label=False %}
@@ -130,7 +130,7 @@
 
     <div class="fr-grid-row mb-3 mb-lg-5">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg p-3 p-lg-5">
+            <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
                 <fieldset>
                     <legend class="h4">Labels et certifications</legend>
                     {% bootstrap_formset_errors label_formset %}
