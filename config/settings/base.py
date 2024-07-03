@@ -368,10 +368,6 @@ BREVO_TENDERS_AUTHOR_SUPER_SIAES_TEMPLATE_ID = env.int("BREVO_TENDERS_AUTHOR_SUP
 
 BREVO_TENDERS_MIN_AMOUNT_TO_SEND = env.int("BREVO_TENDERS_MIN_AMOUNT_TO_SEND", 34998)
 
-# -- hubspot
-HUBSPOT_API_KEY = env.str("HUBSPOT_API_KEY", "set-it")
-HUBSPOT_IS_ACTIVATED = env.bool("HUBSPOT_IS_ACTIVATED", False)
-
 # Caching
 # https://docs.djangoproject.com/en/4.0/topics/cache/
 # ------------------------------------------------------------------------------

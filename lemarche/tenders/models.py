@@ -927,10 +927,6 @@ class Tender(models.Model):
         return False
 
     @property
-    def hubspot_deal_id(self):
-        return self.extra_data.get("hubspot_deal_id")
-
-    @property
     def siae_detail_display_date_count(self):
         return self.tendersiae_set.filter(detail_display_date__isnull=False).count()
 
@@ -961,11 +957,6 @@ class Tender(models.Model):
 
     def get_admin_url(self):
         return get_object_admin_url(self)
-
-    def set_hubspot_id(self, hubspot_deal_id, with_save=True):
-        self.extra_data.update({"hubspot_deal_id": hubspot_deal_id})
-        if with_save:
-            self.save()
 
     @property
     def is_draft(self) -> bool:
