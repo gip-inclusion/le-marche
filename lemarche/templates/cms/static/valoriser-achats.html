@@ -22,10 +22,10 @@
 {% endblock %}
 
 {% block content %}
-<section class="s-page-menu-01 s-page-menu-01--marche pb-5 pb-lg-7">
-    <div class="s-page-menu-01__container fr-container">
-        <div class="s-page-menu-01__row fr-grid-fr-grid-row align-items-center">
-            <div class="s-page-menu-01__col s-page-menu-01__col--title fr-col-12">
+<section class=" pb-5 pb-lg-7">
+    <div class="fr-container">
+        <div class="fr-grid-row align-items-center">
+            <div class="fr-col-12">
                 <h1 class="h1-hero">
                     <strong>Auditer et valoriser vos achats.</strong>
                 </h1>
@@ -33,7 +33,7 @@
                     Il se peut que vous travailliez déjà avec des entreprises sociales inclusives (insertion / handicap) sans le savoir.
                 </h2>
             </div>
-            <div class="s-page-menu-01__col s-page-menu-01__col--cta fr-col-12 text-center">
+            <div class="s-page-menu-01__col--cta fr-col-12 text-center">
                 <span class="ff-extra-01">créer votre compte et</span>
                 {% if user.is_authenticated %}
                     <div class="btn-group">
@@ -63,7 +63,7 @@
 
 <section class="s-valoriser-01 bg-gray-400">
     <div class="s-valoriser-01__container fr-container">
-        <div class="s-valoriser-01__row fr-grid-fr-grid-row fr-grid-row-cols-1 fr-grid-row-cols-md-2 fr-grid-row-cols-lg-3">
+        <div class="s-valoriser-01__row fr-grid-row">
             <div class="fr-col mb-3 mb-md-4">
                 <div class="card c-card c-card--marche h-100">
                     <div class="card-header mb-0">
@@ -98,15 +98,15 @@
     </div>
 </section>
 
-<section class="s-articles-cols-01 s-articles-cols-01--marche">
-    <div class="s-articles-cols-01__container fr-container">
-        <div class="s-articles-cols-01__row fr-grid-row">
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article fr-col-12 fr-col-lg-4">
+<section class="">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-lg-4">
                 <article>
                     <h3 class="h1">Qu’allez-vous <br class="d-none d-lg-inline">retrouver <br class="d-none d-lg-inline"> dans la liste ?</h3>
                 </article>
             </div>
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article fr-col-12 fr-col-lg-4">
+            <div class="fr-col-12 fr-col-lg-4">
                 <article>
                     <h4 class="h2">
                         Quels types de structures vous allez retrouver sur la liste ?
@@ -118,7 +118,7 @@
                     </p>
                 </article>
             </div>
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article fr-col-12 fr-col-lg-4">
+            <div class="fr-col-12 fr-col-lg-4">
                 <article>
                     <h4 class="h2">
                         Quelles informations sont disponibles sur les structures ?
@@ -130,18 +130,18 @@
                 </article>
             </div>
         </div>
-        <div class="s-articles-cols-01__row fr-grid-row">
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article fr-col-12">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
                 <hr class="mb-5">
             </div>
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article fr-col-12 fr-col-lg-4">
+            <div class="fr-col-12 fr-col-lg-4">
                 <article>
                     <h3 class="h1">
                         Pourquoi entrer <br class="d-none d-lg-inline"> dès aujourd’hui <br class="d-none d-lg-inline"> dans une démarche <br class="d-none d-lg-inline">d’achat mesuré ?
                     </h3>
                 </article>
             </div>
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article fr-col-12 fr-col-lg-4">
+            <div class="fr-col-12 fr-col-lg-4">
                 <article>
                     <h4 class="h2">
                         Mesurer pour exister
@@ -152,7 +152,7 @@
                     </p>
                 </article>
             </div>
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article fr-col-12 fr-col-lg-4">
+            <div class="fr-col-12 fr-col-lg-4">
                 <article>
                     <h4 class="h2">
                         Anticiper
