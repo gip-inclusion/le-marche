@@ -1,15 +1,15 @@
-<ul>
-	<li>
-		<a href="{{ HOME_PAGE_PATH }}" class="{% if request.path == HOME_PAGE_PATH %}is-active{% endif %}">Accueil</a>
+<ul class="fr-nav__list">
+	<li class="fr-nav__item">
+		<a href="{{ HOME_PAGE_PATH }}" class="fr-nav__link {% if request.path == HOME_PAGE_PATH %}is-active{% endif %}">Accueil</a>
 	</li>
-	<li>
-		<a href="/ressources/quest-ce-quun-prestataire-inclusif/" id="header-ressource-prestataire" class="{% if request.path == '/ressources/quest-ce-quun-prestataire-inclusif/' %}is-active{% endif %}">
+	<li class="fr-nav__item">
+		<a href="/ressources/quest-ce-quun-prestataire-inclusif/" id="header-ressource-prestataire" class="fr-nav__link {% if request.path == '/ressources/quest-ce-quun-prestataire-inclusif/' %}is-active{% endif %}">
 			Qu'est-ce qu'un prestataire inclusif ?
 		</a>
 	</li>
-	<li>
-		<a href="" class="dropdown-toggle" id="solutionsDropdownMenuButton{% if is_mobile %}Mobile{% endif %}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Solutions</a>
-		<div class="dropdown-menu" aria-labelledby="solutionsDropdownMenuButton{% if is_mobile %}Mobile{% endif %}">
+	<li class="fr-nav__item">
+		<a href="" class="fr-nav__link dropdown-toggle" id="solutionsDropdownMenuButton{% if is_mobile %}Mobile{% endif %}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Solutions</a>
+		{% comment %} <div class="dropdown-menu" aria-labelledby="solutionsDropdownMenuButton{% if is_mobile %}Mobile{% endif %}">
 			<a href="{% url 'siae:search_results' %}" id="header-dropdown-siae-search-btn" class="dropdown-item">
 				Moteur de recherche multicritères
 			</a>
@@ -29,6 +29,6 @@
 				Trouver un facilitateur des clauses sociales
 				<i class="ri-arrow-right-up-line"></i>
 			</a>
-		</div>
+		</div> {% endcomment %}
 	</li>
 </ul>
