@@ -11,7 +11,7 @@
 {% block breadcrumbs %}
     <section>
         <div class="fr-container">
-            <div class="row">
+            <div class="fr-grid-row">
                 <div class="fr-col-12">
                     <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                         <ol class="breadcrumb">
@@ -62,7 +62,7 @@
                     <!-- profile-detail suite -->
                     <article id="user_detail" class="profile-detail">
                         <!-- First fr-grid-row : Description -->
-                        <div class="row">
+                        <div class="fr-grid-row">
                             <div class="fr-col-sm-12 img-left">
                                 <div class="il-l">
                                     <img src="{% static_theme_images 'ico-bicro-marche-descript-act.svg' %}"
@@ -83,7 +83,7 @@
                         </div>
                         <!-- Second & Third Row : Secteurs, Références -->
                         <hr />
-                        <div class="row">
+                        <div class="fr-grid-row">
                             <div class="fr-col-sm-6 img-left">
                                 <div class="il-l">
                                     <img src="{% static_theme_images 'ico-bicro-marche-secteur.svg' %}"
@@ -153,7 +153,7 @@
                         <!-- Fourth Row : Prestations -->
                         {% if siae.offer_count %}
                             <hr />
-                            <div class="row">
+                            <div class="fr-grid-row">
                                 <div class="fr-col-sm-12 img-left">
                                     <div class="il-l">
                                         <img src="{% static_theme_images 'ico-bicro-marche-detail.svg' %}"
@@ -164,7 +164,7 @@
                                         <h3 class="h2 mb-1 mt-1">
                                             Détails des prestations effectuées <small>(matériels, lieux, savoir-faire)</small>
                                         </h3>
-                                        <div class="row">
+                                        <div class="fr-grid-row">
                                             {% for offer in siae.offers.all %}
                                                 <article class="prests-post fr-col-12 {% if siae.offer_count > 1 %}col-lg-6{% endif %} mt-2">
                                                     <h3>
@@ -182,7 +182,7 @@
                         <!-- Fifth Row : Réseaux, Labels -->
                         {% if siae.network_count or siae.label_count %}
                             <hr />
-                            <div class="row">
+                            <div class="fr-grid-row">
                                 {% if siae.network_count %}
                                     <div class="fr-col-12 fr-col-md-6 img-left">
                                         <div class="il-l">
@@ -228,7 +228,7 @@
                         <!-- Sixth Row : Réalisations -->
                         {% if siae.images.count %}
                             <hr />
-                            <div class="row">
+                            <div class="fr-grid-row">
                                 <div class="fr-col-12 img-left">
                                     <div class="il-l">
                                         <img src="{% static_theme_images 'ico-bicro-marche-realisation.svg' %}"
@@ -240,7 +240,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div id="image-grid" class="row">
+                            <div id="image-grid" class="fr-grid-row">
                                 {% for image in siae.images.all %}
                                     <div class="fr-col-12 fr-col-sm-4 pb-3">
                                         <!-- 3 per row -->

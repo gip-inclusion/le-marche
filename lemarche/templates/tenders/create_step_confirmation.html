@@ -8,7 +8,7 @@
     {% csrf_token %}
 {% endblock %}
 {% block recap_section %}
-<div class="row">
+<div class="fr-grid-row">
     <div class="fr-col-12 fr-col-lg-7 order-2 order-lg-1">
         {% include "tenders/_detail_card.html" with tender=tender source_form="true" %}
     </div>

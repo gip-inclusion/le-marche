@@ -3,12 +3,12 @@
 
 <section class="s-hp-slider-partners">
     <div class="s-hp-slider-partners__container fr-container">
-        <div class="s-hp-slider-partners__row row">
+        <div class="s-hp-slider-partners__row fr-grid-row">
             <div class="s-hp-slider-partners__col fr-col-12">
                 <h2 class="h2 mb-3 mb-lg-5 text-center">{{self.title}}</h2>
             </div>
         </div>
-        <div class="s-hp-slider-partners__row row">
+        <div class="s-hp-slider-partners__row fr-grid-row">
             {% for image_with_link in self.images_with_link  %}
                 <div class="s-hp-slider-partners__col s-hp-slider-partners__col-image d-flex align-items-center fr-col-md fr-col-xs-6">
                     {% include_block image_with_link %}

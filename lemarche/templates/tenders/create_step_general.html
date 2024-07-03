@@ -7,7 +7,7 @@
 
 {% block content_form %}
 {% csrf_token %}
-<div class="row">
+<div class="fr-grid-row">
     <div class="fr-col-12 fr-col-lg-7">
         {% bootstrap_field form.kind %}
     </div>
@@ -23,7 +23,7 @@
         </div>
     </div>
 </div>
-<div class="row">
+<div class="fr-grid-row">
     <div class="fr-col-12 fr-col-lg-7">
         {% bootstrap_field form.title %}
     </div>
@@ -40,7 +40,7 @@
         </div>
     </div>
 </div>
-<div class="row">
+<div class="fr-grid-row">
     <div class="fr-col-12 fr-col-lg-7">{% bootstrap_field form.description form_group_class="form-description-ckeditor" %}</div>
     <div class="fr-col-12 fr-col-lg-5">
         <div class="c-form-conseil">
@@ -54,12 +54,12 @@
         </div>
     </div>
 </div>
-<div class="row">
+<div class="fr-grid-row">
     <div class="fr-col-12 fr-col-lg-7">
         {% bootstrap_field form.sectors form_group_class="form-group form-group-required use-multiselect" %}
     </div>
 </div>
-<div class="row">
+<div class="fr-grid-row">
     <div class="fr-col-12 fr-col-lg-7">
         <div class="form-group form-group-required {% if form.location.errors %}is-invalid{% endif %}">
             <label for="id_location">{{ form.location.label }}</label>

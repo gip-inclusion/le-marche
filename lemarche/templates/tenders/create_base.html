@@ -4,7 +4,7 @@
 {% block breadcrumbs %}
     <section>
         <div class="fr-container">
-            <div class="row">
+            <div class="fr-grid-row">
                 <div class="fr-col-12">
                     <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                         <ol class="breadcrumb">
@@ -30,7 +30,7 @@
 {% block content %}
     <section class="">
         <div class="s-title-01__container fr-container">
-            <div class="s-title-01__row row">
+            <div class="fr-grid-row">
                 <div class="fr-col-12">
                     <h1 class="s-title-01__title h1 mb-0">
                         <strong>
@@ -69,7 +69,7 @@
                 </div>
             {% endif %}
             {% block form_section %}
-                <div class="row">
+                <div class="fr-grid-row">
                     <div class="s-section__col fr-col-12">
                         <div class="c-form">
                             <form method="POST"
@@ -89,12 +89,12 @@
                                 {% endblock content_form %}
                                 {% block action_form %}
                                     {% block recap_section %}{% endblock %}
-                                    <div class="row">
+                                    <div class="fr-grid-row">
                                         <div class="fr-col-12 fr-col-lg-7">
                                             <hr />
                                         </div>
                                     </div>
-                                    <div class="row">
+                                    <div class="fr-grid-row">
                                         <div class="fr-col-12 fr-col-lg-7">
                                             <div class="form-row align-items-center {% if wizard.steps.prev %}justify-content-between{% else %}justify-content-end{% endif %}">
                                                 {% block submit_btn %}

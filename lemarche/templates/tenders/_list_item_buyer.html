@@ -2,7 +2,7 @@
 
 <div class="card c-card c-card--marche siae-card">
     <div class="card-body">
-        <div class="row">
+        <div class="fr-grid-row">
             <div class="fr-col-md-8 with-data-url" style="border-right:1px solid;cursor:pointer;" data-url="{% url 'tenders:detail' tender.slug %}">
                 <p class="mb-1">
                     {% include "tenders/_closed_badge.html" with tender=tender %}
@@ -23,7 +23,7 @@
 
                 <h2 class="py-2">{{ tender.title }}</h2>
 
-                <div class="row">
+                <div class="fr-grid-row">
                     <div class="fr-col-md-4">
                         <i class="ri-time-line"></i>
                         Créé le {{ tender.created_at|date }}
@@ -44,7 +44,7 @@
                             <i class="ri-thumb-up-line ri-xl"></i>&nbsp;{{ tender.siae_detail_contact_click_since_last_seen_date_count_annotated }} nouveau{{ tender.siae_detail_contact_click_since_last_seen_date_count_annotated|pluralize:"x" }} prestataire{{ tender.siae_detail_contact_click_since_last_seen_date_count_annotated|pluralize }} intéressé{{ tender.siae_detail_contact_click_since_last_seen_date_count_annotated|pluralize }}
                         </span>
                     {% endif %}
-                    <div class="row">
+                    <div class="fr-grid-row">
                         <div class="fr-col-6" style="border-right:1px solid;">
                             <p class="font-weight-bold mt-2">
                                 <i class="ri-focus-2-line font-weight-light"></i>&nbsp;{{ tender.siae_email_send_count_annotated|default:0 }} prestataire{{ tender.siae_email_send_count_annotated|pluralize }} ciblé{{ tender.siae_email_send_count_annotated|pluralize }}

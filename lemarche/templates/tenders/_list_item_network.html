@@ -2,9 +2,9 @@
 
 <div class="card c-card c-card--marche siae-card" role="button">
     <div class="card-body">
-        <div class="row">
+        <div class="fr-grid-row">
             <div class="fr-col-md-8 with-data-url" style="border-right:1px solid;cursor:pointer;" data-url="{% url 'dashboard_networks:tender_detail' network.slug tender.slug %}">
-                <div class="row">
+                <div class="fr-grid-row">
                     <div class="fr-col-md-12">
                         <p class="mb-1">
                             {% include "tenders/_closed_badge.html" with tender=tender %}
@@ -21,7 +21,7 @@
 
             <div class="fr-col-md-4 text-center my-auto">
                 <hr class="d-md-none" />
-                <div class="row">
+                <div class="fr-grid-row">
                     <div class="fr-col-12">
                         <p class="font-weight-bold">
                             <i class="ri-focus-2-line font-weight-light"></i>&nbsp;{{ tender.network_siae_email_send_count_annotated|default:0 }} adhérent{{ tender.network_siae_email_send_count_annotated|pluralize }} notifié{{ tender.network_siae_email_send_count_annotated|pluralize }}

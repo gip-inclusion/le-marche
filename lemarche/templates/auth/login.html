@@ -6,7 +6,7 @@
 {% block content %}
 <section>
     <div class="fr-container">
-        <div class="row">
+        <div class="fr-grid-row">
             <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
@@ -21,7 +21,7 @@
 
 <section class="">
     <div class="s-title-01__container fr-container">
-        <div class="s-title-01__row row">
+        <div class="fr-grid-row">
             <div class="fr-col-12">
                 <h1 class="s-title-01__title h1">Connexion</h1>
             </div>
@@ -32,10 +32,10 @@
 <section class="s-section">
     <div class=" fr-container">
         {% if new_user_without_password %}
-            <div class="row">
+            <div class="fr-grid-row">
                 <div class="s-section__col fr-col-12">
                     <div id="new-user-without-password-login-message" class="alert alert-warning fade show" role="status">
-                        <div class="row">
+                        <div class="fr-grid-row">
                             <div class="fr-col-auto pr-0">
                                 <i class="ri-information-line ri-xl text-warning"></i>
                             </div>
@@ -51,7 +51,7 @@
                 </div>
             </div>
         {% endif %}
-        <div class="row">
+        <div class="fr-grid-row">
             <div class="s-section__col fr-col-12 fr-col-lg-7">
                 <div class="c-form">
                     <form method="POST" action="" id="login-form">
@@ -69,7 +69,7 @@
 
                         <hr />
 
-                        <div class="row">
+                        <div class="fr-grid-row">
                             <div class="fr-col-12">
                                 <div class="form-row justify-content-end align-items-center">
                                     <div class="form-group fr-col-12 fr-col-lg-auto">
