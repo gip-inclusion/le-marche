@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 API_QPV_REASON = "Mise à jour donnéés Marché de la plateforme de l'Inclusion"
 TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S"  # "2016-12-31T00:00:00+01:00"  # timezone not managed
 
+INFO_URL = "https://equipements.sports.gouv.fr/explore/dataset/quartiers-prioritaires-de-la-politique-de-la-ville-qpv/information/"  # noqa
 BASE_URL = "https://equipements.sports.gouv.fr/api/records/1.0/search"
 DATASET_QPV = "quartiers-prioritaires-de-la-politique-de-la-ville-qpv"
 DISTANCE_TO_VALIDATE_QPV = 0
@@ -47,7 +48,11 @@ def is_in_qpv(latitude, longitude, distance=DISTANCE_TO_VALIDATE_QPV, client=Non
         records = data["records"]
         if records:
             qpv = records[0]
-            return {IS_QPV_KEY: True, QPV_NAME_KEY: qpv["fields"]["nom_qp"], QPV_CODE_KEY: qpv["fields"]["code_qp"]}
+            return {
+                IS_QPV_KEY: True,
+                QPV_NAME_KEY: qpv["fields"]["nom_qp"],
+                QPV_CODE_KEY: qpv["fields"]["identifiant"],  # avant : "code_qp"
+            }
         return {IS_QPV_KEY: False}
     except requests.exceptions.HTTPError as e:
         logger.error("Error while fetching `%s`: %s", e.request.url, e)
