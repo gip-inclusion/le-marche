@@ -7,7 +7,7 @@
     {% endif %}
 </h2>
 
-<div class="row">
+<div class="fr-grid-row">
     {% if tender.contact_full_name %}
         <div class="fr-col-md-6">
             <i class="ri-account-circle-line"></i>
@@ -21,7 +21,7 @@
         </div>
     {% endif %}
 </div>
-<div class="row">
+<div class="fr-grid-row">
     {% if tender.can_display_contact_email %}
         <div class="fr-col-md-6">
             <i class="ri-at-line"></i>
@@ -43,7 +43,7 @@
 </div>
 
 {% if tender.can_display_contact_external_link %}
-    <div class="row">
+    <div class="fr-grid-row">
         <div class="fr-col-12">
             {% if tender.is_partner_approch %}
                 <p>

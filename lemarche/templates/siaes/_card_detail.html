@@ -2,7 +2,7 @@
 
 <div class="card c-card c-card--hovershadow siae-card mb-0 {% if siae.super_badge %}super-badge-card{% endif %}">
     <div class="card-header">
-        <div class="row">
+        <div class="fr-grid-row">
             <div class="fr-col-auto">
                 {% if siae.logo_url %}
                     <img src="{{ siae.logo_url }}" width="100" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
@@ -11,7 +11,7 @@
                 {% endif %}
             </div>
             <div class="fr-col">
-                <div class="row">
+                <div class="fr-grid-row">
                     <div class="fr-col-sm-12">
                         <h1 class="h2 mb-0">
                             {{ siae.name_display }}
@@ -45,7 +45,7 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="row">
+                <div class="fr-grid-row">
                     <div class="fr-col-md-6">
                         <ul class="list-unstyled mb-0">
                             <li class="mb-2">
