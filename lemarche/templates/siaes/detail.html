@@ -63,7 +63,7 @@
                 <!-- profile-detail suite -->
                 <article id="user_detail" class="profile-detail">
 
-                    <!-- First row : Description -->
+                    <!-- First fr-grid-row : Description -->
                     <div class="row">
                         <div class="col-sm-12 img-left">
                             <div class="il-l">
@@ -114,7 +114,7 @@
                                 <div class="il-r">
                                     <h3 class="h2 mb-1 mt-1">Références clients</h3>
                                     {% if siae.client_reference_count <= 6 %}
-                                        <ul class="list-unstyled row row-cols-3 align-items-center">
+                                        <ul class="list-unstyled fr-grid-row row-cols-3 align-items-center">
                                         {% for image in siae.client_references.all %}
                                             <li class="col">
                                                 <img class="img-fluid img-fitcover" src="{{ image.logo_url }}" alt="{{ image.name }}" />
@@ -122,15 +122,15 @@
                                         {% endfor %}
                                         </ul>
                                     {% else %}
-                                        <ul class="list-unstyled row row-cols-3 align-items-center mb-0">
+                                        <ul class="list-unstyled fr-grid-row row-cols-3 align-items-center mb-0">
                                         {% for image in siae.client_references.all|slice:":6" %}
                                             <li class="col">
                                                 <img class="img-fluid img-fitcover" src="{{ image.logo_url }}" alt="{{ image.name }}" />
                                             </li>
                                         {% endfor %}
                                         </ul>
-                                        <div id="collapseMoreRefClients" class="collapse">
-                                            <ul class="list-unstyled row row-cols-3 align-items-center mb-0">
+                                        <div class="collapse" id="collapseMoreRefClients">
+                                            <ul class="list-unstyled fr-grid-row row-cols-3 align-items-center mb-0">
                                             {% for image in siae.client_references.all|slice:"6:" %}
                                                 <li class="col">
                                                     <img class="img-fluid img-fitcover" src="{{ image.logo_url }}" alt="{{ image.name }}" />
@@ -238,7 +238,7 @@
                     {% endif %}
 
                     {% if not siae.user_count and not user.is_authenticated %}
-                        <div id="user_update_cta" class="row justify-content-center mb-5 mb-lg-3 mt-lg-5">
+                        <div id="user_update_cta" class="fr-grid-row justify-content-center mb-5 mb-lg-3 mt-lg-5">
                             <div class="col-12 col-lg-10">
                                 <div class="card c-card c-card--mini h-100 p-3 p-lg-5 pr-lg-7">
                                     <div class="card-body text-center">
@@ -261,7 +261,7 @@
                 </article>
             </div>
         </div>
-        <div class="row partners-md d-lg-none">
+        <div class="fr-grid-row partners-md d-lg-none">
             <div class="col-12">
                 <hr />
                 {% include "siaes/_detail_partner_cta.html" with siae=siae %}
