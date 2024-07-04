@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, UserCreationForm
+from dsfr.forms import DsfrBaseForm
 
 from lemarche.sectors.models import Sector
 from lemarche.users import constants as user_constants
@@ -143,11 +144,14 @@ class SignupForm(UserCreationForm):
         return instance
 
 
-class LoginForm(AuthenticationForm):
+class LoginForm(AuthenticationForm, DsfrBaseForm):
+    username = forms.CharField(label="Adresse e-mail", required=True)
+
     def clean_username(self):
         username = self.cleaned_data["username"]
+        print(username)
         return username.lower()
 
 
-class PasswordResetForm(PasswordResetForm):
+class PasswordResetForm(PasswordResetForm, DsfrBaseForm):
     email = forms.EmailField(label="Votre adresse e-mail", required=True)
