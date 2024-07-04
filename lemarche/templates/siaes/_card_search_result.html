@@ -1,88 +1,92 @@
 {% load static siae_sectors_display %}
 {% load theme_inclusion %}
 
-<div class="card c-card--hovershadow siae-card {% if siae.super_badge %}super-badge-card{% endif %}" data-url="{% url 'siae:detail' siae.slug %}" role="button">
-    <div class="card-header">
-        <div class="fr-grid-row">
-            <div class="fr-col-auto">
-                {% if siae.logo_url %}
-                    <img src="{{ siae.logo_url }}" width="50" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
-                {% else %}
-                    <img src="{% static 'img/default-listing.png' %}" width="50" alt="{{ siae.name }}" loading="lazy" />
-                {% endif %}
-            </div>
+<div class="fr-card fr-enlarge-link fr-card--horizontal fr-mb-2w siae-card {% if siae.super_badge %}super-badge-card{% endif %}" data-url="{% url 'siae:detail' siae.slug %}" role="button">
+    <div class="fr-card__body">
+        <div class="fr-card__content">
             <div class="fr-col">
                 <h2 class="h4 mb-0">
                     {{ siae.name_display }}
                     {% if user.is_authenticated and user.is_admin and not siae.user_count %}
-                        <span class="badge badge-base rounded-pill text-warning fs-sm">
-                            pas encore inscrite
-                        </span>
+                    <span class="badge badge-base rounded-pill text-warning fs-sm">
+                        pas encore inscrite
+                    </span>
                     {% endif %}
                 </h2>
                 {% if siae.super_badge %}
-                    <span class="badge badge-base rounded-pill super-badge-badge text-primary mt-2 font-weight-bold">
-                        <i class="ri-award-fill"></i>
-                        Super prestataire
-                    </span>
+                <span class="badge badge-base rounded-pill super-badge-badge text-primary mt-2 font-weight-bold">
+                    <i class="ri-award-fill"></i>
+                    Super prestataire
+                </span>
                 {% endif %}
-            </div>
-        </div>
-    </div>
-    <div class="fr-card__body">
-            <ul class="list-unstyled fr-m-0 lh-sm fr-grid-row no-gutters">
-                <li class="sc-profile-type fr-col-12 fr-col-lg-6 pr-lg-2 d-flex">
-                    <i class="ri-briefcase-4-line mr-1"></i>
-                    <span class="sr-only">Type(s) de prestation :</span>
-                    <span>{{ siae.presta_type_display }}</span>
-                </li>
-                {% if siae.sectors %}
+                <ul class="list-unstyled fr-m-0 lh-sm fr-grid-row no-gutters">
+                    <li class="sc-profile-type fr-col-12 fr-col-lg-6 pr-lg-2 d-flex">
+                        <i class="ri-briefcase-4-line mr-1"></i>
+                        <span class="sr-only">Type(s) de prestation :</span>
+                        <span>{{ siae.presta_type_display }}</span>
+                    </li>
+                    {% if siae.sectors %}
                     <li class="sc-profile-sectors fr-col-12 fr-col-lg-6 pl-lg-2 mb-3 mb-lg-0 d-flex">
                         <i class="ri-service-line mr-1"></i>
                         <span class="sr-only">Secteur(s) d'activité :</span>
                         <span>{% siae_sectors_display siae display_max=3 current_search_query=current_search_query %}</span>
                     </li>
-                {% endif %}
-            </ul>
-            {% if user.is_authenticated %}
+                    {% endif %}
+                </ul>
+                {% if user.is_authenticated %}
                 {% if from_profile or siae.in_user_favorite_list_count_annotated %}
-                    <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_remove_modal" data-siae-id="{{ siae.id }}" data-siae-slug="{{ siae.slug }}" data-siae-name-display="{{ siae.name_display }}" title="Dans votre liste d'achat">
-                        <i class="ri-star-fill ri-xl"></i>
-                    </a>
+                <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_remove_modal" data-siae-id="{{ siae.id }}" data-siae-slug="{{ siae.slug }}" data-siae-name-display="{{ siae.name_display }}" title="Dans votre liste d'achat">
+                    <i class="ri-star-fill ri-xl"></i>
+                </a>
                 {% else %}
-                    <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_add_modal" data-siae-id="{{ siae.id }}" data-siae-slug="{{ siae.slug }}" data-siae-name-display="{{ siae.name_display }}" title="Ajouter à votre liste d'achat">
-                        <i class="ri-star-line ri-xl"></i>
-                    </a>
+                <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_add_modal" data-siae-id="{{ siae.id }}" data-siae-slug="{{ siae.slug }}" data-siae-name-display="{{ siae.name_display }}" title="Ajouter à votre liste d'achat">
+                    <i class="ri-star-line ri-xl"></i>
+                </a>
                 {% endif %}
-            {% else %}
+                {% else %}
                 <a href="#" id="favorite-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}" title="Ajouter à votre liste d'achat">
                     <i class="ri-star-line ri-xl"></i>
                 </a>
-            {% endif %}
-    </div>
-    <div class="fr-card__end fs-sm">
-            <span>
-                <i class="ri-map-pin-line"></i>
-                <span class="sr-only">Situé à {{ siae.city }}</span>
-                <span>{{ siae.city }}</span>
-                <span class="badge-group">
-                    {% if siae.is_qpv %}
+                {% endif %}
+                <p>
+                    <i class="ri-map-pin-line"></i>
+                    <span class="sr-only">Situé à {{ siae.city }}</span>
+                    <span>{{ siae.city }}</span>
+                    <span class="badge-group">
+                        {% if siae.is_qpv %}
                         <span class="badge badge-sm badge-pill badge-emploi-lightest" title="Quartier prioritaire de la politique de la ville">QPV</span>
-                    {% endif %}
-                    {% if siae.is_zrr %}
+                        {% endif %}
+                        {% if siae.is_zrr %}
                         <span class="badge badge-sm badge-pill badge-emploi-lightest" title="Zone de revitalisation rurale">ZRR</span>
-                    {% endif %}
+                        {% endif %}
+                    </span>
+                </p>
+                <p class="ml-3">
+                    <i class="ri-map-2-line"></i>
+                    <span class="sr-only">Intervient sur : {{ siae.geo_range_pretty_title }}</span>
+                    <span>{{ siae.geo_range_pretty_display }}</span>
+                </p>
+            </div>
+            <div class="fr-card__end">
+                <span class="ml-3">
+                    <i class="ri-building-4-line"></i>
+                    <span class="sr-only">Type de structure : {{ siae.get_kind_display }}</span>
+                    <span>{{ siae.get_kind_display }}</span>
                 </span>
-            </span>
-            <span class="ml-3">
-                <i class="ri-map-2-line"></i>
-                <span class="sr-only">Intervient sur : {{ siae.geo_range_pretty_title }}</span>
-                <span>{{ siae.geo_range_pretty_display }}</span>
-            </span>
-            <span class="ml-3">
-                <i class="ri-building-4-line"></i>
-                <span class="sr-only">Type de structure : {{ siae.get_kind_display }}</span>
-                <span>{{ siae.get_kind_display }}</span>
-            </span>
+
+            </div>
+        </div>
+    </div>
+    <div class="fr-card__header">
+        <div class="fr-grid-row">
+            <div class="fr-col-auto">
+                {% if siae.logo_url %}
+                    <img src="{{ siae.logo_url }}" class="fr-responsive-img" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
+                {% else %}
+                    <img src="{% static 'img/default-listing.png' %}" class="fr-responsive-img" alt="{{ siae.name }}" loading="lazy" />
+                {% endif %}
+            </div>
+
+        </div>
     </div>
 </div>
