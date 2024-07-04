@@ -1,10 +1,10 @@
 {% load bootstrap4 static humanize %}
 
 <div class="card siae-card rounded-lg shadow-lg">
-    <div class="card-header fs-sm rounded-top rounded-lg px-5">
+    <div class="fr-card__header fs-sm rounded-top rounded-lg px-5">
         {% include "tenders/_closed_badge.html" with tender=tender is_new_for_siaes=is_new_for_siaes %}
     </div>
-    <div class="card-body pb-5 px-5">
+    <div class="fr-card__body pb-5 px-5">
         <!-- title & header -->
         <div class="fr-grid-row py-4">
             <div class="fr-col-md-12">

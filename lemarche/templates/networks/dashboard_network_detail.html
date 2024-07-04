@@ -41,13 +41,13 @@
         <div class="fr-grid-row">
             <div class="fr-col-12 fr-col-lg-4">
                 <div class="card h-45 w-100 mb-3 mb-lg-5">
-                    <div class="card-body">
+                    <div class="fr-card__body">
                         <p class="h4 lh-sm mb-lg-4">Mes adhérents</p>
                         <p>
                             Consultez la liste complète de vos adhérents, ainsi que le nombre de besoins qu'ils ont chacuns reçus.
                         </p>
                     </div>
-                    <div class="card-footer pt-0 bg-white text-right">
+                    <div class="fr-card__end pt-0 bg-white text-right">
                         <a href="{% url 'dashboard_networks:siae_list' network.slug %}" id="dashboard-network-siae-list-btn" class="btn btn-link btn-ico">
                             <span>Voir la liste</span>
                             <i class="ri-arrow-right-s-line ri-xl"></i>
@@ -57,7 +57,7 @@
             </div>
             <div class="fr-col-12 fr-col-lg-4">
                 <div class="card h-45 w-100 mb-3 mb-lg-5">
-                    <div class="card-body">
+                    <div class="fr-card__body">
                         <p class="h4 lh-sm mb-lg-4">
                             Opportunités commerciales
                             <span class="badge badge-sm badge-pill badge-important">Nouveauté</span>
@@ -66,7 +66,7 @@
                             Consultez la liste de toutes les opportunités commerciales reçues par vos adhérents.
                         </p>
                     </div>
-                    <div class="card-footer pt-0 bg-white text-right">
+                    <div class="fr-card__end pt-0 bg-white text-right">
                         <a href="{% url 'dashboard_networks:tender_list' network.slug %}" id="dashboard-network-tender-list-btn" class="btn btn-link btn-ico">
                             <span>Voir les opportunités</span>
                             <i class="ri-arrow-right-s-line ri-xl"></i>
