@@ -1,16 +1,16 @@
 
 {% load static bootstrap4 wagtailcore_tags wagtailimages_tags %}
 
-<section class="s-hp-slider-partners">
-    <div class="s-hp-slider-partners__containerfr-container">
-        <div class="s-hp-slider-partners__row fr-grid-row">
-            <div class="s-hp-slider-partners__col fr-col-12">
+<section class="">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
                 <h2 class="h2 mb-3 mb-lg-5 text-center">{{self.title}}</h2>
             </div>
         </div>
-        <div class="s-hp-slider-partners__row fr-grid-row">
+        <div class="fr-grid-row">
             {% for image_with_link in self.images_with_link  %}
-                <div class="s-hp-slider-partners__col s-hp-slider-partners__col-image d-flex align-items-center fr-col-md fr-col-xs-6">
+                <div class="d-flex align-items-center fr-col-md fr-col-xs-6">
                     {% include_block image_with_link %}
                     {% comment %} <a href="https://group.bnpparibas/" target="_blank" rel="noopener">
                         <img src="{% static 'images/logo-partners-bnp.svg' %}" class="img-fluid" alt="Banque BNP Paribas | La banque d'un monde qui change" loading="lazy" />

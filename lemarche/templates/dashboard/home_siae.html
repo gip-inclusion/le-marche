@@ -26,18 +26,18 @@
     <div class="fr-container">
         <div class="fr-grid-row">
             <div class="fr-col-12">
-                <h1 class="s-title-01__title h1"><strong>Tableau de bord</strong></h1>
+                <h1 class="h1"><strong>Tableau de bord</strong></h1>
             </div>
         </div>
     </div>
 </section>
 
 {% if user.siaeuser_set.count %}
-    <section class="s-tabs-01 mb-3 mb-lg-5">
-        <div class="s-tabs-01__containerfr-container">
-            <div id="siaes_tabs" class="s-tabs-01__row fr-grid-row">
-                <div class="s-tabs-01__col fr-col-12">
-                    <ul class="s-tabs-01__nav nav nav-tabs" role="tablist">
+    <section class="mb-3 mb-lg-5">
+        <div class="fr-container">
+            <div id="siaes_tabs" class="fr-grid-row">
+                <div class="fr-col-12">
+                    <ul class="nav nav-tabs" role="tablist">
                         {% for siaeuser in user.siaeuser_set.all %}
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link {% if forloop.first %}active{% endif %} {% if siaeuser.siae.super_badge %}super-badge-tab{% endif %}" id="id-{{ siaeuser.siae.slug }}-tab" data-toggle="tab" href="#id-{{ siaeuser.siae.slug }}" role="tab" aria-controls="{{ siaeuser.siae.slug }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
@@ -81,10 +81,10 @@
         </div>
     </section>
 {% else %}
-    <section class="s-section mb-0">
+    <section class="mb-0">
         <div class="fr-container">
             <div class="fr-grid-row">
-                <div class="s-section__col fr-col-12 pb-5">
+                <div class="fr-col-12 pb-5">
                     {% include "dashboard/_add_siae_card.html" %}
                 </div>
             </div>
@@ -92,10 +92,10 @@
     </section>
 {% endif %}
 
-<section class="s-section mt-0 mb-0">
+<section class="mt-0 mb-0">
     <div class="fr-container">
         <div class="fr-grid-row">
-            <div class="s-section__col fr-col-12 fr-col-lg-6 pb-5">
+            <div class="fr-col-12 fr-col-lg-6 pb-5">
                 <div class="card h-100 w-100">
                     <div class="card-body">
                         <p class="h4 lh-sm mb-lg-4">Vos opportunités commerciales</p>
@@ -119,7 +119,7 @@
                     </div>
                 </div>
             </div>
-            <div class="s-section__col fr-col-12 fr-col-lg-6 pb-5">
+            <div class="fr-col-12 fr-col-lg-6 pb-5">
                 {% include "dashboard/_ressource_card.html" with user_kind="SIAE" ressources=last_3_ressources category_slug=category_slug_cat %}
             </div>
         </div>
@@ -127,7 +127,7 @@
 </section>
 
 {% if user.api_key %}
-<section class="s-section mt-0 mb-5">
+<section class="mt-0 mb-5">
     <div class="fr-container">
         <div class="fr-grid-row">
             <div class="fr-col-12 fr-col-lg-6">

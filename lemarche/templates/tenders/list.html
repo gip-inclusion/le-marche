@@ -51,7 +51,7 @@
                 {% if user.kind != user.KIND_SIAE %}
                     {% block htmx %}
                     <div id="tendersList">
-                        <ul role="navigation" class="nav nav-tabs nav-tabs--marche" style="border-bottom:0;">
+                        <ul role="navigation" class="nav nav-tabs" style="border-bottom:0;">
                             {% url 'tenders:list' as TENDERS_LIST_URL %}
                             {% url 'tenders:list' status=tender_constants.STATUS_DRAFT as TENDERS_DRAFT_LIST_URL %}
                             {% url 'tenders:list' status=tender_constants.STATUS_PUBLISHED as TENDERS_PUBLISHED_LIST_URL %}

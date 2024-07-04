@@ -32,7 +32,7 @@
         <div class="fr-container">
             <div class="fr-grid-row">
                 <div class="fr-col-12">
-                    <h1 class="s-title-01__title h1 mb-0">
+                    <h1 class="h1 mb-0">
                         <strong>
                             {% if wizard.steps.step1 != wizard.steps.count %}{{ wizard.steps.step1 }}.{% endif %}
                             {% block step_title %}{% endblock %}
@@ -45,11 +45,11 @@
             </div>
         </div>
     </section>
-    <section class="s-section">
+    <section class="">
         <div class="fr-container">
             {% if wizard.steps.step1 != wizard.steps.count %}
                 <div class="fr-grid-row mb-3 mb-lg-5">
-                    <div class="s-section__col fr-col-12 fr-col-lg-7">
+                    <div class="fr-col-12 fr-col-lg-7">
                         <div class="c-stepper">
                             <div class="progress progress--marche">
                                 <div class="progress-bar"
@@ -70,7 +70,7 @@
             {% endif %}
             {% block form_section %}
                 <div class="fr-grid-row">
-                    <div class="s-section__col fr-col-12">
+                    <div class="fr-col-12">
                         <div class="c-form">
                             <form method="POST"
                                   action=""

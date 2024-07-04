@@ -23,17 +23,17 @@
     <div class="fr-container">
         <div class="fr-grid-row">
             <div class="fr-col-12">
-                <h1 class="s-title-01__title h1">Connexion</h1>
+                <h1 class="h1">Connexion</h1>
             </div>
         </div>
     </div>
 </section>
 
-<section class="s-section">
+<section class="">
     <div class="fr-container">
         {% if new_user_without_password %}
             <div class="fr-grid-row">
-                <div class="s-section__col fr-col-12">
+                <div class="fr-col-12">
                     <div id="new-user-without-password-login-message" class="alert alert-warning fade show" role="status">
                         <div class="fr-grid-row">
                             <div class="fr-col-auto pr-0">
@@ -52,7 +52,7 @@
             </div>
         {% endif %}
         <div class="fr-grid-row">
-            <div class="s-section__col fr-col-12 fr-col-lg-7">
+            <div class="fr-col-12 fr-col-lg-7">
                 <div class="c-form">
                     <form method="POST" action="" id="login-form">
                         {% csrf_token %}
