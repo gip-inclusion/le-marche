@@ -1,126 +1,164 @@
 {% extends "layouts/base.html" %}
-{% load dsfr_tags %}
+{% load static dsfr_tags process_dict %}
 
 {% block title %}Inscription{{ block.super }}{% endblock title %}
 
+{% block breadcrumb %}
+    {% process_dict current="Inscription" as breadcrumb_data %}
+    {% dsfr_breadcrumb breadcrumb_data %}
+{% endblock breadcrumb %}
+
 {% block content %}
-<section>
-    <div class="fr-container">
-        <div class="fr-grid-row">
-            <div class="fr-col-12">
-                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Inscription</li>
-                    </ol>
-                </nav>
+<div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+    <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+        <div class="fr-container fr-px-md-0 fr-py-2v fr-py-md-4v">
+            <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+                <div class="fr-col-12">
+                    <h1>Inscription</h1>
+                    <div>
+                        <form method="post" id="signup-form">
+                            {% csrf_token %}
+                            {% if form.non_field_errors %}
+                                <section class="fr-my-4v fr-input-group fr-input-group--error">
+                                    {{ form.non_field_errors }}
+                                </section>
+                            {% endif %}
+                            <fieldset class="fr-fieldset">
+                                <div class="fr-fieldset__element">
+                                    <!-- User kind -->
+                                    <fieldset class="fr-fieldset">
+                                        <legend class="fr-fieldset__legend">
+                                            <h2>Vous êtes</h2>
+                                        </legend>
+                                        <div class="fr-fieldset__element">
+                                            <fieldset class="fr-fieldset">
+                                                <div class="fr-fieldset__element">
+                                                    {% dsfr_form_field form.kind %}
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </fieldset>
+                                    <!-- User contact -->
+                                    <fieldset class="fr-fieldset">
+                                        <legend class="fr-fieldset__legend">
+                                            <h2>Contact</h2>
+                                        </legend>
+                                        <div class="fr-fieldset__element">
+                                            <fieldset class="fr-fieldset">
+                                                <div class="fr-fieldset__element">
+                                                    {% dsfr_form_field form.first_name %}
+                                                </div>
+                                                <div class="fr-fieldset__element">
+                                                    {% dsfr_form_field form.last_name %}
+                                                </div>
+                                                <div id="phoneFieldsetElement" class="fr-fieldset__element fr-hidden">
+                                                    {% dsfr_form_field form.phone %}
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </fieldset>
+                                    <!-- User company -->
+                                    <fieldset id="infoStructuresFieldset" class="fr-fieldset fr-hidden">
+                                        <legend class="fr-fieldset__legend">
+                                            <h2>Informations structure</h2>
+                                        </legend>
+                                        <div class="fr-fieldset__element">
+                                            <fieldset class="fr-fieldset">
+                                                <div id="buyerKindDetailFieldsetElement" class="fr-fieldset__element fr-hidden">
+                                                    {% dsfr_form_field form.buyer_kind_detail %}
+                                                </div>
+                                                <div id="partnerKindFieldsetElement" class="fr-fieldset__element fr-hidden">
+                                                    {% dsfr_form_field form.partner_kind %}
+                                                </div>
+                                                <div id="companyNameFieldsetElement" class="fr-fieldset__element fr-hidden">
+                                                    {% dsfr_form_field form.company_name %}
+                                                </div>
+                                                <div id="positionFieldsetElement" class="fr-fieldset__element fr-hidden">
+                                                    {% dsfr_form_field form.position %}
+                                                </div>
+                                                <div id="sectorsFieldsetElement" class="fr-fieldset__element fr-hidden">
+                                                    {% dsfr_form_field form.sectors %}
+                                                </div>
+                                                <div class="fr-fieldset__element company-name-siae-form-group fr-hidden">
+                                                    {% dsfr_alert title="Le nom de votre structure" type="info" content="Une fois votre compte créé, vous pourrez ajouter puis modifier votre structure." %}
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </fieldset>
+                                    <!-- User password -->
+                                    <fieldset class="fr-fieldset">
+                                        <legend class="fr-fieldset__legend">
+                                            <h2>Création du mot de passe</h2>
+                                        </legend>
+                                        <div class="fr-fieldset__element">
+                                            <fieldset class="fr-fieldset">
+                                                <div class="fr-fieldset__element">
+                                                    {% dsfr_form_field form.email %}
+                                                </div>
+                                                <div class="fr-fieldset__element">
+                                                    {% dsfr_form_field form.password1 %}
+                                                </div>
+                                                <div class="fr-fieldset__element">
+                                                    {% dsfr_form_field form.password2 %}
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </fieldset>
+                                    <!-- Buyer survey -->
+                                    <fieldset id="statsSignupBuyerFieldset" class="fr-fieldset fr-hidden">
+                                        <div class="fr-fieldset__element">
+                                            <fieldset class="fr-fieldset">
+                                                <div class="fr-fieldset__element">
+                                                    {% dsfr_form_field form.nb_of_inclusive_provider_last_year %}
+                                                </div>
+                                                <div class="fr-fieldset__element">
+                                                    {% dsfr_form_field form.nb_of_handicap_provider_last_year %}
+                                                </div>
+                                                <div class="fr-fieldset__element">
+                                                    <p class="fr-text--sm">Ces informations resteront confidentielles, elles ne seront traitées qu'à des fins statistiques.</p>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </fieldset>
+                                    <!-- Legal mentions -->
+                                    <fieldset class="fr-fieldset">
+                                        <div class="fr-fieldset__element">
+                                            <fieldset class="fr-fieldset">
+                                                <div id="acceptSurveyFielsetElement" class="fr-fieldset__element fr-hidden">
+                                                    {% dsfr_form_field form.accept_survey %}
+                                                </div>
+                                                <div class="fr-fieldset__element">
+                                                    {% dsfr_form_field form.accept_share_contact_to_external_partners %}
+                                                </div>
+                                                <div id="shareContactFielsetElement" class="fr-fieldset__element fr-hidden">
+                                                    <div class="fr-checkbox-group fr-mb-2w">                                                    
+                                                        {{ form.accept_rgpd }}
+                                                        <label class="fr-label" for="{{ form.accept_rgpd.id_for_label }}">
+                                                            J'accepte les <a href="{% url 'pages:cgu' %}" target="_blank">Conditions Générales d'Utilisation</a>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="fr-fieldset__element">
+                                    <ul class="fr-btns-group">
+                                        <li>
+                                            <button class="fr-mt-2v fr-btn">
+                                                Valider
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </fieldset>    
+                        </form>
+                    </div>               
+                </div>
             </div>
         </div>
     </div>
-</section>
-
-<section>
-    <div class="fr-container">
-        <div class="fr-grid-row">
-            <div class="fr-col-12">
-                <h1 class="h1">Inscription</h1>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section>
-    <div class="fr-container">
-        <div class="fr-grid-row">
-            <div class="fr-col-12 fr-col-lg-7">
-                <form method="post" action="" id="signup-form">
-                    {% csrf_token %}
-                    {% if form.non_field_errors %}
-                        <section class="fr-my-4v fr-input-group fr-input-group--error">
-                            {{ form.non_field_errors }}
-                        </section>
-                    {% endif %}
-
-                    <!-- User kind -->
-                    <fieldset>
-                        <legend>Vous êtes <strong class="fs-base">*</strong></legend>
-                        {% dsfr_form_field form.kind %}
-                    </fieldset>
-                    <hr>
-
-                    <!-- User contact -->
-                    <fieldset>
-                        <legend>Contact</legend>
-                        {% dsfr_form_field form.first_name %}
-                        {% dsfr_form_field form.last_name %}
-                        {% dsfr_form_field form.phone %}
-                    </fieldset>
-                    <hr>
-
-                    <!-- User company -->
-                    <fieldset id="infoStructuresFieldset" class="d-none">
-                        <legend>Informations structure</legend>
-                        {% dsfr_form_field form.buyer_kind_detail %}
-                        {% dsfr_form_field form.partner_kind %}
-                        {% dsfr_form_field form.company_name %}
-                        {% dsfr_form_field form.position %}
-                        {% dsfr_form_field form.sectors %}
-                        <div class="company-name-siae-form-group form-group d-none">
-                            <label>Le nom de votre structure</label>
-                            <div class="alert alert-info" role="status">
-                                Une fois votre compte créé, vous pourrez ajouter puis modifier votre structure.
-                            </div>
-                        </div>
-                        <hr>
-                    </fieldset>
-
-                    <!-- User password -->
-                    <fieldset>
-                        <legend>Création du mot de passe</legend>
-                        {% dsfr_form_field form.email %}
-                        {% dsfr_form_field form.password1 %}
-                        {% dsfr_form_field form.password2 %}
-                    </fieldset>
-                    <hr>
-
-                    <!-- Legal mentions, survey & co -->
-                    <fieldset id="statsSignupBuyer" class="d-none">
-                        <hr>
-                        <div class="form-group">
-                            {% dsfr_form_field form.nb_of_inclusive_provider_last_year %}
-                            {% dsfr_form_field form.nb_of_handicap_provider_last_year %}
-                            <i class="fs-xs">Ces informations resteront confidentielles, elles ne seront traitées qu'à des fins statistiques.</i>
-                        </div>
-                    </fieldset>
-                    <div class="form-group">
-                        <div class="form-group form-group-required">
-                            <div class="form-check">
-                                {{ form.accept_rgpd }}
-                                <label class="form-check-label" for="{{ form.accept_rgpd.id_for_label }}">
-                                    J'accepte les <a href="{% url 'pages:cgu' %}" target="_blank">Conditions Générales d'Utilisation</a>
-                                </label>
-                            </div>
-                        </div>
-                        {% dsfr_form_field form.accept_survey %}
-                        {% dsfr_form_field form.accept_share_contact_to_external_partners %}
-                    </div>
-                    <hr>
-
-                    <!-- Submit -->
-                    <div class="fr-grid-row">
-                        <div class="fr-col-12">
-                            <div class="fr-input-group fr-my-4w">
-                                <button type="submit" class="fr-btn" title="Valider">
-                                  Valider
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</section>
+</div>
 {% endblock content %}
 
 {% block extra_js %}
@@ -147,19 +185,30 @@ document.addEventListener('DOMContentLoaded', function() {
     let positionInput = document.getElementById('id_position');
     let acceptSurveyInput = document.getElementById('id_accept_survey');
     let acceptShareContactInput = document.getElementById('id_accept_share_contact_to_external_partners');
-    let statsSignupBuyerContent = document.getElementById('statsSignupBuyer');
-    let sectorsInput = document.getElementById('id_sectors_multiselect');
+    let statsSignupBuyerContent = document.getElementById('statsSignupBuyerFieldset');
+    let sectorsInput = document.getElementById('id_sectors');
+    let phoneFieldsetElement = document.getElementById('phoneFieldsetElement');
     let infoStructuresFieldset = document.getElementById('infoStructuresFieldset');
+    let buyerKindDetailFieldsetElement = document.getElementById('buyerKindDetailFieldsetElement');
+    let partnerKindFieldsetElement = document.getElementById('partnerKindFieldsetElement');
+    let companyNameFieldsetElement = document.getElementById('companyNameFieldsetElement');
+    let positionFieldsetElement = document.getElementById('positionFieldsetElement');
+    let acceptSurveyFieldsetElement = document.getElementById('acceptSurveyFielsetElement');
+    let acceptShareContactFieldsetElement = document.getElementById('shareContactFielsetElement');
+    let sectorsFieldsetElement = document.getElementById('sectorsFieldsetElement');
+    
 
     let kindRadios = document.querySelectorAll('input[type=radio][name="kind"]');
     kindRadios.forEach(radio => radio.addEventListener('change', () => {
         if (radio.value === 'SIAE') {
-            companyNameSiaeFormGroupDiv.classList.remove('d-none');
+            companyNameSiaeFormGroupDiv.classList.remove('fr-hidden');
+            companyNameFieldsetElement.classList.add('fr-hidden');
             toggleInputElement(false, element=companyNameInput, required=false);
             toggleInputElement(false, element=acceptSurveyInput);
             toggleInputElement(true, element=acceptShareContactInput);
         } else {
-            companyNameSiaeFormGroupDiv.classList.add('d-none');
+            companyNameSiaeFormGroupDiv.classList.add('fr-hidden');
+            companyNameFieldsetElement.classList.remove('fr-hidden');
             toggleInputElement(true, element=companyNameInput, required=true);
             toggleInputElement(true, element=acceptSurveyInput);
             toggleInputElement(false, element=acceptShareContactInput);
@@ -169,13 +218,13 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleInputElement(true, element=buyerKindDetailInput, required=true);
             toggleInputElement(true, element=positionInput, required=true);
             toggleInputElement(true, element=phoneInput, required=true);
-            statsSignupBuyerContent.classList.remove('d-none');
+            statsSignupBuyerContent.classList.remove('fr-hidden');
             toggleInputElement(true, element=sectorsInput, required=false);
         } else {
             toggleInputElement(false, element=buyerKindDetailInput, required=false);
             toggleInputElement(false, element=positionInput, required=false);
             toggleInputElement(true, element=phoneInput, required=false);
-            statsSignupBuyerContent.classList.add('d-none');
+            statsSignupBuyerContent.classList.add('fr-hidden');
             toggleInputElement(false, element=sectorsInput, required=false);
         }
 
@@ -187,9 +236,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (radio.value === 'INDIVIDUAL') {
             toggleInputElement(false, element=companyNameInput, required=false);
-            infoStructuresFieldset.classList.add('d-none');
+            infoStructuresFieldset.classList.add('fr-hidden');
         } else {
-            infoStructuresFieldset.classList.remove('d-none');
+            infoStructuresFieldset.classList.remove('fr-hidden');
         }
     }));
 });
