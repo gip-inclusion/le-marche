@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
-{% load bootstrap4 %}
+{% load dsfr_tags %}
 
-{% block title %}Inscription{{ block.super }}{% endblock %}
+{% block title %}Inscription{{ block.super }}{% endblock title %}
 
 {% block content %}
 <section>
@@ -19,7 +19,7 @@
     </div>
 </section>
 
-<section class="">
+<section>
     <div class="fr-container">
         <div class="fr-grid-row">
             <div class="fr-col-12">
@@ -29,91 +29,90 @@
     </div>
 </section>
 
-<section class="">
+<section>
     <div class="fr-container">
         <div class="fr-grid-row">
             <div class="fr-col-12 fr-col-lg-7">
-                <form method="POST" action="" id="signup-form">
+                <form method="post" action="" id="signup-form">
                     {% csrf_token %}
+                    {% if form.non_field_errors %}
+                        <section class="fr-my-4v fr-input-group fr-input-group--error">
+                            {{ form.non_field_errors }}
+                        </section>
+                    {% endif %}
 
-                    <div class="c-form">
-                        {% bootstrap_form_errors form type="all" %}
+                    <!-- User kind -->
+                    <fieldset>
+                        <legend>Vous êtes <strong class="fs-base">*</strong></legend>
+                        {% dsfr_form_field form.kind %}
+                    </fieldset>
+                    <hr>
 
-                        <!-- User kind -->
-                        <fieldset>
-                            <legend>Vous êtes <strong class="fs-base">*</strong></legend>
-                            {% bootstrap_field form.kind %}
-                        </fieldset>
-                        <hr>
+                    <!-- User contact -->
+                    <fieldset>
+                        <legend>Contact</legend>
+                        {% dsfr_form_field form.first_name %}
+                        {% dsfr_form_field form.last_name %}
+                        {% dsfr_form_field form.phone %}
+                    </fieldset>
+                    <hr>
 
-                        <!-- User contact -->
-                        <fieldset>
-                            <legend>Contact</legend>
-                            {% bootstrap_field form.first_name %}
-                            {% bootstrap_field form.last_name %}
-                            {% bootstrap_field form.phone form_group_class="phone-form-group form-group" %}
-                        </fieldset>
-                        <hr>
-
-                        <!-- User company -->
-                        <fieldset id="infoStructuresFieldset" class="d-none">
-                            <legend>Informations structure</legend>
-                            {% bootstrap_field form.buyer_kind_detail form_group_class="buyer-kind-detail-form-group form-group form-group-required d-none" %}
-                            {% bootstrap_field form.partner_kind form_group_class="partner-kind-form-group form-group form-group-required d-none" %}
-                            {% bootstrap_field form.company_name form_group_class="company-name-form-group form-group form-group-required d-none" %}
-                            {% bootstrap_field form.position form_group_class="position-form-group form-group form-group-required d-none" %}
-                            {% bootstrap_field form.sectors form_group_class="form-group form-group-required use-multiselect d-none" %}
-                            <div class="company-name-siae-form-group form-group d-none">
-                                <label>Le nom de votre structure</label>
-                                <div class="alert alert-info" role="status">
-                                    Une fois votre compte créé, vous pourrez ajouter puis modifier votre structure.
-                                </div>
+                    <!-- User company -->
+                    <fieldset id="infoStructuresFieldset" class="d-none">
+                        <legend>Informations structure</legend>
+                        {% dsfr_form_field form.buyer_kind_detail %}
+                        {% dsfr_form_field form.partner_kind %}
+                        {% dsfr_form_field form.company_name %}
+                        {% dsfr_form_field form.position %}
+                        {% dsfr_form_field form.sectors %}
+                        <div class="company-name-siae-form-group form-group d-none">
+                            <label>Le nom de votre structure</label>
+                            <div class="alert alert-info" role="status">
+                                Une fois votre compte créé, vous pourrez ajouter puis modifier votre structure.
                             </div>
-                            <hr>
-                        </fieldset>
-
-                        <!-- User password -->
-                        <fieldset>
-                            <legend>Création du mot de passe</legend>
-                            {% bootstrap_field form.email %}
-                            {% bootstrap_field form.password1 %}
-                            {% bootstrap_field form.password2 %}
-                        </fieldset>
-                        <hr>
-
-                        <!-- Legal mentions, survey & co -->
-                        <fieldset id="statsSignupBuyer" class="d-none">
-                            <hr>
-                            <div class="form-group">
-                                {% bootstrap_field form.nb_of_inclusive_provider_last_year class="inline-block" %}
-                                {% bootstrap_field form.nb_of_handicap_provider_last_year class="inline-block" %}
-                                <i class="fs-xs">Ces informations resteront confidentielles, elles ne seront traitées qu'à des fins statistiques.</i>
-                            </div>
-                        </fieldset>
-                        <div class="form-group">
-                            <div class="form-group form-group-required">
-                                <div class="form-check">
-                                    {{ form.accept_rgpd }}
-                                    <label class="form-check-label" for="{{ form.accept_rgpd.id_for_label }}">
-                                        J'accepte les <a href="{% url 'pages:cgu' %}" target="_blank">Conditions Générales d'Utilisation</a>
-                                    </label>
-                                </div>
-                            </div>
-                            {% bootstrap_field form.accept_survey form_group_class="form-group accept-survey-form-group d-none" %}
-                            {% bootstrap_field form.accept_share_contact_to_external_partners form_group_class="form-group accept-survey-form-group d-none" %}
                         </div>
                         <hr>
+                    </fieldset>
 
-                        <!-- Submit -->
-                        <div class="fr-grid-row">
-                            <div class="fr-col-12">
-                                <div class="form-row justify-content-end align-items-center">
-                                    <div class="form-group fr-col-12 fr-col-lg-auto">
-                                        <button type="submit" id="signup-submit-btn" class="btn btn-block btn-primary">
-                                            <span>Valider</span>
-                                        </button>
-                                    </div>
-                                </div>
+                    <!-- User password -->
+                    <fieldset>
+                        <legend>Création du mot de passe</legend>
+                        {% dsfr_form_field form.email %}
+                        {% dsfr_form_field form.password1 %}
+                        {% dsfr_form_field form.password2 %}
+                    </fieldset>
+                    <hr>
+
+                    <!-- Legal mentions, survey & co -->
+                    <fieldset id="statsSignupBuyer" class="d-none">
+                        <hr>
+                        <div class="form-group">
+                            {% dsfr_form_field form.nb_of_inclusive_provider_last_year %}
+                            {% dsfr_form_field form.nb_of_handicap_provider_last_year %}
+                            <i class="fs-xs">Ces informations resteront confidentielles, elles ne seront traitées qu'à des fins statistiques.</i>
+                        </div>
+                    </fieldset>
+                    <div class="form-group">
+                        <div class="form-group form-group-required">
+                            <div class="form-check">
+                                {{ form.accept_rgpd }}
+                                <label class="form-check-label" for="{{ form.accept_rgpd.id_for_label }}">
+                                    J'accepte les <a href="{% url 'pages:cgu' %}" target="_blank">Conditions Générales d'Utilisation</a>
+                                </label>
+                            </div>
+                        </div>
+                        {% dsfr_form_field form.accept_survey %}
+                        {% dsfr_form_field form.accept_share_contact_to_external_partners %}
+                    </div>
+                    <hr>
+
+                    <!-- Submit -->
+                    <div class="fr-grid-row">
+                        <div class="fr-col-12">
+                            <div class="fr-input-group fr-my-4w">
+                                <button type="submit" class="fr-btn" title="Valider">
+                                  Valider
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -122,7 +121,7 @@
         </div>
     </div>
 </section>
-{% endblock %}
+{% endblock content %}
 
 {% block extra_js %}
 <script type="text/javascript">
@@ -195,4 +194,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }));
 });
 </script>
-{% endblock %}
+{% endblock extra_js %}
