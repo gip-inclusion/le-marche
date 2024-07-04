@@ -11,7 +11,7 @@ from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.utils.password_validation import CnilCompositionPasswordValidator
 
 
-class SignupForm(UserCreationForm):
+class SignupForm(UserCreationForm, DsfrBaseForm):
     KIND_CHOICES_FORM = (
         (User.KIND_SIAE, "Une entreprise sociale inclusive (SIAE ou structure du handicap, GEIQ)"),
         (User.KIND_BUYER, "Un acheteur"),
