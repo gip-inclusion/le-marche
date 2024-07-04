@@ -13,12 +13,12 @@
             {% for card in self.cards  %}
                 <div class=" fr-col mb-3 mb-md-5">
                     <div class="card h-100 w-100">
-                        <div class="card-header text-center">
+                        <div class="fr-card__header text-center">
                             {% with card.value.ico|add:".svg" as ico %}
                                 <img height="80" src="{% static_theme_images ico %}" alt="" />
                             {% endwith %}
                         </div>
-                        <div class="card-body">
+                        <div class="fr-card__body">
                             <p class="h3 lh-base">{{ card.value.text }}</p>
                         </div>
                         <div class="card-footer"></div>
