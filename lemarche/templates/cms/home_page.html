@@ -7,10 +7,10 @@
 {% block title %}{{ page.title }} {{ block.super }}{% endblock %}
 {% block content %}
     {% if sub_header_custom_message %}
-        <section class="s-sub-header">
+        <section class="">
             <div class="fr-container">
                 <div class="fr-grid-row">
-                    <div class="s-section__col fr-col-12">
+                    <div class="fr-col-12">
                         <div class="alert alert-communaute alert-dismissible-once mt-3 mb-0 d-none"
                              role="status"
                              id="alertSubHeaderDismissibleOnce">
@@ -24,7 +24,7 @@
             </div>
         </section>
     {% endif %}
-    <section class=" p-4">
+    <section class="fr-p-4">
         <div class="fr-container">
             <div class="fr-grid-row">
                 <div class="fr-col-12 fr-col-md-8">

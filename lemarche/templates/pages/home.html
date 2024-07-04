@@ -12,10 +12,10 @@
 
 {% block content %}
 {% if sub_header_custom_message %}
-    <section class="s-sub-header">
+    <section class="">
         <div class="fr-container">
           <div class="fr-grid-row">
-            <div class="s-section__col fr-col-12">
+            <div class="fr-col-12">
                 <div class="alert alert-communaute alert-dismissible-once mt-3 mb-0 d-none" role="status" id="alertSubHeaderDismissibleOnce">
                     <p class="mb-0">{{ sub_header_custom_message|safe }}</p>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
@@ -61,10 +61,10 @@
     </div>
 </section>
 
-<section class="s-section fr-m-0 bg-nuance-09">
+<section class="fr-m-0 bg-nuance-09">
     <div class="fr-container">
         <div class="fr-grid-row">
-            <div class="s-section__col fr-col-12 py-5">
+            <div class="fr-col-12 py-5">
                 <h2 class="h1 font-weight-bolder fr-m-0">Le marché c'est <span class="text-important">{{ user_buyer_count }}&nbsp;acheteurs</span> inscrits, <span class="text-important">{{ siae_count }}&nbsp;prestataires</span> référencés, <span class="text-important">{{ tender_count }}&nbsp;besoins</span> publiés.</h1>
             </div>
         </div>
@@ -249,70 +249,70 @@
     </div>
 </section>
 
-<section class="s-hp-slider-partners">
-    <div class="s-hp-slider-partners__containerfr-container">
-        <div class="s-hp-slider-partners__row fr-grid-row">
-            <div class="s-hp-slider-partners__col fr-col-12">
+<section class="">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
                 <h2 class="h2 mb-3 mb-lg-5">Les partenaires du marché</h2>
             </div>
         </div>
-        <div class="s-hp-slider-partners__row fr-grid-row row-cols-2 row-cols-sfr-m-3 row-cols-md-4 row-cols-lg-6">
-            <div class="s-hp-slider-partners__col fr-col pb-3 d-flex align-items-center">
+        <div class="fr-grid-row row-cols-2 row-cols-sfr-m-3 row-cols-md-4 row-cols-lg-6">
+            <div class="fr-col pb-3 d-flex align-items-center">
                 <a href="https://group.bnpparibas/" target="_blank" rel="noopener">
                     <img src="{% static 'images/logo-partners-bnp.svg' %}" class="img-fluid" alt="Banque BNP Paribas | La banque d'un monde qui change" loading="lazy" />
                 </a>
             </div>
-            <div class="s-hp-slider-partners__col fr-col pb-3 d-flex align-items-center">
+            <div class="fr-col pb-3 d-flex align-items-center">
                 <a href="https://www.laposte.fr/" target="_blank" rel="noopener">
                     <img src="{% static 'images/logo-partners-la-poste.jpg' %}" class="img-fluid" alt="Achetez des Timbres, Envoyez Courrier, Colis - La Poste" loading="lazy" />
                 </a>
             </div>
-            <div class="s-hp-slider-partners__col fr-col pb-3 d-flex align-items-center">
+            <div class="fr-col pb-3 d-flex align-items-center">
                 <a href="https://www.servier.fr/" target="_blank" rel="noopener">
                     <img src="{% static 'images/logo-partners-servier.min.png' %}" class="img-fluid" alt="Groupe pharmaceutique Servier" loading="lazy" />
                 </a>
             </div>
-            <div class="s-hp-slider-partners__col fr-col pb-3 d-flex align-items-center">
+            <div class="fr-col pb-3 d-flex align-items-center">
                 <a href="https://www.lesentreprises-sengagent.gouv.fr" target="_blank" rel="noopener">
                     <img src="{% static 'images/logo-partners-les-entreprises-sengagent.svg' %}" class="img-fluid" alt="Les entreprises s'engagent" loading="lazy" />
                 </a>
             </div>
-            <div class="s-hp-slider-partners__col fr-col pb-3 d-flex align-items-center">
+            <div class="fr-col pb-3 d-flex align-items-center">
                 <a href="https://www.cna-asso.fr/" target="_blank" rel="noopener">
                     <img src="{% static 'images/logo-partners-cna.min.png' %}" class="img-fluid" alt="Conseil National des Achats" loading="lazy" />
                 </a>
             </div>
-            <div class="s-hp-slider-partners__col fr-col pb-3 d-flex align-items-center">
+            <div class="fr-col pb-3 d-flex align-items-center">
                 <a href="https://www.reseau-gesat.com" target="_blank" rel="noopener">
                     <img src="{% static 'images/logo-partners-reseau-gesat-square.min.png' %}" class="img-fluid" alt="Développer vos achats responsables auprès du STPA (ESAT & EA)" loading="lazy" />
                 </a>
             </div>
-            <div class="s-hp-slider-partners__col fr-col pb-3 d-flex align-items-center">
+            <div class="fr-col pb-3 d-flex align-items-center">
                 <a href="https://handeco.org" target="_blank" rel="noopener">
                     <img src="{% static 'images/logo-partners-handeco.min.png' %}" class="img-fluid" alt="Handeco - Le partenaire économique des acteurs solidaires" loading="lazy" />
                 </a>
             </div>
-            <div class="s-hp-slider-partners__col fr-col pb-3 d-flex align-items-center">
+            <div class="fr-col pb-3 d-flex align-items-center">
                 <a href="https://ess2024.org" target="_blank" rel="noopener">
                     <img src="{% static 'images/logo-partners-ess-2024.min.png' %}" class="img-fluid" alt="ESS 2024 La plateforme solidaire" loading="lazy" />
                 </a>
             </div>
-            <div class="s-hp-slider-partners__col fr-col pb-3 d-flex align-items-center">
+            <div class="fr-col pb-3 d-flex align-items-center">
                 <a href="https://campus-inclusion.fr" target="_blank" rel="noopener">
                     <img src="{% static 'images/logo-partners-le-campus-de-linclusion.min.png' %}" class="img-fluid" alt="Campus de l'inclusion : Dirigeants, passez à l'action !" loading="lazy" />
                 </a>
             </div>
-            <div class="s-hp-slider-partners__col fr-col pb-3 d-flex align-items-center">
+            <div class="fr-col pb-3 d-flex align-items-center">
                 <a href="https://www.linkedin.com/company/economies-solidaires/" target="_blank" rel="noopener">
                     <img src="{% static 'images/logo-partners-agence-des-economies-solidaires.min.jpg' %}" class="img-fluid" alt="Agence des Economies Solidaires" loading="lazy" />
                 </a>
             </div>
-            <div class="s-hp-slider-partners__col fr-col pb-3 d-flex align-items-center">
+            <div class="fr-col pb-3 d-flex align-items-center">
                 <a href="http://www.lesentreprisesdinsertion.org/" target="_blank" rel="noopener">
                     <img src="{% static 'images/logo-partners-fei.min.png' %}" class="img-fluid" alt="Fédération des Entreprises d'Insertion" loading="lazy" />
                 </a>
             </div>
-            <div class="s-hp-slider-partners__col fr-col pb-3 d-flex align-items-center">
+            <div class="fr-col pb-3 d-flex align-items-center">
                 <a href="https://up.coop/home" target="_blank" rel="noopener">
                     <img src="{% static 'images/logo-partners-up.min.jpg' %}" class="img-fluid" alt="Up France" loading="lazy" />
                 </a>

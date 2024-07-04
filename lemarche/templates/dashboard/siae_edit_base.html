@@ -30,10 +30,10 @@
 {% block content %}
 <!-- Nudge to fill SIAE -->
 {% if siae.is_missing_content %}
-    <section class="s-section mb-0">
+    <section class="mb-0">
         <div class="fr-container">
             <div class="fr-grid-row">
-                <div class="s-section__col fr-col-12">
+                <div class="fr-col-12">
                     <div class="alert alert-warning" role="alert">
                         <p class="mb-1">
                             <i class="ri-information-line ri-xl"></i>
@@ -64,11 +64,11 @@
 <div id="editTabs"></div>
 
 <!-- Navigation -->
-<section class="s-tabs-01 mb-3 mb-lg-5">
-    <div class="s-tabs-01__containerfr-container">
-        <div class="s-tabs-01__row fr-grid-row">
-            <div class="s-tabs-01__col fr-col-12">
-                <ul class="s-tabs-01__nav nav nav-tabs" role="tablist">
+<section class="mb-3 mb-lg-5">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
+                <ul class="nav nav-tabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <a href="{% url 'dashboard_siaes:siae_edit_contact' siae.slug %}#editTabs" id="siae-edit-contact-tab" class="nav-link {% if 'siae_edit_contact' in request.resolver_match.url_name %}active{% endif %}" aria-selected="{% if 'siae_edit_contact' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
                             Votre contact commercial

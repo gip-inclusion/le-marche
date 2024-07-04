@@ -27,20 +27,20 @@
     <div class="fr-container">
         <div class="fr-grid-row">
             <div class="fr-col-12">
-                <h1 class="s-title-01__title h1"><strong>Tableau de bord</strong></h1>
+                <h1 class="h1"><strong>Tableau de bord</strong></h1>
             </div>
         </div>
     </div>
 </section>
 
-<section class="s-section">
+<section class="">
     <div class="fr-container">
         <div class="fr-grid-row">
-            <div class="s-section__col fr-col-12 fr-col-lg-7 mb-3 mb-lg-5">
+            <div class="fr-col-12 fr-col-lg-7 mb-3 mb-lg-5">
                 {% if user.tenders.count %}
                     <div class="card h-100 w-100">
                         <div class="card-body">
-                            <div class="fr-grid-row mb-sm-4">
+                            <div class="fr-grid-row fr-mb-sm-4">
                                 <div class="fr-col-12 fr-col-md">
                                     <p class="h4 lh-sm">Mes besoins</p>
                                 </div>
@@ -69,7 +69,7 @@
                     {% include "dashboard/_add_tender_card.html" %}
                 {% endif %}
             </div>
-            <div class="s-section__col fr-col-12 fr-col-lg-5">
+            <div class="fr-col-12 fr-col-lg-5">
                 <div class="card h-45 w-100 mb-3 mb-lg-5">
                     <div class="card-body">
                         <p class="h4 lh-sm mb-lg-4">M'informer sur le marché</p>
@@ -134,7 +134,7 @@
             </div>
         </div>
         <div class="fr-grid-row">
-            <div class="s-section__col fr-col-12 fr-col-lg-5">
+            <div class="fr-col-12 fr-col-lg-5">
                 <div class="card h-45 w-100 mb-3 mb-lg-5">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -178,12 +178,12 @@
                     </div>
                 </div>
             </div>
-            <div class="s-section__col fr-col-12 fr-col-lg-7 mb-3 mb-lg-5">
+            <div class="fr-col-12 fr-col-lg-7 mb-3 mb-lg-5">
                 {% include "dashboard/_ressource_card.html" with user_kind="BUYER" ressources=last_3_ressources category_slug=category_slug_cat %}
             </div>
         </div>
         <div class="fr-grid-row">
-            <div class="s-section__col fr-col-12 fr-col-lg-6">
+            <div class="fr-col-12 fr-col-lg-6">
                 <div class="card h-45 w-100 mb-3 mb-lg-5">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -206,7 +206,7 @@
                     </div>
                 </div>
             </div>
-            <div class="s-section__col fr-col-12 fr-col-lg-6">
+            <div class="fr-col-12 fr-col-lg-6">
                 {% include "dashboard/_api_key_card.html" with api_key=user.api_key user_kind="BUYER" %}
             </div>
         </div>
