@@ -1,10 +1,10 @@
 {% load wagtailcore_tags wagtailimages_tags advert_cms %}
 
 {% if user_kind == "BUYER" %}
-    {% cms_advert layout="card" %}
+    {% cms_advert layout="fr-card" %}
 {% endif %}
 <div class="card h-100 w-100">
-    <div class="card-body">
+    <div class="fr-card__body">
         <p class="h4 lh-sm mb-lg-4">
             {% if user_kind == "SIAE" %}
                 Solutions et ressources
@@ -33,7 +33,7 @@
             </ul>
         {% endfor %}
     </div>
-    <div class="card-footer pt-0 bg-white text-right">
+    <div class="fr-card__end pt-0 bg-white text-right">
         <a href="/ressources/{% if category_slug %}categories/{{ category_slug }}/{% endif %}" class="btn btn-link btn-ico">
             <span>Voir toutes les ressources</span>
             <i class="ri-arrow-right-s-line ri-xl"></i>
