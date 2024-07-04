@@ -98,12 +98,26 @@
                                     {% if not siae.sector_count %}<p>Non renseigné</p>{% endif %}
                                 </div>
                             </div>
-                            {% if siae.client_reference_count %}
-                                <div class="fr-col-sm-6 img-left">
-                                    <div class="il-l">
-                                        <img src="{% static_theme_images 'ico-bicro-marche-ref-clients.svg' %}"
-                                             alt=""
-                                             height="32" />
+                        </div>
+                        <div id="image-grid" class="fr-grid-row">
+                            {% for image in siae.images.all %}
+                                <div class="fr-col-12 fr-col-sm-4 pb-3">
+                                    <!-- 3 per row -->
+                                    <img src="{{ image.image_url }}"
+                                         class="img-fluid"
+                                         title="{{ image.name|default:'' }}"
+                                         loading="lazy" />
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if not siae.user_count and not user.is_authenticated %}
+                        <div id="user_update_cta"
+                             class="fr-grid-row justify-content-center mb-5 mb-lg-3 mt-lg-5">
+                            <div class="fr-col-12 fr-col-lg-10">
+                                <div class="card c-card--mini h-100 fr-p-3 p-lg-5 pr-lg-7">
+                                    <div class="card-body text-center">
+                                        <h3 class="h2 fr-m-0">C'est votre structure et vous souhaitez modifier ses informations.</h3>
                                     </div>
                                     <div class="il-r">
                                         <h3 class="h2 mb-1 mt-1">Références clients</h3>
