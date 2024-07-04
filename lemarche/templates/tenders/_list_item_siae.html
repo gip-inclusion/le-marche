@@ -1,6 +1,6 @@
 {% load static humanize %}
 <div id="card-{{tender.slug}}" class="card-{{ tender.kind|lower }}{% if tender.deadline_date_is_outdated_annotated %}-outdated{% endif %} mb-2">
-    <div class="card-body">
+    <div class="fr-card__body">
         <div class="fr-grid-row">
             <div class="fr-col-md-9">
                 {% comment %} we set is_new_for_siaes to False because we have other conf in this view {% endcomment %}

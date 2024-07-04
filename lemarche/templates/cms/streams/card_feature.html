@@ -1,18 +1,24 @@
 {% load theme_inclusion wagtailimages_tags %}
 <div class="item">
-    <div class="card">
-        <div class="card-header text-center">{% image self.image fill-150x150 class="img-fluid" %}</div>
-        <div class="card-body">
-            <p class="h4 lh-base">{{ self.title }}</p>
-            <p>{{ self.subtitle }}</p>
+    <div class="fr-card fr-enlarge-link">
+        <div class="fr-card__body">
+            <div class="fr-card__content">
+                <p class="fr-card__title">{{ self.title }}</p>
+                <p class="fr-card__desc">{{ self.subtitle }}</p>
+                <div class="fr-card__end">
+                    <a href="{{ self.url }}"
+                       target="_blank"
+                       class="fr-btn fr-btn--tertiary-no-outline">
+                        <span>Découvrir</span>
+                        <i class="ri-arrow-right-up-line ri-lg"></i>
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="card-footer text-right">
-            <a href="{{ self.url }}"
-               target="_blank"
-               class="btn btn-link btn-ico stretched-link">
-                <span>Découvrir</span>
-                <i class="ri-arrow-right-up-line ri-lg"></i>
-            </a>
+        <div class="fr-card__header">
+            <div class="fr-card__img">
+                {% image self.image fill-150x150 class="fr-responsive-img" %}
+            </div>
         </div>
     </div>
 </div>
