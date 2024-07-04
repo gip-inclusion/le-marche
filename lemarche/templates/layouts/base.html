@@ -57,7 +57,8 @@
     {% endblock footer %}
 
     {% dsfr_js nonce=request.csp_nonce %}
-
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="{% static 'js/utils.js'%}"></script> 
     {% block extra_js %}
     {% endblock extra_js %}
   </body>
