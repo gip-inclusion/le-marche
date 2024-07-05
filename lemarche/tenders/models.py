@@ -1,3 +1,4 @@
+import random
 from datetime import datetime, timedelta
 from uuid import uuid4
 
@@ -781,6 +782,9 @@ class Tender(models.Model):
         self.set_last_updated_fields()
         try:
             self.set_slug()
+            # generate random status for is_followed_by_us
+            if not self.pk and self.kind == tender_constants.KIND_PROJECT and self.is_followed_by_us is None:
+                self.is_followed_by_us = random.random() < 0.5  # 50% True, 50% False
             with transaction.atomic():
                 super().save(*args, **kwargs)
         except IntegrityError as e:
