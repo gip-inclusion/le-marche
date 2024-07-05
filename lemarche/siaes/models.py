@@ -1423,6 +1423,7 @@ class SiaeActivity(models.Model):
         on_delete=models.DO_NOTHING,
         blank=True,
         null=True,
+        help_text="Activité située dans une autre ville ?",
     )
     geo_range = models.CharField(
         verbose_name="Périmètre d'intervention",
@@ -1432,7 +1433,10 @@ class SiaeActivity(models.Model):
         db_index=True,
     )
     geo_range_custom_distance = models.IntegerField(
-        verbose_name="Distance en kilomètres (périmètre d'intervention)", blank=True, null=True
+        verbose_name="Distance en kilomètres (périmètre d'intervention)",
+        blank=True,
+        null=True,
+        help_text="Distance (en km)",
     )
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
@@ -1457,7 +1461,7 @@ class SiaeActivity(models.Model):
             return f"{self.get_geo_range_display().lower()} ({self.siae.department})"
         elif self.geo_range == siae_constants.GEO_RANGE_CUSTOM:
             if self.geo_range_custom_distance:
-                return f"{self.geo_range_custom_distance} km"
+                return f"{self.geo_range_custom_distance} km (depuis {self.location or self.siae.city})"  # different
         return "non disponible"
 
     @property
@@ -1470,7 +1474,7 @@ class SiaeActivity(models.Model):
             return self.siae.get_department_display()
         elif self.geo_range == siae_constants.GEO_RANGE_CUSTOM:
             if self.geo_range_custom_distance:
-                return f"{self.geo_range_pretty_display} de {self.siae.city}"
+                return self.geo_range_pretty_display  # different
         return self.geo_range_pretty_display
 
 
