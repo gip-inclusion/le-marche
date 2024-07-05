@@ -620,6 +620,17 @@ class Tender(models.Model):
         help_text=ADMIN_FIELD_HELP_TEXT,
         default=6,
     )
+    # admins
+    is_followed_by_us = models.BooleanField("Suivi par l'équipe", null=True)
+    # Admin specific for proj
+    proj_resulted_in_reserved_tender = models.BooleanField(
+        "Abouti à un appel d’offre (uniquement sourcing)", null=True
+    )
+    proj_link_to_tender = models.URLField(
+        "Lien vers l'appel d'offre", help_text="Doit commencer par http:// ou https://", blank=True
+    )  # could become foreign key
+    # Admin specific for tenders
+    is_reserved_tender = models.BooleanField("Appel d'offre reservé", null=True)
 
     # partner data
     partner_approch_id = models.IntegerField("Partenaire APProch : ID", blank=True, null=True)
