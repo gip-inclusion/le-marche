@@ -51,7 +51,7 @@
                                                 <div class="fr-fieldset__element">
                                                     {% dsfr_form_field form.last_name %}
                                                 </div>
-                                                <div id="phoneFieldsetElement" class="fr-fieldset__element fr-hidden">
+                                                <div id="phoneFieldsetElement" class="fr-fieldset__element">
                                                     {% dsfr_form_field form.phone %}
                                                 </div>
                                             </fieldset>
@@ -124,19 +124,19 @@
                                     <fieldset class="fr-fieldset">
                                         <div class="fr-fieldset__element">
                                             <fieldset class="fr-fieldset">
-                                                <div id="acceptSurveyFielsetElement" class="fr-fieldset__element fr-hidden">
-                                                    {% dsfr_form_field form.accept_survey %}
-                                                </div>
                                                 <div class="fr-fieldset__element">
-                                                    {% dsfr_form_field form.accept_share_contact_to_external_partners %}
-                                                </div>
-                                                <div id="shareContactFielsetElement" class="fr-fieldset__element fr-hidden">
                                                     <div class="fr-checkbox-group fr-mb-2w">                                                    
                                                         {{ form.accept_rgpd }}
                                                         <label class="fr-label" for="{{ form.accept_rgpd.id_for_label }}">
-                                                            J'accepte les <a href="{% url 'pages:cgu' %}" target="_blank">Conditions Générales d'Utilisation</a>
+                                                            J'accepte les&nbsp;<a href="{% url 'pages:cgu' %}" target="_blank">Conditions Générales d'Utilisation</a>
                                                         </label>
                                                     </div>
+                                                </div>
+                                                <div id="acceptSurveyFielsetElement" class="fr-fieldset__element fr-hidden">
+                                                    {% dsfr_form_field form.accept_survey %}
+                                                </div>
+                                                <div id="shareContactFielsetElement" class="fr-fieldset__element fr-hidden">
+                                                    {% dsfr_form_field form.accept_share_contact_to_external_partners %}
                                                 </div>
                                             </fieldset>
                                         </div>
@@ -177,17 +177,9 @@
  *      - hide company section
  */
 document.addEventListener('DOMContentLoaded', function() {
-    let phoneInput = document.getElementById('id_phone');
-    let buyerKindDetailInput = document.getElementById('id_buyer_kind_detail');
-    let partnerKindInput = document.getElementById('id_partner_kind');
-    let companyNameInput = document.getElementById('id_company_name');
-    let companyNameSiaeFormGroupDiv = document.getElementsByClassName('company-name-siae-form-group')[0];
-    let positionInput = document.getElementById('id_position');
-    let acceptSurveyInput = document.getElementById('id_accept_survey');
-    let acceptShareContactInput = document.getElementById('id_accept_share_contact_to_external_partners');
-    let statsSignupBuyerContent = document.getElementById('statsSignupBuyerFieldset');
-    let sectorsInput = document.getElementById('id_sectors');
     let phoneFieldsetElement = document.getElementById('phoneFieldsetElement');
+    let companyNameSiaeFormGroupDiv = document.getElementsByClassName('company-name-siae-form-group')[0];
+    let statsSignupBuyerContent = document.getElementById('statsSignupBuyerFieldset');
     let infoStructuresFieldset = document.getElementById('infoStructuresFieldset');
     let buyerKindDetailFieldsetElement = document.getElementById('buyerKindDetailFieldsetElement');
     let partnerKindFieldsetElement = document.getElementById('partnerKindFieldsetElement');
@@ -202,40 +194,38 @@ document.addEventListener('DOMContentLoaded', function() {
     kindRadios.forEach(radio => radio.addEventListener('change', () => {
         if (radio.value === 'SIAE') {
             companyNameSiaeFormGroupDiv.classList.remove('fr-hidden');
-            companyNameFieldsetElement.classList.add('fr-hidden');
-            toggleInputElement(false, element=companyNameInput, required=false);
-            toggleInputElement(false, element=acceptSurveyInput);
-            toggleInputElement(true, element=acceptShareContactInput);
+            toggleFieldsetElement(false, element=companyNameFieldsetElement, required=false);
+            toggleFieldsetElement(false, element=acceptSurveyFieldsetElement);
+            toggleFieldsetElement(true, element=acceptShareContactFieldsetElement);
         } else {
             companyNameSiaeFormGroupDiv.classList.add('fr-hidden');
-            companyNameFieldsetElement.classList.remove('fr-hidden');
-            toggleInputElement(true, element=companyNameInput, required=true);
-            toggleInputElement(true, element=acceptSurveyInput);
-            toggleInputElement(false, element=acceptShareContactInput);
+            toggleFieldsetElement(true, element=companyNameFieldsetElement, required=true);
+            toggleFieldsetElement(true, element=acceptSurveyFieldsetElement);
+            toggleFieldsetElement(false, element=acceptShareContactFieldsetElement);
         }
 
         if (radio.value === 'BUYER') {
-            toggleInputElement(true, element=buyerKindDetailInput, required=true);
-            toggleInputElement(true, element=positionInput, required=true);
-            toggleInputElement(true, element=phoneInput, required=true);
+            toggleFieldsetElement(true, element=buyerKindDetailFieldsetElement, required=true);
+            toggleFieldsetElement(true, element=positionFieldsetElement, required=true);
+            toggleFieldsetElement(true, element=phoneFieldsetElement, required=true);
             statsSignupBuyerContent.classList.remove('fr-hidden');
-            toggleInputElement(true, element=sectorsInput, required=false);
+            toggleFieldsetElement(true, element=sectorsFieldsetElement, required=false);
         } else {
-            toggleInputElement(false, element=buyerKindDetailInput, required=false);
-            toggleInputElement(false, element=positionInput, required=false);
-            toggleInputElement(true, element=phoneInput, required=false);
+            toggleFieldsetElement(false, element=buyerKindDetailFieldsetElement, required=false);
+            toggleFieldsetElement(false, element=positionFieldsetElement, required=false);
+            toggleFieldsetElement(true, element=phoneFieldsetElement, required=false);
             statsSignupBuyerContent.classList.add('fr-hidden');
-            toggleInputElement(false, element=sectorsInput, required=false);
+            toggleFieldsetElement(false, element=sectorsFieldsetElement, required=false);
         }
 
         if (radio.value === 'PARTNER') {
-            toggleInputElement(true, element=partnerKindInput, required=true);
+            toggleFieldsetElement(true, element=partnerKindFieldsetElement, required=true);
         } else {
-            toggleInputElement(false, element=partnerKindInput, required=false);
+            toggleFieldsetElement(false, element=partnerKindFieldsetElement, required=false);
         }
 
         if (radio.value === 'INDIVIDUAL') {
-            toggleInputElement(false, element=companyNameInput, required=false);
+            toggleFieldsetElement(false, element=companyNameFieldsetElement, required=false);
             infoStructuresFieldset.classList.add('fr-hidden');
         } else {
             infoStructuresFieldset.classList.remove('fr-hidden');
