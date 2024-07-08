@@ -1,20 +1,19 @@
 {% extends "tenders/create_base.html" %}
-{% load bootstrap4 static %}
+{% load dsfr_tags static %}
 {% block step_title %}Détails du besoin{% endblock %}
-{% block step_title_again %}Détails du besoin{% endblock %}
 {% block step_subtitle %}
     Veuillez détailler au maximum votre besoin pour que les prestataires inclusifs puissent se positionner.
-{% endblock %}
+{% endblock step_subtitle %}
 {% block content_form %}
     {% csrf_token %}
     <div class="fr-grid-row">
-        <div class="fr-col-12 fr-col-lg-7">{% bootstrap_field form.start_working_date %}</div>
+        <div class="fr-col-12 fr-col-lg-7">{% dsfr_form_field form.start_working_date %}</div>
     </div>
     <div class="fr-grid-row">
-        <div class="fr-col-12 fr-col-lg-7">{% bootstrap_field form.deadline_date %}</div>
+        <div class="fr-col-12 fr-col-lg-7">{% dsfr_form_field form.deadline_date %}</div>
     </div>
     <div class="fr-grid-row">
-        <div class="fr-col-12 fr-col-lg-7">{% bootstrap_field form.external_link %}</div>
+        <div class="fr-col-12 fr-col-lg-7">{% dsfr_form_field form.external_link %}</div>
     </div>
     <div class="fr-grid-row mb-4" x-data="TenderQuestionForm">
         <div class="fr-col-12 fr-col-lg-7">
@@ -47,19 +46,19 @@
     <div class="fr-grid-row">
         <div class="fr-col-12 fr-col-lg-7">
             <span x-data="SocialImpactCalculatorComponent">
-                {% bootstrap_field form.amount %}
-                {% bootstrap_field form.why_amount_is_blank class="inline-block" show_label=False %}
+                {% dsfr_form_field form.amount %}
+                {% dsfr_form_field form.why_amount_is_blank %}{% comment %} class="inline-block" show_label=False{% endcomment %}
                 <div x-show="displayMessage()">
                     <p class="fs-sm text-success" x-text="getImpactMessage"></p>
-                    {% bootstrap_field form.accept_share_amount %}
+                    {% dsfr_form_field form.accept_share_amount %}
                 </div>
             </span>
         </div>
-        <div class="fr-col-12 fr-col-lg-5">
+        <div class="fr-col-12 fr-col-lg-5 fr-pl-1w">
             <div class="c-form-conseil">
                 <div>
                     <p>
-                        <i class="ri-lightbulb-line ri-lg mr-1"></i><strong>Conseil</strong>
+                        <span class="fr-icon-lightbulb-line" aria-hidden="true"></span><strong>Conseil</strong>
                         <br />
                         Le montant € estimé nous aide à évaluer l'impact de la plateforme du Marché de l'inclusion.
                     </p>
@@ -171,4 +170,4 @@
         });
     });
     </script>
-{% endblock %}
+{% endblock extra_js %}
