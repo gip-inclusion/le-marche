@@ -1,136 +1,94 @@
 {% extends "layouts/base.html" %}
-{% load bootstrap4 static %}
-{% block title %}Publier un besoin d'achat{{ block.super }}{% endblock %}
-{% block breadcrumbs %}
-    <section>
-        <div class="fr-container">
-            <div class="fr-grid-row">
-                <div class="fr-col-12">
-                    <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ HOME_PAGE_PATH }}">Accueil</a>
-                            </li>
+{% load process_dict dsfr_tags %}
+
+{% block title %}Publier un besoin d'achat{{ block.super }}{% endblock title %}
+
+{% block breadcrumb %}
+    {% process_dict current="Publier un besoin d'achat" as breadcrumb_data %}
+    {% dsfr_breadcrumb breadcrumb_data %}
+{% endblock breadcrumb %}
+
+                                {% comment %} <a href="{{ HOME_PAGE_PATH }}">Accueil</a>
                             {% if user.is_authenticated %}
-                                <li class="breadcrumb-item">
                                     <a href="{% url 'dashboard:home' %}">Tableau de bord</a>
-                                </li>
-                                <li class="breadcrumb-item">
                                     <a href="{% url 'tenders:list' %}">Besoins en cours</a>
-                                </li>
-                            {% endif %}
-                            <li class="breadcrumb-item active" aria-current="page">Publier un besoin d'achat</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </section>
-{% endblock %}
+                            {% endif %} {% endcomment %}
 {% block content %}
-    <section class="">
-        <div class="fr-container">
-            <div class="fr-grid-row">
-                <div class="fr-col-12">
-                    <h1 class="h1 mb-0">
-                        <strong>
-                            {% if wizard.steps.step1 != wizard.steps.count %}{{ wizard.steps.step1 }}.{% endif %}
-                            {% block step_title %}{% endblock %}
-                        </strong>
-                    </h1>
-                    <p>
-                        {% block step_subtitle %}{% endblock %}
-                    </p>
-                </div>
+    <div class="fr-container fr-container--fluid fr-mb-md-14v">
+        
+        <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+            <div class="fr-col-12">  
+                <h1 class="mb-0">Publier un besoin d'achat</h1>
             </div>
         </div>
-    </section>
-    <section class="">
-        <div class="fr-container">
-            {% if wizard.steps.step1 != wizard.steps.count %}
-                <div class="fr-grid-row mb-3 mb-lg-5">
-                    <div class="fr-col-12 fr-col-lg-7">
-                        <div class="c-stepper">
-                            <div class="progress progress--marche">
-                                <div class="progress-bar"
-                                     role="progressbar"
-                                     aria-valuemin="0"
-                                     aria-valuemax="100"
-                                     style="width:{% widthratio wizard.steps.step1 wizard.steps.count|add:"-1" 100 %}%"
-                                     aria-valuenow="{% widthratio wizard.steps.step1 wizard.steps.count|add:"-1" 100 %}">
+        {% if wizard.steps.step1 != wizard.steps.count %}
+            <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+                <div class="fr-col-12"> 
+                    <div class="fr-stepper">
+                        <h2 class="fr-stepper__title">
+                            {% block step_title %}{% endblock step_title %}
+                            <span class="fr-stepper__state">Étape {{ wizard.steps.step1 }} sur {{ wizard.steps.count|add:"-1" }}</span>
+                        </h2>
+                        <div class="fr-stepper__steps" data-fr-current-step="{{ wizard.steps.step1 }}" data-fr-steps="{{ wizard.steps.count|add:"-1" }}"></div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% block form_section %}
+            <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+                <div class="fr-col-12">
+                    <form method="post"
+                        action=""
+                        id="tender-create-{{ wizard.steps.current }}-form"
+                        enctype="multipart/form-data">
+                        {% if form.non_field_errors %}
+                            <section class="fr-my-4v fr-input-group fr-input-group--error">
+                                {{ form.non_field_errors }}
+                            </section>
+                        {% endif %}
+                        {{ wizard.management_form }}
+                        {% block content_form %}
+                            <table>
+                                {% if wizard.form.forms %}
+                                    {{ wizard.form.management_form }}
+                                    {% for form in wizard.form.forms %}{{ form }}{% endfor %}
+                                {% else %}
+                                    {{ wizard.form }}
+                                {% endif %}
+                            </table>
+                        {% endblock content_form %}
+                        {% block action_form %}
+                            {% block recap_section %}{% endblock recap_section %}
+                            <div class="fr-grid-row">
+                                <div class="fr-col-12 fr-col-lg-7">
+                                    <hr />
                                 </div>
                             </div>
-                            <p>
-                                <strong>Étape {{ wizard.steps.step1 }}/{{ wizard.steps.count|add:"-1" }}</strong> :
-                                {% block step_title_again %}{% endblock %}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            {% block form_section %}
-                <div class="fr-grid-row">
-                    <div class="fr-col-12">
-                        <div class="c-form">
-                            <form method="POST"
-                                  action=""
-                                  id="tender-create-{{ wizard.steps.current }}-form"
-                                  enctype="multipart/form-data">
-                                {{ wizard.management_form }}
-                                {% block content_form %}
-                                    <table>
-                                        {% if wizard.form.forms %}
-                                            {{ wizard.form.management_form }}
-                                            {% for form in wizard.form.forms %}{{ form }}{% endfor %}
-                                        {% else %}
-                                            {{ wizard.form }}
+                            <div class="fr-grid-row">
+                                <div class="fr-col-12 fr-col-lg-7">
+                                    <ul class="fr-mt-2v fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-sm fr-btns-group--icon-left">
+                                        {% block submit_btn %}
+                                            <li>
+                                                <button id="tender-create-{{ wizard.steps.current }}-form-next-step-btn" class="fr-btn" type="submit" aria-label="Passer à l'étape suivante">
+                                                    Étape Suivante
+                                                </button>
+                                            </li>
+                                        {% endblock submit_btn %}
+                                        {% if wizard.steps.prev %}
+                                            <li>
+                                                <button id="tender-create-{{ wizard.steps.current }}-form-previous-step-btn" class="fr-btn fr-btn--tertiary-no-outline fr-icon-arrow-go-back-line" type="submit" name="wizard_goto_step" value="{{ wizard.steps.prev }}" aria-label="Retour à l'étape précédente" formnovalidate>
+                                                    Étape Précédente
+                                                </button>
+                                            </li>
                                         {% endif %}
-                                    </table>
-                                {% endblock content_form %}
-                                {% block action_form %}
-                                    {% block recap_section %}{% endblock %}
-                                    <div class="fr-grid-row">
-                                        <div class="fr-col-12 fr-col-lg-7">
-                                            <hr />
-                                        </div>
-                                    </div>
-                                    <div class="fr-grid-row">
-                                        <div class="fr-col-12 fr-col-lg-7">
-                                            <div class="form-row align-items-center {% if wizard.steps.prev %}justify-content-between{% else %}justify-content-end{% endif %}">
-                                                {% block submit_btn %}
-                                                    <div class="form-group fr-col-6 fr-col-lg-auto order-2 order-lg-3">
-                                                        <button type="submit"
-                                                                id="tender-create-{{ wizard.steps.current }}-form-next-step-btn"
-                                                                class="btn btn-primary btn-block"
-                                                                aria-label="Passer à l'étape suivante">
-                                                            Étape Suivante
-                                                        </button>
-                                                    </div>
-                                                {% endblock submit_btn %}
-                                                {% if wizard.steps.prev %}
-                                                    <div class="form-group fr-col-12 fr-col-lg order-3 order-lg-1">
-                                                        <button type="submit"
-                                                                id="tender-create-{{ wizard.steps.current }}-form-previous-step-btn"
-                                                                class="btn btn-link btn-ico pl-0"
-                                                                name="wizard_goto_step"
-                                                                value="{{ wizard.steps.prev }}"
-                                                                aria-label="Retour à l'étape précédente"
-                                                                formnovalidate>
-                                                            <i class="ri-arrow-go-back-line ri-lg"></i>
-                                                            <span>Étape Précédente</span>
-                                                        </button>
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endblock action_form %}
-                            </form>
-                        </div>
-                    </div>
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endblock action_form %}
+                    </form>
                 </div>
-            {% endblock form_section %}
-        </div>
-    </section>
-    {% block extra_html %}{% endblock %}
-{% endblock %}
+            </div>
+        {% endblock form_section %}
+    </div>
+    {% block extra_html %}{% endblock extra_html %}
+{% endblock content %}
