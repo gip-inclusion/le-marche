@@ -287,11 +287,13 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "siae_count_annotated_with_link_in_list",
         "siae_detail_contact_click_count_annotated_with_link_in_list",
         "is_validated_or_sent",
+        "is_followed_by_us",
     ]
 
     list_filter = [
         AmountCustomFilter,
         ("kind", KindFilter),
+        "is_followed_by_us",
         AuthorKindFilter,
         "status",
         ("scale_marche_useless", ScaleMarcheUselessFilter),
@@ -489,7 +491,18 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                 )
             },
         ),
-        ("Suivi", {"fields": ("admins",)}),
+        (
+            "Suivi",
+            {
+                "fields": (
+                    "admins",
+                    "is_followed_by_us",
+                    "proj_resulted_in_reserved_tender",
+                    "proj_link_to_tender",
+                    "is_reserved_tender",
+                )
+            },
+        ),
         (
             "Stats",
             {

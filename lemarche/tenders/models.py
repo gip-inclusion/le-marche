@@ -1,3 +1,4 @@
+import random
 from datetime import datetime, timedelta
 from uuid import uuid4
 
@@ -620,6 +621,17 @@ class Tender(models.Model):
         help_text=ADMIN_FIELD_HELP_TEXT,
         default=6,
     )
+    # admins
+    is_followed_by_us = models.BooleanField("Suivi par l'équipe", null=True)
+    # Admin specific for proj
+    proj_resulted_in_reserved_tender = models.BooleanField(
+        "Abouti à un appel d’offre (uniquement sourcing)", null=True
+    )
+    proj_link_to_tender = models.URLField(
+        "Lien vers l'appel d'offre", help_text="Doit commencer par http:// ou https://", blank=True
+    )  # could become foreign key
+    # Admin specific for tenders
+    is_reserved_tender = models.BooleanField("Appel d'offre reservé", null=True)
 
     # partner data
     partner_approch_id = models.IntegerField("Partenaire APProch : ID", blank=True, null=True)
@@ -770,6 +782,14 @@ class Tender(models.Model):
         self.set_last_updated_fields()
         try:
             self.set_slug()
+            # generate random status for is_followed_by_us
+            if (
+                not self.pk
+                and self.kind == tender_constants.KIND_PROJECT
+                and self.is_followed_by_us is None
+                and self.amount_int > settings.BREVO_TENDERS_MIN_AMOUNT_TO_SEND
+            ):
+                self.is_followed_by_us = random.random() < 0.5  # 50% True, 50% False
             with transaction.atomic():
                 super().save(*args, **kwargs)
         except IntegrityError as e:
