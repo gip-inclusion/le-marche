@@ -25,7 +25,7 @@ TENDER_JSON = {
     "external_link": "",
     "constraints": "string",
     "amount": "0-1K",
-    "amount_exact": "693",
+    "amount_exact": 693,
     # "why_amount_is_blank": "DONT_KNOW",
     "accept_share_amount": True,
     "accept_cocontracting": True,
