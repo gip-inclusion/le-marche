@@ -234,3 +234,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% endblock extra_js %}
+
+{% block extra_css %}
+<style>
+#statsSignupBuyerFieldset .fr-radio-group{
+    display: flex;
+}
+#statsSignupBuyerFieldset .fr-radio-group>.fr-radio-group{
+    flex: 0 0 auto;
+    margin: 0 .75rem 0 0;
+}
+</style> 
+{% endblock extra_css %}
