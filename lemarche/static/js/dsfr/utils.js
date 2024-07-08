@@ -16,8 +16,14 @@ let toggleFieldsetElement = (toggle, element, required = undefined) => {
     } else {
         element.classList.add('fr-hidden');
     }
+    
     let inputElements = element.querySelectorAll('input');
     if (inputElements.length > 0) {
         toggleRequiredInFieldset(toggle, inputElements[0]);
+    } else {
+        let selectElements = element.querySelectorAll('select');
+        if (selectElements.length > 0) {
+            toggleRequiredInFieldset(toggle, selectElements[0]);
+        }
     }
 }
