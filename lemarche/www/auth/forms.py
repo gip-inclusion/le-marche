@@ -57,7 +57,7 @@ class SignupForm(UserCreationForm, DsfrBaseForm):
     )
 
     sectors = GroupedModelMultipleChoiceField(
-        label=Sector._meta.verbose_name_plural,
+        label=User._meta.get_field("sectors").help_text,
         queryset=Sector.objects.form_filter_queryset(),
         choices_groupby="group",
         to_field_name="slug",
@@ -116,7 +116,6 @@ class SignupForm(UserCreationForm, DsfrBaseForm):
         super().__init__(*args, **kwargs)
         # password validation rules
         self.fields["password1"].help_text = CnilCompositionPasswordValidator().get_help_text()
-        self.fields["sectors"].label = User._meta.get_field("sectors").help_text
 
     def clean_email(self):
         email = self.cleaned_data["email"]
