@@ -53,7 +53,7 @@
     <div class="fr-grid-row">
         <div class="fr-col-12 fr-col-lg-7">
             <div class="fr-input-group{% if form.location.errors %} fr-input-group--error{% endif %}">
-                <label for="id_location">{{ form.location.label }}</label>
+                <label for="id_location" class="fr-label fr-mb-2v">{{ form.location.label }}</label>
                 <input id="id_location" name="general-location" value="{{ form.location.value }}" type="text" class="fr-hidden">
                 <div id="dir_form_location_name" data-input-value="{{ form.instance.location.name_display }}"></div>
                 <small class="form-text text-muted">{{ form.location.help_text }}</small>
