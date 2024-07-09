@@ -41,12 +41,12 @@
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock content_form %}
 
 {% block extra_js %}
 <script type="text/javascript">
     const checkboxResponseIsAnonymous = document.getElementById('id_contact-response_is_anonymous');
-    const input_responses_kind = document.getElementById("id_contact-response_kind")
+    const input_responses_kind = document.getElementById("checkboxes-id_contact-response_kind")
 
     const input_responses_kind_inputs = input_responses_kind.querySelectorAll("input")
     document.addEventListener("DOMContentLoaded", function() {
