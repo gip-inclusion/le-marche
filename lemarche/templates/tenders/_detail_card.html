@@ -1,12 +1,14 @@
 {% load bootstrap4 static humanize %}
 
-<div class="card siae-card rounded-lg shadow-lg">
-    <div class="fr-card__header fs-sm rounded-top rounded-lg px-5">
-        {% include "tenders/_closed_badge.html" with tender=tender is_new_for_siaes=is_new_for_siaes %}
-    </div>
-    <div class="fr-card__body pb-5 px-5">
+<div class="fr-card fr-card--shadow">
+    <div class="fr-card__body fr-py-4w">
+        <div class="fr-grid-row">
+            <div class="fr-col-md-12">
+                {% include "tenders/_closed_badge.html" with tender=tender is_new_for_siaes=is_new_for_siaes %}
+            </div>
+        </div>
         <!-- title & header -->
-        <div class="fr-grid-row py-4">
+        <div class="fr-grid-row">
             <div class="fr-col-md-12">
                 <h1>
                     {{ tender.title }}
@@ -16,16 +18,16 @@
         <div class="fr-grid-row text-bold">
             {% if tender.contact_company_name_display %}
                 <div class="fr-col-md-4" title="Entreprise">
-                    <i class="ri-building-4-line"></i>
+                    <span class="fr-icon-building-line" aria-hidden="true"></span>
                     <strong>{{ tender.contact_company_name_display }}</strong>
                 </div>
             {% endif %}
             <div class="fr-col-md-4" title="Lieu d'intervention">
-                <i class="ri-map-pin-2-line"></i>
+                <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
                 {{ tender.location_display|safe }}
             </div>
             <div class="fr-col-md-4" title="Secteurs d'activité : {{ tender.sectors_full_list_string|safe }}">
-                <i class="ri-award-line"></i>
+                <span class="fr-icon-award-line" aria-hidden="true"></span>
                 {{ tender.sectors_list_string|safe }}
             </div>
         </div>
@@ -33,10 +35,10 @@
         {% if not source_form %}
             {% if user.is_authenticated %}
                 {% if user == tender.author %}
-                    <hr class="my-5">
+                    <hr class="fr-my-4w">
                     {% include "tenders/_detail_contact.html" with tender=tender %}
                 {% elif user_partner_can_display_tender_contact_details %}
-                    <hr class="my-5">
+                    <hr class="fr-my-4w">
                     {% include "tenders/_detail_contact.html" with tender=tender %}
                 {% elif siae_has_detail_contact_click_date and not tender.deadline_date_outdated %}
                     <!-- for SIAE, contact details are displayed above (see tenders/detail.html) -->
@@ -44,17 +46,17 @@
             {% endif %}
         {% endif %}
         <!-- tender description -->
-        <hr class="my-5">
+        <hr class="fr-my-4w">
         <h2>
             Description
-            {% if tender.start_working_date %}
-                <span class="float-right fs-sm text-muted">Début d'intervention : {{ tender.start_working_date }}</span>
-            {% endif %}
         </h2>
+        {% if tender.start_working_date %}
+            <p class="fr-text--sm">Début d'intervention : {{ tender.start_working_date }}</p>
+        {% endif %}
         <p>{{ tender.description|safe|linebreaks }}</p>
         <!-- tender questions -->
         {% if source_form or not source_form and tender.questions_list|length %}
-            <hr class="my-5">
+            <hr class="fr-my-4w">
             <h2>
                 {% if source_form or user == tender.author %}
                     Questions à poser aux prestataires ciblés
@@ -68,13 +70,13 @@
         {% endif %}
         <!-- tender constraints -->
         {% if tender.constraints %}
-            <hr class="my-5">
+            <hr class="fr-my-4w">
             <h2>Comment répondre à cette demande ?</h2>
             <p>{{ tender.constraints|default:"-"|safe|linebreaks }}</p>
         {% endif %}
         <!-- tender amount -->
         {% if source_form or user == tender.author or tender.accept_share_amount %}
-            <hr class="my-5">
+            <hr class="fr-my-4w">
             <h2>
                 {% if source_form or user == tender.author %}
                     Montant du marché
