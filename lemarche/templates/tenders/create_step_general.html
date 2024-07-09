@@ -10,15 +10,12 @@
         <div class="fr-col-12 fr-col-lg-7">
             {% dsfr_form_field form.kind %}
         </div>
-        <div class="fr-col-12 fr-col-lg-5 fr-pl-1w">
-            <div class="c-form-conseil">
-                <div>
-                    <p>
-                        <span class="fr-icon-lightbulb-line" aria-hidden="true"></span><strong>En sourcing inversé</strong>,
-                        <br />
-                        ce n'est pas vous qui recherchez et contactez chaque prestataire un par un - c'est l'inverse, c'est eux qui viennent à vous.
-                    </p>
-                </div>
+        <div class="fr-col-12 fr-col-lg-5 fr-pl-2w">
+            <div class="fr-callout fr-p-4v">
+                <h3 class="fr-callout__title fr-text--sm"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> En sourcing inversé</h3>
+                <p class="fr-callout__text fr-text--sm fr-pl-7v">
+                    ce n'est pas vous qui recherchez et contactez chaque prestataire un par un - c'est l'inverse, c'est eux qui viennent à vous.
+                </p>
             </div>
         </div>
     </div>
@@ -26,34 +23,28 @@
         <div class="fr-col-12 fr-col-lg-7">
             {% dsfr_form_field form.title %}
         </div>
-        <div class="fr-col-12 fr-col-lg-5 fr-pl-1w">
-            <div class="c-form-conseil">
-                <div>
-                    <p>
-                        <span class="fr-icon-lightbulb-line" aria-hidden="true"></span><strong>Optimiser vos titres</strong>,
-                        <br />
-                        Votre titre doit être le plus précis sans être très long ou court.
-                        Les structures inclusives doivent directement pouvoir comprendre vos attentes.
-                    </p>
-                </div>
+        <div class="fr-col-12 fr-col-lg-5 fr-pl-2w">
+            <div class="fr-callout fr-p-4v">
+                <h3 class="fr-callout__title fr-text--sm"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Optimiser vos titres</h3>
+                <p class="fr-callout__text fr-text--sm fr-pl-7v">
+                    Votre titre doit être le plus précis sans être très long ou court.
+                    Les structures inclusives doivent directement pouvoir comprendre vos attentes.
+                </p>
             </div>
         </div>
     </div>
-    <div class="fr-grid-row">
-        <div class="fr-col-12 fr-col-lg-7">{% dsfr_form_field form.description %}</div> {% comment %} form_group_class="form-description-ckeditor"{% endcomment %}
-        <div class="fr-col-12 fr-col-lg-5 fr-pl-1w">
-            <div class="c-form-conseil">
-                <div>
-                    <p>
-                        <span class="fr-icon-lightbulb-line" aria-hidden="true"></span><strong>Conseil pour la description</strong>
-                        <br>
-                        Décrivez en détail votre besoin pour permettre aux prestataires inclusifs de vous faire des réponses personnalisées.
-                    </p>
-                </div>
+    <div class="fr-grid-row fr-mb-4w">
+        <div class="fr-col-12 fr-col-lg-7">{% dsfr_form_field form.description %}</div>
+        <div class="fr-col-12 fr-col-lg-5 fr-pl-2w">
+            <div class="fr-callout fr-p-4v">
+                <h3 class="fr-callout__title fr-text--sm"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Conseil pour la description</h3>
+                <p class="fr-callout__text fr-text--sm fr-pl-7v">
+                    Décrivez en détail votre besoin pour permettre aux prestataires inclusifs de vous faire des réponses personnalisées.
+                </p>
             </div>
         </div>
     </div>
-    <div class="fr-grid-row">
+    <div class="fr-grid-row fr-mb-4w">
         <div class="fr-col-12 fr-col-lg-7">
             {% dsfr_form_field form.sectors %}
             {% comment %} form_group_class="form-group form-group-required use-multiselect" {% endcomment %}
@@ -61,12 +52,20 @@
     </div>
     <div class="fr-grid-row">
         <div class="fr-col-12 fr-col-lg-7">
-            <div class="form-group form-group-required {% if form.location.errors %}is-invalid{% endif %}">
+            <div class="fr-input-group{% if form.location.errors %} fr-input-group--error{% endif %}">
                 <label for="id_location">{{ form.location.label }}</label>
-                <input id="id_location" name="general-location" value="{{ form.location.value }}" type="text" class="d-none">
+                <input id="id_location" name="general-location" value="{{ form.location.value }}" type="text" class="fr-hidden">
                 <div id="dir_form_location_name" data-input-value="{{ form.instance.location.name_display }}"></div>
                 <small class="form-text text-muted">{{ form.location.help_text }}</small>
-                <div class="invalid-feedback">Ce champ est obligatoire.</div>
+                {% if form.location.errors %}
+                    <div id="id_general-description-desc-error">
+                        <ul class="errorlist">
+                            <li class="fr-error-text">
+                                Ce champ est obligatoire.
+                            </li>
+                        </ul>
+                   </div>
+                {% endif %}
             </div>
             {% dsfr_form_field form.is_country_area %}
         </div>
@@ -105,4 +104,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-{% endblock %}
+{% endblock extra_js %}
+{% block extra_css %}
+<style>
+    .form-description-ckeditor .django-ckeditor-widget {
+        width: 100%;
+    }
+</style>
+{% endblock extra_css %}
