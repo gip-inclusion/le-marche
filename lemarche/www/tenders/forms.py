@@ -85,8 +85,8 @@ class TenderCreateStepDetailForm(forms.ModelForm):
             "accept_share_amount",
         ]
         widgets = {
-            "start_working_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
-            "deadline_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
+            "start_working_date": forms.widgets.DateInput(attrs={"class": "fr-input", "type": "date"}),
+            "deadline_date": forms.widgets.DateInput(attrs={"class": "fr-input", "type": "date"}),
             "why_amount_is_blank": forms.widgets.RadioSelect,
             "amount": forms.Select(attrs={"x-model": "formData.amount", "x-on:change": "getImpactMessage()"}),
         }
