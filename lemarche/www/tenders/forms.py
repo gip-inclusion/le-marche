@@ -49,6 +49,8 @@ class TenderCreateStepGeneralForm(forms.ModelForm):
         self.fields["location"].to_field_name = "slug"
         # required fields
         self.fields["description"].required = True
+        self.fields["description"].widget.group_class = "form-description-ckeditor fr-input-group"
+
         # self.fields["perimeters"].required = True  # JS
         # label, placeholder & help_text
         self.fields["title"].widget.attrs["placeholder"] = "Ex : Demande de devis rénovation façade à Grenoble"
