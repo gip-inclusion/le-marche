@@ -54,13 +54,13 @@
     {% endblock follow_newsletter_social_media %}
 
     {% block footer %}
-      {% include "dsfr/footer.html" %}
+      {% include "layouts/_footer.html" %}
     {% endblock footer %}
 
     {% dsfr_js nonce=request.csp_nonce %}
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="{% static 'js/dsfr/utils.js'%}"></script>
-    <script type="text/javascript" src="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.js' %}"></script> 
+    <script type="text/javascript" src="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.js' %}"></script>
     {% block extra_js %}
     {% endblock extra_js %}
   </body>
