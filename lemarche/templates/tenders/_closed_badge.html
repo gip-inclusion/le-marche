@@ -1,20 +1,20 @@
-<p class="mb-1">
+<p class="fr-mb-2w">
     {% if tender.deadline_date_is_outdated_annotated %}
-        <span class="badge badge-xs badge-pill badge-nuance-08 font-weight-bold">
+        <p class="fr-badge fr-badge--sm">
             {{ tender_kind_display|default:tender.get_kind_display }} clôturé{% if tender.kind == "QUOTE" %}e{% endif %}
             le {{ tender.deadline_date|default:"" }}
-        </span>
+        </p>
     {% else %}
-        <span class="badge badge-xs badge-pill mr-1 badge-{{ tender.kind|lower }} font-weight-bold">
+        <p class="fr-badge fr-badge--sm fr-mr-2w {% if tender.kind == "TENDER" %}fr-badge--green-archipel{% elif tender.kind == "QUOTE" %}fr-badge--blue-cumulus{% elif tender.kind == "PROJ" %}fr-badge--purple-glycine{% endif %}">
             {% if tender.kind == "PROJ" %}
                 {{ title_kind_sourcing_siae|default:tender.get_kind_display }}
             {% else %}
                 {{ tender.get_kind_display }}
             {% endif %}
-        </span>
+        </p>
         Disponible <strong>jusqu'au : {{ tender.deadline_date|default:"" }}</strong>
         {% if is_new_for_siaes %}
-            <span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>
+            <p class="fr-badge fr-badge--sm fr-badge--green-emeraude">Nouveau</p>
         {% endif %}
     {% endif %}
 </p>
