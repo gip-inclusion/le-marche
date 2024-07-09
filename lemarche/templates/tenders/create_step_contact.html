@@ -36,7 +36,11 @@
         <div class="fr-grid-row fr-mb-4w">
             <div class="fr-col-12">
                 {% dsfr_form_field form.response_kind %}
-                {% dsfr_form_field form.response_is_anonymous %}
+                {% if form.response_is_anonymous.is_hidden %}
+                    {{ form.response_is_anonymous.as_hidden }}
+                {% else %}    
+                    {% dsfr_form_field form.response_is_anonymous %}
+                {% endif %}
             </div>
         </div>
     </div>
