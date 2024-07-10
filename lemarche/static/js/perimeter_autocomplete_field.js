@@ -275,7 +275,7 @@ class PerimetersMultiAutocomplete {
   }
 
   createHiddenInputPerimeter(resultId, resultName) {
-    let removeIcon = $('<i>', { class: "ri-close-line font-weight-bold mr-0", "aria-hidden": true });
+    let removeIcon = $('<span>', { class: "fr-icon-close-line", "aria-hidden": true });
     let resultIdString = `${this.perimeter_hidden_input_selector_prefix}-${resultId}`;
     $('<input>', {
         type: 'hidden',
@@ -285,7 +285,7 @@ class PerimetersMultiAutocomplete {
     }).appendTo(this.perimeter_selected_container);
     let button = $('<button>', {
         type: 'button',
-        class: "badge badge-base badge-pill badge-outline-primary mr-1 mb-1",
+        class: "fr-badge fr-mr-1v fr-mb-1v",
         title: `Retirer ${resultName}`,
         text: `${resultName}`,
         'data-refInput': resultIdString,
