@@ -199,6 +199,8 @@ class SiaeFilterForm(forms.Form):
 
     def __init__(self, advanced_search=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["has_groups"].help_text = None
+        self.fields["has_client_references"].help_text = None
         # these fields are autocompletes
         self.fields["perimeters"].choices = []
         self.fields["locations"].choices = []
