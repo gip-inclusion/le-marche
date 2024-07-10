@@ -18,11 +18,15 @@
                 </div>
             </div>
         {% endif %}
+        {% if form.contact_company_name.is_hidden %}
+            {{ form.contact_company_name.as_hidden }}
+        {% else %}
             <div class="fr-grid-row fr-mb-4w">
                 <div class="fr-col-12">
                     {% dsfr_form_field form.contact_company_name %}
                 </div>
             </div>
+        {% endif %}
         {% if not user.is_authenticated %}
             <div class="fr-grid-row fr-mb-4w">
                 <div class="fr-col-12 fr-col-md-6 fr-pr-md-2w">
