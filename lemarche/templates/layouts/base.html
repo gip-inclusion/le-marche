@@ -45,6 +45,9 @@
         {% dsfr_breadcrumb %}
       {% endblock breadcrumb %}
       <main id="content" role="main">
+        {% block messages %}
+          {% dsfr_django_messages %}
+        {% endblock messages %}
         {% block content %}
         {% endblock content %}
       </main>
