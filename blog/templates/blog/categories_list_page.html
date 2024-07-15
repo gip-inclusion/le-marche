@@ -1,20 +1,15 @@
-{% extends "base.html" %}
-
+{% extends "layouts/base.html" %}
 {% load static dsfr_tags wagtailcore_tags wagtailimages_tags i18n %}
-
 {% block title %}
     <title>{{ page.seo_title|default:page.title }} — {{ settings.content_manager.CmsDsfrConfig.site_title }}</title>
 {% endblock title %}
-
 {% if page.search_description %}
     {% block description %}
         <meta name="description" content="{{ page.search_description }}" />
     {% endblock description %}
 {% endif %}
-
 {% block content %}
     {% include "content_manager/blocks/messages.html" %}
-
     <div class="fr-container fr-my-6w">
         {% dsfr_breadcrumb breadcrumb %}
         <h1>{% translate "Categories" %}</h1>
@@ -26,5 +21,4 @@
             {% endfor %}
         </ul>
     </div>
-
 {% endblock content %}
