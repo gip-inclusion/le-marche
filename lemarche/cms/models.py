@@ -225,3 +225,20 @@ class HomePage(Page):
         except PageFragment.DoesNotExist:
             pass
         return context
+
+
+class FAQPage(Page):
+    body = StreamField(
+        [
+            ("faq_group", blocks.FAQGroupBlock()),
+        ],
+        blank=True,
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("body"),
+    ]
+
+    class Meta:
+        verbose_name = "FAQ Page"
+        verbose_name_plural = "FAQ Pages"

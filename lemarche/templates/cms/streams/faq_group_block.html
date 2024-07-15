@@ -1,0 +1,10 @@
+{% load wagtailcore_tags %}
+<div class="faq-group mb-3">
+    <h3>{{ self.group_title }}</h3>
+    <div class="accordion" id="accordion{{ group_id }}">
+        {% for faq in self.faqs %}
+            {% comment %} <p>{{ faq.title }}</p> {% endcomment %}
+            {% include_block faq with parent_id=group_id %}
+        {% endfor %}
+    </div>
+</div>
