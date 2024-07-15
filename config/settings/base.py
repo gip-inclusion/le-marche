@@ -164,6 +164,7 @@ WAGTAIL_APPS = [
     "wagtail.contrib.search_promotions",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
+    "wagtail.contrib.settings",
     "wagtail.embeds",
     "wagtail.sites",
     "wagtail.users",
@@ -174,8 +175,15 @@ WAGTAIL_APPS = [
     "wagtail.admin",
     "wagtail",
     "modelcluster",
+    "wagtailmarkdown",
+    "wagtailmenus",
+    "wagtail_localize",
+    "wagtail_localize.locales",
     "taggit",
     "storages",
+    # app from site_facile
+    "blog",
+    "content_manager",
 ]
 
 INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + DJANGO_DSFR_APPS + THIRD_PARTY_APPS + LOCAL_APPS + WAGTAIL_APPS
@@ -806,7 +814,7 @@ BITOUBI_ENV_COLOR = ENV_COLOR_MAPPING.get(BITOUBI_ENV, "")
 # Wagtail
 # ------------------------------------------------------------------------------
 
-WAGTAIL_SITE_NAME = "Le Marché"
+WAGTAIL_SITE_NAME = os.getenv("SITE_NAME", "Le Marché")
 
 WAGTAILSEARCH_BACKENDS = {
     "default": {
@@ -831,6 +839,57 @@ WAGTAILEMBEDS_RESPONSIVE_HTML = True
 WAGTAILADMIN_BASE_URL = DEPLOY_URL or "http://localhost/"
 
 WAGTAIL_FRONTEND_LOGIN_URL = LOGIN_URL
+
+# Base URL to use when referring to full URLs within the Wagtail admin backend -
+# e.g. in notification emails. Don't include '/admin' or a trailing slash
+# WAGTAILADMIN_BASE_URL = f"{os.getenv('HOST_PROTO', 'https')}://{HOST_URL}"
+
+HOST_PORT = os.getenv("HOST_PORT", "")
+if HOST_PORT != "":
+    WAGTAILADMIN_BASE_URL = f"{WAGTAILADMIN_BASE_URL}:{HOST_PORT}"
+
+# WAGTAILADMIN_PATH = os.getenv("WAGTAILADMIN_PATH", "cms-admin/")
+
+# Disable Gravatar service
+WAGTAIL_GRAVATAR_PROVIDER_URL = None
+
+WAGTAIL_RICHTEXT_FIELD_FEATURES = [
+    "h2",
+    "h3",
+    "h4",
+    "bold",
+    "italic",
+    "link",
+    "document-link",
+    "image",
+    "embed",
+]
+
+WAGTAILEMBEDS_RESPONSIVE_HTML = True
+WAGTAIL_MODERATION_ENABLED = False
+WAGTAILMENUS_FLAT_MENUS_HANDLE_CHOICES = (
+    ("header_tools", "Menu en haut à droite"),
+    ("footer", "Menu en pied de page"),
+    ("mega_menu_section_1", "Catégorie de méga-menu 1"),
+    ("mega_menu_section_2", "Catégorie de méga-menu 2"),
+    ("mega_menu_section_3", "Catégorie de méga-menu 3"),
+    ("mega_menu_section_4", "Catégorie de méga-menu 4"),
+    ("mega_menu_section_5", "Catégorie de méga-menu 5"),
+    ("mega_menu_section_6", "Catégorie de méga-menu 6"),
+    ("mega_menu_section_7", "Catégorie de méga-menu 7"),
+    ("mega_menu_section_8", "Catégorie de méga-menu 8"),
+    ("mega_menu_section_9", "Catégorie de méga-menu 9"),
+    ("mega_menu_section_10", "Catégorie de méga-menu 10"),
+    ("mega_menu_section_11", "Catégorie de méga-menu 11"),
+    ("mega_menu_section_12", "Catégorie de méga-menu 12"),
+    ("mega_menu_section_13", "Catégorie de méga-menu 13"),
+    ("mega_menu_section_14", "Catégorie de méga-menu 14"),
+    ("mega_menu_section_15", "Catégorie de méga-menu 15"),
+    ("mega_menu_section_16", "Catégorie de méga-menu 16"),
+)
+
+WAGTAILIMAGES_EXTENSIONS = ["gif", "jpg", "jpeg", "png", "webp", "svg"]
+
 
 # Specific home and purchasing impact page is setted here to avoid queries on every page
 SIAE_HOME_PAGE = env.str("SIAE_HOME_PAGE", "/accueil-structure/")
