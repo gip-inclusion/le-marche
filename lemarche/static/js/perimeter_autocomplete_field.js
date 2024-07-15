@@ -36,12 +36,12 @@ async function fetchSource(query, kind = undefined) {
 }
 
 class PerimeterAutocomplete {
-  constructor(perimeter_container_name, perimeter_input_id, perimeter_placeholder='Région, ville…', perimeter_kind = undefined) {
-    this.perimeter_container_name= perimeter_container_name;
-    this.perimeter_input_id= perimeter_input_id;
-    this.perimeter_kind= perimeter_kind;
-    this.perimeter_placeholder= perimeter_placeholder;
-    this.perimeter_name_input_id= `${this.perimeter_input_id}_name`;
+  constructor(perimeter_container_name, perimeter_input_id, perimeter_placeholder = 'Région, ville…', perimeter_kind = undefined) {
+    this.perimeter_container_name = perimeter_container_name;
+    this.perimeter_input_id = perimeter_input_id;
+    this.perimeter_placeholder = perimeter_placeholder;
+    this.perimeter_kind = perimeter_kind;
+    this.perimeter_name_input_id = `${this.perimeter_input_id}_name`;
     this.perimeterAutocompleteContainer = document.getElementById(perimeter_container_name);
     this.perimeterInput = document.getElementById(perimeter_input_id);  // hidden
     this.initial_value_name = this.perimeterAutocompleteContainer.dataset.inputValue;

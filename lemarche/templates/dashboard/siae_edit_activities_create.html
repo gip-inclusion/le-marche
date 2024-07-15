@@ -98,7 +98,20 @@
                                 <fieldset>
                                     <legend class="h4">{{ form.geo_range.label }} <strong class="fs-base">*</strong></legend>
                                     {% bootstrap_field form.geo_range show_label=False %}
-                                    {{ form.geo_range_custom_distance }}
+                                    <div id="geo_range_activity_row" style="padding-left:10px">
+                                        <div class="form-row">
+                                            <div class="col-md-6">
+                                                {% bootstrap_field form.geo_range_custom_distance show_label=False %}
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group {% if form.location.errors %}is-invalid{% endif %}">
+                                                    <input id="id_location" name="general-location" value="{{ form.location.value }}" type="text" class="d-none">
+                                                    <div id="dir_form_location_name" data-input-value="{{ form.instance.location.name_display }}"></div>
+                                                    <small class="form-text text-muted">{{ form.location.help_text }}</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </fieldset>
                             </div>
                         </div>
@@ -110,6 +123,17 @@
                                 </p>
                                 <p class="mb-0">
                                     Le périmètre d'intervention est un critère essentiel dans le choix des acheteurs. Il est nécessaire de bien le renseigner.
+                                </p>
+                                <hr />
+                                <p class="mb-0">
+                                    <strong>Adresse :</strong>
+                                    <span>{{ siae.address }} {{ siae.post_code }} {{ siae.city }}</span>
+                                    <br />
+                                    <strong>Département :</strong>
+                                    <span>{{ siae.get_department_display }}</span>
+                                    <br />
+                                    <strong>Région :</strong>
+                                    <span>{{ siae.region }}</span>
                                 </p>
                             </div>
                         </div>
@@ -133,7 +157,6 @@
 {% endblock %}
 
 {% block extra_js %}
-<script type="text/javascript" src="{% static 'js/siae_geo_range_field.js' %}"></script>
 <script type="text/javascript">
 // dynamic sector display based on sector group selection
 document.addEventListener('DOMContentLoaded', function() {
@@ -179,6 +202,35 @@ document.addEventListener('DOMContentLoaded', function() {
             showSectorsOfSelectedSectorGroup(event.target.value);
         }
     })
+});
+</script>
+<script type="text/javascript" src="{% static 'js/siae_geo_range_field.js' %}"></script>
+{{ current_perimeters|json_script:"current-perimeters" }}
+<script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+    let is_in_country_area = document.getElementById('id_general-is_country_area');
+
+    const PERIMETER_CONTAINER_NAME = "dir_form_location_name";
+    const PERIMETER_INPUT_ID = "id_location";
+
+    const perimeterAutoComplete = new PerimeterAutocomplete(PERIMETER_CONTAINER_NAME, PERIMETER_INPUT_ID, 'Choisir une ville…', 'CITY');
+
+    // init of the page
+    perimeterAutoComplete.init();
+    if (is_in_country_area.checked) {
+        perimeterAutoComplete.disablePerimeter(disable_it=true);
+    }
+{% if form.location.errors and not form.location.value %}
+    else {
+        perimeterAutoComplete.cleanPerimeter();
+    }
+{% endif %}
+
+    // on change
+    is_in_country_area.addEventListener('change', () => {
+        perimeterAutoComplete.disablePerimeter(disable_it=is_in_country_area.checked)
+    });
 });
 </script>
 {% endblock %}
