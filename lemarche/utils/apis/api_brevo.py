@@ -343,7 +343,8 @@ def send_transactional_email_with_template(
             send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**data)
             response = api_instance.send_transac_email(send_smtp_email)
             logger.info("Brevo: send transactional email with template")
-            return response
+            # {'message_id': '<202407151419.84958140835@smtp-relay.mailin.fr>', 'message_ids': None}
+            return response.to_dict()
         except ApiException as e:
             print(f"Exception when calling SMTPApi->send_transac_email: {e}")
     else:

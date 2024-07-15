@@ -17,6 +17,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("object_id", models.PositiveBigIntegerField(blank=True, null=True)),
+                ("extra_data", models.JSONField(default=dict, editable=False, verbose_name="Données complémentaires")),
                 (
                     "created_at",
                     models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date de création"),
