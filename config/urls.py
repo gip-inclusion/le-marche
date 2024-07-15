@@ -21,6 +21,7 @@ urlpatterns = [
     path("select2/", include("django_select2.urls")),
     # admin blog
     path("cms/", include(wagtailadmin_urls)),
+    path("blog/", include("blog.urls")),
     # url docuemnts of glog
     path("documents/", include(wagtaildocs_urls)),
     # urls pages blog
