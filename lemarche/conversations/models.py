@@ -2,6 +2,8 @@ from datetime import timedelta
 from uuid import uuid4
 
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import IntegrityError, models
 from django.db.models import Func, IntegerField, Q
 from django.utils import timezone
@@ -284,3 +286,24 @@ class TemplateTransactional(models.Model):
                     from_email=from_email,
                     from_name=from_name,
                 )
+
+
+class TemplateTransactionalSendLog(models.Model):
+    template_transactional = models.ForeignKey(
+        "conversations.TemplateTransactional",
+        verbose_name="Template transactionnel",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="send_logs",
+    )
+
+    content_type = models.ForeignKey(ContentType, blank=True, null=True, on_delete=models.CASCADE)
+    object_id = models.PositiveBigIntegerField(blank=True, null=True)
+    content_object = GenericForeignKey("content_type", "object_id")
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Template transactionnel: logs d'envois"
+        verbose_name_plural = "Templates transactionnels: logs d'envois"

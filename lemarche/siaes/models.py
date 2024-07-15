@@ -871,6 +871,7 @@ class Siae(models.Model):
         "Nombre de besoins intéressés", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
     )
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
+    transactional_send_logs = GenericRelation("conversations.TemplateTransactionalSendLog", related_query_name="siae")
     source = models.CharField(
         max_length=20, choices=siae_constants.SOURCE_CHOICES, default=siae_constants.SOURCE_STAFF_C4_CREATED
     )
