@@ -1,22 +1,26 @@
 {% extends "dashboard/siae_edit_base.html" %}
-{% load static bootstrap4 addstr %}
+{% load static dsfr_tags addstr %}
 
 {% block extra_css %}
 {{ form.media.css }}
-{% endblock %}
+{% endblock extra_css %}
 
 {% block content_siae_form %}
-<form method="POST" action="" class="mb-3 mb-lg-5">
+<form method="post" action="">
     {% csrf_token %}
 
-    {% bootstrap_form_errors form type="all" %}
+    {% if form.non_field_errors %}
+        <section class="fr-my-4v fr-input-group fr-input-group--error">
+            {{ form.non_field_errors }}
+        </section>
+    {% endif %}
 
     <div class="fr-grid-row mb-3 mb-lg-5">
         <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
                 <fieldset>
                     <legend class="h4">Votre structure est-elle adhérente à un réseau ou une fédération ?</legend>
-                    {% bootstrap_field form.networks show_label=False %}
+                    {% dsfr_form_field form.networks %}
                 </fieldset>
             </div>
         </div>
@@ -27,7 +31,7 @@
             <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
                 <fieldset>
                     <legend class="h4">Êtes-vous ouvert à la co-traitance ou au groupement momentané d'entreprises (<a href="https://www.economie.gouv.fr/dae/groupement-momentane-dentreprises" target="_blank" rel="noopener">GME</a>) ?</legend>
-                    {% bootstrap_field form.is_cocontracting show_label=False %}
+                    {% dsfr_form_field form.is_cocontracting %}
                 </fieldset>
             </div>
         </div>
@@ -49,7 +53,7 @@
             <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
                 <fieldset>
                     <legend class="h4">Appartenez-vous à un groupement ou ensemblier ?</legend>
-                    {% bootstrap_field form.groups show_label=False %}
+                    {% dsfr_form_field form.groups %}
                 </fieldset>
                 <div class="alert alert-warning" role="alert">
                     <p class="mb-1">
@@ -64,17 +68,15 @@
         </div>
     </div>
 
-    <div class="fr-grid-row mt-3 mt-lg-5 justify-content-end">
-        <div class="fr-col-12 fr-col-lg-auto px-5 px-lg-6">
-            <button type="submit" class="btn btn-primary btn-block">
-                <span>Enregistrer mes modifications</span>
-            </button>
+    <div class="fr-grid-row">
+        <div class="fr-col-12 fr-col-lg-auto">
+            {% dsfr_button label="Enregistrer mes modifications" %}
         </div>
         <div class="fr-col-12 fr-col-lg-4"></div>
     </div>
 </form>
-{% endblock %}
+{% endblock content_siae_form %}
 
 {% block extra_js %}
 {{ form.media.js }}
-{% endblock %}
+{% endblock extra_js %}
