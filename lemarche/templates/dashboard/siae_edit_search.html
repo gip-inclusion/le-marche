@@ -1,33 +1,34 @@
 {% extends "dashboard/siae_edit_base.html" %}
-{% load static bootstrap4 %}
+{% load static dsfr_tags %}
 
 {% block content_siae_form %}
-<form method="POST" action="" class="mb-3 mb-lg-5">
+<form method="post" action="">
     {% csrf_token %}
-
-    {% bootstrap_form_errors form type="all" %}
-
-    <div class="fr-grid-row mb-3 mb-lg-5">
+    {% if form.non_field_errors %}
+        <section class="fr-my-4v fr-input-group fr-input-group--error">
+            {{ form.non_field_errors }}
+        </section>
+    {% endif %}
+    <div class="fr-grid-row fr-mb-4v">
         <div class="fr-col-12">
             <h3>Réferencez efficacement votre structure dans les résultats de recherche</h3>
         </div>
     </div>
 
-    <div class="fr-grid-row mb-3 mb-lg-5">
+    <div class="fr-grid-row fr-mb-4v">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
-                <fieldset>
-                    {% bootstrap_field form.presta_type %}
+            <div class="bg-white d-block rounded-lg shadow-lg  fr-p-4v">
+                <fieldset class="fr-fieldset">
+                    <div class="fr-fieldset__element">
+                        {% dsfr_form_field form.presta_type %}
+                    </div>
                 </fieldset>
             </div>
         </div>
         <div class="fr-col-12 fr-col-lg-4">
-            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-                <p class="mb-1">
-                    <i class="ri-information-line ri-lg"></i>
-                    <strong>Type de prestation</strong>
-                </p>
-                <p class="mb-0">
+            <div class="fr-callout fr-p-4v">
+                <h3 class="fr-callout__title fr-text--sm"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Type de prestation</h3>
+                <p class="fr-callout__text fr-text--sm fr-pl-7v">
                     Vous pourrez ensuite détailler vos prestations dans l'onglet <strong>offre commerciale</strong>.
                 </p>
             </div>
@@ -36,21 +37,17 @@
 
     <div class="fr-grid-row mb-3 mb-lg-5">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
-                <fieldset>
-                    <legend class="h4">{{ form.geo_range.label }} <strong class="fs-base">*</strong></legend>
-                    {% bootstrap_field form.geo_range show_label=False %}
+            <fieldset class="fr-fieldset">
+                <div class="fr-fieldset__element">
+                    {% dsfr_form_field form.geo_range %}
                     {{ form.geo_range_custom_distance }}
-                </fieldset>
-            </div>
+                </div>
+            </fieldset>
         </div>
         <div class="fr-col-12 fr-col-lg-4">
-            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-                <p class="mb-1">
-                    <i class="ri-information-line ri-lg"></i>
-                    <strong>Périmètre d'intervention</strong>
-                </p>
-                <p class="mb-0">
+            <div class="fr-callout fr-p-4v">
+                <h3 class="fr-callout__title fr-text--sm"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Périmètre d'intervention</h3>
+                <p class="fr-callout__text fr-text--sm fr-pl-7v">
                     Le périmètre d'intervention est un critère essentiel dans le choix des acheteurs.
                     Il est nécessaire de bien le renseigner.
                 </p>
@@ -60,31 +57,25 @@
 
     <div class="fr-grid-row mb-3 mb-lg-5">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
-                <fieldset>
-                    <legend class="h4">{{ form.sectors.label }} <strong class="fs-base">*</strong></legend>
-                    {% bootstrap_field form.sectors show_label=False form_check_class="form-check checkbox-title" %}
-                </fieldset>
-            </div>
+            <fieldset class="fr-fieldset">
+                <div class="fr-fieldset__element">
+                    {% dsfr_form_field form.sectors %}
+                </div>
+            </fieldset>
         </div>
         <div class="fr-col-12 fr-col-lg-4">
-            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-                <p class="mb-1">
-                    <i class="ri-information-line ri-lg"></i>
-                    <strong>Secteurs d'activité</strong>
-                </p>
-                <p class="mb-0">
+            <div class="fr-callout fr-p-4v">
+                <h3 class="fr-callout__title fr-text--sm"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Secteurs d'activité</h3>
+                <p class="fr-callout__text fr-text--sm fr-pl-7v">
                     Améliorez votre référencement en indiquant tous les secteurs d'activités sur lesquels votre struture est positionnée.
                 </p>
             </div>
         </div>
     </div>
 
-    <div class="fr-grid-row mt-3 mt-lg-5 justify-content-end">
-        <div class="fr-col-12 fr-col-lg-auto px-5 px-lg-6">
-            <button type="submit" class="btn btn-primary btn-block">
-                <span>Enregistrer mes modifications</span>
-            </button>
+    <div class="fr-grid-row">
+        <div class="fr-col-12 fr-col-lg-auto fr-px-5v fr-px-lg-6">
+            {% dsfr_button label="Enregistrer mes modifications" %}
         </div>
         <div class="fr-col-12 fr-col-lg-4"></div>
     </div>
@@ -93,4 +84,4 @@
 
 {% block extra_js %}
 <script type="text/javascript" src="{% static 'js/siae_geo_range_field.js' %}"></script>
-{% endblock %}
+{% endblock extra_js %}
