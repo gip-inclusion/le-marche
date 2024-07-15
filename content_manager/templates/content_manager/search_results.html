@@ -1,7 +1,5 @@
-{% extends "base.html" %}
-
+{% extends "layouts/base.html" %}
 {% load static dsfr_tags wagtailcore_tags wagtailimages_tags %}
-
 {% block title %}
     <title>
         {% if object_list.count %}
@@ -11,14 +9,12 @@
         {% endif %}
     pour la recherche « {{ query }} » — {{ settings.content_manager.CmsDsfrConfig.site_title }}</title>
 {% endblock title %}
-
 {% if page.search_description %}
     {% block description %}
         <meta name="description"
               content="{% if object_list.count %} {{ object_list.count }} résultat{{ object_list.count|pluralize }} {% else %} Aucun résultat {% endif %} pour la recherche « {{ query }} »" />
     {% endblock description %}
 {% endif %}
-
 {% block content %}
     <div class="fr-container fr-my-4w">
         <h1>
@@ -37,7 +33,6 @@
                             <a href="{% pageurl result %}">{{ result }}</a>
                         </h2>
                         {% if result.search_description %}<p>{{ result.search_description|safe }}</p>{% endif %}
-
                     </li>
                 {% endfor %}
             </ol>
@@ -62,5 +57,4 @@
             </div>
         {% endif %}
     </div>
-
 {% endblock content %}
