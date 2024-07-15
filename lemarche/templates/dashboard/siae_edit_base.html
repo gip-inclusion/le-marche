@@ -110,3 +110,22 @@
     </div>
 </section>
 {% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript">
+
+        const userGuide = new UserGuide();
+        userGuide.init();
+        function triggerGuide(guideName) {
+            const event = new CustomEvent('startUserGuide', {
+                detail: { guideName: guideName }
+            });
+            document.dispatchEvent(event);
+        }
+
+        // Call this function with the name of the guide you want to start
+        triggerGuide('test2');
+
+    </script>
+
+{% endblock %}
