@@ -4,7 +4,7 @@
 {% block title %}Modifier mon profil{{ block.super }}{% endblock title %}
 
 {% block breadcrumb %}
-    {% process_dict current="Modifier mon profil" as breadcrumb_data %}
+    {% process_dict root_dir=HOME_PAGE_PATH current="Modifier mon profil" as breadcrumb_data %}
     {% dsfr_breadcrumb breadcrumb_data %}
 {% endblock breadcrumb %}
 
