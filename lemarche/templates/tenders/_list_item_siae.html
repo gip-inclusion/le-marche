@@ -8,7 +8,7 @@
             </div>
             <div class="fr-col-md-3">
                 {% if tender.is_new_for_siaes %}
-                    <span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>
+                    <p class="fr-badge fr-badge--sm fr-badge--green-emeraude">Nouveau</p>
                 {% elif tender.deadline_date_is_outdated_annotated %}
                     <form action="{% url 'tenders:hide-tender-siae' tender.slug %}"
                         method="post" hx-post="{% url 'tenders:hide-tender-siae' tender.slug %}"

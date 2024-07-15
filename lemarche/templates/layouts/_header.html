@@ -1,6 +1,14 @@
 {% load i18n static theme_inclusion %}
 
-<header role="banner" class="fr-header">
+{% if not user.is_authenticated %}
+    {% if page.slug == "accueil-structure" %}
+        {% include "includes/_header_for_buyers.html" %}
+    {% else %}
+        {% include "includes/_header_for_siaes.html" %}
+    {% endif %}
+{% endif %}
+
+<header role="banner" class="fr-header" id="header">
   <div class="fr-header__body">
     <div class="fr-container">
       <div class="fr-header__body-row">
@@ -65,7 +73,9 @@
         <div class="fr-header__tools">
           <div class="fr-header__tools-links">
               {% block header_tools %}
-                {% include 'layouts/_header_nav_primary_items.html' %}
+                {% with tender_siae_unread_count=user.tender_siae_unread_count %}
+                  {% include "layouts/_header_nav_primary_items.html" %}
+                {% endwith %}
               {% endblock header_tools %}
           </div>
           {% block header_search %}

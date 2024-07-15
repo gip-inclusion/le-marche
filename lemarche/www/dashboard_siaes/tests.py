@@ -138,16 +138,18 @@ class DashboardSiaeEditViewTest(TestCase):
         ]
         self.client.force_login(self.user_siae)
         for siae_edit_url in SIAE_EDIT_URLS:
-            url = reverse(siae_edit_url, args=[self.siae_with_user.slug])
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, 200)
+            with self.subTest(siae_edit_url=siae_edit_url):
+                url = reverse(siae_edit_url, args=[self.siae_with_user.slug])
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200)
 
         self.client.force_login(self.other_user_siae)
         for siae_edit_url in SIAE_EDIT_URLS:
-            url = reverse(siae_edit_url, args=[self.siae_with_user.slug])
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, 302)
-            self.assertEqual(response.url, "/profil/")
+            with self.subTest(siae_edit_url=siae_edit_url):
+                url = reverse(siae_edit_url, args=[self.siae_with_user.slug])
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 302)
+                self.assertEqual(response.url, "/profil/")
 
 
 class DashboardSiaeUserViewTest(TestCase):
