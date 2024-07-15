@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 
-from lemarche.conversations.models import Conversation, TemplateTransactional
+from lemarche.conversations.models import Conversation, TemplateTransactional, TemplateTransactionalSendLog
 from lemarche.utils.admin.admin_site import admin_site
 from lemarche.utils.fields import pretty_print_readonly_jsonfield_to_table
 from lemarche.www.conversations.tasks import send_first_email_from_conversation
@@ -144,3 +144,22 @@ class TemplateTransactionalAdmin(admin.ModelAdmin):
         ("Paramètres d'envoi", {"fields": ("mailjet_id", "brevo_id", "source", "is_active")}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
+
+
+@admin.register(TemplateTransactionalSendLog, site=admin_site)
+class TemplateTransactionalSendLogAdmin(admin.ModelAdmin):
+    list_display = ["id", "template_transactional", "content_type", "created_at"]
+    list_filter = [("content_type", admin.RelatedOnlyFieldListFilter)]
+    search_fields = ["id", "template_transactional"]
+    search_help_text = "Cherche sur les champs : ID, Template transactionnel"
+
+    readonly_fields = [field.name for field in TemplateTransactionalSendLog._meta.fields]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
