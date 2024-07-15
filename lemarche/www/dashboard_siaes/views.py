@@ -9,6 +9,7 @@ from django.views.generic import CreateView, DeleteView, DetailView, ListView, U
 from django.views.generic.edit import FormMixin
 
 from lemarche.siaes.models import Siae, SiaeActivity, SiaeUser, SiaeUserRequest
+from lemarche.utils import home_page_context_processors
 from lemarche.utils.apis import api_brevo
 from lemarche.utils.mixins import SiaeMemberRequiredMixin, SiaeUserAndNotMemberRequiredMixin, SiaeUserRequiredMixin
 from lemarche.utils.s3 import S3Upload
@@ -52,6 +53,14 @@ class SiaeSearchBySiretView(SiaeUserRequiredMixin, FormMixin, ListView):
         context = super().get_context_data(**kwargs)
         if len(self.request.GET.keys()):
             context["form"] = SiaeSearchBySiretForm(data=self.request.GET)
+
+        context["breadcrumb_data"] = {
+            "root_dir": home_page_context_processors.home_page(self.request)["HOME_PAGE_PATH"],
+            "links": [
+                {"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")},
+            ],
+            "current": "Rechercher ma structure",
+        }
         return context
 
 
@@ -69,6 +78,14 @@ class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, SuccessMessa
         context = super().get_context_data(**kwargs)
         siae_user_pending_request = self.object.siaeuserrequest_set.initiator(self.request.user).pending()
         context["siae_user_pending_request"] = siae_user_pending_request
+        context["breadcrumb_data"] = {
+            "root_dir": home_page_context_processors.home_page(self.request)["HOME_PAGE_PATH"],
+            "links": [
+                {"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")},
+                {"title": "Tableau de bord", "url": reverse_lazy("dashboard_siaes:siae_search_by_siret")},
+            ],
+            "current": "Vérifier ma structure",
+        }
         return context
 
     def form_valid(self, form):
