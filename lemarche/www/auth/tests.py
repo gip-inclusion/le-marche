@@ -163,7 +163,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         # should redirect to redirect_url
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{redirect_url}")
         # message should be displayed
-        messages = self.driver.find_element(By.CSS_SELECTOR, "div.messages")
+        messages = self.driver.find_element(By.CSS_SELECTOR, "div.fr-alert--success")
         self.assertTrue("Inscription validée" in messages.text)
         return messages
 
@@ -355,7 +355,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         # should not submit form
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:login')}")
         # error message should be displayed
-        messages = driver.find_element(By.CSS_SELECTOR, "div.alert-danger")
+        messages = driver.find_element(By.CSS_SELECTOR, "section.fr-input-group--error")
         self.assertTrue("aisissez un Adresse e-mail et un mot de passe valides" in messages.text)
 
     def test_user_empty_credentials_should_see_password_reset_message(self):
