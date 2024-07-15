@@ -1,13 +1,10 @@
 {% extends "layouts/base.html" %}
-{% load dsfr_tags get_verbose_name process_dict %}
+{% load dsfr_tags get_verbose_name %}
 
 {% block title %}Rechercher ma structure{{ block.super }}{% endblock title %}
 
 {% block breadcrumb %}
-{% comment %}                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li> {% endcomment %}
-    {% process_dict current="Rechercher ma structure" as breadcrumb_data %}
-    {% dsfr_breadcrumb breadcrumb_data %}
+    {% dsfr_breadcrumb %}
 {% endblock breadcrumb %}
 
 {% block content %}
@@ -61,7 +58,7 @@
                         <div class="fr-col">
                             <br />
                             <a href="{% url 'dashboard_siaes:siae_search_adopt_confirm' siae.slug %}" class="fr-btn fr-btn--secondary">
-                                <span>Sélectionner</span>
+                                Sélectionner
                             </a>
                         </div>
                     </div>
@@ -77,4 +74,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
