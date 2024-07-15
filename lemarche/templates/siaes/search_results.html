@@ -7,7 +7,7 @@
 {% endblock meta_description %}
 
 {% block breadcrumb %}
-    {% process_dict current="Recherche" as breadcrumb_data %}
+    {% process_dict root_dir=HOME_PAGE_PATH current="Recherche" as breadcrumb_data %}
     {% dsfr_breadcrumb breadcrumb_data %}
 {% endblock breadcrumb %}
 
