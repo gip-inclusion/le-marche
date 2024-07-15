@@ -1,93 +1,80 @@
 {% extends "layouts/base.html" %}
-{% load bootstrap4 get_verbose_name %}
+{% load dsfr_tags get_verbose_name process_dict %}
 
-{% block title %}Rechercher ma structure{{ block.super }}{% endblock %}
+{% block title %}Rechercher ma structure{{ block.super }}{% endblock title %}
 
-{% block breadcrumbs %}
-<section>
-    <div class="fr-container">
-        <div class="fr-grid-row">
-            <div class="fr-col-12">
-                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Rechercher ma structure</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-</section>
-{% endblock %}
+{% block breadcrumb %}
+{% comment %}                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li> {% endcomment %}
+    {% process_dict current="Rechercher ma structure" as breadcrumb_data %}
+    {% dsfr_breadcrumb breadcrumb_data %}
+{% endblock breadcrumb %}
 
 {% block content %}
-<section class="">
-    <div class="fr-container">
-        <div class="fr-grid-row">
-            <div class="fr-col-12 fr-col-lg-8">
-                <h1><strong>Se rattacher à une structure</strong></h1>
-                <p class="mb-3 mb-lg-5">
-                    Nous référençons uniquement les structures relevant de l'Insertion par l'activité économique et du secteur du travail protégé et adapté.
-                    Nous ne référençons pas encore les TIH, ni les autres structures de l'ESS.
-                </p>
+<div class="fr-container">
+    <div class="fr-grid-row">
+        <div class="fr-col-12 fr-col-lg-8">
+            <h1><strong>Se rattacher à une structure</strong></h1>
+            <p class="fr-mb-4v">
+                Nous référençons uniquement les structures relevant de l'Insertion par l'activité économique et du secteur du travail protégé et adapté.
+                Nous ne référençons pas encore les TIH, ni les autres structures de l'ESS.
+            </p>
+            <form method="get" action="{% url 'dashboard_siaes:siae_search_by_siret' %}">
+                {% if form.non_field_errors %}
+                    <section class="fr-my-4v fr-input-group fr-input-group--error">
+                        {{ form.non_field_errors }}
+                    </section>
+                {% endif %}
+                <div class="fr-grid-row">
+                    <div class="fr-input-group fr-col">
+                        {% dsfr_form_field form.siret %}
+                    </div>
+                    <div class="fr-input-group fr-col">
+                        {% dsfr_button label="Rechercher" extra_classes="fr-btn--icon-right fr-icon-search-line" %}
+                    </div>
+                </div>
+            </form>
 
-                <form method="GET" action="{% url 'dashboard_siaes:siae_search_by_siret' %}">
-                    {% bootstrap_form_errors form type="all" %}
-                    <label class="mb-2 d-inline-block font-weight-bold required" for="id_siret">Entrez le numéro SIRET ou SIREN de votre structure</label>
-                    <div class="form-row">
-                        <div class="form-group form-group-required fr-col">
-                            {% bootstrap_field form.siret show_label=False %}
+            {% if siaes %}
+                <h2>{{ siaes.count }} structure{% if siaes.count > 1 %}s{% endif %} trouvée{% if siaes.count > 1 %}s{% endif %}</h2>
+                {% for siae in siaes %}
+                    <hr />
+                    <div class="fr-grid-row">
+                        <div class="fr-col">
+                            <p title="{% get_verbose_name siae 'name' %}">
+                                <strong>{% get_verbose_name siae 'name' %} :</strong>
+                                {{ siae.name }}
+                            </p>
+                            <p title="{% get_verbose_name siae 'brand' %}">
+                                <strong>{% get_verbose_name siae 'brand' %} :</strong>
+                                {{ siae.brand|default:'' }}
+                            </p>
+                            <p title="{% get_verbose_name siae 'siret' %}">
+                                <strong>{% get_verbose_name siae 'siret' %} :</strong>
+                                {{ siae.siret_display }}
+                            </p>
+                            <p title="Localisation">
+                                <strong>Localisation :</strong>
+                                {{ siae.city }} {{ siae.post_code }}
+                            </p>
                         </div>
-                        <div class="form-group fr-col-auto">
-                            <button class="btn btn-primary btn-ico" type="submit">
-                                <span>Rechercher</span>
-                                <i class="ri-search-line ri-lg"></i>
-                            </button>
+                        <div class="fr-col">
+                            <br />
+                            <a href="{% url 'dashboard_siaes:siae_search_adopt_confirm' siae.slug %}" class="fr-btn fr-btn--secondary">
+                                <span>Sélectionner</span>
+                            </a>
                         </div>
                     </div>
-                </form>
-
-                {% if siaes %}
-                    <h2>{{ siaes.count }} structure{% if siaes.count > 1 %}s{% endif %} trouvée{% if siaes.count > 1 %}s{% endif %}</h2>
-                    {% for siae in siaes %}
-                        <hr />
-                        <div class="fr-grid-row">
-                            <div class="fr-col">
-                                <p title="{% get_verbose_name siae 'name' %}" class="mb-0">
-                                    <strong>{% get_verbose_name siae 'name' %} :</strong>
-                                    {{ siae.name }}
-                                </p>
-                                <p title="{% get_verbose_name siae 'brand' %}" class="mb-0">
-                                    <strong>{% get_verbose_name siae 'brand' %} :</strong>
-                                    {{ siae.brand|default:'' }}
-                                </p>
-                                <p title="{% get_verbose_name siae 'siret' %}" class="mb-0">
-                                    <strong>{% get_verbose_name siae 'siret' %} :</strong>
-                                    {{ siae.siret_display }}
-                                </p>
-                                <p title="Localisation" class="mb-0">
-                                    <strong>Localisation :</strong>
-                                    {{ siae.city }} {{ siae.post_code }}
-                                </p>
-                            </div>
-                            <div class="fr-col text-right">
-                                <br />
-                                <a href="{% url 'dashboard_siaes:siae_search_adopt_confirm' siae.slug %}" class="btn btn-outline-primary">
-                                    <span>Sélectionner</span>
-                                </a>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-                {% if not siaes and form.is_valid %}
-                    <div class="alert alert-danger mb-3 mb-lg-5" role="status">
-                        Nous n'avons pas retrouvé votre numéro de Siret. Merci de vérifier votre numéro.<br />
-                        Dans le cas où le problème persiste, contactez <a href="{% url 'pages:contact' %}">notre support</a>.
-                    </div>
-                {% endif %}
-            </div>
+                {% endfor %}
+            {% endif %}
+            {% if not siaes and form.is_valid %}
+                <div class="fr-alert fr-alert--error">
+                    <p>
+                        Nous n'avons pas retrouvé votre numéro de Siret. Merci de vérifier votre numéro.<br />Dans le cas où le problème persiste, contactez <a href="{% url 'pages:contact' %}">notre support</a>.
+                    </p>
+                </div>
+            {% endif %}
         </div>
     </div>
-</section>
+</div>
 {% endblock %}
