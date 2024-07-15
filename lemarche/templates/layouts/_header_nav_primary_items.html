@@ -3,7 +3,7 @@
 		{% if user.kind == user.KIND_SIAE %}
 			<li>
 				<a href="{% url 'tenders:list' %}" class="fr-btn">
-					Demandes reçues{% if tender_siae_unread_count %} <span class="badge badge-pill badge-important fs-xs">{{ tender_siae_unread_count }}</span>{% endif %}
+					Demandes reçues{% if tender_siae_unread_count %}&nbsp;<span class="fr-badge fr-badge--sm fr-badge--green-emeraude">{{ tender_siae_unread_count }}</span>{% endif %}
 				</a>
 			</li>
 		{% else %}
