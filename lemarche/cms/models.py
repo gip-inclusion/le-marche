@@ -9,6 +9,7 @@ from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Page
 
+from content_manager.models import SitesFacilesBasePage
 from lemarche.cms import blocks
 from lemarche.cms.forms import ArticlePageForm
 from lemarche.cms.snippets import ArticleCategory
@@ -258,3 +259,7 @@ class FAQPage(ArticleBase):
     class Meta:
         verbose_name = "FAQ Page"
         verbose_name_plural = "FAQ Pages"
+
+
+class HomePagev2(SitesFacilesBasePage):
+    parent_page_types = ["wagtailcore.Page", "cms.HomePage"]
