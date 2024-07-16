@@ -445,27 +445,23 @@ def send_siae_interested_email_to_author(tender: Tender):
 
         if tender_siae_detail_contact_click_count == 1:
             should_send_email = True
-            email_subject = "Un premier prestataire intéressé !"
-            template_id = settings.MAILJET_TENDERS_AUTHOR_SIAE_INTERESTED_1_TEMPLATE_ID
+            email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_SIAE_INTERESTED_1")
         elif tender_siae_detail_contact_click_count == 2:
             should_send_email = True
-            email_subject = "Un deuxième prestataire intéressé !"
-            template_id = settings.MAILJET_TENDERS_AUTHOR_SIAE_INTERESTED_2_TEMPLATE_ID
+            email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_SIAE_INTERESTED_2")
         elif tender_siae_detail_contact_click_count == 5:
             should_send_email = True
-            email_subject = "Un cinquième prestataire intéressé !"
-            template_id = settings.MAILJET_TENDERS_AUTHOR_SIAE_INTERESTED_5_TEMPLATE_ID
+            email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_SIAE_INTERESTED_5")
         elif tender_siae_detail_contact_click_count % 5 == 0:
             should_send_email = True
-            email_subject = "5 nouveaux prestataires intéressés !"
-            template_id = settings.MAILJET_TENDERS_AUTHOR_SIAE_INTERESTED_5_MORE_TEMPLATE_ID
+            email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_SIAE_INTERESTED_5_MORE")
         else:
             pass
 
         if should_send_email:
             recipient_list = whitelist_recipient_list([tender.author.email])  # tender.contact_email ?
-            if recipient_list and not tender.contact_notifications_disabled:
-                recipient_email = recipient_list[0] if recipient_list else ""
+            if len(recipient_list) and not tender.contact_notifications_disabled:
+                recipient_email = recipient_list[0]
                 recipient_name = tender.author.full_name
 
                 variables = {
@@ -474,19 +470,17 @@ def send_siae_interested_email_to_author(tender: Tender):
                     "TENDER_SIAE_INTERESTED_LIST_URL": f"{get_object_share_url(tender)}/prestataires",  # noqa
                 }
 
-                api_mailjet.send_transactional_email_with_template(
-                    template_id=template_id,
+                email_template.send_transactional_email(
                     recipient_email=recipient_email,
                     recipient_name=recipient_name,
                     variables=variables,
-                    subject=email_subject,
                 )
 
                 # log email
                 log_item = {
                     "action": "email_siae_interested",
+                    "email_template": email_template.code,
                     "email_to": recipient_email,
-                    "email_subject": email_subject,
                     # "email_body": email_body,
                     "email_timestamp": timezone.now().isoformat(),
                 }
