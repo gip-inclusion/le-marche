@@ -1,18 +1,18 @@
 <div>
-    <time class="fs-sm d-block" aria-label="Date de clôture">
+    <time aria-label="Date de clôture">
         <span>{{ tender.deadline_date|default:"" }}</span>
         {% if tender.deadline_date_is_outdated_annotated %}
-            <span class="badge badge-xs badge-base badge-pill badge-{{ tender.kind|lower }} float-right">Clôturé</span>
+            <span class="fr-badge fr-badge--sm {% if tender.kind == "TENDER" %}fr-badge--green-archipel{% elif tender.kind == "QUOTE" %}fr-badge--blue-cumulus{% elif tender.kind == "PROJ" %}fr-badge--purple-glycine{% endif %} fr-ml-2w">Clôturé</span>
         {% endif %}
         {% if tender.is_draft %}
-            <span class="badge badge-xs badge-base badge-pill badge-outline-warning float-right">
-                <i class="ri-draft-fill"></i>Brouillon
+            <span class="fr-badge fr-badge--sm fr-badge--no-icon fr-badge--warning fr-ml-2w">
+                <span class="fr-icon-draft-fill fr-mr-2w" aria-hidden="true"></span>Brouillon
             </span>
         {% elif tender.is_pending_validation_or_validated %}
-            <span class="badge badge-xs badge-base badge-pill badge-outline-info float-right">
-                <i class="ri-loader-fill"></i>En cours de validation
+            <span class="fr-badge fr-badge--sm fr-badge--no-icon fr-badge--info fr-ml-2w">
+                <span class="fr-icon-timer-line fr-mr-2w" aria-hidden="true"></span>En cours de validation
             </span>
         {% endif %}
-    </time>
-    <a href="{% url 'tenders:detail' tender.slug %}" class="d-block font-weight-bold stretched-link">{{ tender.title }}</a>
+    </time><br />
+    <a href="{% url 'tenders:detail' tender.slug %}"><strong>{{ tender.title }}</strong></a>
 </div>
