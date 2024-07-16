@@ -13,7 +13,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import PartnerShareTender, Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils import constants
-from lemarche.utils.apis import api_brevo, api_mailjet, api_slack
+from lemarche.utils.apis import api_mailjet, api_slack
 from lemarche.utils.data import date_to_string
 from lemarche.utils.emails import send_mail_async, whitelist_recipient_list
 from lemarche.utils.urls import get_domain_url, get_object_admin_url, get_object_share_url
@@ -668,9 +668,10 @@ def notify_admin_siae_wants_cocontracting(tender: Tender, siae: Siae):
 
 
 def send_super_siaes_email_to_author(tender: Tender, top_siaes: list[Siae]):
+    email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_SUPER_SIAES")
     recipient_list = whitelist_recipient_list([tender.author.email])
-    if recipient_list:
-        recipient_email = recipient_list[0] if recipient_list else ""
+    if len(recipient_list) and not tender.contact_notifications_disabled:
+        recipient_email = recipient_list[0]
         recipient_name = tender.author.full_name
 
         # Use transaction parameters of Brevo with loop for siaes, documentation :
@@ -694,8 +695,7 @@ def send_super_siaes_email_to_author(tender: Tender, top_siaes: list[Siae]):
                 }
             )
 
-        api_brevo.send_transactional_email_with_template(
-            template_id=settings.BREVO_TENDERS_AUTHOR_SUPER_SIAES_TEMPLATE_ID,
+        email_template.send_transactional_email(
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
@@ -704,6 +704,7 @@ def send_super_siaes_email_to_author(tender: Tender, top_siaes: list[Siae]):
         # log email
         log_item = {
             "action": "email_super_siaes",
+            "email_template": email_template.code,
             "email_to": recipient_email,
             "email_timestamp": timezone.now().isoformat(),
             "email_variables": variables,
