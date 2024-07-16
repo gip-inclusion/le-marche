@@ -1,4 +1,4 @@
-{% load wagtailcore_tags wagtailimages_tags advert_cms %}
+{% load static wagtailcore_tags wagtailimages_tags advert_cms %}
 
 {% if user_kind == "BUYER" %}
     {% cms_advert layout="fr-card" %}
@@ -16,29 +16,25 @@
             </h3>
             <div class="fr-card__desc">
                 {% for ressource in ressources %}
-                    <ul class="list-group list-group-flush list-group-link">
-                        <li class="list-group-item list-group-item-action">
-                            <div class="d-flex align-items-center">
-                                <picture class="d-none d-lg-inline-flex mr-2">
-                                    {% if ressource.image %}
-                                        {% image ressource.image fill-100x60 as tmp_img %}
-                                        <img src="{{ tmp_img.url }}" width="100" height="60" alt="{{ tmp_img.alt }}" class="rounded" loading="lazy" />
-                                    {% else %}
-                                        <img src="https://via.placeholder.com/100x60" alt="" width="100" height="60" class="rounded">
-                                    {% endif %}
-                                </picture>
-                                <div>
-                                    <time class="fs-sm d-block" aria-label="Date de publication">{{ ressource.last_published_at }}</time>
-                                    <a href="{% pageurl ressource %}" class="d-block font-weight-bold stretched-link">{{ ressource.title }}</a>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
+                    <div class="fr-grid-row fr-grid-row--gutters{% if not forloop.last %} fr-mb-4v{% endif %}">
+                        <div class="fr-col-3 fr-hidden fr-unhidden-lg">
+                            {% if ressource.image %}
+                                {% image ressource.image fill-100x60 as tmp_img %}
+                                <img src="{{ tmp_img.url }}" width="100" height="60" alt="{{ tmp_img.alt }}" class="rounded" loading="lazy" />
+                            {% else %}
+                                <img src="{% static "images/default-100x60.png" %}" alt="" width="100" height="60" class="rounded">
+                            {% endif %}
+                        </div>
+                        <div class="fr-col-12 fr-col-lg-9">
+                            <time aria-label="Date de publication">{{ ressource.last_published_at }}</time><br />
+                            <a href="{% pageurl ressource %}"><strong>{{ ressource.title }}</strong></a>
+                        </div>
+                    </div>
                 {% endfor %}
             </div>
         </div>
         <div class="fr-card__footer">
-            <ul class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg">
+            <ul class="fr-btns-group--right fr-btns-group fr-btns-group--inline">
                 <li>
                     <a class="fr-btn" href="/ressources/{% if category_slug %}categories/{{ category_slug }}/{% endif %}">
                         Voir toutes les ressources
