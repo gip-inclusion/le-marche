@@ -1,57 +1,56 @@
 {% load static %}
 
-<div class="fr-grid-row">
-    <div class="fr-col-12 fr-col-md-7">
-        <div class="fr-grid-row mb-3">
+<div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-col-12 fr-col-md-9">
+        <div class="fr-grid-row fr-grid-row--gutters">
             <div class="fr-col-auto">
                 {% if siae.logo_url %}
-                    <img class="img-fluid" style="width:50px" src="{{ siae.logo_url }}" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
+                    <img class="fr-responsive-img" style="width:50px" src="{{ siae.logo_url }}" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
                 {% else %}
-                    <img class="img-fluid" style="width:50px" src="{% static 'img/default-listing.png' %}" alt="{{ siae.name }}" loading="lazy" />
+                    <img class="fr-responsive-img" style="width:50px" src="{% static 'img/default-listing.png' %}" alt="{{ siae.name }}" loading="lazy" />
                 {% endif %}
             </div>
             <div class="fr-col">
-                <h2 class="mb-0">{{ siae.name_display }}</h2>
-                {% if siae.super_badge %}
-                    <span class="badge badge-base rounded-pill super-badge-badge text-primary mt-2 font-weight-bold">
-                        <i class="ri-award-fill"></i>
-                        Super prestataire
-                    </span>
-                {% endif %}
+                <h2>{{ siae.name_display }}</h2>
+                {% include "includes/_super_badge.html" with siae=siae %}
             </div>
         </div>
         {% include "includes/_completion_progress_bar.html" with completion_percent=siae.completion_rate_calculated %}
     </div>
-    <div class="fr-col-12 fr-col-md-auto ml-auto d-flex flex-column">
-        <a href="{% url 'dashboard_siaes:siae_edit' siae.slug %}" id="dashboard-siae-edit-btn" class="btn btn-important btn-sm btn-ico mb-2">
-            <i class="ri-pencil-fill ri-lg"></i>
-            <span>Compléter votre fiche</span>
-        </a>
-        <a href="{% url 'siae:detail' siae.slug %}" target="_blank" id="dashboard-siae-view-btn" class="btn btn-outline-primary btn-sm btn-ico mb-2">
-            <i class="ri-eye-line ri-lg"></i>
-            <span>Voir votre fiche</span>
-        </a>
-        <a href="{% url 'dashboard_siaes:siae_users' siae.slug %}" id="dashboard-siae-edit-btn" class="btn btn-outline-primary btn-sm btn-ico">
-            <i class="ri-group-line ri-lg"></i>
-            <span>Collaborateurs ({{ siae.user_count }})</span>
-        </a>
+    <div class="fr-col-12 fr-col-md-3">
+        <ul class="fr-btns-group fr-btns-group--center fr-btns-group--sm fr-btns-group--icon-left">
+            <li>
+                <a href="{% url 'dashboard_siaes:siae_edit' siae.slug %}" id="dashboard-siae-edit-btn" class="fr-btn fr-icon-pencil-fill fr-btn--icon-left">
+                    Compléter votre fiche
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'siae:detail' siae.slug %}" target="_blank" id="dashboard-siae-view-btn" class="fr-btn fr-btn--secondary fr-icon-eye-line fr-btn--icon-left">
+                    Voir votre fiche
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'dashboard_siaes:siae_users' siae.slug %}" id="dashboard-siae-edit-btn" class="fr-btn fr-btn--secondary fr-icon-group-line fr-btn--icon-left">
+                    Collaborateurs ({{ siae.user_count }})
+                </a>
+            </li>
+        </ul>
     </div>
 </div>
 
-<hr />
+<hr class="fr-my-4v">
 
-<div class="fr-grid-row">
-    <div class="fr-col-lg-6">
-        <p class="h4 lh-sm mb-lg-4">Statistiques liées à votre structure <span class="fs-sm font-weight-normal">(3 derniers mois)</span></p>
-        <div class="d-flex">
-            <div class="flex-fill text-center">
-                <span class="h2 text-info d-block mb-1">{{ siae.stat_buyer_view_count_last_3_months }}</span>
-                <span class="fs-sm lh-sm d-block">Entreprises et acheteurs publics<br />ont vu votre fiche</span>
-            </div>
-            <div class="flex-fill text-center">
-                <span class="h2 text-info d-block mb-1">{{ siae.stat_partner_view_count_last_3_months }}</span>
-                <span class="fs-sm lh-sm d-block">Partenaires (facilitateur, réseau…)<br />ont vu votre fiche</span>
-            </div>
-        </div>
+<div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+    <div class="fr-col-12">
+        <h3>Statistiques liées à votre structure</h3>
+        <p>(3 derniers mois)</p>
+    </div>
+    <div class="fr-col-12 fr-col-sm">
+        <h4 class="fr-display-xs">{{ siae.stat_buyer_view_count_last_3_months }}</h4>
+        <p>Entreprises et acheteurs publics<br />ont vu votre fiche</p>
+    </div>
+    <div class="fr-col-12 fr-col-sm">
+        <h4 class="fr-display-xs">{{ siae.stat_partner_view_count_last_3_months }}</h4>
+        <p>Partenaires (facilitateur, réseau…)<br />ont vu votre fiche</p>
     </div>
 </div>
