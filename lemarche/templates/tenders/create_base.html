@@ -4,15 +4,10 @@
 {% block title %}Publier un besoin d'achat{{ block.super }}{% endblock title %}
 
 {% block breadcrumb %}
-    {% process_dict root_dir=HOME_PAGE_PATH current="Publier un besoin d'achat" as breadcrumb_data %}
+    {% process_dict root_dir=HOME_PAGE_PATH links=breadcrumb_links current="Publier un besoin d'achat" as breadcrumb_data %}
     {% dsfr_breadcrumb breadcrumb_data %}
 {% endblock breadcrumb %}
 
-                                {% comment %} <a href="{{ HOME_PAGE_PATH }}">Accueil</a>
-                            {% if user.is_authenticated %}
-                                    <a href="{% url 'dashboard:home' %}">Tableau de bord</a>
-                                    <a href="{% url 'tenders:list' %}">Besoins en cours</a>
-                            {% endif %} {% endcomment %}
 {% block content %}
     <div class="fr-container fr-container--fluid fr-mb-md-14v">
         <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
