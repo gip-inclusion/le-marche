@@ -68,6 +68,7 @@ class Migration(migrations.Migration):
                             )
                         ],
                         blank=True,
+                        use_json_field=True,
                     ),
                 ),
             ],

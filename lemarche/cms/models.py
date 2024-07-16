@@ -233,6 +233,7 @@ class FAQPage(Page):
             ("faq_group", blocks.FAQGroupBlock()),
         ],
         blank=True,
+        use_json_field=True,
     )
 
     content_panels = Page.content_panels + [
