@@ -587,18 +587,17 @@ def send_tenders_siaes_survey(tender: Tender, kind="transactioned_question_7d"):
 
 
 def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_question_7d"):
-    email_subject = f"Suite à notre demande de {tendersiae.tender.title}"
-    template_id = settings.MAILJET_TENDERS_SIAE_TRANSACTIONED_QUESTION_7D_TEMPLATE_ID
+    email_template = TemplateTransactional.objects.get(code="TENDERS_SIAE_TRANSACTIONED_QUESTION_7D")
 
     for user in tendersiae.siae.users.all():
         recipient_list = whitelist_recipient_list([user.email])
-        if recipient_list:
-            recipient_email = recipient_list[0] if recipient_list else ""
+        if len(recipient_list):
+            recipient_email = recipient_list[0]
             recipient_name = user.full_name
 
             variables = {
                 "TENDER_AUTHOR_FULL_NAME": tendersiae.tender.contact_full_name,
-                "tender_author_company": tendersiae.tender.author.company_name,
+                "TENDER_AUTHOR_COMPANY": tendersiae.tender.author.company_name,
                 "TENDER_TITLE": tendersiae.tender.title,
                 "TENDER_VALIDATE_AT": tendersiae.tender.first_sent_at.strftime("%d %B %Y"),  # TODO: TENDER_SENT_AT?
                 "TENDER_KIND": tendersiae.tender.get_kind_display(),
@@ -615,12 +614,10 @@ def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_questio
             variables["ANSWER_YES_URL"] = answer_url_with_sesame_token + "&answer=True"
             variables["ANSWER_NO_URL"] = answer_url_with_sesame_token + "&answer=False"
 
-            api_mailjet.send_transactional_email_with_template(
-                template_id=template_id,
+            email_template.send_transactional_email(
                 recipient_email=recipient_email,
                 recipient_name=recipient_name,
                 variables=variables,
-                subject=email_subject,
             )
 
             # update tendersiae
@@ -628,8 +625,8 @@ def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_questio
             # log email
             log_item = {
                 "action": f"email_{kind}_sent",
+                "email_template": email_template.code,
                 "email_to": recipient_email,
-                "email_subject": email_subject,
                 # "email_body": email_body,
                 "email_timestamp": timezone.now().isoformat(),
             }
