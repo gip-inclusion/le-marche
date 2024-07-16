@@ -16,7 +16,7 @@ from lemarche.pages.models import PageFragment
 
 
 class ArticleBase(Page):
-    intro = models.TextField(verbose_name="Introduction", null=True, blank=True)
+    intro = models.TextField(verbose_name="Introduction de la page", null=True, blank=True)
     image = models.ForeignKey(
         "wagtailimages.Image", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
     )
@@ -250,7 +250,6 @@ class FAQPage(ArticleBase):
         use_json_field=True,
     )
     content_panels = ArticleBase.content_panels + [
-        MultiFieldPanel([FieldPanel("categories", widget=forms.CheckboxSelectMultiple)], heading="Categories"),
         FieldPanel("faqs"),
     ]
 
