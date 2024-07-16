@@ -151,6 +151,11 @@ class TenderCreateMultiStepView(SessionWizardView):
                 else tender_constants.ACCEPT_SHARE_AMOUNT_FALSE
             )
             context.update({"tender": tender_dict})
+
+        context["breadcrumb_links"] = []
+        if self.request.user.is_authenticated:
+            context["breadcrumb_links"].append({"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")})
+            context["breadcrumb_links"].append({"title": "Besoins en cours", "url": reverse_lazy("tenders:list")})
         return context
 
     def process_step(self, form):
