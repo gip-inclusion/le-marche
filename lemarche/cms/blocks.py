@@ -237,7 +237,6 @@ class WhyCallSiaes(blocks.StructBlock):
 
 
 class FAQBlock(blocks.StructBlock):
-    # id = blocks.CharBlock(required=True, default=uuid4(), help_text="L'identifiant unique pour cette question.")
     question = blocks.CharBlock(required=True, help_text="La question fréquemment posée.")
     answer = blocks.RichTextBlock(required=True, help_text="La réponse à la question.")
 
@@ -253,7 +252,6 @@ class FAQBlock(blocks.StructBlock):
 
 
 class FAQGroupBlock(blocks.StructBlock):
-    # id = blocks.CharBlock(required=True, default=uuid4(), help_text="L'identifiant unique pour cette question.")
     group_title = blocks.CharBlock(required=True, help_text="Le titre du groupe de questions-réponses.")
     faqs = blocks.ListBlock(FAQBlock())
 
