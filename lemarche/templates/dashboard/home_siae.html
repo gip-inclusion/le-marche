@@ -61,7 +61,7 @@
     <section>
         <div class="fr-container">
             <div class="fr-grid-row">
-                <div class="fr-col-12 pb-5">
+                <div class="fr-col-12 fr-mb-6v">
                     {% include "dashboard/_add_siae_card.html" %}
                 </div>
             </div>
@@ -113,9 +113,9 @@
 </section>
 
 {% if user.api_key %}
-<section>
+<section class="fr-pt-6v">
     <div class="fr-container">
-        <div class="fr-grid-row">
+        <div class="fr-grid-row fr-grid-row--gutters">
             <div class="fr-col-12 fr-col-lg-6">
                 {% include "dashboard/_api_key_card.html" with user_kind="SIAE" api_key=user.api_key %}
             </div>
@@ -128,3 +128,10 @@
 {% include "includes/_super_siae_arguments_badge.html" %}
 
 {% endblock content %}
+
+{% block extra_css %}
+<style>
+    .progress{display:flex;height:.5rem;overflow:hidden;line-height:0;font-size:.75rem;background-color:#e6e6eb;border-radius:.25rem;box-shadow:none}
+    .progress-bar{display:flex;flex-direction:column;justify-content:center;overflow:hidden;color:#fff;text-align:center;white-space:nowrap;background-color:#000091;transition:width .6s ease}
+</style>
+{% endblock extra_css %}
