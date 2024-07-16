@@ -1,7 +1,8 @@
 {% extends "layouts/base.html" %}
 {% block content %}
-    <div class="container pt-2 faq-page">
+    <div class="container py-4 faq-page">
         <h1>{{ page.title }}</h1>
-        {% for block in page.body %}{{ block }}{% endfor %}
+        <p>{{ page.intro|default:"" }}</p>
+        {% for block in page.faqs %}{{ block }}{% endfor %}
     </div>
 {% endblock %}
