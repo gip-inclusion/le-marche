@@ -13,12 +13,7 @@
                     </span>
                     {% endif %}
                 </h2>
-                {% if siae.super_badge %}
-                <span class="badge badge-base rounded-pill super-badge-badge text-primary mt-2 font-weight-bold">
-                    <i class="ri-award-fill"></i>
-                    Super prestataire
-                </span>
-                {% endif %}
+                {% include "includes/_super_badge.html" with siae=siae %}
                 <ul class="list-unstyled fr-m-0 lh-sm fr-grid-row no-gutters">
                     <li class="sc-profile-type fr-col-12 fr-col-lg-6 pr-lg-2 d-flex">
                         <i class="ri-briefcase-4-line mr-1"></i>
