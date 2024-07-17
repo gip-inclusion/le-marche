@@ -49,6 +49,8 @@ class TenderCreateStepGeneralForm(forms.ModelForm):
         self.fields["location"].to_field_name = "slug"
         # required fields
         self.fields["description"].required = True
+        self.fields["description"].widget.group_class = "form-description-ckeditor fr-input-group"
+
         # self.fields["perimeters"].required = True  # JS
         # label, placeholder & help_text
         self.fields["title"].widget.attrs["placeholder"] = "Ex : Demande de devis rénovation façade à Grenoble"
@@ -83,8 +85,8 @@ class TenderCreateStepDetailForm(forms.ModelForm):
             "accept_share_amount",
         ]
         widgets = {
-            "start_working_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
-            "deadline_date": forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}),
+            "start_working_date": forms.widgets.DateInput(attrs={"class": "fr-input", "type": "date"}),
+            "deadline_date": forms.widgets.DateInput(attrs={"class": "fr-input", "type": "date"}),
             "why_amount_is_blank": forms.widgets.RadioSelect,
             "amount": forms.Select(attrs={"x-model": "formData.amount", "x-on:change": "getImpactMessage()"}),
         }

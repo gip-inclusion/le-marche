@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, UserCreationForm
+from dsfr.forms import DsfrBaseForm
 
 from lemarche.sectors.models import Sector
 from lemarche.users import constants as user_constants
@@ -10,7 +11,7 @@ from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.utils.password_validation import CnilCompositionPasswordValidator
 
 
-class SignupForm(UserCreationForm):
+class SignupForm(UserCreationForm, DsfrBaseForm):
     KIND_CHOICES_FORM = (
         (User.KIND_SIAE, "Une entreprise sociale inclusive (SIAE ou structure du handicap, GEIQ)"),
         (User.KIND_BUYER, "Un acheteur"),
@@ -56,7 +57,7 @@ class SignupForm(UserCreationForm):
     )
 
     sectors = GroupedModelMultipleChoiceField(
-        label=Sector._meta.verbose_name_plural,
+        label=User._meta.get_field("sectors").help_text,
         queryset=Sector.objects.form_filter_queryset(),
         choices_groupby="group",
         to_field_name="slug",
@@ -115,7 +116,6 @@ class SignupForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         # password validation rules
         self.fields["password1"].help_text = CnilCompositionPasswordValidator().get_help_text()
-        self.fields["sectors"].label = User._meta.get_field("sectors").help_text
 
     def clean_email(self):
         email = self.cleaned_data["email"]
@@ -143,11 +143,14 @@ class SignupForm(UserCreationForm):
         return instance
 
 
-class LoginForm(AuthenticationForm):
+class LoginForm(AuthenticationForm, DsfrBaseForm):
+    username = forms.CharField(label="Adresse e-mail", required=True)
+
     def clean_username(self):
         username = self.cleaned_data["username"]
+        print(username)
         return username.lower()
 
 
-class PasswordResetForm(PasswordResetForm):
+class PasswordResetForm(PasswordResetForm, DsfrBaseForm):
     email = forms.EmailField(label="Votre adresse e-mail", required=True)

@@ -8,9 +8,9 @@
 
 {% block breadcrumbs %}
 <section>
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -24,10 +24,10 @@
 {% endblock %}
 
 {% block content %}
-<section class="s-page-menu-01 s-page-menu-01--marche has-illustration-bg-01">
-    <div class="s-page-menu-01__container container">
-        <div class="s-page-menu-01__row row align-items-center">
-            <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-lg-10">
+<section class="has-illustration-bg-01">
+    <div class="fr-container">
+        <div class="fr-grid-row align-items-center">
+            <div class="fr-col-12 fr-col-lg-10">
                 <h1 class="h1-hero">
                     <strong>Statistiques</strong>
                 </h1>
@@ -36,10 +36,10 @@
     </div>
 </section>
 
-<section class="s-section">
-    <div class="s-section__container container">
-        <div class="row">
-            <div class="col-12">
+<section class="">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
                 <script src="https://stats.inclusion.beta.gouv.fr/app/iframeResizer.js"></script>
                 <iframe
                     src="{{ METABASE_PUBLIC_DASHBOARD_URL }}"

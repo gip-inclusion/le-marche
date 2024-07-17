@@ -1,12 +1,12 @@
 {% load static %}
 
 <section class="bg-gray-light py-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-6 col-md-8 my-sm-auto">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-sm-6 fr-col-md-8 my-sm-auto">
                 <img src="{% static 'images/hp-logos-labels.min.png' %}" class="img-fluid" loading="lazy" alt="Logos de différents labels et certifications">
             </div>
-            <div class="col-sm-6 col-md-4 my-4 my-sm-auto">
+            <div class="fr-col-sm-6 fr-col-md-4 my-4 my-sm-auto">
                 <h2 class="h2 mb-3 mb-lg-5">{{self.title}}</h2>
                 {{self.subtitle}}
                 <a href="{% url 'tenders:create' %}" id="home-siaes-labels" class="btn btn-primary d-block d-md-inline-block mb-2">

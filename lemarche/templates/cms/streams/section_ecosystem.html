@@ -1,12 +1,12 @@
 {% load wagtailimages_tags %}
 
 <section class="bg-gray-light py-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-6 col-md-8 my-sm-auto">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-sm-6 fr-col-md-8 my-sm-auto">
                 {% image self.image original class="card-img-top" class="img-fluid" loading="lazy" %}
             </div>
-            <div class="col-sm-6 col-md-4 my-4 my-sm-auto">
+            <div class="fr-col-sm-6 fr-col-md-4 my-4 my-sm-auto">
                 <h2 class="h2 mb-3 mb-lg-5">{{self.title}}</h2>
                 {{self.subtitle}}
                 <a href="{{ self.cta.cta_href }}" id="{{ self.cta.cta_id }}" class="btn btn-primary d-block d-md-inline-block mb-2">

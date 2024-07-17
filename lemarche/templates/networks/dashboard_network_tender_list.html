@@ -5,9 +5,9 @@
 
 {% block breadcrumbs %}
 <section>
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -24,14 +24,14 @@
 
 {% block content %}
 <section>
-    <div class="container py-4">
-        <div class="row">
-            <div class="col-12 col-lg">
+    <div class="fr-container py-4">
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-lg">
                 <h1>Opportunités commerciales reçues par mes adhérents</h1>
             </div>
         </div>
-        <div class="row">
-            <div class="col-12 my-5">
+        <div class="fr-grid-row">
+            <div class="fr-col-12 my-5">
                 {% for tender in tenders %}
                     {% include "tenders/_list_item_network.html" with tender=tender network=network %}
                 {% endfor %}

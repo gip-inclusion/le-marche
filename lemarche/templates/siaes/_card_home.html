@@ -1,33 +1,37 @@
 {% load static %}
 {% load theme_inclusion %}
 
-<div class="s-cards-grid-01__col col mb-3 mb-md-5">
-    <div class="card c-card has-one-link-inside h-100">
-        <div class="card-header">
-            <div class="d-flex align-items-center">
+<div class="fr-col mb-3 mb-md-5">
+    <div class="fr-card fr-enlarge-link fr-card--horizontal">
+        <div class="fr-card__header">
+            <div class="fr-card__img">
                 {% if siae.logo_url %}
-                    <img src="{{ siae.logo_url }}" class="rounded-circle mr-2" height="40" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
+                    <img src="{{ siae.logo_url }}" class="fr-responsive-img" height="40" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
                 {% else %}
-                    <img src="{% static 'img/default-listing.png' %}" class="rounded-circle mr-2" height="40" alt="{{ siae.name }}" loading="lazy" />
+                    <img src="{% static 'img/default-listing.png' %}" class="rfr-responsive-img" height="40" alt="{{ siae.name }}" loading="lazy" />
                 {% endif %}
-                <a href="{% url 'siae:detail' siae.slug %}" class="d-block font-weight-bold text-decoration-none lh-sm stretched-link">
-                    {{ siae.name_display }}
-                </a>
             </div>
         </div>
-        <div class="card-body">
-            <ul class="list-unstyled">
-                <li class="d-flex lh-sm mb-2">
-                    <img src="{% static_theme_images 'ico-bicro-marche-geo.svg' %}" alt="" class="mr-2" height="25">
-                    <span>Situé à {{ siae.city }}</span>
-                </li>
-                {% if siae.kind %}
+        <div class="fr-card__body">
+            <div class="fr-card__content">
+                <h3 class="fr-card__title">
+                    <a href="{% url 'siae:detail' siae.slug %}" class="d-block font-weight-bold text-decoration-none lh-sm stretched-link">
+                        {{ siae.name_display }}
+                    </a>
+                </h3>
+                <ul class="list-unstyled">
                     <li class="d-flex lh-sm mb-2">
-                        <img src="{% static_theme_images 'ico-bicro-marche-secteur.svg' %}" alt="" class="mr-2" height="25">
-                        <span>{{ siae.presta_type_display }}</span>
+                        <img src="{% static_theme_images 'ico-bicro-marche-geo.svg' %}" alt="" class="mr-2" height="25">
+                        <span>Situé à {{ siae.city }}</span>
                     </li>
-                {% endif %}
-            </ul>
+                    {% if siae.kind %}
+                        <li class="d-flex lh-sm mb-2">
+                            <img src="{% static_theme_images 'ico-bicro-marche-secteur.svg' %}" alt="" class="mr-2" height="25">
+                            <span>{{ siae.presta_type_display }}</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
     </div>
 </div>

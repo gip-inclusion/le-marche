@@ -8,9 +8,9 @@
 
 {% block breadcrumbs %}
 <section>
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -24,10 +24,10 @@
 {% endblock %}
 
 {% block content %}
-<section class="s-page-menu-01 s-page-impact-calculator s-page-menu-01--marche has-illustration-bg-01">
-    <div class="s-page-menu-01__container container">
-        <div class="s-page-menu-01__row row align-items-center">
-            <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-lg-10">
+<section class="has-illustration-bg-01">
+    <div class="fr-container">
+        <div class="fr-grid-row align-items-center">
+            <div class="fr-col-12 fr-col-lg-10">
                 <h1 class="h1-hero">
                     <strong>Découvrez si votre entreprise est déjà cliente d'un prestataire inclusif</strong>
                 </h1>
@@ -39,11 +39,11 @@
     </div>
 </section>
 
-<section class="s-section">
-    <div class="s-section__container container">
+<section class="">
+    <div class="fr-container">
         {% block htmx %}
-            <div class="s-section__row row" id="companyReferenceCalculator">
-                <div class="col-12 col-lg-7">
+            <div class="fr-grid-row" id="companyReferenceCalculator">
+                <div class="fr-col-12 fr-col-lg-7">
                     <div class="c-form mb-5 mb-lg-0">
                         <form hx-get="{{ request.path }}" hx-push-url="true" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-target="#companyReferenceCalculator" hx-swap="outerHTML">
                             {% bootstrap_form_errors form type="all" %}
@@ -51,18 +51,18 @@
                                 {% bootstrap_field form.company_client_reference %}
                             </fieldset>
                             <hr class="mb-3">
-                            <div class="row">
-                                <div class="col-12">
+                            <div class="fr-grid-row">
+                                <div class="fr-col-12">
                                     <div class="form-row align-items-center justify-content-end">
                                         {% if form_has_filtered %}
-                                        <div class="form-group col-12 col-lg-auto">
+                                        <div class="form-group fr-col-12 fr-col-lg-auto">
                                             <button hx-get="{{ request.path }}" hx-target="#companyReferenceCalculator" hx-swap="outerHTML" class="btn btn-block btn-ico btn-outline-primary">
                                                 <i class="ri-close-fill ri-lg"></i>
                                                 <span>Annuler</span>
                                             </button>
                                         </div>
                                         {% endif %}
-                                        <div class="form-group col-12 col-lg-auto">
+                                        <div class="form-group fr-col-12 fr-col-lg-auto">
                                             <button type="submit" id="company-reference-calculator-submit-btn" class="btn btn-ico btn-block btn-primary">
                                                 <i class="ri-search-line ri-lg"></i>
                                                 <span>Lancer la recherche</span>
@@ -75,7 +75,7 @@
                     </div>
                 </div>
                 {% if form_has_filtered %}
-                    <div class="col-12 col-lg-5">
+                    <div class="fr-col-12 fr-col-lg-5">
                         <h3>Résultats</h3>
                         {% if results.count > 0 %}
                             <p>

@@ -1,46 +1,39 @@
 {% extends "tenders/create_base.html" %}
-{% load static bootstrap4 %}
-{% block step_title %}Evaluation de l’impact{% endblock %}
-{% block step_title_again %}Evaluation de l’impact{% endblock %}
+{% load dsfr_tags static %}
+{% block step_title %}Evaluation de l’impact{% endblock step_title %}
 {% block step_subtitle %}
     Aidez-nous à évaluer l'impact de la plateforme du Marché de l’inclusion en répondant à ces deux questions.
     <br />
     <i class="fs-sm"> ⚠️ Ces informations sont anonymisées et exploitées à des fins statistiques. Elles resteront strictement confidentielles.</i>
-{% endblock %}
+{% endblock step_subtitle %}
 {% block content_form %}
     {% csrf_token %}
     <div id="serveyTender">
-        <div class="row">
-            <div class="col-12 col-lg-7">
-                {% bootstrap_field form.scale_marche_useless wrapper_class="form-check-inline" form_group_class="form-group mb-lg-5" %}
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-lg-7">
+                {% dsfr_form_field form.scale_marche_useless %}
             </div>
-            <div class="col-12 col-lg-5">
-                <div class="c-form-conseil">
-                    <div>
-                        <p>
-                            Le terme <i>*</i><strong>Prestataire inclusif</strong> fait référence aux structures agréées Insertion ou Handicap.
-                        </p>
-                        <p>
-                            Ici, le terme <strong>Prestataire inclusif</strong> ne fait pas référence à l'ensemble des prestataires relevant de l'E.S.S (Économie Sociale & Solidaire)
-                        </p>
-                    </div>
+            <div class="fr-col-12 fr-col-lg-5 fr-pl-2w">
+                <div class="fr-callout fr-p-4v">
+                    <p class="fr-callout__text fr-text--sm fr-pl-7v">
+                        Le terme <i>*</i><strong>Prestataire inclusif</strong> fait référence aux structures agréées Insertion ou Handicap.
+                        <br />
+                        Ici, le terme <strong>Prestataire inclusif</strong> ne fait pas référence à l'ensemble des prestataires relevant de l'E.S.S (Économie Sociale & Solidaire)
+                    </p>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-12 col-lg-7">
-                {% bootstrap_field form.le_marche_doesnt_exist_how_to_find_siae form_group_class="form-group mb-lg-5" %}
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-lg-7">
+                {% dsfr_form_field form.le_marche_doesnt_exist_how_to_find_siae %}
             </div>
         </div>
     </div>
-{% endblock %}
+{% endblock content_form %}
 {% block submit_btn %}
-    <div class="form-group col-6 col-lg-auto order-2 order-lg-3">
-        <button type="submit"
-                id="tender-create-{{ wizard.steps.current }}-form-next-step-btn"
-                class="btn btn-primary btn-block"
-                aria-label="Aperçu avant publication">
+    <li>
+        <button id="tender-create-{{ wizard.steps.current }}-form-next-step-btn" class="fr-btn" type="submit" aria-label="Aperçu avant publication">
             Aperçu avant publication
         </button>
-    </div>
+    </li>
 {% endblock submit_btn %}
