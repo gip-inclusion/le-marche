@@ -61,42 +61,42 @@
     <div class="fr-container">
         <div class="fr-grid-row">
             <div class="fr-col-12">
-                <div class="fr-tabs fr-transition-none">
+                <div class="fr-tabs">
                     <ul class="fr-tabs__list" role="tablist" aria-label="Édition de votre structure">
                         <li role="presentation">
-                            <a href="{% url 'dashboard_siaes:siae_edit_contact' siae.slug %}#editTabs" id="siae-edit-contact-tab" class="fr-tabs__tab" aria-selected="{% if 'siae_edit_contact' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
+                            <a href="{% url 'dashboard_siaes:siae_edit_contact' siae.slug %}#editTabs" id="siae-edit-contact-tab" class="fr-tabs__tab" aria-controls="siae_edit_contact_panel" aria-selected="{% if 'siae_edit_contact' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
                                 Votre contact commercial
                             </a>
                         </li>
                         <li role="presentation">
-                            <a href="{% url 'dashboard_siaes:siae_edit_search' siae.slug %}#editTabs" id="siae-edit-search-tab" class="fr-tabs__tab" aria-selected="{% if 'siae_edit_search' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
+                            <a href="{% url 'dashboard_siaes:siae_edit_search' siae.slug %}#editTabs" id="siae-edit-search-tab" class="fr-tabs__tab" aria-controls="siae_edit_search_panel" aria-selected="{% if 'siae_edit_search' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
                                 Votre référencement
                             </a>
                         </li>
                         {% if user.is_authenticated and user.is_admin %}
                             <li role="presentation">
-                                <a href="{% url 'dashboard_siaes:siae_edit_activities' siae.slug %}#editTabs" id="siae-edit-search-2-tab" class="fr-tabs__tab" aria-selected="{% if 'siae_edit_activities' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
+                                <a href="{% url 'dashboard_siaes:siae_edit_activities' siae.slug %}#editTabs" id="siae-edit-search-2-tab" class="fr-tabs__tab" aria-controls="siae_edit_activities_panel" aria-selected="{% if 'siae_edit_activities' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
                                     Votre référencement (2)
                                 </a>
                             </li>
                         {% endif %}
                         <li role="presentation">
-                            <a href="{% url 'dashboard_siaes:siae_edit_info' siae.slug %}#editTabs" id="siae-edit-info-tab" class="fr-tabs__tab" aria-selected="{% if 'siae_edit_info' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
+                            <a href="{% url 'dashboard_siaes:siae_edit_info' siae.slug %}#editTabs" id="siae-edit-info-tab" class="fr-tabs__tab" aria-controls="siae_edit_info_panel" aria-selected="{% if 'siae_edit_info' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
                                 Votre structure
                             </a>
                         </li>
                         <li role="presentation">
-                            <a href="{% url 'dashboard_siaes:siae_edit_offer' siae.slug %}#editTabs" id="siae-edit-offer-tab" class="fr-tabs__tab" aria-selected="{% if 'siae_edit_offer' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
+                            <a href="{% url 'dashboard_siaes:siae_edit_offer' siae.slug %}#editTabs" id="siae-edit-offer-tab" class="fr-tabs__tab" aria-controls="siae_edit_offer_panel" aria-selected="{% if 'siae_edit_offer' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
                                 Vos offres commerciales
                             </a>
                         </li>
                         <li role="presentation">
-                            <a href="{% url 'dashboard_siaes:siae_edit_links' siae.slug %}#editTabs" id="siae-edit-links-tab" class="fr-tabs__tab" aria-selected="{% if 'siae_edit_links' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
+                            <a href="{% url 'dashboard_siaes:siae_edit_links' siae.slug %}#editTabs" id="siae-edit-links-tab" class="fr-tabs__tab" aria-controls="siae_edit_links_panel" aria-selected="{% if 'siae_edit_links' in request.resolver_match.url_name %}true{% else %}false{% endif %}">
                                 Groupements
                             </a>
                         </li>
                     </ul>
-                    <div class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel" tabindex="0">
+                    <div id="{{ request.resolver_match.url_name }}_panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel" tabindex="0">
                         {% block content_siae_form %}{% endblock content_siae_form %}
                     </div>
                 </div>
