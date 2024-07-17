@@ -15,15 +15,9 @@
         </div>
     </div>
 
-    <div class="fr-grid-row fr-mb-4v">
+    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg  fr-p-4v">
-                <fieldset class="fr-fieldset">
-                    <div class="fr-fieldset__element">
-                        {% dsfr_form_field form.presta_type %}
-                    </div>
-                </fieldset>
-            </div>
+            {% dsfr_form_field form.presta_type %}
         </div>
         <div class="fr-col-12 fr-col-lg-4">
             <div class="fr-callout fr-p-4v">
@@ -35,14 +29,10 @@
         </div>
     </div>
 
-    <div class="fr-grid-row mb-3 mb-lg-5">
+    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
         <div class="fr-col-12 fr-col-lg-8">
-            <fieldset class="fr-fieldset">
-                <div class="fr-fieldset__element">
-                    {% dsfr_form_field form.geo_range %}
-                    {{ form.geo_range_custom_distance }}
-                </div>
-            </fieldset>
+            {% dsfr_form_field form.geo_range %}
+            {{ form.geo_range_custom_distance }}
         </div>
         <div class="fr-col-12 fr-col-lg-4">
             <div class="fr-callout fr-p-4v">
@@ -55,13 +45,9 @@
         </div>
     </div>
 
-    <div class="fr-grid-row mb-3 mb-lg-5">
+    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
         <div class="fr-col-12 fr-col-lg-8">
-            <fieldset class="fr-fieldset">
-                <div class="fr-fieldset__element">
-                    {% dsfr_form_field form.sectors %}
-                </div>
-            </fieldset>
+            {% dsfr_form_field form.sectors %}
         </div>
         <div class="fr-col-12 fr-col-lg-4">
             <div class="fr-callout fr-p-4v">
@@ -72,15 +58,18 @@
             </div>
         </div>
     </div>
-
     <div class="fr-grid-row">
-        <div class="fr-col-12 fr-col-lg-auto fr-px-5v fr-px-lg-6">
-            {% dsfr_button label="Enregistrer mes modifications" %}
+        <div class="fr-col-12 fr-col-lg-8">
+            <ul class="fr-btns-group--right fr-btns-group fr-btns-group--inline">
+                <li>
+                    {% dsfr_button label="Enregistrer mes modifications" extra_classes="fr-mt-4v" %}
+                </li>
+            </ul>
         </div>
         <div class="fr-col-12 fr-col-lg-4"></div>
     </div>
 </form>
-{% endblock %}
+{% endblock content_siae_form %}
 
 {% block extra_js %}
 <script type="text/javascript" src="{% static 'js/siae_geo_range_field.js' %}"></script>
