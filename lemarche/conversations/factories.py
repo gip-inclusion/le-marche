@@ -1,7 +1,7 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from lemarche.conversations.models import Conversation
+from lemarche.conversations.models import Conversation, TemplateTransactional
 from lemarche.siaes.factories import SiaeFactory
 
 
@@ -15,3 +15,11 @@ class ConversationFactory(DjangoModelFactory):
     sender_email = factory.Sequence("email{0}@beta.gouv.fr".format)
     siae = factory.SubFactory(SiaeFactory)
     initial_body_message = factory.Faker("name", locale="fr_FR")
+
+
+class TemplateTransactionalFactory(DjangoModelFactory):
+    class Meta:
+        model = TemplateTransactional
+
+    name = factory.Faker("name", locale="fr_FR")
+    code = factory.Faker("name", locale="fr_FR")
