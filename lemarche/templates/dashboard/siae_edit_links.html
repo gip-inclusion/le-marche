@@ -15,60 +15,37 @@
         </section>
     {% endif %}
 
-    <div class="fr-grid-row mb-3 mb-lg-5">
+    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
-                <fieldset>
-                    <legend class="h4">Votre structure est-elle adhérente à un réseau ou une fédération ?</legend>
-                    {% dsfr_form_field form.networks %}
-                </fieldset>
-            </div>
+            {% dsfr_form_field form.networks %}
         </div>
     </div>
 
-    <div class="fr-grid-row mb-3 mb-lg-5">
+    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
-                <fieldset>
-                    <legend class="h4">Êtes-vous ouvert à la co-traitance ou au groupement momentané d'entreprises (<a href="https://www.economie.gouv.fr/dae/groupement-momentane-dentreprises" target="_blank" rel="noopener">GME</a>) ?</legend>
-                    {% dsfr_form_field form.is_cocontracting %}
-                </fieldset>
-            </div>
+            {% dsfr_form_field form.is_cocontracting %}
         </div>
         <div class="fr-col-12 fr-col-lg-4">
-            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-                <p class="mb-1">
-                    <i class="ri-information-line ri-lg"></i>
-                    <strong>Co-traitance</strong>
-                </p>
-                <p class="mb-0">
+            <div class="fr-callout fr-p-4v">
+                <h3 class="fr-callout__title fr-text--sm"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Co-traitance</h3>
+                <p class="fr-callout__text fr-text--sm fr-pl-7v">
                     Vous êtes prêt à travailler avec une autre structure de l'insertion ou une entreprise du milieu ordinaire.
                 </p>
             </div>
         </div>
     </div>
 
-    <div class="fr-grid-row mb-3 mb-lg-5">
+    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
-                <fieldset>
-                    <legend class="h4">Appartenez-vous à un groupement ou ensemblier ?</legend>
-                    {% dsfr_form_field form.groups %}
-                </fieldset>
-                <div class="alert alert-warning" role="alert">
-                    <p class="mb-1">
-                        <i class="ri-information-line ri-lg"></i>
-                        <strong>Le groupement auquel vous appartenez n'apparaît pas dans la liste ?</strong>
-                    </p>
-                    <p class="mb-0">
-                        Ajoutez le en <a href="{{ TYPEFORM_GROUPEMENT_AJOUT }}#data=user_id:{{ user.id }}" id="siae-group-add" target="_blank" rel="noopener">remplissant le formulaire</a>.
-                    </p>
-                </div>
+            {% dsfr_form_field form.groups %}
+            <div class="fr-callout fr-icon-information-line">
+                <h3 class="fr-callout__title fr-text--sm">Le groupement auquel vous appartenez n'apparaît pas dans la liste ?</h3>
+                <p class="fr-callout__text fr-text--sm">Ajoutez le en <a href="{{ TYPEFORM_GROUPEMENT_AJOUT }}#data=user_id:{{ user.id }}" id="siae-group-add" target="_blank" rel="noopener">remplissant le formulaire</a>.</p>
             </div>
         </div>
     </div>
 
-    <div class="fr-grid-row">
+    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
         <div class="fr-col-12 fr-col-lg-auto">
             {% dsfr_button label="Enregistrer mes modifications" %}
         </div>
