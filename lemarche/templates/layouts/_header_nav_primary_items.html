@@ -14,32 +14,24 @@
 			</li>
 		{% endif %}
 		<li>
-			<div class="dropdown">
-				<button class="fr-btn btn-outline-primary dropdown-toggle{% if is_mobile %} mb-3" type="button{% endif %}"
-					id="userDropdownMenuButton{% if is_mobile %}Mobile{% endif %}" data-toggle="dropdown"
-					aria-haspopup="true" aria-expanded="false">
-					Mon espace
-				</button>
-				<div class="dropdown-menu" aria-labelledby="userDropdownMenuButton{% if is_mobile %}Mobile{% endif %}">
-					<a href="{% url 'dashboard:home' %}" class="dropdown-item">
-						<i class="ri-dashboard-line"></i>
-						Tableau de bord
-					</a>
-					<a href="{% url 'dashboard_favorites:list' %}" id="header-favorites" class="dropdown-item">
-						<i class="ri-star-line"></i>
-						Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_list_count }}</span>
-					</a>
-					<a href="{% url 'dashboard:profile_edit' %}" class="dropdown-item">
-						<i class="ri-user-line"></i>
-						Mon profil
-					</a>
-					<div class="dropdown-divider"></div>
-					<a href="{% url 'auth:logout' %}" class="dropdown-item">
-						<i class="ri-logout-box-line"></i>
-						Déconnexion
-					</a>
-				</div>
-			</div>
+			<a href="{% url 'dashboard:home' %}" class="fr-btn fr-icon-dashboard-3-line">
+				Tableau de bord
+			</a>
+		</li>
+		<li>
+			<a href="{% url 'dashboard_favorites:list' %}" id="header-favorites" class="fr-btn fr-icon-star-line">
+				Favoris <span class="fr-badge fr-badge--sm fr-ml-2v">{{ user.favorite_list_count }}</span>
+			</a>
+		</li>
+		<li>
+			<a href="{% url 'dashboard:profile_edit' %}" class="fr-btn fr-icon-user-line">
+				Mon profil
+			</a>
+		</li>
+		<li>
+			<a href="{% url 'auth:logout' %}" class="fr-btn fr-icon-logout-box-r-line">
+				Déconnexion
+			</a>
 		</li>
 	{% else %}
 		{% if page and page.slug == "accueil-structure" %}
