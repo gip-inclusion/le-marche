@@ -15,13 +15,27 @@ from lemarche.cms.snippets import ArticleCategory
 from lemarche.pages.models import PageFragment
 
 
-class ArticlePage(Page):
-    intro = models.TextField(verbose_name="Introduction", null=True, blank=True)
+class ArticleBase(Page):
+    intro = models.TextField(verbose_name="Introduction de la page", null=True, blank=True)
     image = models.ForeignKey(
         "wagtailimages.Image", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
     )
     categories = ParentalManyToManyField("cms.ArticleCategory", blank=True)
 
+    content_panels = Page.content_panels + [
+        FieldPanel("intro", classname="full"),
+        MultiFieldPanel([FieldPanel("categories", widget=forms.CheckboxSelectMultiple)], heading="Categories"),
+        FieldPanel(
+            "image",
+            classname="collapsible",
+        ),
+    ]
+
+    class Meta:
+        abstract = True
+
+
+class ArticlePage(ArticleBase):
     is_static_page = models.BooleanField(verbose_name="c'est une page statique ?", default=False)
     with_cta_tender = models.BooleanField(verbose_name="avec un CTA pour les besoins ?", default=False)
 
@@ -47,7 +61,7 @@ class ArticlePage(Page):
 
     # Editor panels configuration
 
-    content_panels = Page.content_panels + [
+    content_panels = ArticleBase.content_panels + [
         FieldPanel("intro", classname="full"),
         FieldPanel("with_cta_tender", classname="full"),
         MultiFieldPanel([FieldPanel("categories", widget=forms.CheckboxSelectMultiple)], heading="Categories"),
@@ -225,3 +239,22 @@ class HomePage(Page):
         except PageFragment.DoesNotExist:
             pass
         return context
+
+
+class FAQPage(ArticleBase):
+    faqs = StreamField(
+        [
+            ("faq_group", blocks.FAQGroupBlock()),
+        ],
+        blank=True,
+        use_json_field=True,
+    )
+    content_panels = ArticleBase.content_panels + [
+        FieldPanel("faqs"),
+    ]
+
+    parent_page_types = ["wagtailcore.Page", "cms.HomePage", "cms.ArticleList", "cms.PaidArticleList"]
+
+    class Meta:
+        verbose_name = "FAQ Page"
+        verbose_name_plural = "FAQ Pages"

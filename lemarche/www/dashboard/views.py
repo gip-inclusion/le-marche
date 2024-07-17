@@ -53,13 +53,19 @@ class DashboardHomeView(LoginRequiredMixin, DetailView):
             try:
                 # Look for the blog category by its slug.
                 category = ArticleCategory.objects.get(slug=category_slug)
-                article_list = article_list.filter(categories__in=[category])
-            except Exception:
+                last_faq_page = category.faqpage_set.last()
+                article_list = article_list.filter(categories__in=[category])[:3]
+                if last_faq_page:
+                    article_list = list(article_list[:2])
+                    article_list.insert(0, last_faq_page)
+
+            except ArticleCategory.DoesNotExist:
                 category_slug = None
+                article_list = article_list[:3]
 
         # set context ressources
         context["current_slug_cat"] = category_slug
-        context["last_3_ressources"] = article_list[:3]
+        context["last_3_ressources"] = article_list
 
         # for specific users
         if user.kind == User.KIND_SIAE:

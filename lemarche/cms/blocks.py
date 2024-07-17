@@ -1,4 +1,6 @@
 # common blocks
+from uuid import uuid4
+
 from wagtail import blocks
 from wagtail.images.blocks import ImageChooserBlock
 
@@ -232,3 +234,33 @@ class WhyCallSiaes(blocks.StructBlock):
         template = "cms/streams/section_why_call_siaes.html"
         icon = "pen"
         label = "Pourquoi faire appel à un prestataire inclusif ?"
+
+
+class FAQBlock(blocks.StructBlock):
+    question = blocks.CharBlock(required=True, help_text="La question fréquemment posée.")
+    answer = blocks.RichTextBlock(required=True, help_text="La réponse à la question.")
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        context["faq_id"] = f"faq-{str(uuid4())[:6]}"
+        return context
+
+    class Meta:
+        icon = "help"
+        label = "Question/Réponse"
+        template = "cms/streams/faq_block.html"
+
+
+class FAQGroupBlock(blocks.StructBlock):
+    group_title = blocks.CharBlock(required=True, help_text="Le titre du groupe de questions-réponses.")
+    faqs = blocks.ListBlock(FAQBlock())
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        context["group_id"] = f"group-{str(uuid4())[:6]}"
+        return context
+
+    class Meta:
+        icon = "folder"
+        label = "Groupe de FAQ"
+        template = "cms/streams/faq_group_block.html"
