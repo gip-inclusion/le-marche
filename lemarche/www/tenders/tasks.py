@@ -515,10 +515,9 @@ def notify_admin_tender_created(tender: Tender):
 
 
 def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
-    email_subject = f"Suite à votre {tender.get_kind_display().lower()}"
     recipient_list = whitelist_recipient_list([tender.author.email])
-    if recipient_list and not tender.contact_notifications_disabled:
-        recipient_email = recipient_list[0] if recipient_list else ""
+    if len(recipient_list) and not tender.contact_notifications_disabled:
+        recipient_email = recipient_list[0]
         recipient_name = tender.author.full_name
 
         variables = {
@@ -526,10 +525,11 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
             "TENDER_TITLE": tender.title,
             "TENDER_VALIDATE_AT": tender.first_sent_at.strftime("%d %B %Y"),  # TODO: TENDER_SENT_AT?
             "TENDER_KIND": tender.get_kind_display(),
+            "TENDER_KIND_LOWER": tender.get_kind_display().lower(),
         }
 
         if kind in ["transactioned_question_7d", "transactioned_question_7d_reminder"]:
-            template_id = settings.MAILJET_TENDERS_AUTHOR_TRANSACTIONED_QUESTION_7D_TEMPLATE_ID
+            email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_TRANSACTIONED_QUESTION_7D")
             user_sesame_query_string = sesame_get_query_string(tender.author)  # TODO: sesame scope parameter
             answer_url_with_sesame_token = (
                 f"https://{get_domain_url()}"
@@ -542,21 +542,19 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
             # add timestamp
             tender.survey_transactioned_send_date = timezone.now()
         else:
-            template_id = settings.MAILJET_TENDERS_AUTHOR_FEEDBACK_30D_TEMPLATE_ID
+            email_template = TemplateTransactional.objects.get(code="TENDERS_AUTHOR_FEEDBACK_30D")
 
-        api_mailjet.send_transactional_email_with_template(
-            template_id=template_id,
+        email_template.send_transactional_email(
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            subject=email_subject,
         )
 
         # log email
         log_item = {
             "action": f"email_{kind}_sent",
+            "email_template": email_template.code,
             "email_to": recipient_email,
-            "email_subject": email_subject,
             # "email_body": email_body,
             "email_timestamp": timezone.now().isoformat(),
         }
@@ -587,18 +585,17 @@ def send_tenders_siaes_survey(tender: Tender, kind="transactioned_question_7d"):
 
 
 def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_question_7d"):
-    email_subject = f"Suite à notre demande de {tendersiae.tender.title}"
-    template_id = settings.MAILJET_TENDERS_SIAE_TRANSACTIONED_QUESTION_7D_TEMPLATE_ID
+    email_template = TemplateTransactional.objects.get(code="TENDERS_SIAE_TRANSACTIONED_QUESTION_7D")
 
     for user in tendersiae.siae.users.all():
         recipient_list = whitelist_recipient_list([user.email])
-        if recipient_list:
-            recipient_email = recipient_list[0] if recipient_list else ""
+        if len(recipient_list):
+            recipient_email = recipient_list[0]
             recipient_name = user.full_name
 
             variables = {
                 "TENDER_AUTHOR_FULL_NAME": tendersiae.tender.contact_full_name,
-                "tender_author_company": tendersiae.tender.author.company_name,
+                "TENDER_AUTHOR_COMPANY": tendersiae.tender.author.company_name,
                 "TENDER_TITLE": tendersiae.tender.title,
                 "TENDER_VALIDATE_AT": tendersiae.tender.first_sent_at.strftime("%d %B %Y"),  # TODO: TENDER_SENT_AT?
                 "TENDER_KIND": tendersiae.tender.get_kind_display(),
@@ -615,12 +612,10 @@ def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_questio
             variables["ANSWER_YES_URL"] = answer_url_with_sesame_token + "&answer=True"
             variables["ANSWER_NO_URL"] = answer_url_with_sesame_token + "&answer=False"
 
-            api_mailjet.send_transactional_email_with_template(
-                template_id=template_id,
+            email_template.send_transactional_email(
                 recipient_email=recipient_email,
                 recipient_name=recipient_name,
                 variables=variables,
-                subject=email_subject,
             )
 
             # update tendersiae
@@ -628,8 +623,8 @@ def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_questio
             # log email
             log_item = {
                 "action": f"email_{kind}_sent",
+                "email_template": email_template.code,
                 "email_to": recipient_email,
-                "email_subject": email_subject,
                 # "email_body": email_body,
                 "email_timestamp": timezone.now().isoformat(),
             }
