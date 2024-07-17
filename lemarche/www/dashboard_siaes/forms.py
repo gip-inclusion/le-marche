@@ -1,5 +1,6 @@
 from django import forms
 from django.forms.models import inlineformset_factory
+from django.utils.html import mark_safe
 from django_select2.forms import ModelSelect2MultipleWidget
 
 from lemarche.networks.models import Network
@@ -125,6 +126,9 @@ class SiaeEditInfoForm(forms.ModelForm):
                 "placeholder": "Décrivez votre activité commerciale puis votre projet social",
             }
         )
+        self.fields["ca"].label = "Indiquez le chiffre d'affaires de votre structure"
+        self.fields["year_constitution"].label = "Année de création de votre structure"
+        self.fields["employees_insertion_count"].label = f"Nombre de {self.instance.etp_count_label_display.lower()}"
         # self.fields["logo_url"].label = "Importez votre logo"
 
 
@@ -212,6 +216,19 @@ class SiaeEditLinksForm(forms.ModelForm):
             "networks",
             "groups",
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["networks"].label = "Votre structure est-elle adhérente à un réseau ou une fédération ?"
+        self.fields["is_cocontracting"].label = mark_safe(
+            (
+                "Êtes-vous ouvert à la co-traitance ou au groupement momentané d'entreprises "
+                '(<a href="https://www.economie.gouv.fr/dae/groupement-momentane-dentreprises" target="_blank"'
+                ' rel="noopener">GME</a>) ?'
+            )
+        )
+        self.fields["groups"].label = "Appartenez-vous à un groupement ou ensemblier ?"
 
 
 class SiaeEditContactForm(forms.ModelForm):

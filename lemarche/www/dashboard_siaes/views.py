@@ -139,6 +139,12 @@ class SiaeEditSearchView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateVie
     def get_success_url(self):
         return reverse_lazy("dashboard_siaes:siae_edit_search", args=[self.kwargs.get("slug")])
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb_links"] = [{"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")}]
+        context["breadcrumb_current"] = f"{self.object.name_display} : modifier"
+        return context
+
 
 class SiaeEditActivitiesView(SiaeMemberRequiredMixin, DetailView):
     template_name = "dashboard/siae_edit_activities.html"
@@ -249,6 +255,8 @@ class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView)
             .exclude(id=self.object.id)
             .order_by("-updated_at")[:3]
         )
+        context["breadcrumb_links"] = [{"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")}]
+        context["breadcrumb_current"] = f"{self.object.name_display} : modifier"
         return context
 
     def post(self, request, *args, **kwargs):
@@ -301,6 +309,8 @@ class SiaeEditOfferView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView
         s3_upload_siae_image = S3Upload(kind="siae_image")
         context["s3_form_values_siae_image"] = s3_upload_siae_image.form_values
         context["s3_upload_config_siae_image"] = s3_upload_siae_image.config
+        context["breadcrumb_links"] = [{"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")}]
+        context["breadcrumb_current"] = f"{self.object.name_display} : modifier"
         return context
 
     def post(self, request, *args, **kwargs):
@@ -347,6 +357,12 @@ class SiaeEditLinksView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView
     def get_success_url(self):
         return reverse_lazy("dashboard_siaes:siae_edit_links", args=[self.kwargs.get("slug")])
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb_links"] = [{"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")}]
+        context["breadcrumb_current"] = f"{self.object.name_display} : modifier"
+        return context
+
 
 class SiaeEditContactView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = SiaeEditContactForm
@@ -357,6 +373,12 @@ class SiaeEditContactView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateVi
 
     def get_success_url(self):
         return reverse_lazy("dashboard_siaes:siae_edit_contact", args=[self.kwargs.get("slug")])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb_links"] = [{"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")}]
+        context["breadcrumb_current"] = f"{self.object.name_display} : modifier"
+        return context
 
 
 class SiaeUserRequestConfirmView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView):
