@@ -792,7 +792,10 @@
             "title": "La FAQ d'une consultation",
             "draft_title": "La FAQ d'une consultation",
             "slug": "la-faq-dune-consultation",
-            "content_type": 152,
+            "content_type": [
+                "cms",
+                "faqpage"
+            ],
             "url_path": "/page-daccueil/la-faq-dune-consultation/",
             "owner": 2,
             "seo_title": "",
