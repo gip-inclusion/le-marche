@@ -1,4 +1,4 @@
-{% load static dsfr_tags %}
+{% load static compress dsfr_tags %}
 <!DOCTYPE html>
 <html lang="{% block lang %}fr{% endblock lang %}"
       data-fr-scheme="system"
@@ -8,12 +8,15 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     {% dsfr_css %}
+
+    {% compress css %}
     <link rel="stylesheet" href="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.css' %}" type="text/css" />
     <link rel="stylesheet" href="{% static 'vendor/leaflet-1.7.1/leaflet.css' %}" type="text/css" />
 
     {% comment %}See https://github.com/GouvernementFR/dsfr-theme-tarteaucitron{% endcomment %}
     <link rel="stylesheet" href="{% static 'css/dsfr-theme-tac.min.css' %}" type="text/css" />
     {% dsfr_favicon %}
+    {% endcompress %}
 
     {% block extra_css %}
     {% endblock extra_css %}
