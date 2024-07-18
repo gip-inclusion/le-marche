@@ -150,8 +150,7 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, re
             recipient_name=recipient_name,
             variables=variables,
             subject=email_subject,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            from_name=settings.DEFAULT_FROM_NAME,
+            content_object=recipient_to_override if recipient_to_override else siae,
         )
 
         # update tendersiae
@@ -297,8 +296,7 @@ def send_tender_contacted_reminder_email_to_siae(tendersiae: TenderSiae, email_t
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            from_name=settings.DEFAULT_FROM_NAME,
+            content_object=tendersiae.siae,
         )
 
         # log email
@@ -374,8 +372,7 @@ def send_tender_interested_reminder_email_to_siae(
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            from_name=settings.DEFAULT_FROM_NAME,
+            content_object=tendersiae.siae,
         )
 
         # log email
@@ -420,6 +417,7 @@ def send_confirmation_published_email_to_author(tender: Tender):
                 recipient_email=recipient_email,
                 recipient_name=recipient_name,
                 variables=variables,
+                content_object=tender.author,
             )
 
             # log email
@@ -486,6 +484,7 @@ def send_siae_interested_email_to_author(tender: Tender):
                     recipient_email=recipient_email,
                     recipient_name=recipient_name,
                     variables=variables,
+                    content_object=tender.author,
                 )
 
                 # log email
@@ -564,6 +563,7 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            content_object=tender.author,
         )
 
         # log email
@@ -636,6 +636,7 @@ def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_questio
                 recipient_email=recipient_email,
                 recipient_name=recipient_name,
                 variables=variables,
+                content_object=user,
             )
 
             # update tendersiae
@@ -713,6 +714,7 @@ def send_super_siaes_email_to_author(tender: Tender, top_siaes: list[Siae]):
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            content_object=tender.author,
         )
 
         # log email

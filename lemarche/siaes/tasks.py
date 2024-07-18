@@ -43,7 +43,9 @@ def send_completion_reminder_email_to_siae(siae):
             recipient_name = siae_user.full_name
 
             variables = {
+                "SIAE_USER_ID": siae_user.id,
                 "SIAE_USER_FIRST_NAME": siae_user.first_name,
+                "SIAE_ID": siae.id,
                 "SIAE_NAME": siae.name_display,
                 "SIAE_URL": get_object_share_url(siae),
                 "SIAE_EDIT_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard_siaes:siae_edit_contact', args=[siae.slug])}",  # noqa
@@ -53,6 +55,7 @@ def send_completion_reminder_email_to_siae(siae):
                 recipient_email=recipient_email,
                 recipient_name=recipient_name,
                 variables=variables,
+                content_object=siae_user,
             )
 
         # log email

@@ -49,6 +49,7 @@ def send_new_user_password_reset_link(user: User):
         recipient_name = user.full_name
 
         variables = {
+            "USER_ID": user.id,
             "USER_FIRST_NAME": user.first_name,
             "USER_EMAIL": user.email,
             "PASSWORD_RESET_LINK": generate_password_reset_link(user),
@@ -58,4 +59,5 @@ def send_new_user_password_reset_link(user: User):
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            content_object=user,
         )
