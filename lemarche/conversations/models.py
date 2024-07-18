@@ -2,6 +2,8 @@ from datetime import timedelta
 from uuid import uuid4
 
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import IntegrityError, models
 from django.db.models import Func, IntegerField, Q
 from django.utils import timezone
@@ -254,6 +256,9 @@ class TemplateTransactional(models.Model):
                 return self.brevo_id
         return None
 
+    def create_send_log(self, **kwargs):
+        TemplateTransactionalSendLog.objects.create(template_transactional=self, **kwargs)
+
     def send_transactional_email(
         self,
         recipient_email,
@@ -264,23 +269,41 @@ class TemplateTransactional(models.Model):
         from_name=settings.DEFAULT_FROM_NAME,
     ):
         if self.is_active:
+            args = {
+                "template_id": self.get_template_id,
+                "recipient_email": recipient_email,
+                "recipient_name": recipient_name,
+                "variables": variables,
+                "subject": subject,
+                "from_email": from_email,
+                "from_name": from_name,
+            }
             if self.source == conversation_constants.SOURCE_MAILJET:
-                api_mailjet.send_transactional_email_with_template(
-                    template_id=self.get_template_id,
-                    recipient_email=recipient_email,
-                    recipient_name=recipient_name,
-                    variables=variables,
-                    subject=subject,
-                    from_email=from_email,
-                    from_name=from_name,
-                )
+                result = api_mailjet.send_transactional_email_with_template(**args)
             elif self.source == conversation_constants.SOURCE_BREVO:
-                api_brevo.send_transactional_email_with_template(
-                    template_id=self.get_template_id,
-                    recipient_email=recipient_email,
-                    recipient_name=recipient_name,
-                    variables=variables,
-                    subject=subject,
-                    from_email=from_email,
-                    from_name=from_name,
-                )
+                result = api_brevo.send_transactional_email_with_template(**args)
+            # create log
+            self.create_send_log(extra_data={"source": self.source, "variables": args, "response": result()})
+
+
+class TemplateTransactionalSendLog(models.Model):
+    template_transactional = models.ForeignKey(
+        "conversations.TemplateTransactional",
+        verbose_name="Template transactionnel",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="send_logs",
+    )
+
+    content_type = models.ForeignKey(ContentType, blank=True, null=True, on_delete=models.CASCADE)
+    object_id = models.PositiveBigIntegerField(blank=True, null=True)
+    content_object = GenericForeignKey("content_type", "object_id")
+
+    extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)
+
+    created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
+    updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    class Meta:
+        verbose_name = "Template transactionnel: logs d'envois"
+        verbose_name_plural = "Templates transactionnels: logs d'envois"
