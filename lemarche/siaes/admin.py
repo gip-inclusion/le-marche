@@ -9,7 +9,7 @@ from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 from simple_history.admin import SimpleHistoryAdmin
 
-from lemarche.conversations.models import Conversation
+from lemarche.conversations.models import Conversation, TemplateTransactionalSendLog
 from lemarche.labels.models import Label
 from lemarche.networks.models import Network
 from lemarche.notes.models import Note
@@ -212,6 +212,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin)
             "tender_detail_display_count_annotated_with_link",
             "tender_detail_contact_click_count_annotated_with_link",
             "tender_detail_not_interested_count_annotated_with_link",
+            "transactional_send_logs_count_with_link",
             "brevo_company_id",
             "extra_data_display",
             "import_raw_object_display",
@@ -362,6 +363,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin)
                 "fields": (
                     "signup_date",
                     "content_filled_basic_date",
+                    "transactional_send_logs_count_with_link",
                     "brevo_company_id",
                     "extra_data_display",
                 ),
@@ -664,6 +666,12 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin)
     tender_detail_not_interested_count_annotated_with_link.admin_order_field = (
         "tender_detail_not_interested_count_annotated"
     )
+
+    def transactional_send_logs_count_with_link(self, obj):
+        url = reverse("admin:conversations_templatetransactionalsendlog_changelist") + f"?siae__id__exact={obj.id}"
+        return format_html(f'<a href="{url}">{obj.transactional_send_logs.count()}</a>')
+
+    transactional_send_logs_count_with_link.short_description = TemplateTransactionalSendLog._meta.verbose_name
 
     def logs_display(self, siae=None):
         if siae:

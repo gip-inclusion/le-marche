@@ -9,11 +9,13 @@ from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
+from lemarche.conversations.models import TemplateTransactionalSendLog
 from lemarche.notes.models import Note
 from lemarche.siaes.models import Siae, SiaeUser
 from lemarche.users.forms import UserChangeForm, UserCreationForm
 from lemarche.users.models import User
 from lemarche.utils.admin.admin_site import admin_site
+from lemarche.utils.fields import pretty_print_readonly_jsonfield
 
 
 class HasCompanyFilter(admin.SimpleListFilter):
@@ -194,8 +196,9 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             "favorite_list_count_with_link",
             "image_url",
             "image_url_display",
+            "transactional_send_logs_count_with_link",
             "brevo_contact_id",
-            "extra_data",
+            "extra_data_display",
         ]
     )
 
@@ -283,7 +286,13 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             "Stats",
             {
                 "classes": ["collapse"],
-                "fields": ("dashboard_last_seen_date", "tender_list_last_seen_date", "brevo_contact_id", "extra_data"),
+                "fields": (
+                    "dashboard_last_seen_date",
+                    "tender_list_last_seen_date",
+                    "transactional_send_logs_count_with_link",
+                    "brevo_contact_id",
+                    "extra_data_display",
+                ),
             },
         ),
         (
@@ -384,3 +393,16 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
         return mark_safe("<div>-</div>")
 
     image_url_display.short_description = "Image"
+
+    def transactional_send_logs_count_with_link(self, obj):
+        url = reverse("admin:conversations_templatetransactionalsendlog_changelist") + f"?user__id__exact={obj.id}"
+        return format_html(f'<a href="{url}">{obj.transactional_send_logs.count()}</a>')
+
+    transactional_send_logs_count_with_link.short_description = TemplateTransactionalSendLog._meta.verbose_name
+
+    def extra_data_display(self, instance: User = None):
+        if instance:
+            return pretty_print_readonly_jsonfield(instance.extra_data)
+        return "-"
+
+    extra_data_display.short_description = User._meta.get_field("extra_data").verbose_name
