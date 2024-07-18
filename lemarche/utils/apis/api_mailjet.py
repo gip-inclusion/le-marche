@@ -127,6 +127,7 @@ def send_transactional_email_with_template(
             response = client.post(SEND_URL, json=data)
             response.raise_for_status()
             logger.info("Mailjet: send transactional email with template")
+            # {'Messages': [{'Status': 'success', 'CustomID': '', 'To': [{'Email': '<recipient_email>', 'MessageUUID': '<uuid>', 'MessageID': <id>, 'MessageHref': 'https://api.mailjet.com/v3/REST/message/<id>'}], 'Cc': [], 'Bcc': []}]}  # noqa
             return response.json()
         except requests.exceptions.HTTPError as e:
             logger.error("Error while fetching `%s`: %s", e.request.url, e)

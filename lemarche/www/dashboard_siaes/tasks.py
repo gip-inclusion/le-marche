@@ -17,8 +17,11 @@ def send_siae_user_request_email_to_assignee(siae_user_request):
         recipient_name = siae_user_request.assignee.full_name
 
         variables = {
+            "ASSIGNEE_ID": siae_user_request.assignee.id,
             "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
+            "INITIATIOR_ID": siae_user_request.initiator.id,
             "INITIATOR_FULL_NAME": siae_user_request.initiator.full_name,
+            "SIAE_ID": siae_user_request.siae.id,
             "SIAE_NAME": siae_user_request.siae.name_display,
             "SIAE_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard_siaes:siae_users', args=[siae_user_request.siae.slug])}",  # noqa
         }
@@ -57,8 +60,11 @@ def send_siae_user_request_response_email_to_initiator(siae_user_request):
             recipient_name = siae_user_request.initiator.full_name
 
             variables = {
+                "ASSIGNEE_ID": siae_user_request.assignee.id,
                 "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
+                "INITIATIOR_ID": siae_user_request.initiator.id,
                 "INITIATOR_FULL_NAME": siae_user_request.initiator.full_name,
+                "SIAE_ID": siae_user_request.siae.id,
                 "SIAE_NAME": siae_user_request.siae.name_display,
                 "DASHBOARD_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard:home')}",
             }
@@ -99,8 +105,11 @@ def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
         recipient_name = siae_user_request.assignee.full_name
 
         variables = {
+            "ASSIGNEE_ID": siae_user_request.assignee.id,
             "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
+            "INITIATIOR_ID": siae_user_request.initiator.id,
             "INITIATOR_FULL_NAME": siae_user_request.initiator.full_name,
+            "SIAE_ID": siae_user_request.siae.id,
             "SIAE_NAME": siae_user_request.siae.name_display,
             "SIAE_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard_siaes:siae_users', args=[siae_user_request.siae.slug])}",  # noqa
         }
@@ -131,8 +140,11 @@ def send_siae_user_request_reminder_3_days_email_to_initiator(siae_user_request)
         recipient_name = siae_user_request.initiator.full_name
 
         variables = {
+            "ASSIGNEE_ID": siae_user_request.assignee.id,
             "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
+            "INITIATIOR_ID": siae_user_request.initiator.id,
             "INITIATOR_FULL_NAME": siae_user_request.initiator.full_name,
+            "SIAE_ID": siae_user_request.siae.id,
             "SIAE_NAME": siae_user_request.siae.name_display,
         }
 
@@ -172,8 +184,11 @@ def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
         recipient_name = siae_user_request.assignee.full_name
 
         variables = {
+            "ASSIGNEE_ID": siae_user_request.assignee.id,
             "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
+            "INITIATIOR_ID": siae_user_request.initiator.id,
             "INITIATOR_FULL_NAME": siae_user_request.initiator.full_name,
+            "SIAE_ID": siae_user_request.siae.id,
             "SIAE_NAME": siae_user_request.siae.name_display,
             "SIAE_USERS_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard_siaes:siae_users', args=[siae_user_request.siae.slug])}",  # noqa
         }
@@ -204,8 +219,11 @@ def send_siae_user_request_reminder_8_days_email_to_initiator(siae_user_request)
         recipient_name = siae_user_request.initiator.full_name
 
         variables = {
+            "ASSIGNEE_ID": siae_user_request.assignee.id,
             "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
+            "INITIATIOR_ID": siae_user_request.initiator.id,
             "INITIATOR_FULL_NAME": siae_user_request.initiator.full_name,
+            "SIAE_ID": siae_user_request.siae.id,
             "SIAE_NAME": siae_user_request.siae.name_display,
             "SUPPORT_URL": f"https://{get_domain_url()}{reverse_lazy('pages:contact')}?siret={siae_user_request.siae.siret}",  # noqa
         }

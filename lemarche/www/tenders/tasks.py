@@ -128,12 +128,15 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, re
             tender_not_interested_url += f"&user_id={recipient_to_override.id}"
 
         variables = {
+            "SIAE_ID": siae.id,
             "SIAE_CONTACT_FIRST_NAME": siae.contact_first_name,
             "SIAE_SECTORS": siae.sectors_list_string(),
             "SIAE_PERIMETER": siae.geo_range_pretty_display,
+            "TENDER_ID": tender.id,
             "TENDER_TITLE": tender.title,
             "TENDER_AUTHOR_COMPANY": tender.author.company_name,
             "TENDER_KIND": tender.get_kind_display(),
+            "TENDER_KIND_LOWER": tender.get_kind_display().lower(),
             "TENDER_SECTORS": tender.sectors_list_string(),
             "TENDER_PERIMETERS": tender.location_display,
             "TENDER_AMOUNT": tender.amount_display,
@@ -192,6 +195,7 @@ def send_tender_email_to_partner(email_subject: str, tender: Tender, partner: Pa
     recipient_list = whitelist_recipient_list(partner.contact_email_list)
     if recipient_list:
         variables = {
+            "TENDER_ID": tender.id,
             "TENDER_TITLE": tender.title,
             "TENDER_AUTHOR_COMPANY": tender.author.company_name,
             "TENDER_SECTORS": tender.sectors_list_string(),
@@ -273,9 +277,11 @@ def send_tender_contacted_reminder_email_to_siae(tendersiae: TenderSiae, email_t
         recipient_name = tendersiae.siae.contact_email_name_display
 
         variables = {
+            "SIAE_ID": tendersiae.siae.id,
             "SIAE_CONTACT_FIRST_NAME": tendersiae.siae.contact_first_name,
             "SIAE_SECTORS": tendersiae.siae.sectors_list_string(),
             "SIAE_PERIMETER": tendersiae.siae.geo_range_pretty_display,
+            "TENDER_ID": tendersiae.tender.id,
             "TENDER_TITLE": tendersiae.tender.title,
             "TENDER_AUTHOR_COMPANY": tendersiae.tender.author.company_name,
             "TENDER_KIND": tendersiae.tender.get_kind_display(),
@@ -348,9 +354,11 @@ def send_tender_interested_reminder_email_to_siae(
         recipient_name = tendersiae.siae.contact_email_name_display
 
         variables = {
+            "SIAE_ID": tendersiae.siae.id,
             "SIAE_CONTACT_FIRST_NAME": tendersiae.siae.contact_first_name,
             "SIAE_SECTORS": tendersiae.siae.sectors_list_string(),
             "SIAE_PERIMETER": tendersiae.siae.geo_range_pretty_display,
+            "TENDER_ID": tendersiae.tender.id,
             "TENDER_TITLE": tendersiae.tender.title,
             "TENDER_AUTHOR_COMPANY": tendersiae.tender.author.company_name,
             "TENDER_KIND": tendersiae.tender.get_kind_display(),
@@ -394,7 +402,7 @@ def send_confirmation_published_email_to_author(tender: Tender):
             recipient_name = tender.author.full_name
 
             variables = {
-                "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
+                "TENDER_ID": tender.id,
                 "TENDER_TITLE": tender.title,
                 "TENDER_KIND": tender.get_kind_display(),
                 "TENDER_KIND_LOWER": tender.get_kind_display().lower(),
@@ -402,6 +410,8 @@ def send_confirmation_published_email_to_author(tender: Tender):
                 "TENDER_PERIMETERS": tender.location_display,
                 "TENDER_AMOUNT": tender.amount_display,
                 "TENDER_DEADLINE_DATE": date_to_string(tender.deadline_date),
+                "TENDER_AUTHOR_ID": tender.author.id,
+                "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
                 "TENDER_NB_MATCH": tender.siaes.count(),
                 "TENDER_URL": get_object_share_url(tender),
             }
@@ -465,8 +475,10 @@ def send_siae_interested_email_to_author(tender: Tender):
                 recipient_name = tender.author.full_name
 
                 variables = {
-                    "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
+                    "TENDER_ID": tender.id,
                     "TENDER_TITLE": tender.title,
+                    "TENDER_AUTHOR_ID": tender.author.id,
+                    "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
                     "TENDER_SIAE_INTERESTED_LIST_URL": f"{get_object_share_url(tender)}/prestataires",  # noqa
                 }
 
@@ -492,18 +504,20 @@ def notify_admin_tender_created(tender: Tender):
     email_subject = f"Marché de l'inclusion : dépôt de besoin, ajout d'un nouveau {tender.get_kind_display()}"
     tender_admin_url = get_object_admin_url(tender)
     data_to_send = {
-        "tender_id": tender.id,
-        "tender_title": tender.title,
-        "tender_kind": tender.get_kind_display(),
-        "tender_location": tender.location_display,
-        "tender_deadline_date": tender.deadline_date,
-        "tender_author_full_name": tender.contact_full_name,
-        "tender_author_email": tender.author.email,
-        "tender_author_company": tender.author.company_name,
-        "tender_scale_marche_useless": tender.get_scale_marche_useless_display(),
-        "tender_status": tender.get_status_display(),
-        "tender_source": tender.get_source_display(),
-        "tender_admin_url": tender_admin_url,
+        "TENDER_ID": tender.id,
+        "TENDER_TITLE": tender.title,
+        "TENDER_KIND": tender.get_kind_display(),
+        "TENDER_KIND_LOWER": tender.get_kind_display().lower(),
+        "TENDER_LOCATION": tender.location_display,
+        "TENDER_DEADLINE_DATE": tender.deadline_date,
+        "TENDER_AUTHOR_ID": tender.author.id,
+        "TENDER_AUTHOR_FULL_NAME": tender.contact_full_name,
+        "TENDER_AUTHOR_EMAIL": tender.author.email,
+        "TENDER_AUTHOR_COMPANY": tender.author.company_name,
+        "TENDER_SCALE_MARCHE_USELESS": tender.get_scale_marche_useless_display(),
+        "TENDER_STATUS": tender.get_status_display(),
+        "TENDER_SOURCE": tender.get_source_display(),
+        "TENDER_ADMIN_URL": tender_admin_url,
     }
     email_body = render_to_string("tenders/create_notification_email_admin_body.txt", data_to_send)
     send_mail_async(
@@ -521,11 +535,13 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
         recipient_name = tender.author.full_name
 
         variables = {
-            "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
+            "TENDER_ID": tender.id,
             "TENDER_TITLE": tender.title,
             "TENDER_VALIDATE_AT": tender.first_sent_at.strftime("%d %B %Y"),  # TODO: TENDER_SENT_AT?
             "TENDER_KIND": tender.get_kind_display(),
             "TENDER_KIND_LOWER": tender.get_kind_display().lower(),
+            "TENDER_AUTHOR_ID": tender.author.id,
+            "TENDER_AUTHOR_FIRST_NAME": tender.author.first_name,
         }
 
         if kind in ["transactioned_question_7d", "transactioned_question_7d_reminder"]:
@@ -594,11 +610,15 @@ def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_questio
             recipient_name = user.full_name
 
             variables = {
-                "TENDER_AUTHOR_FULL_NAME": tendersiae.tender.contact_full_name,
-                "TENDER_AUTHOR_COMPANY": tendersiae.tender.author.company_name,
+                "SIAE_ID": tendersiae.siae.id,
+                "TENDER_ID": tendersiae.tender.id,
                 "TENDER_TITLE": tendersiae.tender.title,
                 "TENDER_VALIDATE_AT": tendersiae.tender.first_sent_at.strftime("%d %B %Y"),  # TODO: TENDER_SENT_AT?
                 "TENDER_KIND": tendersiae.tender.get_kind_display(),
+                "TENDER_KIND_LOWER": tendersiae.tender.get_kind_display().lower(),
+                "TENDER_AUTHOR_ID": tendersiae.tender.author.id,
+                "TENDER_AUTHOR_FULL_NAME": tendersiae.tender.contact_full_name,
+                "TENDER_AUTHOR_COMPANY": tendersiae.tender.author.company_name,
             }
 
             user_sesame_query_string = sesame_get_query_string(user)  # TODO: sesame scope parameter
@@ -638,12 +658,15 @@ def notify_admin_siae_wants_cocontracting(tender: Tender, siae: Siae):
     email_body = render_to_string(
         "tenders/cocontracting_notification_email_admin_body.txt",
         {
-            "tender_title": tender.title,
-            "tender_kind": tender.get_kind_display(),
-            "tender_admin_url": tender_admin_url,
-            "siae_name": siae.name,
-            "siae_contact_email": siae.contact_email,
-            "siae_siret": siae.siret,
+            "TENDER_ID": tender.id,
+            "TENDER_TITLE": tender.title,
+            "TENDER_KIND": tender.get_kind_display(),
+            "TENDER_KIND_LOWER": tender.get_kind_display().lower(),
+            "TENDER_ADMIN_URL": tender_admin_url,
+            "SIAE_ID": siae.id,
+            "SIAE_NAME": siae.name,
+            "SIAE_CONTACT_EMAIL": siae.contact_email,
+            "SIAE_SIRET": siae.siret,
         },
     )
     send_mail_async(
@@ -666,16 +689,20 @@ def send_super_siaes_email_to_author(tender: Tender, top_siaes: list[Siae]):
         # Use transaction parameters of Brevo with loop for siaes, documentation :
         # https://help.brevo.com/hc/en-us/articles/4402386448530-Customize-your-emails-using-transactional-parameters
         variables = {
-            "author_name": recipient_name,
-            "tender_title": tender.title,
-            "tender_kind": tender.get_kind_display().lower(),
-            "siaes_count": len(top_siaes),
-            "siaes": [],
-            "tender_siae_interested_list_url": f"{get_object_share_url(tender)}/prestataires",
+            "TENDER_ID": tender.id,
+            "TENDER_TITLE": tender.title,
+            "TENDER_KIND": tender.get_kind_display().lower(),
+            "TENDER_KIND_LOWER": tender.get_kind_display().lower(),
+            "TENDER_AUTHOR_ID": tender.author.id,
+            "TENDER_AUTHOR_NAME": recipient_name,
+            "SIAES_COUNT": len(top_siaes),
+            "SIAES": [],
+            "TENDER_SIAE_INTERESTED_LIST_URL": f"{get_object_share_url(tender)}/prestataires",
         }
         for siae in top_siaes:
             variables["siaes"].append(
                 {
+                    "id": siae.id,
                     "name": siae.name_display,
                     "kind": siae.get_kind_display(),
                     "contact_name": siae.contact_full_name,
