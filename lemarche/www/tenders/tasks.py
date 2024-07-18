@@ -503,7 +503,7 @@ def send_siae_interested_email_to_author(tender: Tender):
 def notify_admin_tender_created(tender: Tender):
     email_subject = f"Marché de l'inclusion : dépôt de besoin, ajout d'un nouveau {tender.get_kind_display()}"
     tender_admin_url = get_object_admin_url(tender)
-    data_to_send = {
+    variables = {
         "TENDER_ID": tender.id,
         "TENDER_TITLE": tender.title,
         "TENDER_KIND": tender.get_kind_display(),
@@ -519,7 +519,7 @@ def notify_admin_tender_created(tender: Tender):
         "TENDER_SOURCE": tender.get_source_display(),
         "TENDER_ADMIN_URL": tender_admin_url,
     }
-    email_body = render_to_string("tenders/create_notification_email_admin_body.txt", data_to_send)
+    email_body = render_to_string("tenders/create_notification_email_admin_body.txt", variables)
     send_mail_async(
         email_subject=email_subject,
         email_body=email_body,
@@ -655,20 +655,18 @@ def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_questio
 def notify_admin_siae_wants_cocontracting(tender: Tender, siae: Siae):
     email_subject = f"Marché de l'inclusion : la structure {siae.name} souhaite répondre en co-traitance"
     tender_admin_url = get_object_admin_url(tender)
-    email_body = render_to_string(
-        "tenders/cocontracting_notification_email_admin_body.txt",
-        {
-            "TENDER_ID": tender.id,
-            "TENDER_TITLE": tender.title,
-            "TENDER_KIND": tender.get_kind_display(),
-            "TENDER_KIND_LOWER": tender.get_kind_display().lower(),
-            "TENDER_ADMIN_URL": tender_admin_url,
-            "SIAE_ID": siae.id,
-            "SIAE_NAME": siae.name,
-            "SIAE_CONTACT_EMAIL": siae.contact_email,
-            "SIAE_SIRET": siae.siret,
-        },
-    )
+    variables = {
+        "TENDER_ID": tender.id,
+        "TENDER_TITLE": tender.title,
+        "TENDER_KIND": tender.get_kind_display(),
+        "TENDER_KIND_LOWER": tender.get_kind_display().lower(),
+        "TENDER_ADMIN_URL": tender_admin_url,
+        "SIAE_ID": siae.id,
+        "SIAE_NAME": siae.name,
+        "SIAE_CONTACT_EMAIL": siae.contact_email,
+        "SIAE_SIRET": siae.siret,
+    }
+    email_body = render_to_string("tenders/cocontracting_notification_email_admin_body.txt", variables)
     send_mail_async(
         email_subject=email_subject,
         email_body=email_body,
