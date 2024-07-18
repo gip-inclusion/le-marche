@@ -8,27 +8,30 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     {% dsfr_css %}
-
     {% compress css %}
-    <link rel="stylesheet" href="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.css' %}" type="text/css" />
-    <link rel="stylesheet" href="{% static 'vendor/leaflet-1.7.1/leaflet.css' %}" type="text/css" />
-
-    {% comment %}See https://github.com/GouvernementFR/dsfr-theme-tarteaucitron{% endcomment %}
-    <link rel="stylesheet" href="{% static 'css/dsfr-theme-tac.min.css' %}" type="text/css" />
-    {% dsfr_favicon %}
+      <link rel="stylesheet"
+            href="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.css' %}"
+            type="text/css" />
+      <link rel="stylesheet"
+            href="{% static 'vendor/leaflet-1.7.1/leaflet.css' %}"
+            type="text/css" />
+      {% comment %}See https://github.com/GouvernementFR/dsfr-theme-tarteaucitron{% endcomment %}
+      <link rel="stylesheet"
+            href="{% static 'css/dsfr-theme-tac.min.css' %}"
+            type="text/css" />
+      {% dsfr_favicon %}
     {% endcompress %}
-
     {% block extra_css %}
     {% endblock extra_css %}
-
-    <title>{% block title %} — Le marché de l'inclusion{% endblock %}</title>
+    <title>
+      {% block title %}— Le marché de l'inclusion{% endblock %}
+    </title>
     {% block meta_description %}
-        <meta name="description" content="Le marché de l'inclusion est un service numérique permettant de trouver un prestataire sociale inclusif proposant des produits ou services professionnels.">
+      <meta name="description"
+            content="Le marché de l'inclusion est un service numérique permettant de trouver un prestataire sociale inclusif proposant des produits ou services professionnels.">
     {% endblock meta_description %}
-
     <meta name="format-detection"
           content="telephone=no,date=no,address=no,email=no,url=no">
-
     {% block opengraph %}
     {% endblock opengraph %}
   </head>
@@ -36,20 +39,17 @@
     {% block skiplinks %}
       {% dsfr_skiplinks skiplinks %}
     {% endblock skiplinks %}
-
     {% block header %}
       {% include "layouts/_header.html" %}
     {% endblock header %}
-
     {% dsfr_theme_modale %}
-
     {% if SITE_CONFIG.notice %}
       {% dsfr_notice title=SITE_CONFIG.notice %}
     {% endif %}
-
     <div class="fr-container fr-mt-4w fr-mb-6w">
       {% block breadcrumb %}
-        {% dsfr_breadcrumb %}
+        {% comment %} {% dsfr_breadcrumb %} {% endcomment %}
+        {% include "content_manager/blocks/breadcrumbs.html" %}
       {% endblock breadcrumb %}
       <main id="content" role="main">
         {% block messages %}
@@ -59,25 +59,25 @@
         {% endblock content %}
       </main>
     </div>
-
     {% block follow_newsletter_social_media %}
     {% endblock follow_newsletter_social_media %}
-
     {% block footer %}
       {% include "layouts/_footer.html" %}
     {% endblock footer %}
-
-    {% block modals %}{% endblock modals %}
-
+    {% block modals %}
+    {% endblock modals %}
     {% dsfr_js nonce=request.csp_nonce %}
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
     <script type="text/javascript" src="{% static 'js/dsfr/utils.js'%}"></script>
-    <script type="text/javascript" src="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'vendor/leaflet-1.7.1/leaflet.js' %}"></script>
-
+    <script type="text/javascript"
+            src="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.js' %}"></script>
+    <script type="text/javascript"
+            src="{% static 'vendor/leaflet-1.7.1/leaflet.js' %}"></script>
     {% if BITOUBI_ENV not in "dev" %}
-        {% include "includes/_tracker_tarteaucitron.html" %}
-        {% include "includes/_tracker_itou.html" %}
+      {% include "includes/_tracker_tarteaucitron.html" %}
+      {% include "includes/_tracker_itou.html" %}
     {% endif %}
     {% block extra_js %}
     {% endblock extra_js %}
