@@ -283,7 +283,7 @@ class TemplateTransactional(models.Model):
             elif self.source == conversation_constants.SOURCE_BREVO:
                 result = api_brevo.send_transactional_email_with_template(**args)
             # create log
-            self.create_send_log(extra_data={"source": self.source, "variables": args, "response": result()})
+            self.create_send_log(extra_data={"source": self.source, "args": args, "response": result()})
 
 
 class TemplateTransactionalSendLog(models.Model):
