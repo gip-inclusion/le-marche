@@ -1,9 +1,11 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.utils.html import format_html
 
 from lemarche.conversations.models import Conversation, TemplateTransactional, TemplateTransactionalSendLog
 from lemarche.utils.admin.admin_site import admin_site
-from lemarche.utils.fields import pretty_print_readonly_jsonfield_to_table
+from lemarche.utils.fields import pretty_print_readonly_jsonfield, pretty_print_readonly_jsonfield_to_table
 from lemarche.www.conversations.tasks import send_first_email_from_conversation
 
 
@@ -155,6 +157,13 @@ class TemplateTransactionalSendLogAdmin(admin.ModelAdmin):
 
     readonly_fields = [field.name for field in TemplateTransactionalSendLog._meta.fields]
 
+    fieldsets = (
+        (None, {"fields": ("template_transactional",)}),
+        ("Envoyé à…", {"fields": ("content_type", "object_id_with_link")}),
+        ("Logs", {"fields": ("extra_data_display",)}),
+        ("Dates", {"fields": ("created_at", "updated_at")}),
+    )
+
     def has_add_permission(self, request):
         return False
 
@@ -163,3 +172,23 @@ class TemplateTransactionalSendLogAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    def object_id_with_link(self, obj):
+        if obj.content_type and obj.object_id:
+            if obj.content_type.model == "tender":
+                url = reverse("admin:tenders_tender_change", args=[obj.object_id])
+                return format_html(f'<a href="{url}">{obj.object_id}</a>')
+            elif obj.content_type.model == "siae":
+                url = reverse("admin:siaes_siae_change", args=[obj.object_id])
+                return format_html(f'<a href="{url}">{obj.object_id}</a>')
+            elif obj.content_type.model == "user":
+                url = reverse("admin:users_user_change", args=[obj.object_id])
+                return format_html(f'<a href="{url}">{obj.object_id}</a>')
+        return obj.object.id
+
+    def extra_data_display(self, instance: TemplateTransactionalSendLog = None):
+        if instance:
+            return pretty_print_readonly_jsonfield(instance.extra_data)
+        return "-"
+
+    extra_data_display.short_description = TemplateTransactionalSendLog._meta.get_field("extra_data").verbose_name

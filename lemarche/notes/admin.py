@@ -26,12 +26,7 @@ class NoteAdmin(admin.ModelAdmin):
     formfield_overrides = {models.TextField: {"widget": CKEditorWidget(config_name="admin_note_text")}}
 
     fieldsets = (
-        (
-            None,
-            {
-                "fields": ("text", "author"),
-            },
-        ),
+        (None, {"fields": ("text", "author")}),
         ("Rattachée à…", {"fields": ("content_type", "object_id_with_link")}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
@@ -41,15 +36,15 @@ class NoteAdmin(admin.ModelAdmin):
             obj.author = request.user
         obj.save()
 
-    def object_id_with_link(self, note):
-        if note.content_type and note.object_id:
-            if note.content_type.model == "tender":
-                url = reverse("admin:tenders_tender_change", args=[note.object_id])
-                return format_html(f'<a href="{url}">{note.object_id}</a>')
-            elif note.content_type.model == "siae":
-                url = reverse("admin:siaes_siae_change", args=[note.object_id])
-                return format_html(f'<a href="{url}">{note.object_id}</a>')
-            elif note.content_type.model == "user":
-                url = reverse("admin:users_user_change", args=[note.object_id])
-                return format_html(f'<a href="{url}">{note.object_id}</a>')
-        return note.object.id
+    def object_id_with_link(self, obj):
+        if obj.content_type and obj.object_id:
+            if obj.content_type.model == "tender":
+                url = reverse("admin:tenders_tender_change", args=[obj.object_id])
+                return format_html(f'<a href="{url}">{obj.object_id}</a>')
+            elif obj.content_type.model == "siae":
+                url = reverse("admin:siaes_siae_change", args=[obj.object_id])
+                return format_html(f'<a href="{url}">{obj.object_id}</a>')
+            elif obj.content_type.model == "user":
+                url = reverse("admin:users_user_change", args=[obj.object_id])
+                return format_html(f'<a href="{url}">{obj.object_id}</a>')
+        return obj.object.id
