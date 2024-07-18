@@ -1,13 +1,13 @@
-Dépôt de besoin : ajout d'un nouveau {{ tender_kind|safe }}
+Dépôt de besoin : ajout d'un nouveau {{ TENDER_KIND|safe }}
 
-titre : {{ tender_title|safe }}
-type : {{ tender_kind|safe }}
-lieu d'intervention : {{ tender_location|safe }}
-date de clôture des réponses : {{ tender_deadline_date|safe }}
-contact : {{ tender_author_full_name|safe }}
-entreprise : {{ tender_author_company|safe }}
-si le Marché n'existait pas, auriez-vous consulté des prestataires inclusifs ? : {{ tender_scale_marche_useless|safe }}
-status : {{ tender_status|safe }}
-source: {{ tender_source|safe }}
+titre : {{ TENDER_TITLE|safe }}
+type : {{ TENDER_KIND|safe }}
+lieu d'intervention : {{ TENDER_LOCATION|safe }}
+date de clôture des réponses : {{ TENDER_DEADLINE_DATE|safe }}
+contact : {{ TENDER_AUTHOR_FULL_NAME|safe }}
+entreprise : {{ TENDER_AUTHOR_COMPANY|safe }}
+si le Marché n'existait pas, auriez-vous consulté des prestataires inclusifs ? : {{ TENDER_SCALE_MARCHE_USELESS|safe }}
+status : {{ TENDER_STATUS|safe }}
+source: {{ TENDER_SOURCE|safe }}
 
-Lien dans l'admin : {{ tender_admin_url }}
+Lien dans l'admin : {{ TENDER_ADMIN_URL }}
