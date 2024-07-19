@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import IntegrityError, models
-from django.db.models import Func, IntegerField, Q
+from django.db.models import Count, Func, IntegerField, Q
 from django.utils import timezone
 from django.utils.text import slugify
 from django_extensions.db.fields import ShortUUIDField
@@ -198,6 +198,13 @@ class Conversation(models.Model):
         self.save()
 
 
+class TemplateTransactionalQuerySet(models.QuerySet):
+    def with_stats(self):
+        return self.annotate(
+            send_log_count=Count("send_logs"),
+        )
+
+
 class TemplateTransactional(models.Model):
     name = models.CharField(verbose_name="Nom", max_length=255)
     code = models.CharField(
@@ -237,6 +244,8 @@ class TemplateTransactional(models.Model):
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
     updated_at = models.DateTimeField(verbose_name="Date de modification", auto_now=True)
+
+    objects = models.Manager.from_queryset(TemplateTransactionalQuerySet)()
 
     class Meta:
         verbose_name = "Template transactionnel"

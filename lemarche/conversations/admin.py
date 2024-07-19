@@ -136,22 +136,49 @@ class ConversationAdmin(admin.ModelAdmin):
 
 @admin.register(TemplateTransactional, site=admin_site)
 class TemplateTransactionalAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", "code", "mailjet_id", "brevo_id", "source", "is_active", "created_at", "updated_at"]
+    list_display = [
+        "id",
+        "name",
+        "code",
+        "mailjet_id",
+        "brevo_id",
+        "source",
+        "is_active",
+        "template_transactional_send_log_count_with_link",
+        "created_at",
+        "updated_at",
+    ]
     search_fields = ["id", "name", "code", "mailjet_id", "brevo_id"]
 
-    readonly_fields = ["code", "created_at", "updated_at"]
+    readonly_fields = ["code", "template_transactional_send_log_count_with_link", "created_at", "updated_at"]
 
     fieldsets = (
         (None, {"fields": ("name", "code", "description")}),
         ("Paramètres d'envoi", {"fields": ("mailjet_id", "brevo_id", "source", "is_active")}),
+        ("Stats", {"fields": ("template_transactional_send_log_count_with_link",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.with_stats()
+        return qs
+
+    def template_transactional_send_log_count_with_link(self, obj):
+        url = (
+            reverse("admin:conversations_templatetransactionalsendlog_changelist")
+            + f"?template_transactionals__in={obj.id}"
+        )
+        return format_html(f'<a href="{url}">{obj.send_log_count}</a>')
+
+    template_transactional_send_log_count_with_link.short_description = "Logs d'envois"
+    template_transactional_send_log_count_with_link.admin_order_field = "send_log_count"
 
 
 @admin.register(TemplateTransactionalSendLog, site=admin_site)
 class TemplateTransactionalSendLogAdmin(admin.ModelAdmin):
     list_display = ["id", "template_transactional", "content_type", "created_at"]
-    list_filter = [("content_type", admin.RelatedOnlyFieldListFilter)]
+    list_filter = ["template_transactional", ("content_type", admin.RelatedOnlyFieldListFilter)]
     search_fields = ["id", "template_transactional"]
     search_help_text = "Cherche sur les champs : ID, Template transactionnel"
 
