@@ -2,6 +2,7 @@ from django import forms
 from django.forms.models import inlineformset_factory
 from django.utils.html import mark_safe
 from django_select2.forms import ModelSelect2MultipleWidget
+from dsfr.forms import DsfrBaseForm
 
 from lemarche.networks.models import Network
 from lemarche.sectors.models import Sector
@@ -105,7 +106,7 @@ class SiaeEditSearchForm(forms.ModelForm):
         super().save(*args, **kwargs)
 
 
-class SiaeEditInfoForm(forms.ModelForm):
+class SiaeEditInfoForm(forms.ModelForm, DsfrBaseForm):
     class Meta:
         model = Siae
         fields = [

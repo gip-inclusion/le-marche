@@ -263,7 +263,7 @@ class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView)
         self.object = self.get_object()
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        label_formset = SiaeLabelOldFormSet(self.request.POST, instance=self.object)
+        label_formset = SiaeLabelOldFormSet(request.POST, instance=self.object)
         if form.is_valid() and label_formset.is_valid():
             return self.form_valid(form, label_formset)
         else:
