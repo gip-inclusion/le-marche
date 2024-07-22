@@ -114,6 +114,7 @@ def send_tender_emails_to_siaes(tender: Tender):
 # @task()
 def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, recipient_to_override: User = None):
     email_template = TemplateTransactional.objects.get(code="TENDERS_SIAE_PRESENTATION")
+    tendersiae = TenderSiae.objects.get(tender=tender, siae=siae)
     # override siae.contact_email if email_to_override is provided
     email_to = recipient_to_override.email if recipient_to_override else siae.contact_email
     recipient_list = whitelist_recipient_list([email_to])
@@ -150,11 +151,11 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, re
             recipient_name=recipient_name,
             variables=variables,
             subject=email_subject,
-            content_object=recipient_to_override if recipient_to_override else siae,
+            recipient_content_object=recipient_to_override if recipient_to_override else siae,
+            parent_content_object=tendersiae,
         )
 
         # update tendersiae
-        tendersiae = TenderSiae.objects.get(tender=tender, siae=siae)
         tendersiae.email_send_date = timezone.now()
         log_item = {
             "action": "email_sent",
@@ -296,7 +297,8 @@ def send_tender_contacted_reminder_email_to_siae(tendersiae: TenderSiae, email_t
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            content_object=tendersiae.siae,
+            recipient_content_object=tendersiae.siae,
+            parent_content_object=tendersiae,
         )
 
         # log email
@@ -372,7 +374,8 @@ def send_tender_interested_reminder_email_to_siae(
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            content_object=tendersiae.siae,
+            recipient_content_object=tendersiae.siae,
+            parent_content_object=tendersiae,
         )
 
         # log email
@@ -417,7 +420,8 @@ def send_confirmation_published_email_to_author(tender: Tender):
                 recipient_email=recipient_email,
                 recipient_name=recipient_name,
                 variables=variables,
-                content_object=tender.author,
+                recipient_content_object=tender.author,
+                parent_content_object=tender,
             )
 
             # log email
@@ -484,7 +488,8 @@ def send_siae_interested_email_to_author(tender: Tender):
                     recipient_email=recipient_email,
                     recipient_name=recipient_name,
                     variables=variables,
-                    content_object=tender.author,
+                    recipient_content_object=tender.author,
+                    parent_content_object=tender,
                 )
 
                 # log email
@@ -563,7 +568,8 @@ def send_tenders_author_feedback_or_survey(tender: Tender, kind="feedback_30d"):
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            content_object=tender.author,
+            recipient_content_object=tender.author,
+            parent_content_object=tender,
         )
 
         # log email
@@ -636,7 +642,8 @@ def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_questio
                 recipient_email=recipient_email,
                 recipient_name=recipient_name,
                 variables=variables,
-                content_object=user,
+                recipient_content_object=user,
+                parent_content_object=tendersiae,
             )
 
             # update tendersiae
@@ -714,7 +721,8 @@ def send_super_siaes_email_to_author(tender: Tender, top_siaes: list[Siae]):
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            content_object=tender.author,
+            recipient_content_object=tender.author,
+            parent_content_object=tender,
         )
 
         # log email

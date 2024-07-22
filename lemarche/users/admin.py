@@ -196,7 +196,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
             "favorite_list_count_with_link",
             "image_url",
             "image_url_display",
-            "transactional_send_logs_count_with_link",
+            "recipient_transactional_send_logs_count_with_link",
             "brevo_contact_id",
             "extra_data_display",
         ]
@@ -289,7 +289,7 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
                 "fields": (
                     "dashboard_last_seen_date",
                     "tender_list_last_seen_date",
-                    "transactional_send_logs_count_with_link",
+                    "recipient_transactional_send_logs_count_with_link",
                     "brevo_contact_id",
                     "extra_data_display",
                 ),
@@ -394,11 +394,13 @@ class UserAdmin(FieldsetsInlineMixin, UserAdmin):
 
     image_url_display.short_description = "Image"
 
-    def transactional_send_logs_count_with_link(self, obj):
+    def recipient_transactional_send_logs_count_with_link(self, obj):
         url = reverse("admin:conversations_templatetransactionalsendlog_changelist") + f"?user__id__exact={obj.id}"
-        return format_html(f'<a href="{url}">{obj.transactional_send_logs.count()}</a>')
+        return format_html(f'<a href="{url}">{obj.recipient_transactional_send_logs.count()}</a>')
 
-    transactional_send_logs_count_with_link.short_description = TemplateTransactionalSendLog._meta.verbose_name
+    recipient_transactional_send_logs_count_with_link.short_description = (
+        TemplateTransactionalSendLog._meta.verbose_name
+    )
 
     def extra_data_display(self, instance: User = None):
         if instance:

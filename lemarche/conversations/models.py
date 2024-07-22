@@ -276,7 +276,8 @@ class TemplateTransactional(models.Model):
         subject=None,
         from_email=settings.DEFAULT_FROM_EMAIL,
         from_name=settings.DEFAULT_FROM_NAME,
-        content_object=None,
+        recipient_content_object=None,
+        parent_content_object=None,
     ):
         if self.is_active:
             args = {
@@ -294,7 +295,9 @@ class TemplateTransactional(models.Model):
                 result = api_brevo.send_transactional_email_with_template(**args)
             # create log
             self.create_send_log(
-                content_object=content_object, extra_data={"source": self.source, "args": args, "response": result()}
+                recipient_content_object=recipient_content_object,
+                parent_content_object=parent_content_object,
+                extra_data={"source": self.source, "args": args, "response": result()},
             )
 
 
@@ -307,9 +310,19 @@ class TemplateTransactionalSendLog(models.Model):
         related_name="send_logs",
     )
 
-    content_type = models.ForeignKey(ContentType, blank=True, null=True, on_delete=models.CASCADE)
-    object_id = models.PositiveBigIntegerField(blank=True, null=True)
-    content_object = GenericForeignKey("content_type", "object_id")
+    # the object that is the recipient of the email (User, Siae...)
+    recipient_content_type = models.ForeignKey(
+        ContentType, blank=True, null=True, on_delete=models.CASCADE, related_name="recipient_send_logs"
+    )
+    recipient_object_id = models.PositiveBigIntegerField(blank=True, null=True)
+    recipient_content_object = GenericForeignKey("recipient_content_type", "recipient_object_id")
+
+    # the object that is the parent of the email (TenderSiae, SiaeUserRequest...)
+    parent_content_type = models.ForeignKey(
+        ContentType, blank=True, null=True, on_delete=models.CASCADE, related_name="parent_send_logs"
+    )
+    parent_object_id = models.PositiveBigIntegerField(blank=True, null=True)
+    parent_content_object = GenericForeignKey("parent_content_type", "parent_object_id")
 
     extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)
 

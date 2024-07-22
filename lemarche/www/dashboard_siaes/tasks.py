@@ -31,7 +31,8 @@ def send_siae_user_request_email_to_assignee(siae_user_request):
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            content_object=siae_user_request.assignee,
+            recipient_content_object=siae_user_request.assignee,
+            parent_content_object=siae_user_request,
         )
 
         # log email
@@ -76,7 +77,8 @@ def send_siae_user_request_response_email_to_initiator(siae_user_request):
                 recipient_email=recipient_email,
                 recipient_name=recipient_name,
                 variables=variables,
-                content_object=siae_user_request.initiator,
+                recipient_content_object=siae_user_request.initiator,
+                parent_content_object=siae_user_request,
             )
 
             # log email
@@ -123,7 +125,8 @@ def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            content_object=siae_user_request.assignee,
+            recipient_content_object=siae_user_request.assignee,
+            parent_content_object=siae_user_request,
         )
 
         # log email
@@ -159,7 +162,8 @@ def send_siae_user_request_reminder_3_days_email_to_initiator(siae_user_request)
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            content_object=siae_user_request.initiator,
+            recipient_content_object=siae_user_request.initiator,
+            parent_content_object=siae_user_request,
         )
 
         # log email
@@ -206,7 +210,8 @@ def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            content_object=siae_user_request.assignee,
+            recipient_content_object=siae_user_request.assignee,
+            parent_content_object=siae_user_request,
         )
 
         # log email
@@ -243,7 +248,8 @@ def send_siae_user_request_reminder_8_days_email_to_initiator(siae_user_request)
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
-            content_object=siae_user_request.initiator,
+            recipient_content_object=siae_user_request.initiator,
+            parent_content_object=siae_user_request,
         )
 
         # log email

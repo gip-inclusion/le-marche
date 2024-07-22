@@ -55,7 +55,8 @@ def send_completion_reminder_email_to_siae(siae):
                 recipient_email=recipient_email,
                 recipient_name=recipient_name,
                 variables=variables,
-                content_object=siae_user,
+                recipient_content_object=siae_user,
+                parent_content_object=siae,
             )
 
         # log email

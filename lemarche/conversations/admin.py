@@ -177,8 +177,12 @@ class TemplateTransactionalAdmin(admin.ModelAdmin):
 
 @admin.register(TemplateTransactionalSendLog, site=admin_site)
 class TemplateTransactionalSendLogAdmin(admin.ModelAdmin):
-    list_display = ["id", "template_transactional", "content_type", "created_at"]
-    list_filter = ["template_transactional", ("content_type", admin.RelatedOnlyFieldListFilter)]
+    list_display = ["id", "template_transactional", "recipient_content_type", "parent_content_type", "created_at"]
+    list_filter = [
+        "template_transactional",
+        ("recipient_content_type", admin.RelatedOnlyFieldListFilter),
+        ("parent_content_type", admin.RelatedOnlyFieldListFilter),
+    ]
     search_fields = ["id", "template_transactional"]
     search_help_text = "Cherche sur les champs : ID, Template transactionnel"
 
@@ -186,7 +190,8 @@ class TemplateTransactionalSendLogAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {"fields": ("template_transactional",)}),
-        ("Envoyé à…", {"fields": ("content_type", "object_id_with_link")}),
+        ("Envoyé à…", {"fields": ("recipient_content_type", "recipient_object_id_with_link")}),
+        ("Contexte…", {"fields": ("parent_content_type", "parent_object_id_with_link")}),
         ("Logs", {"fields": ("extra_data_display",)}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
@@ -200,18 +205,31 @@ class TemplateTransactionalSendLogAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    def object_id_with_link(self, obj):
-        if obj.content_type and obj.object_id:
-            if obj.content_type.model == "tender":
-                url = reverse("admin:tenders_tender_change", args=[obj.object_id])
-                return format_html(f'<a href="{url}">{obj.object_id}</a>')
-            elif obj.content_type.model == "siae":
-                url = reverse("admin:siaes_siae_change", args=[obj.object_id])
-                return format_html(f'<a href="{url}">{obj.object_id}</a>')
-            elif obj.content_type.model == "user":
-                url = reverse("admin:users_user_change", args=[obj.object_id])
-                return format_html(f'<a href="{url}">{obj.object_id}</a>')
-        return obj.object.id
+    def recipient_object_id_with_link(self, obj):
+        if obj.recipient_content_type and obj.recipient_object_id:
+            if obj.recipient_content_type.model == "tender":
+                url = reverse("admin:tenders_tender_change", args=[obj.recipient_object_id])
+                return format_html(f'<a href="{url}">{obj.recipient_object_id}</a>')
+            elif obj.recipient_content_type.model == "siae":
+                url = reverse("admin:siaes_siae_change", args=[obj.recipient_object_id])
+                return format_html(f'<a href="{url}">{obj.recipient_object_id}</a>')
+            elif obj.recipient_content_type.model == "user":
+                url = reverse("admin:users_user_change", args=[obj.recipient_object_id])
+                return format_html(f'<a href="{url}">{obj.recipient_object_id}</a>')
+        return obj.recipient_object.id
+
+    def parent_object_id_with_link(self, obj):
+        if obj.parent_content_type and obj.parent_object_id:
+            if obj.recipient_content_type.model == "tender":
+                url = reverse("admin:tenders_tender_change", args=[obj.parent_object_id])
+                return format_html(f'<a href="{url}">{obj.parent_object_id}</a>')
+            if obj.parent_content_type.model == "tendersiae":
+                url = reverse("admin:tenders_tendersiae_change", args=[obj.parent_object_id])
+                return format_html(f'<a href="{url}">{obj.parent_object_id}</a>')
+            elif obj.parent_content_type.model == "siaeuserrequest":
+                url = reverse("admin:siaes_siaeuserrequest_change", args=[obj.parent_object_id])
+                return format_html(f'<a href="{url}">{obj.parent_object_id}</a>')
+        return obj.context_object.id
 
     def extra_data_display(self, instance: TemplateTransactionalSendLog = None):
         if instance:

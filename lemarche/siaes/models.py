@@ -871,7 +871,12 @@ class Siae(models.Model):
         "Nombre de besoins intéressés", help_text=RECALCULATED_FIELD_HELP_TEXT, default=0
     )
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
-    transactional_send_logs = GenericRelation("conversations.TemplateTransactionalSendLog", related_query_name="siae")
+    recipient_transactional_send_logs = GenericRelation(
+        "conversations.TemplateTransactionalSendLog",
+        related_query_name="siae",
+        content_type_field="recipient_content_type",
+        object_id_field="recipient_object_id",
+    )
     source = models.CharField(
         max_length=20, choices=siae_constants.SOURCE_CHOICES, default=siae_constants.SOURCE_STAFF_C4_CREATED
     )
@@ -1381,6 +1386,12 @@ class SiaeUserRequest(models.Model):
     response = models.BooleanField(verbose_name="Réponse", blank=True, null=True)
     response_date = models.DateTimeField("Date de la réponse", blank=True, null=True)
 
+    parent_transactional_send_logs = GenericRelation(
+        "conversations.TemplateTransactionalSendLog",
+        related_query_name="siaeuserrequest",
+        content_type_field="parent_content_type",
+        object_id_field="parent_object_id",
+    )
     logs = models.JSONField(verbose_name="Logs des échanges", editable=False, default=list)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)

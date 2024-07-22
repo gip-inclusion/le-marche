@@ -676,6 +676,13 @@ class Tender(models.Model):
         related_name="tenders_admins",
         blank=True,
     )
+
+    parent_transactional_send_logs = GenericRelation(
+        "conversations.TemplateTransactionalSendLog",
+        related_query_name="tender",
+        content_type_field="parent_content_type",
+        object_id_field="parent_object_id",
+    )
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
     source = models.CharField(
         verbose_name="Source",
@@ -1189,6 +1196,12 @@ class TenderSiae(models.Model):
         null=True,
     )
 
+    parent_transactional_send_logs = GenericRelation(
+        "conversations.TemplateTransactionalSendLog",
+        related_query_name="tendersiae",
+        content_type_field="parent_content_type",
+        object_id_field="parent_object_id",
+    )
     logs = models.JSONField(verbose_name="Logs historiques", editable=False, default=list)
 
     created_at = models.DateTimeField(verbose_name="Date de création", default=timezone.now)
