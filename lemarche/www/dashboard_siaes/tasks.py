@@ -1,5 +1,4 @@
 from django.urls import reverse_lazy
-from django.utils import timezone
 
 from lemarche.conversations.models import TemplateTransactional
 from lemarche.utils.emails import whitelist_recipient_list
@@ -35,17 +34,6 @@ def send_siae_user_request_email_to_assignee(siae_user_request):
             parent_content_object=siae_user_request,
         )
 
-        # log email
-        log_item = {
-            "action": "email_sent",
-            "email_template": email_template.code,
-            "email_to": recipient_email,
-            # "email_body": email_body,
-            "email_timestamp": timezone.now().isoformat(),
-        }
-        siae_user_request.logs.append(log_item)
-        siae_user_request.save()
-
 
 def send_siae_user_request_response_email_to_initiator(siae_user_request):
     """
@@ -80,17 +68,6 @@ def send_siae_user_request_response_email_to_initiator(siae_user_request):
                 recipient_content_object=siae_user_request.initiator,
                 parent_content_object=siae_user_request,
             )
-
-            # log email
-            log_item = {
-                "action": "email_sent",
-                "email_template": email_template.code,
-                "email_to": recipient_email,
-                # "email_body": email_body,
-                "email_timestamp": timezone.now().isoformat(),
-            }
-            siae_user_request.logs.append(log_item)
-            siae_user_request.save()
 
 
 def send_siae_user_request_reminder_3_days_emails(siae_user_request):
@@ -129,17 +106,6 @@ def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
             parent_content_object=siae_user_request,
         )
 
-        # log email
-        log_item = {
-            "action": "email_sent",
-            "email_template": email_template.code,
-            "email_to": recipient_email,
-            # "email_body": email_body,
-            "email_timestamp": timezone.now().isoformat(),
-        }
-        siae_user_request.logs.append(log_item)
-        siae_user_request.save()
-
 
 def send_siae_user_request_reminder_3_days_email_to_initiator(siae_user_request):
     email_template = TemplateTransactional.objects.get(code="SIAEUSERREQUEST_REMINDER_1_INITIATOR")
@@ -165,17 +131,6 @@ def send_siae_user_request_reminder_3_days_email_to_initiator(siae_user_request)
             recipient_content_object=siae_user_request.initiator,
             parent_content_object=siae_user_request,
         )
-
-        # log email
-        log_item = {
-            "action": "email_sent",
-            "email_template": email_template.code,
-            "email_to": recipient_email,
-            # "email_body": email_body,
-            "email_timestamp": timezone.now().isoformat(),
-        }
-        siae_user_request.logs.append(log_item)
-        siae_user_request.save()
 
 
 def send_siae_user_request_reminder_8_days_emails(siae_user_request):
@@ -214,17 +169,6 @@ def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
             parent_content_object=siae_user_request,
         )
 
-        # log email
-        log_item = {
-            "action": "email_sent",
-            "email_template": email_template.code,
-            "email_to": recipient_email,
-            # "email_body": email_body,
-            "email_timestamp": timezone.now().isoformat(),
-        }
-        siae_user_request.logs.append(log_item)
-        siae_user_request.save()
-
 
 def send_siae_user_request_reminder_8_days_email_to_initiator(siae_user_request):
     email_template = TemplateTransactional.objects.get(code="SIAEUSERREQUEST_REMINDER_2_INITIATOR")
@@ -251,14 +195,3 @@ def send_siae_user_request_reminder_8_days_email_to_initiator(siae_user_request)
             recipient_content_object=siae_user_request.initiator,
             parent_content_object=siae_user_request,
         )
-
-        # log email
-        log_item = {
-            "action": "email_sent",
-            "email_template": email_template.code,
-            "email_to": recipient_email,
-            # "email_body": email_body,
-            "email_timestamp": timezone.now().isoformat(),
-        }
-        siae_user_request.logs.append(log_item)
-        siae_user_request.save()
