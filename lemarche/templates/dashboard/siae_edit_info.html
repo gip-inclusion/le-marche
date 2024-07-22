@@ -99,6 +99,16 @@
     <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
         <div class="fr-col-12 fr-col-lg-8">
             {% include "includes/forms/_dsfr_formset.html" with formset_title="Labels et certifications" formset=label_formset %}
+            <div id="labels_old-formset-empty-form" class="fr-hidden">
+                <div class="formset-row-labels_old formset">
+                    {% dsfr_form label_formset.empty_form %}
+                </div>
+            </div>
+            <button id="labels_old-formset-add-more" 
+                type="button"
+                class="fr-btn fr-btn--secondary fr-fi-add-circle-line fr-btn--icon-right fr-mt-1w">
+                Ajouter un label
+            </button>
         </div>
         <div class="fr-col-12 fr-col-lg-4">
             <div class="fr-callout fr-p-4v">
@@ -230,28 +240,30 @@ s3UploadInit({
 });
 </script>
 <script type="text/javascript">
-/**
- * Add formset items dynamically
- */
-const prefixRegex = new RegExp('__prefix__', 'g');
-
-// label formset
-const labelIdString = 'id_labels';
-const labelFormsetString = 'label-formset';
-const totalLabelFormset = document.getElementById(`${labelIdString}-TOTAL_FORMS`);
-const labelFormsetEmptyForm = document.getElementById(`${labelFormsetString}-empty-form`);
-const labelFormsetAddMoreButton = document.getElementById(`${labelFormsetString}-add-more`);
-
-labelFormsetAddMoreButton.addEventListener('click', function(e) {
-    if (e) { e.preventDefault(); }
-    // add new form
-    const copyLabelFormsetEmptyForm = labelFormsetEmptyForm.cloneNode(true);
-    copyLabelFormsetEmptyForm.innerHTML = copyLabelFormsetEmptyForm.innerHTML.replace(prefixRegex, totalLabelFormset.value);
-    copyLabelFormsetEmptyForm.childNodes.forEach(node => {
-        labelFormsetEmptyForm.parentNode.insertBefore(node, labelFormsetEmptyForm);
+    /**
+     * Add labels formset items dynamically
+     */
+    const formsetPrefix = 'labels_old';
+    document.getElementById(`${formsetPrefix}-formset-add-more`).addEventListener('click', function() {
+        // Get the empty form template
+        var emptyForm = document.getElementById(`${formsetPrefix}-formset-empty-form`).innerHTML;
+    
+        // Increment the total forms count
+        var totalFormsInput = document.getElementById(`id_${formsetPrefix}-TOTAL_FORMS`);
+        var totalForms = parseInt(totalFormsInput.value);
+        totalFormsInput.value = totalForms + 1;
+    
+        // Replace the prefix in the empty form template
+        var newForm = emptyForm.replace(/__prefix__/g, totalForms);
+    
+        // Create a new div element and set its innerHTML to the new form
+        var newFormElement = document.createElement('div');
+        newFormElement.innerHTML = newForm;
+        newFormElement.classList.add('row' + ((totalForms % 2) + 1), `formset-row-${formsetPrefix}`, 'formset');
+    
+        // Insert the new form at the end
+        var formsetGroup = document.querySelector(`.formset-${formsetPrefix}.formset-group`);
+        formsetGroup.insertBefore(newFormElement, null);
     });
-    // update total forms count
-    totalLabelFormset.setAttribute('value', parseInt(totalLabelFormset.getAttribute('value'), 10) + 1);
-});
 </script>
 {% endblock extra_js %}
