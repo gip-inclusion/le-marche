@@ -6,6 +6,23 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2024.5.0](https://github.com/gip-inclusion/le-marche/compare/v2024.4.0...v2024.5.0) (2024-07-18)
+
+
+### Features
+
+* **cms:** ajout de page de FAQ sur le cms ([#1342](https://github.com/gip-inclusion/le-marche/issues/1342)) ([9aaa614](https://github.com/gip-inclusion/le-marche/commit/9aaa6140ee7e46f7c10d7c6750671da4520d7b5e))
+* **Dépôt de besoins:** Ajout d'attributs pour le nouveaux process de suivi vip ([#1325](https://github.com/gip-inclusion/le-marche/issues/1325)) ([9fb6b62](https://github.com/gip-inclusion/le-marche/commit/9fb6b62132e030f27031720731415e04243913b3))
+* **Emails:** avoir les logs d'envois des TemplateTransactional ([#1337](https://github.com/gip-inclusion/le-marche/issues/1337)) ([3addac3](https://github.com/gip-inclusion/le-marche/commit/3addac3deb5cf5fa3e8d59120a98447db8f70d31))
+* **Emails:** Besoins : configurer les envois d'e-mails "avez-vous transactionné ?" avec TemplateTransactional (3/X) ([#1343](https://github.com/gip-inclusion/le-marche/issues/1343)) ([fe3bb3b](https://github.com/gip-inclusion/le-marche/commit/fe3bb3bc9e2f34d2c7a4832dccac54d51eac62e4))
+* **Emails:** Besoins : configurer les envois d'e-mails à l'auteur avec TemplateTransactional (2/X) ([#1341](https://github.com/gip-inclusion/le-marche/issues/1341)) ([c02db9f](https://github.com/gip-inclusion/le-marche/commit/c02db9ff717131db83b5a31f06d693f266833613))
+
+
+### Bug Fixes
+
+* add class to fix faq button ([#1346](https://github.com/gip-inclusion/le-marche/issues/1346)) ([6d48f7f](https://github.com/gip-inclusion/le-marche/commit/6d48f7fc427cf8b2a9745a2366057c57d5a63f77))
+* extra email variable refactoring. ref [#1337](https://github.com/gip-inclusion/le-marche/issues/1337) ([5a1ae57](https://github.com/gip-inclusion/le-marche/commit/5a1ae5780f2278e544e658645b78b8c8a191cfa8))
+
 ## [2024.4.0](https://github.com/gip-inclusion/le-marche/compare/v2024.3.0...v2024.4.0) (2024-07-03)
 
 
