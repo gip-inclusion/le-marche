@@ -86,22 +86,18 @@ window.s3UploadInit = function s3UploadInit({
 
   const dropzone = new Dropzone(dropzoneSelector, dropzoneConfig);
 
-  // Display a help message when the user tries to
-  // submit the form during file transfer.
-  submitButton.tooltip({ title: "Veuillez attendre la fin du transfert" });
-  // Enable it later, during file transfer.
-  submitButton.tooltip("disable");
+  // Display a help message when the user tries to submit the form during file transfer.
 
   // Events
   dropzone.on("addedfile", function (file) {
-    submitButton.tooltip("enable");
+    submitButton.attr("aria-describedby", "tooltip-s3-info");
     submitButton.prop("disabled", true);
     submitButton.addClass("btn-secondary");
   });
 
   // Called when the upload was either successful or erroneous.
   dropzone.on("complete", function (file) {
-    submitButton.tooltip("disable");
+    submitButton.removeAttr("aria-describedby");
     submitButton.prop("disabled", false);
     submitButton.removeClass("btn-secondary");
   });
@@ -114,7 +110,7 @@ window.s3UploadInit = function s3UploadInit({
     const location = `${formUrl}/${file.upload.filename}`;
     // Prevent a selector mistake from being silent.
     if ($(callbackLocationSelector).length === 0) {
-      this._handleUploadError(
+      this._handleUploadError(  
         [file],
         xhr,
         "Ce document n'a pas pu être envoyé à cause d'un problème technique. Nous vous invitons à contacter notre support."

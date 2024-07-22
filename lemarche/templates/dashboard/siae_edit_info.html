@@ -214,6 +214,8 @@
             <ul class="fr-btns-group--right fr-btns-group fr-btns-group--inline">
                 <li>
                     {% dsfr_button label="Enregistrer mes modifications" extra_classes="fr-mt-4v" %}
+                    {% comment %}The following tooltip is triggered in s3_upload.js{% endcomment %}
+                    <span class="fr-tooltip fr-placement" id="tooltip-s3-info" role="tooltip" aria-hidden="true">Veuillez attendre la fin du transfert</span>
                 </li>
             </ul>
         </div>
