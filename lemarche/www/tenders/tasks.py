@@ -79,13 +79,14 @@ def send_tender_emails_to_siaes(tender: Tender):
     siae_users_send_count = 0
 
     for siae in siaes:
+        tendersiae = TenderSiae.objects.get(tender=tender, siae=siae)
         # send to siae 'contact_email'
-        send_tender_email_to_siae(tender, siae, email_subject)
+        send_tender_email_to_siae(tendersiae, email_subject)
         # also send to the siae's user(s) 'email' (if its value is different)
         for user in siae.users.all():
             siae_users_count += 1
             if user.email != siae.contact_email:
-                send_tender_email_to_siae(tender, siae, email_subject, recipient_to_override=user)
+                send_tender_email_to_siae(tendersiae, email_subject, recipient_to_override=user)
                 siae_users_send_count += 1
 
     # log email batch
@@ -112,36 +113,37 @@ def send_tender_emails_to_siaes(tender: Tender):
 
 
 # @task()
-def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, recipient_to_override: User = None):
+def send_tender_email_to_siae(tendersiae: TenderSiae, email_subject: str, recipient_to_override: User = None):
     email_template = TemplateTransactional.objects.get(code="TENDERS_SIAE_PRESENTATION")
-    tendersiae = TenderSiae.objects.get(tender=tender, siae=siae)
     # override siae.contact_email if email_to_override is provided
-    email_to = recipient_to_override.email if recipient_to_override else siae.contact_email
+    email_to = recipient_to_override.email if recipient_to_override else tendersiae.siae.contact_email
     recipient_list = whitelist_recipient_list([email_to])
     if len(recipient_list):
         recipient_email = recipient_list[0]
-        recipient_name = siae.contact_email_name_display
+        recipient_name = tendersiae.siae.contact_email_name_display
 
-        tender_url = f"{get_object_share_url(tender)}?siae_id={siae.id}"
-        tender_not_interested_url = f"{get_object_share_url(tender)}?siae_id={siae.id}&not_interested=True"
+        tender_url = f"{get_object_share_url(tendersiae.tender)}?siae_id={tendersiae.siae.id}"
+        tender_not_interested_url = (
+            f"{get_object_share_url(tendersiae.tender)}?siae_id={tendersiae.siae.id}&not_interested=True"
+        )
         if recipient_to_override:
             tender_url += f"&user_id={recipient_to_override.id}"
             tender_not_interested_url += f"&user_id={recipient_to_override.id}"
 
         variables = {
-            "SIAE_ID": siae.id,
-            "SIAE_CONTACT_FIRST_NAME": siae.contact_first_name,
-            "SIAE_SECTORS": siae.sectors_list_string(),
-            "SIAE_PERIMETER": siae.geo_range_pretty_display,
-            "TENDER_ID": tender.id,
-            "TENDER_TITLE": tender.title,
-            "TENDER_AUTHOR_COMPANY": tender.author.company_name,
-            "TENDER_KIND": tender.get_kind_display(),
-            "TENDER_KIND_LOWER": tender.get_kind_display().lower(),
-            "TENDER_SECTORS": tender.sectors_list_string(),
-            "TENDER_PERIMETERS": tender.location_display,
-            "TENDER_AMOUNT": tender.amount_display,
-            "TENDER_DEADLINE_DATE": date_to_string(tender.deadline_date),
+            "SIAE_ID": tendersiae.siae.id,
+            "SIAE_CONTACT_FIRST_NAME": tendersiae.siae.contact_first_name,
+            "SIAE_SECTORS": tendersiae.siae.sectors_list_string(),
+            "SIAE_PERIMETER": tendersiae.siae.geo_range_pretty_display,
+            "TENDER_ID": tendersiae.tender.id,
+            "TENDER_TITLE": tendersiae.tender.title,
+            "TENDER_AUTHOR_COMPANY": tendersiae.tender.author.company_name,
+            "TENDER_KIND": tendersiae.tender.get_kind_display(),
+            "TENDER_KIND_LOWER": tendersiae.tender.get_kind_display().lower(),
+            "TENDER_SECTORS": tendersiae.tender.sectors_list_string(),
+            "TENDER_PERIMETERS": tendersiae.tender.location_display,
+            "TENDER_AMOUNT": tendersiae.tender.amount_display,
+            "TENDER_DEADLINE_DATE": date_to_string(tendersiae.tender.deadline_date),
             "TENDER_URL": tender_url,
             "TENDER_NOT_INTERESTED_URL": tender_not_interested_url,
             "TENDERSIAE_ID": tendersiae.id,
@@ -152,7 +154,7 @@ def send_tender_email_to_siae(tender: Tender, siae: Siae, email_subject: str, re
             recipient_name=recipient_name,
             variables=variables,
             subject=email_subject,
-            recipient_content_object=recipient_to_override if recipient_to_override else siae,
+            recipient_content_object=recipient_to_override if recipient_to_override else tendersiae.siae,
             parent_content_object=tendersiae,
         )
 
@@ -188,6 +190,7 @@ def send_tender_email_to_partner(tender: Tender, partner: PartnerShareTender, em
     recipient_list = whitelist_recipient_list(partner.contact_email_list)
     if recipient_list:
         variables = {
+            "PARTNER_ID": partner.id,
             "TENDER_ID": tender.id,
             "TENDER_TITLE": tender.title,
             "TENDER_AUTHOR_COMPANY": tender.author.company_name,
@@ -285,6 +288,7 @@ def send_tender_contacted_reminder_email_to_siae(tendersiae: TenderSiae, email_t
             "TENDER_DEADLINE_DATE": date_to_string(tendersiae.tender.deadline_date),
             "TENDER_URL": f"{get_object_share_url(tendersiae.tender)}?siae_id={tendersiae.siae.id}&mtm_campaign=relance-esi-contactees",  # noqa
             "TENDERSIAE_ID": tendersiae.id,
+            "DAYS_SINCE_EMAIL_SEND_DATE": days_since_email_send_date,
         }
 
         email_template.send_transactional_email(
@@ -352,6 +356,7 @@ def send_tender_interested_reminder_email_to_siae(
             "TENDER_DEADLINE_DATE": date_to_string(tendersiae.tender.deadline_date),
             "TENDER_URL": f"{get_object_share_url(tendersiae.tender)}?siae_id={tendersiae.siae.id}&mtm_campaign=relance-esi-interessees",  # noqa
             "TENDERSIAE_ID": tendersiae.id,
+            "DAYS_SINCE_DETAIL_CONTACT_SEND_DATE": days_since_detail_contact_click_date,
         }
 
         email_template.send_transactional_email(
@@ -567,6 +572,7 @@ def send_tenders_siae_survey(tendersiae: TenderSiae, kind="transactioned_questio
                 "TENDER_AUTHOR_ID": tendersiae.tender.author.id,
                 "TENDER_AUTHOR_FULL_NAME": tendersiae.tender.contact_full_name,
                 "TENDER_AUTHOR_COMPANY": tendersiae.tender.author.company_name,
+                "TENDERSIAE_ID": tendersiae.id,
             }
 
             user_sesame_query_string = sesame_get_query_string(user)  # TODO: sesame scope parameter
@@ -606,6 +612,7 @@ def notify_admin_siae_wants_cocontracting(tender: Tender, siae: Siae):
         "SIAE_NAME": siae.name,
         "SIAE_CONTACT_EMAIL": siae.contact_email,
         "SIAE_SIRET": siae.siret,
+        # "TENDERSIAE_ID": tendersiae.id,
     }
     email_body = render_to_string("tenders/cocontracting_notification_email_admin_body.txt", variables)
     send_mail_async(
