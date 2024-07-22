@@ -1,8 +1,19 @@
-{% extends "dsfr/formset_base.html" %}
-{% block formset_title %}
-  {% if formset %}
-    <h3 class="fr-mt-3w">
+{% load static dsfr_tags widget_tweaks %}
+{% if formset %}
+<div class="formset-{{ formset.prefix }} formset-group">
+  {{ formset.management_form }}
+  <h3 class="fr-mt-3w">
       {{ formset_title }}
-    </h3>
-  {% endif %}
-{% endblock formset_title %}
+  </h3>
+  {% for form in formset %}
+    <div class="{% cycle 'row1' 'row2' %} formset-row-{{ formset.prefix }} formset">
+      {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+      {% endfor %}
+      {% for field in form.visible_fields %}
+        {% include "dsfr/form_field_snippets/field_snippet.html" %}
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
