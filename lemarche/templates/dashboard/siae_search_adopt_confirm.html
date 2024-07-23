@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load static get_verbose_name %}
+{% load dsfr_tags static get_verbose_name %}
 
 {% block title %}Vérifier ma structure{{ block.super }}{% endblock title %}
 
@@ -76,23 +76,26 @@
             <form method="post" class="fr-mt-4v">
                 {% csrf_token %}
                 <div class="fr-grid-row">
-                    <div class="fr-col-12 fr-col-md-auto fr-pr-lg-2v">
-                        <a href="{% url 'dashboard_siaes:siae_search_by_siret' %}" class="fr-btn fr-btn--secondary">
-                            Non, refaire une recherche
-                        </a>
-                    </div>
-                    <div class="fr-col-12 fr-col-md-auto fr-pl-lg-2v fr-pt-3 fr-pt-lg-0">
-                        {% if siae.users.count %}
-                            <button type="submit" class="fr-btn" {% if siae_user_pending_request %}disabled{% endif %}>
-                                Demander le rattachement
-                            </button>
-                        {% else %}
-                            {% dsfr_button label="Je confirme" %}
-                        {% endif %}
+                    <div class="fr-col-12">
+                        <ul class="fr-mt-2v fr-btns-group fr-btns-group--right fr-btns-group--inline-sm">
+                            <li>
+                                <a href="{% url 'dashboard_siaes:siae_search_by_siret' %}" class="fr-btn fr-btn--secondary">
+                                    Non, refaire une recherche
+                                </a>
+                            </li>
+                            <li>
+                                {% if siae.users.count %}
+                                    <button type="submit" class="fr-btn" {% if siae_user_pending_request %}disabled{% endif %}>
+                                        Demander le rattachement
+                                    </button>
+                                {% else %}
+                                    {% dsfr_button label="Je confirme" %}
+                                {% endif %}
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </form>
-
         </div>
     </div>
 </div>
