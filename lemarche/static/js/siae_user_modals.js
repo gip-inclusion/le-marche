@@ -1,13 +1,10 @@
 document.addEventListener("DOMContentLoaded", function() {
-    $('#siae_user_request_confirm_modal').on('show.bs.modal', function (event) {
+    document.getElementById('siae_user_request_confirm_modal').addEventListener('dsfr.disclose', (event) => {
         // Button that triggered the modal
-        var button = $(event.relatedTarget);
-
-        // Extract info from data-* attributes
-        // var siaeId = button.data('siae-id');
-        var siaeSlug = button.data('siae-slug');
-        var initiatorFullName = button.data('initiator-full-name');
-        var siaeUserRequestId = button.data('siae-user-request-id');
+        var button = event.explicitOriginalTarget;
+        var siaeSlug = button.dataset["siaeSlug"];
+        var initiatorFullName = button.dataset["initiatorFullName"];
+        var siaeUserRequestId = button.dataset["siaeUserRequestId"];
 
         // Update the modal's content
         // - siae user full name
@@ -19,15 +16,12 @@ document.addEventListener("DOMContentLoaded", function() {
         modalForm.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', siaeSlug).replace('siae-user-request-id-to-replace', siaeUserRequestId));
     });
 
-    $('#siae_user_request_cancel_modal').on('show.bs.modal', function (event) {
+    document.getElementById('siae_user_request_cancel_modal').addEventListener('dsfr.disclose', (event) => {
         // Button that triggered the modal
-        var button = $(event.relatedTarget);
-
-        // Extract info from data-* attributes
-        // var siaeId = button.data('siae-id');
-        var siaeSlug = button.data('siae-slug');
-        var initiatorFullName = button.data('initiator-full-name');
-        var siaeUserRequestId = button.data('siae-user-request-id');
+        var button = event.explicitOriginalTarget;
+        var siaeSlug = button.dataset["siaeSlug"];
+        var initiatorFullName = button.dataset["initiatorFullName"];
+        var siaeUserRequestId = button.dataset["siaeUserRequestId"];
 
         // Update the modal's content
         // - siae user full name
@@ -39,15 +33,12 @@ document.addEventListener("DOMContentLoaded", function() {
         modalForm.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', siaeSlug).replace('siae-user-request-id-to-replace', siaeUserRequestId));
     });
 
-    $('#siae_user_delete_modal').on('show.bs.modal', function (event) {
+    document.getElementById('siae_user_delete_modal').addEventListener('dsfr.disclose', (event) => {
         // Button that triggered the modal
-        var button = $(event.relatedTarget);
-
-        // Extract info from data-* attributes
-        // var siaeId = button.data('siae-id');
-        var siaeSlug = button.data('siae-slug');
-        var userFullName = button.data('user-full-name');
-        var siaeUserId = button.data('siae-user-id');
+        var button = event.explicitOriginalTarget;
+        var siaeSlug = button.dataset["siaeSlug"];
+        var userFullName = button.dataset["userFullName"];
+        var siaeUserId = button.dataset["siaeUserId"];
 
         // Update the modal's content
         // - siae user full name
