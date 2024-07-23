@@ -3,7 +3,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'vendor/dropzone-5.9.3/dropzone.min.css' %}" />
-{% endblock %}
+{% endblock extra_css %}
 
 {% block content_siae_form %}
 <form method="post" action="">
@@ -50,7 +50,7 @@
                         <br />
                         Une fiche commerciale bien complétée c'est davantage de chances d'être sollicité par des clients.
                     </p>
-                </div> 
+                </div>
             </div>
         {% endif %}
     </div>

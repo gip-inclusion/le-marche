@@ -10,7 +10,7 @@
 {% block content %}
 <div class="fr-container">
     <div class="fr-grid-row">
-        <div class="fr-col-12 fr-col-lg-8">
+        <div class="fr-col-12">
             <h1><strong>Se rattacher à une structure</strong></h1>
             <p class="fr-mb-4v">
                 Nous référençons uniquement les structures relevant de l'Insertion par l'activité économique et du secteur du travail protégé et adapté.
@@ -22,11 +22,11 @@
                         {{ form.non_field_errors }}
                     </section>
                 {% endif %}
-                <div class="fr-grid-row">
-                    <div class="fr-input-group fr-col">
+                <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+                    <div class="fr-col-12 fr-col-md-6">
                         {% dsfr_form_field form.siret %}
                     </div>
-                    <div class="fr-input-group fr-col">
+                    <div class="fr-col-12 fr-col-md-4 fr-pt-md-11v">
                         {% dsfr_button label="Rechercher" extra_classes="fr-btn--icon-right fr-icon-search-line" %}
                     </div>
                 </div>
