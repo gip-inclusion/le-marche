@@ -17,7 +17,7 @@
         <div class="fr-col-12 fr-col-lg-8">
             {% dsfr_form_field form.description %}
             <!-- Logo -->
-            <div class="fr-grid-row">
+            <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col-12 fr-col-sm-6">
                     <div class="fr-input-group">
                         {{ form.logo_url.as_hidden }}
@@ -33,7 +33,7 @@
                                 <img class="fr-responsive-img" src="{{ form.logo_url.value }}" />
                             </div>
                         {% else %}
-                            <span class="fr-text--xs">Aucun</span>
+                            <p class="fr-text--xs">Aucun</p>
                         {% endif %}
                     </div>
                 </div>
