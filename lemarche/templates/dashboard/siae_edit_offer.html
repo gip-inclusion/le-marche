@@ -1,135 +1,145 @@
 {% extends "dashboard/siae_edit_base.html" %}
-{% load static bootstrap4 addstr %}
+{% load static dsfr_tags addstr %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'vendor/dropzone-5.9.3/dropzone.min.css' %}" />
-{% endblock %}
+{% endblock extra_css %}
 
 {% block content_siae_form %}
-<form method="POST" action="" class="mb-3 mb-lg-5">
+<form method="post" action="" class="mb-3 mb-lg-5">
     {% csrf_token %}
-
-    {% bootstrap_form_errors form type="all" %}
-
-    <div class="fr-grid-row mb-3 mb-lg-5">
+    {% if form.non_field_errors %}
+        <section class="fr-my-4v fr-input-group fr-input-group--error">
+            {{ form.non_field_errors }}
+        </section>
+    {% endif %}
+    <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
-                <fieldset>
-                    <legend class="h4">Vos prestations commerciales <small class="text-muted">(services rendus, produits vendus, activités exercées par vos salariés…)</small></legend>
-                    {% bootstrap_formset_errors offer_formset %}
-                    {% if offer_formset.errors %}
-                        <div class="alert alert-danger" role="alert">{{ offer_formset.errors }}</div>
-                    {% endif %}
-
-                    {% bootstrap_formset offer_formset %}
-
-                    <div id="offer-formset-empty-form" class="d-none">{% bootstrap_form offer_formset.empty_form %}</div>
-                    <button id="offer-formset-add-more" class="btn btn-outline-primary btn-sm btn-ico float-right" type="button">
-                        <span>Ajouter une nouvelle prestation</span>
-                        <i class="ri-add-fill ri-lg"></i>
-                    </button>
-                </fieldset>
+            <div class="formset-{{ offer_formset.prefix }} formset-group">
+                {{ offer_formset.management_form }}
+                <h3 class="fr-mt-3w">Vos prestations commerciales</h3>
+                <p>(services rendus, produits vendus, activités exercées par vos salariés…)</p>
+                {% if offer_formset.errors %}
+                    <div class="fr-input-group fr-input-group--error">{{ offer_formset.errors }}</div>
+                {% endif %}
+                {% for form_formset in offer_formset %}
+                  <div class="{% cycle 'row1' 'row2' %} formset-row-{{ offer_formset.prefix }} formset fr-mb-8v">
+                    {% for hidden in form_formset.hidden_fields %}
+                      {{ hidden }}
+                    {% endfor %}
+                    {% for field in form_formset.visible_fields %}
+                      {% include "dsfr/form_field_snippets/field_snippet.html" %}
+                    {% endfor %}
+                  </div>
+                {% endfor %}
             </div>
+            <div id="{{ offer_formset.prefix }}-formset-empty-form" class="fr-hidden">
+                <div class="formset-row-{{ offer_formset.prefix }} formset">
+                    {% dsfr_form offer_formset.empty_form %}
+                </div>
+            </div>
+            <button id="{{ offer_formset.prefix }}-formset-add-more" 
+                type="button"
+                class="fr-btn fr-btn--secondary fr-fi-add-circle-line fr-btn--icon-right fr-mt-1w">
+                Ajouter une nouvelle prestation
+            </button>
         </div>
         <div class="fr-col-12 fr-col-lg-4">
-            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-                <p class="mb-1">
-                    <i class="ri-information-line ri-lg"></i>
-                    <strong>Conseil</strong>
-                </p>
-                <p class="mb-1">
-                    Expliquez, détaillez les différents services ou produits que vous proposez aux entreprises.
-                </p>
-                <p class="mb-0">
+            <div class="fr-callout fr-p-4v">
+                <h3 class="fr-callout__title fr-text--sm"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Conseil</h3>
+                <p class="fr-callout__text fr-text--sm fr-pl-7v">
+                    Expliquez, détaillez les différents services ou produits que vous proposez aux entreprises.<br />
                     Utilisez des mots-clés qui permettront de bien identifier vos prestations.
                 </p>
             </div>
         </div>
     </div>
-
-    <div class="fr-grid-row mb-3 mb-lg-5">
+    <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
-                <fieldset>
-                    <legend class="h4">Références clients</legend>
-                    {% bootstrap_formset_errors client_reference_formset %}
-                    {% if client_reference_formset.errors %}
-                        <div class="alert alert-danger" role="alert">{{ client_reference_formset.errors }}</div>
-                    {% endif %}
-
-                    {{ client_reference_formset.management_form }}
-
-                    {% for form in client_reference_formset %}
-                        <div class="fieldset">
-                            {% bootstrap_field form.id %}
-                            {% bootstrap_field form.name %}
-                            <!-- Logo -->
-                            <div class="fr-grid-row">
-                                <div class="fr-col-12 fr-col-sm-6">
-                                    <div class="form-group">
-                                        {{ form.logo_url.as_hidden }}
-                                        {% with "id_client_references-"|addstr:forloop.counter0|addstr:"-logo_form" as id_logo_form %}
-                                            <label for="{{ id_logo_form }}" class="js-display-if-javascript-enabled">Logo</label>
-                                            {% include "storage/s3_upload_form.html" with dropzone_form_id=id_logo_form %}
-                                        {% endwith %}
-                                    </div>
-                                </div>
-                                <div class="fr-col-12 fr-col-sm-6">
-                                    <div class="form-group">
-                                        <label>Logo actuel</label>
-                                        {% if form.logo_url.value %}
-                                            <div>
-                                                <img class="img-fluid" src="{{ form.logo_url.value }}" />
+            <div class="formset-{{ client_reference_formset.prefix }} formset-group">
+                {{ client_reference_formset.management_form }}
+                <h3 class="fr-mt-3w">Références clients</h3>
+                {% if client_reference_formset.errors %}
+                    <div class="fr-input-group fr-input-group--error">{{ client_reference_formset.errors }}</div>
+                {% endif %}
+                {% for form_formset in client_reference_formset %}
+                    <div class="{% cycle 'row1' 'row2' %} formset-row-{{ client_reference_formset.prefix }} formset">
+                        {% with "id_client_references-"|addstr:forloop.counter0|addstr:"-logo_form" as id_logo_form %}
+                            {% for hidden in form_formset.hidden_fields %}
+                                {{ hidden }}
+                            {% endfor %}
+                            {% for field in form_formset.visible_fields %}
+                                {% if field.name == 'logo_url' %}
+                                    <!-- Logo -->
+                                    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+                                        <div class="fr-col-12 fr-col-sm-6">
+                                            <div class="fr-input-group">
+                                                {{ form_formset.logo_url.as_hidden }}
+                                                <label for="{{ id_logo_form }}" class="fr-label">Logo</label>
+                                                {% include "storage/s3_upload_form.html" with dropzone_form_id=id_logo_form %}
                                             </div>
-                                        {% else %}
-                                            <span class="form-text text-muted">Aucun</span>
-                                        {% endif %}
+                                        </div>
+                                        <div class="fr-col-12 fr-col-sm-6">
+                                            <div class="fr-input-group">
+                                                <label>Logo actuel</label>
+                                                {% if form_formset.logo_url.value %}
+                                                    <div>
+                                                        <img class="responsive-img" src="{{ form_formset.logo_url.value }}" />
+                                                    </div>
+                                                {% else %}
+                                                    <p class="fr-text--xs">Aucun</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="fr-grid-row fr-mb-4v fr-pb-2v">
+                                        <div class="fr-col-12">
+                                            {% include "dsfr/form_field_snippets/field_snippet.html" %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endwith %}
+                    </div>
+                {% endfor %}
+            </div>
+            <div id="{{ client_reference_formset.prefix }}-formset-empty-form" class="fr-hidden">
+                <div class="formset-row-{{ client_reference_formset.prefix }} formset">
+                    {% for hidden in client_reference_formset.empty_form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                    {% for field in client_reference_formset.empty_form.visible_fields %}
+                        {% if field.name == 'logo_url' %}
+                            <!-- Logo -->
+                            <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+                                <div class="fr-col-12 fr-col-sm-6">
+                                    <div class="fr-input-group">
+                                        {{ field.as_hidden }}
+                                        {% include "storage/s3_upload_form.html" with dropzone_form_id="id_client_references-__prefix__-logo_form" %}
                                     </div>
                                 </div>
                             </div>
-                            {% bootstrap_field form.DELETE %}
-                        </div>
-                        <hr />
-                    {% endfor %}
-
-                    <div id="client-reference-formset-empty-form" class="d-none">
-                        <div class="form-group">
-                            <label for="id_client_references-__prefix__-name">Nom</label>
-                            <input type="text" name="client_references-__prefix__-name" maxlength="255" class="form-control" title="" id="id_client_references-__prefix__-name">
-                        </div>
-                        <div class="fr-grid-row">
-                            <div class="fr-col-12 fr-col-sm-6">
-                                <div class="form-group">
-                                    <!-- <label for="id_client_references-__prefix__-logo_url">Lien vers le logo</label> -->
-                                    <input type="hidden" name="client_references-__prefix__-logo_url" maxlength="500" class="form-control" title="" id="id_client_references-__prefix__-logo_url">
-                                    <label for="id_client_references-__prefix__-logo_form" class="js-display-if-javascript-enabled">Logo</label>
-                                    {% include "storage/s3_upload_form.html" with dropzone_form_id="id_client_references-__prefix__-logo_form" %}
+                        {% else %}
+                            <div class="fr-grid-row fr-mb-4v fr-pb-2v">
+                                <div class="fr-col-12">
+                                    {% include "dsfr/form_field_snippets/field_snippet.html" %}
                                 </div>
                             </div>
-                        </div>
-                        <input type="hidden" name="client_references-__prefix__-id" id="id_client_references-__prefix__-id">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input type="checkbox" name="client_references-__prefix__-DELETE" class="form-check-input" id="id_client_references-__prefix__-DELETE">
-                                <label class="form-check-label" for="id_client_references-__prefix__-DELETE">Supprimer</label>
-                            </div>
-                        </div>
-                        <input type="hidden" name="client_references-__prefix__-siae" id="id_client_references-__prefix__-siae">
-                    </div>
-                    <button id="client-reference-formset-add-more" class="btn btn-outline-primary btn-sm btn-ico float-right" type="button">
-                        <span>Ajouter une nouvelle référence</span>
-                        <i class="ri-add-fill ri-lg"></i>
-                    </button>
-                </fieldset>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             </div>
+            <button id="{{ client_reference_formset.prefix }}-formset-add-more" 
+                type="button"
+                class="fr-btn fr-btn--secondary fr-fi-add-circle-line fr-btn--icon-right fr-mt-1w">
+                Ajouter une nouvelle référence
+            </button>
         </div>
         <div class="fr-col-12 fr-col-lg-4">
-            <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-                <p class="mb-1">
-                    <i class="ri-information-line ri-lg"></i>
-                    <strong>Conseil</strong>
-                </p>
-                <p class="mb-0">
+            <div class="fr-callout fr-p-4v">
+                <h3 class="fr-callout__title fr-text--sm"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Conseil</h3>
+                <p class="fr-callout__text fr-text--sm fr-pl-7v">
                     Elles permettent :<br />
                     - de rassurer un acheteur sur la qualité de votre service ou produit<br />
                     - de gagner en crédibilité auprès de nouveaux acheteurs<br />
@@ -139,108 +149,112 @@
         </div>
     </div>
 
-    <div class="fr-grid-row mb-3 mb-lg-5">
+    <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white d-block rounded-lg shadow-lg fr-p-3 p-lg-5">
-                <fieldset>
-                    <legend class="h4">Vos réalisations</legend>
-                    {% bootstrap_formset_errors image_formset %}
-                    {% if image_formset.errors %}
-                        <div class="alert alert-danger" role="alert">{{ image_formset.errors }}</div>
-                    {% endif %}
-
-                    {{ image_formset.management_form }}
-
-                    {% for form in image_formset %}
-                        <div class="fieldset">
-                            {% bootstrap_field form.id %}
-                            {% bootstrap_field form.name %}
-                            <!-- Image -->
-                            <div class="fr-grid-row">
-                                <div class="fr-col-12 fr-col-sm-6">
-                                    <div class="form-group">
-                                        {{ form.image_url.as_hidden }}
-                                        {% with "id_images-"|addstr:forloop.counter0|addstr:"-image_form" as id_image_form %}
-                                            <label for="{{ id_image_form }}" class="js-display-if-javascript-enabled">Image</label>
+            <div class="formset-{{ image_formset.prefix }} formset-group">
+                {{ image_formset.management_form }}
+                <h3 class="fr-mt-3w">Vos réalisations</h3>
+                {% if image_formset.errors %}
+                    <div class="fr-input-group fr-input-group--error">{{ image_formset.errors }}</div>
+                {% endif %}
+                {% for form_formset in image_formset %}
+                  <div class="{% cycle 'row1' 'row2' %} formset-row-{{ image_formset.prefix }} formset">
+                    {% with "id_images-"|addstr:forloop.counter0|addstr:"-image_form" as id_image_form %}
+                        {% for hidden in form_formset.hidden_fields %}
+                        {{ hidden }}
+                        {% endfor %}
+                        {% for field in form_formset.visible_fields %}
+                            {% if field.name == 'image_url' %}
+                                <!-- Image -->
+                                <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+                                    <div class="fr-col-12 fr-col-sm-6">
+                                        <div class="fr-input-group">
+                                            {{ form_formset.image_url.as_hidden }}
+                                            <label for="{{ id_image_form }}" class="fr-label">Image</label>
                                             {% include "storage/s3_upload_form.html" with dropzone_form_id=id_image_form %}
-                                        {% endwith %}
+                                        </div>
+                                    </div>
+                                    <div class="fr-col-12 fr-col-sm-6">
+                                        <div class="fr-input-group">
+                                            <label>Image actuelle</label>
+                                            {% if form_forset.image_url.value %}
+                                                <div>
+                                                    <img class="responsive-img" src="{{ form_formset.image_url.value }}" />
+                                                </div>
+                                            {% else %}
+                                                <p class="fr-text--xs">Aucune</p>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="fr-col-12 fr-col-sm-6">
-                                    <div class="form-group">
-                                        <label>Image actuelle</label>
-                                        {% if form.image_url.value %}
-                                            <div>
-                                                <img class="img-fluid" src="{{ form.image_url.value }}" />
-                                            </div>
-                                        {% else %}
-                                            <span class="form-text text-muted">Aucun</span>
-                                        {% endif %}
+                            {% else %}
+                                <div class="fr-grid-row fr-mb-4v fr-pb-2v">
+                                    <div class="fr-col-12">
+                                        {% include "dsfr/form_field_snippets/field_snippet.html" %}
                                     </div>
                                 </div>
-                            </div>
-                            {% bootstrap_field form.DELETE %}
-                        </div>
-                        <hr />
-                    {% endfor %}
-
-                    <div id="image-formset-empty-form" class="d-none">
-                        <div class="form-group">
-                            <label for="id_images-__prefix__-name">Nom</label>
-                            <input type="text" name="images-__prefix__-name" maxlength="255" class="form-control" title="" id="id_images-__prefix__-name">
-                        </div>
-                        <div class="fr-grid-row">
-                            <div class="fr-col-12 fr-col-sm-6">
-                                <div class="form-group">
-                                    <!-- <label for="id_images-__prefix__-image_url">Lien vers l'image</label> -->
-                                    <input type="hidden" name="images-__prefix__-image_url" maxlength="500" class="form-control" title="" id="id_images-__prefix__-image_url">
-                                    <label for="id_images-__prefix__-image_form" class="js-display-if-javascript-enabled">Image</label>
-                                    {% include "storage/s3_upload_form.html" with dropzone_form_id="id_images-__prefix__-image_form" %}
-                                </div>
-                            </div>
-                        </div>
-                        <input type="hidden" name="images-__prefix__-id" id="id_images-__prefix__-id">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input type="checkbox" name="images-__prefix__-DELETE" class="form-check-input" id="id_images-__prefix__-DELETE">
-                                <label class="form-check-label" for="id_images-__prefix__-DELETE">Supprimer</label>
-                            </div>
-                        </div>
-                        <input type="hidden" name="images-__prefix__-siae" id="id_images-__prefix__-siae">
-                    </div>
-                    <button id="image-formset-add-more" class="btn btn-outline-primary btn-sm btn-ico float-right" type="button">
-                        <span>Ajouter une nouvelle image</span>
-                        <i class="ri-add-fill ri-lg"></i>
-                    </button>
-                </fieldset>
+                            {% endif %}
+                        {% endfor %}
+                    {% endwith %}
+                  </div>
+                {% endfor %}
             </div>
+            <div id="{{ image_formset.prefix }}-formset-empty-form" class="fr-hidden">
+                <div class="formset-row-{{ image_formset.prefix }} formset">
+                    {% for hidden in image_formset.empty_form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                    {% for field in image_formset.empty_form.visible_fields %}
+                        {% if field.name == 'image_url' %}
+                            <!-- Image -->
+                            <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+                                <div class="fr-col-12 fr-col-sm-6">
+                                    <div class="fr-input-group">
+                                        {{ field.as_hidden }}
+                                        {% include "storage/s3_upload_form.html" with dropzone_form_id="id_images-__prefix__-image_form" %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="fr-grid-row fr-mb-4v fr-pb-2v">
+                                <div class="fr-col-12">
+                                    {% include "dsfr/form_field_snippets/field_snippet.html" %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <button id="{{ image_formset.prefix }}-formset-add-more" 
+                type="button"
+                class="fr-btn fr-btn--secondary fr-fi-add-circle-line fr-btn--icon-right fr-mt-1w">
+                Ajouter une nouvelle image
+            </button>
         </div>
         <div class="fr-col-12 fr-col-lg-4">
-            <div role="alert" class="alert alert-info mt-3 mt-lg-0">
-                <p class="mb-1">
-                    <i class="ri-information-line ri-lg"></i>
-                    <strong>Conseil</strong>
-                </p>
-                <p class="mb-1">
-                    Une image vaut mille mots !
-                </p>
-                <p class="mb-0">
+            <div class="fr-callout fr-p-4v">
+                <h3 class="fr-callout__title fr-text--sm"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Conseil</h3>
+                <p class="fr-callout__text fr-text--sm fr-pl-7v">
+                    Une image vaut mille mots !<br />
                     Montrez vos produits, vos avant/après, vos chantiers, vos machines et moyens de production.
                 </p>
             </div>
         </div>
     </div>
-
-    <div class="fr-grid-row mt-3 mt-lg-5 justify-content-end">
-        <div class="fr-col-12 fr-col-lg-auto px-5 px-lg-6">
-            <button type="submit" class="btn btn-primary btn-block">
-                <span>Enregistrer mes modifications</span>
-            </button>
+    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+        <div class="fr-col-12 fr-col-lg-8">
+            <ul class="fr-btns-group--right fr-btns-group fr-btns-group--inline">
+                <li>
+                    {% dsfr_button label="Enregistrer mes modifications" extra_classes="fr-mt-4v" %}
+                    {% comment %}The following tooltip is triggered in s3_upload.js{% endcomment %}
+                    <span class="fr-tooltip fr-placement" id="tooltip-s3-info" role="tooltip" aria-hidden="true">Veuillez attendre la fin du transfert</span>
+                </li>
+            </ul>
         </div>
         <div class="fr-col-12 fr-col-lg-4"></div>
     </div>
 </form>
-{% endblock %}
+{% endblock content_siae_form %}
 
 {% block extra_js %}
 <script type="text/javascript" src="{% static 'vendor/dropzone-5.9.3/dropzone.min.js' %}"></script>
@@ -251,7 +265,7 @@
 {{ s3_upload_config_siae_image|json_script:"s3-upload-config-siae-image" }}
 <script type="text/javascript">
 // init dropzones
-Array.from(document.querySelectorAll(".dropzone")).forEach(function(element) {
+Array.from(document.querySelectorAll(".formset-group .dropzone")).forEach(function(element) {
     if (element.id.includes("logo_form")) {
         s3UploadInit({
             dropzoneSelector: `#${element.id}`,
@@ -277,90 +291,49 @@ Array.from(document.querySelectorAll(".dropzone")).forEach(function(element) {
 })
 </script>
 <script type="text/javascript">
-/**
- * Add formset items dynamically
- */
-const prefixRegex = new RegExp('__prefix__', 'g');
+    /**
+     * Add formset items dynamically
+     */
+    function addFormsetItems(formsetPrefix, dropzonePrefix="", dropzoneName="") {
+        document.getElementById(`${formsetPrefix}-formset-add-more`).addEventListener('click', function() {
+            // Get the empty form template
+            var emptyForm = document.getElementById(`${formsetPrefix}-formset-empty-form`).innerHTML;
+        
+            // Increment the total forms count
+            var totalFormsInput = document.getElementById(`id_${formsetPrefix}-TOTAL_FORMS`);
+            var totalForms = parseInt(totalFormsInput.value);
+            totalFormsInput.value = totalForms + 1;
+        
+            // Replace the prefix in the empty form template
+            var newForm = emptyForm.replace(/__prefix__/g, totalForms);
+            console.log(newForm.innerHTML);
+        
+            // Create a new div element and set its innerHTML to the new form
+            var newFormElement = document.createElement('div');
+            newFormElement.innerHTML = newForm;
+            newFormElement.classList.add('row' + ((totalForms % 2) + 1), `formset-row-${formsetPrefix}`, 'formset');
+        
+            // Insert the new form at the end
+            var formsetGroup = document.querySelector(`.formset-${formsetPrefix}.formset-group`);
+            formsetGroup.insertBefore(newFormElement, null);
 
-// offer formset
-const totalOfferFormset = document.getElementById('id_offers-TOTAL_FORMS');
-const offerFormsetEmptyForm = document.getElementById('offer-formset-empty-form');
-const offerFormsetAddMoreButton = document.getElementById('offer-formset-add-more');
+            // init dropzone if ${dropzoneName} is not empty
+            if (dropzoneName) {
+                s3UploadInit({
+                    dropzoneSelector: `#id_${formsetPrefix}-${totalForms}-${dropzoneName}_form`,
+                    callbackLocationSelector: `#id_${formsetPrefix}-${totalForms}-${dropzoneName}_url`,
+                    s3FormValuesId: `s3-form-values-${dropzonePrefix}-${dropzoneName}`,
+                    s3UploadConfigId: `s3-upload-config-${dropzonePrefix}-${dropzoneName}`,
+                    // Not really nice
+                    sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
+                    sentryCsrfToken: "{{ csrf_token }}"
+                });
+            }
+        });
+    }
 
-offerFormsetAddMoreButton.addEventListener('click', function(e) {
-    if (e) { e.preventDefault(); }
-    // add new form
-    const copyOfferFormsetEmptyForm = offerFormsetEmptyForm.cloneNode(true);
-    copyOfferFormsetEmptyForm.innerHTML = copyOfferFormsetEmptyForm.innerHTML.replace(prefixRegex, totalOfferFormset.value);
-    copyOfferFormsetEmptyForm.childNodes.forEach(node => {
-        offerFormsetEmptyForm.parentNode.insertBefore(node, offerFormsetEmptyForm);
-    });
-    // update total forms count
-    totalOfferFormset.setAttribute('value', parseInt(totalOfferFormset.getAttribute('value'), 10) + 1);
-});
-
-// client reference formset
-const clientReferenceIdString = 'id_client_references';
-const clientReferenceFormsetString = 'client-reference-formset';
-const totalClientReferenceFormset = document.getElementById(`${clientReferenceIdString}-TOTAL_FORMS`);
-const clientReferenceFormsetEmptyForm = document.getElementById(`${clientReferenceFormsetString}-empty-form`);
-const clientReferenceFormsetAddMoreButton = document.getElementById(`${clientReferenceFormsetString}-add-more`);
-
-clientReferenceFormsetAddMoreButton.addEventListener('click', function(e) {
-    if (e) { e.preventDefault(); }
-    // add new form
-    const copyClientReferenceFormsetEmptyForm = clientReferenceFormsetEmptyForm.cloneNode(true);
-    copyClientReferenceFormsetEmptyForm.innerHTML = copyClientReferenceFormsetEmptyForm.innerHTML.replace(prefixRegex, totalClientReferenceFormset.value);
-    // copyClientReferenceFormsetEmptyForm.childNodes.forEach(node => {
-    //     clientReferenceFormsetEmptyForm.parentNode.insertBefore(node, clientReferenceFormsetEmptyForm);
-    // });
-    copyClientReferenceFormsetEmptyForm.setAttribute('id', '');
-    copyClientReferenceFormsetEmptyForm.setAttribute('class', '');
-    clientReferenceFormsetEmptyForm.parentNode.insertBefore(copyClientReferenceFormsetEmptyForm, clientReferenceFormsetEmptyForm);
-    // add dropzone
-    s3UploadInit({
-        dropzoneSelector: `#${clientReferenceIdString}-${totalClientReferenceFormset.value}-logo_form`,
-        callbackLocationSelector: `#${clientReferenceIdString}-${totalClientReferenceFormset.value}-logo_url`,
-        s3FormValuesId: "s3-form-values-client-reference-logo",
-        s3UploadConfigId: "s3-upload-config-client-reference-logo",
-        // Not really nice
-        sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
-        sentryCsrfToken: "{{ csrf_token }}"
-    });
-    // update total forms count
-    totalClientReferenceFormset.setAttribute('value', parseInt(totalClientReferenceFormset.getAttribute('value'), 10) + 1);
-});
-
-// image formset
-const imageIdString = 'id_images';
-const imageFormsetString = 'image-formset';
-const totalImageFormset = document.getElementById(`${imageIdString}-TOTAL_FORMS`);
-const imageFormsetEmptyForm = document.getElementById(`${imageFormsetString}-empty-form`);
-const imageFormsetAddMoreButton = document.getElementById(`${imageFormsetString}-add-more`);
-
-imageFormsetAddMoreButton.addEventListener('click', function(e) {
-    if (e) { e.preventDefault(); }
-    // add new form
-    const copyImageFormsetEmptyForm = imageFormsetEmptyForm.cloneNode(true);
-    copyImageFormsetEmptyForm.innerHTML = copyImageFormsetEmptyForm.innerHTML.replace(prefixRegex, totalImageFormset.value);
-    // copyImageFormsetEmptyForm.childNodes.forEach(node => {
-    //     imageFormsetEmptyForm.parentNode.insertBefore(node, imageFormsetEmptyForm);
-    // });
-    copyImageFormsetEmptyForm.setAttribute('id', '');
-    copyImageFormsetEmptyForm.setAttribute('class', '');
-    imageFormsetEmptyForm.parentNode.insertBefore(copyImageFormsetEmptyForm, imageFormsetEmptyForm);
-    // add dropzone
-    s3UploadInit({
-        dropzoneSelector: `#${imageIdString}-${totalImageFormset.value}-image_form`,
-        callbackLocationSelector: `#${imageIdString}-${totalImageFormset.value}-image_url`,
-        s3FormValuesId: "s3-form-values-siae-image",
-        s3UploadConfigId: "s3-upload-config-siae-image",
-        // Not really nice
-        sentryInternalUrl: "{% url 'pages:sentry_debug' %}",
-        sentryCsrfToken: "{{ csrf_token }}"
-    });
-    // update total forms count
-    totalImageFormset.setAttribute('value', parseInt(totalImageFormset.getAttribute('value'), 10) + 1);
-});
+    addFormsetItems('offers');
+    addFormsetItems('client_references', 'client-reference', 'logo');
+    addFormsetItems('images', 'siae', 'image');
 </script>
-{% endblock %}
+{% endblock extra_js %}
