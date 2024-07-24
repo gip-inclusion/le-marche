@@ -1,5 +1,12 @@
+$yellow-super-badge--bg-color: #fff7e0;
+$yellow-super-badge--borders-color: #fcc63a;
+
 .lemarche {
     &--align-right {
         float: right;
+    }
+
+    &-super-badge {
+        background-color: $yellow-super-badge--bg-color;
     }
 }
