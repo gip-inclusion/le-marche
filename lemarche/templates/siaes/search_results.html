@@ -1,16 +1,16 @@
 {% extends "layouts/base.html" %}
 {% load static process_dict dsfr_tags wagtailcore_tags advert_cms %}
-{% block title %}Trouvez votre prestataire parmi 8600 prestataires inclusifs{{ block.super }}{% endblock title %}
+{% block title %}
+    Trouvez votre prestataire parmi 8600 prestataires inclusifs{{ block.super }}
+{% endblock title %}
 {% block meta_description %}
     <meta name="description"
           content="Recherchez en fonction de votre segment d'achats, périmètre géographique et types de prestation afin de trouver le prestataire idéal.">
 {% endblock meta_description %}
-
 {% block breadcrumb %}
     {% process_dict root_dir=HOME_PAGE_PATH current="Recherche" as breadcrumb_data %}
     {% dsfr_breadcrumb breadcrumb_data %}
 {% endblock breadcrumb %}
-
 {% block content %}
     <div class="fr-container">
         <div class="fr-grid-row">
@@ -23,9 +23,7 @@
                                     tabindex="0"
                                     role="tab"
                                     aria-selected="false"
-                                    aria-controls="search-filter">
-                                    Recherche par critères
-                            </button>
+                                    aria-controls="search-filter">Recherche par critères</button>
                         </li>
                         <li role="presentation">
                             <button id="search-text-tab"
@@ -33,9 +31,7 @@
                                     tabindex="0"
                                     role="tab"
                                     aria-selected="false"
-                                    aria-controls="search-text">
-                                    Recherche par SIRET / nom
-                            </button>
+                                    aria-controls="search-text">Recherche par SIRET / nom</button>
                         </li>
                         <li role="presentation">
                             <button id="search-semantic-tab"
@@ -44,18 +40,22 @@
                                     role="tab"
                                     aria-selected="false"
                                     aria-controls="search-semantic">
-                                    Recherche par mot clé
-                                    <span class="fr-badge fr-badge--sm fr-badge--green-emeraude fr-mx-2v">Beta</span>
-                                    <span class="fr-badge fr-badge--sm fr-badge--green-emeraude">Nouveauté</span>
+                                Recherche par mot clé
+                                <span class="fr-badge fr-badge--sm fr-badge--green-emeraude fr-mx-2v">Beta</span>
+                                <span class="fr-badge fr-badge--sm fr-badge--green-emeraude">Nouveauté</span>
                             </button>
                         </li>
                     </ul>
-                    <div id="search-filter" class="fr-tabs__panel" role="tabpanel" aria-labelledby="search-filter-tab" tabindex="0">
+                    <div id="search-filter"
+                         class="fr-tabs__panel"
+                         role="tabpanel"
+                         aria-labelledby="search-filter-tab"
+                         tabindex="0">
                         <form method="get"
-                                action="{% url 'siae:search_results' %}"
-                                id="filter-search-form"
-                                aria-label="Rechercher des prestataires de l'insertion et du handicap"
-                                role="search">
+                              action="{% url 'siae:search_results' %}"
+                              id="filter-search-form"
+                              aria-label="Rechercher des prestataires de l'insertion et du handicap"
+                              role="search">
                             {% if form.non_field_errors %}
                                 <section class="fr-my-4v fr-input-group fr-input-group--error">
                                     {{ form.non_field_errors }}
@@ -76,10 +76,15 @@
                                 </div>
                                 <div class="fr-col-12 fr-col-md-12 fr-col-lg-4 fr-hidden fr-unhidden-lg">
                                     <div class="fr-pt-6v">
-                                        <button id="filter-submit" class="fr-btn fr-btn--icon-right fr-icon-search-line" type="submit">
+                                        <button id="filter-submit"
+                                                class="fr-btn fr-btn--icon-right fr-icon-search-line"
+                                                type="submit">
                                             <span>Rechercher</span>
                                         </button>
-                                        <button id="form-reset-btn" type="button" class="fr-btn fr-icon-delete-bin-line fr-btn--secondary" aria-label="Réinitialiser la recherche">
+                                        <button id="form-reset-btn"
+                                                type="button"
+                                                class="fr-btn fr-icon-delete-bin-line fr-btn--secondary"
+                                                aria-label="Réinitialiser la recherche">
                                             <span>Réinitialiser</span>
                                         </button>
                                     </div>
@@ -88,23 +93,21 @@
                             <div x-data="AdvancedSearchComponent">
                                 <div class="fr-grid-row">
                                     <div class="fr-col-12 fr-btns-group--center fr-my-4v">
-                                        <button type="button" class="fr-btn fr-btn--tertiary-no-outline" @click="toggle()">
+                                        <button type="button"
+                                                class="fr-btn fr-btn--tertiary-no-outline"
+                                                @click="toggle()">
                                             Recherche avancée
                                             <br />
                                             <span :class="open ? 'fr-icon-arrow-up-s-line' : 'fr-icon-arrow-down-s-line'"
-                                                :aria-label="open ? 'Descendre' : 'Monter' "></span>
+                                                  :aria-label="open ? 'Descendre' : 'Monter' "></span>
                                         </button>
                                     </div>
                                 </div>
                                 <div x-show="open" class="fr-grid-row fr-grid-row--gutters">
                                     <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.kind %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
-                                        {% dsfr_form_field form.presta_type %}
-                                    </div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.presta_type %}</div>
                                     <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.territory %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
-                                        {% dsfr_form_field form.networks %}
-                                    </div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.networks %}</div>
                                     <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
                                         <div class="fr-input-group{% if form.locations.field.widget.attrs.disabled %} fr-input-group--disabled{% endif %}">
                                             <label for="id_locations" class="fr-label">{{ form.locations.label }}</label>
@@ -112,41 +115,35 @@
                                             {{ current_locations|json_script:"current-locations" }}
                                         </div>
                                     </div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
-                                        {% dsfr_form_field form.has_client_references %}
-                                    </div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
-                                        {% dsfr_form_field form.has_groups %}
-                                    </div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
-                                        {% dsfr_form_field form.ca %}
-                                    </div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
-                                        {% dsfr_form_field form.legal_form %}
-                                    </div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
-                                        {% dsfr_form_field form.employees %}
-                                    </div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
-                                        {% dsfr_form_field form.labels %}
-                                    </div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.has_client_references %}</div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.has_groups %}</div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.ca %}</div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.legal_form %}</div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.employees %}</div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.labels %}</div>
                                 </div>
                             </div>
                             <div class="fr-grid-row fr-hidden-lg">
                                 <div class="fr-col-12">
-                                    <button id="filter-submit" class="fr-btn fr-btn--icon-right fr-icon-search-line fr-mt-4w" type="submit">
+                                    <button id="filter-submit"
+                                            class="fr-btn fr-btn--icon-right fr-icon-search-line fr-mt-4w"
+                                            type="submit">
                                         <span>Rechercher</span>
                                     </button>
                                 </div>
                             </div>
                         </form>
                     </div>
-                    <div id="search-text" class="fr-tabs__panel" role="tabpanel" aria-labelledby="search-text-tab" tabindex="0">
+                    <div id="search-text"
+                         class="fr-tabs__panel"
+                         role="tabpanel"
+                         aria-labelledby="search-text-tab"
+                         tabindex="0">
                         <form method="get"
-                                action="{% url 'siae:search_results' %}"
-                                id="text-search-form"
-                                aria-label="Rechercher des prestataires de l'insertion et du handicap"
-                                role="search">
+                              action="{% url 'siae:search_results' %}"
+                              id="text-search-form"
+                              aria-label="Rechercher des prestataires de l'insertion et du handicap"
+                              role="search">
                             {% if form.non_field_errors %}
                                 <section class="fr-my-4v fr-input-group fr-input-group--error">
                                     {{ form.non_field_errors }}
@@ -161,7 +158,9 @@
                                 <div class="fr-col-12 fr-col-lg-4">
                                     <ul class="fr-btns-group fr-btns-group--icon-left">
                                         <li>
-                                            <button id="text-search-submit" class="fr-btn fr-btn--icon-right fr-icon-search-line fr-mt-4w" type="submit">
+                                            <button id="text-search-submit"
+                                                    class="fr-btn fr-btn--icon-right fr-icon-search-line fr-mt-4w"
+                                                    type="submit">
                                                 <span>Rechercher</span>
                                             </button>
                                         </li>
@@ -170,32 +169,37 @@
                             </div>
                         </form>
                     </div>
-                    <div id="search-semantic" class="fr-tabs__panel" role="tabpanel" aria-labelledby="search-semantic-tab" tabindex="0">
+                    <div id="search-semantic"
+                         class="fr-tabs__panel"
+                         role="tabpanel"
+                         aria-labelledby="search-semantic-tab"
+                         tabindex="0">
                         <form method="get"
-                            action="{% url 'siae:search_results' %}"
-                            id="semantic-search-form"
-                            aria-label="Rechercher des prestataires de l'insertion et du handicap"
-                            role="search">
+                              action="{% url 'siae:search_results' %}"
+                              id="semantic-search-form"
+                              aria-label="Rechercher des prestataires de l'insertion et du handicap"
+                              role="search">
                             {% if form.non_field_errors %}
                                 <section class="fr-my-4v fr-input-group fr-input-group--error">
                                     {{ form.non_field_errors }}
                                 </section>
                             {% endif %}
                             <div class="fr-grid-row fr-grid-row--gutters">
-                                <div class="fr-col-12 fr-col-lg-4">
-                                    {% dsfr_form_field form.semantic_q %}
-                                </div>
+                                <div class="fr-col-12 fr-col-lg-4">{% dsfr_form_field form.semantic_q %}</div>
                                 <div class="fr-col-12 fr-col-lg-4">
                                     <div class="fr-input-group">
                                         <label for="id_semantic_city" class="fr-label fr-mb-2v">{{ form.semantic_city.label }}</label>
-                                        <div id="dir_form_semantic_city" data-input-name="{{ form.semantic_city.name }}"></div>
+                                        <div id="dir_form_semantic_city"
+                                             data-input-name="{{ form.semantic_city.name }}"></div>
                                         {{ form.semantic_city }}
                                     </div>
                                 </div>
                                 <div class="fr-col-12 fr-col-lg-4">
                                     <ul class="fr-btns-group fr-btns-group--icon-left">
                                         <li>
-                                            <button id="text-search-submit" class="fr-btn fr-btn--icon-right fr-icon-search-line fr-mt-4w" type="submit">
+                                            <button id="text-search-submit"
+                                                    class="fr-btn fr-btn--icon-right fr-icon-search-line fr-mt-4w"
+                                                    type="submit">
                                                 <span>Rechercher</span>
                                             </button>
                                         </li>
@@ -226,11 +230,13 @@
                     {% endif %}
                     {% if siaes %}
                         {% for siae in siaes %}
-                            {% include "siaes/_card_search_result.html" with siae=siae %}
-                            <!-- insert to nudge tender creation -->
-                            {% if forloop.counter in position_promote_tenders and page_obj.number == 1 %}
-                                {% include "siaes/_card_suggest_tender.html" with current_perimeters=current_perimeters current_sectors=current_sectors %}
-                            {% endif %}
+                            <div class="fr-my-4w">
+                                {% include "siaes/_card_search_result.html" with siae=siae %}
+                                <!-- insert to nudge tender creation -->
+                                {% if forloop.counter in position_promote_tenders and page_obj.number == 1 %}
+                                    {% include "siaes/_card_suggest_tender.html" with current_perimeters=current_perimeters current_sectors=current_sectors %}
+                                {% endif %}
+                            </div>
                         {% endfor %}
                         {% include "includes/_pagination.html" %}
                     {% else %}
@@ -239,10 +245,8 @@
                         <p>Publiez votre besoin, et on s'occupe de vous trouver des prestataires inclusifs.</p>
                         <p>Obtenez des réponses en moins de 24 heures (en moyenne).</p>
                         <a href="{% url 'tenders:create' %}"
-                            id="siae-search-empty-demande"
-                            class="fr-btn fr-btn--icon-left fr-icon-mail-line">
-                            Publier un besoin d'achat
-                        </a>
+                           id="siae-search-empty-demande"
+                           class="fr-btn fr-btn--icon-left fr-icon-mail-line">Publier un besoin d'achat</a>
                     {% endif %}
                 </div>
                 <!-- sidebar -->
@@ -265,11 +269,13 @@
     {% include "favorites/_favorite_item_remove_modal.html" %}
 {% endblock modals %}
 {% block extra_js %}
-    <script type="text/javascript" src="{% static 'vendor/alpinejs@3.11.1.min.js'%}" defer></script>
-    <script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
+    <script type="text/javascript"
+            src="{% static 'vendor/alpinejs@3.11.1.min.js'%}"
+            defer></script>
+    <script type="text/javascript"
+            src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/search_form.js' %}"></script>
     <script type="text/javascript">
-
 document.addEventListener('alpine:init', function() {
     Alpine.data('AdvancedSearchComponent', () => (
         {
@@ -382,14 +388,16 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
     </script>
-    <script type="text/javascript" src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
+    <script type="text/javascript"
+            src="{% static 'js/envoi_groupe_modal_video.js' %}"></script>
     {% if user.is_authenticated %}
         <script type="text/javascript" src="{% static 'js/favorite_item_add.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/favorite_item_remove.js' %}"></script>
+        <script type="text/javascript"
+                src="{% static 'js/favorite_item_remove.js' %}"></script>
     {% endif %}
 {% endblock extra_js %}
 {% block extra_css %}
-<style>
+    <style>
     #searchResults .map-holder {
         height: 19rem;
         width: 100%;
@@ -399,5 +407,5 @@ document.addEventListener("DOMContentLoaded", function() {
     #map-siae-list {
         height: 19rem;
     }
-</style>
+    </style>
 {% endblock extra_css %}
