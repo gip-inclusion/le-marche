@@ -1,5 +1,4 @@
 from django.urls import reverse_lazy
-from django.utils import timezone
 from huey.contrib.djhuey import task
 
 from lemarche.conversations.models import TemplateTransactional
@@ -47,6 +46,8 @@ def send_completion_reminder_email_to_siae(siae):
                 "SIAE_USER_FIRST_NAME": siae_user.first_name,
                 "SIAE_ID": siae.id,
                 "SIAE_NAME": siae.name_display,
+                "SIAE_CONTACT_EMAIL": siae.contact_email,
+                "SIAE_SECTOR_COUNT": siae.sector_count,
                 "SIAE_URL": get_object_share_url(siae),
                 "SIAE_EDIT_URL": f"https://{get_domain_url()}{reverse_lazy('dashboard_siaes:siae_edit_contact', args=[siae.slug])}",  # noqa
             }
@@ -58,18 +59,3 @@ def send_completion_reminder_email_to_siae(siae):
                 recipient_content_object=siae_user,
                 parent_content_object=siae,
             )
-
-        # log email
-        log_item = {
-            "action": "email_completion_reminder",
-            "email_template": email_template.code,
-            "email_to": recipient_list,
-            # "email_body": email_body,
-            "email_timestamp": timezone.now().isoformat(),
-            "metadata": {
-                "sector_count": siae.sector_count,
-                "contact_email": True if len(siae.contact_email) else False,
-            },
-        }
-        siae.logs.append(log_item)
-        siae.save()
