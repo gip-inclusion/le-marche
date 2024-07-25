@@ -220,7 +220,7 @@ class TemplateTransactionalSendLogAdmin(admin.ModelAdmin):
 
     def parent_object_id_with_link(self, obj):
         if obj.parent_content_type and obj.parent_object_id:
-            if obj.recipient_content_type.model == "tender":
+            if obj.parent_content_type.model == "tender":
                 url = reverse("admin:tenders_tender_change", args=[obj.parent_object_id])
                 return format_html(f'<a href="{url}">{obj.parent_object_id}</a>')
             if obj.parent_content_type.model == "tendersiae":
