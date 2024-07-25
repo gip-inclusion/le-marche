@@ -17,6 +17,7 @@ def send_siae_user_request_email_to_assignee(siae_user_request):
         recipient_name = siae_user_request.assignee.full_name
 
         variables = {
+            "SIAE_USER_REQUEST_ID": siae_user_request.id,
             "ASSIGNEE_ID": siae_user_request.assignee.id,
             "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
             "INITIATIOR_ID": siae_user_request.initiator.id,
@@ -30,6 +31,8 @@ def send_siae_user_request_email_to_assignee(siae_user_request):
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            recipient_content_object=siae_user_request.assignee,
+            parent_content_object=siae_user_request,
         )
 
         # log email
@@ -60,6 +63,7 @@ def send_siae_user_request_response_email_to_initiator(siae_user_request):
             recipient_name = siae_user_request.initiator.full_name
 
             variables = {
+                "SIAE_USER_REQUEST_ID": siae_user_request.id,
                 "ASSIGNEE_ID": siae_user_request.assignee.id,
                 "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
                 "INITIATIOR_ID": siae_user_request.initiator.id,
@@ -73,6 +77,8 @@ def send_siae_user_request_response_email_to_initiator(siae_user_request):
                 recipient_email=recipient_email,
                 recipient_name=recipient_name,
                 variables=variables,
+                recipient_content_object=siae_user_request.initiator,
+                parent_content_object=siae_user_request,
             )
 
             # log email
@@ -105,6 +111,7 @@ def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
         recipient_name = siae_user_request.assignee.full_name
 
         variables = {
+            "SIAE_USER_REQUEST_ID": siae_user_request.id,
             "ASSIGNEE_ID": siae_user_request.assignee.id,
             "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
             "INITIATIOR_ID": siae_user_request.initiator.id,
@@ -118,6 +125,8 @@ def send_siae_user_request_reminder_3_days_email_to_assignee(siae_user_request):
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            recipient_content_object=siae_user_request.assignee,
+            parent_content_object=siae_user_request,
         )
 
         # log email
@@ -140,6 +149,7 @@ def send_siae_user_request_reminder_3_days_email_to_initiator(siae_user_request)
         recipient_name = siae_user_request.initiator.full_name
 
         variables = {
+            "SIAE_USER_REQUEST_ID": siae_user_request.id,
             "ASSIGNEE_ID": siae_user_request.assignee.id,
             "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
             "INITIATIOR_ID": siae_user_request.initiator.id,
@@ -152,6 +162,8 @@ def send_siae_user_request_reminder_3_days_email_to_initiator(siae_user_request)
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            recipient_content_object=siae_user_request.initiator,
+            parent_content_object=siae_user_request,
         )
 
         # log email
@@ -184,6 +196,7 @@ def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
         recipient_name = siae_user_request.assignee.full_name
 
         variables = {
+            "SIAE_USER_REQUEST_ID": siae_user_request.id,
             "ASSIGNEE_ID": siae_user_request.assignee.id,
             "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
             "INITIATIOR_ID": siae_user_request.initiator.id,
@@ -197,6 +210,8 @@ def send_siae_user_request_reminder_8_days_email_to_assignee(siae_user_request):
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            recipient_content_object=siae_user_request.assignee,
+            parent_content_object=siae_user_request,
         )
 
         # log email
@@ -219,6 +234,7 @@ def send_siae_user_request_reminder_8_days_email_to_initiator(siae_user_request)
         recipient_name = siae_user_request.initiator.full_name
 
         variables = {
+            "SIAE_USER_REQUEST_ID": siae_user_request.id,
             "ASSIGNEE_ID": siae_user_request.assignee.id,
             "ASSIGNEE_FULL_NAME": siae_user_request.assignee.full_name,
             "INITIATIOR_ID": siae_user_request.initiator.id,
@@ -232,6 +248,8 @@ def send_siae_user_request_reminder_8_days_email_to_initiator(siae_user_request)
             recipient_email=recipient_email,
             recipient_name=recipient_name,
             variables=variables,
+            recipient_content_object=siae_user_request.initiator,
+            parent_content_object=siae_user_request,
         )
 
         # log email

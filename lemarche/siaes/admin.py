@@ -9,7 +9,7 @@ from django.utils.html import format_html, mark_safe
 from fieldsets_with_inlines import FieldsetsInlineMixin
 from simple_history.admin import SimpleHistoryAdmin
 
-from lemarche.conversations.models import Conversation
+from lemarche.conversations.models import Conversation, TemplateTransactionalSendLog
 from lemarche.labels.models import Label
 from lemarche.networks.models import Network
 from lemarche.notes.models import Note
@@ -212,6 +212,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin)
             "tender_detail_display_count_annotated_with_link",
             "tender_detail_contact_click_count_annotated_with_link",
             "tender_detail_not_interested_count_annotated_with_link",
+            "recipient_transactional_send_logs_count_with_link",
             "brevo_company_id",
             "extra_data_display",
             "import_raw_object_display",
@@ -362,6 +363,7 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin)
                 "fields": (
                     "signup_date",
                     "content_filled_basic_date",
+                    "recipient_transactional_send_logs_count_with_link",
                     "brevo_company_id",
                     "extra_data_display",
                 ),
@@ -665,6 +667,14 @@ class SiaeAdmin(FieldsetsInlineMixin, gis_admin.OSMGeoAdmin, SimpleHistoryAdmin)
         "tender_detail_not_interested_count_annotated"
     )
 
+    def recipient_transactional_send_logs_count_with_link(self, obj):
+        url = reverse("admin:conversations_templatetransactionalsendlog_changelist") + f"?siae__id__exact={obj.id}"
+        return format_html(f'<a href="{url}">{obj.recipient_transactional_send_logs.count()}</a>')
+
+    recipient_transactional_send_logs_count_with_link.short_description = (
+        TemplateTransactionalSendLog._meta.verbose_name
+    )
+
     def logs_display(self, siae=None):
         if siae:
             return pretty_print_readonly_jsonfield(siae.logs)
@@ -700,13 +710,6 @@ class SiaeUserRequestAdmin(admin.ModelAdmin):
     readonly_fields = [field.name for field in SiaeUserRequest._meta.fields]
     fields = ["logs_display" if field_name == "logs" else field_name for field_name in readonly_fields]
 
-    def logs_display(self, siaeuserrequest=None):
-        if siaeuserrequest:
-            return pretty_print_readonly_jsonfield(siaeuserrequest.logs)
-        return "-"
-
-    logs_display.short_description = SiaeUserRequest._meta.get_field("logs").verbose_name
-
     def has_add_permission(self, request):
         return False
 
@@ -715,6 +718,22 @@ class SiaeUserRequestAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    def parent_transactional_send_logs_count_with_link(self, obj):
+        url = (
+            reverse("admin:conversations_templatetransactionalsendlog_changelist")
+            + f"?siaeuserrequest__id__exact={obj.id}"
+        )
+        return format_html(f'<a href="{url}">{obj.parent_transactional_send_logs.count()}</a>')
+
+    parent_transactional_send_logs_count_with_link.short_description = TemplateTransactionalSendLog._meta.verbose_name
+
+    def logs_display(self, siaeuserrequest=None):
+        if siaeuserrequest:
+            return pretty_print_readonly_jsonfield(siaeuserrequest.logs)
+        return "-"
+
+    logs_display.short_description = SiaeUserRequest._meta.get_field("logs").verbose_name
 
 
 @admin.register(SiaeActivity, site=admin_site)
