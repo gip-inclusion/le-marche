@@ -1,13 +1,11 @@
 <div class="card">
     <div class="card-header" id="heading{{ faq_id }}">
-        <h2>
-            <button class="btn btn-link text-left"
-                    type="button"
-                    data-toggle="collapse"
-                    data-target="#collapse{{ faq_id }}"
-                    aria-expanded="true"
-                    aria-controls="collapse{{ faq_id }}">{{ self.question }}</button>
-        </h2>
+        <button class="btn btn-link text-left"
+                type="button"
+                data-toggle="collapse"
+                data-target="#collapse{{ faq_id }}"
+                aria-expanded="true"
+                aria-controls="collapse{{ faq_id }}">{{ self.question }}</button>
     </div>
     <div id="collapse{{ faq_id }}"
          class="collapse"
