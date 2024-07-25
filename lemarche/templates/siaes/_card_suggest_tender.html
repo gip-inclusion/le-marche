@@ -1,61 +1,67 @@
 {% comment %} {% load static bootstrap4 %} {% endcomment %}
-<div class="c-box border-primary mb-4">
-    <div class="fr-grid-row">
-        <div class="fr-col-md">
-            <h2 class="h3">Vos sourcing et RFI sont chronophages ?</h2>
-            <p>
-                Confier votre sourcing ou votre RFI à notre algorithme et recevez des réponses de prestataires inclusifs en moins de 24h.
-            </p>
-            <a href="{% url 'tenders:create' %}"
-               id="siae-search-insert-tender-create-btn"
-               class="btn btn-primary btn-sm btn-ico d-block d-md-inline-block mb-2">
-                <i class="ri-mail-send-line ri-lg"></i>&nbsp;Lancer un sourcing inversé
-            </a>
-        </div>
-        {% if current_perimeters or current_sectors %}
-            <div class="fr-col-md">
-                {% if current_perimeters %}
-                    {% with perimeters_length=current_perimeters|length %}
-                        <h5 class="mb-2">Lieu{{ perimeters_length|pluralize:"x" }} d'intervention</h5>
-                        {% for perimeter in current_perimeters %}
-                            <span class="badge badge-base badge-outline-primary mr-1">{{ perimeter.name }}</span>
-                            {% if forloop.counter == 2 and perimeters_length > 2 %}
-                                <a class="w-100 d-block text-decoration-none has-collapse-caret collapsed"
-                                   data-toggle="collapse"
-                                   href="#perimetersSearchHidden"
-                                   role="button"
-                                   aria-expanded="false"
-                                   aria-controls="perimetersSearchHidden">
-                                    Afficher les {{ perimeters_length|add:"-2" }} autres lieux d'interventions
-                                </a>
-                                <div id="perimetersSearchHidden" class="collapse">
+<div class="fr-card">
+    <div class="fr-card__body">
+        <div class="fr-card__content">
+            <h2 class="h3 fr-card__title">Vos sourcing et RFI sont chronophages ?</h2>
+            <div class="fr-card__desc">
+                <div class="fr-grid-row">
+                    <div class="fr-col-md">
+                        <p>
+                            Confier votre sourcing ou votre RFI à notre algorithme et recevez des réponses de prestataires inclusifs en moins de 24h.
+                        </p>
+                        <a href="{% url 'tenders:create' %}"
+                        id="siae-search-insert-tender-create-btn"
+                        class="btn btn-primary btn-sm btn-ico d-block d-md-inline-block mb-2">
+                            <i class="ri-mail-send-line ri-lg"></i>&nbsp;Lancer un sourcing inversé
+                        </a>
+                    </div>
+                    {% if current_perimeters or current_sectors %}
+                        <div class="fr-col-md">
+                            {% if current_perimeters %}
+                                {% with perimeters_length=current_perimeters|length %}
+                                    <h5 class="mb-2">Lieu{{ perimeters_length|pluralize:"x" }} d'intervention</h5>
+                                    {% for perimeter in current_perimeters %}
+                                        <span class="badge badge-base badge-outline-primary mr-1">{{ perimeter.name }}</span>
+                                        {% if forloop.counter == 2 and perimeters_length > 2 %}
+                                            <a class="w-100 d-block text-decoration-none has-collapse-caret collapsed"
+                                            data-toggle="collapse"
+                                            href="#perimetersSearchHidden"
+                                            role="button"
+                                            aria-expanded="false"
+                                            aria-controls="perimetersSearchHidden">
+                                                Afficher les {{ perimeters_length|add:"-2" }} autres lieux d'interventions
+                                            </a>
+                                            <div id="perimetersSearchHidden" class="collapse">
+                                        {% endif %}
+                                        {% if forloop.counter == perimeters_length and perimeters_length > 2 %}</div>{% endif %}
+                                    {% endfor %}
+                                {% endwith %}
                             {% endif %}
-                            {% if forloop.counter == perimeters_length and perimeters_length > 2 %}</div>{% endif %}
-                        {% endfor %}
-                    {% endwith %}
-                {% endif %}
-                {% if current_sectors %}
-                    {% with sectors_length=current_sectors|length %}
-                        <h5 class="{% if current_perimeters %}mt-4{% endif %} mb-2">Secteur{{ sectors_length|pluralize }} d'activité</h5>
-                        {% for sector in current_sectors %}
-                            <span class="badge badge-base badge-outline-primary ml-0 mb-1">{{ sector.name|truncatechars:42 }}</span>
-                            <br />
-                            {% if forloop.counter == 2 and sectors_length > 2 %}
-                                <a class="w-100 d-block text-decoration-none has-collapse-caret collapsed"
-                                    data-toggle="collapse"
-                                    href="#sectorsSearchHidden"
-                                    role="button"
-                                    aria-expanded="false"
-                                    aria-controls="sectorsSearchHidden">
-                                    Afficher les {{ sectors_length|add:"-2" }} autres secteurs
-                                </a>
-                                <div id="sectorsSearchHidden" class="collapse">
+                            {% if current_sectors %}
+                                {% with sectors_length=current_sectors|length %}
+                                    <h5 class="{% if current_perimeters %}mt-4{% endif %} mb-2">Secteur{{ sectors_length|pluralize }} d'activité</h5>
+                                    {% for sector in current_sectors %}
+                                        <span class="badge badge-base badge-outline-primary ml-0 mb-1">{{ sector.name|truncatechars:42 }}</span>
+                                        <br />
+                                        {% if forloop.counter == 2 and sectors_length > 2 %}
+                                            <a class="w-100 d-block text-decoration-none has-collapse-caret collapsed"
+                                                data-toggle="collapse"
+                                                href="#sectorsSearchHidden"
+                                                role="button"
+                                                aria-expanded="false"
+                                                aria-controls="sectorsSearchHidden">
+                                                Afficher les {{ sectors_length|add:"-2" }} autres secteurs
+                                            </a>
+                                            <div id="sectorsSearchHidden" class="collapse">
+                                        {% endif %}
+                                        {% if forloop.counter == sectors_length and sectors_length > 2  %}</div>{% endif %}
+                                    {% endfor %}
+                                {% endwith %}
                             {% endif %}
-                            {% if forloop.counter == sectors_length and sectors_length > 2  %}</div>{% endif %}
-                        {% endfor %}
-                    {% endwith %}
-                {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-        {% endif %}
+        </div>
     </div>
 </div>

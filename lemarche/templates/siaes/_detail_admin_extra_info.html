@@ -1,33 +1,39 @@
-<div class="alert alert-warning">
-    <h2 class="h3">Informations Admin</h2>
-    <div class="fr-grid-row">
-        <div class="fr-col-12">
-            <ul class="list-unstyled mb-0">
-                <li class="mb-2">
-                    <i class="ri-user-line"></i>
-                    <span>{{ siae.contact_full_name }}</span>
-                </li>
-                <li class="mb-2">
-                    <i class="ri-at-line"></i>
-                    <a href="mailto:{{ siae.contact_email }}" id="company_email">{{ siae.contact_email }}</a>
-                </li>
-                <li class="mb-2">
-                    <i class="ri-phone-line"></i>
-                    <a href="tel:{{ siae.contact_phone }}" id="company_phone">{{ siae.contact_phone }}</a>
-                </li>
-                <li class="mb-2">
-                    <i class="ri-group-line"></i>
-                    {{ siae.user_count }} collaborateur{{ siae.user_count|pluralize }}
-                </li>
-                <li>
-                    <a href="{{ siae.get_admin_url }}" target="_blank" id="siae-detail-admin-btn" class="btn btn-sm btn-outline-primary btn-ico">
-                        <span>
-                            Lien vers l'admin&nbsp;
-                            <i class="ri-external-link-line" aria-hidden="true"></i>
-                        </span>
-                    </a>
-                </li>
-            </ul>
+<div class="fr-card alert-warning">
+    <div class="fr-card__body">
+        <div class="fr-card__content">
+            <h2 class="h3 fr-card__title">Informations Admin</h2>
+            <div class="fr-card__desc">
+                <div class="fr-grid-row">
+                    <div class="fr-col-12">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <i class="ri-user-line"></i>
+                                <span>{{ siae.contact_full_name }}</span>
+                            </li>
+                            <li class="mb-2">
+                                <i class="ri-at-line"></i>
+                                <a href="mailto:{{ siae.contact_email }}" id="company_email">{{ siae.contact_email }}</a>
+                            </li>
+                            <li class="mb-2">
+                                <i class="ri-phone-line"></i>
+                                <a href="tel:{{ siae.contact_phone }}" id="company_phone">{{ siae.contact_phone }}</a>
+                            </li>
+                            <li class="mb-2">
+                                <i class="ri-group-line"></i>
+                                {{ siae.user_count }} collaborateur{{ siae.user_count|pluralize }}
+                            </li>
+                            <li>
+                                <a href="{{ siae.get_admin_url }}" target="_blank" id="siae-detail-admin-btn" class="btn btn-sm btn-outline-primary btn-ico">
+                                    <span>
+                                        Lien vers l'admin&nbsp;
+                                        <i class="ri-external-link-line" aria-hidden="true"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

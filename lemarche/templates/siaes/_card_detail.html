@@ -1,81 +1,83 @@
 {% load static %}
 
-<div class="card c-card--hovershadow siae-card mb-0 {% if siae.super_badge %}super-badge-card{% endif %}">
-    <div class="card-header">
-        <div class="fr-grid-row">
-            <div class="fr-col-auto">
-                {% if siae.logo_url %}
-                    <img src="{{ siae.logo_url }}" width="100" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
-                {% else %}
-                    <img src="{% static 'img/default-listing.png' %}" width="100" alt="{{ siae.name }}" loading="lazy" />
-                {% endif %}
-            </div>
-            <div class="fr-col">
-                <div class="fr-grid-row">
-                    <div class="fr-col-sm-12">
-                        <h1 class="h2 mb-0">
-                            {{ siae.name_display }}
-                            {% if user.is_authenticated and user.is_admin and not siae.user_count %}
-                                <span class="badge badge-base rounded-pill text-warning fs-sm">
-                                    pas encore inscrite
-                                </span>
-                            {% endif %}
-                        </h1>
-                        {% include "includes/_super_badge.html" with siae=siae %}
-                        <p class="mt-3 mb-2 font-italic">(Dernière activité il y a {{ siae.latest_activity_at|timesince }})</p>
-                        {% if user.is_authenticated %}
-                            {% if siae.in_user_favorite_list_count_annotated %}
-                                <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_remove_modal" title="Dans votre liste d'achat">
-                                    <i class="ri-star-fill ri-xl"></i>
-                                </a>
-                                {% else %}
-                                <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_add_modal" title="Ajouter à votre liste d'achat" >
+<div class="fr-card {% if siae.super_badge %}super-badge-card{% endif %}">
+    <div class="fr-card__body">
+        <div class="fr-card__content">
+            <div class="fr-card__desc">
+                <div class="fr-col-auto">
+                    {% if siae.logo_url %}
+                        <img src="{{ siae.logo_url }}" width="100" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
+                    {% else %}
+                        <img src="{% static 'img/default-listing.png' %}" width="100" alt="{{ siae.name }}" loading="lazy" />
+                    {% endif %}
+                </div>
+                <div class="fr-col">
+                    <div class="fr-grid-row">
+                        <div class="fr-col-sm-12">
+                            <h1 class="h2 mb-0">
+                                {{ siae.name_display }}
+                                {% if user.is_authenticated and user.is_admin and not siae.user_count %}
+                                    <span class="badge badge-base rounded-pill text-warning fs-sm">
+                                        pas encore inscrite
+                                    </span>
+                                {% endif %}
+                            </h1>
+                            {% include "includes/_super_badge.html" with siae=siae %}
+                            <p class="mt-3 mb-2 font-italic">(Dernière activité il y a {{ siae.latest_activity_at|timesince }})</p>
+                            {% if user.is_authenticated %}
+                                {% if siae.in_user_favorite_list_count_annotated %}
+                                    <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_remove_modal" title="Dans votre liste d'achat">
+                                        <i class="ri-star-fill ri-xl"></i>
+                                    </a>
+                                    {% else %}
+                                    <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_add_modal" title="Ajouter à votre liste d'achat" >
+                                        <i class="ri-star-line ri-xl"></i>
+                                    </a>
+                                {% endif %}
+                            {% else %}
+                                <a href="#" id="favorite-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}" title="Ajouter à votre liste d'achat">
                                     <i class="ri-star-line ri-xl"></i>
                                 </a>
                             {% endif %}
-                        {% else %}
-                            <a href="#" id="favorite-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}" title="Ajouter à votre liste d'achat">
-                                <i class="ri-star-line ri-xl"></i>
-                            </a>
-                        {% endif %}
+                        </div>
                     </div>
-                </div>
-                <div class="fr-grid-row">
-                    <div class="fr-col-md-6">
-                        <ul class="list-unstyled mb-0">
-                            <li class="mb-2">
-                                <i class="ri-building-4-line"></i>
-                                <span>{{ siae.get_kind_display }}</span>
-                            </li>
-                            {% if siae.legal_form %}
+                    <div class="fr-grid-row">
+                        <div class="fr-col-md-6">
+                            <ul class="list-unstyled mb-0">
                                 <li class="mb-2">
-                                    <i class="ri-building-4-fill"></i>
-                                    <span>{{ siae.get_legal_form_display }}</span>
+                                    <i class="ri-building-4-line"></i>
+                                    <span>{{ siae.get_kind_display }}</span>
                                 </li>
-                            {% endif %}
-                        </ul>
-                    </div>
-                    <div class="fr-col-md-6">
-                        <div class="badge-group">
-                            {% if siae.is_qpv %}
-                                <span class="badge badge-pill badge-emploi-lightest" title="Quartier prioritaire de la politique de la ville">QPV</span>
-                            {% endif %}
-                            {% if siae.is_zrr %}
-                                <span class="badge badge-pill badge-emploi-lightest" title="Zone de revitalisation rurale">ZRR</span>
-                            {% endif %}
-                            {% for group in siae.groups.all %}
-                                <span class="badge badge-pill badge-emploi-light">{{ group.name }}</span>
-                            {% endfor %}
-                            {% if siae.is_cocontracting %}
-                                <span class="badge badge-pill badge-success-light">Ouvert à la co-traitance</span>
-                            {% endif %}
+                                {% if siae.legal_form %}
+                                    <li class="mb-2">
+                                        <i class="ri-building-4-fill"></i>
+                                        <span>{{ siae.get_legal_form_display }}</span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                        <div class="fr-col-md-6">
+                            <div class="badge-group">
+                                {% if siae.is_qpv %}
+                                    <span class="badge badge-pill badge-emploi-lightest" title="Quartier prioritaire de la politique de la ville">QPV</span>
+                                {% endif %}
+                                {% if siae.is_zrr %}
+                                    <span class="badge badge-pill badge-emploi-lightest" title="Zone de revitalisation rurale">ZRR</span>
+                                {% endif %}
+                                {% for group in siae.groups.all %}
+                                    <span class="badge badge-pill badge-emploi-light">{{ group.name }}</span>
+                                {% endfor %}
+                                {% if siae.is_cocontracting %}
+                                    <span class="badge badge-pill badge-success-light">Ouvert à la co-traitance</span>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="fr-card__end">
+                {% include "siaes/_useful_infos.html" with siae=siae %}
+            </div>
         </div>
-    </div>
-    <div class="fr-card__body" style="border-top:1px solid #e6e6eb">
-        {% include "siaes/_useful_infos.html" with siae=siae %}
     </div>
 </div>
