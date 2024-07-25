@@ -1,21 +1,22 @@
 {% load wagtailcore_tags %}
 
-<div class="c-box">
-    <div class="fr-grid-row">
-        <div class="fr-col">
-            <h2 class="h3">Vous avez besoin d'être accompagné dans vos achats inclusifs par des partenaires reconnus ?</h2>
-
-            {% if siae.kind_is_esat_or_ea_or_eatt %}
-                <a href="{% slugurl "faciltez-vous-les-achats-responsables" %}" target="_blank" id="track_siae_detail_partners_esat_ea" class="btn btn-sm btn-outline-primary btn-ico">
-                    <span>Découvrez-les maintenant</span>
-                    <i class="ri-arrow-right-up-line ri-lg"></i>
-                </a>
-            {% else %}
-                <a href="{% url 'pages:partenaires' %}" target="_blank" id="track_siae_detail_partners" class="btn btn-sm btn-outline-primary btn-ico">
-                    <span>Découvrez-les maintenant</span>
-                    <i class="ri-arrow-right-up-line ri-lg"></i>
-                </a>
-            {% endif %}
+<div class="fr-card">
+    <div class="fr-card__body">
+        <div class="fr-card__content">
+            <h2 class="h3 fr-card__title">Vous avez besoin d'être accompagné dans vos achats inclusifs par des partenaires reconnus ?</h2>
+            <div class="fr-card__desc">
+                {% if siae.kind_is_esat_or_ea_or_eatt %}
+                    <a href="{% slugurl "faciltez-vous-les-achats-responsables" %}" target="_blank" id="track_siae_detail_partners_esat_ea" class="btn btn-sm btn-outline-primary btn-ico">
+                        <span>Découvrez-les maintenant</span>
+                        <i class="ri-arrow-right-up-line ri-lg"></i>
+                    </a>
+                {% else %}
+                    <a href="{% url 'pages:partenaires' %}" target="_blank" id="track_siae_detail_partners" class="btn btn-sm btn-outline-primary btn-ico">
+                        <span>Découvrez-les maintenant</span>
+                        <i class="ri-arrow-right-up-line ri-lg"></i>
+                    </a>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
