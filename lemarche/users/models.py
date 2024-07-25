@@ -275,7 +275,12 @@ class User(AbstractUser):
         "Date de dernière visite sur la page 'besoins'", blank=True, null=True
     )
     extra_data = models.JSONField(verbose_name="Données complémentaires", editable=False, default=dict)
-    transactional_send_logs = GenericRelation("conversations.TemplateTransactionalSendLog", related_query_name="user")
+    recipient_transactional_send_logs = GenericRelation(
+        "conversations.TemplateTransactionalSendLog",
+        related_query_name="user",
+        content_type_field="recipient_content_type",
+        object_id_field="recipient_object_id",
+    )
 
     # is_active, is_staff, is_superuser
 

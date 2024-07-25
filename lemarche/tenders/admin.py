@@ -13,6 +13,7 @@ from django_admin_filters import MultiChoice
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 from fieldsets_with_inlines import FieldsetsInlineMixin
 
+from lemarche.conversations.models import TemplateTransactionalSendLog
 from lemarche.notes.models import Note
 from lemarche.perimeters.admin import PerimeterRegionFilter
 from lemarche.perimeters.models import Perimeter
@@ -339,6 +340,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "siae_transactioned_source",
         "siae_transactioned_last_updated",
         "source",
+        "parent_transactional_send_logs_count_with_link",
         "brevo_deal_id",
         "extra_data_display",
         "import_raw_object_display",
@@ -511,6 +513,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
                     "marche_benefits",
                     "siae_list_last_seen_date",
                     "source",
+                    "parent_transactional_send_logs_count_with_link",
                     "brevo_deal_id",
                     "extra_data_display",
                 ),
@@ -759,6 +762,12 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
         "siae_detail_not_interested_click_count_annotated"
     )
 
+    def parent_transactional_send_logs_count_with_link(self, obj):
+        url = reverse("admin:conversations_templatetransactionalsendlog_changelist") + f"?tender__id__exact={obj.id}"
+        return format_html(f'<a href="{url}">{obj.parent_transactional_send_logs.count()}</a>')
+
+    parent_transactional_send_logs_count_with_link.short_description = TemplateTransactionalSendLog._meta.verbose_name
+
     def logs_display(self, tender=None):
         if tender:
             return pretty_print_readonly_jsonfield(tender.logs)
@@ -950,6 +959,7 @@ class TenderSiaeAdmin(admin.ModelAdmin):
         "tender",
         "tender_with_link",
         "transactioned_source",
+        "parent_transactional_send_logs_count_with_link",
         "logs_display",
     ]
 
@@ -964,7 +974,15 @@ class TenderSiaeAdmin(admin.ModelAdmin):
             {"fields": (*TenderSiae.FIELDS_SURVEY_TRANSACTIONED, "transactioned", "transactioned_source")},
         ),
         ("Utilisateur", {"fields": ("user",)}),
-        ("Stats", {"fields": ("logs_display",)}),
+        (
+            "Stats",
+            {
+                "fields": (
+                    "parent_transactional_send_logs_count_with_link",
+                    "logs_display",
+                )
+            },
+        ),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
 
@@ -999,6 +1017,14 @@ class TenderSiaeAdmin(admin.ModelAdmin):
 
     status.short_description = "Status"
     status.admin_order_field = "status"
+
+    def parent_transactional_send_logs_count_with_link(self, obj):
+        url = (
+            reverse("admin:conversations_templatetransactionalsendlog_changelist") + f"?tendersiae__id__exact={obj.id}"
+        )
+        return format_html(f'<a href="{url}">{obj.parent_transactional_send_logs.count()}</a>')
+
+    parent_transactional_send_logs_count_with_link.short_description = TemplateTransactionalSendLog._meta.verbose_name
 
     def logs_display(self, tender=None):
         if tender:
