@@ -1,12 +1,13 @@
 document.addEventListener("DOMContentLoaded", function() {
-    $('#favorite_item_add_modal').on('show.bs.modal', function (event) {
+    document.getElementById('favorite_item_add_modal').addEventListener('dsfr.disclose', (event) => {
         // Button that triggered the modal
-        var button = $(event.relatedTarget);
+        var button = event.explicitOriginalTarget;
 
         // Extract info from data-* attributes
-        var siaeId = button.data('siae-id');
-        var siaeSlug = button.data('siae-slug');
-        var siaeNameDisplay = button.data('siae-name-display');
+        var siaeSlug = button.dataset["siaeSlug"];
+        var siaeNameDisplay = button.dataset["siaeNameDisplay"];
+        // Button that triggered the modal
+        var button = $(event.relatedTarget);
 
         // Update the modal's content
         // - siae name display
@@ -18,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
             modal.querySelector('#siae-name-display').textContent = siaeNameDisplay;
         }
         modalForms.forEach(form => {
-            var formActionUrl = form.getAttribute('action');
+            var formActionUrl = form.getAttribute('data-action');
             form.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', siaeSlug));
         });
     });
