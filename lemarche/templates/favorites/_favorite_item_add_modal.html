@@ -11,7 +11,7 @@
                             Liste d'achat favoris
                         </h3>
                         <!-- New list -->
-                        <form method="post" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
+                        <form method="post" data-action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
                             {% csrf_token %}
                             <div class="fr-input-group">
                                 <label class="fr-label" for="id_new_favorite_list">Créer une {% if user.favorite_list_count %}nouvelle {% endif %}liste</label>
@@ -22,7 +22,7 @@
 
                         <!-- Existing list(s) -->
                         {% if user.favorite_list_count %}
-                            <form method="post" action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
+                            <form method="post" data-action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">
                                 {% csrf_token %}
                                 <p class="fr-hr-or">ou</p>
 
