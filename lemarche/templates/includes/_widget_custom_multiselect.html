@@ -1,0 +1,75 @@
+{% load static %}
+<style>
+    .fr-input-wrap {
+        display: flex;
+        align-items: center;
+    }
+    .fr-input-wrap input {
+        flex-grow: 1;
+    }
+    .fr-input-wrap button {
+        margin-left: 8px;
+    }
+</style>
+<div x-data="multiselect()" class="fr-checkbox-group" {{ widget.attrs }}>
+    <div class="fr-input-wrap">
+        <input type="text"
+               class="fr-input"
+               x-model="selectedLabels"
+               readonly
+               placeholder="Sélectionner des options">
+        <button type="button"
+                class="fr-btn fr-btn--icon-right fr-ml-0"
+                @click="toggle"
+                :class="open ? ' fr-icon-arrow-up-s-line' : 'fr-icon-arrow-down-s-line'"></button>
+    </div>
+    <div x-show="open" class="fr-checkbox-list">
+        {% for group, options, index in widget.optgroups %}
+            {% if group %}
+                <div class="fr-checkbox-group-title">
+                    <b>{{ group }}</b>
+                </div>
+            {% endif %}
+            {% for option in options %}
+                <div class="fr-checkbox fr-py-1w">
+                    <input type="checkbox"
+                           id="{{ option.attrs.id }}"
+                           name="{{ widget.name }}"
+                           value="{{ option.value }}"
+                           {% if option.selected %}checked{% endif %}
+                           {% include "django/forms/widgets/attrs.html" %}
+                           @click="updateSelection($event, '{{ option.label }}')">
+                    <label for="{{ option.attrs.id }}">{{ option.label }}</label>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+<script>
+function multiselect() {
+    return {
+        open: false,
+        selected: [],
+        selectedLabels: '',
+        toggle() {
+            this.open = !this.open;
+        },
+        updateSelection(event, label) {
+            if (event.target.checked) {
+                this.selected.push(label);
+            } else {
+                this.selected = this.selected.filter(item => item !== label);
+            }
+            this.updateInput();
+        },
+        updateInput() {
+            this.selectedLabels = this.selected.map(label => {
+                if (label.length > 10) {
+                    return label.substring(0, 10) + '...';
+                }
+                return label;
+            }).join(', ');
+        }
+    };
+}
+</script>
