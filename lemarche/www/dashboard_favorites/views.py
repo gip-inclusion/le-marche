@@ -10,6 +10,7 @@ from django.views.generic.edit import CreateView
 
 from lemarche.favorites.models import FavoriteItem, FavoriteList
 from lemarche.siaes.models import Siae
+from lemarche.utils import home_page_context_processors
 from lemarche.utils.mixins import FavoriteListOwnerRequiredMixin
 from lemarche.www.dashboard_favorites.forms import FavoriteListEditForm
 
@@ -28,6 +29,13 @@ class DashboardFavoriteListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = FavoriteListEditForm()
+        context["breadcrumb_data"] = {
+            "root_dir": home_page_context_processors.home_page(self.request)["HOME_PAGE_PATH"],
+            "links": [
+                {"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")},
+            ],
+            "current": "Liste d'achat favoris",
+        }
         return context
 
 
@@ -50,13 +58,25 @@ class DashboardFavoriteListCreateView(LoginRequiredMixin, SuccessMessageMixin, C
         return HttpResponseRedirect(self.success_url)
 
     def get_success_message(self, cleaned_data):
-        return mark_safe(f"Votre liste d'achat <strong>{cleaned_data['name']}</strong> a été crée avec succès.")
+        return mark_safe(f"Votre liste d'achat <strong>{cleaned_data['name']}</strong> a été créée avec succès.")
 
 
 class DashboardFavoriteListDetailView(FavoriteListOwnerRequiredMixin, DetailView):
     template_name = "favorites/dashboard_favorite_list_detail.html"
     queryset = FavoriteList.objects.prefetch_related("siaes").all()
     context_object_name = "favorite_list"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb_data"] = {
+            "root_dir": home_page_context_processors.home_page(self.request)["HOME_PAGE_PATH"],
+            "links": [
+                {"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")},
+                {"title": "Liste d'achat favoris", "url": reverse_lazy("dashboard_favorites:list")},
+            ],
+            "current": self.object.name,
+        }
+        return context
 
 
 class DashboardFavoriteListEditView(FavoriteListOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
