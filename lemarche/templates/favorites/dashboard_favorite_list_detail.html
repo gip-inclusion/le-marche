@@ -37,7 +37,11 @@
                     {% dsfr_alert type="info" content="Vous n'avez pas encore ajouté de structures à cette liste !" %}
                 {% endif %}
                 {% for siae in favorite_list.siaes.all %}
-                    {% include "siaes/_card_search_result.html" with siae=siae from_profile="true" %}
+                    <div class="fr-grid-row fr-grid-row--gutters">
+                        <div class="fr-col-12">
+                            {% include "siaes/_card_search_result.html" with siae=siae from_profile="true" %}
+                        </div>
+                    </div>
                 {% endfor %}
             </div>
             <div class="fr-col-12 fr-col-lg-3">
