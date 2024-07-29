@@ -14,7 +14,7 @@
                 <div class="fr-col">
                     <div class="fr-grid-row">
                         <div class="fr-col-sm-12">
-                            <h1 class="h2 mb-0">
+                            <h1>
                                 {{ siae.name_display }}
                                 {% if user.is_authenticated and user.is_admin and not siae.user_count %}
                                     <span class="badge badge-base rounded-pill text-warning fs-sm">
@@ -23,20 +23,20 @@
                                 {% endif %}
                             </h1>
                             {% include "includes/_super_badge.html" with siae=siae %}
-                            <p class="mt-3 mb-2 font-italic">(Dernière activité il y a {{ siae.latest_activity_at|timesince }})</p>
+                            <p class="fr-text--sm"><i>(Dernière activité il y a {{ siae.latest_activity_at|timesince }})</i></p>
                             {% if user.is_authenticated %}
                                 {% if siae.in_user_favorite_list_count_annotated %}
-                                    <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_remove_modal" title="Dans votre liste d'achat">
-                                        <i class="ri-star-fill ri-xl"></i>
+                                    <a href="#" id="favorite-remove-modal-btn" class="fr-btn fr-btn--tertiary-no-outline" data-fr-opened="false" aria-controls="favorite_item_remove_modal" title="Dans votre liste d'achat">
+                                        <span class="fr-icon-star-fill" aria-hidden="true"></span>
                                     </a>
-                                    {% else %}
-                                    <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_add_modal" title="Ajouter à votre liste d'achat" >
-                                        <i class="ri-star-line ri-xl"></i>
+                                {% else %}
+                                    <a href="#" id="favorite-add-modal-btn" class="fr-btn fr-btn--tertiary-no-outline" data-fr-opened="false" aria-controls="favorite_item_add_modal" title="Ajouter à votre liste d'achat" >
+                                        <span class="fr-icon-star-line" aria-hidden="true"></span>
                                     </a>
                                 {% endif %}
                             {% else %}
-                                <a href="#" id="favorite-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}" title="Ajouter à votre liste d'achat">
-                                    <i class="ri-star-line ri-xl"></i>
+                                <a href="#" id="favorite-modal-btn" class="fr-btn fr-btn--tertiary-no-outline" data-fr-opened="false" aria-controls="login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}" title="Ajouter à votre liste d'achat">
+                                    <span class="fr-icon-star-line" aria-hidden="true"></span>
                                 </a>
                             {% endif %}
                         </div>
