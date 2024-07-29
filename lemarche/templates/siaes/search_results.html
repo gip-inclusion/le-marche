@@ -104,9 +104,22 @@
                                     </div>
                                 </div>
                                 <div x-show="open" class="fr-grid-row fr-grid-row--gutters">
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.kind %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.presta_type %}</div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.territory %}</div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
+                                        <label for="{{ form.kind.id_for_label }}">{{ form.kind.label }}</label>
+                                        {{ form.kind }}
+                                    </div>
+                                    <div class="form-group fr-col-12 fr-col-md-6 fr-col-lg-3">
+                                        <label for="{{ form.presta_type.id_for_label }}">{{ form.presta_type.label }}</label>
+                                        {{ form.presta_type }}
+                                    </div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
+                                        <label for="{{ form.territory.id_for_label }}">{{ form.territory.label }}</label>
+                                        {{ form.territory }}
+                                    </div>
+                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
+                                        <label for="{{ form.networks.id_for_label }}">{{ form.networks.label }}</label>
+                                        {{ form.networks }}
+                                    </div>
                                     <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.networks %}</div>
                                     <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
                                         <div class="fr-input-group{% if form.locations.field.widget.attrs.disabled %} fr-input-group--disabled{% endif %}">
