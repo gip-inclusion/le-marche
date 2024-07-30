@@ -18,7 +18,7 @@ class SiaeViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
 
     queryset = Siae.objects.api_query_set()
     serializer_class = SiaeListSerializer
-    filter_class = SiaeFilter
+    filterset_class = SiaeFilter
 
     @extend_schema(
         summary="Lister toutes les structures",
