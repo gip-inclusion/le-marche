@@ -1,71 +1,62 @@
-{% load static %}
-{% load theme_inclusion %}
-
 {% if not user.is_authenticated %}
-    <style>
-    .remix {
-    width: 24px;
-    height: 24px;
-    fill: #333;
-    }
-    </style>
-    <div class="modal fade modal-siae" id="login_or_signup_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="exampleModalLabel">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="exampleModalLabel">Profitez gratuitement du Marché</h3>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-                        <i class="ri-close-line"></i>
-                    </button>
-                </div>
-                <div class="modal-body home-content-body">
-                    <p class="mb-4">
-                        Ce ne sera pas long ! Inscrivez-vous et accédez à toutes les fonctionnalités du marché.
-                    </p>
-                    <ul class="list-unstyled mb-5">
-                        <li class="d-flex mb-2">
-                            <i class="text-success ri-checkbox-circle-fill display-2"></i>
-                            <span class="font-weight-bold ml-2">Publiez vos besoins auprès des structures, et retrouvez celles qui sont intéressées.</span>
-                        </li>
-                        <li class="d-flex mb-2">
-                            <i class="text-success ri-checkbox-circle-fill display-2"></i>
-                            <span class="font-weight-bold ml-2">Téléchargez la liste complète des structures figurant sur le marché.</span>
-                        </li>
-                        <li class="d-flex mb-2">
-                            <i class="text-success ri-checkbox-circle-fill display-2"></i>
-                            <span class="font-weight-bold ml-2">Créez des listes d'achat et sauvegardez vos structures favorites.</span>
-                        </li>
-                        <li class="d-flex mb-2">
-                            <i class="text-success ri-checkbox-circle-fill display-2"></i>
-                            <span class="font-weight-bold ml-2">Accédez aux coordonnées des structures.</span>
-                        </li>
-                    </ul>
-                    <div class="text-center">
-                        <a href="{% url 'auth:signup' %}?next=next-params-to-replace" id="auth-link" class="btn btn-sm btn-primary">Créer un compte</a>
-                    </div>
-                    <hr class="my-5" data-text="ou" />
-                    <div class="text-center">
-                        <p class="mb-0">Vous avez déjà un compte ?</p>
-                        <a href="{% url 'auth:login' %}?next=next-params-to-replace" id="auth-link" class="btn btn-sm btn-link">Se connecter</a>
+    <dialog aria-labelledby="login_or_signup_modal_title" role="dialog" id="login_or_signup_modal" class="fr-modal">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                            <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="login_or_signup_modal">Fermer</button>
+                        </div>
+                        <div class="fr-modal__content">
+                            <h3 id="login_or_signup_modal_title" class="fr-modal__title">Profitez gratuitement du Marché</h3>
+                            <p>
+                                Ce ne sera pas long ! Inscrivez-vous et accédez à toutes les fonctionnalités du marché.
+                            </p>
+                            <ul class="fr-text--bold">
+                                <li class="fr-icon-checkbox-circle-fill">
+                                    Publiez vos besoins auprès des structures, et retrouvez celles qui sont intéressées.
+                                </li>
+                                <li class="fr-icon-checkbox-circle-fill">
+                                    Téléchargez la liste complète des structures figurant sur le marché.
+                                </li>
+                                <li class="fr-icon-checkbox-circle-fill">
+                                    Créez des listes d'achat et sauvegardez vos structures favorites.
+                                </li>
+                                <li class="fr-icon-checkbox-circle-fill">
+                                    Accédez aux coordonnées des structures.
+                                </li>
+                            </ul>
+                            <ul class="fr-btns-group">
+                                <li>
+                                    <a href="{% url 'auth:signup' %}?next=next-params-to-replace" id="auth-link" class="fr-btn">Créer un compte</a>
+                                </li>
+                            </ul>
+                            <p class="fr-hr-or fr-my-4v">ou</p>
+                            <p>Vous avez déjà un compte ?</p>
+                            <ul class="fr-btns-group">
+                                <li>
+                                    <a href="{% url 'auth:login' %}?next=next-params-to-replace" id="auth-link" class="fr-btn fr-btn--tertiary">Se connecter</a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </dialog>
 
     <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function() {
-        const MODAL_ID = '#login_or_signup_modal';
-        $(MODAL_ID).on('show.bs.modal', function (event) {
+        const MODAL_ID = 'login_or_signup_modal';
+        document.getElementById(MODAL_ID).addEventListener('dsfr.disclose', (event) => {
             // Button that triggered the modal
-            var button = $(event.relatedTarget);
-
+            var button = event.explicitOriginalTarget;
             // Extract info from data-* attributes
-            var nextParams = button.data('next-params');
+            var nextParams = button.dataset['nextParams'];
 
             // Update the modal's content
             // - replace next param for login & signup
-            var modal = document.querySelector(MODAL_ID);
+            var modal = document.querySelector('#' + MODAL_ID);
             modal.querySelectorAll('#auth-link').forEach(link => {
                 var linkUrl = link.getAttribute('href');
                 link.setAttribute('href', linkUrl.replace('next-params-to-replace', nextParams));
