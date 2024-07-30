@@ -1,7 +1,6 @@
 {% load static compress dsfr_tags %}
 <!DOCTYPE html>
 <html lang="{% block lang %}fr{% endblock lang %}"
-      data-fr-scheme="system"
       {% if SITE_CONFIG.mourning %}data-fr-mourning{% endif %}>
   <head>
     <meta charset="utf-8" />
@@ -45,7 +44,6 @@
     {% block header %}
       {% include "layouts/_header.html" %}
     {% endblock header %}
-    {% dsfr_theme_modale %}
     {% if SITE_CONFIG.notice %}
       {% dsfr_notice title=SITE_CONFIG.notice %}
     {% endif %}
