@@ -27,18 +27,34 @@
                             <p class="fr-text--sm"><i>(Dernière activité il y a {{ siae.latest_activity_at|timesince }})</i></p>
                             {% if user.is_authenticated %}
                                 {% if siae.in_user_favorite_list_count_annotated %}
-                                    <a href="#" id="favorite-remove-modal-btn" class="fr-btn fr-btn--tertiary-no-outline" data-fr-opened="false" aria-controls="favorite_item_remove_modal" title="Dans votre liste d'achat">
-                                        <span class="fr-icon-star-fill" aria-hidden="true"></span>
-                                    </a>
+                                    <button 
+                                        id="favorite-remove-modal-btn"
+                                        class="fr-btn fr-btn--tertiary-no-outline fr-icon-star-fill"
+                                        data-fr-opened="false"
+                                        aria-controls="favorite_item_remove_modal"
+                                        title="Dans votre liste d'achat">
+                                        Supprimer de votre liste d'achat
+                                    </button>
                                 {% else %}
-                                    <a href="#" id="favorite-add-modal-btn" class="fr-btn fr-btn--tertiary-no-outline" data-fr-opened="false" aria-controls="favorite_item_add_modal" title="Ajouter à votre liste d'achat" >
-                                        <span class="fr-icon-star-line" aria-hidden="true"></span>
-                                    </a>
+                                    <button
+                                        id="favorite-add-modal-btn"
+                                        class="fr-btn fr-btn--tertiary-no-outline fr-icon-star-line"
+                                        data-fr-opened="false"
+                                        aria-controls="favorite_item_add_modal"
+                                        title="Ajouter à votre liste d'achat">
+                                        Ajouter à votre liste d'achat
+                                    </button>
                                 {% endif %}
                             {% else %}
-                                <a href="#" id="favorite-modal-btn" class="fr-btn fr-btn--tertiary-no-outline" data-fr-opened="false" aria-controls="login_or_signup_modal" data-next-params="{% url 'siae:detail' siae.slug %}" title="Ajouter à votre liste d'achat">
-                                    <span class="fr-icon-star-line" aria-hidden="true"></span>
-                                </a>
+                                <button
+                                    id="favorite-modal-btn"
+                                    class="fr-btn fr-btn--tertiary-no-outline fr-icon-star-line"
+                                    data-fr-opened="false"
+                                    aria-controls="login_or_signup_modal"
+                                    data-next-params="{% url 'siae:detail' siae.slug %}"
+                                    title="Ajouter à votre liste d'achat">
+                                    Se connecter pour Ajouter à votre liste d'achat
+                                </button>
                             {% endif %}
                         </div>
                     </div>
