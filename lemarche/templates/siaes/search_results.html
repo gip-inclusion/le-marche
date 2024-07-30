@@ -213,50 +213,48 @@
         </div>
     </div>
     <div class="fr-container">
-        <div id="dir_list">
-            <div id="searchResults" class="fr-grid-row fr-grid-row--gutters">
-                <div class="fr-col-12 fr-col-lg-8 fr-mt-6v">
-                    <h4>
-                        {% with paginator.count as siae_count %}
-                            {% if siae_count > 0 %}
-                                {{ siae_count }} prestataire{{ siae_count|pluralize }} correspond{{ siae_count|pluralize:"ent" }} à vos critères
-                            {% else %}
-                                Oups, aucun prestataire trouvé !
+        <div id="searchResults" class="fr-grid-row fr-grid-row--gutters">
+            <div class="fr-col-12 fr-col-lg-8 fr-mt-6v">
+                <h4>
+                    {% with paginator.count as siae_count %}
+                        {% if siae_count > 0 %}
+                            {{ siae_count }} prestataire{{ siae_count|pluralize }} correspond{{ siae_count|pluralize:"ent" }} à vos critères
+                        {% else %}
+                            Oups, aucun prestataire trouvé !
+                        {% endif %}
+                    {% endwith %}
+                </h4>
+                {% if siaes %}
+                    <div class="fr-col">{% include "siaes/_share_search_results.html" %}</div>
+                {% endif %}
+                {% if siaes %}
+                    {% for siae in siaes %}
+                        <div class="fr-my-4w">
+                            {% include "siaes/_card_search_result.html" with siae=siae %}
+                            <!-- insert to nudge tender creation -->
+                            {% if forloop.counter in position_promote_tenders and page_obj.number == 1 %}
+                                {% include "siaes/_card_suggest_tender.html" with current_perimeters=current_perimeters current_sectors=current_sectors %}
                             {% endif %}
-                        {% endwith %}
-                    </h4>
-                    {% if siaes %}
-                        <div class="fr-col">{% include "siaes/_share_search_results.html" %}</div>
-                    {% endif %}
-                    {% if siaes %}
-                        {% for siae in siaes %}
-                            <div class="fr-my-4w">
-                                {% include "siaes/_card_search_result.html" with siae=siae %}
-                                <!-- insert to nudge tender creation -->
-                                {% if forloop.counter in position_promote_tenders and page_obj.number == 1 %}
-                                    {% include "siaes/_card_suggest_tender.html" with current_perimeters=current_perimeters current_sectors=current_sectors %}
-                                {% endif %}
-                            </div>
-                        {% endfor %}
-                        {% include "includes/_pagination.html" %}
-                    {% else %}
-                        <!-- no results -->
-                        <p>Il y a encore de l'espoir ❤️</p>
-                        <p>Publiez votre besoin, et on s'occupe de vous trouver des prestataires inclusifs.</p>
-                        <p>Obtenez des réponses en moins de 24 heures (en moyenne).</p>
-                        <a href="{% url 'tenders:create' %}"
-                           id="siae-search-empty-demande"
-                           class="fr-btn fr-btn--icon-left fr-icon-mail-line">Publier un besoin d'achat</a>
-                    {% endif %}
+                        </div>
+                    {% endfor %}
+                    {% include "includes/_pagination.html" %}
+                {% else %}
+                    <!-- no results -->
+                    <p>Il y a encore de l'espoir ❤️</p>
+                    <p>Publiez votre besoin, et on s'occupe de vous trouver des prestataires inclusifs.</p>
+                    <p>Obtenez des réponses en moins de 24 heures (en moyenne).</p>
+                    <a href="{% url 'tenders:create' %}"
+                        id="siae-search-empty-demande"
+                        class="fr-btn fr-btn--icon-left fr-icon-mail-line">Publier un besoin d'achat</a>
+                {% endif %}
+            </div>
+            <!-- sidebar -->
+            <div class="fr-col-12 fr-col-lg-4 siae-info fr-mt-6v">
+                <div class="map-holder fr-mb-4v">
+                    <div id="map-siae-list" class="map-canvas"></div>
                 </div>
-                <!-- sidebar -->
-                <div class="fr-col-12 fr-col-lg-4 siae-info fr-mt-6v">
-                    <div class="map-holder fr-mb-4v">
-                        <div id="map-siae-list" class="map-canvas"></div>
-                    </div>
-                    {% cms_advert layout="fr-card" %}
-                    {% include "siaes/_si_ideas_search_result.html" %}
-                </div>
+                {% cms_advert layout="fr-card" %}
+                {% include "siaes/_si_ideas_search_result.html" %}
             </div>
         </div>
     </div>
