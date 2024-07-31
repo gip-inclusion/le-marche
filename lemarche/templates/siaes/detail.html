@@ -1,37 +1,17 @@
 {% extends "layouts/base.html" %}
-{% load static %}
-{% load theme_inclusion %}
-{% block title %}{{ siae.name_display }} est sur le marché de l'inclusion{% endblock %}
-{% block extra_head %}
+{% load static dsfr_tags %}
+{% block title %}{{ siae.name_display }} est sur le marché de l'inclusion{% endblock title %}
+{% block opengraph %}
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
     <meta property="og:title" content="{{ siae.name_display }}" />
     <meta property="twitter:url" content="{{ request.build_absolute_uri }}" />
     <meta property="twitter:title" content="{{ siae.name_display }}" />
-{% endblock %}
-{% block breadcrumbs %}
-    <section>
-        <div class="fr-container">
-            <div class="fr-grid-row">
-                <div class="fr-col-12">
-                    <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ HOME_PAGE_PATH }}">Accueil</a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="{% url 'siae:search_results' %}?{{ current_search_query }}"
-                                   title="Revenir aux résultats de recherche">Recherche</a>
-                            </li>
-                            <li class="breadcrumb-item active"
-                                aria-current="page"
-                                title="{{ siae.name_display }}">{{ siae.name_display }}</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </section>
-{% endblock %}
+{% endblock opengraph %}
+
+{% block breadcrumb %}
+    {% dsfr_breadcrumb %}
+{% endblock breadcrumb %}
+
 {% block content %}
     <div class="fr-container">
         <div class="fr-grid-row fr-grid-row--gutters">
@@ -44,83 +24,97 @@
             <div class="fr-col-12 fr-col-md-4">
                 <!-- profile-detail sidebar -->
                 <aside id="sidebar">
-                    {% if user.is_authenticated and user.is_admin %}
-                        {% include "siaes/_detail_admin_extra_info.html" with siae=siae %}
-                    {% endif %}
-                    {% if inbound_email_is_activated %}
-                        {% include "siaes/_detail_cta_v2.html" with siae=siae %}
-                    {% else %}
-                        {% include "siaes/_detail_cta.html" with siae=siae %}
-                    {% endif %}
-                    {% include "siaes/_card_suggest_tender.html" %}
-                    {% include "siaes/_detail_partner_cta.html" with siae=siae %}
+                    <div class="fr-grid-row fr-grid-row--gutters">
+                        {% if user.is_authenticated and user.is_admin %}
+                            <div class="fr-col-12">
+                                {% include "siaes/_detail_admin_extra_info.html" with siae=siae %}
+                            </div>
+                        {% endif %}
+                        <div class="fr-col-12">
+                            {% if inbound_email_is_activated %}
+                                {% include "siaes/_detail_cta_v2.html" with siae=siae %}
+                            {% else %}
+                                {% include "siaes/_detail_cta.html" with siae=siae %}
+                            {% endif %}
+                        </div>
+                        <div class="fr-col-12">
+                            {% include "siaes/_card_suggest_tender.html" %}
+                        </div>
+                        <div class="fr-col-12">
+                            {% include "siaes/_detail_partner_cta.html" with siae=siae %}
+                        </div>
+                    </div>
                 </aside>
             </div>
         </div>
     </div>
     {% include "includes/_super_siae_arguments_badge.html" %}
-{% endblock %}
-        {% block modals %}
-            {% include "auth/_login_or_signup_modal.html" %}
-            {% include "conversations/_form_contact_modal.html" %}
-            {% include "favorites/_favorite_item_add_modal.html" with siae=siae %}
-            {% include "favorites/_favorite_item_remove_modal.html" with siae=siae %}
-        {% endblock %}
-        {% block extra_js %}
-            <script type="text/javascript">
-document.addEventListener("DOMContentLoaded", function() {
-    // map
-    // siae coords output as floats with commas. We need to transform them into floats.
-    const siaeName = "{{ siae.name }}";
-    const siaeBrand = "{{ siae.brand|default:'' }}";
-    const siaeLatitudeString = "{{ siae.coords.x }}";
-    const siaeLongitudeString = "{{ siae.coords.y }}";
-    const siaeLatitudeFloat = parseFloat(siaeLatitudeString.replace(',', '.'));
-    const siaeLongitudeFloat = parseFloat(siaeLongitudeString.replace(',', '.'));
+{% endblock content %}
+{% block modals %}
+    {% include "auth/_login_or_signup_modal.html" %}
+    {% include "conversations/_form_contact_modal.html" %}
+    {% include "favorites/_favorite_item_add_modal.html" with siae=siae %}
+    {% include "favorites/_favorite_item_remove_modal.html" with siae=siae %}
+{% endblock modals %}
+{% block extra_js %}
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+            // map
+            // siae coords output as floats with commas. We need to transform them into floats.
+            const siaeName = "{{ siae.name }}";
+            const siaeBrand = "{{ siae.brand|default:'' }}";
+            const siaeLatitudeString = "{{ siae.coords.x }}";
+            const siaeLongitudeString = "{{ siae.coords.y }}";
+            const siaeLatitudeFloat = parseFloat(siaeLatitudeString.replace(',', '.'));
+            const siaeLongitudeFloat = parseFloat(siaeLongitudeString.replace(',', '.'));
 
-    // init map
-    var map = L.map('map-siae').setView([siaeLongitudeFloat, siaeLatitudeFloat], 13);
+            // init map
+            var map = L.map('map-siae').setView([siaeLongitudeFloat, siaeLatitudeFloat], 13);
 
-    // map tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 19,
-        zoomControl: false,
-    }).addTo(map);
+            // map tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19,
+                zoomControl: false,
+            }).addTo(map);
 
-    // map zoom controls in the bottom right
-    map.zoomControl.remove();
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
+            // map zoom controls in the bottom right
+            map.zoomControl.remove();
+            L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    // create custom marker (because of static url issues)
-    var customLeafletIcon = L.icon({
-        'iconUrl': "{% static 'img/icon_map.png' %}",
-        'shadowUrl': "{% static 'img/icon_map_shadow.png' %}",
-        iconSize: [34,25],
-        shadowSize:[34,25],
-    });
+            // create custom marker (because of static url issues)
+            var customLeafletIcon = L.icon({
+                'iconUrl': "{% static 'img/icon_map.png' %}",
+                'shadowUrl': "{% static 'img/icon_map_shadow.png' %}",
+                iconSize: [34,25],
+                shadowSize:[34,25],
+            });
 
-    // add marker (with popup on click)
-    var siaeDisplayName = siaeBrand ? siaeBrand : siaeName;
-    L.marker([siaeLongitudeFloat, siaeLatitudeFloat], {icon: customLeafletIcon})
-    .bindPopup(`<p class="h6">${siaeDisplayName}</p></a>`)
-    .addTo(map);
+            // add marker (with popup on click)
+            var siaeDisplayName = siaeBrand ? siaeBrand : siaeName;
+            L.marker([siaeLongitudeFloat, siaeLatitudeFloat], {icon: customLeafletIcon})
+            .bindPopup(`<p class="h6">${siaeDisplayName}</p></a>`)
+            .addTo(map);
 
-    {% if form.errors %}$('#form_contact_modal').modal('show');{% endif %}
-});
-            </script>
-            {% if MTCAPTCHA_PUBLIC_KEY %}
-                <script type="text/javascript">
-        // add captcha to contact form
-        var mtcaptchaConfig = {
-            "sitekey": "{{ MTCAPTCHA_PUBLIC_KEY }}",
-            "lang": "fr"
-        };
-                </script>
-                <script type="text/javascript" src="{% static 'js/mtcaptcha.js' %}"></script>
+            {% if form.errors %}
+                setTimeout(() => {
+                    const form_contact_modal = document.getElementById("form_contact_modal");
+                    dsfr(form_contact_modal).modal.disclose();
+                }, 500);
             {% endif %}
-            {% if user.is_authenticated %}
-                <script type="text/javascript"
-                        src="{% static 'js/favorite_item_remove.js' %}"></script>
-            {% endif %}
-        {% endblock %}
+        });
+    </script>
+    {% if MTCAPTCHA_PUBLIC_KEY %}
+        <script type="text/javascript">
+            // add captcha to contact form
+            var mtcaptchaConfig = {
+                "sitekey": "{{ MTCAPTCHA_PUBLIC_KEY }}",
+                "lang": "fr"
+            };
+        </script>
+        <script type="text/javascript" src="{% static 'js/mtcaptcha.js' %}"></script>
+    {% endif %}
+    {% if user.is_authenticated %}
+        <script type="text/javascript" src="{% static 'js/favorite_item_remove.js' %}"></script>
+    {% endif %}
+{% endblock extra_js %}
