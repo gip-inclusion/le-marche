@@ -95,7 +95,7 @@
                                     <div class="fr-col-12 fr-btns-group--center fr-my-4v">
                                         <button type="button"
                                                 class="fr-btn fr-btn--tertiary-no-outline"
-                                                @click="toggle()">
+                                                @click="toggle()"{% if not user.is_authenticated %} data-fr-opened="false" aria-controls="modal_login_to_access_advanced_search"{% endif %}>
                                             Recherche avancée
                                             <br />
                                             <span :class="open ? 'fr-icon-arrow-up-s-line' : 'fr-icon-arrow-down-s-line'"
@@ -278,14 +278,7 @@ document.addEventListener('alpine:init', function() {
     Alpine.data('AdvancedSearchComponent', () => (
         {
             open: {{is_advanced_search|yesno:"true,false"}},
-            is_authenticated: {{user.is_authenticated|yesno:"true,false"}},
-            is_already_opened: false,
             toggle() {
-                if(!this.is_authenticated && !this.is_already_opened){
-                    this.is_already_opened=true;
-                    const modal_access_advanced_search = document.getElementById("modal_login_to_access_advanced_search");
-                    dsfr(modal_access_advanced_search).modal.disclose();
-                }
                 this.open = !this.open;
             },
         }
