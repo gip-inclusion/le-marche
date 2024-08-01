@@ -2,13 +2,11 @@
     <div class="fr-card__body">
         <div class="fr-card__content">
             <h3 class="fr-card__title">Ce prestataire vous intéresse ?</h3>
-
             <div class="fr-card__desc">
                 <p>
                     Accédez gratuitement aux coordonnées de ce prestataire
                     afin de prendre contact avec leur responsable commerciale.
                 </p>
-
                 {% if user.is_authenticated %}
                     <button type="button" id="show_data" class="fr-btn btn-primary btn-block btn-ico" data-toggle="collapse" data-target="#collapseCoordonnees" aria-expanded="false" aria-controls="collapseCoordonnees">
                         <i class="ri-mail-send-line"></i>
