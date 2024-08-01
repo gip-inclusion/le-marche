@@ -95,7 +95,8 @@
                                     <div class="fr-col-12 fr-btns-group--center fr-my-4v">
                                         <button type="button"
                                                 class="fr-btn fr-btn--tertiary-no-outline"
-                                                @click="toggle()"{% if not user.is_authenticated %} data-fr-opened="false" aria-controls="modal_login_to_access_advanced_search"{% endif %}>
+                                                @click="toggle()"
+                                                {% if not user.is_authenticated %} data-fr-opened="false" aria-controls="modal_login_to_access_advanced_search"{% endif %}>
                                             Recherche avancée
                                             <br />
                                             <span :class="open ? 'fr-icon-arrow-up-s-line' : 'fr-icon-arrow-down-s-line'"
@@ -238,9 +239,7 @@
                     {% endwith %}
                 </h4>
                 {% if siaes %}
-                    <div class="fr-col">
-                        {% include "siaes/_share_search_results.html" %}
-                    </div>
+                    <div class="fr-col">{% include "siaes/_share_search_results.html" %}</div>
                 {% endif %}
                 {% if siaes %}
                     {% for siae in siaes %}
@@ -259,8 +258,8 @@
                     <p>Publiez votre besoin, et on s'occupe de vous trouver des prestataires inclusifs.</p>
                     <p>Obtenez des réponses en moins de 24 heures (en moyenne).</p>
                     <a href="{% url 'tenders:create' %}"
-                        id="siae-search-empty-demande"
-                        class="fr-btn fr-btn--icon-left fr-icon-mail-line">Publier un besoin d'achat</a>
+                       id="siae-search-empty-demande"
+                       class="fr-btn fr-btn--icon-left fr-icon-mail-line">Publier un besoin d'achat</a>
                 {% endif %}
             </div>
             <!-- sidebar -->
@@ -287,6 +286,7 @@
             defer></script>
     <script type="text/javascript"
             src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/multiselect.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/search_form.js' %}"></script>
     <script type="text/javascript">
 document.addEventListener('alpine:init', function() {
