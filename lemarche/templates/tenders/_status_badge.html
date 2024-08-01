@@ -1,0 +1,13 @@
+{% if tender.is_draft %}
+    <span class="fr-badge fr-badge--sm fr-badge--warning">
+        <i class="ri-draft-fill"></i>Brouillon
+    </span>
+{% elif tender.is_pending_validation_or_validated %}
+    <span class="fr-badge fr-badge--sm fr-badge--info">
+        <i class="ri-loader-fill"></i>En cours de validation
+    </span>
+{% elif tender.is_sent %}
+    <span class="fr-badge fr-badge--sm fr-badge--success">
+        <i class="ri-mail-send-line"></i>Envoyé
+    </span>
+{% endif %}
