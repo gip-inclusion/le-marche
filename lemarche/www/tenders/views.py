@@ -329,6 +329,7 @@ class TenderListView(LoginRequiredMixin, ListView):
         )
         context["tender_constants"] = tender_constants
         context["filter_form"] = self.filter_form
+        context["breadcrumb_links"] = [{"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")}]
         return context
 
 
