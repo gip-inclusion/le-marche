@@ -1,4 +1,4 @@
-<p class="fr-mb-2w">
+<span>
     {% if tender.deadline_date_is_outdated_annotated %}
         <p class="fr-badge fr-badge--sm">
             {{ tender_kind_display|default:tender.get_kind_display }} clôturé{% if tender.kind == "QUOTE" %}e{% endif %}
@@ -17,4 +17,4 @@
             <p class="fr-badge fr-badge--sm fr-badge--green-emeraude">Nouveau</p>
         {% endif %}
     {% endif %}
-</p>
+</span>
