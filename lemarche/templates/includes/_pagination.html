@@ -1,33 +1,33 @@
 {% load url_add_query %}
 
 {% if is_paginated %}
-<nav class="nav-pagination mb-3 mb-md-5">
-    {% if paginator.num_pages > 1 %}
-        <ul class="pagination justify-content-center">
-            {% if page_obj.number > 1 %}
-                <li class="page-item">
-                    <a href="{% url_add_query page=page_obj.previous_page_number %}" class="page-link" aria-label="Précédent">
-                        <i class="ri-arrow-left-s-line"></i>
-                    </a>
-                </li>
-            {% endif %}
+    <nav role="navigation" class="fr-pagination justify-content-center" aria-label="Pagination">
+        {% if paginator.num_pages > 1 %}
+            <ul class="fr-pagination__list">
+                {% if page_obj.number > 1 %}
+                    <li>
+                        <a href="{% url_add_query page=page_obj.previous_page_number %}" class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" title="Page précédente">
+                            <i class="ri-arrow-left-s-line"></i>
+                        </a>
+                    </li>
+                {% endif %}
 
-            {% for p in paginator_range %}
-                <li class="page-item {% if p == page_obj.number %}active{% endif %}">
-                    <a href="{% url_add_query page=p %}" class="page-link">
-                        {{ p }}
-                    </a>
-                </li>
-            {% endfor %}
+                {% for p in paginator_range %}
+                    <li>
+                        <a href="{% url_add_query page=p %}" class="fr-pagination__link" {% if p == page_obj.number %}aria-current="page"{% endif %} title="Page {{ p }}">
+                            {{ p }}
+                        </a>
+                    </li>
+                {% endfor %}
 
-            {% if page_obj.number < paginator.num_pages %}
-                <li class="page-item">
-                    <a href="{% url_add_query page=page_obj.next_page_number %}" class="page-link" aria-label="Suivant">
-                        <i class="ri-arrow-right-s-line"></i>
-                    </a>
-                </li>
-            {% endif %}
-        </ul>
-    {% endif %}
-</nav>
+                {% if page_obj.number < paginator.num_pages %}
+                    <li>
+                        <a href="{% url_add_query page=page_obj.next_page_number %}" class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" title="Page suivante">
+                            <i class="ri-arrow-right-s-line"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    </nav>
 {% endif %}
