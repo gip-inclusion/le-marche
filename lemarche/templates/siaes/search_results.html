@@ -225,7 +225,9 @@
                     {% endwith %}
                 </h4>
                 {% if siaes %}
-                    <div class="fr-col">{% include "siaes/_share_search_results.html" %}</div>
+                    <div class="fr-col">
+                        {% include "siaes/_share_search_results.html" %}
+                    </div>
                 {% endif %}
                 {% if siaes %}
                     {% for siae in siaes %}
