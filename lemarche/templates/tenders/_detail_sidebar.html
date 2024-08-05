@@ -5,7 +5,9 @@
 {% endif %}
 <!-- author stats info -->
 {% if user == tender.author %}
-    {% include "tenders/_detail_side_infos_author.html" %}
+    <div class="fr-col-12">
+        {% include "tenders/_detail_side_infos_author.html" %}
+    </div>
 {% else %}
     {% if not tender.deadline_date_outdated %}
         <!-- tender basic view stat -->
