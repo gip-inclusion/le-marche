@@ -1,10 +1,15 @@
-<div class="card rounded-lg shadow-lg">
+<div class="fr-card">
     <div class="fr-card__body">
-        <h3>Votre intérêt a été signalé au client</h3>
-
-        <p>
-            S'il est intéressé, il vous recontactera via vos coordonnées de contact présentes sur
-            votre fiche commerciale (<a href="{% url 'dashboard:home' %}">Vérifier votre fiche</a>).
-        </p>
+        <div class="fr-card__content">
+            <h3 class="fr-card__title">
+                Votre intérêt a été signalé au client
+            </h3>
+            <div class="fr-card__desc">
+                <p>
+                    S'il est intéressé, il vous recontactera via vos coordonnées de contact présentes sur
+                    votre fiche commerciale (<a href="{% url 'dashboard:home' %}">Vérifier votre fiche</a>).
+                </p>
+            </div>
+        </div>
     </div>
 </div>

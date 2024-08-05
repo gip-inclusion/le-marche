@@ -1,40 +1,40 @@
-<div class="alert alert-warning">
-    <h2 class="h3">Informations Admin</h2>
+<div class="fr-alert fr-alert--warning">
+    <h3 class="fr-alert__title">Informations Admin</h2>
     <div class="fr-grid-row">
         <div class="fr-col-12">
-            <ul class="list-unstyled mb-0">
-                <li class="mb-2">
+            <ul>
+                <li class="fr-mt-2v">
                     Publié le {{ tender.published_at|date }}
                 </li>
-                <li class="mb-2">
+                <li class="fr-mt-2v">
                     {% if tender.is_sent %}
                         Validé le {{ tender.first_sent_at|date }}
                     {% else %}
                         Statut : {{ tender.get_status_display }}
                     {% endif %}
                 </li>
-                <li class="mb-2">
+                <li class="fr-mt-2v">
                     <i class="ri-focus-2-line"></i>
                     {{ tender.siae_email_send_date_count }} prestataire{{ tender.siae_email_send_date_count|pluralize }} ciblé{{ tender.siae_email_send_date_count|pluralize }}
                 </li>
-                <li class="mb-2">
+                <li class="fr-mt-2v">
                     <i class="ri-eye-line"></i>
                     {{ tender.siae_email_link_click_date_or_detail_display_date_count }} prestataire{{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize }} qui {{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize:'a,ont' }} vu
                 </li>
-                <li class="mb-2">
+                <li class="fr-mt-2v">
                     <i class="ri-thumb-up-line"></i>
                     {{ tender.siae_detail_contact_click_date_count }} prestataire{{ tender.siae_detail_contact_click_date_count|pluralize }} intéressé{{ tender.siae_detail_contact_click_date_count|pluralize }}
                 </li>
-                <li class="mb-2">
+                <li class="fr-mt-2v">
                     <i class="ri-shake-hands-line"></i>
                     {{ tender.siae_detail_cocontracting_click_date_count }} prestataire{{ tender.siae_detail_cocontracting_click_date_count|pluralize }} ouvert{{ tender.siae_detail_cocontracting_click_date_count|pluralize }} à la co-traitance
                 </li>
-                <li class="mb-2">
+                <li class="fr-mt-2v">
                     <i class="ri-thumb-down-line"></i>
                     {{ tender.siae_detail_not_interested_click_date_count }} prestataire{{ tender.siae_detail_not_interested_click_date_count|pluralize }} pas intéressé{{ tender.siae_detail_not_interested_click_date_count|pluralize }}
                 </li>
                 {% if not tender.deadline_date_outdated %}
-                    <li class="mb-2">
+                    <li class="fr-mt-2v">
                         Transactionné :
                         {% if tender.siae_transactioned == None %}
                             inconnu
