@@ -1,24 +1,26 @@
-<div class="card rounded-lg shadow-lg">
+<div class="fr-card">
     <div class="fr-card__body">
-        <h3>{{ tender.cta_card_title_text|safe }}</h3>
-
-        <p>{{ tender.cta_card_paragraph_text|safe }}</p>
-
-        {% if user_can_click %}
-            {% if tender_response_is_anonymous %}
-                <form method="POST" action="{% url 'tenders:detail-contact-click-stat' tender.slug %}?siae_id={{ siae_id }}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary btn-block" name="detail_contact_click_confirm" value="true">{{ tender.cta_card_button_text|safe }}</button>
-                </form>
-            {% else %}
-                <button type="button" id="show-tender-contact-modal-btn" class="btn btn-primary btn-block" data-toggle="modal" data-target="#detail_contact_click_confirm_modal" data-siae-id="{{ siae_id }}" title="{{ tender.cta_card_button_text|safe }}">
-                    {{ tender.cta_card_button_text|safe }}
-                </button>
-            {% endif %}
-        {% else %}
-            <a href="#" id="show-tender-contact-modal-btn" class="btn btn-primary btn-block" data-toggle="modal" data-target="#login_or_signup_siae_tender_modal" data-next-params="{% url 'tenders:detail' tender.slug %}">
-                <span>{{ tender.cta_card_button_text|safe }}</span>
-            </a>
-        {% endif %}
+        <div class="fr-card__content">
+            <h3 class="fr-card__title">{{ tender.cta_card_title_text|safe }}</h3>
+            <div class="fr-card__desc">
+                <p>{{ tender.cta_card_paragraph_text|safe }}</p>
+                {% if user_can_click %}
+                    {% if tender_response_is_anonymous %}
+                        <form method="post" action="{% url 'tenders:detail-contact-click-stat' tender.slug %}?siae_id={{ siae_id }}">
+                            {% csrf_token %}
+                            <button type="submit" class="fr-btn" name="detail_contact_click_confirm" value="true">{{ tender.cta_card_button_text|safe }}</button>
+                        </form>
+                    {% else %}
+                        <button type="button" id="show-tender-contact-modal-btn" class="fr-btn" data-fr-opened="false" aria-controls="detail_contact_click_confirm_modal" data-siae-id="{{ siae_id }}" title="{{ tender.cta_card_button_text|safe }}">
+                            {{ tender.cta_card_button_text|safe }}
+                        </button>
+                    {% endif %}
+                {% else %}
+                    <button id="show-tender-contact-modal-btn" class="fr-btn" data-fr-opened="false" aria-controls="login_or_signup_siae_tender_modal" data-next-params="{% url 'tenders:detail' tender.slug %}">
+                        {{ tender.cta_card_button_text|safe }}
+                    </button>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
