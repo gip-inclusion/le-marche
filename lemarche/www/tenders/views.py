@@ -16,7 +16,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderSiae, TenderStepsData
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
-from lemarche.utils import constants
+from lemarche.utils import constants, home_page_context_processors
 from lemarche.utils.data import get_choice
 from lemarche.utils.mixins import (
     SesameSiaeMemberRequiredMixin,
@@ -401,7 +401,20 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
             context["siae_has_detail_not_interested_click_date"] = TenderSiae.objects.filter(
                 tender=self.object, siae_id=int(self.siae_id), detail_not_interested_click_date__isnull=False
             ).exists()
+
+        context["breadcrumb_data"] = {
+            "root_dir": home_page_context_processors.home_page(self.request)["HOME_PAGE_PATH"],
+            "links": [],
+            "current": self.object.title[:25],
+        }
         if user.is_authenticated:
+            context["breadcrumb_data"]["links"].append(
+                {"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")}
+            )
+            context["breadcrumb_data"]["links"].append(
+                {"title": context["parent_title"], "url": reverse_lazy("tenders:list")}
+            )
+
             if user.kind == User.KIND_SIAE:
                 context["siae_has_detail_contact_click_date"] = (
                     getattr(context, "siae_has_detail_contact_click_date", None)
