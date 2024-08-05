@@ -1,8 +1,8 @@
 {% if info_card %}
-    <div class="alert alert-info ">
-        <p>
-            <b><i class="ri-information-line"></i> Conseil</b>
-        </p>
-        {{info_card.content_card|linebreaks}}
+    <div class="fr-callout fr-p-4v fr-mb-0">
+        <h3 class="fr-callout__title"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Conseil</h3>
+        <div class="fr-callout__text fr-pl-7v">
+            {{ info_card.content_card|linebreaks }}
+        </div>
     </div>
 {% endif %}

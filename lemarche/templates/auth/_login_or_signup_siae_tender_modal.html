@@ -1,63 +1,53 @@
-{% load static %}
-{% load theme_inclusion %}
-
-<style>
-  .remix {
-  width: 24px;
-  height: 24px;
-  fill: #333;
-}
-</style>
-
-<div class="modal fade modal-siae"
+<dialog class="fr-modal"
+     aria-labelledby="login_or_signup_siae_tender_modal_title"
      id="login_or_signup_siae_tender_modal"
-     tabindex="-1"
-     role="dialog"
-     aria-modal="true"
-     data-backdrop="static"
-     data-keyboard="false"
-     aria-labelledby="title_modal_login">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-                    <i class="ri-close-line"></i>
-                </button>
-            </div>
-            <div class="modal-body home-content-body">
-                <h3 id="title_modal_login" class="text-center mb-4">
-                    {{ title|default:"Connectez-vous pour accédez aux coordonnées du client" }}
-                </h3>
-                <div class="text-center">
-                    <a href="{% url 'auth:login' %}?next=next-params-to-replace"
-                       id="auth-link"
-                       class="btn btn-primary">Se connecter</a>
-                </div>
-                <hr class="my-5" data-text="ou" />
-                <div class="text-center">
-                    <h4>Vous n'avez pas de compte ?</h4>
-                    <a href="{% url 'auth:signup' %}?next=next-params-to-replace"
-                       id="auth-link"
-                       class="btn btn-sm btn-info">Créer un compte</a>
+     role="dialog">
+    <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                    <div class="fr-modal__header">
+                        <button class="fr-btn--close fr-btn" aria-controls="login_or_signup_siae_tender_modal">Fermer</button>
+                    </div>
+                    <div class="fr-modal__content">
+                        <h3 id="login_or_signup_siae_tender_modal_title">
+                            {{ title|default:"Connectez-vous pour accédez aux coordonnées du client" }}
+                        </h3>
+                        <div>
+                            <ul class="fr-btns-group">
+                                <li>
+                                    <a href="{% url 'auth:login' %}?next=next-params-to-replace" id="auth-link" class="fr-btn">Se connecter</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <p class="fr-hr-or fr-my-4v">ou</p>
+                        <div>
+                            <h4>Vous n'avez pas de compte ?</h4>
+                            <ul class="fr-btns-group">
+                                <li>
+                                    <a href="{% url 'auth:signup' %}?next=next-params-to-replace" id="auth-link" class="fr-btn fr-btn--tertiary">Créer un compte</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</dialog>
 
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
-    const MODAL_ID = '#login_or_signup_siae_tender_modal';
-    $(MODAL_ID).on('show.bs.modal', function (event) {
+    document.getElementById('login_or_signup_siae_tender_modal').addEventListener('dsfr.disclose', (event) => {
         // Button that triggered the modal
-        var button = $(event.relatedTarget);
+        var button = event.explicitOriginalTarget;
 
         // Extract info from data-* attributes
-        var nextParams = button.data('next-params');
+        var nextParams = button.dataset['nextParams'];
 
         // Update the modal's content
         // - replace next param for login & signup
-        var modal = document.querySelector(MODAL_ID);
+        var modal = document.querySelector('#login_or_signup_siae_tender_modal');
         modal.querySelectorAll('#auth-link').forEach(link => {
             var linkUrl = link.getAttribute('href');
             link.setAttribute('href', linkUrl.replace('next-params-to-replace', nextParams));
