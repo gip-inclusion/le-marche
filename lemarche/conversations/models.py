@@ -290,14 +290,14 @@ class TemplateTransactional(models.Model):
                 "from_name": from_name,
             }
             if self.source == conversation_constants.SOURCE_MAILJET:
-                result = api_mailjet.send_transactional_email_with_template(**args)
+                api_mailjet.send_transactional_email_with_template(**args)
             elif self.source == conversation_constants.SOURCE_BREVO:
-                result = api_brevo.send_transactional_email_with_template(**args)
+                api_brevo.send_transactional_email_with_template(**args)
             # create log
             self.create_send_log(
                 recipient_content_object=recipient_content_object,
                 parent_content_object=parent_content_object,
-                extra_data={"source": self.source, "args": args, "response": result()},
+                extra_data={"source": self.source, "args": args},  # "response": result()
             )
 
 
