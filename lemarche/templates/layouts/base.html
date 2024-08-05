@@ -36,7 +36,7 @@
     {% block opengraph %}
     {% endblock opengraph %}
   </head>
-  <body>
+  <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% block skiplinks %}
       {% dsfr_skiplinks skiplinks %}
     {% endblock skiplinks %}
