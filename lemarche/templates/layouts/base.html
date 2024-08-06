@@ -48,8 +48,7 @@
     {% endif %}
     <div class="fr-container fr-mt-4w fr-mb-6w">
       {% block breadcrumb %}
-        {% comment %} {% dsfr_breadcrumb %} {% endcomment %}
-        {% include "content_manager/blocks/breadcrumbs.html" %}
+        {% comment %} empty because managed for each type of page {% endcomment %}
       {% endblock breadcrumb %}
       <main id="content" role="main">
         {% block messages %}
