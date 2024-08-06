@@ -6,8 +6,11 @@
 {% block body_class %}p-homepage{{ block.super }}{% endblock %}
 {% block title %}{{ page.title }} {{ block.super }}{% endblock %}
 {% block content %}
+    <div class="fr-container">
+        {% include "content_manager/blocks/breadcrumbs.html" %}
+    </div>    
     {% if sub_header_custom_message %}
-        <section class="">
+        <section>
             <div class="fr-container">
                 <div class="fr-grid-row">
                     <div class="fr-col-12">
