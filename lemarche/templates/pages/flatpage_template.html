@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}{{ flatpage.title }}{{ block.super }}{% endblock %}
+{% block page_title %}{{ flatpage.title }}{{ block.super }}{% endblock page_title %}
 
 {% block meta_title %}{{ flatpage.meta_title|default:flatpage.title }}{% endblock %}
 {% block meta_description %}{{ flatpage.meta_description }}{% endblock %}

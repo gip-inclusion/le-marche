@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load dsfr_tags static humanize %}
 
-{% block title %}{{ tender_kind_display }} {{ tender.title }}{{ block.super }}{% endblock %}
+{% block page_title %}{{ tender_kind_display }} {{ tender.title }}{{ block.super }}{% endblock page_title %}
 
 {% block breadcrumb %}
     {% dsfr_breadcrumb %}

@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load dsfr_tags process_dict %}
 
-{% block title %}Connexion{{ block.super }}{% endblock title %}
+{% block page_title %}Connexion{{ block.super }}{% endblock page_title %}
 
 {% block breadcrumb %}
     {% process_dict root_dir=HOME_PAGE_PATH current="Connexion" as breadcrumb_data %}

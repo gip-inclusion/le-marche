@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 {% load static dsfr_tags %}
-{% block title %}{{ siae.name_display }} est sur le marché de l'inclusion{% endblock title %}
+{% block page_title %}{{ siae.name_display }} est sur le marché de l'inclusion{% endblock page_title %}
 {% block opengraph %}
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
     <meta property="og:title" content="{{ siae.name_display }}" />

@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load static dsfr_tags process_dict %}
 
-{% block title %}Modifier mon profil{{ block.super }}{% endblock title %}
+{% block page_title %}Modifier mon profil{{ block.super }}{% endblock page_title %}
 
 {% block breadcrumb %}
     {% process_dict root_dir=HOME_PAGE_PATH current="Modifier mon profil" as breadcrumb_data %}
