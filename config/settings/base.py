@@ -220,6 +220,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "wagtail.contrib.settings.context_processors.settings",
                 # custom
                 "lemarche.utils.settings_context_processors.expose_settings",
                 "lemarche.utils.home_page_context_processors.home_page",
