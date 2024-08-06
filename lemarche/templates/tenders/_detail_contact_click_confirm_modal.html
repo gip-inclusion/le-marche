@@ -12,7 +12,7 @@
                             Pour {{ tender.cta_card_button_text | lower }}, vous devez signaler votre intérêt à l'acheteur.
                         </p>
                     </div>
-                    <form method="post" action="{% url 'tenders:detail-contact-click-stat' tender.slug %}?siae_id=siae-id-params-to-replace">
+                    <form method="post" action="{% url 'tenders:detail-contact-click-stat' tender.slug %}?siae_id={{ siae_id }}">
                         {% csrf_token %}
                         <div class="fr-modal__footer">
                             <ul class="fr-btns-group fr-btns-group--inline-sm fr-btns-group--equisized fr-btns-group--right">
@@ -30,22 +30,3 @@
         </div>
     </div>
 </dialog>
-
-<script type="text/javascript">
-document.addEventListener("DOMContentLoaded", function() {
-    const MODAL_ID = 'detail_contact_click_confirm_modal';
-    document.getElementById(MODAL_ID).addEventListener('dsfr.disclose', (event) => {    
-        // Button that triggered the modal
-        var button = event.explicitOriginalTarget;
-
-        // Extract info from data-* attributes
-        var siaeIdParams = button.dataset['siaeId'];
-
-        // Update the modal's content
-        var modal = document.querySelector('#' + MODAL_ID);
-        var form = modal.querySelector('form');
-        var formAction = form.getAttribute('action');
-        form.setAttribute('action', formAction.replace('siae-id-params-to-replace', siaeIdParams));
-    });
-});
-</script>
