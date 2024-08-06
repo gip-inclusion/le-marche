@@ -1,7 +1,9 @@
 <!-- admin info -->
 {% load info_card_cms %}
 {% if user.is_authenticated and user.is_admin %}
-    {% include "tenders/_detail_admin_extra_info.html" with tender=tender %}
+    <div class="fr-col-12">
+        {% include "tenders/_detail_admin_extra_info.html" with tender=tender %}
+    </div>
 {% endif %}
 <!-- author stats info -->
 {% if user == tender.author %}
