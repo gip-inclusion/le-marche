@@ -24,9 +24,9 @@
     {% endcompress %}
     {% block extra_css %}
     {% endblock extra_css %}
-    <title>
-      {% block title %}— Le marché de l'inclusion{% endblock %}
-    </title>
+    {% block title %}
+    <title>{% block page_title %}— Le marché de l'inclusion{% endblock page_title %}</title>
+    {% endblock title %}
     {% block meta_description %}
       <meta name="description"
             content="Le marché de l'inclusion est un service numérique permettant de trouver un prestataire sociale inclusif proposant des produits ou services professionnels.">

@@ -1,7 +1,7 @@
 {% extends BASE_TEMPLATE %}
 {% load bootstrap4 static dsfr_tags process_dict %}
 
-{% block title %}{{ page_title }}{{ block.super }}{% endblock %}
+{% block page_title %}{{ page_title }}{{ block.super }}{% endblock page_title %}
 
 {% block breadcrumb %}
     {% process_dict root_dir=HOME_PAGE_PATH links=breadcrumb_links current=page_title as breadcrumb_data %}

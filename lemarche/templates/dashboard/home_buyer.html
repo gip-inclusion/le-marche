@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load static get_verbose_name process_dict dsfr_tags %}
 
-{% block title %}Tableau de bord{{ block.super }}{% endblock title %}
+{% block page_title %}Tableau de bord{{ block.super }}{% endblock page_title %}
 
 {% block breadcrumb %}
     {% process_dict root_dir=HOME_PAGE_PATH current="Tableau de bord" as breadcrumb_data %}
