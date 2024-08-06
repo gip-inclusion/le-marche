@@ -13,19 +13,16 @@
         <!-- Contact details above + help -->
         {% if not tender.deadline_date_outdated and not tender.response_is_anonymous %}
             {% if siae_has_detail_contact_click_date %}
-                <div class="fr-grid-row">
+                <div class="fr-grid-row fr-grid-row--gutters">
                     <div class="fr-col-12 fr-col-lg-8">
-                        <div class="alert alert-info fade show" role="status">
+                        <div class="fr-alert fr-alert--info" role="status">
                             {% include "tenders/_detail_contact.html" with tender=tender source="alert" %}
                         </div>
                     </div>
                     <div class="fr-col-12 fr-col-lg-4">
-                        <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-                            <p class="mb-1">
-                                <i class="ri-information-line ri-lg"></i>
-                                <strong>Conseil</strong>
-                            </p>
-                            <p class="mb-0 fs-sm">
+                        <div class="fr-callout fr-icon-lightbulb-line">
+                            <h3 class="fr-callout__title">Conseil</h3>
+                            <p class="fr-callout__text">
                                 N'attendez pas et contactez dès maintenant le client.
                                 En fonction, envoyez lui un devis, une plaquette commerciale ou répondez à son marché.
                             </p>

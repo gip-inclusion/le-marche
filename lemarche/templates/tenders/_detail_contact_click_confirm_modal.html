@@ -1,40 +1,48 @@
-<div class="modal fade modal-siae" id="detail_contact_click_confirm_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="modalTitle">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">Signaler votre intérêt à l'acheteur ?</h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-                    <i class="ri-close-line"></i>
-                </button>
+<dialog id="detail_contact_click_confirm_modal" role="dialog" class="fr-modal" aria-labelledby="detail_contact_click_confirm_modal_title">
+    <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-8">
+                <div class="fr-modal__body">
+                    <div class="fr-modal__header">
+                        <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="detail_contact_click_confirm_modal" target="_self">Fermer</button>
+                    </div>
+                    <div class="fr-modal__content">
+                        <h3 id="detail_contact_click_confirm_modal_title" class="fr-modal__title">Signaler votre intérêt à l'acheteur ?</h3>
+                        <p>
+                            Pour {{ tender.cta_card_button_text | lower }}, vous devez signaler votre intérêt à l'acheteur.
+                        </p>
+                    </div>
+                    <form method="post" action="{% url 'tenders:detail-contact-click-stat' tender.slug %}?siae_id=siae-id-params-to-replace">
+                        {% csrf_token %}
+                        <div class="fr-modal__footer">
+                            <ul class="fr-btns-group fr-btns-group--inline-sm fr-btns-group--equisized fr-btns-group--right">
+                                <li>
+                                    <button type="submit" class="fr-btn fr-btn--secondary" name="detail_contact_click_confirm" value="false">Non</button>
+                                </li>
+                                <li>
+                                    <button type="submit" class="fr-btn" name="detail_contact_click_confirm" value="true">Oui</button>
+                                </li>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <form method="POST" action="{% url 'tenders:detail-contact-click-stat' tender.slug %}?siae_id=siae-id-params-to-replace">
-                {% csrf_token %}
-                <div class="modal-body home-content-body">
-                    <p>
-                        Pour {{ tender.cta_card_button_text | lower }}, vous devez signaler votre intérêt à l'acheteur.
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-sm btn-link" name="detail_contact_click_confirm" value="false">Non</button>
-                    <button type="submit" class="btn btn-sm btn-primary" name="detail_contact_click_confirm" value="true">Oui</button>
-                </div>
-            </form>
         </div>
     </div>
-</div>
+</dialog>
 
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
-    const MODAL_ID = '#detail_contact_click_confirm_modal';
-    $(MODAL_ID).on('show.bs.modal', function (event) {
+    const MODAL_ID = 'detail_contact_click_confirm_modal';
+    document.getElementById(MODAL_ID).addEventListener('dsfr.disclose', (event) => {    
         // Button that triggered the modal
-        var button = $(event.relatedTarget);
+        var button = event.explicitOriginalTarget;
 
         // Extract info from data-* attributes
-        var siaeIdParams = button.data('siae-id');
+        var siaeIdParams = button.dataset['siaeId'];
 
         // Update the modal's content
-        var modal = document.querySelector(MODAL_ID);
+        var modal = document.querySelector('#' + MODAL_ID);
         var form = modal.querySelector('form');
         var formAction = form.getAttribute('action');
         form.setAttribute('action', formAction.replace('siae-id-params-to-replace', siaeIdParams));
