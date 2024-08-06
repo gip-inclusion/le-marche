@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 {% load static bootstrap4 %}
-{% block title %}{{ page_title }}{{ block.super }}{% endblock %}
+{% block page_title %}{{ page_title }}{{ block.super }}{% endblock page_title %}
 {% block breadcrumbs %}
     <section>
         <div class="fr-container">

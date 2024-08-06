@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load process_dict dsfr_tags %}
 
-{% block title %}Publier un besoin d'achat{{ block.super }}{% endblock title %}
+{% block page_title %}Publier un besoin d'achat{{ block.super }}{% endblock page_title %}
 
 {% block breadcrumb %}
     {% process_dict root_dir=HOME_PAGE_PATH links=breadcrumb_links current="Publier un besoin d'achat" as breadcrumb_data %}
