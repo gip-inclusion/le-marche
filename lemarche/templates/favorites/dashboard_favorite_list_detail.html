@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load static dsfr_tags %}
 
-{% block title %}{{ favorite_list.name }} - Liste d'achat favoris{{ block.super }}{% endblock title %}
+{% block page_title %}{{ favorite_list.name }} - Liste d'achat favoris{{ block.super }}{% endblock page_title %}
 
 {% block breadcrumb %}
     {% dsfr_breadcrumb %}
