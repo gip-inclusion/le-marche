@@ -352,7 +352,7 @@ class TenderFilterForm(forms.Form):
         choices=FORM_KIND_CHOICES,
         widget=forms.Select(
             attrs={
-                "class": "form-control",
+                "class": "fr-select",
                 "onchange": "this.form.submit()",
             }
         ),
