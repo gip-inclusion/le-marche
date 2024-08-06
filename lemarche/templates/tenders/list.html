@@ -1,5 +1,5 @@
 {% extends BASE_TEMPLATE %}
-{% load bootstrap4 static dsfr_tags process_dict %}
+{% load static dsfr_tags process_dict %}
 
 {% block page_title %}{{ page_title }}{{ block.super }}{% endblock page_title %}
 
@@ -11,23 +11,21 @@
 {% block content %}
 <section>
     <div class="fr-container py-4">
-        <div class="fr-grid-row">
-            <div class="fr-col-12 fr-col-lg">
+        <div class="fr-grid-row fr-mb-8v">
+            <div class="fr-col-12 fr-col-md-8">
                 <h1>{{ page_title }}</h1>
             </div>
             <!-- "buyer": can create new tenders -->
             {% if user.kind != user.KIND_SIAE %}
-                <div class="fr-col-12 fr-col-md-auto">
+                <div class="fr-col-12 fr-col-md">
                     <a href="{% url 'tenders:create' %}" id="tender-list-create" class="fr-btn fr-btn--icon-right fr-icon-add-circle-line">
                         Publier un besoin d'achat
                     </a>
                 </div>
             {% else %}
-                <div class="fr-col-12 fr-col-md-auto">
-                    <form method="GET" action="">
-                        <div class="form-group">
-                            {{ filter_form.kind }}
-                        </div>
+                <div class="fr-col-12 fr-col-md">
+                    <form method="get" action="">
+                        {{ filter_form.kind }}
                     </form>
                 </div>
             {% endif %}
