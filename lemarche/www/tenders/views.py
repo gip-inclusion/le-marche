@@ -664,8 +664,16 @@ class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, Updat
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["tender"] = self.object
-        context["parent_title"] = TITLE_DETAIL_PAGE_OTHERS
         context["nps_form_id"] = settings.TALLY_BUYER_NPS_FORM_ID
+        context["breadcrumb_data"] = {
+            "root_dir": home_page_context_processors.home_page(self.request)["HOME_PAGE_PATH"],
+            "links": [
+                {"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")},
+                {"title": TITLE_DETAIL_PAGE_OTHERS, "url": reverse_lazy("tenders:list")},
+                {"title": self.object.title[:25], "url": reverse_lazy("tenders:detail", args=[self.object.slug])},
+            ],
+            "current": "Avez-vous contractualisé ?",
+        }
         return context
 
     def get_form_kwargs(self):
@@ -746,7 +754,15 @@ class TenderDetailSiaeSurveyTransactionedView(SesameSiaeMemberRequiredMixin, Upd
         context = super().get_context_data(**kwargs)
         context["tender"] = self.tender
         context["siae"] = self.siae
-        context["parent_title"] = TITLE_DETAIL_PAGE_SIAE
+        context["breadcrumb_data"] = {
+            "root_dir": home_page_context_processors.home_page(self.request)["HOME_PAGE_PATH"],
+            "links": [
+                {"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")},
+                {"title": TITLE_DETAIL_PAGE_SIAE, "url": reverse_lazy("tenders:list")},
+                {"title": self.tender.title[:25], "url": reverse_lazy("tenders:detail", args=[self.tender.slug])},
+            ],
+            "current": "Avez-vous contractualisé ?",
+        }
         return context
 
     def get_form_kwargs(self):
