@@ -1,10 +1,10 @@
 {% extends "layouts/base.html" %}
 {% load static get_verbose_name process_dict dsfr_tags %}
 
-{% block page_title %}Tableau de bord{{ block.super }}{% endblock page_title %}
+{% block page_title %}{{ page_title }}{{ block.super }}{% endblock page_title %}
 
 {% block breadcrumb %}
-    {% process_dict root_dir=HOME_PAGE_PATH current="Tableau de bord" as breadcrumb_data %}
+    {% process_dict root_dir=HOME_PAGE_PATH current=page_title as breadcrumb_data %}
     {% dsfr_breadcrumb breadcrumb_data %}
 {% endblock breadcrumb %}
 
@@ -13,7 +13,7 @@
     <div class="fr-container">
         <div class="fr-grid-row">
             <div class="fr-col-12">
-                <h1>Tableau de bord</h1>
+                <h1>{{ page_title }}</h1>
             </div>
         </div>
     </div>
