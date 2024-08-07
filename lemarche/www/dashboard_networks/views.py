@@ -1,5 +1,6 @@
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
 
@@ -14,6 +15,11 @@ class DashboardNetworkDetailView(NetworkMemberRequiredMixin, DetailView):
     template_name = "networks/dashboard_network_detail.html"
     queryset = Network.objects.prefetch_related("siaes").all()
     context_object_name = "network"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb_links"] = [{"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")}]
+        return context
 
 
 class DashboardNetworkSiaeListView(NetworkMemberRequiredMixin, FormMixin, ListView):
