@@ -6,6 +6,14 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2024.5.1](https://github.com/gip-inclusion/le-marche/compare/v2024.5.0...v2024.5.1) (2024-08-07)
+
+
+### Bug Fixes
+
+* **Emails:** Template Transactional: remove result() call ([#1379](https://github.com/gip-inclusion/le-marche/issues/1379)) ([1809f5c](https://github.com/gip-inclusion/le-marche/commit/1809f5cb102042d13eb8284aa0493f6e3a29b6ee))
+* mini fixs SEO de la page faq  ([#1351](https://github.com/gip-inclusion/le-marche/issues/1351)) ([f527985](https://github.com/gip-inclusion/le-marche/commit/f52798508fa2a15c1eddedc09afc0374090b9c3c))
+
 ## [2024.5.0](https://github.com/gip-inclusion/le-marche/compare/v2024.4.0...v2024.5.0) (2024-07-18)
 
 
