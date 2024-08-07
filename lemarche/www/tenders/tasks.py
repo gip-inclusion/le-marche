@@ -646,13 +646,13 @@ def send_super_siaes_email_to_author(tender: Tender, top_siaes: list[Siae]):
             "TENDER_SIAE_INTERESTED_LIST_URL": f"{get_object_share_url(tender)}/prestataires",
         }
         for siae in top_siaes:
-            variables["siaes"].append(
+            variables["SIAES"].append(
                 {
-                    "id": siae.id,
-                    "name": siae.name_display,
-                    "kind": siae.get_kind_display(),
-                    "contact_name": siae.contact_full_name,
-                    "contact_phone": siae.contact_phone_display,
+                    "ID": siae.id,
+                    "NAME": siae.name_display,
+                    "KIND": siae.get_kind_display(),
+                    "CONTACT_NAME": siae.contact_full_name,
+                    "CONTACT_N": siae.contact_phone_display,
                     "contact_email": siae.contact_email,
                 }
             )
