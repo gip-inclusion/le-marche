@@ -616,6 +616,16 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
                 current_locations = siae_search_form.cleaned_data.get("locations")
                 if current_locations:
                     context["current_locations"] = list(current_locations.values("id", "slug", "name"))
+
+        context["breadcrumb_data"] = {
+            "root_dir": home_page_context_processors.home_page(self.request)["HOME_PAGE_PATH"],
+            "links": [
+                {"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")},
+                {"title": "Mes besoins", "url": reverse_lazy("tenders:list")},
+                {"title": self.tender.title[:25], "url": reverse_lazy("tenders:detail", args=[self.tender.slug])},
+            ],
+            "current": "Prestataires ciblés & intéressés",
+        }
         return context
 
 
