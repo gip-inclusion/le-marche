@@ -520,6 +520,12 @@ class NetworkSiaeFilterForm(forms.Form):
         queryset=Perimeter.objects.regions().order_by("name"),
         to_field_name="slug",
         required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "fr-select",
+                "onchange": "this.form.submit()",
+            }
+        ),
     )
 
     def filter_queryset(self, qs=None):

@@ -54,7 +54,6 @@ class SiaeSearchBySiretView(SiaeUserRequiredMixin, FormMixin, ListView):
         context = super().get_context_data(**kwargs)
         if len(self.request.GET.keys()):
             context["form"] = SiaeSearchBySiretForm(data=self.request.GET)
-
         context["breadcrumb_data"] = {
             "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
             "links": [
