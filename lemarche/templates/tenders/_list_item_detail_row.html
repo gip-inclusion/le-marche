@@ -1,13 +1,13 @@
 {% load get_verbose_name %}
 
-<div class="fr-grid-row">
+<div class="fr-grid-row fr-grid-row--gutters">
     {% if tender.contact_company_name_display %}
-        <div class="fr-col-md-3" title="Entreprise">
+        <div class="fr-col-12 fr-col-md-3" title="Entreprise">
             <i class="ri-building-4-line"></i>
             {{ tender.contact_company_name_display }}
         </div>
     {% endif %}
-    <div class="fr-col-md-9" title="{% get_verbose_name tender 'location' %}">
+    <div class="fr-col-12 fr-col-md-9" title="{% get_verbose_name tender 'location' %}">
         {% if tender.perimeters_list_string %}
             <i class="ri-map-pin-2-line"></i>
             {{ tender.location_display|safe }}
@@ -15,13 +15,11 @@
     </div>
 </div>
 {% if tender.accept_share_amount %}
-    <hr />
     <div class="fr-grid-row">
-        <div class="fr-col-md-3" title="{% get_verbose_name tender 'amount' %}">
+        <div class="fr-col-12 fr-col-md-3" title="{% get_verbose_name tender 'amount' %}">
             <strong>
                 Budget : {{ tender.amount_display|default:"-" }}
             </strong>
         </div>
     </div>
 {% endif %}
-

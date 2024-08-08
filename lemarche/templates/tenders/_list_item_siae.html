@@ -1,19 +1,17 @@
 {% load static humanize %}
-<div id="card-{{tender.slug}}" class="card-{{ tender.kind|lower }}{% if tender.deadline_date_is_outdated_annotated %}-outdated{% endif %} mb-2">
+
+<div id="card-{{tender.slug}}" class="fr-card fr-card--horizontal fr-mb-3w card-{{ tender.kind|lower }}{% if tender.deadline_date_is_outdated_annotated %}-outdated{% endif %} mb-2">
     <div class="fr-card__body">
-        <div class="fr-grid-row">
-            <div class="fr-col-md-9">
+        <div class="fr-card__content">
+            <div class="fr-card__start">
                 {% comment %} we set is_new_for_siaes to False because we have other conf in this view {% endcomment %}
                 {% include "tenders/_closed_badge.html" with tender=tender is_new_for_siaes=False %}
-            </div>
-            <div class="fr-col-md-3">
                 {% if tender.is_new_for_siaes %}
                     <p class="fr-badge fr-badge--sm fr-badge--green-emeraude">Nouveau</p>
                 {% elif tender.deadline_date_is_outdated_annotated %}
                     <form action="{% url 'tenders:hide-tender-siae' tender.slug %}"
                         method="post" hx-post="{% url 'tenders:hide-tender-siae' tender.slug %}"
-                        hx-target="#card-{{tender.slug}}" hx-swap="outerHTML"
-                    >
+                        hx-target="#card-{{tender.slug}}" hx-swap="outerHTML">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-light btn-ico btn-sm float-right" aria-label="Supprimer">
                             <i class="ri-delete-bin-2-line"></i>
@@ -21,13 +19,14 @@
                     </form>
                 {% endif %}
             </div>
+
+            <h2 class="fr-card__title" class="py-2{% if tender.deadline_date_is_outdated_annotated %} text-nuance-03{% endif %}">
+                <a href="{% url 'tenders:detail' tender.slug %}">{{ tender.title }}</a>
+            </h2>
+
+            <div class="fr-card__desc">
+                {% include "tenders/_list_item_detail_row.html" with tender=tender %}
+            </div>
         </div>
-        <a href="{% url 'tenders:detail' tender.slug %}">
-            <h2 class="py-2{% if tender.deadline_date_is_outdated_annotated %} text-nuance-03{% endif %}">{{ tender.title }}</h2>
-        </a>
-
-        <hr />
-
-        {% include "tenders/_list_item_detail_row.html" with tender=tender %}
     </div>
 </div>
