@@ -16,7 +16,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderSiae, TenderStepsData
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
-from lemarche.utils import constants, home_page_context_processors
+from lemarche.utils import constants, settings_context_processors
 from lemarche.utils.data import get_choice
 from lemarche.utils.mixins import (
     SesameSiaeMemberRequiredMixin,
@@ -42,10 +42,6 @@ from lemarche.www.tenders.tasks import (  # , send_tender_emails_to_siaes
     send_siae_interested_email_to_author,
 )
 from lemarche.www.tenders.utils import create_tender_from_dict, get_or_create_user, update_or_create_questions_list
-
-
-TITLE_DETAIL_PAGE_SIAE = "Trouver de nouvelles opportunités"
-TITLE_DETAIL_PAGE_OTHERS = "Mes besoins"
 
 
 class TenderCreateMultiStepView(SessionWizardView):
@@ -154,7 +150,9 @@ class TenderCreateMultiStepView(SessionWizardView):
 
         context["breadcrumb_links"] = []
         if self.request.user.is_authenticated:
-            context["breadcrumb_links"].append({"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")})
+            context["breadcrumb_links"].append(
+                {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}
+            )
             context["breadcrumb_links"].append({"title": "Besoins en cours", "url": reverse_lazy("tenders:list")})
         return context
 
@@ -321,7 +319,9 @@ class TenderListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user_kind = self.request.user.kind if self.request.user.is_authenticated else "anonymous"
-        context["page_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
+        context["page_title"] = (
+            settings.TENDER_DETAIL_TITLE_SIAE if user_kind == User.KIND_SIAE else settings.TENDER_DETAIL_TITLE_OTHERS
+        )
         context["title_kind_sourcing_siae"] = (
             tender_constants.KIND_PROJECT_SIAE_DISPLAY
             if user_kind == User.KIND_SIAE
@@ -329,7 +329,7 @@ class TenderListView(LoginRequiredMixin, ListView):
         )
         context["tender_constants"] = tender_constants
         context["filter_form"] = self.filter_form
-        context["breadcrumb_links"] = [{"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")}]
+        context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
         return context
 
 
@@ -384,7 +384,9 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
         user_kind = user.kind if user.is_authenticated else "anonymous"
         show_nps = self.request.GET.get("nps", None)
         # enrich context
-        context["parent_title"] = TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else TITLE_DETAIL_PAGE_OTHERS
+        context["parent_title"] = (
+            settings.TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else settings.TITLE_DETAIL_PAGE_OTHERS
+        )
         context["tender_kind_display"] = (
             tender_constants.KIND_PROJECT_SIAE_DISPLAY
             if user_kind == User.KIND_SIAE and self.object.kind == tender_constants.KIND_PROJECT
@@ -403,13 +405,13 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
             ).exists()
 
         context["breadcrumb_data"] = {
-            "root_dir": home_page_context_processors.home_page(self.request)["HOME_PAGE_PATH"],
+            "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
             "links": [],
             "current": self.object.title[:25],
         }
         if user.is_authenticated:
             context["breadcrumb_data"]["links"].append(
-                {"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")}
+                {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}
             )
             context["breadcrumb_data"]["links"].append(
                 {"title": context["parent_title"], "url": reverse_lazy("tenders:list")}
@@ -618,9 +620,9 @@ class TenderSiaeListView(TenderAuthorOrAdminRequiredMixin, FormMixin, ListView):
                     context["current_locations"] = list(current_locations.values("id", "slug", "name"))
 
         context["breadcrumb_data"] = {
-            "root_dir": home_page_context_processors.home_page(self.request)["HOME_PAGE_PATH"],
+            "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
             "links": [
-                {"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")},
+                {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
                 {"title": "Mes besoins", "url": reverse_lazy("tenders:list")},
                 {"title": self.tender.title[:25], "url": reverse_lazy("tenders:detail", args=[self.tender.slug])},
             ],
@@ -676,10 +678,10 @@ class TenderDetailSurveyTransactionedView(SesameTenderAuthorRequiredMixin, Updat
         context["tender"] = self.object
         context["nps_form_id"] = settings.TALLY_BUYER_NPS_FORM_ID
         context["breadcrumb_data"] = {
-            "root_dir": home_page_context_processors.home_page(self.request)["HOME_PAGE_PATH"],
+            "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
             "links": [
-                {"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")},
-                {"title": TITLE_DETAIL_PAGE_OTHERS, "url": reverse_lazy("tenders:list")},
+                {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
+                {"title": settings.TITLE_DETAIL_PAGE_OTHERS, "url": reverse_lazy("tenders:list")},
                 {"title": self.object.title[:25], "url": reverse_lazy("tenders:detail", args=[self.object.slug])},
             ],
             "current": "Avez-vous contractualisé ?",
@@ -765,10 +767,10 @@ class TenderDetailSiaeSurveyTransactionedView(SesameSiaeMemberRequiredMixin, Upd
         context["tender"] = self.tender
         context["siae"] = self.siae
         context["breadcrumb_data"] = {
-            "root_dir": home_page_context_processors.home_page(self.request)["HOME_PAGE_PATH"],
+            "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
             "links": [
-                {"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")},
-                {"title": TITLE_DETAIL_PAGE_SIAE, "url": reverse_lazy("tenders:list")},
+                {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
+                {"title": settings.TITLE_DETAIL_PAGE_SIAE, "url": reverse_lazy("tenders:list")},
                 {"title": self.tender.title[:25], "url": reverse_lazy("tenders:detail", args=[self.tender.slug])},
             ],
             "current": "Avez-vous contractualisé ?",

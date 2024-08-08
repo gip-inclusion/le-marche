@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -10,7 +11,7 @@ from django.views.generic.edit import CreateView
 
 from lemarche.favorites.models import FavoriteItem, FavoriteList
 from lemarche.siaes.models import Siae
-from lemarche.utils import home_page_context_processors
+from lemarche.utils import settings_context_processors
 from lemarche.utils.mixins import FavoriteListOwnerRequiredMixin
 from lemarche.www.dashboard_favorites.forms import FavoriteListEditForm
 
@@ -30,11 +31,11 @@ class DashboardFavoriteListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["form"] = FavoriteListEditForm()
         context["breadcrumb_data"] = {
-            "root_dir": home_page_context_processors.home_page(self.request)["HOME_PAGE_PATH"],
+            "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
             "links": [
-                {"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")},
+                {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
             ],
-            "current": "Liste d'achat favoris",
+            "current": settings.FAVORITE_LIST_TITLE,
         }
         return context
 
@@ -69,10 +70,10 @@ class DashboardFavoriteListDetailView(FavoriteListOwnerRequiredMixin, DetailView
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["breadcrumb_data"] = {
-            "root_dir": home_page_context_processors.home_page(self.request)["HOME_PAGE_PATH"],
+            "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
             "links": [
-                {"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")},
-                {"title": "Liste d'achat favoris", "url": reverse_lazy("dashboard_favorites:list")},
+                {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
+                {"title": settings.FAVORITE_LIST_TITLE, "url": reverse_lazy("dashboard_favorites:list")},
             ],
             "current": self.object.name,
         }
