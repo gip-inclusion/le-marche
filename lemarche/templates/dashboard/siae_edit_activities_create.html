@@ -12,7 +12,7 @@
                                 <a href="{{ HOME_PAGE_PATH }}">Accueil</a>
                             </li>
                             <li class="breadcrumb-item">
-                                <a href="{% url 'dashboard:home' %}">Tableau de bord</a>
+                                <a href="{% url 'dashboard:home' %}">{{ DASHBOARD_TITLE }}</a>
                             </li>
                             <li class="breadcrumb-item" title="{{ siae.name_display }} : modifier">
                                 <a href="{% url 'dashboard_siaes:siae_edit_activities' siae.slug %}">{{ siae.name_display }} : modifier</a>

@@ -8,7 +8,7 @@
                     </div>
                     <div class="fr-modal__content">
                         <h3 id="favorite_item_add_modal_title" class="fr-modal__title">
-                            Liste d'achat favoris
+                            {{ FAVORITE_LIST_TITLE }}
                         </h3>
                         <!-- New list -->
                         <form method="post" data-action="{% url 'siae:favorite_lists' siae.slug|default:'siae-slug-to-replace' %}">

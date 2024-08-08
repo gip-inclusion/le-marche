@@ -1,22 +1,37 @@
 from django.conf import settings
+from django.urls import reverse_lazy
+
+from lemarche.users.models import User
 
 
 def expose_settings(request):
     """
     Put things into the context to make them available in templates.
-    https://docs.djangoproject.com/en/2.1/ref/templates/api/#using-requestcontext
+    https://docs.djangoproject.com/en/5.0/ref/templates/api/#using-requestcontext
     """
     base_template = "layouts/base_htmx.html" if request.htmx else "layouts/base.html"
 
+    home_page = reverse_lazy("wagtail_serve", args=("",))
+    if request.user.is_authenticated and request.user.kind == User.KIND_SIAE:
+        home_page = settings.SIAE_HOME_PAGE
+
     return {
-        "BASE_TEMPLATE": base_template,
         "BITOUBI_ENV": settings.BITOUBI_ENV,
         "BITOUBI_ENV_COLOR": settings.BITOUBI_ENV_COLOR,
+        # external services
         "GOOGLE_TAG_MANAGER_ID": settings.GOOGLE_TAG_MANAGER_ID,
         "MATOMO_SITE_ID": settings.MATOMO_SITE_ID,
         "MATOMO_HOST": settings.MATOMO_HOST,
         "MATOMO_TAG_MANAGER_CONTAINER_ID": settings.MATOMO_TAG_MANAGER_CONTAINER_ID,
         "CRISP_ID": settings.CRISP_ID,
+        # template & wording
+        "BASE_TEMPLATE": base_template,
+        "HOME_PAGE_PATH": home_page,
+        "DASHBOARD_TITLE": settings.DASHBOARD_TITLE,
+        "TENDER_DETAIL_TITLE_SIAE": settings.TENDER_DETAIL_TITLE_SIAE,
+        "TENDER_DETAIL_TITLE_OTHERS": settings.TENDER_DETAIL_TITLE_OTHERS,
+        "FAVORITE_LIST_TITLE": settings.FAVORITE_LIST_TITLE,
+        # emails & urls
         "API_GOUV_URL": settings.API_GOUV_URL,
         "CONTACT_EMAIL": settings.CONTACT_EMAIL,
         "TEAM_CONTACT_EMAIL": settings.TEAM_CONTACT_EMAIL,

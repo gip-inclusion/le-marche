@@ -223,7 +223,6 @@ TEMPLATES = [
                 "wagtail.contrib.settings.context_processors.settings",
                 # custom
                 "lemarche.utils.settings_context_processors.expose_settings",
-                "lemarche.utils.home_page_context_processors.home_page",
             ],
         },
     },
@@ -292,6 +291,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGIN_URL = "auth:login"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
 
 # Django Sesame
 # https://django-sesame.readthedocs.io/en/stable/index.html
@@ -382,6 +382,7 @@ BREVO_TENDERS_AUTHOR_SUPER_SIAES_TEMPLATE_ID = env.int("BREVO_TENDERS_AUTHOR_SUP
 
 BREVO_TENDERS_MIN_AMOUNT_TO_SEND = env.int("BREVO_TENDERS_MIN_AMOUNT_TO_SEND", 34998)
 
+
 # Caching
 # https://docs.djangoproject.com/en/4.0/topics/cache/
 # ------------------------------------------------------------------------------
@@ -413,6 +414,7 @@ else:
     }
 
 SELECT2_CACHE_BACKEND = "default"
+
 
 # Security
 # ------------------------------------------------------------------------------
@@ -686,6 +688,7 @@ MESSAGE_TAGS = {
 # Async Configuration Options: Huey
 # Workers are run in prod via `CC_WORKER_COMMAND = django-admin run_huey`.
 # ------------------------------------------------------------------------------
+
 CONNECTION_MODES_HUEY = {
     # immediate mode
     "direct": {"immediate": True},
@@ -803,6 +806,15 @@ CKEDITOR_CONFIGS = {
 # ------------------------------------------------------------------------------
 
 SIMPLE_HISTORY_HISTORY_ID_USE_UUID = True
+
+
+# Wording
+# ------------------------------------------------------------------------------
+
+DASHBOARD_TITLE = "Tableau de bord"
+TENDER_DETAIL_TITLE_SIAE = "Trouver de nouvelles opportunités"
+TENDER_DETAIL_TITLE_OTHERS = "Mes besoins"
+FAVORITE_LIST_TITLE = "Liste d'achat favoris"
 
 
 # Internal & external
@@ -938,12 +950,14 @@ FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 # MTCAPTCHA
 # ------------------------------------------------------------------------------
+
 MTCAPTCHA_PRIVATE_KEY = env.str("MTCAPTCHA_PRIVATE_KEY", "")
 MTCAPTCHA_PUBLIC_KEY = env.str("MTCAPTCHA_PUBLIC_KEY", "")
 
 
 # OPENAI
 # ------------------------------------------------------------------------------
+
 OPENAI_ORG = env.str("OPENAI_ORG", "")
 OPENAI_API_BASE = env.str("OPENAI_API_BASE", "")
 OPENAI_API_KEY = env.str("OPENAI_API_KEY", "")
