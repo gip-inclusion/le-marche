@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load dsfr_tags %}
 
-{% block page_title %}Liste d'achat favoris{{ block.super }}{% endblock page_title %}
+{% block page_title %}{{ FAVORITE_LIST_TITLE }}{{ block.super }}{% endblock page_title %}
 
 {% block breadcrumb %}
     {% dsfr_breadcrumb %}
@@ -12,7 +12,7 @@
     <div class="fr-container">
         <div class="fr-grid-row">
             <div class="fr-col-12 fr-col-lg-8">
-                <h1>Liste d'achat favoris</h1>
+                <h1>{{ FAVORITE_LIST_TITLE }}</h1>
             </div>
         </div>
         <div class="fr-grid-row">
