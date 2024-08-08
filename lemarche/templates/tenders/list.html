@@ -31,10 +31,9 @@
             {% endif %}
         </div>
         <div class="fr-grid-row">
-            <div class="fr-col-12 my-5">
+            <div class="fr-col-12">
                 <!-- "buyer": display tenders which the user is the author -->
                 {% if user.kind != user.KIND_SIAE %}
-                    <br />
                     {% block htmx %}
                     <div id="tendersList" class="fr-tabs">
                         <ul class="fr-tabs__list" role="tablist">
@@ -52,7 +51,7 @@
                             <li role="presentation">
                                 <button role="tab" class="fr-tabs__tab" aria-selected="{% if request.get_full_path == TENDERS_DRAFT_LIST_URL %}true{% else %}false{% endif %}"
                                     hx-push-url="true" hx-get="{{ TENDERS_DRAFT_LIST_URL }}" hx-target="#tendersList" hx-swap="outerHTML">
-                                    Brouillon
+                                    Brouillons
                                 </button>
                             </li>
                             <li role="presentation">
@@ -64,16 +63,17 @@
                             <li role="presentation">
                                 <button role="tab" class="fr-tabs__tab" aria-selected="{% if request.get_full_path == TENDERS_SENT_LIST_URL %}true{% else %}false{% endif %}"
                                     hx-push-url="true" hx-get="{{ TENDERS_SENT_LIST_URL }}" hx-target="#tendersList" hx-swap="outerHTML">
-                                    Envoyé
+                                    Envoyés
                                 </button>
                             </li>
                         </ul>
                         <div id="{{ request.resolver_match.url_name }}_panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel" tabindex="0">
-                            {% for tender in tenders %}
-                                {% include "tenders/_list_item_buyer.html" with tender=tender %}
-                            {% endfor %}
-                            {% include "includes/_pagination.html" %}
-                            {% if not tenders %}
+                            {% if tenders %}
+                                {% for tender in tenders %}
+                                    {% include "tenders/_list_item_buyer.html" with tender=tender %}
+                                {% endfor %}
+                                {% include "includes/_pagination.html" %}
+                            {% else %}
                                 <p class="text-muted my-5">
                                     {% if request.get_full_path == TENDERS_LIST_URL %}
                                         Publiez un besoin pour trouver des prestataires inclusifs près de chez vous.
@@ -96,11 +96,12 @@
                     {% endblock %}
                 <!-- "siae": display opportunities -->
                 {% else %}
-                    {% for tender in tenders %}
-                        {% include "tenders/_list_item_siae.html" with tender=tender %}
-                    {% endfor %}
-                    {% include "includes/_pagination.html" %}
-                    {% if not tenders %}
+                    {% if tenders %}
+                        {% for tender in tenders %}
+                            {% include "tenders/_list_item_siae.html" with tender=tender %}
+                        {% endfor %}
+                        {% include "includes/_pagination.html" %}
+                    {% else %}
                         <p class="text-muted">
                             Désolé, nous n'avons aucune opportunité à vous présenter pour le moment.
                             <br />
