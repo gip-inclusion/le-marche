@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
@@ -9,7 +10,7 @@ from django.views.generic import CreateView, DeleteView, DetailView, ListView, U
 from django.views.generic.edit import FormMixin
 
 from lemarche.siaes.models import Siae, SiaeActivity, SiaeUser, SiaeUserRequest
-from lemarche.utils import home_page_context_processors
+from lemarche.utils import settings_context_processors
 from lemarche.utils.apis import api_brevo
 from lemarche.utils.mixins import SiaeMemberRequiredMixin, SiaeUserAndNotMemberRequiredMixin, SiaeUserRequiredMixin
 from lemarche.utils.s3 import S3Upload
@@ -55,9 +56,9 @@ class SiaeSearchBySiretView(SiaeUserRequiredMixin, FormMixin, ListView):
             context["form"] = SiaeSearchBySiretForm(data=self.request.GET)
 
         context["breadcrumb_data"] = {
-            "root_dir": home_page_context_processors.home_page(self.request)["HOME_PAGE_PATH"],
+            "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
             "links": [
-                {"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")},
+                {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
             ],
             "current": "Rechercher ma structure",
         }
@@ -79,10 +80,10 @@ class SiaeSearchAdoptConfirmView(SiaeUserAndNotMemberRequiredMixin, SuccessMessa
         siae_user_pending_request = self.object.siaeuserrequest_set.initiator(self.request.user).pending()
         context["siae_user_pending_request"] = siae_user_pending_request
         context["breadcrumb_data"] = {
-            "root_dir": home_page_context_processors.home_page(self.request)["HOME_PAGE_PATH"],
+            "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
             "links": [
-                {"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")},
-                {"title": "Tableau de bord", "url": reverse_lazy("dashboard_siaes:siae_search_by_siret")},
+                {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
+                {"title": "Rechercher ma structure", "url": reverse_lazy("dashboard_siaes:siae_search_by_siret")},
             ],
             "current": "Vérifier ma structure",
         }
@@ -126,7 +127,7 @@ class SiaeUsersView(SiaeMemberRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         siae_user_pending_request = self.object.siaeuserrequest_set.assignee(self.request.user).pending()
         context["siae_user_pending_request"] = siae_user_pending_request
-        context["breadcrumb_links"] = [{"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")}]
+        context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
         context["breadcrumb_current"] = f"{self.object.name_display} : collaborateurs"
         return context
 
@@ -143,7 +144,7 @@ class SiaeEditSearchView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateVie
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["breadcrumb_links"] = [{"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")}]
+        context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
         context["breadcrumb_current"] = f"{self.object.name_display} : modifier"
         return context
 
@@ -257,7 +258,7 @@ class SiaeEditInfoView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView)
             .exclude(id=self.object.id)
             .order_by("-updated_at")[:3]
         )
-        context["breadcrumb_links"] = [{"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")}]
+        context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
         context["breadcrumb_current"] = f"{self.object.name_display} : modifier"
         return context
 
@@ -311,7 +312,7 @@ class SiaeEditOfferView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView
         s3_upload_siae_image = S3Upload(kind="siae_image")
         context["s3_form_values_siae_image"] = s3_upload_siae_image.form_values
         context["s3_upload_config_siae_image"] = s3_upload_siae_image.config
-        context["breadcrumb_links"] = [{"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")}]
+        context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
         context["breadcrumb_current"] = f"{self.object.name_display} : modifier"
         return context
 
@@ -361,7 +362,7 @@ class SiaeEditLinksView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateView
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["breadcrumb_links"] = [{"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")}]
+        context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
         context["breadcrumb_current"] = f"{self.object.name_display} : modifier"
         return context
 
@@ -378,7 +379,7 @@ class SiaeEditContactView(SiaeMemberRequiredMixin, SuccessMessageMixin, UpdateVi
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["breadcrumb_links"] = [{"title": "Tableau de bord", "url": reverse_lazy("dashboard:home")}]
+        context["breadcrumb_links"] = [{"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")}]
         context["breadcrumb_current"] = f"{self.object.name_display} : modifier"
         return context
 
