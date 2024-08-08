@@ -1,66 +1,61 @@
 {% extends "layouts/base.html" %}
-{% load process_dict dsfr_tags %}
+{% load dsfr_tags %}
 
-{% block page_title %}Mon réseau{{ block.super }}{% endblock page_title %}
+{% block page_title %}{{ DASHBOARD_NETWORK_TITLE }}{{ block.super }}{% endblock page_title %}
 
 {% block breadcrumb %}
-    {% process_dict root_dir=HOME_PAGE_PATH links=breadcrumb_links current="Mon réseau" as breadcrumb_data %}
-    {% dsfr_breadcrumb breadcrumb_data %}
+    {% dsfr_breadcrumb %}
 {% endblock breadcrumb %}
 
 {% block content %}
-<section class="">
-    <div class="fr-container">
-        <div class="fr-grid-row">
-            <div class="fr-col-12">
-                <h1 class="h1">
-                    <strong>Mon réseau : {{ network }}</strong>
-                    <br />
-                    <small>{{ network.siaes.count }} adhérent{{ network.siaes.count|pluralize }}</small>
-                </h1>
-            </div>
+<div class="fr-container">
+    <div class="fr-grid-row">
+        <div class="fr-col-12">
+            <h1 class="h1">
+                <strong>{{ DASHBOARD_NETWORK_TITLE }} : {{ network }}</strong>
+                <br />
+                <small>{{ network.siaes.count }} adhérent{{ network.siaes.count|pluralize }}</small>
+            </h1>
         </div>
     </div>
-</section>
+</div>
 
-<section class="">
-    <div class="fr-container">
-        <div class="fr-grid-row">
-            <div class="fr-col-12 fr-col-lg-4 fr-mb-2v fr-mr-2v">
-                <div class="fr-card">
-                    <div class="fr-card__body">
-                        <div class="fr-card__content">
-                            <h3 class="fr-card__title">Mes adhérents</h3>
-                            <div class="fr-card__desc">
-                                <p>
-                                    Consultez la liste complète de vos adhérents, ainsi que le nombre de besoins qu'ils ont chacuns reçus.
-                                </p>
-                                <a href="{% url 'dashboard_networks:siae_list' network.slug %}" id="dashboard-network-siae-list-btn" class="fr-btn fr-btn--icon-right fr-icon-arrow-right-s-line">
-                                    <span>Voir la liste</span>
-                                </a>
-                            </div>
+<div class="fr-container">
+    <div class="fr-grid-row">
+        <div class="fr-col-12 fr-col-lg-4 fr-mb-2v fr-mr-2v">
+            <div class="fr-card">
+                <div class="fr-card__body">
+                    <div class="fr-card__content">
+                        <h3 class="fr-card__title">{{ DASHBOARD_NETWORK_SIAE_TITLE }}</h3>
+                        <div class="fr-card__desc">
+                            <p>
+                                Consultez la liste complète de vos adhérents, ainsi que le nombre de besoins qu'ils ont chacuns reçus.
+                            </p>
+                            <a href="{% url 'dashboard_networks:siae_list' network.slug %}" id="dashboard-network-siae-list-btn" class="fr-btn fr-btn--icon-right fr-icon-arrow-right-s-line">
+                                <span>Voir la liste</span>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="fr-col-12 fr-col-lg-4 fr-mb-2v">
-                <div class="fr-card">
-                    <div class="fr-card__body">
-                        <div class="fr-card__content">
-                            <h3 class="fr-card__title">Opportunités commerciales</h3>
-                            <div class="fr-card__desc">
-                                <p>
-                                    Consultez la liste de toutes les opportunités commerciales reçues par vos adhérents.
-                                </p>
-                                <a href="{% url 'dashboard_networks:tender_list' network.slug %}" id="dashboard-network-tender-list-btn" class="fr-btn fr-btn--icon-right fr-icon-arrow-right-s-line">
-                                    <span>Voir les opportunités</span>
-                                </a>
-                            </div>
+        </div>
+        <div class="fr-col-12 fr-col-lg-4 fr-mb-2v">
+            <div class="fr-card">
+                <div class="fr-card__body">
+                    <div class="fr-card__content">
+                        <h3 class="fr-card__title">Opportunités commerciales</h3>
+                        <div class="fr-card__desc">
+                            <p>
+                                Consultez la liste de toutes les opportunités commerciales reçues par vos adhérents.
+                            </p>
+                            <a href="{% url 'dashboard_networks:tender_list' network.slug %}" id="dashboard-network-tender-list-btn" class="fr-btn fr-btn--icon-right fr-icon-arrow-right-s-line">
+                                <span>Voir les opportunités</span>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 {% endblock %}
