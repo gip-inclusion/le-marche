@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load dsfr_tags %}
 
-{% block page_title %}{{ DASHBOARD_NETWORK_TITLE }}{{ block.super }}{% endblock page_title %}
+{% block page_title %}{{ DASHBOARD_NETWORK_DETAIL_TITLE }}{{ block.super }}{% endblock page_title %}
 
 {% block breadcrumb %}
     {% dsfr_breadcrumb %}
@@ -12,7 +12,7 @@
     <div class="fr-grid-row">
         <div class="fr-col-12">
             <h1 class="h1">
-                <strong>{{ DASHBOARD_NETWORK_TITLE }} : {{ network }}</strong>
+                <strong>{{ DASHBOARD_NETWORK_DETAIL_TITLE }} : {{ network }}</strong>
                 <br />
                 <small>{{ network.siaes.count }} adhérent{{ network.siaes.count|pluralize }}</small>
             </h1>
@@ -26,7 +26,7 @@
             <div class="fr-card">
                 <div class="fr-card__body">
                     <div class="fr-card__content">
-                        <h3 class="fr-card__title">{{ DASHBOARD_NETWORK_SIAE_TITLE }}</h3>
+                        <h3 class="fr-card__title">{{ DASHBOARD_NETWORK_SIAE_LIST_TITLE }}</h3>
                         <div class="fr-card__desc">
                             <p>
                                 Consultez la liste complète de vos adhérents, ainsi que le nombre de besoins qu'ils ont chacuns reçus.
