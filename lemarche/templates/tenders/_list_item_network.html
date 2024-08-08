@@ -1,25 +1,27 @@
 {% load static humanize %}
 
-<div class="card siae-fr-card" role="button">
+<div class="fr-card fr-card--horizontal fr-mb-3w">
     <div class="fr-card__body">
         <div class="fr-grid-row">
-            <div class="fr-col-md-8 with-data-url" style="border-right:1px solid;cursor:pointer;" data-url="{% url 'dashboard_networks:tender_detail' network.slug tender.slug %}">
-                <div class="fr-grid-row">
-                    <div class="fr-col-md-12">
-                        <p class="mb-1">
-                            {% include "tenders/_closed_badge.html" with tender=tender %}
-                        </p>
+            <div class="fr-col-12 fr-col-md-8 with-data-url" style="border-right:1px solid;cursor:pointer;" data-url="{% url 'dashboard_networks:tender_detail' network.slug tender.slug %}">
+                <div class="fr-card__content">
+                    <div class="fr-card__start">
+                        <ul class="fr-badges-group">
+                            <li>
+                                {% include "tenders/_closed_badge.html" with tender=tender %}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <h2 class="fr-card__title">{{ tender.title }}</h2>
+
+                    <div class="fr-card__end">
+                        {% include "tenders/_list_item_detail_row.html" with tender=tender %}
                     </div>
                 </div>
-
-                <h2 class="py-2">{{ tender.title }}</h2>
-
-                <hr />
-
-                {% include "tenders/_list_item_detail_row.html" with tender=tender %}
             </div>
 
-            <div class="fr-col-md-4 text-center my-auto">
+            <div class="fr-col-12 fr-col-md-4 text-center my-auto">
                 <hr class="d-md-none" />
                 <div class="fr-grid-row">
                     <div class="fr-col-12">
@@ -27,7 +29,7 @@
                             <i class="ri-focus-2-line font-weight-light"></i>&nbsp;{{ tender.network_siae_email_send_count_annotated|default:0 }} adhérent{{ tender.network_siae_email_send_count_annotated|pluralize }} notifié{{ tender.network_siae_email_send_count_annotated|pluralize }}
                         </p>
                         {% if tender.network_siae_email_send_count_annotated %}
-                            <a href="{% url 'dashboard_networks:tender_siae_list' network.slug tender.slug %}" id="dashboard-network-tender-show-siae-list-btn" class="btn btn-sm btn-primary">
+                            <a href="{% url 'dashboard_networks:tender_siae_list' network.slug tender.slug %}" id="dashboard-network-tender-show-siae-list-btn" class="fr-btn fr-btn--sm">
                                 Voir la liste
                             </a>
                         {% endif %}
