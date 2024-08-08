@@ -1,81 +1,66 @@
 {% extends BASE_TEMPLATE %}
-{% load bootstrap4 static %}
+{% load bootstrap4 static dsfr_tags %}
 
 {% block page_title %}Adhérents notifiés - {{ tender.title }}{{ block.super }}{% endblock page_title %}
 
-{% block breadcrumbs %}
-<section>
-    <div class="fr-container">
-        <div class="fr-grid-row">
-            <div class="fr-col-12">
-                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard_networks:detail' network.slug %}">Mon réseau</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard_networks:tender_list' network.slug %}">Opportunités commerciales</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard_networks:tender_detail' network.slug tender.slug %}" title="{{ tender.title }}">{{ tender.title|truncatechars:25 }}</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Adhérents notifiés</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-</section>
-{% endblock %}
+{% block breadcrumb %}
+    {% dsfr_breadcrumb %}
+{% endblock breadcrumb %}
 
 {% block content %}
-<section class="">
-    <div class="fr-container">
-        <div class="fr-grid-row">
-            <div class="fr-col-12 fr-col-lg-8">
-                <h1 class="mb-3 mb-lg-5">Mes adhérents notifiés et intéressés par cette opportunité</h1>
-            </div>
-        </div>
-
-        <div class="fr-grid-row">
-            <div class="fr-col-12">
-                {% block htmx %}
-                <div id="siaeTenderList">
-                    <ul role="navigation" class="nav nav-tabs">
-                        {% url 'dashboard_networks:tender_siae_list' network.slug tender.slug as NETWORK_TENDER_SIAE_LIST_URL %}
-                        {% url 'dashboard_networks:tender_siae_list' network.slug tender.slug "CONTACT-CLICK" as NETWORK_TENDER_SIAE_CONTACT_CLICK_LIST_URL %}
-                        <li class="nav-item">
-                            <a role="button" hx-push-url="true" hx-get="{{ NETWORK_TENDER_SIAE_LIST_URL }}"
-                                class="nav-link{% if request.get_full_path == NETWORK_TENDER_SIAE_LIST_URL %} active{% endif %}"
-                                hx-target="#siaeTenderList" hx-swap="outerHTML">
-                                Adhérents notifiés
-                                <span class="badge badge-pill badge-primary fs-xs" style="vertical-align:middle;">{{ tender.network_siae_email_send_count_annotated }}</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a role="button" hx-push-url="true" hx-get="{{ NETWORK_TENDER_SIAE_CONTACT_CLICK_LIST_URL }}"
-                                class="nav-link{% if request.get_full_path == NETWORK_TENDER_SIAE_CONTACT_CLICK_LIST_URL %} active{% endif %}"
-                                hx-target="#siaeTenderList" hx-swap="outerHTML">
-                                Adhérents intéressés
-                                <span class="badge badge-pill badge-primary fs-xs" style="vertical-align:middle;">{{ tender.network_siae_detail_contact_click_count_annotated }}</span>
-                            </a>
-                        </li>
-                    </ul>
-                    {% for tendersiae in tendersiaes %}
-                        {% include "siaes/_card_tender.html" with siae=tendersiae.siae %}
-                    {% endfor %}
-                    {% if not tendersiaes %}
-                        <p class="text-muted my-5">
-                            {% if request.get_full_path == NETWORK_TENDER_SIAE_LIST_URL %}
-                                Aucun de mes adhérents n'a été notifié de cette opportunité.
-                            {% endif %}
-                            {% if request.get_full_path == NETWORK_TENDER_SIAE_CONTACT_CLICK_LIST_URL %}
-                                Aucun de mes adhérents ne s'est montré intéressé par cette opportunité.
-                            {% endif %}
-                        </p>
-                    {% endif %}
-                </div>
-                {% endblock %}
-            </div>
+<div class="fr-container">
+    <div class="fr-grid-row">
+        <div class="fr-col-12">
+            <h1>Mes adhérents notifiés et intéressés par cette opportunité</h1>
         </div>
     </div>
-</section>
+
+    <div class="fr-grid-row">
+        <div class="fr-col-12">
+            {% block htmx %}
+            <div id="siaeTenderList">
+                <div class="fr-tabs">
+                    <ul class="fr-tabs__list" role="tablist">
+                        {% url 'dashboard_networks:tender_siae_list' network.slug tender.slug as NETWORK_TENDER_SIAE_LIST_URL %}
+                        {% url 'dashboard_networks:tender_siae_list' network.slug tender.slug "CONTACT-CLICK" as NETWORK_TENDER_SIAE_CONTACT_CLICK_LIST_URL %}
+
+                        <li role="presentation">
+                            <button role="tab" class="fr-tabs__tab" aria-selected="{% if request.get_full_path == NETWORK_TENDER_SIAE_LIST_URL %}true{% else %}false{% endif %}"
+                                hx-push-url="true" hx-get="{{ NETWORK_TENDER_SIAE_LIST_URL }}" hx-target="#siaeTenderList" hx-swap="outerHTML">
+                                Adhérents notifiés&nbsp;
+                                <span class="fr-tag fr-tag--sm">{{ tender.network_siae_email_send_count_annotated }}</span>
+                            </button>
+                        </li>
+                        <li role="presentation">
+                            <button role="tab" class="fr-tabs__tab" aria-selected="{% if request.get_full_path == NETWORK_TENDER_SIAE_CONTACT_CLICK_LIST_URL %}true{% else %}false{% endif %}"
+                                hx-push-url="true" hx-get="{{ NETWORK_TENDER_SIAE_CONTACT_CLICK_LIST_URL }}" hx-target="#siaeTenderList" hx-swap="outerHTML">
+                                Adhérents intéressés&nbsp;
+                                <span class="fr-tag fr-tag--sm">{{ tender.network_siae_detail_contact_click_count_annotated }}</span>
+                            </button>
+                        </li>
+                    </ul>
+                    <div id="{{ request.resolver_match.url_name }}_panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel" tabindex="0">
+                        {% if tendersiaes %}
+                            {% for tendersiae in tendersiaes %}
+                                {% include "siaes/_card_tender.html" with siae=tendersiae.siae %}
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted my-5">
+                                {% if request.get_full_path == NETWORK_TENDER_SIAE_LIST_URL %}
+                                    Aucun de mes adhérents n'a été notifié de cette opportunité.
+                                {% endif %}
+                                {% if request.get_full_path == NETWORK_TENDER_SIAE_CONTACT_CLICK_LIST_URL %}
+                                    Aucun de mes adhérents ne s'est montré intéressé par cette opportunité.
+                                {% endif %}
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endblock %}
+        </div>
+    </div>
+</div>
 {% include "includes/_super_siae_arguments_badge.html" %}
 
 {% endblock %}

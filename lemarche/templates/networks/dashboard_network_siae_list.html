@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load bootstrap4 dsfr_tags %}
 
-{% block page_title %}{{ DASHBOARD_NETWORK_SIAE_TITLE }}{{ block.super }}{% endblock page_title %}
+{% block page_title %}{{ DASHBOARD_NETWORK_SIAE_LIST_TITLE }}{{ block.super }}{% endblock page_title %}
 
 {% block breadcrumb %}
     {% dsfr_breadcrumb %}
@@ -12,7 +12,7 @@
     <div class="fr-grid-row">
         <div class="fr-col-12">
             <h1 class="h1 mb-3 mb-lg-5">
-                <strong>{{ DASHBOARD_NETWORK_SIAE_TITLE }}</strong>
+                <strong>{{ DASHBOARD_NETWORK_SIAE_LIST_TITLE }}</strong>
                 <br />
                 <small>Statistiques : toutes les demandes de devis, appel d'offres et sourcing</small>
             </h1>

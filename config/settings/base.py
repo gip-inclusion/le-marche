@@ -789,9 +789,9 @@ SIMPLE_HISTORY_HISTORY_ID_USE_UUID = True
 # ------------------------------------------------------------------------------
 
 DASHBOARD_TITLE = "Tableau de bord"
-DASHBOARD_NETWORK_TITLE = "Mon réseau"
-DASHBOARD_NETWORK_SIAE_TITLE = "Mes adhérents"
-DASHBOARD_NETWORK_TENDER_TITLE = "Opportunités commerciales"
+DASHBOARD_NETWORK_DETAIL_TITLE = "Mon réseau"
+DASHBOARD_NETWORK_SIAE_LIST_TITLE = "Mes adhérents"
+DASHBOARD_NETWORK_TENDER_LIST_TITLE = "Opportunités commerciales"
 TENDER_DETAIL_TITLE_SIAE = "Trouver de nouvelles opportunités"
 TENDER_DETAIL_TITLE_OTHERS = "Mes besoins"
 FAVORITE_LIST_TITLE = "Liste d'achat favoris"

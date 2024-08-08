@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.utils.text import Truncator
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
 
@@ -25,7 +26,7 @@ class DashboardNetworkDetailView(NetworkMemberRequiredMixin, DetailView):
             "links": [
                 {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
             ],
-            "current": settings.DASHBOARD_NETWORK_TITLE,
+            "current": settings.DASHBOARD_NETWORK_DETAIL_TITLE,
         }
         return context
 
@@ -55,11 +56,11 @@ class DashboardNetworkSiaeListView(NetworkMemberRequiredMixin, FormMixin, ListVi
             "links": [
                 {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
                 {
-                    "title": settings.DASHBOARD_NETWORK_TITLE,
+                    "title": settings.DASHBOARD_NETWORK_DETAIL_TITLE,
                     "url": reverse_lazy("dashboard_networks:detail", args=[self.network.slug]),
                 },
             ],
-            "current": settings.DASHBOARD_NETWORK_SIAE_TITLE,
+            "current": settings.DASHBOARD_NETWORK_SIAE_LIST_TITLE,
         }
         return context
 
@@ -100,6 +101,24 @@ class DashboardNetworkSiaeTenderListView(NetworkMemberRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["network"] = self.network
         context["siae"] = self.siae
+        context["breadcrumb_data"] = {
+            "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
+            "links": [
+                {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
+                {
+                    "title": settings.DASHBOARD_NETWORK_DETAIL_TITLE,
+                    "url": reverse_lazy("dashboard_networks:detail", args=[self.network.slug]),
+                },
+                {
+                    "title": settings.DASHBOARD_NETWORK_SIAE_LIST_TITLE,
+                    "url": reverse_lazy("dashboard_networks:siae_list", args=[self.network.slug]),
+                },
+                {
+                    "title": Truncator(self.siae.name_display).chars(25),
+                },
+            ],
+            "current": "Demandes reçues",
+        }
         return context
 
 
@@ -132,11 +151,11 @@ class DashboardNetworkTenderListView(NetworkMemberRequiredMixin, ListView):
             "links": [
                 {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
                 {
-                    "title": settings.DASHBOARD_NETWORK_TITLE,
+                    "title": settings.DASHBOARD_NETWORK_DETAIL_TITLE,
                     "url": reverse_lazy("dashboard_networks:detail", args=[self.network.slug]),
                 },
             ],
-            "current": settings.DASHBOARD_NETWORK_TENDER_TITLE,
+            "current": settings.DASHBOARD_NETWORK_TENDER_LIST_TITLE,
         }
         return context
 
@@ -158,6 +177,21 @@ class DashboardNetworkTenderDetailView(NetworkMemberRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["network"] = self.network
+        context["breadcrumb_data"] = {
+            "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
+            "links": [
+                {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
+                {
+                    "title": settings.DASHBOARD_NETWORK_DETAIL_TITLE,
+                    "url": reverse_lazy("dashboard_networks:detail", args=[self.network.slug]),
+                },
+                {
+                    "title": settings.DASHBOARD_NETWORK_TENDER_LIST_TITLE,
+                    "url": reverse_lazy("dashboard_networks:tender_list", args=[self.network.slug]),
+                },
+            ],
+            "current": Truncator(self.tender.title).chars(25),
+        }
         return context
 
 
@@ -195,4 +229,25 @@ class DashboardNetworkTenderSiaeListView(NetworkMemberRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["network"] = self.network
         context["tender"] = self.tender
+        context["breadcrumb_data"] = {
+            "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
+            "links": [
+                {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
+                {
+                    "title": settings.DASHBOARD_NETWORK_DETAIL_TITLE,
+                    "url": reverse_lazy("dashboard_networks:detail", args=[self.network.slug]),
+                },
+                {
+                    "title": settings.DASHBOARD_NETWORK_TENDER_LIST_TITLE,
+                    "url": reverse_lazy("dashboard_networks:tender_list", args=[self.network.slug]),
+                },
+                {
+                    "title": Truncator(self.tender.title).chars(25),
+                    "url": reverse_lazy(
+                        "dashboard_networks:tender_detail", args=[self.network.slug, self.tender.slug]
+                    ),
+                },
+            ],
+            "current": "Adhérents notifiés",
+        }
         return context

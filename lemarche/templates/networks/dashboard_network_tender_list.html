@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load bootstrap4 static dsfr_tags %}
 
-{% block page_title %}{{ DASHBOARD_NETWORK_TENDER_TITLE }}{{ block.super }}{% endblock page_title %}
+{% block page_title %}{{ DASHBOARD_NETWORK_TENDER_LIST_TITLE }}{{ block.super }}{% endblock page_title %}
 
 {% block breadcrumb %}
     {% dsfr_breadcrumb %}
@@ -17,11 +17,16 @@
 
     <div class="fr-grid-row">
         <div class="fr-col-12">
-            {% for tender in tenders %}
-                {% include "tenders/_list_item_network.html" with tender=tender network=network %}
-            {% endfor %}
-            {% include "includes/_pagination.html" %}
-            {% if not tenders %}
+            {% if tenders %}
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    {% for tender in tenders %}
+                        <div class="fr-col-12">
+                            {% include "tenders/_list_item_network.html" with tender=tender network=network %}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% include "includes/_pagination.html" %}
+            {% else %}
                 <p class="text-muted">
                     Désolé, nous n'avons aucune opportunités à vous présenter pour le moment.
                 </p>
