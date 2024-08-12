@@ -20,7 +20,7 @@
                 {% endif %}
             </div>
 
-            <h2 class="fr-card__title" class="py-2{% if tender.deadline_date_is_outdated_annotated %} text-nuance-03{% endif %}">
+            <h2 class="fr-card__title py-2{% if tender.deadline_date_is_outdated_annotated %} text-nuance-03{% endif %}">
                 <a href="{% url 'tenders:detail' tender.slug %}">{{ tender.title }}</a>
             </h2>
 
