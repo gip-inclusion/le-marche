@@ -1,37 +1,26 @@
 {% extends "layouts/base.html" %}
-{% load bootstrap4 %}
+{% load process_dict dsfr_tags %}
 
 {% block page_title %}Accessibilité{{ block.super }}{% endblock page_title %}
 
-{% block breadcrumbs %}
+{% block breadcrumb %}
+    {% process_dict root_dir=HOME_PAGE_PATH current="Accessibilité" as breadcrumb_data %}
+    {% dsfr_breadcrumb breadcrumb_data %}
+{% endblock breadcrumb %}
+
+{% block content %}
 <section>
 	<div class="fr-container">
 		<div class="fr-grid-row">
 			<div class="fr-col-12">
-				<nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-					<ol class="breadcrumb">
-						<li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
-						<li class="breadcrumb-item active" aria-current="page">Accessibilité</li>
-					</ol>
-				</nav>
-			</div>
-		</div>
-	</div>
-</section>
-{% endblock %}
-
-{% block content %}
-<section class="">
-	<div class="fr-container">
-		<div class="fr-grid-row">
-			<div class="fr-col-12">
-				<h1 class="h1"><strong>Déclaration d'accessibilité</strong></h1>
-				<h2 class="h2">
+				<h1>Déclaration d'accessibilité</h1>
+				<h2>
 					La <strong>Délégation générale à l'Emploi et à la Formation professionnelle</strong>
 					s'engage à rendre son service accessible, conformément à l'article 47 de la loi n° 2005-102 du 11
 					février 2005.
 				</h2>
-				<p>Cette déclaration d'accessibilité s'applique au site web <strong>Le marché de l'inclusion</strong>.
+				<p>
+					Cette déclaration d'accessibilité s'applique au site web <strong>Le marché de l'inclusion</strong>.
 				</p>
 			</div>
 		</div>
@@ -39,36 +28,36 @@
 </section>
 
 <section>
-	<div class="fr-container fr-container-max-lg">
-		<div class="fr-grid-row">
+	<div class="fr-container">
+		<div class="fr-grid-row fr-mt-8v">
 			<div class="fr-col-12">
 				<article>
-					<p class="h2 mb-1">État de conformité</p>
+					<h3>État de conformité</h3>
 					<p>Le marché de l'inclusion est non conforme avec le RGAA 4.1. Le site n'a pas encore été audité.</p>
 
-					<p class="h2 mb-1">Établissement de cette déclaration d'accessibilité</p>
+					<h3>Établissement de cette déclaration d'accessibilité</h3>
 					<p>Cette déclaration a été établie le 13 janvier 2023.</p>
 
-					<p class="h2 mb-1">Amélioration et contact</p>
-					<p class="mb-0">
+					<h3>Amélioration et contact</h3>
+					<p>
 						Si vous n'arrivez pas à accéder à un contenu ou à un service, vous pouvez nous
 						contacter pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre
 						forme.
 					</p>
-					<ul>
-						<li>E-mail : <a href="mailto:{{ GIP_CONTACT_EMAIL }}" class="text-decoration-underline">{{ GIP_CONTACT_EMAIL }}</a></li>
+					<ul class="list-unstyled">
+						<li>E-mail : <a href="mailto:{{ GIP_CONTACT_EMAIL }}" class="fr-link">{{ GIP_CONTACT_EMAIL }}</a></li>
 						<li>Adresse : 20 avenue de Ségur 75007 Paris</li>
 					</ul>
 					<p>Nous essayons de répondre dans les 2 jours ouvrés.</p>
 
-					<p class="h2 mb-1">Voie de recours</p>
+					<h3>Voie de recours</h3>
 					<p>
 						Cette procédure est à utiliser dans le cas suivant : vous avez signalé au responsable du site
 						internet un défaut d'accessibilité qui vous empêche d'accéder à un contenu ou à un des services
 						du portail et vous n'avez pas obtenu de réponse satisfaisante.
 					</p>
 
-					<p class="mb-0">Vous pouvez :</p>
+					<p>Vous pouvez :</p>
 					<ul>
 						<li>Écrire un message au Défenseur des droits</li>
 						<li>Contacter le délégué du Défenseur des droits dans votre région</li>
@@ -85,4 +74,4 @@
 		</div>
 	</div>
 </section>
-{% endblock %}
+{% endblock content %}
