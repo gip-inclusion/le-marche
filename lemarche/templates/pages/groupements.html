@@ -1,100 +1,86 @@
 {% extends "layouts/base.html" %}
-{% load static siae_sectors_display %}
+{% load process_dict dsfr_tags static siae_sectors_display %}
 
 {% block page_title %}Un appel d'offres de grande ampleur ? Découvrez les groupements{{ block.super }}{% endblock page_title %}
 {% block meta_description %}
 <meta name="description" content="Retrouver les groupements commerciaux des structures de l'insertion et de l'handicap. Votre interlocuteur unique pour vos achats socialement responsables d'envergure.">
-{% endblock %}
-{% block body_class %}p-partenaires{{ block.super }}{% endblock %}
+{% endblock meta_description %}
 
-{% block breadcrumbs %}
+{% block breadcrumb %}
+    {% process_dict root_dir=HOME_PAGE_PATH current="Groupements" as breadcrumb_data %}
+    {% dsfr_breadcrumb breadcrumb_data %}
+{% endblock breadcrumb %}
+
+{% block content %}
 <section>
     <div class="fr-container">
         <div class="fr-grid-row">
-            <div class="fr-col-12">
-                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Groupements</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-</section>
-{% endblock %}
-
-{% block content %}
-<section class="has-illustration-bg-01">
-    <div class="fr-container">
-        <div class="fr-grid-row align-items-center">
             <div class="fr-col-12 fr-col-lg-10">
-                <h1 class="h1-hero">
-                    <strong>Retrouver les groupements <br class="d-none d-lg-inline">commerciaux des SIAE</strong>
+                <h1>
+                    Retrouver les groupements <br class="fr-hidden fr-unhidden-lg">commerciaux des SIAE
                 </h1>
             </div>
         </div>
     </div>
 </section>
 
-<section class="pt-0">
+<section>
     <div class="fr-container">
-        <div class="fr-grid-row row-cols-1 row-cols-md-2 row-cols-lg-3 justify-content-start">
+        <div class="fr-grid-row fr-grid-row--gutters">
             {% for group in siaegroups %}
-                <div class=" fr-col mb-3 mb-md-5">
-                    <div class="card has-links-inside h-100 w-100">
-                        <div class="card-header">
-                            {% if group.logo_url %}
-                                <img src="{{ group.logo_url }}" class="img-fluid" alt="Logo de {{ group.name }}" loading="lazy" />
-                            {% else %}
-                                <img src="{% static 'img/default-listing.png' %}" class="img-fluid" alt="{{ siae.name }}" loading="lazy" />
-                            {% endif %}
-                        </div>
+                <div class="fr-col-12 fr-col-md-6 fr-col-lg-4">
+                    <div class="fr-card">
                         <div class="fr-card__body">
-                            <p class="h3 lh-sm">{{ group.name }}</p>
-                            {% if group.sectors.count %}
-                                <div class="d-flex" title="Secteurs d'activité">
-                                    <i class="ri-award-line ri-xl mr-1"></i>
-                                    <ul class="list-unstyled">
-                                        {% siae_sectors_display group display_max=6 output_format='li' %}
+                            <div class="fr-card__content">
+                                <h3 class="fr-card__title">
+                                    {{ group.name }}
+                                </h3>
+                                <div class="fr-card__desc">
+                                    {% if group.sectors.count %}
+                                        <div title="Secteurs d'activité">
+                                            <span class="fr-icon-award-line" aria-hidden="true"></span>
+                                            <ul class="list-unstyled">
+                                                {% siae_sectors_display group display_max=6 output_format='li' %}
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+                                    {% if group.siae_count %}
+                                        <span class="fr-icon-hotel-line" aria-hidden="true"></span> {{ group.siae_count }} structure{{ group.siae_count|pluralize }}
+                                    {% endif %}
+                                    <ul class="list-unstyled fr-mt-4v fr-pl-1v">
+                                        {% if group.contact_website %}
+                                            <li>
+                                                <a href="{{ group.contact_website }}" class="fr-link fr-icon-window-line fr-link--icon-left" id="group_company_website" target="_blank" rel="noopener">
+                                                    {{ group.contact_website }}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        {% if group.contact_email %}
+                                            <li>
+                                                <a href="mailto:{{ group.contact_email }}" class="fr-link fr-icon-mail-line fr-link--icon-left" id="group_company_email">
+                                                    {{ group.contact_email }}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        {% if group.contact_phone %}
+                                            <li>
+                                                <a href="tel:{{ group.contact_phone }}" class="fr-link fr-icon-phone-line fr-link--icon-left" id="group_company_phone">
+                                                    {{ group.contact_phone }}
+                                                </a>
+                                            </li>
+                                        {% endif %}
                                     </ul>
                                 </div>
-                            {% endif %}
-                            {% if group.siae_count %}
-                                <p title="Nombre de structures">
-                                    <i class="ri-hotel-line ri-xl mr-1"></i>
-                                    <span>{{ group.siae_count }} structures</span>
-                                </p>
-                            {% endif %}
+                            </div>
                         </div>
-                        <div class="card-footer">
-                            <hr />
-                            <ul class="list-unstyled">
-                                {% if group.contact_website %}
-                                    <li>
-                                        <a href="{{ group.contact_website }}" class="btn btn-link btn-ico pl-0 py-1" id="group_company_website" target="_blank" rel="noopener">
-                                            <i class="ri-window-2-line ri-xl mr-1"></i>
-                                            <span>{{ group.contact_website }}</span>
-                                        </a>
-                                    </li>
+                        <div class="fr-card__header">
+                            <div class="fr-card__img">
+                                {% if group.logo_url %}
+                                    <img src="{{ group.logo_url }}" class="fr-responsive-img" alt="Logo de {{ group.name }}" loading="lazy" />
+                                {% else %}
+                                    <img src="{% static 'img/default-listing.png' %}" class="fr-responsive-img" alt="{{ siae.name }}" loading="lazy" />
                                 {% endif %}
-                                {% if group.contact_email %}
-                                    <li>
-                                        <a href="mailto:{{ group.contact_email }}" class="btn btn-link btn-ico pl-0 py-1" id="group_company_email">
-                                            <i class="ri-at-line ri-xl mr-1"></i>
-                                            <span>{{ group.contact_email }}</span>
-                                        </a>
-                                    </li>
-                                {% endif %}
-                                {% if group.contact_phone %}
-                                    <li>
-                                        <a href="tel:{{ group.contact_phone }}" class="btn btn-link btn-ico pl-0 py-1" id="group_company_phone">
-                                            <i class="ri-phone-line ri-xl mr-1"></i>
-                                            <span>{{ group.contact_phone }}</span>
-                                        </a>
-                                    </li>
-                                {% endif %}
-                            </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -103,25 +89,26 @@
     </div>
 </section>
 
-<section class="">
+<section>
     <div class="fr-container">
-        <div class="fr-grid-row justify-content-center">
-            <div class="fr-col-12 fr-col-lg-8">
-                <div class="card c-card--mini h-100 fr-p-3 p-lg-5 pr-lg-7">
+        <div class="fr-grid-row fr-m-8v">
+            <div class="fr-col-12 fr-col-lg-8 fr-col-offset-lg-2">
+                <div class="fr-card fr-card--sm">
                     <div class="fr-card__body">
-                        <h3 class="h2 fr-m-0">
-                            Vous souhaitez référencer votre groupement de vos SIAE ?
-                        </h3>
-                    </div>
-                    <div class="fr-card__end text-center">
-                        <a href="{% url 'pages:contact' %}" class="btn btn-primary btn-ico stretched-link">
-                            <span>Contactez-nous</span>
-                            <i class="ri-arrow-right-line ri-lg"></i>
-                        </a>
+                        <div class="fr-card__content">
+                            <h3 class="fr-card__title">
+                                Vous souhaitez référencer votre groupement de vos SIAE ?
+                            </h3>
+                            <p class="fr-card__desc">
+                                <a href="{% url 'pages:contact' %}" class="fr-btn fr-btn-icon-arrow-right-line fr-btn-icon-right fr-mt-4v">
+                                    Contactez-nous
+                                </a>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-{% endblock %}
+{% endblock content %}
