@@ -124,13 +124,13 @@
                                     </ul>
                                 </div>
                             </div>
-                            <div class="fr-grid-row">
-                                <div class="fr-col-12">
-                                    {% for siae in siaes %}
+                            <div class="fr-grid-row fr-grid-row--gutters">
+                                {% for siae in siaes %}
+                                    <div class="fr-col-12">
                                         {% include "siaes/_card_tender.html" with siae=siae %}
-                                    {% endfor %}
-                                    {% include "includes/_pagination.html" %}
-                                </div>
+                                    </div>
+                                {% endfor %}
+                                {% include "includes/_pagination.html" %}
                             </div>
                         </div>                        
                     </div>
