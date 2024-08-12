@@ -385,7 +385,7 @@ class TenderDetailView(TenderAuthorOrAdminRequiredIfNotSentMixin, DetailView):
         show_nps = self.request.GET.get("nps", None)
         # enrich context
         context["parent_title"] = (
-            settings.TITLE_DETAIL_PAGE_SIAE if user_kind == User.KIND_SIAE else settings.TITLE_DETAIL_PAGE_OTHERS
+            settings.TENDER_DETAIL_TITLE_SIAE if user_kind == User.KIND_SIAE else settings.TITLE_DETAIL_PAGE_OTHERS
         )
         context["tender_kind_display"] = (
             tender_constants.KIND_PROJECT_SIAE_DISPLAY
@@ -770,7 +770,7 @@ class TenderDetailSiaeSurveyTransactionedView(SesameSiaeMemberRequiredMixin, Upd
             "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
             "links": [
                 {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
-                {"title": settings.TITLE_DETAIL_PAGE_SIAE, "url": reverse_lazy("tenders:list")},
+                {"title": settings.TENDER_DETAIL_TITLE_SIAE, "url": reverse_lazy("tenders:list")},
                 {"title": self.tender.title[:25], "url": reverse_lazy("tenders:detail", args=[self.tender.slug])},
             ],
             "current": "Avez-vous contractualisé ?",
