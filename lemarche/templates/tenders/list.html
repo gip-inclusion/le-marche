@@ -69,45 +69,61 @@
                         </ul>
                         <div id="{{ request.resolver_match.url_name }}_panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel" tabindex="0">
                             {% if tenders %}
-                                {% for tender in tenders %}
-                                    {% include "tenders/_list_item_buyer.html" with tender=tender %}
-                                {% endfor %}
-                                {% include "includes/_pagination.html" %}
+                                <div class="fr-grid-row fr-grid-row--gutters">
+                                    {% for tender in tenders %}
+                                        <div class="fr-col-12">
+                                            {% include "tenders/_list_item_buyer.html" with tender=tender %}
+                                        </div>
+                                    {% endfor %}
+                                    <div class="fr-col-12">
+                                        {% include "includes/_pagination.html" %}
+                                    </div>
+                                </div>
                             {% else %}
-                                <p class="text-muted my-5">
-                                    {% if request.get_full_path == TENDERS_LIST_URL %}
-                                        Publiez un besoin pour trouver des prestataires inclusifs près de chez vous.
-                                    {% endif %}
-                                    {% if request.get_full_path == TENDERS_DRAFT_LIST_URL %}
-                                        Vous n'avez aucun besoin en brouillon pour le moment.
-                                    {% endif %}
-                                    {% if request.get_full_path == TENDERS_PUBLISHED_LIST_URL %}
-                                        Vous n'avez aucun besoin en cours de validation pour le moment.
-                                    {% endif %}
-                                    {% if request.get_full_path == TENDERS_SENT_LIST_URL %}
-                                        Vous n'avez aucun besoin d'envoyé pour le moment.
-                                        <br />
-                                        Contacter notre équipe en cas de problème avec un de vos dépôts de besoins en cours de validation.
-                                    {% endif %}
-                                </p>
+                                <div class="fr-alert fr-alert--info">
+                                    <p>
+                                        {% if request.get_full_path == TENDERS_LIST_URL %}
+                                            Publiez un besoin pour trouver des prestataires inclusifs près de chez vous.
+                                        {% endif %}
+                                        {% if request.get_full_path == TENDERS_DRAFT_LIST_URL %}
+                                            Vous n'avez aucun besoin en brouillon pour le moment.
+                                        {% endif %}
+                                        {% if request.get_full_path == TENDERS_PUBLISHED_LIST_URL %}
+                                            Vous n'avez aucun besoin en cours de validation pour le moment.
+                                        {% endif %}
+                                        {% if request.get_full_path == TENDERS_SENT_LIST_URL %}
+                                            Vous n'avez aucun besoin d'envoyé pour le moment.
+                                            <br />
+                                            Contacter notre équipe en cas de problème avec un de vos dépôts de besoins en cours de validation.
+                                        {% endif %}
+                                    </p>
+                                </div>
                             {% endif %}
                         </div>
                     </div>
-                    {% endblock %}
+                    {% endblock htmx %}
                 <!-- "siae": display opportunities -->
                 {% else %}
                     {% if tenders %}
-                        {% for tender in tenders %}
-                            {% include "tenders/_list_item_siae.html" with tender=tender %}
-                        {% endfor %}
-                        {% include "includes/_pagination.html" %}
+                        <div class="fr-grid-row fr-grid-row--gutters">
+                            {% for tender in tenders %}
+                                <div class="fr-col-12">
+                                    {% include "tenders/_list_item_siae.html" with tender=tender %}
+                                </div>
+                            {% endfor %}
+                            <div class="fr-col-12">
+                                {% include "includes/_pagination.html" %}
+                            </div>
+                        </div>
                     {% else %}
-                        <p class="text-muted">
-                            Désolé, nous n'avons aucune opportunité à vous présenter pour le moment.
-                            <br />
-                            Si ce n'est pas déjà fait, pensez à <a href="{% url 'dashboard:home' %}">compléter votre fiche structure</a>
-                            pour optimiser vos chances de trouver de nouvelles opportunités.
-                        </p>
+                        <div class="fr-alert fr-alert--info">
+                            <p>
+                                Désolé, nous n'avons aucune opportunité à vous présenter pour le moment.
+                                <br />
+                                Si ce n'est pas déjà fait, pensez à <a href="{% url 'dashboard:home' %}">compléter votre fiche structure</a>
+                                pour optimiser vos chances de trouver de nouvelles opportunités.
+                            </p>
+                        </div>
                     {% endif %}
                 {% endif %}
             </div>
