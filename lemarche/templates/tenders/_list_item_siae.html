@@ -9,12 +9,12 @@
                 {% if tender.is_new_for_siaes %}
                     <p class="fr-badge fr-badge--sm fr-badge--green-emeraude">Nouveau</p>
                 {% elif tender.deadline_date_is_outdated_annotated %}
-                    <form action="{% url 'tenders:hide-tender-siae' tender.slug %}"
+                    <form action="{% url 'tenders:hide-tender-siae' tender.slug %}" style="display: inline-block;"
                         method="post" hx-post="{% url 'tenders:hide-tender-siae' tender.slug %}"
                         hx-target="#card-{{tender.slug}}" hx-swap="outerHTML">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-light btn-ico btn-sm float-right" aria-label="Supprimer">
-                            <i class="ri-delete-bin-2-line"></i>
+                        <button type="submit" class="fr-btn fr-btn--tertiary-no-outline fr-icon-delete-bin-line" aria-label="Supprimer">
+                            Supprimer
                         </button>
                     </form>
                 {% endif %}
