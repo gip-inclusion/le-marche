@@ -52,3 +52,56 @@ $yellow-super-badge--borders-color: #fcc63a;
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+ul.summary-grid-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-column-gap: 0;
+    grid-row-gap: 1rem;
+}
+
+@media (min-width: 992px) {
+    ul.summary-grid-list {
+        grid-template-columns: repeat(2,1fr);
+        grid-column-gap: 2rem;
+        grid-row-gap: 1rem;
+    }
+}
+
+.s-inclusion-03 {
+	&__stats {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		div {
+			z-index: 2;
+			position: relative;
+			display: flex;
+			justify-content: center;
+			align-items: center;		
+			padding: 0.5rem;
+			margin: 1rem;
+			background-color: #fff;
+			min-height: 60px;
+			min-width: 240px;
+			border-bottom: 4px solid #FE5455;
+			text-align: center;
+
+			&.has-relation-between {
+				z-index: 1;
+
+				&::before {
+					content: '';
+					position: absolute;
+					bottom: -58px;
+					left: 50%;
+					transform: translateX(-50%);
+					background-image: url('/static/images/inclusion-06-illu-01.svg');
+					width: 164px;
+					height: 58px;
+				}
+			}
+		}
+	}
+}
