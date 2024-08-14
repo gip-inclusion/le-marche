@@ -1,33 +1,23 @@
 {% extends "layouts/base.html" %}
+{% load process_dict dsfr_tags static siae_sectors_display %}
 
-{% block page_title %}{{ flatpage.title }}{{ block.super }}{% endblock page_title %}
+{% block page_title %}{{ flatpage.meta_title|default:flatpage.title }}{{ block.super }}{% endblock page_title %}
 
-{% block meta_title %}{{ flatpage.meta_title|default:flatpage.title }}{% endblock %}
-{% block meta_description %}{{ flatpage.meta_description }}{% endblock %}
+{% block meta_description %}
+    <meta name="description" content="{{ flatpage.meta_description|striptags }}">
+{% endblock meta_description %}
 
-{% block breadcrumbs %}
+{% block breadcrumb %}
+    {% process_dict root_dir=HOME_PAGE_PATH current=flatpage.title as breadcrumb_data %}
+    {% dsfr_breadcrumb breadcrumb_data %}
+{% endblock breadcrumb %}
+
+{% block content %}
     <section>
         <div class="fr-container">
             <div class="fr-grid-row">
                 <div class="fr-col-12">
-                    <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
-                            <li class="breadcrumb-item active" aria-current="page"title="{{ flatpage.title }}">{{ flatpage.title }}</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </section>
-{% endblock %}
-
-{% block content %}
-    <section class="">
-        <div class="fr-container">
-            <div class="fr-grid-row">
-                <div class="fr-col-12">
-                    <h1 class="h1"><strong>{{ flatpage.title }}</strong></h1>
+                    <h1>{{ flatpage.title }}</h1>
                 </div>
             </div>
         </div>
@@ -42,4 +32,4 @@
             </div>
         </div>
     </section>
-{% endblock %}
+{% endblock content %}
