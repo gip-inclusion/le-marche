@@ -46,18 +46,18 @@
     {% if SITE_CONFIG.notice %}
       {% dsfr_notice title=SITE_CONFIG.notice %}
     {% endif %}
-    <div class="fr-container fr-mt-4w fr-mb-6w">
-      {% block breadcrumb %}
+    
+    {% block breadcrumb %}
         {% comment %} empty because managed for each type of page {% endcomment %}
-      {% endblock breadcrumb %}
-      <main id="content" role="main">
-        {% block messages %}
-          {% dsfr_django_messages wrapper_classes="fr-container fr-my-4v" %}
-        {% endblock messages %}
-        {% block content %}
-        {% endblock content %}
-      </main>
-    </div>
+    {% endblock breadcrumb %}
+    
+    <main id="content" role="main">
+      {% block messages %}
+        {% dsfr_django_messages wrapper_classes="fr-container fr-my-4v" %}
+      {% endblock messages %}
+      {% block content %}
+      {% endblock content %}
+    </main>
     {% block follow_newsletter_social_media %}
     {% endblock follow_newsletter_social_media %}
     {% block footer %}
