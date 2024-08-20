@@ -158,7 +158,7 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(User.objects.count(), self.user_count + 1)
         # user should be automatically logged in
         header = self.driver.find_element(By.CSS_SELECTOR, "header#header")
-        self.assertTrue("Mon espace" in header.text)
+        self.assertTrue("Tableau de bord" in header.text)
         self.assertTrue("Connexion" not in header.text)
         # should redirect to redirect_url
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{redirect_url}")
@@ -303,6 +303,12 @@ class LoginFormTest(StaticLiveServerTestCase):
         super().setUpClass()
         options = Options()
         options.add_argument("-headless")
+
+        # Create a Firefox profile to set the locale to French (needed for the login form)
+        profile = webdriver.FirefoxProfile()
+        profile.set_preference("intl.accept_languages", "fr")
+        options.profile = profile
+
         cls.driver = webdriver.Firefox(options=options)
         cls.driver.implicitly_wait(1)
 
@@ -356,7 +362,7 @@ class LoginFormTest(StaticLiveServerTestCase):
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:login')}")
         # error message should be displayed
         messages = driver.find_element(By.CSS_SELECTOR, "section.fr-input-group--error")
-        self.assertTrue("aisissez un Adresse e-mail et un mot de passe valides" in messages.text)
+        self.assertTrue("Saisissez un Adresse e-mail et un mot de passe valides" in messages.text)
 
     def test_user_empty_credentials_should_see_password_reset_message(self):
         existing_user = UserFactory(email="existing-user@example.com", password="")
