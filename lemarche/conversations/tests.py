@@ -108,11 +108,16 @@ class TemplateTransactionalModelSaveTest(TransactionTestCase):
     def setUpTestData(cls):
         pass
 
+    def test_template_transactional_field_rules(self):
+        self.assertRaises(IntegrityError, TemplateTransactionalFactory, source=None)
+
     def test_template_transactional_validation_on_save(self):
         TemplateTransactionalFactory(
             mailjet_id=None, brevo_id=None, source=conversation_constants.SOURCE_BREVO, is_active=False
         )
-        self.assertRaises(IntegrityError, TemplateTransactionalFactory, source=None)
+        TemplateTransactionalFactory(
+            mailjet_id=None, brevo_id=123, source=conversation_constants.SOURCE_BREVO, is_active=True
+        )
         self.assertRaises(
             ValidationError,
             TemplateTransactionalFactory,

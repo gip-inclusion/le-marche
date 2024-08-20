@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from lemarche.conversations.models import TemplateTransactional
+from lemarche.conversations.factories import TemplateTransactionalFactory
 from lemarche.siaes.factories import SiaeFactory
 from lemarche.siaes.models import SiaeUser
 from lemarche.users.factories import UserFactory
@@ -19,7 +19,7 @@ class DashboardSiaeSearchAdoptViewTest(TestCase):
         cls.siae_with_user = SiaeFactory()
         cls.siae_with_user.users.add(cls.user_siae)
         cls.siae_without_user = SiaeFactory()
-        TemplateTransactional.objects.create(code="SIAEUSERREQUEST_ASSIGNEE")
+        TemplateTransactionalFactory(code="SIAEUSERREQUEST_ASSIGNEE")
 
     def test_anonymous_user_cannot_adopt_siae(self):
         url = reverse("dashboard_siaes:siae_search_by_siret")
