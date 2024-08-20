@@ -4,6 +4,7 @@ from uuid import uuid4
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.validators import ValidationError
 from django.db import IntegrityError, models
 from django.db.models import Count, Func, IntegerField, Q
 from django.utils import timezone
@@ -13,6 +14,7 @@ from shortuuid import uuid
 
 from lemarche.conversations import constants as conversation_constants
 from lemarche.utils.apis import api_brevo, api_mailjet
+from lemarche.utils.data import add_validation_error
 
 
 class ConversationQuerySet(models.QuerySet):
@@ -255,6 +257,35 @@ class TemplateTransactional(models.Model):
         if self.code:
             return f"{self.name} ({self.code})"
         return self.name
+
+    def clean(self, *args, **kwargs):
+        # dict to store all ValidationErrors
+        validation_errors = dict()
+        # validation rules
+        if self.is_active:
+            if self.source == conversation_constants.SOURCE_MAILJET and not self.mailjet_id:
+                validation_errors = add_validation_error(
+                    validation_errors,
+                    "mailjet_id",
+                    "Le mailjet_id est requis pour un template actif",
+                )
+            elif self.source == conversation_constants.SOURCE_BREVO and not self.brevo_id:
+                validation_errors = add_validation_error(
+                    validation_errors,
+                    "brevo_id",
+                    "Le brevo_id est requis pour un template actif",
+                )
+        # return
+        if bool(validation_errors):
+            raise ValidationError(validation_errors)
+        super().clean(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        """
+        - run validations
+        """
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     @property
     def get_template_id(self):
