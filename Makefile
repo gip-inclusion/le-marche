@@ -33,7 +33,7 @@ deploy_prod: scripts/deploy_prod.sh
 	./scripts/deploy_prod.sh
 
 test_container:
-	docker compose exec -ti app django-admin test --settings=config.settings.test $(TARGET) --noinput --failfast --parallel lemarche
+	docker compose exec -ti app django-admin test --settings=config.settings.test $(TARGET) --noinput --failfast lemarche
 
 test:
-	django-admin test --settings=config.settings.test $(TARGET) --noinput --failfast --parallel lemarche
+	django-admin test --settings=config.settings.test $(TARGET) --noinput --failfast lemarche
