@@ -1,35 +1,194 @@
 {% load static %}
-<div x-data="multiselect()" class="fr-checkbox-group" {{ widget.attrs }}>
-    <div class="fr-input-wrap">
+<div x-data="multiselect('{{ widget.attrs.id }}')" x-init="initOptions('{{ widget.groups_json|escapejs }}', '{{ widget.options_json|escapejs }}')" class="fr-checkbox-group" {{ widget.attrs }}>
+    <template x-for="value in selectedValues" :key="value">
+        <input type="hidden" :name="name" :value="value">
+    </template>
+    <div class="fr-input-group"
+         style="display: flex;
+                align-items: center;
+                margin-bottom: 0">
         <input type="text"
+               id="{{ widget.attrs.id }}"
                class="fr-input"
-               x-model="selectedLabels"
-               readonly
-               placeholder="Sélectionner des options">
-        <button type="button"
-                class="fr-btn fr-btn--icon-right fr-m-0"
-                @click="toggle"
-                :class="open ? ' fr-icon-arrow-up-s-line' : 'fr-icon-arrow-down-s-line'"></button>
+               x-model="searchQuery"
+               placeholder="Sélectionner des options"
+               @focus="openDropdown()"
+               @input="filterOptions()"
+               style="flex-grow: 1">
+        {% comment %} <button type="button" class="fr-btn fr-btn--icon-right fr-m-0" @click="openDropdown()" x-ref="button" :class="open ? 'fr-icon-arrow-up-s-line' : 'fr-icon-arrow-down-s-line'" style="margin-left: 8px"></button> {% endcomment %}
+    </div>
+    <div class="fr-tags-group">
+        <template x-for="(label, index) in selected" :key="index">
+            <div class="fr-tag">
+                <span x-text="label"></span>
+                <button type="button" class="fr-tag__close" @click="removeSelection(index)">&times;</button>
+            </div>
+        </template>
     </div>
     <div x-show="open"
          x-ref="dropdown"
          class="fr-checkbox-list"
          :class="{ show: open }">
-        {% for group, options, index in widget.optgroups %}
-            {% if group %}<div class="fr-checkbox-group-title">{{ group }}</div>{% endif %}
-            {% for option in options %}
+        <template x-if="groups.length > 0">
+            <template x-for="group in filteredGroups" :key="group.name">
+                <div>
+                    <template x-if="group.name">
+                        <div class="fr-checkbox-group-title">
+                            <b x-text="group.name"></b>
+                        </div>
+                    </template>
+                    <template x-for="option in group.options" :key="option.value">
+                        <div class="fr-checkbox fr-py-1w">
+                            <input type="checkbox"
+                                   :id="option.id"
+                                   :value="option.value"
+                                   :checked="selectedValues.includes(option.value)"
+                                   @change="updateSelection(option.label, option.value)">
+                            <label :for="option.id" x-text="option.label"></label>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </template>
+        <!-- Affichage des options sans groupe -->
+        <template x-if="groups.length === 0">
+            <template x-for="option in filteredOptions" :key="option.value">
                 <div class="fr-checkbox fr-py-1w">
                     <input type="checkbox"
-                           id="{{ option.attrs.id }}"
-                           name="{{ widget.name }}"
-                           value="{{ option.value }}"
-                           x-value="{{ option.label }}"
-                           {% if option.selected %}checked{% endif %}
-                           {% include "django/forms/widgets/attrs.html" %}
-                           @click="updateSelection($event)">
-                    <label for="{{ option.attrs.id }}">{{ option.label }}</label>
+                           :id="option.id"
+                           :value="option.value"
+                           :checked="selectedValues.includes(option.value)"
+                           @change="updateSelection(option.label, option.value)">
+                    <label :for="option.id" x-text="option.label"></label>
                 </div>
-            {% endfor %}
-        {% endfor %}
+            </template>
+        </template>
     </div>
 </div>
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('multiselect', (id) => ({
+            open: false,
+            selected: [],
+            selectedValues: [],
+            searchQuery: '',
+            groups: [],
+            options: [],
+            filteredGroups: [],
+            filteredOptions: [],
+            name: id,
+
+            initOptions(groupsJson, optionsJson) {
+                if (groupsJson) {
+                    this.groups = JSON.parse(groupsJson);
+                    this.filteredGroups = this.groups;
+                }
+                if (optionsJson) {
+                    this.options = JSON.parse(optionsJson);
+                    this.filteredOptions = this.options;
+                }
+
+                // Initialiser les tags à partir des valeurs de l'URL
+                this.initSelectedValuesFromURL();
+
+                // Ajouter un écouteur global pour fermer le dropdown si on clique à l'extérieur
+                document.addEventListener('click', this.handleClickOutside.bind(this));
+            },
+
+            initSelectedValuesFromURL() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const values = urlParams.getAll(this.name);
+
+                values.forEach(value => {
+                    const option = this.findOptionByValue(value);
+                    if (option) {
+                        this.selectedValues.push(value);
+                        this.selected.push(option.label);
+                    }
+                });
+
+                this.updateInput();
+            },
+
+            handleClickOutside(event) {
+                if (this.open && !this.$refs.dropdown.contains(event.target) && !this.$refs.button.contains(event.target)) {
+                    this.open = false;
+                }
+            },
+
+            findOptionByValue(value) {
+                let foundOption = null;
+
+                if (this.groups.length > 0) {
+                    this.groups.forEach(group => {
+                        group.options.forEach(option => {
+                            if (option.value === value) {
+                                foundOption = option;
+                            }
+                        });
+                    });
+                }
+
+                if (!foundOption) {
+                    this.options.forEach(option => {
+                        if (option.value === value) {
+                            foundOption = option;
+                        }
+                    });
+                }
+
+                return foundOption;
+            },
+
+            openDropdown() {
+                this.open = !this.open;
+                if (this.open) {
+                    this.$refs.dropdown.style.display = 'block';
+                } else {
+                    this.$refs.dropdown.style.display = 'none';
+                }
+            },
+
+            filterOptions() {
+                const searchQueryLower = this.searchQuery.toLowerCase();
+                if (this.groups.length > 0) {
+                    this.filteredGroups = this.groups.map(group => ({
+                        ...group,
+                        options: group.options.filter(option =>
+                            option.label.toLowerCase().includes(searchQueryLower)
+                        )
+                    })).filter(group => group.options.length > 0);
+                } else {
+                    this.filteredOptions = this.options.filter(option =>
+                        option.label.toLowerCase().includes(searchQueryLower)
+                    );
+                }
+            },
+
+            updateSelection(label, value) {
+                const valueIndex = this.selectedValues.indexOf(value);
+                if (valueIndex === -1) {
+                    this.selectedValues.push(value);
+                    this.selected.push(label);
+                } else {
+                    this.selectedValues.splice(valueIndex, 1);
+                    this.selected = this.selected.filter(item => item !== label);
+                }
+                this.updateInput();
+            },
+
+            removeSelection(index) {
+                const value = this.selectedValues[index];
+                this.selectedValues.splice(index, 1);
+                this.selected.splice(index, 1);
+                this.updateInput();
+            },
+
+            updateInput() {
+                this.searchQuery = '';
+                this.filterOptions();
+            }
+        }));
+    });
+
+</script>
