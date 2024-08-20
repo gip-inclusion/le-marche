@@ -15,18 +15,17 @@ $yellow-super-badge--borders-color: #fcc63a;
     display: flex;
     align-items: center;
     position: relative;
+    flex-direction: column;
 }
-.fr-input-wrap input {
-    flex-grow: 1;
+.fr-input {
+    width: 100%;
 }
-.fr-input-wrap button {
+.fr-btn {
     margin-left: 8px;
 }
 .fr-checkbox-list {
-    position: absolute;
+    position: relative;
     top: 100%;
-    left: 0;
-    right: 0;
     z-index: 1000;
     background: white;
     border: 1px solid #ddd;
@@ -38,6 +37,23 @@ $yellow-super-badge--borders-color: #fcc63a;
 }
 .fr-checkbox-list.show {
     display: block;
+}
+.fr-tags-group {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+.fr-tag {
+    margin: 4px;
+    background-color: #e5e5e5;
+    padding: 5px 10px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+}
+.fr-tag .fr-tag__close {
+    margin-left: 8px;
+    cursor: pointer;
 }
 
 .list-unstyled {
@@ -62,46 +78,46 @@ ul.summary-grid-list {
 
 @media (min-width: 992px) {
     ul.summary-grid-list {
-        grid-template-columns: repeat(2,1fr);
+        grid-template-columns: repeat(2, 1fr);
         grid-column-gap: 2rem;
         grid-row-gap: 1rem;
     }
 }
 
 .s-inclusion-03 {
-	&__stats {
-		display: flex;
-		justify-content: center;
-		align-items: center;
+    &__stats {
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-		div {
-			z-index: 2;
-			position: relative;
-			display: flex;
-			justify-content: center;
-			align-items: center;		
-			padding: 0.5rem;
-			margin: 1rem;
-			background-color: #fff;
-			min-height: 60px;
-			min-width: 240px;
-			border-bottom: 4px solid #FE5455;
-			text-align: center;
+        div {
+            z-index: 2;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0.5rem;
+            margin: 1rem;
+            background-color: #fff;
+            min-height: 60px;
+            min-width: 240px;
+            border-bottom: 4px solid #fe5455;
+            text-align: center;
 
-			&.has-relation-between {
-				z-index: 1;
+            &.has-relation-between {
+                z-index: 1;
 
-				&::before {
-					content: '';
-					position: absolute;
-					bottom: -58px;
-					left: 50%;
-					transform: translateX(-50%);
-					background-image: url('/static/images/inclusion-06-illu-01.svg');
-					width: 164px;
-					height: 58px;
-				}
-			}
-		}
-	}
+                &::before {
+                    content: "";
+                    position: absolute;
+                    bottom: -58px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background-image: url("/static/images/inclusion-06-illu-01.svg");
+                    width: 164px;
+                    height: 58px;
+                }
+            }
+        }
+    }
 }
