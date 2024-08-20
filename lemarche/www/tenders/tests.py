@@ -1617,7 +1617,7 @@ class TenderDetailNotInterestedClickView(TestCase):
         )
         self.assertContains(response, self.cta_message)
         self.assertNotContains(response, 'id="login_or_signup_siae_tender_modal"')
-        self.assertContains(response, 'modal-siae" id="detail_not_interested_click_confirm_modal"')
+        self.assertContains(response, 'dialog id="detail_not_interested_click_confirm_modal"')
         self.assertNotContains(response, 'modal-siae show" id="detail_not_interested_click_confirm_modal"')
         self.assertNotContains(response, self.cta_message_success)
         # workflow
@@ -1627,7 +1627,7 @@ class TenderDetailNotInterestedClickView(TestCase):
             f"{self.tender_not_interested_url}?siae_id={self.siae.id}&not_interested=True", data={}, follow=True
         )
         self.assertNotContains(response, self.cta_message)
-        self.assertNotContains(response, 'modal-siae" id="detail_not_interested_click_confirm_modal"')
+        self.assertNotContains(response, 'dialog id="detail_not_interested_click_confirm_modal"')
         # self.assertContains(response, 'modal-siae show" id="detail_not_interested_click_confirm_modal"')
         # self.assertNotContains(response, self.cta_message_success)
         tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)
