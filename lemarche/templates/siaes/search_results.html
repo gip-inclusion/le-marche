@@ -71,28 +71,33 @@
                                     </div>
                                 </div>
                                 <div class="fr-col-12 fr-col-md-6 fr-col-lg-4">
-                                    {% dsfr_form_field form.sectors %}
-                                    {% comment %} form_group_class="form-group use-multiselect" {% endcomment %}
+                                    {% dsfr_form_field form.sectors %}                                    
                                 </div>
                                 <div class="fr-col-12 fr-col-md-12 fr-col-lg-4 fr-hidden fr-unhidden-lg">
-                                    <div class="fr-pt-6v">
-                                        <button id="filter-submit"
-                                                class="fr-btn fr-btn--icon-right fr-icon-search-line"
-                                                type="submit">
-                                            <span>Rechercher</span>
-                                        </button>
-                                        <button id="form-reset-btn"
-                                                type="button"
-                                                class="fr-btn fr-icon-delete-bin-line fr-btn--secondary"
-                                                aria-label="Réinitialiser la recherche">
-                                            <span>Réinitialiser</span>
-                                        </button>
+                                    <div class="fr-mt-6v">
+                                        <ul class="fr-btns-group fr-btns-group--inline-lg fr-btns-group--icon-right">
+                                            <li>
+                                                <button id="filter-submit"
+                                                        class="fr-btn fr-icon-search-line"
+                                                        type="submit">
+                                                    Rechercher
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button id="form-reset-btn"
+                                                        type="button"
+                                                        class="fr-btn fr-icon-delete-bin-line fr-btn--secondary"
+                                                        aria-label="Réinitialiser la recherche">
+                                                    Réinitialiser
+                                                </button>
+                                            </li>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
                             <div x-data="AdvancedSearchComponent">
                                 <div class="fr-grid-row">
-                                    <div class="fr-col-12 fr-btns-group--center fr-my-4v">
+                                    <div class="fr-col-12 fr-btns-group--center fr-mt-4v fr-mb-0">
                                         <button type="button"
                                                 class="fr-btn fr-btn--tertiary-no-outline"
                                                 @click="toggle()"
@@ -142,7 +147,7 @@
                                     <button id="filter-submit"
                                             class="fr-btn fr-btn--icon-right fr-icon-search-line fr-mt-4w"
                                             type="submit">
-                                        <span>Rechercher</span>
+                                        Rechercher
                                     </button>
                                 </div>
                             </div>
@@ -175,7 +180,7 @@
                                             <button id="text-search-submit"
                                                     class="fr-btn fr-btn--icon-right fr-icon-search-line fr-mt-4w"
                                                     type="submit">
-                                                <span>Rechercher</span>
+                                                Rechercher
                                             </button>
                                         </li>
                                     </ul>
@@ -214,7 +219,7 @@
                                             <button id="text-search-submit"
                                                     class="fr-btn fr-btn--icon-right fr-icon-search-line fr-mt-4w"
                                                     type="submit">
-                                                <span>Rechercher</span>
+                                                Rechercher
                                             </button>
                                         </li>
                                     </ul>
@@ -229,40 +234,50 @@
     <div class="fr-container">
         <div id="searchResults" class="fr-grid-row fr-grid-row--gutters">
             <div class="fr-col-12 fr-col-lg-8 fr-mt-6v">
-                <h4>
-                    {% with paginator.count as siae_count %}
-                        {% if siae_count > 0 %}
-                            {{ siae_count }} prestataire{{ siae_count|pluralize }} correspond{{ siae_count|pluralize:"ent" }} à vos critères
-                        {% else %}
-                            Oups, aucun prestataire trouvé !
-                        {% endif %}
-                    {% endwith %}
-                </h4>
-                {% if siaes %}
-                    <div class="fr-col">{% include "siaes/_share_search_results.html" %}</div>
-                {% endif %}
-                {% if siaes %}
-                    {% for siae in siaes %}
-                        <div class="fr-my-3w">
-                            {% include "siaes/_card_search_result.html" with siae=siae %}
+                <div class="fr-grid-row">
+                    <div class="fr-col-12 fr-col-lg-9">
+                        <h4>
+                            {% with paginator.count as siae_count %}
+                                {% if siae_count > 0 %}
+                                    {{ siae_count }} prestataire{{ siae_count|pluralize }} correspond{{ siae_count|pluralize:"ent" }} à vos critères
+                                {% else %}
+                                    Oups, aucun prestataire trouvé !
+                                {% endif %}
+                            {% endwith %}
+                        </h4>
+                    </div>
+                    {% if siaes %}
+                        <div class="fr-col-12 fr-col-lg-3">{% include "siaes/_share_search_results.html" %}</div>
+                    {% endif %}
+                </div>
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    {% if siaes %}
+                        {% for siae in siaes %}
+                            <div class="fr-col-12">
+                                {% include "siaes/_card_search_result.html" with siae=siae %}
+                            </div>
                             <!-- insert to nudge tender creation -->
                             {% if forloop.counter in position_promote_tenders and page_obj.number == 1 %}
-                                </div>
-                                <div class="fr-my-3w">
+                                <div class="fr-col-12">
                                     {% include "siaes/_card_suggest_tender.html" with current_perimeters=current_perimeters current_sectors=current_sectors %}
+                                </div>
                             {% endif %}
+                        {% endfor %}
+                        <div class="fr-col-12">
+                            {% include "includes/_pagination.html" %}
                         </div>
-                    {% endfor %}
-                    {% include "includes/_pagination.html" %}
-                {% else %}
-                    <!-- no results -->
-                    <p>Il y a encore de l'espoir ❤️</p>
-                    <p>Publiez votre besoin, et on s'occupe de vous trouver des prestataires inclusifs.</p>
-                    <p>Obtenez des réponses en moins de 24 heures (en moyenne).</p>
-                    <a href="{% url 'tenders:create' %}"
-                       id="siae-search-empty-demande"
-                       class="fr-btn fr-btn--icon-left fr-icon-mail-line">Publier un besoin d'achat</a>
-                {% endif %}
+                    {% else %}
+                        <div class="fr-col-12">
+                            <!-- no results -->
+                            <p>Il y a encore de l'espoir ❤️</p>
+                            <p>Publiez votre besoin, et on s'occupe de vous trouver des prestataires inclusifs.</p>
+                            <p>Obtenez des réponses en moins de 24 heures (en moyenne).</p>
+                            <a href="{% url 'tenders:create' %}"
+                            id="siae-search-empty-demande"
+                            class="fr-btn fr-btn--icon-left fr-icon-mail-line">Publier un besoin d'achat</a>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
             <!-- sidebar -->
             <div class="fr-col-12 fr-col-lg-4 siae-info fr-mt-6v">
