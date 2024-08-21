@@ -247,7 +247,9 @@
                             {% include "siaes/_card_search_result.html" with siae=siae %}
                             <!-- insert to nudge tender creation -->
                             {% if forloop.counter in position_promote_tenders and page_obj.number == 1 %}
-                                {% include "siaes/_card_suggest_tender.html" with current_perimeters=current_perimeters current_sectors=current_sectors %}
+                                </div>
+                                <div class="fr-my-3w">
+                                    {% include "siaes/_card_suggest_tender.html" with current_perimeters=current_perimeters current_sectors=current_sectors %}
                             {% endif %}
                         </div>
                     {% endfor %}
