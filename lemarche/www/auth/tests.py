@@ -1,3 +1,5 @@
+import secrets
+import string
 import time
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -11,6 +13,8 @@ from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
 
 
+EXAMPLE_PASSWORD = "".join(secrets.choice(string.ascii_letters + string.digits + string.punctuation) for i in range(9))
+
 SIAE = {
     "id_kind": 0,  # required
     "first_name": "Prenom",
@@ -18,8 +22,8 @@ SIAE = {
     "phone": "+33123456789",  # not required
     # "company_name": "",  # not asked here
     "email": "siae@example.com",
-    "password1": "Erls92#32",
-    "password2": "Erls92#32",
+    "password1": EXAMPLE_PASSWORD,
+    "password2": EXAMPLE_PASSWORD,
     # "id_accept_rgpd"  # required
 }
 
@@ -32,8 +36,8 @@ BUYER = {
     "company_name": "Ma boite",
     "position": "Role important",
     "email": "buyer@example.com",
-    "password1": "Erls92#32",
-    "password2": "Erls92#32",
+    "password1": EXAMPLE_PASSWORD,
+    "password2": EXAMPLE_PASSWORD,
     # "nb_of_handicap_provider_last_year": "3",
     # "nb_of_inclusive_provider_last_year": "4",
     # "id_accept_rgpd"  # required
@@ -48,8 +52,8 @@ PARTNER = {
     # "partner_kind": "RESEAU_IAE",
     "company_name": "Ma boite",
     "email": "partner@example.com",
-    "password1": "Erls92#32",
-    "password2": "Erls92#32",
+    "password1": EXAMPLE_PASSWORD,
+    "password2": EXAMPLE_PASSWORD,
     # "id_accept_rgpd"  # required
     # "id_accept_survey"  # not required
 }
@@ -62,8 +66,8 @@ PARTNER_2 = {
     # "partner_kind": "RESEAU_IAE",
     "company_name": "Ma boite",
     "email": "partner2@example.com",
-    "password1": "Erls92#32",
-    "password2": "Erls92#32",
+    "password1": EXAMPLE_PASSWORD,
+    "password2": EXAMPLE_PASSWORD,
     # "id_accept_rgpd"  # required
     # "id_accept_survey"  # not required
 }
@@ -74,8 +78,8 @@ INDIVIDUAL = {
     "last_name": "Nom",
     # "phone": "012345678",  # not required
     "email": "individual@example.com",
-    "password1": "Erls92#32",
-    "password2": "Erls92#32",
+    "password1": EXAMPLE_PASSWORD,
+    "password2": EXAMPLE_PASSWORD,
     # "id_accept_rgpd"  # required
     # "id_accept_survey"  # not required
 }
