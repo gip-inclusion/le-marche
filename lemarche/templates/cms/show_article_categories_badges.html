@@ -1,5 +1,7 @@
-<p>
+<ul class="fr-tags-group">
     {% for categorie in categories %}
-        <span class="badge badge-sm badge-pill badge-pilotage-light text-primary">{{ categorie }}</span>
+        <li>
+            <p class="fr-tag">{{ categorie }}</p>
+        </li>
     {% endfor %}
-</p>
+</ul>
