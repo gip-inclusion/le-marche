@@ -1,21 +1,21 @@
 {% load wagtailimages_tags %}
 {% load inclusion_cms %}
 
-<div class="card has-one-link-inside w-100 h-100">
-    <div class="card-header">
-        {% image article.specific.image fill-655x388 class="img-fluid img-fitcover" loading="lazy" %}
-    </div>
+<div class="fr-card fr-card--shadow fr-enlarge-link">
     <div class="fr-card__body">
-        <p class="h3 lh-sm">{{ article.title }}</p>
-        {% show_article_categories_badges article %}
-        <p>
-            {{ article.specific.intro | truncatechars:200 }}
-        </p>
+        <div class="fr-card__content">
+            <h3 class="fr-card__title">
+                <a href="{{ article.url }}">{{ article.title }}</a>
+            </h3>
+            <p class="fr-card__desc">{{ article.specific.intro | truncatechars:200 }}</p>
+            <div class="fr-card__start">
+                {% show_article_categories_badges article %}
+            </div>
+        </div>
     </div>
-    <div class="fr-card__end text-right">
-        <a href="{{ article.url }}" class="btn btn-link btn-ico stretched-link" title="Lire la suite de l'article : {{ article.title }}">
-            <span>Lire la suite </span>
-            <i class="ri-arrow-right-up-line ri-lg"></i>
-        </a>
+    <div class="fr-card__header">
+        <div class="fr-card__img">
+            {% image article.specific.image fill-655x388 class="fr-responsive-img" loading="lazy" %}            
+        </div>
     </div>
 </div>
