@@ -109,7 +109,8 @@ class ArticleList(RoutablePageMixin, Page):
 
     def get_posts(self):
         return (
-            ArticlePage.objects.prefetch_related("categories")
+            Page.objects.filter(Q(contentpage__isnull=False) | Q(articlepage__isnull=False))
+            .prefetch_related("articlepage__categories")
             .descendant_of(self)
             .live()
             .order_by("-last_published_at")
@@ -136,7 +137,7 @@ class ArticleList(RoutablePageMixin, Page):
             # Redirect to self.url, return a 404.. that's up to you!
             category = None
         if category is not None:
-            context["article_list"] = self.posts.filter(categories__in=[category])
+            context["article_list"] = self.posts.filter(articlepage__categories__in=[category])
             context["category"] = category
         return self.render(
             request,
@@ -159,7 +160,7 @@ class ArticleList(RoutablePageMixin, Page):
         )
 
     # parent_page_types = ["cms.HomePage"]
-    subpage_types = ["cms.ArticlePage"]
+    subpage_types = ["cms.ArticlePage", "content_manager.ContentPage"]
 
 
 class PaidArticleList(ArticleList):
