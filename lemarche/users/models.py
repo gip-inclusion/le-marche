@@ -43,6 +43,11 @@ class UserQueryset(models.QuerySet):
     def has_api_key(self):
         return self.filter(api_key__isnull=False)
 
+    def has_email_domain(self, email_domain):
+        if not email_domain.startswith("@"):
+            email_domain = f"@{email_domain}"
+        return self.filter(email__iendswith=email_domain)
+
     def with_siae_stats(self):
         return self.prefetch_related("siaes").annotate(siae_count_annotated=Count("siaes", distinct=True))
 
@@ -113,6 +118,9 @@ class UserManager(BaseUserManager):
 
     def has_api_key(self):
         return self.get_queryset().has_api_key()
+
+    def has_email_domain(self, email_domain):
+        return self.get_queryset().has_email_domain(email_domain)
 
     def with_siae_stats(self):
         return self.get_queryset().with_siae_stats()
