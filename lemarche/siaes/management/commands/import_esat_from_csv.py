@@ -102,9 +102,9 @@ class Command(BaseCommand):
                                 "siret": siret,
                                 "contact_email": email,
                                 "contact_phone": phone,
-                                "employees_insertion_count": int(employees_count)
-                                if employees_count and employees_count != "#N/D"
-                                else None,
+                                "employees_insertion_count": (
+                                    int(employees_count) if employees_count and employees_count != "#N/D" else None
+                                ),
                                 "employees_insertion_count_last_updated": timezone.now(),
                                 "import_raw_object": data.copy(),
                                 "kind": siae_constants.KIND_ESAT,
