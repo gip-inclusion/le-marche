@@ -296,9 +296,9 @@ class TenderSurveyTransactionedForm(forms.ModelForm):
 
     def __init__(self, tender_survey_transactioned_answer=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields[
-            "survey_transactioned_answer"
-        ].label = "Avez-vous contractualisé avec un prestataire trouvé via le Marché de l'inclusion ?"
+        self.fields["survey_transactioned_answer"].label = (
+            "Avez-vous contractualisé avec un prestataire trouvé via le Marché de l'inclusion ?"
+        )
         self.fields["survey_transactioned_amount"].label = "Quel est le montant de la transaction ? (facultatif)"
         self.fields["survey_transactioned_feedback"].label = "Partagez-nous votre retour d'expérience (facultatif)"
         self.fields["survey_transactioned_feedback"].widget.attrs.update(

@@ -2,8 +2,8 @@ from django.urls import include, path
 from django.views.generic.base import RedirectView
 
 from lemarche.www.dashboard_siaes.views import (
-    SiaeEditActivitiesDeleteView,
     SiaeEditActivitiesCreateView,
+    SiaeEditActivitiesDeleteView,
     SiaeEditActivitiesEditView,
     SiaeEditActivitiesView,
     SiaeEditContactView,
