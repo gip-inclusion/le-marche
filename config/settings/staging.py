@@ -25,7 +25,8 @@ SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", True)
 
 MEDIA_URL = f"https://{S3_STORAGE_ENDPOINT_DOMAIN}/"  # noqa
 
-STORAGES = {"default": {"BACKEND": "storages.backends.s3.S3Storage"}}
+# flake8: noqa F405
+STORAGES |= {"default": {"BACKEND": "storages.backends.s3.S3Storage"}}
 
 
 # Sentry
