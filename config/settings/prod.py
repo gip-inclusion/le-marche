@@ -21,7 +21,9 @@ CSRF_TRUSTED_ORIGINS = [
 SECURE_SSL_REDIRECT = env.str("SECURE_SSL_REDIRECT", True)
 
 MEDIA_URL = f"https://{S3_STORAGE_ENDPOINT_DOMAIN}/"  # noqa
-DEFAULT_FILE_STORAGE = "lemarche.utils.s3boto.S3BotoStorage"
+
+# flake8: noqa F405
+STORAGES |= {"default": {"BACKEND": "storages.backends.s3.S3Storage"}}
 
 
 # Sentry
