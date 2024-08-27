@@ -1,5 +1,6 @@
 # copy from django-storage-1.8
 # replace force_text by force_str
+# get_available_overwrite_name is removed in 1.14.4
 import io
 import mimetypes
 import os
