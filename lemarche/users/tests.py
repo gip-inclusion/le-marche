@@ -91,7 +91,8 @@ class UserModelQuerysetTest(TestCase):
         UserFactory(email="test@plateau-urbain.fr")
         self.assertEqual(User.objects.count(), 1 + 2)
         for EMAIL_DOMAIN in ["ain.fr", "@ain.fr"]:
-            self.assertEqual(User.objects.has_email_domain(email_domain=EMAIL_DOMAIN).count(), 1)
+            with self.subTest(email_domain=EMAIL_DOMAIN):
+                self.assertEqual(User.objects.has_email_domain(email_domain=EMAIL_DOMAIN).count(), 1)
 
     def test_with_siae_stats(self):
         user_2 = UserFactory()
