@@ -23,7 +23,7 @@ SECURE_SSL_REDIRECT = env.str("SECURE_SSL_REDIRECT", True)
 MEDIA_URL = f"https://{S3_STORAGE_ENDPOINT_DOMAIN}/"  # noqa
 
 # flake8: noqa F405
-STORAGES |= {"default": {"BACKEND": "storages.backends.s3.S3Storage"}}
+STORAGES |= {"default": {"BACKEND": "lemarche.utils.s3boto.S3BotoStorage"}}
 
 
 # Sentry
