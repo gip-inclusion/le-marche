@@ -9,8 +9,7 @@ env = environ.Env()
 
 STORAGES = {
     "default": {
-        # "BACKEND": "storages.backends.s3.S3Storage",
-        "BACKEND": "lemarche.utils.s3boto.S3BotoStorage",
+        "BACKEND": "storages.backends.s3.S3Storage",
         "OPTIONS": {
             "bucket_name": S3_STORAGE_BUCKET_NAME,  # noqa
             "access_key": S3_STORAGE_ACCESS_KEY_ID,  # noqa
