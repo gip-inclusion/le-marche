@@ -1,10 +1,10 @@
 <ul class="fr-nav__list">
 	<li class="fr-nav__item">
-		<a href="{{ HOME_PAGE_PATH }}" class="fr-nav__link {% if request.path == HOME_PAGE_PATH %}is-active{% endif %}">Accueil</a>
+		<a href="{{ HOME_PAGE_PATH }}" class="fr-nav__link"{% if request.path == HOME_PAGE_PATH %} aria-current="page"{% endif %}>Accueil</a>
 	</li>
 	<li class="fr-nav__item">
-		<a href="/ressources/quest-ce-quun-prestataire-inclusif/" id="header-ressource-prestataire" class="fr-nav__link {% if request.path == '/ressources/quest-ce-quun-prestataire-inclusif/' %}is-active{% endif %}">
-			Qu'est-ce qu'un prestataire inclusif ?
+		<a href="/ressources/quest-ce-quun-fournisseur-inclusif/" id="header-ressource-prestataire" class="fr-nav__link"{% if request.path == '/ressources/quest-ce-quun-fournisseur-inclusif/' %} aria-current="page"{% endif %}>
+			Qu'est-ce qu'un fournisseur inclusif ?
 		</a>
 	</li>
 	<li class="fr-nav__item">
