@@ -9,8 +9,8 @@ env = environ.Env()
 
 STORAGES = {
     "default": {
-        "BACKEND": "storages.backends.s3.S3Storage",
-        # "BACKEND": "lemarche.utils.s3boto.S3BotoStorage",
+        # "BACKEND": "storages.backends.s3.S3Storage",
+        "BACKEND": "lemarche.utils.s3boto.S3BotoStorage",
         "OPTIONS": {
             "bucket_name": S3_STORAGE_BUCKET_NAME,  # noqa
             "access_key": S3_STORAGE_ACCESS_KEY_ID,  # noqa
@@ -44,7 +44,6 @@ CSRF_TRUSTED_ORIGINS = [
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", True)
 
 MEDIA_URL = f"https://{S3_STORAGE_ENDPOINT_DOMAIN}/"  # noqa
-DEFAULT_FILE_STORAGE = "lemarche.utils.s3boto.S3BotoStorage"
 
 
 # Sentry
