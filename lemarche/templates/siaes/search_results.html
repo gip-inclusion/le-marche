@@ -70,26 +70,18 @@
                                         {{ current_perimeters|json_script:"current-perimeters" }}
                                     </div>
                                 </div>
-                                <div class="fr-col-12 fr-col-md-6 fr-col-lg-4">
-                                    {% dsfr_form_field form.sectors %}                                    
-                                </div>
+                                <div class="fr-col-12 fr-col-md-6 fr-col-lg-4">{% dsfr_form_field form.sectors %}</div>
                                 <div class="fr-col-12 fr-col-md-12 fr-col-lg-4 fr-hidden fr-unhidden-lg">
                                     <div class="fr-mt-6v">
                                         <ul class="fr-btns-group fr-btns-group--inline-lg fr-btns-group--icon-right">
                                             <li>
-                                                <button id="filter-submit"
-                                                        class="fr-btn fr-icon-search-line"
-                                                        type="submit">
-                                                    Rechercher
-                                                </button>
+                                                <button id="filter-submit" class="fr-btn fr-icon-search-line" type="submit">Rechercher</button>
                                             </li>
                                             <li>
                                                 <button id="form-reset-btn"
                                                         type="button"
                                                         class="fr-btn fr-icon-delete-bin-line fr-btn--secondary"
-                                                        aria-label="Réinitialiser la recherche">
-                                                    Réinitialiser
-                                                </button>
+                                                        aria-label="Réinitialiser la recherche">Réinitialiser</button>
                                             </li>
                                         </ul>
                                     </div>
@@ -122,10 +114,6 @@
                                         <label for="{{ form.territory.id_for_label }}">{{ form.territory.label }}</label>
                                         {{ form.territory }}
                                     </div>
-                                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
-                                        <label for="{{ form.networks.id_for_label }}">{{ form.networks.label }}</label>
-                                        {{ form.networks }}
-                                    </div>
                                     <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">{% dsfr_form_field form.networks %}</div>
                                     <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
                                         <div class="fr-input-group{% if form.locations.field.widget.attrs.disabled %} fr-input-group--disabled{% endif %}">
@@ -146,9 +134,7 @@
                                 <div class="fr-col-12">
                                     <button id="filter-submit"
                                             class="fr-btn fr-btn--icon-right fr-icon-search-line fr-mt-4w"
-                                            type="submit">
-                                        Rechercher
-                                    </button>
+                                            type="submit">Rechercher</button>
                                 </div>
                             </div>
                         </form>
@@ -179,9 +165,7 @@
                                         <li>
                                             <button id="text-search-submit"
                                                     class="fr-btn fr-btn--icon-right fr-icon-search-line fr-mt-4w"
-                                                    type="submit">
-                                                Rechercher
-                                            </button>
+                                                    type="submit">Rechercher</button>
                                         </li>
                                     </ul>
                                 </div>
@@ -218,9 +202,7 @@
                                         <li>
                                             <button id="text-search-submit"
                                                     class="fr-btn fr-btn--icon-right fr-icon-search-line fr-mt-4w"
-                                                    type="submit">
-                                                Rechercher
-                                            </button>
+                                                    type="submit">Rechercher</button>
                                         </li>
                                     </ul>
                                 </div>
@@ -253,9 +235,7 @@
                 <div class="fr-grid-row fr-grid-row--gutters">
                     {% if siaes %}
                         {% for siae in siaes %}
-                            <div class="fr-col-12">
-                                {% include "siaes/_card_search_result.html" with siae=siae %}
-                            </div>
+                            <div class="fr-col-12">{% include "siaes/_card_search_result.html" with siae=siae %}</div>
                             <!-- insert to nudge tender creation -->
                             {% if forloop.counter in position_promote_tenders and page_obj.number == 1 %}
                                 <div class="fr-col-12">
@@ -263,9 +243,7 @@
                                 </div>
                             {% endif %}
                         {% endfor %}
-                        <div class="fr-col-12">
-                            {% include "includes/_pagination.html" %}
-                        </div>
+                        <div class="fr-col-12">{% include "includes/_pagination.html" %}</div>
                     {% else %}
                         <div class="fr-col-12">
                             <!-- no results -->
@@ -273,8 +251,8 @@
                             <p>Publiez votre besoin, et on s'occupe de vous trouver des prestataires inclusifs.</p>
                             <p>Obtenez des réponses en moins de 24 heures (en moyenne).</p>
                             <a href="{% url 'tenders:create' %}"
-                            id="siae-search-empty-demande"
-                            class="fr-btn fr-btn--icon-left fr-icon-mail-line">Publier un besoin d'achat</a>
+                               id="siae-search-empty-demande"
+                               class="fr-btn fr-btn--icon-left fr-icon-mail-line">Publier un besoin d'achat</a>
                         </div>
                     {% endif %}
                 </div>
