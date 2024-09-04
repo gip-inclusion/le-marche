@@ -13,6 +13,7 @@
                x-model="searchQuery"
                placeholder="Sélectionner des options"
                @focus="openDropdown()"
+               @click.once="openDropdown()"
                @input="filterOptions()"
                style="flex-grow: 1">
         {% comment %} <button type="button" class="fr-btn fr-btn--icon-right fr-m-0" @click="openDropdown()" x-ref="button" :class="open ? 'fr-icon-arrow-up-s-line' : 'fr-icon-arrow-down-s-line'" style="margin-left: 8px"></button> {% endcomment %}
@@ -26,6 +27,7 @@
         </template>
     </div>
     <div x-show="open"
+         @click.outside="closeDropdown()"
          x-ref="dropdown"
          class="fr-checkbox-list"
          :class="{ show: open }">
@@ -91,8 +93,6 @@
                 // Initialiser les tags à partir des valeurs de l'URL
                 this.initSelectedValuesFromURL();
 
-                // Ajouter un écouteur global pour fermer le dropdown si on clique à l'extérieur
-                document.addEventListener('click', this.handleClickOutside.bind(this));
             },
 
             initSelectedValuesFromURL() {
@@ -108,12 +108,6 @@
                 });
 
                 this.updateInput();
-            },
-
-            handleClickOutside(event) {
-                if (this.open && !this.$refs.dropdown.contains(event.target) && !this.$refs.button.contains(event.target)) {
-                    this.open = false;
-                }
             },
 
             findOptionByValue(value) {
@@ -139,14 +133,13 @@
 
                 return foundOption;
             },
-
+            closeDropdown() {
+                this.open = false;
+                this.$refs.dropdown.style.display = 'none';
+            },
             openDropdown() {
-                this.open = !this.open;
-                if (this.open) {
-                    this.$refs.dropdown.style.display = 'block';
-                } else {
-                    this.$refs.dropdown.style.display = 'none';
-                }
+                this.open = true;
+                this.$refs.dropdown.style.display = 'block';
             },
 
             filterOptions() {
