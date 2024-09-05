@@ -1,2 +1,2 @@
 <a class="{{ button.button_type }}{% if button.icon_side %} {{ button.icon_side }} {{ button.icon_class }}{% endif %}"
-     href="{{ button.url }}">{{ button.text }}</a>
+     href="{{ button.url }}" id="btn-{{ page.slug }}-{{ button.text|slugify }}">{{ button.text }}</a>
