@@ -1,4 +1,23 @@
 document.addEventListener('alpine:init', () => {
+    Alpine.store('dropdown', {
+        active: null,
+
+        open(dropdown) {
+            if (this.active && this.active !== dropdown) {
+                this.active.closeDropdown();
+            }
+            this.active = dropdown;
+        },
+
+        close() {
+            if (this.active) {
+                this.active.closeDropdown();
+                this.active = null;
+            }
+        }
+    });
+
+    // Composant Alpine.js pour le multi-sélecteur
     Alpine.data('multiselect', (id) => ({
         open: false,
         selected: [],
@@ -11,7 +30,6 @@ document.addEventListener('alpine:init', () => {
         name: id,
 
         initOptions(groupsJson, optionsJson) {
-            // debugger
             if (groupsJson) {
                 this.groups = JSON.parse(groupsJson);
                 this.filteredGroups = this.groups;
@@ -21,9 +39,7 @@ document.addEventListener('alpine:init', () => {
                 this.filteredOptions = this.options;
             }
 
-            // Initialiser les tags à partir des valeurs de l'URL
-            this.initSelectedValuesFromURL();
-
+            this.initSelectedValuesFromURL();  // Initialiser les tags à partir des valeurs de l'URL
         },
 
         initSelectedValuesFromURL() {
@@ -38,7 +54,7 @@ document.addEventListener('alpine:init', () => {
                 }
             });
 
-            this.updateInput();
+            // this.updateInput();
         },
 
         findOptionByValue(value) {
@@ -64,14 +80,20 @@ document.addEventListener('alpine:init', () => {
 
             return foundOption;
         },
+
+        openDropdown() {
+            this.open = true;
+            Alpine.store('dropdown').open(this);  // Gérer l'état global du dropdown actif
+        },
+
         closeDropdown() {
             this.open = false;
         },
-        openDropdown() {
-            this.open = true;
-        },
 
         filterOptions() {
+            if (!this.open) {
+                this.open = true;
+            }
             const searchQueryLower = this.searchQuery.toLowerCase();
             if (this.groups.length > 0) {
                 this.filteredGroups = this.groups.map(group => ({
@@ -111,7 +133,4 @@ document.addEventListener('alpine:init', () => {
             this.filterOptions();
         }
     }));
-
 });
-
-

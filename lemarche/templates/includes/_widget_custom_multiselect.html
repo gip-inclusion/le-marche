@@ -1,5 +1,5 @@
 {% load static %}
-<div x-data="multiselect('{{ widget.attrs.id }}')" x-init="initOptions('{{ widget.groups_json|escapejs }}', '{{ widget.options_json|escapejs }}')" class="multiselect fr-checkbox-group" {{ widget.attrs }}>
+<div x-data="multiselect('{{ widget.attrs.id }}')" x-init="initOptions('{{ widget.groups_json|escapejs }}', '{{ widget.options_json|escapejs }}')"  class="multiselect fr-checkbox-group" {{ widget.attrs }}>
     <template x-for="value in selectedValues" :key="value">
         <input type="hidden" :name="name" :value="value">
     </template>
@@ -9,13 +9,12 @@
                 margin-bottom: 0">
         <input type="text"
                id="{{ widget.attrs.id }}"
-               class="fr-input"
+               class="fr-input fr-mt-1w"
                x-model="searchQuery"
                placeholder="Sélectionner des options"
-               @click.stop="openDropdown()"
+               @click="openDropdown()"
                @input="filterOptions()"
                style="flex-grow: 1">
-        {% comment %} <button type="button" class="fr-btn fr-btn--icon-right fr-m-0" @click="openDropdown()" x-ref="button" :class="open ? 'fr-icon-arrow-up-s-line' : 'fr-icon-arrow-down-s-line'" style="margin-left: 8px"></button> {% endcomment %}
     </div>
     <div class="fr-tags-group">
         <template x-for="(label, index) in selected" :key="index">
@@ -26,8 +25,8 @@
         </template>
     </div>
     <div x-show="open"
-         @click.outside="closeDropdown()"
          class="fr-checkbox-list"
+         @click.outside="Alpine.store('dropdown').close()"
          :class="{ show: open }">
         <template x-if="groups.length > 0">
             <template x-for="group in filteredGroups" :key="group.name">
@@ -50,7 +49,6 @@
                 </div>
             </template>
         </template>
-        <!-- Affichage des options sans groupe -->
         <template x-if="groups.length === 0">
             <template x-for="option in filteredOptions" :key="option.value">
                 <div class="fr-checkbox fr-py-1w">
