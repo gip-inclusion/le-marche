@@ -716,9 +716,6 @@ class SiaeUserRequestAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
 
-    def has_delete_permission(self, request, obj=None):
-        return False
-
     def parent_transactional_send_logs_count_with_link(self, obj):
         url = (
             reverse("admin:conversations_templatetransactionalsendlog_changelist")
