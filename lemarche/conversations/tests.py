@@ -1,10 +1,12 @@
 from datetime import timedelta
 
-from django.test import TestCase
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
+from django.test import TestCase, TransactionTestCase
 from django.utils import timezone
 
 from lemarche.conversations import constants as conversation_constants
-from lemarche.conversations.factories import ConversationFactory
+from lemarche.conversations.factories import ConversationFactory, TemplateTransactionalFactory
 from lemarche.conversations.models import Conversation, TemplateTransactional
 from lemarche.siaes.factories import SiaeFactory
 
@@ -99,3 +101,36 @@ class TemplateTransactionalModelTest(TestCase):
         self.assertEqual(self.tt_inactive.get_template_id, self.tt_inactive.mailjet_id)
         self.assertEqual(self.tt_active_mailjet.get_template_id, self.tt_active_mailjet.mailjet_id)
         self.assertEqual(self.tt_active_brevo.get_template_id, self.tt_active_brevo.brevo_id)
+
+
+class TemplateTransactionalModelSaveTest(TransactionTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        pass
+
+    def test_template_transactional_field_rules(self):
+        self.assertRaises(IntegrityError, TemplateTransactionalFactory, source=None)
+
+    def test_template_transactional_validation_on_save(self):
+        TemplateTransactionalFactory(
+            mailjet_id=None, brevo_id=None, source=conversation_constants.SOURCE_BREVO, is_active=False
+        )
+        TemplateTransactionalFactory(
+            mailjet_id=None, brevo_id=123, source=conversation_constants.SOURCE_BREVO, is_active=True
+        )
+        self.assertRaises(
+            ValidationError,
+            TemplateTransactionalFactory,
+            mailjet_id=123,
+            brevo_id=None,
+            source=conversation_constants.SOURCE_BREVO,
+            is_active=True,
+        )
+        self.assertRaises(
+            ValidationError,
+            TemplateTransactionalFactory,
+            mailjet_id=None,
+            brevo_id=123,
+            source=conversation_constants.SOURCE_MAILJET,
+            is_active=True,
+        )
