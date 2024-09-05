@@ -19,7 +19,7 @@ updates:
       prefix: "poetry bot"
     reviewers:
       - "madjid-asa"
-      - "raphodn"
+      - "SebastienReuiller"
     # allow:
     #   # Allow only direct updates for
     #   # Django and any packages starting "django"
