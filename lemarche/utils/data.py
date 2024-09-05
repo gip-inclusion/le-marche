@@ -96,3 +96,18 @@ def phone_number_display(phone_number_model_field):
         return phone_number_model_field.as_e164
     except AttributeError:
         return phone_number_model_field
+
+
+def add_validation_error(dict, key, value):
+    """
+    Build a dictionary of validation errors
+    {"field1": ["error1", "error2"], "field2": ["error1"]}
+    """
+    if key not in dict:
+        dict[key] = value
+    else:
+        if type(dict[key]) is list:
+            dict[key] += [value]
+        if type(dict[key]) is str:
+            dict[key] = [dict[key], value]
+    return dict
