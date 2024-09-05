@@ -202,9 +202,6 @@ class TemplateTransactionalSendLogAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
 
-    def has_delete_permission(self, request, obj=None):
-        return False
-
     def recipient_object_id_with_link(self, obj):
         if obj.recipient_content_type and obj.recipient_object_id:
             if obj.recipient_content_type.model == "tender":
