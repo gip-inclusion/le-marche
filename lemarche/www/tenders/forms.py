@@ -10,6 +10,7 @@ from lemarche.tenders.models import Tender, TenderSiae
 from lemarche.users.models import User
 from lemarche.utils import constants
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
+from lemarche.utils.widgets import CustomSelectMultiple
 
 
 class TenderCreateStepGeneralForm(forms.ModelForm):
@@ -27,6 +28,7 @@ class TenderCreateStepGeneralForm(forms.ModelForm):
         choices_groupby="group",
         to_field_name="slug",
         required=True,
+        widget=CustomSelectMultiple(),
     )
 
     class Meta:
