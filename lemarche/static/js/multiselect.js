@@ -27,7 +27,7 @@ document.addEventListener('alpine:init', () => {
         options: [],
         filteredGroups: [],
         filteredOptions: [],
-        name: id,
+        name: id.replace(/^id_/, ''),
 
         initOptions(groupsJson, optionsJson) {
             if (groupsJson) {
