@@ -1,4 +1,3 @@
-const MULTI_SELECT_TO_CLEAR = ["id_kind", "id_sectors", "id_presta_type", "id_territory", "id_networks"];
 
 function clearFormFields(form) {
     // Parcourir tous les éléments du formulaire
@@ -50,11 +49,7 @@ function resetForm() {
 
     // Réinitialiser les plugins jQuery multiselect
     clearFormFields(form);
-    for (let i = 0; i < MULTI_SELECT_TO_CLEAR.length; i++) {
-        let multiselect_component = $(`#${MULTI_SELECT_TO_CLEAR[i]}`);
-        multiselect_component.multiselect("deselectAll", false)
-        multiselect_component.multiselect("refresh");
-    }
+    document.dispatchEvent(new CustomEvent('reset-all-filter'));
 }
 
 function showSearchFilterForm(searchFilterTab, searchFilterContent) {
