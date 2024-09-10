@@ -1,5 +1,5 @@
 {% load static %}
-<div x-data="multiselect('{{ widget.attrs.id }}')" x-init="initOptions('{{ widget.groups_json|escapejs }}', '{{ widget.options_json|escapejs }}')"  class="multiselect fr-checkbox-group" {{ widget.attrs }}>
+<div x-data="multiselect('{{ widget.attrs.id }}')" x-init="initOptions('{{ widget.groups_json|escapejs }}', '{{ widget.options_json|escapejs }}'{% if widget.value != None %}, '{{ widget.value_json|escapejs }}'{% endif %})"  class="multiselect fr-checkbox-group" {{ widget.attrs }}>
     <template x-for="value in selectedValues" :key="value">
         <input type="hidden" :name="name" :value="value">
     </template>

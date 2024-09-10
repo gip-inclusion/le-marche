@@ -29,7 +29,7 @@ document.addEventListener('alpine:init', () => {
         filteredOptions: [],
         name: id.replace(/^id_/, ''),
 
-        initOptions(groupsJson, optionsJson) {
+        initOptions(groupsJson, optionsJson, valuesJson) {
             if (groupsJson) {
                 this.groups = JSON.parse(groupsJson);
                 this.filteredGroups = this.groups;
@@ -38,14 +38,14 @@ document.addEventListener('alpine:init', () => {
                 this.options = JSON.parse(optionsJson);
                 this.filteredOptions = this.options;
             }
-
-            this.initSelectedValuesFromURL();  // Initialiser les tags à partir des valeurs de l'URL
+            if (valuesJson) {
+                // Initialiser les tags à partir des valeurs initiales du formulaire
+                this.initialValues = JSON.parse(valuesJson);                
+                this.initSelectedValues(this.initialValues);
+            }
         },
 
-        initSelectedValuesFromURL() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const values = urlParams.getAll(this.name);
-
+        initSelectedValues(values) {
             values.forEach(value => {
                 const option = this.findOptionByValue(value);
                 if (option) {
@@ -53,8 +53,6 @@ document.addEventListener('alpine:init', () => {
                     this.selected.push(option.label);
                 }
             });
-
-            // this.updateInput();
         },
 
         findOptionByValue(value) {
