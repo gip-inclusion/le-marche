@@ -41,8 +41,9 @@
                                             {% endif %}
                                         </div>
                                     {% endif %}
-                                    {% dsfr_form_field form.sectors %}
-                                    {% comment %} form_group_class="form-group form-group-required use-multiselect" {% endcomment %}
+                                    {% if user.kind == 'BUYER' %}
+                                        {% dsfr_form_field form.sectors %}
+                                    {% endif %}                                    
                                     <br />
                                     {% dsfr_form_field form.email %}
                                     <p class="fr-text">
@@ -83,3 +84,7 @@
     </div>
 </div>
 {% endblock content %}
+{% block extra_js %}
+<script type="text/javascript" src="{% static 'vendor/alpinejs@3.11.1.min.js'%}" defer></script>
+<script type="text/javascript" src="{% static 'js/multiselect.js' %}"></script>
+{% endblock extra_js %}
