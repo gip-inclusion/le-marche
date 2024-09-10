@@ -119,11 +119,15 @@ document.addEventListener('alpine:init', () => {
             this.updateInput();
         },
 
-        removeSelection(index) {
-            const value = this.selectedValues[index];
+        removeSelection(index) {            
             this.selectedValues.splice(index, 1);
             this.selected.splice(index, 1);
             this.updateInput();
+        },
+
+        reset() {   
+            this.selectedValues = [];
+            this.selected = [];
         },
 
         updateInput() {
