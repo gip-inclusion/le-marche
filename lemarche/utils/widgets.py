@@ -44,5 +44,6 @@ class CustomSelectMultiple(forms.CheckboxSelectMultiple):
 
         context["widget"]["groups_json"] = json.dumps(groups)
         context["widget"]["options_json"] = json.dumps(options)
+        context["widget"]["value_json"] = json.dumps(value)
         context["widget"]["value"] = value
         return context
