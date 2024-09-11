@@ -80,8 +80,8 @@ document.addEventListener('alpine:init', () => {
         },
 
         openDropdown() {
-            this.open = true;
             Alpine.store('dropdown').open(this);  // Gérer l'état global du dropdown actif
+            this.open = true;
         },
 
         closeDropdown() {
