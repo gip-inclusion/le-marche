@@ -22,9 +22,7 @@ class SignupForm(UserCreationForm, DsfrBaseForm):
     FORM_PARTNER_KIND_CHOICES = EMPTY_CHOICE + user_constants.PARTNER_KIND_CHOICES
 
     kind = forms.ChoiceField(label="", widget=forms.RadioSelect, choices=KIND_CHOICES_FORM, required=True)
-    first_name = forms.CharField(
-        label="Votre prénom", widget=forms.TextInput(attrs={"autofocus": "autofocus"}), required=True
-    )
+    first_name = forms.CharField(label="Votre prénom", required=True)
     last_name = forms.CharField(label="Votre nom", required=True)
     phone = forms.CharField(
         label="Votre numéro de téléphone",
@@ -114,6 +112,13 @@ class SignupForm(UserCreationForm, DsfrBaseForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        if self.errors:
+            for field in self.errors.keys():
+                if field in self.fields:
+                    self.fields[field].widget.attrs.update({"autofocus": ""})
+                    break
+
         # password validation rules
         self.fields["password1"].help_text = CnilCompositionPasswordValidator().get_help_text()
 
