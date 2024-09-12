@@ -74,7 +74,7 @@ class SiaeActivityInline(admin.TabularInline):
         "sector_group",
         "sectors",
         "presta_type",
-        "location",
+        # "location", # FIXME: see why activity location loads all perimeters
         "geo_range",
         "geo_range_custom_distance",
         "created_at",
