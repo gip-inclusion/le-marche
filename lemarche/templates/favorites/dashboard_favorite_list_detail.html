@@ -35,14 +35,17 @@
             <div class="fr-col-12 fr-col-lg-9">
                 {% if favorite_list.siaes.count == 0 %}
                     {% dsfr_alert type="info" content="Vous n'avez pas encore ajouté de structures à cette liste !" %}
-                {% endif %}
-                {% for siae in favorite_list.siaes.all %}
-                    <div class="fr-grid-row fr-grid-row--gutters">
-                        <div class="fr-col-12">
-                            {% include "siaes/_card_search_result.html" with siae=siae from_profile="true" %}
+                {% else %}
+                    <!-- button needed for modal to be triggered -->
+                    <button data-fr-opened="false" aria-controls="favorite_item_remove_modal" class="fr-hidden"></button>
+                    {% for siae in favorite_list.siaes.all %}
+                        <div class="fr-grid-row fr-grid-row--gutters">
+                            <div class="fr-col-12">
+                                {% include "siaes/_card_search_result.html" with siae=siae from_profile="true" %}
+                            </div>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                {% endif %}
             </div>
             <div class="fr-col-12 fr-col-lg-3">
                 <ul class="fr-btns-group fr-btns-group--center fr-btns-group--sm fr-btns-group--icon-left">
@@ -90,5 +93,6 @@
 {% endblock modals %}
 
 {% block extra_js %}
-<script type="text/javascript" src="{% static 'js/favorite_item_remove.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/alpinejs@3.11.1.min.js'%}" defer></script>
+<script type="text/javascript" src="{% static 'js/favorite_item.js' %}"></script>
 {% endblock extra_js %}
