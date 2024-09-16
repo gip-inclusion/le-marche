@@ -42,11 +42,9 @@
                                     <button 
                                         id="favorite-remove-modal-btn"
                                         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-star-fill"
-                                        data-fr-opened="false"
-                                        aria-controls="favorite_item_remove_modal"
-                                        data-siae-id="{{ siae.id }}"
-                                        data-siae-slug="{{ siae.slug }}"
-                                        data-siae-name-display="{{ siae.name_display }}"
+                                        x-data="favoriteItem"
+                                        x-init="initOptions('{{ siae.slug }}', '{{ siae.name_display|escapejs }}')"
+                                        @click="remove"
                                         title="Dans votre liste d'achat">
                                         Supprimer de votre liste d'achat
                                     </button>
@@ -54,11 +52,9 @@
                                     <button
                                         id="favorite-add-modal-btn"
                                         class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-star-line"
-                                        data-fr-opened="false"
-                                        aria-controls="favorite_item_add_modal"
-                                        data-siae-id="{{ siae.id }}"
-                                        data-siae-slug="{{ siae.slug }}"
-                                        data-siae-name-display="{{ siae.name_display }}"
+                                        x-data="favoriteItem"
+                                        x-init="initOptions('{{ siae.slug }}', '{{ siae.name_display|escapejs }}')"
+                                        @click="add"
                                         title="Ajouter à votre liste d'achat">
                                         Ajouter à votre liste d'achat
                                     </button>

@@ -27,12 +27,16 @@
                             {% include "includes/_super_badge.html" with siae=siae %}
                             <p class="fr-text--sm"><i>(Dernière activité il y a {{ siae.latest_activity_at|timesince }})</i></p>
                             {% if user.is_authenticated %}
+                                <!-- buttons needed for modal to be triggered -->
+                                <button data-fr-opened="false" aria-controls="favorite_item_add_modal" class="fr-hidden"></button>
+                                <button data-fr-opened="false" aria-controls="favorite_item_remove_modal" class="fr-hidden"></button>
                                 {% if siae.in_user_favorite_list_count_annotated %}
                                     <button 
                                         id="favorite-remove-modal-btn"
                                         class="fr-btn fr-btn--tertiary-no-outline fr-icon-star-fill"
-                                        data-fr-opened="false"
-                                        aria-controls="favorite_item_remove_modal"
+                                        x-data="favoriteItem"
+                                        x-init="initOptions('{{ siae.slug }}', '{{ siae.name_display|escapejs }}')"
+                                        @click="remove"
                                         title="Dans votre liste d'achat">
                                         Supprimer de votre liste d'achat
                                     </button>
@@ -40,8 +44,9 @@
                                     <button
                                         id="favorite-add-modal-btn"
                                         class="fr-btn fr-btn--tertiary-no-outline fr-icon-star-line"
-                                        data-fr-opened="false"
-                                        aria-controls="favorite_item_add_modal"
+                                        x-data="favoriteItem"
+                                        x-init="initOptions('{{ siae.slug }}', '{{ siae.name_display|escapejs }}')"
+                                        @click="add"
                                         title="Ajouter à votre liste d'achat">
                                         Ajouter à votre liste d'achat
                                     </button>
