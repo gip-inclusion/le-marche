@@ -164,6 +164,7 @@ class ImpactCalculatorView(FormMixin, ListView):
             context["form"] = self.filter_form
             if siae_search_form.is_valid():
                 # results
+                context["show_results"] = True
                 context["results"] = self.get_queryset()
                 context["results_aggregated"] = self.filter_form.impact_aggregation(context["results"])
                 context["current_search_query"] = self.request.GET.urlencode()
