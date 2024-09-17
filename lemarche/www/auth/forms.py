@@ -118,6 +118,8 @@ class SignupForm(UserCreationForm, DsfrBaseForm):
                 if field in self.fields:
                     self.fields[field].widget.attrs.update({"autofocus": ""})
                     break
+        else:
+            self.fields["kind"].widget.attrs.update({"autofocus": ""})
 
         # password validation rules
         self.fields["password1"].help_text = CnilCompositionPasswordValidator().get_help_text()
