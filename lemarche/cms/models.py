@@ -13,6 +13,7 @@ from wagtail.models import Page
 from content_manager.models import ContentPage, SitesFacilesBasePage, Tag
 from lemarche.cms import blocks
 from lemarche.cms.forms import ArticlePageForm
+from lemarche.cms.snippets import ArticleCategory
 from lemarche.pages.models import PageFragment
 
 
@@ -21,7 +22,7 @@ class ArticlePage(Page):
     image = models.ForeignKey(
         "wagtailimages.Image", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
     )
-    categories = ParentalManyToManyField("cms.ArticleCategory", blank=True)
+    categories = ParentalManyToManyField(ArticleCategory, blank=True)
 
     is_static_page = models.BooleanField(verbose_name="c'est une page statique ?", default=False)
     with_cta_tender = models.BooleanField(verbose_name="avec un CTA pour les besoins ?", default=False)
