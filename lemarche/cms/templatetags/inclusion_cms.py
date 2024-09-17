@@ -8,8 +8,5 @@ register = template.Library()
 def show_article_categories_badges(article):
     """display list of article categories"""
 
-    categories = []
-    if hasattr(article, "articlepage"):
-        categories = article.articlepage.categories.all()
-
+    categories = article.tags.all()
     return {"categories": categories}
