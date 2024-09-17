@@ -13,6 +13,7 @@ from wagtail.models import Page
 from content_manager.models import ContentPage, SitesFacilesBasePage, Tag
 from lemarche.cms import blocks
 from lemarche.cms.forms import ArticlePageForm
+from lemarche.cms.snippets import ArticleCategory
 from lemarche.pages.models import PageFragment
 
 
@@ -21,7 +22,7 @@ class ArticleBase(Page):
     image = models.ForeignKey(
         "wagtailimages.Image", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
     )
-    categories = ParentalManyToManyField("cms.ArticleCategory", blank=True)
+    categories = ParentalManyToManyField(ArticleCategory, blank=True)
 
     content_panels = Page.content_panels + [
         FieldPanel("intro", classname="full"),
