@@ -109,6 +109,7 @@ class ArticleList(RoutablePageMixin, Page):
             Tag.objects.filter(contentpage__in=ContentPage.objects.descendant_of(self).live())
             .annotate(usecount=Count("contentpage"))
             .filter(usecount__gte=1)
+            .order_by("name")
         )
 
         return context
