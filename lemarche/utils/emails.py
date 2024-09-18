@@ -7,6 +7,7 @@ from huey.contrib.djhuey import task
 from lemarche.users import constants as user_constants
 from lemarche.utils.apis import api_brevo, api_mailjet
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
+from lemarche.utils.data import sanitize_to_send_by_email
 
 
 GENERIC_EMAIL_DOMAIN_SUFFIX_LIST = [
@@ -80,11 +81,11 @@ def add_to_contact_list(user, type: str, source: str = user_constants.SOURCE_SIG
         raise ValueError("type must be defined")
     if contact_list_id:
         properties = {
-            "nom": user.last_name.capitalize(),
-            "prénom": user.first_name.capitalize(),
+            "nom": sanitize_to_send_by_email(user.last_name.capitalize()),
+            "prénom": sanitize_to_send_by_email(user.first_name.capitalize()),
             "pays": "france",
-            "nomsiae": user.company_name.capitalize() if user.company_name else "",
-            "poste": user.position.capitalize() if user.position else "",
+            "nomsiae": sanitize_to_send_by_email(user.company_name.capitalize()) if user.company_name else "",
+            "poste": sanitize_to_send_by_email(user.position.capitalize()) if user.position else "",
         }
 
         api_mailjet.add_to_contact_list_async(user.email, properties, contact_list_id)

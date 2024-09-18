@@ -4,6 +4,7 @@ import phonenumbers
 from django.core.management import call_command
 from django.db import connection
 from django.utils.encoding import force_str
+from django.utils.html import escape, strip_tags
 
 
 def reset_app_sql_sequences(app_name):
@@ -111,3 +112,10 @@ def add_validation_error(dict, key, value):
         if type(dict[key]) is str:
             dict[key] = [dict[key], value]
     return dict
+
+
+def sanitize_to_send_by_email(value):
+    """
+    Sanitize a string to be sent by email (remove HTML tags to avoid XSS in first_name, last_name, etc.)
+    """
+    return escape(strip_tags(value))

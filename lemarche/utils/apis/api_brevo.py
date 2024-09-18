@@ -9,6 +9,7 @@ from sib_api_v3_sdk.rest import ApiException
 
 from lemarche.tenders.constants import AMOUNT_RANGE_CHOICE_EXACT
 from lemarche.utils.constants import EMAIL_SUBJECT_PREFIX
+from lemarche.utils.data import sanitize_to_send_by_email
 from lemarche.utils.urls import get_object_admin_url, get_object_share_url
 
 
@@ -40,12 +41,12 @@ def create_contact(user, list_id: int):
         email=user.email,
         list_ids=[list_id],
         attributes={
-            "NOM": user.last_name,
-            "PRENOM": user.first_name,
+            "NOM": sanitize_to_send_by_email(user.last_name.capitalize()),
+            "PRENOM": sanitize_to_send_by_email(user.first_name.capitalize()),
             "DATE_INSCRIPTION": user.created_at,
             "TYPE_ORGANISATION": user.buyer_kind_detail,
-            "NOM_ENTREPRISE": user.company_name,
-            "SMS": user.phone_display,
+            "NOM_ENTREPRISE": sanitize_to_send_by_email(user.company_name.capitalize()),
+            "SMS": sanitize_to_send_by_email(user.phone_display),
             # WHATSAPP, TYPE_ORGANISATION, LIEN_FICHE_COMMERCIALE, TAUX_DE_COMPLETION
         },
         ext_id=str(user.id),
