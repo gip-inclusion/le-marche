@@ -1,6 +1,5 @@
 {% load wagtailimages_tags %}
 {% load inclusion_cms %}
-
 <div class="fr-card fr-card--shadow fr-enlarge-link">
     <div class="fr-card__body">
         <div class="fr-card__content">
@@ -8,14 +7,10 @@
                 <a href="{{ article.url }}">{{ article.title }}</a>
             </h3>
             <p class="fr-card__desc">{{ article.specific.intro | truncatechars:200 }}</p>
-            <div class="fr-card__start">
-                {% show_article_categories_badges article %}
-            </div>
+            <div class="fr-card__start">{% show_article_categories_badges article %}</div>
         </div>
     </div>
     <div class="fr-card__header">
-        <div class="fr-card__img">
-            {% image article.specific.image fill-655x388 class="fr-responsive-img" loading="lazy" %}            
-        </div>
+        <div class="fr-card__img">{% image article.header_image fill-655x388 class="fr-responsive-img" loading="lazy" %}</div>
     </div>
 </div>
