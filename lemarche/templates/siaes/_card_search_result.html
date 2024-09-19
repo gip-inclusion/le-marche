@@ -1,88 +1,103 @@
 {% load static siae_sectors_display %}
-{% load theme_inclusion %}
-
-<div class="card c-card c-card--hovershadow siae-card {% if siae.super_badge %}super-badge-card{% endif %}" data-url="{% url 'siae:detail' siae.slug %}" role="button">
-    <div class="card-header">
-        <div class="row">
-            <div class="col-auto">
-                {% if siae.logo_url %}
-                    <img src="{{ siae.logo_url }}" width="50" alt="Logo de la structure {{ siae.name }}" loading="lazy" />
-                {% else %}
-                    <img src="{% static 'img/default-listing.png' %}" width="50" alt="{{ siae.name }}" loading="lazy" />
-                {% endif %}
-            </div>
-            <div class="col">
-                <h2 class="h4 mb-0">
-                    {{ siae.name_display }}
-                    {% if user.is_authenticated and user.is_admin and not siae.user_count %}
-                        <span class="badge badge-base rounded-pill text-warning fs-sm">
-                            pas encore inscrite
-                        </span>
+<div class="fr-card fr-card--horizontal">
+    <div class="fr-card__body">
+        <div class="fr-card__content">
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-1">
+                    {% if siae.logo_url %}
+                        <img src="{{ siae.logo_url }}"
+                                class="fr-responsive-img"
+                                alt="Logo de la structure {{ siae.name }}"
+                                loading="lazy" />
+                    {% else %}
+                        <img src="{% static 'img/default-listing.png' %}"
+                                class="fr-responsive-img"
+                                alt="{{ siae.name }}"
+                                loading="lazy" />
                     {% endif %}
-                </h2>
-                {% if siae.super_badge %}
-                    <span class="badge badge-base rounded-pill super-badge-badge text-primary mt-2 font-weight-bold">
-                        <i class="ri-award-fill"></i>
-                        Super prestataire
-                    </span>
-                {% endif %}
+                </div>
+                <div class="fr-col-10 fr-col-lg-7">
+                    <h3 class="fr-card__title">
+                        <a href="{% url 'siae:detail' siae.slug %}">{{ siae.name_display }}</a>
+                    </h3>
+                </div>
+                <div class="fr-col-12 fr-col-lg-4">
+                    <ul class="fr-tags-group lemarche--align-right">
+                        <li>{% include "includes/_super_badge.html" with siae=siae %}</li>
+                        {% if siae.is_qpv %}
+                            <li>
+                                <span class="fr-tag"
+                                        title="Quartier prioritaire de la politique de la ville">QPV</span>
+                            </li>
+                        {% endif %}
+                        {% if siae.is_zrr %}
+                            <li>
+                                <span class="fr-tag" title="Zone de revitalisation rurale">ZRR</span>
+                            </li>
+                        {% endif %}
+                        {% comment %} favorites {% endcomment %}
+                        <li>
+                            {% if user.is_authenticated %}
+                                {% if from_profile or siae.in_user_favorite_list_count_annotated %}
+                                    <button 
+                                        id="favorite-remove-modal-btn"
+                                        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-star-fill"
+                                        x-data="favoriteItem"
+                                        x-init="initOptions('{{ siae.slug }}', '{{ siae.name_display|escapejs }}')"
+                                        @click="remove"
+                                        title="Dans votre liste d'achat">
+                                        Supprimer de votre liste d'achat
+                                    </button>
+                                {% else %}
+                                    <button
+                                        id="favorite-add-modal-btn"
+                                        class="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-star-line"
+                                        x-data="favoriteItem"
+                                        x-init="initOptions('{{ siae.slug }}', '{{ siae.name_display|escapejs }}')"
+                                        @click="add"
+                                        title="Ajouter à votre liste d'achat">
+                                        Ajouter à votre liste d'achat
+                                    </button>
+                                {% endif %}
+                            {% else %}
+                                <button
+                                    id="favorite-modal-btn"
+                                    class="fr-btn fr-btn--tertiary-no-outline fr-icon-star-line"
+                                    data-fr-opened="false"
+                                    aria-controls="login_or_signup_modal"
+                                    data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}"
+                                    title="Ajouter à votre liste d'achat">
+                                    Se connecter pour Ajouter à votre liste d'achat
+                                </button>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+                <div class="fr-col-12">
+                    <span class="fr-tag">{{ siae.get_kind_display }}</span>
+                </div>
+                <div class="fr-col-12 fr-col-lg-6">
+                    <p>
+                        <span class="fr-icon-briefcase-line" aria-hidden="true"></span> {{ siae.presta_type_display }}
+                    </p>
+                </div>
+                <div class="fr-col-12 fr-col-lg-6">
+                    <p>{% siae_sectors_display siae display_max=3 current_search_query=current_search_query %}</p>
+                </div>
+            </div>
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12">
+                    <p class="fr-m-0">
+                        <span class="fr-icon-map-pin-2-line" aria-hidden="true"></span>
+                        {{ siae.city }}
+                        <span class="fr-icon-road-map-line fr-ml-2w" aria-hidden="true"></span>
+                        {{ siae.geo_range_pretty_display }}
+                    </p>
+                    {% if user.is_authenticated and user.is_admin and not siae.user_count %}
+                        <p class="fr-card__detail fr-icon-warning-fill fr-mt-3w">pas encore inscrite</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
-    </div>
-    <div class="card-body">
-            <ul class="list-unstyled m-0 lh-sm row no-gutters">
-                <li class="sc-profile-type col-12 col-lg-6 pr-lg-2 d-flex">
-                    <i class="ri-briefcase-4-line mr-1"></i>
-                    <span class="sr-only">Type(s) de prestation :</span>
-                    <span>{{ siae.presta_type_display }}</span>
-                </li>
-                {% if siae.sectors %}
-                    <li class="sc-profile-sectors col-12 col-lg-6 pl-lg-2 mb-3 mb-lg-0 d-flex">
-                        <i class="ri-service-line mr-1"></i>
-                        <span class="sr-only">Secteur(s) d'activité :</span>
-                        <span>{% siae_sectors_display siae display_max=3 current_search_query=current_search_query %}</span>
-                    </li>
-                {% endif %}
-            </ul>
-            {% if user.is_authenticated %}
-                {% if from_profile or siae.in_user_favorite_list_count_annotated %}
-                    <a href="#" id="favorite-remove-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_remove_modal" data-siae-id="{{ siae.id }}" data-siae-slug="{{ siae.slug }}" data-siae-name-display="{{ siae.name_display }}" title="Dans votre liste d'achat">
-                        <i class="ri-star-fill ri-xl"></i>
-                    </a>
-                {% else %}
-                    <a href="#" id="favorite-add-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#favorite_item_add_modal" data-siae-id="{{ siae.id }}" data-siae-slug="{{ siae.slug }}" data-siae-name-display="{{ siae.name_display }}" title="Ajouter à votre liste d'achat">
-                        <i class="ri-star-line ri-xl"></i>
-                    </a>
-                {% endif %}
-            {% else %}
-                <a href="#" id="favorite-modal-btn" class="btn btn-favorite" data-toggle="modal" data-target="#login_or_signup_modal" data-next-params="{% url 'siae:search_results' %}?{{ current_search_query_escaped }}" title="Ajouter à votre liste d'achat">
-                    <i class="ri-star-line ri-xl"></i>
-                </a>
-            {% endif %}
-    </div>
-    <div class="card-footer fs-sm">
-            <span>
-                <i class="ri-map-pin-line"></i>
-                <span class="sr-only">Situé à {{ siae.city }}</span>
-                <span>{{ siae.city }}</span>
-                <span class="badge-group">
-                    {% if siae.is_qpv %}
-                        <span class="badge badge-sm badge-pill badge-emploi-lightest" title="Quartier prioritaire de la politique de la ville">QPV</span>
-                    {% endif %}
-                    {% if siae.is_zrr %}
-                        <span class="badge badge-sm badge-pill badge-emploi-lightest" title="Zone de revitalisation rurale">ZRR</span>
-                    {% endif %}
-                </span>
-            </span>
-            <span class="ml-3">
-                <i class="ri-map-2-line"></i>
-                <span class="sr-only">Intervient sur : {{ siae.geo_range_pretty_title }}</span>
-                <span>{{ siae.geo_range_pretty_display }}</span>
-            </span>
-            <span class="ml-3">
-                <i class="ri-building-4-line"></i>
-                <span class="sr-only">Type de structure : {{ siae.get_kind_display }}</span>
-                <span>{{ siae.get_kind_display }}</span>
-            </span>
     </div>
 </div>

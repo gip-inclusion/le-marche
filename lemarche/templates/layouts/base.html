@@ -1,144 +1,86 @@
-{% load static compress bootstrap4 theme_inclusion %}
-
+{% load static compress dsfr_tags %}
 <!DOCTYPE html>
-<html lang="fr">
-<head>
+<html lang="{% block lang %}fr{% endblock lang %}"
+      {% if SITE_CONFIG.mourning %}data-fr-mourning{% endif %}>
+  <head>
     <meta charset="utf-8" />
-    <title>{% block title %} — Le marché de l'inclusion{% endblock %}</title>
-    {% block meta_description %}
-        <meta name="description" content="Le marché de l'inclusion est un service numérique permettant de trouver un prestataire sociale inclusif proposant des produits ou services professionnels.">
-    {% endblock %}
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <meta name="theme-color" content="#ffffff">
-
-    <!-- https://metatags.io Open Graph -->
-    <meta property="og:locale" content="fr_FR" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://lemarche.inclusion.beta.gouv.fr/" />
-    <meta property="og:image" content="{% static 'img/logo_metatags_marche.png' %}" />
-    <meta property="og:image:alt" content="Logo du marché de l'inclusion" />
-    <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <!-- https://metatags.io Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://lemarche.inclusion.beta.gouv.fr/" />
-    <meta property="twitter:image" content="{% static 'img/logo_metatags_marche.png' %}" />
-    <meta property="twitter:site" content="inclusion_gouv" />
-    <!-- https://metatags.io Facebook -->
-    <meta property="fb:page_id" content="inclusion.gouv" />
-
-    <link rel="shortcut icon" href="{% static_theme_images "favicon.ico" %}" type="image/ico">
-
-    <!-- Use this to get the value of the CSRF token in JavaScript. -->
-    <meta name="csrf-token" content="{{ csrf_token }}">
-
-    <!-- itou theme -->
-    {% import_static_CSS_theme_inclusion %}
-
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    {% dsfr_favicon %}
+    {% dsfr_css %}
     {% compress css %}
-    <!-- third party css -->
-    <link rel="stylesheet" href="{% static 'vendor/bootstrap-multiselect-1.1.1/bootstrap-multiselect.min.css' %}" type="text/css" />
-    <link rel="stylesheet" href="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.css' %}" type="text/css" />
-    <link rel="stylesheet" href="{% static 'vendor/leaflet-1.7.1/leaflet.css' %}" type="text/css" />
-    <!-- custom css -->
-    <link rel="stylesheet" href="{% static 'itou_marche/itou_marche.scss' %}" type="text/x-scss" />
+      <link rel="stylesheet"
+            href="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.css' %}"
+            type="text/css" />
+      <link rel="stylesheet"
+            href="{% static 'vendor/leaflet-1.7.1/leaflet.css' %}"
+            type="text/css" />
+      {% comment %}See https://github.com/GouvernementFR/dsfr-theme-tarteaucitron{% endcomment %}
+      <link rel="stylesheet"
+            href="{% static 'css/dsfr-theme-tac.min.css' %}"
+            type="text/css" />
+      <link rel="stylesheet"
+            href="{% static 'itou_marche/itou_marche.scss' %}"
+            type="text/x-scss" />
     {% endcompress %}
-
-    {% block extra_css %}{% endblock %}
-
-    {% block extra_head %}{% endblock %}
-</head>
-
-<body id="top" class="{% block body_class %}{% endblock %}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-    <!-- allow a user to go to the main content of the page -->
-    <noscript>
-        <div class="alert alert-danger" role="status">
-            Javascript doit être activé pour pouvoir assurer l'affichage correct de la page (recherche géographique par exemple).
-        </div>
-    </noscript>
-
-    <nav role="navigation" aria-label="Accès rapide" tabindex="1" class="sr-only">
-        <ul>
-            <li><a href="#nav-primary">Aller au menu principal</a></li>
-            <li><a href="#main">Aller au contenu principal</a></li>
-            {% if request.path == "/prestataires/" %}
-                <li><a href="#filter-search-form">Aller à la recherche de structures de l'insertion et du handicap</a></li>
-            {% endif %}
-        </ul>
-    </nav>
-
+    {% block extra_css %}
+    {% endblock extra_css %}
+    {% block title %}
+    <title>{% block page_title %}— Le marché de l'inclusion{% endblock page_title %}</title>
+    {% endblock title %}
+    {% block meta_description %}
+      <meta name="description"
+            content="Le marché de l'inclusion est un service numérique permettant de trouver un prestataire sociale inclusif proposant des produits ou services professionnels.">
+    {% endblock meta_description %}
+    <meta name="format-detection"
+          content="telephone=no,date=no,address=no,email=no,url=no">
+    {% block opengraph %}
+    {% endblock opengraph %}
+  </head>
+  <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    {% block skiplinks %}
+      {% dsfr_skiplinks skiplinks %}
+    {% endblock skiplinks %}
     {% block header %}
       {% include "layouts/_header.html" %}
-    {% endblock %}
-
-    {% block sub_header %}{% endblock %}
-
-    <!-- contains main informative part of the site -->
-    <main id="main" role="main" class="s-main">
-        {% block breadcrumbs %}{% endblock %}
-
-        {% block messages %}
-            {% if messages %}
-                <section>
-                    <div class="container">
-                        <div class="row messages">
-                            <div class="col">
-                                {% include 'includes/_messages.html' %}
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            {% endif %}
-        {% endblock %}
-
-        {% block content %}{% endblock %}
+    {% endblock header %}
+    {% if SITE_CONFIG.notice %}
+      {% dsfr_notice title=SITE_CONFIG.notice %}
+    {% endif %}
+    
+    {% block breadcrumb %}
+        {% comment %} empty because managed for each type of page {% endcomment %}
+    {% endblock breadcrumb %}
+    
+    <main id="content" role="main">
+      {% block messages %}
+        {% dsfr_django_messages wrapper_classes="fr-container fr-my-4v" %}
+      {% endblock messages %}
+      {% block content %}
+      {% endblock content %}
     </main>
-
+    {% block follow_newsletter_social_media %}
+    {% endblock follow_newsletter_social_media %}
     {% block footer %}
-        {% include "layouts/_footer.html" %}
-    {% endblock %}
-
-    <!-- popin -->
-    <div id="modalsContent">
-        {% block modals %}{% endblock %}
-    </div>
-
-    <!-- allow a user to go to the top of the page -->
-    <div class="sr-only sr-only-focusable">
-        <a href="#header">retour au début de la page</a>
-    </div>
-
-    {% block script %}
-    <!-- itou theme -->
-    {% import_static_JS_theme_inclusion %}
-    {% compress js %}
-    <!-- third party javascript -->
-    <script type="text/javascript" src="{% static 'vendor/bootstrap-multiselect-1.1.1/bootstrap-multiselect.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'vendor/leaflet-1.7.1/leaflet.js' %}"></script>
-    <script type="text/javascript" src="{% static 'vendor/accessible-slick-1.0.1/slick.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'vendor/htmx-1.8.2/htmx.min.js' %}" defer></script>
-    <!-- custom javascript -->
-    <script type="text/javascript" src="{% static 'js/sector_multiselect_field.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/kind_multiselect_field.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/presta_type_multiselect_field.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/legal_form_multiselect_field.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/territory_multiselect_field.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/network_multiselect_field.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/label_multiselect_field.js' %}"></script>
-    {% endcompress %}
+      {% include "layouts/_footer.html" %}
+    {% endblock footer %}
+    {% block modals %}
+    {% endblock modals %}
+    {% dsfr_js nonce=request.csp_nonce %}
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <script type="text/javascript" src="{% static 'js/dsfr/utils.js'%}"></script>
+    <script type="text/javascript"
+            src="{% static 'vendor/alphagov-accessible-autocomplete-2.0.3/accessible-autocomplete.min.js' %}"></script>
+    <script type="text/javascript"
+            src="{% static 'vendor/leaflet-1.7.1/leaflet.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/htmx-1.9.12/htmx.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/utils.js'%}"></script>
     {% if BITOUBI_ENV not in "dev" %}
-        {% include "includes/_tracker_tarteaucitron.html" %}
-        {% include "includes/_tracker_itou.html" %}
+      {% include "includes/_tracker_tarteaucitron.html" %}
+      {% include "includes/_tracker_itou.html" %}
     {% endif %}
-    {% comment "migrate first" %}
-    {% include '@CocoricoCore/Frontend/Common/_cookie_consent_js.html.twig' only %}
-    {% endcomment %}
-    {% endblock %}
-
-    {% block extra_js %}{% endblock %}
-</body>
+    {% block extra_js %}
+    {% endblock extra_js %}
+  </body>
 </html>

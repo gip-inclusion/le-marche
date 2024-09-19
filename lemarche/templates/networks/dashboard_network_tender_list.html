@@ -1,48 +1,37 @@
 {% extends "layouts/base.html" %}
-{% load bootstrap4 static %}
+{% load bootstrap4 static dsfr_tags %}
 
-{% block title %}Opportunités commerciales{{ block.super }}{% endblock %}
+{% block page_title %}{{ DASHBOARD_NETWORK_TENDER_LIST_TITLE }}{{ block.super }}{% endblock page_title %}
 
-{% block breadcrumbs %}
-<section>
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard_networks:detail' network.slug %}">Mon réseau</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Opportunités commerciales</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-</section>
-{% endblock %}
+{% block breadcrumb %}
+    {% dsfr_breadcrumb %}
+{% endblock breadcrumb %}
 
 {% block content %}
-<section>
-    <div class="container py-4">
-        <div class="row">
-            <div class="col-12 col-lg">
-                <h1>Opportunités commerciales reçues par mes adhérents</h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12 my-5">
-                {% for tender in tenders %}
-                    {% include "tenders/_list_item_network.html" with tender=tender network=network %}
-                {% endfor %}
-                {% include "includes/_pagination.html" %}
-                {% if not tenders %}
-                    <p class="text-muted">
-                        Désolé, nous n'avons aucune opportunités à vous présenter pour le moment.
-                    </p>
-                {% endif %}
-            </div>
+<div class="fr-container">
+    <div class="fr-grid-row">
+        <div class="fr-col-12">
+            <h1>Opportunités commerciales reçues par mes adhérents</h1>
         </div>
     </div>
-</section>
+
+    <div class="fr-grid-row">
+        <div class="fr-col-12">
+            {% if tenders %}
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    {% for tender in tenders %}
+                        <div class="fr-col-12">
+                            {% include "tenders/_list_item_network.html" with tender=tender network=network %}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% include "includes/_pagination.html" %}
+            {% else %}
+                <p class="text-muted">
+                    Désolé, nous n'avons aucune opportunités à vous présenter pour le moment.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

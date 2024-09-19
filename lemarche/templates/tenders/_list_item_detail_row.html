@@ -1,27 +1,30 @@
 {% load get_verbose_name %}
 
-<div class="row">
+<div class="fr-grid-row fr-grid-row--gutters fr-mt-2v">
     {% if tender.contact_company_name_display %}
-        <div class="col-md-3" title="Entreprise">
-            <i class="ri-building-4-line"></i>
-            {{ tender.contact_company_name_display }}
+        <div class="fr-col-12 fr-col-md-3" title="Entreprise">
+            <p class="fr-mb-0">
+                <span class="fr-icon-building-line"></span>
+                {{ tender.contact_company_name_display }}
+            </p>
         </div>
     {% endif %}
-    <div class="col-md-9" title="{% get_verbose_name tender 'location' %}">
+    <div class="fr-col-12 fr-col-md-9" title="{% get_verbose_name tender 'location' %}">
         {% if tender.perimeters_list_string %}
-            <i class="ri-map-pin-2-line"></i>
-            {{ tender.location_display|safe }}
+            <p class="fr-mb-0">
+                <span class="fr-icon-map-pin-2-line"></span>
+                {{ tender.location_display|safe }}
+            </p>
         {% endif %}
     </div>
-</div>
-{% if tender.accept_share_amount %}
-    <hr />
-    <div class="row">
-        <div class="col-md-3" title="{% get_verbose_name tender 'amount' %}">
-            <strong>
-                Budget : {{ tender.amount_display|default:"-" }}
-            </strong>
+    {% if tender.accept_share_amount %}
+        <div class="fr-col-12 fr-col-md-3" title="{% get_verbose_name tender 'amount' %}">
+            <p class="fr-mb-0">
+                <span class="fr-icon-money-euro-circle-line"></span>
+                <strong>
+                    Budget : {{ tender.amount_display|default:"-" }}
+                </strong>
+            </p>
         </div>
-    </div>
-{% endif %}
-
+    {% endif %}
+</div>

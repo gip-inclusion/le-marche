@@ -64,7 +64,6 @@ STATICFILES_FINDERS = [
     "compressor.finders.CompressorFinder",
 ]
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
 
@@ -103,6 +102,11 @@ DJANGO_APPS = [
     "django.contrib.flatpages",
     "django.contrib.gis",
     "django.contrib.humanize",
+]
+
+DJANGO_DSFR_APPS = [
+    "widget_tweaks",  # django-widget-tweaks
+    "dsfr",  # django-dsfr
     "django.forms",
 ]
 
@@ -159,6 +163,7 @@ WAGTAIL_APPS = [
     "wagtail.contrib.search_promotions",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
+    "wagtail.contrib.settings",
     "wagtail.embeds",
     "wagtail.sites",
     "wagtail.users",
@@ -169,11 +174,19 @@ WAGTAIL_APPS = [
     "wagtail.admin",
     "wagtail",
     "modelcluster",
+    "wagtailmarkdown",
+    "wagtailmenus",
+    "wagtail_localize",
+    "wagtail_localize.locales",
+    "wagtail_transfer",
     "taggit",
     "storages",
+    # app from site_facile
+    "blog",
+    "content_manager",
 ]
 
-INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS + WAGTAIL_APPS
+INSTALLED_APPS = PRIORITY_APPS + DJANGO_APPS + DJANGO_DSFR_APPS + THIRD_PARTY_APPS + LOCAL_APPS + WAGTAIL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -184,6 +197,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     # Third-party Middlewares
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django_htmx.middleware.HtmxMiddleware",  # django-htmx
@@ -207,9 +221,9 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "wagtail.contrib.settings.context_processors.settings",
                 # custom
                 "lemarche.utils.settings_context_processors.expose_settings",
-                "lemarche.utils.home_page_context_processors.home_page",
             ],
         },
     },
@@ -279,6 +293,7 @@ LOGIN_URL = "auth:login"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
+
 # Django Sesame
 # https://django-sesame.readthedocs.io/en/stable/index.html
 # ------------------------------------------------------------------------------
@@ -345,6 +360,7 @@ INBOUND_EMAIL_IS_ACTIVATED = env.bool("INBOUND_EMAIL_IS_ACTIVATED", True)
 
 BREVO_TENDERS_MIN_AMOUNT_TO_SEND = env.int("BREVO_TENDERS_MIN_AMOUNT_TO_SEND", 34998)
 
+
 # Caching
 # https://docs.djangoproject.com/en/4.0/topics/cache/
 # ------------------------------------------------------------------------------
@@ -376,6 +392,7 @@ else:
     }
 
 SELECT2_CACHE_BACKEND = "default"
+
 
 # Security
 # ------------------------------------------------------------------------------
@@ -649,6 +666,7 @@ MESSAGE_TAGS = {
 # Async Configuration Options: Huey
 # Workers are run in prod via `CC_WORKER_COMMAND = django-admin run_huey`.
 # ------------------------------------------------------------------------------
+
 CONNECTION_MODES_HUEY = {
     # immediate mode
     "direct": {"immediate": True},
@@ -768,6 +786,18 @@ CKEDITOR_CONFIGS = {
 SIMPLE_HISTORY_HISTORY_ID_USE_UUID = True
 
 
+# Wording
+# ------------------------------------------------------------------------------
+
+DASHBOARD_TITLE = "Tableau de bord"
+DASHBOARD_NETWORK_DETAIL_TITLE = "Mon réseau"
+DASHBOARD_NETWORK_SIAE_LIST_TITLE = "Mes adhérents"
+DASHBOARD_NETWORK_TENDER_LIST_TITLE = "Opportunités commerciales"
+TENDER_DETAIL_TITLE_SIAE = "Trouver de nouvelles opportunités"
+TENDER_DETAIL_TITLE_OTHERS = "Mes besoins"
+FAVORITE_LIST_TITLE = "Liste d'achat favoris"
+
+
 # Internal & external
 # (if you need these settings in the template, add them to settings_context_processor.expose_settings)
 # ------------------------------------------------------------------------------
@@ -801,7 +831,7 @@ BITOUBI_ENV_COLOR = ENV_COLOR_MAPPING.get(BITOUBI_ENV, "")
 # Wagtail
 # ------------------------------------------------------------------------------
 
-WAGTAIL_SITE_NAME = "Le Marché"
+WAGTAIL_SITE_NAME = os.getenv("SITE_NAME", "Le Marché")
 
 WAGTAILSEARCH_BACKENDS = {
     "default": {
@@ -811,15 +841,6 @@ WAGTAILSEARCH_BACKENDS = {
 
 SITE_ID = 1
 
-WAGTAIL_RICHTEXT_FIELD_FEATURES = [
-    "h2",
-    "h3",
-    "bold",
-    "italic",
-    "link",
-    "image",
-    "embed",
-]
 
 WAGTAILEMBEDS_RESPONSIVE_HTML = True
 
@@ -827,6 +848,67 @@ WAGTAILADMIN_BASE_URL = DEPLOY_URL or "http://localhost/"
 
 WAGTAIL_FRONTEND_LOGIN_URL = LOGIN_URL
 
+# Base URL to use when referring to full URLs within the Wagtail admin backend -
+# e.g. in notification emails. Don't include '/admin' or a trailing slash
+# WAGTAILADMIN_BASE_URL = f"{os.getenv('HOST_PROTO', 'https')}://{HOST_URL}"
+
+HOST_PORT = os.getenv("HOST_PORT", "")
+if HOST_PORT != "":
+    WAGTAILADMIN_BASE_URL = f"{WAGTAILADMIN_BASE_URL}:{HOST_PORT}"
+
+# WAGTAILADMIN_PATH = os.getenv("WAGTAILADMIN_PATH", "cms-admin/")
+
+# Disable Gravatar service
+WAGTAIL_GRAVATAR_PROVIDER_URL = None
+
+WAGTAIL_RICHTEXT_FIELD_FEATURES = [
+    "h2",
+    "h3",
+    "h4",
+    "bold",
+    "italic",
+    "link",
+    "document-link",
+    "image",
+    "embed",
+]
+
+WAGTAIL_MODERATION_ENABLED = False
+WAGTAILMENUS_FLAT_MENUS_HANDLE_CHOICES = (
+    ("header_tools", "Menu en haut à droite"),
+    ("footer", "Menu en pied de page"),
+    ("mega_menu_section_1", "Catégorie de méga-menu 1"),
+    ("mega_menu_section_2", "Catégorie de méga-menu 2"),
+    ("mega_menu_section_3", "Catégorie de méga-menu 3"),
+    ("mega_menu_section_4", "Catégorie de méga-menu 4"),
+    ("mega_menu_section_5", "Catégorie de méga-menu 5"),
+    ("mega_menu_section_6", "Catégorie de méga-menu 6"),
+    ("mega_menu_section_7", "Catégorie de méga-menu 7"),
+    ("mega_menu_section_8", "Catégorie de méga-menu 8"),
+    ("mega_menu_section_9", "Catégorie de méga-menu 9"),
+    ("mega_menu_section_10", "Catégorie de méga-menu 10"),
+    ("mega_menu_section_11", "Catégorie de méga-menu 11"),
+    ("mega_menu_section_12", "Catégorie de méga-menu 12"),
+    ("mega_menu_section_13", "Catégorie de méga-menu 13"),
+    ("mega_menu_section_14", "Catégorie de méga-menu 14"),
+    ("mega_menu_section_15", "Catégorie de méga-menu 15"),
+    ("mega_menu_section_16", "Catégorie de méga-menu 16"),
+)
+
+WAGTAILIMAGES_EXTENSIONS = ["gif", "jpg", "jpeg", "png", "webp", "svg"]
+
+WAGTAILTRANSFER_SOURCES = {
+    "staging": {
+        "BASE_URL": os.getenv("WAGTAILTRANSFER_SOURCES_STAGING_URL", ""),
+        "SECRET_KEY": os.getenv("WAGTAILTRANSFER_SOURCES_STAGING_SECRET", ""),
+    },
+    "production": {
+        "BASE_URL": os.getenv("WAGTAILTRANSFER_SOURCES_PROD_URL", ""),
+        "SECRET_KEY": os.getenv("WAGTAILTRANSFER_SOURCES_PROD_SECRET", ""),
+    },
+}
+
+WAGTAILTRANSFER_SECRET_KEY = os.getenv("WAGTAILTRANSFER_SOURCES_PROD_SECRET", "7cd5de8229be75e1e0c2af8abc2ada7e")
 # Specific home and purchasing impact page is setted here to avoid queries on every page
 SIAE_HOME_PAGE = env.str("SIAE_HOME_PAGE", "/accueil-structure/")
 PURCHASING_IMPACT_PAGE = env.str("PURCHASING_IMPACT_PAGE", "/impact-rse/")
@@ -850,12 +932,14 @@ FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 # MTCAPTCHA
 # ------------------------------------------------------------------------------
+
 MTCAPTCHA_PRIVATE_KEY = env.str("MTCAPTCHA_PRIVATE_KEY", "")
 MTCAPTCHA_PUBLIC_KEY = env.str("MTCAPTCHA_PUBLIC_KEY", "")
 
 
 # OPENAI
 # ------------------------------------------------------------------------------
+
 OPENAI_ORG = env.str("OPENAI_ORG", "")
 OPENAI_API_BASE = env.str("OPENAI_API_BASE", "")
 OPENAI_API_KEY = env.str("OPENAI_API_KEY", "")

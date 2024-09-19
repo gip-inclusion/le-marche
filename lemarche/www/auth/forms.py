@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, UserCreationForm
+from dsfr.forms import DsfrBaseForm
 
 from lemarche.sectors.models import Sector
 from lemarche.users import constants as user_constants
@@ -10,7 +11,7 @@ from lemarche.utils.fields import GroupedModelMultipleChoiceField
 from lemarche.utils.password_validation import CnilCompositionPasswordValidator
 
 
-class SignupForm(UserCreationForm):
+class SignupForm(UserCreationForm, DsfrBaseForm):
     KIND_CHOICES_FORM = (
         (User.KIND_SIAE, "Une entreprise sociale inclusive (SIAE ou structure du handicap, GEIQ)"),
         (User.KIND_BUYER, "Un acheteur"),
@@ -21,9 +22,7 @@ class SignupForm(UserCreationForm):
     FORM_PARTNER_KIND_CHOICES = EMPTY_CHOICE + user_constants.PARTNER_KIND_CHOICES
 
     kind = forms.ChoiceField(label="", widget=forms.RadioSelect, choices=KIND_CHOICES_FORM, required=True)
-    first_name = forms.CharField(
-        label="Votre prénom", widget=forms.TextInput(attrs={"autofocus": "autofocus"}), required=True
-    )
+    first_name = forms.CharField(label="Votre prénom", required=True)
     last_name = forms.CharField(label="Votre nom", required=True)
     phone = forms.CharField(
         label="Votre numéro de téléphone",
@@ -56,7 +55,7 @@ class SignupForm(UserCreationForm):
     )
 
     sectors = GroupedModelMultipleChoiceField(
-        label=Sector._meta.verbose_name_plural,
+        label=User._meta.get_field("sectors").help_text,
         queryset=Sector.objects.form_filter_queryset(),
         choices_groupby="group",
         to_field_name="slug",
@@ -113,9 +112,17 @@ class SignupForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        if self.errors:
+            for field in self.errors.keys():
+                if field in self.fields:
+                    self.fields[field].widget.attrs.update({"autofocus": ""})
+                    break
+        else:
+            self.fields["kind"].widget.attrs.update({"autofocus": ""})
+
         # password validation rules
         self.fields["password1"].help_text = CnilCompositionPasswordValidator().get_help_text()
-        self.fields["sectors"].label = User._meta.get_field("sectors").help_text
 
     def clean_email(self):
         email = self.cleaned_data["email"]
@@ -143,11 +150,14 @@ class SignupForm(UserCreationForm):
         return instance
 
 
-class LoginForm(AuthenticationForm):
+class LoginForm(AuthenticationForm, DsfrBaseForm):
+    username = forms.CharField(label="Adresse e-mail", required=True)
+
     def clean_username(self):
         username = self.cleaned_data["username"]
+        print(username)
         return username.lower()
 
 
-class PasswordResetForm(PasswordResetForm):
+class PasswordResetForm(PasswordResetForm, DsfrBaseForm):
     email = forms.EmailField(label="Votre adresse e-mail", required=True)

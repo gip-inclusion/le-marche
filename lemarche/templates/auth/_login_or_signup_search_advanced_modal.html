@@ -1,54 +1,66 @@
-<div class="modal fade modal-siae" id="modal_login_to_access_advanced_search" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="exampleModalLabel">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Pour accéder à la recherche avancée multicritères, inscrivez-vous, c'est gratuit !</h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-                    <i class="ri-close-line"></i>
-                </button>
-            </div>
-            <div class="modal-body home-content-body">
-                <p class="mb-4">
-                    Vous pourrez filtrer selon les critères suivants :
-                </p>
-                <ul class="list-unstyled mb-5">
-                    <li class="d-flex mb-2">
-                        <span class="font-weight-bold ml-2">Type de structure</span>
-                    </li>
-                    {% comment %}<li class="d-flex mb-2">
-                        <span class="font-weight-bold ml-2">Certification (Qualibat, RGE, Ecocert, Imprim'vert, Bio, ESS…)</span>
-                    </li> {% endcomment %}
-                    <li class="d-flex mb-2">
-                        <span class="font-weight-bold ml-2">Taille d'entreprise</span>
-                    </li>
-                    <li class="d-flex mb-2">
-                        <span class="font-weight-bold ml-2">Chiffre d'affaires</span>
-                    </li>
-                    <li class="d-flex mb-2">
-                        <span class="font-weight-bold ml-2">Localisation</span>
-                    </li>
-                    <li class="d-flex mb-2">
-                        <span class="font-weight-bold ml-2">Référence client</span>
-                    </li>
-                    <li class="d-flex mb-2">
-                        <span class="font-weight-bold ml-2">Groupement</span>
-                    </li>
-                    <li class="d-flex mb-2">
-                        <span class="font-weight-bold ml-2">QPV/ZRR</span>
-                    </li>
-                    <li class="d-flex mb-2">
-                        <span class="font-weight-bold ml-2">Forme juridique</span>
-                    </li>
-                </ul>
-                <div class="text-center">
-                    <a href="{% url 'auth:signup' %}?next=/prestataires/" id="auth-link" class="btn btn-sm btn-primary">Créer un compte</a>
-                </div>
-                <hr class="my-5" data-text="ou" />
-                <div class="text-center">
-                    <p class="mb-0">Vous avez déjà un compte ?</p>
-                    <a href="{% url 'auth:login' %}?next=/prestataires/" id="auth-link" class="btn btn-sm btn-link">Se connecter</a>
+{% if not user.is_authenticated %}
+    <dialog aria-labelledby="modal_login_to_access_advanced_search_title" role="dialog" id="modal_login_to_access_advanced_search" class="fr-modal modal-siae">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                            <button class="fr-btn--close fr-btn" aria-controls="modal_login_to_access_advanced_search">Fermer</button>
+                        </div>
+                        <div class="fr-modal__content">
+                            <h3 id="modal_login_to_access_advanced_search_title" class="fr-modal__title">Pour accéder à la recherche avancée multicritères, inscrivez-vous, c'est gratuit !</h3>
+                            <p>
+                                Vous pourrez filtrer selon les critères suivants :
+                            </p>
+                            <ul class="fr-text--bold">
+                                <li>
+                                    <span>Type de structure</span>
+                                </li>
+                                {% comment %}<li>
+                                    <span>Certification (Qualibat, RGE, Ecocert, Imprim'vert, Bio, ESS…)</span>
+                                </li> {% endcomment %}
+                                <li>
+                                    <span>Taille d'entreprise</span>
+                                </li>
+                                <li>
+                                    <span>Chiffre d'affaires</span>
+                                </li>
+                                <li>
+                                    <span>Localisation</span>
+                                </li>
+                                <li>
+                                    <span>Référence client</span>
+                                </li>
+                                <li>
+                                    <span>Groupement</span>
+                                </li>
+                                <li>
+                                    <span>QPV/ZRR</span>
+                                </li>
+                                <li>
+                                    <span>Forme juridique</span>
+                                </li>
+                            </ul>
+                            <div>
+                                <ul class="fr-btns-group">
+                                    <li>
+                                        <a href="{% url 'auth:signup' %}?next=/prestataires/" id="auth-link" class="fr-btn">Créer un compte</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <p class="fr-hr-or fr-my-4v">ou</p>
+                            <div>
+                                <p>Vous avez déjà un compte ?</p>
+                                <ul class="fr-btns-group">
+                                    <li>
+                                        <a href="{% url 'auth:login' %}?next=/prestataires/" id="auth-link" class="fr-btn fr-btn--tertiary">Se connecter</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    </dialog>
+{% endif %}

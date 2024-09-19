@@ -1,45 +1,35 @@
 {% extends "layouts/base.html" %}
+{% load process_dict dsfr_tags static siae_sectors_display %}
 
-{% block title %}{{ flatpage.title }}{{ block.super }}{% endblock %}
+{% block page_title %}{{ flatpage.meta_title|default:flatpage.title }}{{ block.super }}{% endblock page_title %}
 
-{% block meta_title %}{{ flatpage.meta_title|default:flatpage.title }}{% endblock %}
-{% block meta_description %}{{ flatpage.meta_description }}{% endblock %}
+{% block meta_description %}
+    <meta name="description" content="{{ flatpage.meta_description|striptags }}">
+{% endblock meta_description %}
 
-{% block breadcrumbs %}
-    <section>
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
-                            <li class="breadcrumb-item active" aria-current="page"title="{{ flatpage.title }}">{{ flatpage.title }}</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </section>
-{% endblock %}
+{% block breadcrumb %}
+    {% process_dict root_dir=HOME_PAGE_PATH current=flatpage.title as breadcrumb_data %}
+    {% dsfr_breadcrumb breadcrumb_data %}
+{% endblock breadcrumb %}
 
 {% block content %}
-    <section class="s-title-01">
-        <div class="s-title-01__container container">
-            <div class="s-title-01__row row">
-                <div class="s-title-01__col col-12">
-                    <h1 class="s-title-01__title h1"><strong>{{ flatpage.title }}</strong></h1>
+    <section>
+        <div class="fr-container">
+            <div class="fr-grid-row">
+                <div class="fr-col-12">
+                    <h1>{{ flatpage.title }}</h1>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="s-cms">
-        <div class="s-cms__container container container-max-lg">
-            <div class="s-cms__row row">
-                <div class="s-cms__col col-12">
+    <section>
+        <div class="fr-container fr-container-max-lg">
+            <div class="fr-grid-row">
+                <div class="fr-col-12">
                     {{ flatpage.content | safe }}
                 </div>
             </div>
         </div>
     </section>
-{% endblock %}
+{% endblock content %}

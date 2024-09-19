@@ -42,8 +42,11 @@ class PagesHeaderLinkTest(TestCase):
         self.assertNotContains(response, "Demandes reçues")
         self.assertNotContains(response, f'"{reverse("tenders:list")}"')
 
-        self.assertNotContains(response, "Mon espace")
+        self.assertNotContains(response, "Tableau de bord")
         self.assertNotContains(response, reverse("dashboard:home"))
+
+        self.assertNotContains(response, "Déconnexion")
+        self.assertNotContains(response, reverse("auth:logout"))
 
     def test_anonymous_user_home_for_siae(self):
         response = self.client.get("/accueil-structure/")
@@ -67,8 +70,11 @@ class PagesHeaderLinkTest(TestCase):
         self.assertNotContains(response, "Demandes reçues")
         self.assertNotContains(response, f'"{reverse("tenders:list")}"')
 
-        self.assertNotContains(response, "Mon espace")
+        self.assertNotContains(response, "Tableau de bord")
         self.assertNotContains(response, reverse("dashboard:home"))
+
+        self.assertNotContains(response, "Déconnexion")
+        self.assertNotContains(response, reverse("auth:logout"))
 
     def test_siae_user_home(self):
         self.client.force_login(self.siae_user)
@@ -93,8 +99,11 @@ class PagesHeaderLinkTest(TestCase):
         self.assertContains(response, "Demandes reçues")
         self.assertContains(response, f'"{reverse("tenders:list")}"')
 
-        self.assertContains(response, "Mon espace")
+        self.assertContains(response, "Tableau de bord")
         self.assertContains(response, reverse("dashboard:home"))
+
+        self.assertContains(response, "Déconnexion")
+        self.assertContains(response, reverse("auth:logout"))
 
     def test_buyer_user_home(self):
         self.client.force_login(self.user_buyer)
@@ -119,5 +128,8 @@ class PagesHeaderLinkTest(TestCase):
         self.assertNotContains(response, "Demandes reçues")
         self.assertNotContains(response, f'"{reverse("tenders:list")}"')
 
-        self.assertContains(response, "Mon espace")
+        self.assertContains(response, "Tableau de bord")
         self.assertContains(response, reverse("dashboard:home"))
+
+        self.assertContains(response, "Déconnexion")
+        self.assertContains(response, reverse("auth:logout"))

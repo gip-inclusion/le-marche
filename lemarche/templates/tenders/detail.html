@@ -1,48 +1,28 @@
 {% extends "layouts/base.html" %}
-{% load bootstrap4 static humanize %}
+{% load dsfr_tags static humanize %}
 
-{% block title %}{{ tender_kind_display }} {{ tender.title }}{{ block.super }}{% endblock %}
+{% block page_title %}{{ tender_kind_display }} {{ tender.title }}{{ block.super }}{% endblock page_title %}
 
-{% block breadcrumbs %}
-<section>
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
-                        {% if user.is_authenticated %}
-                            <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
-                            <li class="breadcrumb-item"><a href="{% url 'tenders:list' %}">{{ parent_title }}</a></li>
-                        {% endif %}
-                        <li class="breadcrumb-item active" aria-current="page" title="{{ tender.title }}">{{ tender.title|truncatechars:25 }}</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-</section>
-{% endblock %}
+{% block breadcrumb %}
+    {% dsfr_breadcrumb %}
+{% endblock breadcrumb %}
 
 {% block content %}
-<section class="s-section">
-    <div class="s-section__container container">
+<section>
+    <div class="fr-container">
         <!-- Contact details above + help -->
         {% if not tender.deadline_date_outdated and not tender.response_is_anonymous %}
             {% if siae_has_detail_contact_click_date %}
-                <div class="row">
-                    <div class="col-12 col-lg-8">
-                        <div class="alert alert-info fade show" role="status">
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    <div class="fr-col-12 fr-col-lg-8">
+                        <div class="fr-alert fr-alert--info" role="status">
                             {% include "tenders/_detail_contact.html" with tender=tender source="alert" %}
                         </div>
                     </div>
-                    <div class="col-12 col-lg-4">
-                        <div class="alert alert-info mt-3 mt-lg-0" role="alert">
-                            <p class="mb-1">
-                                <i class="ri-information-line ri-lg"></i>
-                                <strong>Conseil</strong>
-                            </p>
-                            <p class="mb-0 fs-sm">
+                    <div class="fr-col-12 fr-col-lg-4">
+                        <div class="fr-callout fr-icon-lightbulb-line">
+                            <h3 class="fr-callout__title">Conseil</h3>
+                            <p class="fr-callout__text">
                                 N'attendez pas et contactez dès maintenant le client.
                                 En fonction, envoyez lui un devis, une plaquette commerciale ou répondez à son marché.
                             </p>
@@ -51,35 +31,37 @@
                 </div>
             {% endif %}
         {% endif %}
-        <div class="row">
+        <div class="fr-grid-row fr-grid-row--gutters">
             <!-- Main tender card -->
-            <div class="col-12 col-lg-8 order-2">
+            <div class="fr-col-12 fr-col-lg-8 order-2">
                 {% include "tenders/_detail_card.html" with tender=tender is_new_for_siaes=is_new_for_siaes %}
             </div>
             <!-- Sidebar with actions -->
-            <div class="col-12 col-lg-4 order-1 order-lg-2">
-                {% include "tenders/_detail_sidebar.html" with tender=tender %}
+            <div class="fr-col-12 fr-col-lg-4 order-1 order-lg-2">
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    {% include "tenders/_detail_sidebar.html" with tender=tender %}
+                </div>
             </div>
         </div>
     </div>
 </section>
-{% endblock %}
+{% endblock content %}
 
 {% block modals %}
 {% if user.is_authenticated or siae_id %}
     {% if not siae_has_detail_contact_click_date %}
-        {% include "tenders/_detail_contact_click_confirm_modal.html" %}
+        {% include "tenders/_detail_contact_click_confirm_modal.html" with siae_id=siae_id %}
     {% endif %}
     {% if not siae_has_detail_cocontracting_click_date %}
         <!-- no confirmation modal for cocontracting -->
     {% endif %}
     {% if not siae_has_detail_not_interested_click_date %}
-        {% include "tenders/_detail_not_interested_click_confirm_modal.html" %}
+        {% include "tenders/_detail_not_interested_click_confirm_modal.html" with siae_id=siae_id %}
     {% endif %}
 {% else %}
     {% include "auth/_login_or_signup_siae_tender_modal.html" %}
 {% endif %}
-{% endblock %}
+{% endblock modals %}
 
 {% block extra_js %}
 {% if not siae_has_detail_not_interested_click_date %}
@@ -96,4 +78,4 @@
     </script>
 {% endif %}
 {% include "tenders/_detail_nps_tally_form.html" %}
-{% endblock %}
+{% endblock extra_js %}

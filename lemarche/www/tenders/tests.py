@@ -559,9 +559,7 @@ class TenderListViewTest(TestCase):
         self.assertContains(response, "2 prestataires ciblés")  # tender_3
         self.assertContains(response, "1 prestataire intéressé")  # tender_3
         self.assertNotContains(response, "Demandes reçues")
-        self.assertNotContains(
-            response, '<span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>'
-        )
+        self.assertNotContains(response, '<p class="fr-badge fr-badge--sm fr-badge--green-emeraude">Nouveau</p>')
 
     def test_other_user_without_tender_should_not_see_any_tenders(self):
         self.client.force_login(self.user_partner)
@@ -585,11 +583,11 @@ class TenderListViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["tenders"]), 2)
         # The badge in header, only one because one is outdated
-        self.assertContains(response, 'Demandes reçues <span class="badge badge-pill badge-important fs-xs">1</span>')
-        # The badge in tender list
         self.assertContains(
-            response, '<span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>', 1
+            response, 'Demandes reçues&nbsp;<span class="fr-badge fr-badge--sm fr-badge--green-emeraude">1</span>'
         )
+        # The badge in tender list
+        self.assertContains(response, '<p class="fr-badge fr-badge--sm fr-badge--green-emeraude">Nouveau</p>', 1)
 
         # Open tender detail page
         detail_url = reverse("tenders:detail", kwargs={"slug": self.tender_4.slug})
@@ -598,11 +596,9 @@ class TenderListViewTest(TestCase):
         # The badges have disappeared
         response = self.client.get(url)
         self.assertNotContains(
-            response, 'Demandes reçues <span class="badge badge-pill badge-important fs-xs">1</span>'
+            response, 'Demandes reçues&nbsp;<span class="fr-badge fr-badge--sm fr-badge--green-emeraude">1</span>'
         )
-        self.assertNotContains(
-            response, '<span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>'
-        )
+        self.assertNotContains(response, '<p class="fr-badge fr-badge--sm fr-badge--green-emeraude">Nouveau</p>')
 
     def test_siae_user_should_only_see_filtered_kind(self):
         self.client.force_login(self.siae_user_2)
@@ -1291,9 +1287,7 @@ class TenderDetailViewTest(TestCase):
         self.client.force_login(self.siae_user_1)
         url = reverse("tenders:detail", kwargs={"slug": tender_outdated.slug})
         response = self.client.get(url)
-        self.assertNotContains(
-            response, '<span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>'
-        )
+        self.assertNotContains(response, '<p class="fr-badge fr-badge--sm fr-badge--green-emeraude">Nouveau</p>')
 
         tender_new = TenderFactory(
             kind=tender_constants.KIND_QUOTE,
@@ -1303,14 +1297,10 @@ class TenderDetailViewTest(TestCase):
         self.client.force_login(self.siae_user_1)
         url = reverse("tenders:detail", kwargs={"slug": tender_new.slug})
         response = self.client.get(url)
-        self.assertContains(
-            response, '<span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>', 1
-        )
+        self.assertContains(response, '<p class="fr-badge fr-badge--sm fr-badge--green-emeraude">Nouveau</p>', 1)
 
         response = self.client.get(url)
-        self.assertNotContains(
-            response, '<span class="float-right badge badge-sm badge-pill badge-new">Nouveau</span>'
-        )
+        self.assertNotContains(response, '<p class="fr-badge fr-badge--sm fr-badge--green-emeraude">Nouveau</p>')
 
 
 class TenderDetailContactClickStatViewTest(TestCase):
@@ -1627,7 +1617,7 @@ class TenderDetailNotInterestedClickView(TestCase):
         )
         self.assertContains(response, self.cta_message)
         self.assertNotContains(response, 'id="login_or_signup_siae_tender_modal"')
-        self.assertContains(response, 'modal-siae" id="detail_not_interested_click_confirm_modal"')
+        self.assertContains(response, 'dialog id="detail_not_interested_click_confirm_modal"')
         self.assertNotContains(response, 'modal-siae show" id="detail_not_interested_click_confirm_modal"')
         self.assertNotContains(response, self.cta_message_success)
         # workflow
@@ -1637,7 +1627,7 @@ class TenderDetailNotInterestedClickView(TestCase):
             f"{self.tender_not_interested_url}?siae_id={self.siae.id}&not_interested=True", data={}, follow=True
         )
         self.assertNotContains(response, self.cta_message)
-        self.assertNotContains(response, 'modal-siae" id="detail_not_interested_click_confirm_modal"')
+        self.assertNotContains(response, 'dialog id="detail_not_interested_click_confirm_modal"')
         # self.assertContains(response, 'modal-siae show" id="detail_not_interested_click_confirm_modal"')
         # self.assertNotContains(response, self.cta_message_success)
         tendersiae = TenderSiae.objects.get(tender=self.tender, siae=self.siae)

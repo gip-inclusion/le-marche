@@ -10,7 +10,7 @@ from lemarche.perimeters.models import Perimeter
 class PerimeterViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Perimeter.objects.all()
     serializer_class = PerimeterSimpleSerializer
-    filter_class = PerimeterFilter
+    filterset_class = PerimeterFilter
 
     @extend_schema(summary="Lister tous les périmètres", tags=[Perimeter._meta.verbose_name_plural])
     def list(self, request, *args, **kwargs):
@@ -20,7 +20,7 @@ class PerimeterViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 class PerimeterAutocompleteViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Perimeter.objects.all()
     serializer_class = PerimeterSimpleSerializer
-    filter_class = PerimeterAutocompleteFilter
+    filterset_class = PerimeterAutocompleteFilter
     pagination_class = None
 
     def finalize_response(self, request, response, *args, **kwargs):

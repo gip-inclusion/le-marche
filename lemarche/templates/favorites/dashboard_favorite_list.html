@@ -1,77 +1,70 @@
 {% extends "layouts/base.html" %}
-{% load bootstrap4 %}
+{% load dsfr_tags %}
 
-{% block title %}Liste d'achat favoris{{ block.super }}{% endblock %}
+{% block page_title %}{{ FAVORITE_LIST_TITLE }}{{ block.super }}{% endblock page_title %}
 
-{% block breadcrumbs %}
-<section>
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Liste d'achat favoris</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-</section>
-{% endblock %}
+{% block breadcrumb %}
+    {% dsfr_breadcrumb %}
+{% endblock breadcrumb %}
 
 {% block content %}
-<section class="s-section">
-    <div class="s-section__container container">
-        <div class="row">
-            <div class="col-12 col-lg-8">
-                <h1 class="h1 mb-3 mb-lg-5">
-                    <strong>Liste d'achat favoris</strong>
-                </h1>
+<section>
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-lg-8">
+                <h1>{{ FAVORITE_LIST_TITLE }}</h1>
             </div>
         </div>
-
-        <div class="row">
-            <div class="col-12 col-lg-8">
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-lg-8">
                 <!-- New list -->
                 <h2>Nouvelle liste</h2>
-                <form method="POST" action="{% url 'dashboard_favorites:list_create' %}">
+                <form method="post" action="{% url 'dashboard_favorites:list_create' %}">
                     {% csrf_token %}
-                    {% bootstrap_form_errors form type="all" %}
-                    <label class="mb-2 d-inline-block font-weight-bold" for="id_name">Créer une {% if favorite_lists.count %}nouvelle {% endif %}liste</label>
-                    <div class="form-row">
-                        <div class="form-group col">
-                            {% bootstrap_field form.name show_label=False %}
+                    {% if form.non_field_errors %}
+                        <section class="fr-my-4v fr-input-group fr-input-group--error">
+                            {{ form.non_field_errors }}
+                        </section>
+                    {% endif %}
+                    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4v">
+                        <div class="fr-col-12 fr-col-md-6">
+                            {% dsfr_form_field form.name %}
                         </div>
-                        <div class="form-group col-auto">
-                            <button class="btn btn-primary btn-ico" type="submit" name="action" value="create">
-                                <span>Créer</span>
-                                <i class="ri-add-fill ri-lg"></i>
-                            </button>
+                        <div class="fr-col-12 fr-col-md-4 fr-pt-md-11v">
+                            {% dsfr_button label="Créer" extra_classes="fr-btn--icon-right fr-icon-add-circle-fill" %}
                         </div>
                     </div>
                 </form>
-
+            </div>
+        </div>
+        <div class="fr-grid-row fr-mt-8v">
+            <div class="fr-col-12 fr-col-lg-8">
                 <!-- Existing list(s) -->
                 {% if favorite_lists.count %}
                     <h2>{{ favorite_lists.count }} liste{% if favorite_lists.count > 1 %}s{% endif %} existante{% if favorite_lists.count > 1 %}s{% endif %}</h2>
-                    <ul class="list-group">
-                    {% for favorite_list in favorite_lists.all %}
-                        <li class="list-group-item">
-                            <a href="{% url 'dashboard_favorites:list_detail' favorite_list.slug %}" class="d-flex justify-content-between align-items-center text-decoration-none" title="Voir la liste">
-                                <span>{{ favorite_list.name }} <span class="ml-2 fs-xs badge badge-marche-light badge-pill">{{ favorite_list.siaes.count }}</span></span>
-                                <i class="ri-eye-line ri-lg"></i>
-                            </a>
-                        </li>
-                    {% endfor %}
-                    </ul>
+                    <div class="fr-grid-row fr-grid--gutters">
+                        {% for favorite_list in favorite_lists.all %}
+                            <div class="fr-col-12 fr-mb-4v">
+                                <div class="fr-tile fr-tile--horizontal fr-enlarge-link">
+                                    <div class="fr-tile__body">
+                                        <div class="fr-tile__content">
+                                            <h3 class="fr-tile__title">
+                                                <a href="{% url 'dashboard_favorites:list_detail' favorite_list.slug %}" title="Voir la liste">{{ favorite_list.name }}</a>
+                                            </h3>
+                                            <p class="fr-tile__detail">
+                                                <span class="fr-badge fr-badge--sm fr-mr-2v">{{ favorite_list.siaes.count }}</span> structure{{ favorite_list.siaes.count|pluralize }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
                 {% else %}
-                    <p class="text-danger font-weight-bold">Vous n'avez pas encore créé de listes !</p>
+                    {% dsfr_alert type="info" content="Vous n'avez pas encore créé de listes !" %}
                 {% endif %}
             </div>
         </div>
-
     </div>
 </section>
-{% endblock %}
+{% endblock content %}

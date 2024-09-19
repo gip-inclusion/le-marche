@@ -1,25 +1,25 @@
 {% load static %}
 
-<div class="card h-100 w-100">
-    <div class="card-body">
-        <div class="row mb-sm-4">
-            <div class="col-12 col-md">
-                <p class="h4 lh-sm">Mes besoins</p>
-            </div>
-        </div>
-        <div class="d-flex align-items-center">
-            <span class="d-none d-lg-inline-flex mr-3">
-                <img src="{% static 'images/illustration-28b.svg' %}" height="200" alt="" loading="lazy" />
-            </span>
-            <div>
-                <p class="h4 lh-sm mb-lg-4">Vous n'avez pas encore publié de besoin</p>
+<div class="fr-card fr-card--horizontal fr-card--horizontal-tier">
+    <div class="fr-card__body">
+        <div class="fr-card__content">
+            <h3 class="fr-card__title">Mes besoins</h3>
+            <div class="fr-card__desc">
+                <p>
+                    <strong>Vous n'avez pas encore publié de besoin</strong>
+                </p>
                 <p>
                     Publiez vos demandes de devis, appels d'offres, relayez vos marchés ou lancez un sourcing et retrouvez-les dans cette section.
                 </p>
-                <a href="{% url 'tenders:create' %}" id="dashboard-tender-create-btn" class="btn btn-primary width-100 width-md-auto">
-                    <i class="ri-add-fill ri-lg mr-2"></i>Publier un besoin d'achat
+                <a href="{% url 'tenders:create' %}" id="dashboard-tender-create-btn" class="fr-btn fr-btn--icon-right fr-icon-add-circle-line">
+                    Publier un besoin d'achat
                 </a>
             </div>
+        </div>
+    </div>
+    <div class="fr-card__header fr-hidden fr-unhidden-lg">
+        <div class="fr-card__img">
+            <img class="fr-responsive-img" src="{% static 'images/illustration-28b.svg' %}" alt="" />
         </div>
     </div>
 </div>

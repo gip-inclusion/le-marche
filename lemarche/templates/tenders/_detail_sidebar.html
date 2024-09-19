@@ -1,20 +1,26 @@
 <!-- admin info -->
 {% load info_card_cms %}
 {% if user.is_authenticated and user.is_admin %}
-    {% include "tenders/_detail_admin_extra_info.html" with tender=tender %}
+    <div class="fr-col-12">
+        {% include "tenders/_detail_admin_extra_info.html" with tender=tender %}
+    </div>
 {% endif %}
 <!-- author stats info -->
 {% if user == tender.author %}
-    {% include "tenders/_detail_side_infos_author.html" %}
+    <div class="fr-col-12">
+        {% include "tenders/_detail_side_infos_author.html" %}
+    </div>
 {% else %}
     {% if not tender.deadline_date_outdated %}
         <!-- tender basic view stat -->
         {% if tender.siae_email_link_click_date_or_detail_display_date_count > 0 %}
-            <div class="alert alert-warning mt-3 mt-lg-0" role="alert">
-                <p class="mb-0 fs-sm">
-                    Déjà {{ tender.siae_email_link_click_date_or_detail_display_date_count }} prestataire{{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize }} inclusif{{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize }}
-                    {{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize:"a,ont" }} vu le besoin de ce client.
-                </p>
+            <div class="fr-col-12">
+                <div class="fr-alert fr-alert--warning">
+                    <p>
+                        Déjà {{ tender.siae_email_link_click_date_or_detail_display_date_count }} prestataire{{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize }} inclusif{{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize }}
+                        {{ tender.siae_email_link_click_date_or_detail_display_date_count|pluralize:"a,ont" }} vu le besoin de ce client.
+                    </p>
+                </div>
             </div>
         {% endif %}
         {% if not tender.response_is_anonymous %}
@@ -23,95 +29,146 @@
                 <!-- partner info -->
                 {% if user.kind == user.KIND_PARTNER %}
                     {% if not user_partner_can_display_tender_contact_details %}
-                        <div class="alert alert-info" role="alert">
-                            <p class="mb-1">
-                                <i class="ri-lightbulb-line ri-lg"></i>
-                                <strong>Comment contacter le client ?</strong>
-                            </p>
-                            <p class="mb-0">
-                                Contactez Sofiane via
-                                <a href="mailto:{{ TEAM_CONTACT_EMAIL }}?subject=Demande d'information pour {{ tender.title }}">{{ TEAM_CONTACT_EMAIL }}</a>
-                                pour être mis en relation avec le client.
-                            </p>
+                        <div class="fr-col-12">
+                            <div class="fr-callout fr-p-4v fr-mb-0">
+                                <h3 class="fr-callout__title"><span class="fr-icon-lightbulb-line" aria-hidden="true"></span> Comment contacter le client ?</h3>
+                                <p class="fr-callout__text fr-pl-7v">
+                                    Contactez Sofiane via
+                                    <a href="mailto:{{ TEAM_CONTACT_EMAIL }}?subject=Demande d'information pour {{ tender.title }}">{{ TEAM_CONTACT_EMAIL }}</a>
+                                    pour être mis en relation avec le client.
+                                </p>
+                            </div>
                         </div>
                     {% endif %}
                 <!-- siae info & actions -->
                 {% elif user.kind == user.KIND_SIAE %}
                     {% if tender.can_display_contact_phone %}
-                        {% cms_info_card %}
+                        <div class="fr-col-12">
+                            {% cms_info_card %}
+                        </div>
                     {% endif %}
                     {% if not user.has_siae %}
-                        {% include "tenders/_detail_siae_user_without_siae.html" %}
+                        <div class="fr-col-12">
+                            {% include "tenders/_detail_siae_user_without_siae.html" %}
+                        </div>
                     {% elif siae_has_detail_contact_click_date or siae_has_detail_cocontracting_click_date %}
-                        {% if siae_has_detail_contact_click_date and not siae_has_detail_cocontracting_click_date %}
-                            {# contact info displayed in _detail_contact.html #}
-                            {% include "tenders/_detail_cta_cocontracting.html" with tender=tender user_can_click=True %}
-                        {% elif not siae_has_detail_contact_click_date and siae_has_detail_cocontracting_click_date %}
-                            {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True %}
-                            {% include "tenders/_detail_cocontracting_click_confirm.html" %}
-                        {% else %}
-                            {# contact info displayed in _detail_contact.html #}
-                            {% include "tenders/_detail_cocontracting_click_confirm.html" %}
-                        {% endif %}
+                        <div class="fr-col-12">
+                            {% if siae_has_detail_contact_click_date and not siae_has_detail_cocontracting_click_date %}
+                                {# contact info displayed in _detail_contact.html #}
+                                {% include "tenders/_detail_cta_cocontracting.html" with tender=tender user_can_click=True %}
+                            {% elif not siae_has_detail_contact_click_date and siae_has_detail_cocontracting_click_date %}
+                                {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True %}
+                                {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+                            {% else %}
+                                {# contact info displayed in _detail_contact.html #}
+                                {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+                            {% endif %}
+                        </div>
                     {% elif siae_has_detail_not_interested_click_date %}
-                        {% include "tenders/_detail_not_interested_click_confirm.html" %}
+                        <div class="fr-col-12">
+                            {% include "tenders/_detail_not_interested_click_confirm.html" %}
+                        </div>
                     {% else %}
-                        {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True %}
-                        {% include "tenders/_detail_cta_cocontracting.html" with tender=tender user_can_click=True %}
-                        {% include "tenders/_detail_cta_not_interested.html" with tender=tender user_can_click=True %}
+                        <div class="fr-col-12">
+                            {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True %}
+                        </div>
+                        <div class="fr-col-12">
+                            {% include "tenders/_detail_cta_cocontracting.html" with tender=tender user_can_click=True %}
+                        </div>
+                        <div class="fr-col-12">
+                            {% include "tenders/_detail_cta_not_interested.html" with tender=tender user_can_click=True %}
+                        </div>
                     {% endif %}
                 {% endif %}
             <!-- anonymous user but siae_id in url -->
             {% elif siae_id %}
                 {% if siae_has_detail_contact_click_date or siae_has_detail_cocontracting_click_date %}
-                    {% if siae_has_detail_contact_click_date and not siae_has_detail_cocontracting_click_date %}
-                        {# contact info displayed in _detail_contact.html #}
-                        {% include "tenders/_detail_cta_cocontracting.html" with tender=tender user_can_click=True siae_id=siae_id %}
-                    {% elif not siae_has_detail_contact_click_date and siae_has_detail_cocontracting_click_date %}
-                        {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True siae_id=siae_id %}
-                        {% include "tenders/_detail_cocontracting_click_confirm.html" %}
-                    {% else %}
-                        {# contact info displayed in _detail_contact.html #}
-                        {% include "tenders/_detail_cocontracting_click_confirm.html" %}
-                    {% endif %}
+                    <div class="fr-col-12">
+                        {% if siae_has_detail_contact_click_date and not siae_has_detail_cocontracting_click_date %}
+                            {# contact info displayed in _detail_contact.html #}
+                            {% include "tenders/_detail_cta_cocontracting.html" with tender=tender user_can_click=True siae_id=siae_id %}
+                        {% elif not siae_has_detail_contact_click_date and siae_has_detail_cocontracting_click_date %}
+                            {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True siae_id=siae_id %}
+                            {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+                        {% else %}
+                            {# contact info displayed in _detail_contact.html #}
+                            {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+                        {% endif %}
+                    </div>
                 {% elif siae_has_detail_not_interested_click_date %}
-                    {% include "tenders/_detail_not_interested_click_confirm.html" %}
+                    <div class="fr-col-12">
+                        {% include "tenders/_detail_not_interested_click_confirm.html" %}
+                    </div>
                 {% else %}
-                    {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True siae_id=siae_id %}
-                    {% include "tenders/_detail_cta_cocontracting.html" with tender=tender user_can_click=True siae_id=siae_id %}
-                    {% include "tenders/_detail_cta_not_interested.html" with tender=tender user_can_click=True siae_id=siae_id %}
+                    <div class="fr-col-12">
+                        {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True siae_id=siae_id %}
+                    </div>
+                    <div class="fr-col-12">
+                        {% include "tenders/_detail_cta_cocontracting.html" with tender=tender user_can_click=True siae_id=siae_id %}
+                    </div>
+                    <div class="fr-col-12">
+                        {% include "tenders/_detail_cta_not_interested.html" with tender=tender user_can_click=True siae_id=siae_id %}
+                    </div>
                 {% endif %}
             {% endif %}
         <!-- anonymous tender -->
         {% else %}
             {% if user.is_authenticated or siae_id %}
                 {% if user.is_authenticated and not user.has_siae %}
-                    {% include "tenders/_detail_siae_user_without_siae.html" %}
+                    <div class="fr-col-12">
+                        {% include "tenders/_detail_siae_user_without_siae.html" %}
+                    </div>
                 {% elif siae_has_detail_contact_click_date or siae_has_detail_cocontracting_click_date %}
                     {% if siae_has_detail_contact_click_date and not siae_has_detail_cocontracting_click_date %}
-                        {% include "tenders/_detail_contact_click_confirm_tender_response_is_anonymous.html" %}
-                        {% include "tenders/_detail_cta_cocontracting.html" with tender=tender user_can_click=True siae_id=siae_id %}
+                        <div class="fr-col-12">
+                            {% include "tenders/_detail_contact_click_confirm_tender_response_is_anonymous.html" %}
+                        </div>
+                        <div class="fr-col-12">
+                            {% include "tenders/_detail_cta_cocontracting.html" with tender=tender user_can_click=True siae_id=siae_id %}
+                        </div>
                     {% elif not siae_has_detail_contact_click_date and siae_has_detail_cocontracting_click_date %}
-                        {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True siae_id=siae_id tender_response_is_anonymous=True %}
-                        {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+                        <div class="fr-col-12">
+                            {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True siae_id=siae_id tender_response_is_anonymous=True %}
+                        </div>
+                        <div class="fr-col-12">
+                            {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+                        </div>
                     {% else %}
-                        {% include "tenders/_detail_contact_click_confirm_tender_response_is_anonymous.html" %}
-                        {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+                        <div class="fr-col-12">
+                            {% include "tenders/_detail_contact_click_confirm_tender_response_is_anonymous.html" %}
+                        </div>
+                        <div class="fr-col-12">
+                            {% include "tenders/_detail_cocontracting_click_confirm.html" %}
+                        </div>
                     {% endif %}
                 {% elif siae_has_detail_not_interested_click_date %}
-                    {% include "tenders/_detail_not_interested_click_confirm.html" %}
+                    <div class="fr-col-12">
+                        {% include "tenders/_detail_not_interested_click_confirm.html" %}
+                    </div>
                 {% else %}
-                    {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True siae_id=siae_id tender_response_is_anonymous=True %}
-                    {% include "tenders/_detail_cta_cocontracting.html" with tender=tender user_can_click=True siae_id=siae_id %}
-                    {% include "tenders/_detail_cta_not_interested.html" with tender=tender user_can_click=True siae_id=siae_id %}
+                    <div class="fr-col-12">
+                        {% include "tenders/_detail_cta.html" with tender=tender user_can_click=True siae_id=siae_id tender_response_is_anonymous=True %}
+                    </div>
+                    <div class="fr-col-12">
+                        {% include "tenders/_detail_cta_cocontracting.html" with tender=tender user_can_click=True siae_id=siae_id %}
+                    </div>
+                    <div class="fr-col-12">
+                        {% include "tenders/_detail_cta_not_interested.html" with tender=tender user_can_click=True siae_id=siae_id %}
+                    </div>
                 {% endif %}
             {% endif %}
         {% endif %}
         <!-- anonymous user: action buttons show login modal -->
         {% if not user.is_authenticated and not siae_id %}
-            {% include "tenders/_detail_cta.html" with tender=tender user_can_click=False %}
-            {% include "tenders/_detail_cta_cocontracting.html" with tender=tender user_can_click=False %}
-            {% include "tenders/_detail_cta_not_interested.html" with tender=tender user_can_click=False %}
+            <div class="fr-col-12">
+                {% include "tenders/_detail_cta.html" with tender=tender user_can_click=False %}
+            </div>
+            <div class="fr-col-12">
+                {% include "tenders/_detail_cta_cocontracting.html" with tender=tender user_can_click=False %}
+            </div>
+            <div class="fr-col-12">
+                {% include "tenders/_detail_cta_not_interested.html" with tender=tender user_can_click=False %}
+            </div>
         {% endif %}
     {% endif %}
 {% endif %}

@@ -4,8 +4,8 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import DetailView, UpdateView
 
-from lemarche.cms.models import ArticlePage
-from lemarche.cms.snippets import ArticleCategory
+from content_manager.models import ContentPage, Tag
+from lemarche.cms.models import ArticleList
 from lemarche.siaes.models import Siae
 from lemarche.tenders.models import Tender
 from lemarche.users.models import User
@@ -47,25 +47,28 @@ class DashboardHomeView(LoginRequiredMixin, DetailView):
             category_slug = SLUG_RESSOURCES_CAT_SIAES
         elif user.kind == User.KIND_BUYER:
             category_slug = SLUG_RESSOURCES_CAT_BUYERS
-        article_list = ArticlePage.objects.live().public().order_by("-last_published_at")
+
+        # Get ContentPage under the ArticleList that has the slug "ressources"
+        try:
+            ressource_page = ArticleList.objects.get(slug="ressources")
+            ressource_list = (
+                ContentPage.objects.descendant_of(ressource_page)
+                .live()
+                .prefetch_related("tags")
+                .order_by("-last_published_at")
+            )
+        except ArticleList.DoesNotExist:
+            ressource_list = ContentPage.objects.none()
 
         if category_slug:
             try:
-                # Look for the blog category by its slug.
-                category = ArticleCategory.objects.get(slug=category_slug)
-                last_faq_page = category.faqpage_set.last()
-                article_list = article_list.filter(categories__in=[category])[:3]
-                if last_faq_page:
-                    article_list = list(article_list[:2])
-                    article_list.insert(0, last_faq_page)
-
-            except ArticleCategory.DoesNotExist:
-                category_slug = None
-                article_list = article_list[:3]
+                tag = Tag.objects.get(slug=category_slug)
+                ressource_list = ressource_list.filter(tags__in=[tag])
+            except Exception:
+                pass
 
         # set context ressources
-        context["current_slug_cat"] = category_slug
-        context["last_3_ressources"] = article_list
+        context["last_3_ressources"] = ressource_list[:3]
 
         # for specific users
         if user.kind == User.KIND_SIAE:

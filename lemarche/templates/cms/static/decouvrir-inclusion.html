@@ -1,13 +1,13 @@
 {% extends "layouts/base.html" %}
 {% load static %}
 
-{% block title %}C'est quoi l'inclusion ?{{ block.super }}{% endblock %}
+{% block page_title %}C'est quoi l'inclusion ?{{ block.super }}{% endblock page_title %}
 
 {% block breadcrumbs %}
 <section>
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
                 <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
@@ -21,15 +21,15 @@
 {% endblock %}
 
 {% block content %}
-<section class="s-page-menu-01 s-page-menu-01--marche">
-    <div class="s-page-menu-01__container container">
-        <div class="s-page-menu-01__row row align-items-center">
-            <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-lg-5">
+<section class="">
+    <div class="fr-container">
+        <div class="fr-grid-row align-items-center">
+            <div class="fr-col-12 fr-col-lg-5">
                 <h1 class="h1-hero">
                     <strong>Les <br class="d-none d-lg-inline">thématiques <br class="d-none d-lg-inline">abordées</strong>
                 </h1>
             </div>
-            <div class="s-page-menu-01__col s-page-menu-01__col--grid col-12 col-lg-7">
+            <div class="fr-col-12 fr-col-lg-7">
                 <ul>
                     <li>
                         <a href="#definition">Définition</a>
@@ -67,22 +67,22 @@
     </div>
 </section>
 
-<section class="s-inclusion-01" id="definition">
-    <div class="s-inclusion-01__container container">
-        <div class="s-inclusion-01__row row">
-            <div class="s-inclusion-01__col s-inclusion-01__col--title col-12">
+<section class="" id="definition">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
                 <h2 class="h1 mb-3 mb-lg-5">
                     <strong>L'inclusion dans l'emploi, qu’est-ce que c’est ?</strong>
                 </h2>
             </div>
         </div>
-        <div class="s-inclusion-01__row row">
-            <div class="s-inclusion-01__col s-inclusion-01__col--figure col-12 col-lg-4">
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-lg-4">
                 <figure class="mb-3 mb-lg-0">
                     <img src="{% static 'img/inclusion-02-visuel-01.min.jpg' %}" class="img-fluid img-fitcover" alt="">
                 </figure>
             </div>
-            <div class="s-inclusion-01__col s-inclusion-01__col--article w-100 col-12 col-lg-4">
+            <div class="w-100 fr-col-12 fr-col-lg-4">
                 <article>
                     <p>
                         Aujourd'hui, plus de deux millions de personnes sont en situation d'exclusion. Pourtant elles
@@ -96,7 +96,7 @@
                     </p>
                 </article>
             </div>
-            <div class="s-inclusion-01__col s-inclusion-01__col--card col-12 col-lg-4">
+            <div class="fr-col-12 fr-col-lg-4">
                 <div
                     class="d-flex flex-column justify-content-between h-100 w-100 p-5 pt-3 shadow-lg rounded-lg bg-white position-relative">
                     <div>
@@ -106,7 +106,7 @@
                             Des exemples de belles collaborations.
                         </p>
                     </div>
-                    <p class="s-inclusion-01__col__cta">
+                    <p class="">
                         <a href="https://campus-inclusion.fr/bibliin/" id="track_inclusion_campus_inclusion_bibliin" class="btn btn-block btn-primary btn-ico" target="_blank" rel="noopener">
                             <span>Je découvre</span>
                             <i class="ri-arrow-right-up-line ri-lg"></i>
@@ -118,34 +118,34 @@
     </div>
 </section>
 
-<section class="s-cards-grid-01" id="avantages">
-    <div class="s-cards-grid-01__container container">
-        <div class="s-cards-grid-01__row row">
-            <div class="s-cards-grid-01__col s-cards-grid-01__col--title col-12">
+<section class="" id="avantages">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
                 <h3 class="h1 mb-3 mb-lg-5">
                     <strong>Quels sont les avantages à travailler avec les structures inclusives ?</strong>
                 </h3>
             </div>
         </div>
-        <div class="s-cards-grid-01__row row row-cols-1 row-cols-md-2 row-cols-lg-3">
-            <div class="s-cards-grid-01__col col mb-3 mb-md-5">
-                <div class="card c-card c-card--marche h-100 w-100">
-                    <div class="card-header text-center">
+        <div class="fr-grid-row">
+            <div class=" fr-col mb-3 mb-md-5">
+                <div class="card h-100 w-100">
+                    <div class="fr-card__header text-center">
                         <img src="{% static 'img/inclusion-03-picto-01.svg' %}" height="80" alt="">
                     </div>
-                    <div class="card-body mb-3">
+                    <div class="fr-card__body mb-3">
                         <p>
                             Prestations de qualité et de proximité pour contribuer à la dynamique de votre territoire
                         </p>
                     </div>
                 </div>
             </div>
-            <div class="s-cards-grid-01__col col mb-3 mb-md-5">
-                <div class="card c-card c-card--marche h-100 w-100">
-                    <div class="card-header text-center">
+            <div class=" fr-col mb-3 mb-md-5">
+                <div class="card h-100 w-100">
+                    <div class="fr-card__header text-center">
                         <img src="{% static 'img/inclusion-03-picto-02.svg' %}" height="80" alt="">
                     </div>
-                    <div class="card-body mb-3">
+                    <div class="fr-card__body mb-3">
                         <p>
                             Collaboration avec près de 5000 structures qui interviennent sur des secteurs innovants
                             (écoconstruction, valorisation des déchets, restauration circuits courts, conciergerie…)
@@ -153,12 +153,12 @@
                     </div>
                 </div>
             </div>
-            <div class="s-cards-grid-01__col col mb-3 mb-md-5">
-                <div class="card c-card c-card--marche h-100 w-100">
-                    <div class="card-header text-center">
+            <div class=" fr-col mb-3 mb-md-5">
+                <div class="card h-100 w-100">
+                    <div class="fr-card__header text-center">
                         <img src="{% static 'img/inclusion-03-picto-03.svg' %}" height="80" alt="">
                     </div>
-                    <div class="card-body mb-3">
+                    <div class="fr-card__body mb-3">
                         <p>
                             Solution RH souple et réactive pour vos métiers en tension, vos hausses d’activité, vos
                             démarches de recrutement ou de sous-traitance.
@@ -166,12 +166,12 @@
                     </div>
                 </div>
             </div>
-            <div class="s-cards-grid-01__col col mb-3 mb-md-5">
-                <div class="card c-card c-card--marche h-100 w-100">
-                    <div class="card-header text-center">
+            <div class=" fr-col mb-3 mb-md-5">
+                <div class="card h-100 w-100">
+                    <div class="fr-card__header text-center">
                         <img src="{% static 'img/inclusion-03-picto-04.svg' %}" height="80" alt="">
                     </div>
-                    <div class="card-body mb-3">
+                    <div class="fr-card__body mb-3">
                         <p>
                             Savoir-faire spécifique en matière de clauses sociales pour assurer vos appels d’offres
                             publics et optimiser vos chances
@@ -179,12 +179,12 @@
                     </div>
                 </div>
             </div>
-            <div class="s-cards-grid-01__col col mb-3 mb-md-5">
-                <div class="card c-card c-card--marche h-100 w-100">
-                    <div class="card-header text-center">
+            <div class=" fr-col mb-3 mb-md-5">
+                <div class="card h-100 w-100">
+                    <div class="fr-card__header text-center">
                         <img src="{% static 'img/inclusion-03-picto-05.svg' %}" height="80" alt="">
                     </div>
-                    <div class="card-body mb-3">
+                    <div class="fr-card__body mb-3">
                         <p>
                             Soutien de l’emploi en situation de handicap tout en réduisant vos contributions
                             Agefiph/Fiphfp
@@ -192,12 +192,12 @@
                     </div>
                 </div>
             </div>
-            <div class="s-cards-grid-01__col col mb-3 mb-md-5">
-                <div class="card c-card c-card--marche h-100 w-100">
-                    <div class="card-header text-center">
+            <div class=" fr-col mb-3 mb-md-5">
+                <div class="card h-100 w-100">
+                    <div class="fr-card__header text-center">
                         <img src="{% static 'img/inclusion-03-picto-06.svg' %}" height="80" alt="">
                     </div>
-                    <div class="card-body mb-3">
+                    <div class="fr-card__body mb-3">
                         <p>
                             Incarnation de votre démarche RSE et valorisation de votre image via des achats responsables,
                             à impact positif
@@ -209,17 +209,17 @@
     </div>
 </section>
 
-<section class="s-inclusion-02" id="faq">
-    <div class="s-inclusion-02__container container">
-        <div class="s-inclusion-02__row row">
-            <div class="s-inclusion-02__col s-inclusion-02__col--title col-12 col-lg-4">
-                <div class="position-relative d-flex align-items-center h-100 p-3 pl-xl-0 bg-marche-lighter">
+<section class="" id="faq">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-lg-4">
+                <div class="position-relative d-flex align-items-center h-100 fr-p-3 pl-xl-0 bg-marche-lighter">
                     <h2 class="h1-hero">
                         <strong>Les questions fréquentes</strong>
                     </h2>
                 </div>
             </div>
-            <div class="s-inclusion-02__col s-inclusion-02__col--article col-12 col-lg-4">
+            <div class="fr-col-12 fr-col-lg-4">
                 <article class="mb-5">
                     <h3 class="h2 mb-3 mb-lg-5">
                         <strong>Par qui être accompagné lorsqu’on débute ses achats ?</strong>
@@ -260,7 +260,7 @@
                     </p>
                 </article>
             </div>
-            <div class="s-inclusion-02__col l s-inclusion-02__col--article col-12 col-lg-4">
+            <div class="l fr-col-12 fr-col-lg-4">
                 <article class="mb-5">
                     <h3 class="h2 mb-3 mb-lg-5">
                         <strong>Comment fonctionne la contribution agefiph ?</strong>
@@ -299,17 +299,17 @@
     </div>
 </section>
 
-<section class="s-articles-cols-01 s-articles-cols-01--marche" id="acteurs">
-    <div class="s-articles-cols-01__container container">
-        <div class="s-articles-cols-01__row row">
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--title col-12">
+<section class="" id="acteurs">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
                 <h3 class="h1">
                     <strong>Les acteurs de l’inclusion dans l’emploi</strong>
                 </h3>
             </div>
         </div>
-        <div class="s-articles-cols-01__row row">
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12 col-lg-6">
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-lg-6">
                 <article>
                     <h4 class="h2">
                         <strong>Les réseaux de L’IAE</strong>
@@ -336,7 +336,7 @@
                     </ul>
                 </article>
             </div>
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12 col-lg-6">
+            <div class="fr-col-12 fr-col-lg-6">
                 <article>
                     <h4 class="h2">
                         <strong>Les facilitateurs</strong>
@@ -362,8 +362,8 @@
                 </article>
             </div>
         </div>
-        <div class="s-articles-cols-01__row row">
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12 col-lg-6">
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-lg-6">
                 <article>
                     <h4 class="h2">
                         <img src="{% static 'img/inclusion-logo-france-chance.svg' %}" alt="France Chance" height="56">
@@ -380,7 +380,7 @@
                     </p>
                 </article>
             </div>
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12 col-lg-6">
+            <div class="fr-col-12 fr-col-lg-6">
                 <article>
                     <h4 class="h2">
                         <img src="{% static 'img/inclusion-logo-campus-inclusion.png' %}" alt="Campus de l'inclusion">
@@ -401,12 +401,12 @@
     </div>
 </section>
 
-<section class="s-inclusion-03" id="structures">
-    <div class="s-inclusion-03__container container">
-        <div class="s-inclusion-03__row row">
-            <div class="s-inclusion-03__col s-inclusion-03__col--title col-12 col-lg-6">
-                <aside class="position-relative d-flex align-items-center h-100 p-3 pl-xl-0 bg-marche">
-                    <div class="m-3 mb-lg-0">
+<section class="" id="structures">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-lg-6">
+                <aside class="position-relative d-flex align-items-center h-100 fr-p-3 pl-xl-0 bg-marche">
+                    <div class="fr-m-3 mb-lg-0">
                         <h2 class="h1-hero text-white">
                             <strong>Les différents types de structures de l’inclusion dans l’emploi</strong>
                         </h2>
@@ -420,8 +420,8 @@
                     </div>
                 </aside>
             </div>
-            <div class="s-inclusion-03__col s-inclusion-03__col--article col-12 col-lg-6">
-                <article class="m-3 mb-lg-5">
+            <div class="fr-col-12 fr-col-lg-6">
+                <article class="fr-m-3 mb-lg-5">
                     <h3 class="h1">
                         <strong>SIAE ou Structure d’Insertion par l’Activité Économique.</strong>
                     </h3>
@@ -440,7 +440,7 @@
                             <i class="ri-arrow-right-up-line ri-lg"></i>
                         </a>
                     </p>
-                    <div class="s-inclusion-03__stats">
+                    <div class="">
                         <div class="shadow rounded">
                             <strong class="d-block fs-base lh-sm ff-heading">4178 SIAE en France</strong>
                         </div>
@@ -449,7 +449,7 @@
                         </div>
                     </div>
                 </article>
-                <article class="m-3 mb-lg-5">
+                <article class="fr-m-3 mb-lg-5">
                     <h3 class="h1">
                         <strong>Secteur du Handicap ou STPA</strong>
                     </h3>
@@ -461,12 +461,12 @@
                         2 types de structures : les <strong>ESAT</strong> (Etablissements et Services d’Aide par le
                         Travail) et les EA (Entreprises Adaptées)
                     </p>
-                    <div class="s-inclusion-03__stats">
+                    <div class="">
                         <div class="has-relation-between shadow rounded">
                             <strong class="d-block fs-base lh-sm ff-heading">2 250 structures du STPA </strong>
                         </div>
                     </div>
-                    <div class="s-inclusion-03__stats">
+                    <div class="">
                         <div class="shadow rounded">
                             <span class="d-block fs-base lh-sm ff-heading">
                                 <strong class="d-block fs-base lh-sm ff-heading">26 000</strong> travailleurs handicapés<br />en EA
@@ -484,17 +484,17 @@
     </div>
 </section>
 
-<section class="s-articles-cols-01 s-articles-cols-01--marche" id="typologies">
-    <div class="s-articles-cols-01__container container">
-        <div class="s-articles-cols-01__row row">
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--title col-12">
+<section class="" id="typologies">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
                 <h3 class="h1">
                     <strong>Les typologies de structures</strong>
                 </h3>
             </div>
         </div>
-        <div class="s-articles-cols-01__row row">
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12 col-lg-3">
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-lg-3">
                 <article>
                     <h4 class="h2 mh-5">
                         <strong>Ateliers et chantiers d’insertion (ACI)</strong>
@@ -511,7 +511,7 @@
                     </p>
                 </article>
             </div>
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12 col-lg-3">
+            <div class="fr-col-12 fr-col-lg-3">
                 <article>
                     <h4 class="h2 mh-5">
                         <strong>Entreprises d’insertion (EI)</strong>
@@ -524,7 +524,7 @@
                     </p>
                 </article>
             </div>
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12 col-lg-3">
+            <div class="fr-col-12 fr-col-lg-3">
                 <article>
                     <h4 class="h2 mh-5">
                         <strong>Entreprises de travail temporaire d’insertion (ETTI)</strong>
@@ -536,7 +536,7 @@
                     </p>
                 </article>
             </div>
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12 col-lg-3">
+            <div class="fr-col-12 fr-col-lg-3">
                 <article>
                     <h4 class="h2 mh-5">
                         <strong>Associations intermédiaires (AI)</strong>
@@ -551,8 +551,8 @@
                 </article>
             </div>
         </div>
-        <div class="s-articles-cols-01__row row">
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12 col-lg-3">
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-lg-3">
                 <article>
                     <h4 class="h2 mh-5">
                         <strong>GEIQ</strong>
@@ -567,7 +567,7 @@
                     </p>
                 </article>
             </div>
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12 col-lg-3">
+            <div class="fr-col-12 fr-col-lg-3">
                 <article>
                     <h4 class="h2 mh-5">
                         <strong>Entreprises adaptées (EA)</strong>
@@ -582,7 +582,7 @@
                     </p>
                 </article>
             </div>
-            <div class="s-articles-cols-01__col s-articles-cols-01__col--article col-12 col-lg-3">
+            <div class="fr-col-12 fr-col-lg-3">
                 <article>
                     <h4 class="h2 mh-5">
                         <strong>Établissements ou services d'aide par le travail (ESAT)</strong>
@@ -601,15 +601,15 @@
     </div>
 </section>
 
-<section class="s-article-picture-group-01 s-article-picture-group-01--marche">
-    <div class="s-article-picture-group-01__container container">
-        <div class="s-article-picture-group-01__row row" id="clauses">
-            <div class="s-article-picture-group-01__col s-article-picture-group-01__col--picture col-12 col-lg-6">
+<section class="">
+    <div class="fr-container">
+        <div class="fr-grid-row" id="clauses">
+            <div class="fr-col-12 fr-col-lg-6">
                 <picture>
                     <img src="{% static 'img/inclusion-08-visuel-01.min.jpg' %}" class="img-fluid img-fitcover" alt="">
                 </picture>
             </div>
-            <div class="s-article-picture-group-01__col s-article-picture-group-01__col--article col-12 col-lg-6">
+            <div class="fr-col-12 fr-col-lg-6">
                 <article>
                     <h3 class="h1">
                         <strong>Les clauses sociales</strong>
@@ -627,13 +627,13 @@
                 </article>
             </div>
         </div>
-        <div class="s-article-picture-group-01__row row" id="rse">
-            <div class="s-article-picture-group-01__col s-article-picture-group-01__col--picture col-12 col-lg-6">
+        <div class="fr-grid-row" id="rse">
+            <div class="fr-col-12 fr-col-lg-6">
                 <picture>
                     <img src="{% static 'img/inclusion-08-visuel-02.min.jpg' %}" class="img-fluid img-fitcover" alt="">
                 </picture>
             </div>
-            <div class="s-article-picture-group-01__col s-article-picture-group-01__col--article col-12 col-lg-6">
+            <div class="fr-col-12 fr-col-lg-6">
                 <article>
                     <h3 class="h1">
                         <strong>Responsabilité sociale des entreprises</strong>
@@ -648,13 +648,13 @@
                 </article>
             </div>
         </div>
-        <div class="s-article-picture-group-01__row row" id="agefiph">
-            <div class="s-article-picture-group-01__col s-article-picture-group-01__col--picture col-12 col-lg-6">
+        <div class="fr-grid-row" id="agefiph">
+            <div class="fr-col-12 fr-col-lg-6">
                 <picture>
                     <img src="{% static 'img/inclusion-08-visuel-03.min.jpg' %}" class="img-fluid img-fitcover" alt="">
                 </picture>
             </div>
-            <div class="s-article-picture-group-01__col s-article-picture-group-01__col--article col-12 col-lg-6">
+            <div class="fr-col-12 fr-col-lg-6">
                 <article>
                     <h3 class="h1">
                         <strong>Contribution Agefiph /Fiph</strong>

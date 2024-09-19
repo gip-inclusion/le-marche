@@ -1,47 +1,55 @@
 {% extends "layouts/base.html" %}
-{% load bootstrap4 static humanize %}
+{% load bootstrap4 static humanize dsfr_tags %}
 
-{% block title %}{{ tender.title }}{{ block.super }}{% endblock %}
+{% block page_title %}{{ tender.title }}{{ block.super }}{% endblock page_title %}
 
-{% block breadcrumbs %}
-<section>
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard_networks:detail' network.slug %}">Mon réseau</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard_networks:tender_list' network.slug %}">Opportunités commerciales</a></li>
-                        <li class="breadcrumb-item active" aria-current="page" title="{{ tender.title }}">{{ tender.title|truncatechars:25 }}</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-</section>
-{% endblock %}
+{% block breadcrumb %}
+    {% dsfr_breadcrumb %}
+{% endblock breadcrumb %}
 
 {% block content %}
-<section class="s-section">
-    <div class="s-section__container container">
-        <div class="row">
-            <div class="col-12 col-lg-8 order-2">
-                {% include "tenders/_detail_card.html" with tender=tender %}
-            </div>
-            {# Sidebar "actions" #}
-            <div class="col-12 col-lg-4 order-1 order-lg-2">
-                <a href="{% url 'dashboard_networks:tender_siae_list' network.slug tender.slug %}" id="show-tender-siae-list-from-network-tender-detail-btn" class="btn btn-primary mb-3">
-                    <i class="ri-focus-2-line"></i>
-                    {{ tender.network_siae_email_send_count_annotated }} adhérent{{ tender.network_siae_email_send_count_annotated|pluralize }} notifié{{ tender.network_siae_email_send_count_annotated|pluralize }}
-                </a>
-                <a href="{% url 'dashboard_networks:tender_siae_list' network.slug tender.slug "CONTACT-CLICK" %}" id="show-tender-siae-interested-list-from-network-tender-detail-btn" class="btn btn-primary mb-3">
-                    <i class="ri-thumb-up-line"></i>
-                    {{ tender.network_siae_detail_contact_click_count_annotated }} adhérent{{ tender.network_siae_detail_contact_click_count_annotated|pluralize }} intéressé{{ tender.network_siae_detail_contact_click_count_annotated|pluralize }}
-                </a>
+<div class="fr-container">
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12 fr-col-lg-8 order-2">
+            {% include "tenders/_detail_card.html" with tender=tender %}
+        </div>
+        {# <aside id="sidebar"> #}
+        <div class="fr-col-12 fr-col-lg-4 order-1 order-lg-2">
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12">
+                    <div class="fr-card">
+                        <div class="fr-card__body">
+                            <div class="fr-card__content">
+                                <h3 class="fr-card__title">{{ tender.network_siae_email_send_count_annotated }} adhérent{{ tender.network_siae_email_send_count_annotated|pluralize }} notifié{{ tender.network_siae_email_send_count_annotated|pluralize }}</h3>
+                                {% if tender.network_siae_email_send_count_annotated %}
+                                    <div class="fr-card__end">
+                                        <a href="{% url 'dashboard_networks:tender_siae_list' network.slug tender.slug %}" id="show-tender-siae-list-from-network-tender-detail-btn" class="fr-btn fr-btn--icon-right fr-icon-arrow-right-s-line">
+                                            Voir la liste
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="fr-col-12">
+                    <div class="fr-card">
+                        <div class="fr-card__body">
+                            <div class="fr-card__content">
+                                <h3 class="fr-card__title">{{ tender.network_siae_detail_contact_click_count_annotated }} adhérent{{ tender.network_siae_detail_contact_click_count_annotated|pluralize }} intéressé{{ tender.network_siae_detail_contact_click_count_annotated|pluralize }}</h3>
+                                {% if tender.network_siae_detail_contact_click_count_annotated %}
+                                    <div class="fr-card__end">
+                                        <a href="{% url 'dashboard_networks:tender_siae_list' network.slug tender.slug "CONTACT-CLICK" %}" id="show-tender-siae-interested-list-from-network-tender-detail-btn" class="fr-btn fr-btn--icon-right fr-icon-arrow-right-s-line">
+                                            Voir la liste
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 {% endblock %}

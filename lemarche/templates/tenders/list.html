@@ -1,128 +1,129 @@
 {% extends BASE_TEMPLATE %}
-{% load bootstrap4 static %}
+{% load static dsfr_tags process_dict %}
 
-{% block title %}{{ page_title }}{{ block.super }}{% endblock %}
+{% block page_title %}{{ page_title }}{{ block.super }}{% endblock page_title %}
 
-{% block breadcrumbs %}
-<section>
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Tableau de bord</a></li>
-                        <li class="breadcrumb-item active" aria-current="page" title="{{ page_title }}">{{ page_title }}</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-</section>
-{% endblock %}
+{% block breadcrumb %}
+    {% process_dict root_dir=HOME_PAGE_PATH links=breadcrumb_links current=page_title as breadcrumb_data %}
+    {% dsfr_breadcrumb breadcrumb_data %}
+{% endblock breadcrumb %}
 
 {% block content %}
 <section>
-    <div class="container py-4">
-        <div class="row">
-            <div class="col-12 col-lg">
+    <div class="fr-container py-4">
+        <div class="fr-grid-row fr-mb-8v">
+            <div class="fr-col-12 fr-col-md-8">
                 <h1>{{ page_title }}</h1>
             </div>
             <!-- "buyer": can create new tenders -->
             {% if user.kind != user.KIND_SIAE %}
-                <div class="col-12 col-md-auto">
-                    <a href="{% url 'tenders:create' %}" id="tender-list-create" class="btn btn-primary">
-                        <i class="ri-add-fill ri-lg mr-2"></i>Publier un besoin d'achat
+                <div class="fr-col-12 fr-col-md">
+                    <a href="{% url 'tenders:create' %}" id="tender-list-create" class="fr-btn fr-btn--icon-right fr-icon-add-circle-line">
+                        Publier un besoin d'achat
                     </a>
                 </div>
             {% else %}
-                <div class="col-12 col-md-auto">
-                    <form method="GET" action="">
-                        <div class="form-group">
-                            {{ filter_form.kind }}
-                        </div>
+                <div class="fr-col-12 fr-col-md">
+                    <form method="get" action="">
+                        {{ filter_form.kind }}
                     </form>
                 </div>
             {% endif %}
         </div>
-        <div class="row">
-            <div class="col-12 my-5">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
                 <!-- "buyer": display tenders which the user is the author -->
                 {% if user.kind != user.KIND_SIAE %}
                     {% block htmx %}
-                    <div id="tendersList">
-                        <ul role="navigation" class="nav nav-tabs nav-tabs--marche" style="border-bottom:0;">
+                    <div id="tendersList" class="fr-tabs">
+                        <ul class="fr-tabs__list" role="tablist">
                             {% url 'tenders:list' as TENDERS_LIST_URL %}
                             {% url 'tenders:list' status=tender_constants.STATUS_DRAFT as TENDERS_DRAFT_LIST_URL %}
                             {% url 'tenders:list' status=tender_constants.STATUS_PUBLISHED as TENDERS_PUBLISHED_LIST_URL %}
                             {% url 'tenders:list' status=tender_constants.STATUS_SENT as TENDERS_SENT_LIST_URL %}
 
-                            <li class="nav-item">
-                                <a role="button" hx-push-url="true" hx-get="{{ TENDERS_LIST_URL }}"
-                                    class="nav-link{% if request.get_full_path == TENDERS_LIST_URL %} active{% endif %}"
-                                    hx-target="#tendersList" hx-swap="outerHTML">
+                            <li role="presentation">
+                                <button role="tab" class="fr-tabs__tab" aria-selected="{% if request.get_full_path == TENDERS_LIST_URL %}true{% else %}false{% endif %}"
+                                    hx-push-url="true" hx-get="{{ TENDERS_LIST_URL }}" hx-target="#tendersList" hx-swap="outerHTML">
                                     Tous
-                                </a>
+                                </button>
                             </li>
-                            <li class="nav-item">
-                                <a role="button" hx-push-url="true" hx-get="{{ TENDERS_DRAFT_LIST_URL }}"
-                                    class="nav-link{% if request.get_full_path == TENDERS_DRAFT_LIST_URL %} active{% endif %}"
-                                    hx-target="#tendersList" hx-swap="outerHTML">
-                                    Brouillon
-                                </a>
+                            <li role="presentation">
+                                <button role="tab" class="fr-tabs__tab" aria-selected="{% if request.get_full_path == TENDERS_DRAFT_LIST_URL %}true{% else %}false{% endif %}"
+                                    hx-push-url="true" hx-get="{{ TENDERS_DRAFT_LIST_URL }}" hx-target="#tendersList" hx-swap="outerHTML">
+                                    Brouillons
+                                </button>
                             </li>
-                            <li class="nav-item">
-                                <a role="button" hx-push-url="true" hx-get="{{ TENDERS_PUBLISHED_LIST_URL }}"
-                                    class="nav-link{% if request.get_full_path == TENDERS_PUBLISHED_LIST_URL %} active{% endif %}"
-                                    hx-target="#tendersList" hx-swap="outerHTML">
+                            <li role="presentation">
+                                <button role="tab" class="fr-tabs__tab" aria-selected="{% if request.get_full_path == TENDERS_PUBLISHED_LIST_URL %}true{% else %}false{% endif %}"
+                                    hx-push-url="true" hx-get="{{ TENDERS_PUBLISHED_LIST_URL }}" hx-target="#tendersList" hx-swap="outerHTML">
                                     En cours de validation
-                                </a>
+                                </button>
                             </li>
-                            <li class="nav-item">
-                                <a role="button" hx-push-url="true" hx-get="{{ TENDERS_SENT_LIST_URL }}"
-                                    class="nav-link{% if request.get_full_path == TENDERS_SENT_LIST_URL %} active{% endif %}"
-                                    hx-target="#tendersList" hx-swap="outerHTML">
-                                    Envoyé
-                                </a>
+                            <li role="presentation">
+                                <button role="tab" class="fr-tabs__tab" aria-selected="{% if request.get_full_path == TENDERS_SENT_LIST_URL %}true{% else %}false{% endif %}"
+                                    hx-push-url="true" hx-get="{{ TENDERS_SENT_LIST_URL }}" hx-target="#tendersList" hx-swap="outerHTML">
+                                    Envoyés
+                                </button>
                             </li>
                         </ul>
-                        {% for tender in tenders %}
-                            {% include "tenders/_list_item_buyer.html" with tender=tender %}
-                        {% endfor %}
-                        {% include "includes/_pagination.html" %}
-                        {% if not tenders %}
-                            <p class="text-muted my-5">
-                                {% if request.get_full_path == TENDERS_LIST_URL %}
-                                    Publiez un besoin pour trouver des prestataires inclusifs près de chez vous.
-                                {% endif %}
-                                {% if request.get_full_path == TENDERS_DRAFT_LIST_URL %}
-                                    Vous n'avez aucun besoin en brouillon pour le moment.
-                                {% endif %}
-                                {% if request.get_full_path == TENDERS_PUBLISHED_LIST_URL %}
-                                    Vous n'avez aucun besoin en cours de validation pour le moment.
-                                {% endif %}
-                                {% if request.get_full_path == TENDERS_SENT_LIST_URL %}
-                                    Vous n'avez aucun besoin d'envoyé pour le moment.
-                                    <br />
-                                    Contacter notre équipe en cas de problème avec un de vos dépôts de besoins en cours de validation.
-                                {% endif %}
-                            </p>
-                        {% endif %}
+                        <div id="{{ request.resolver_match.url_name }}_panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel" tabindex="0">
+                            {% if tenders %}
+                                <div class="fr-grid-row fr-grid-row--gutters">
+                                    {% for tender in tenders %}
+                                        <div class="fr-col-12">
+                                            {% include "tenders/_list_item_buyer.html" with tender=tender %}
+                                        </div>
+                                    {% endfor %}
+                                    <div class="fr-col-12">
+                                        {% include "includes/_pagination.html" %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="fr-alert fr-alert--info">
+                                    <p>
+                                        {% if request.get_full_path == TENDERS_LIST_URL %}
+                                            Publiez un besoin pour trouver des prestataires inclusifs près de chez vous.
+                                        {% endif %}
+                                        {% if request.get_full_path == TENDERS_DRAFT_LIST_URL %}
+                                            Vous n'avez aucun besoin en brouillon pour le moment.
+                                        {% endif %}
+                                        {% if request.get_full_path == TENDERS_PUBLISHED_LIST_URL %}
+                                            Vous n'avez aucun besoin en cours de validation pour le moment.
+                                        {% endif %}
+                                        {% if request.get_full_path == TENDERS_SENT_LIST_URL %}
+                                            Vous n'avez aucun besoin d'envoyé pour le moment.
+                                            <br />
+                                            Contacter notre équipe en cas de problème avec un de vos dépôts de besoins en cours de validation.
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
-                    {% endblock %}
+                    {% endblock htmx %}
                 <!-- "siae": display opportunities -->
                 {% else %}
-                    {% for tender in tenders %}
-                        {% include "tenders/_list_item_siae.html" with tender=tender %}
-                    {% endfor %}
-                    {% include "includes/_pagination.html" %}
-                    {% if not tenders %}
-                        <p class="text-muted">
-                            Désolé, nous n'avons aucune opportunité à vous présenter pour le moment.
-                            <br />
-                            Si ce n'est pas déjà fait, pensez à <a href="{% url 'dashboard:home' %}">compléter votre fiche structure</a>
-                            pour optimiser vos chances de trouver de nouvelles opportunités.
-                        </p>
+                    {% if tenders %}
+                        <div class="fr-grid-row fr-grid-row--gutters">
+                            {% for tender in tenders %}
+                                <div class="fr-col-12">
+                                    {% include "tenders/_list_item_siae.html" with tender=tender %}
+                                </div>
+                            {% endfor %}
+                            <div class="fr-col-12">
+                                {% include "includes/_pagination.html" %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="fr-alert fr-alert--info">
+                            <p>
+                                Désolé, nous n'avons aucune opportunité à vous présenter pour le moment.
+                                <br />
+                                Si ce n'est pas déjà fait, pensez à <a href="{% url 'dashboard:home' %}">compléter votre fiche structure</a>
+                                pour optimiser vos chances de trouver de nouvelles opportunités.
+                            </p>
+                        </div>
                     {% endif %}
                 {% endif %}
             </div>

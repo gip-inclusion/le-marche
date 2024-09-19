@@ -19,6 +19,7 @@ from django.views.generic.edit import FormMixin
 from lemarche.conversations.models import Conversation
 from lemarche.favorites.models import FavoriteList
 from lemarche.siaes.models import Siae
+from lemarche.utils import settings_context_processors
 from lemarche.utils.emails import add_to_contact_list
 from lemarche.utils.export import export_siae_to_csv, export_siae_to_excel
 from lemarche.utils.s3 import API_CONNECTION_DICT
@@ -279,6 +280,16 @@ class SiaeDetailView(FormMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["current_search_query"] = self.request.session.get(CURRENT_SEARCH_QUERY_COOKIE_NAME, "")
         context["inbound_email_is_activated"] = settings.INBOUND_EMAIL_IS_ACTIVATED
+        context["breadcrumb_data"] = {
+            "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
+            "links": [
+                {
+                    "title": "Recherche",
+                    "url": f"{reverse_lazy('siae:search_results')}?{context['current_search_query']}",
+                },
+            ],
+            "current": self.get_object().name_display,
+        }
         return context
 
 

@@ -38,6 +38,8 @@ COPY poetry.lock pyproject.toml $APP_DIR
 RUN pip install poetry==$POETRY_VERSION && pip install -I uwsgi
 RUN poetry install --no-interaction --no-ansi --no-root
 
+COPY ./blog ./blog
+COPY ./content_manager ./content_manager
 COPY ./lemarche ./lemarche
 COPY ./config ./config
 COPY ./manage.py ./manage.py

@@ -1,78 +1,64 @@
-<ul>
+<ul class="fr-btns-group">
 	{% if user.is_authenticated %}
 		{% if user.kind == user.KIND_SIAE %}
 			<li>
-				<a href="{% url 'tenders:list' %}" class="btn btn-link">
-					Demandes reçues{% if tender_siae_unread_count %} <span class="badge badge-pill badge-important fs-xs">{{ tender_siae_unread_count }}</span>{% endif %}
+				<a href="{% url 'tenders:list' %}" class="fr-btn">
+					Demandes reçues{% if tender_siae_unread_count %}&nbsp;<span class="fr-badge fr-badge--sm fr-badge--green-emeraude">{{ tender_siae_unread_count }}</span>{% endif %}
 				</a>
 			</li>
 		{% else %}
 			<li>
-				<a href="{% url 'tenders:create' %}" id="header-demande" class="btn btn-primary btn-ico">
-					<i class="ri-mail-send-line ri-lg"></i>
+				<a href="{% url 'tenders:create' %}" id="header-demande" class="fr-btn fr-icon-add-circle-line">
 					<span>Publier un besoin d'achat</span>
 				</a>
 			</li>
 		{% endif %}
 		<li>
-			<div class="dropdown">
-				<button class="btn btn-outline-primary dropdown-toggle{% if is_mobile %} mb-3" type="button{% endif %}"
-					id="userDropdownMenuButton{% if is_mobile %}Mobile{% endif %}" data-toggle="dropdown"
-					aria-haspopup="true" aria-expanded="false">
-					Mon espace
-				</button>
-				<div class="dropdown-menu" aria-labelledby="userDropdownMenuButton{% if is_mobile %}Mobile{% endif %}">
-					<a href="{% url 'dashboard:home' %}" class="dropdown-item">
-						<i class="ri-dashboard-line"></i>
-						Tableau de bord
-					</a>
-					<a href="{% url 'dashboard_favorites:list' %}" id="header-favorites" class="dropdown-item">
-						<i class="ri-star-line"></i>
-						Favoris <span class="badge badge-pill badge-primary fs-xs">{{ user.favorite_list_count }}</span>
-					</a>
-					<a href="{% url 'dashboard:profile_edit' %}" class="dropdown-item">
-						<i class="ri-user-line"></i>
-						Mon profil
-					</a>
-					<div class="dropdown-divider"></div>
-					<a href="{% url 'auth:logout' %}" class="dropdown-item">
-						<i class="ri-logout-box-line"></i>
-						Déconnexion
-					</a>
-				</div>
-			</div>
+			<a href="{% url 'dashboard:home' %}" class="fr-btn fr-icon-dashboard-3-line">
+				Tableau de bord
+			</a>
+		</li>
+		<li>
+			<a href="{% url 'dashboard_favorites:list' %}" id="header-favorites" class="fr-btn fr-icon-star-line">
+				Favoris <span class="fr-badge fr-badge--sm fr-ml-2v">{{ user.favorite_list_count }}</span>
+			</a>
+		</li>
+		<li>
+			<a href="{% url 'dashboard:profile_edit' %}" class="fr-btn fr-icon-user-line">
+				Mon profil
+			</a>
+		</li>
+		<li>
+			<a href="{% url 'auth:logout' %}" class="fr-btn fr-icon-logout-box-r-line">
+				Déconnexion
+			</a>
 		</li>
 	{% else %}
 		{% if page and page.slug == "accueil-structure" %}
 			<li>
-				<a href="{% url 'auth:signup' %}" id="header-signup-siae" class="btn btn-primary btn-ico">
-					<i class="ri-building-line ri-lg"></i>
+				<a href="{% url 'auth:signup' %}" id="header-signup-siae" class="fr-btn fr-icon-account-line">
 					<span>Référencer ma structure</span>
 				</a>
 			</li>
 			<li>
-				<a href="{% url 'auth:login' %}" id="h_login" class="btn btn-outline-primary btn-ico">
-					<i class="ri-login-box-line ri-lg"></i>
+				<a href="{% url 'auth:login' %}" id="h_login" class="fr-btn fr-icon-lock-line">
 					<span>Se connecter</span>
 				</a>
 			</li>
 		{% else %}
 			<li>
 				<a href="{% url 'tenders:create' %}" id="header-demande"
-					class="btn btn-link btn-ico {% if is_mobile %}mh-auto p-0{% endif %}">
-					<i class="ri-mail-send-line ri-lg"></i>
-					<span>Publier un besoin d'achat</span>
+					class="fr-btn fr-icon-add-circle-line {% if is_mobile %}mh-auto fr-p-0{% endif %}">
+					Publier un besoin d'achat
 				</a>
 			</li>
 			<li>
-				<a href="{% url 'auth:signup' %}" id="h_signup" class="btn btn-outline-primary btn-ico">
-					<i class="ri-user-add-line ri-lg"></i>
+				<a href="{% url 'auth:signup' %}" id="h_signup" class="fr-btn fr-icon-account-line">
 					<span>S'inscrire</span>
 				</a>
 			</li>
 			<li>
-				<a href="{% url 'auth:login' %}" id="h_login" class="btn btn-primary btn-ico">
-					<i class="ri-login-box-line ri-lg"></i>
+				<a href="{% url 'auth:login' %}" id="h_login" class="fr-btn fr-icon-lock-line">
 					<span>Se connecter</span>
 				</a>
 			</li>

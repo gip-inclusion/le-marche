@@ -1,9 +1,4 @@
-{% load static %}
-{% load theme_inclusion %}
-
-{% if BITOUBI_ENV not in "prod" %}
-    {% include "includes/_header_env_notice.html" %}
-{% endif %}
+{% load i18n static theme_inclusion %}
 
 {% if not user.is_authenticated %}
     {% if page.slug == "accueil-structure" %}
@@ -13,45 +8,100 @@
     {% endif %}
 {% endif %}
 
-<header role="banner" id="header">
-    {% with tender_siae_unread_count=user.tender_siae_unread_count %}
-        <section class="s-header">
-            <div class="s-header__container container">
-                <div class="s-header__row row">
-                    <div class="s-header__col s-header__col--logo-ministere col col-md-auto d-flex align-items-center pr-0">
-                        <a href="{{ HOME_PAGE_PATH }}" class="s-header__logo-ministere"><img src="{% static_theme_images 'logo-republique-francaise.svg' %}" alt="Rébublique Française"></a>
-                    </div>
-                    <div class="s-header__col s-header__col--logo-service col-auto d-flex align-items-center px-0">
-                        <a href="{{ HOME_PAGE_PATH }}"><img src="{% static_theme_images 'logo-marche-inclusion.svg' %}" alt="Le marché de l'inclusion"></a>
-                    </div>
-                    <div class="s-header__col s-header__col--nav col d-none d-xl-inline-flex d-xl-flex align-items-center justify-content-end">
-                        <nav role="navigation" id="nav-primary" aria-label="Navigation principale">
-                            {% include 'layouts/_header_nav_primary_items.html' %}
-                        </nav>
-                    </div>
-                    <div class="s-header__col s-header__col--burger col d-flex align-items-center justify-content-end d-xl-none" data-toggle="burger">
-                        <i class="ri-menu-line" id="open" role="button" tabindex="0" aria-label="Ouverture du menu de navigation principale pour mobile"></i>
-                        <i class="ri-close-line" id="close" role="button" tabindex="0" aria-label="Fermeture du menu de navigation principale pour mobile"></i>
-                    </div>
-                    <div id="burgerNav">
-                        <nav role="navigation" aria-label="Navigation principale pour mobile">
-                            {% include 'layouts/_header_nav_primary_items.html' with is_mobile=True %}
-                            {% include 'layouts/_header_nav_secondary_items.html' with is_mobile=True %}
-                        </nav>
-                    </div>
-                </div>
+<header role="banner" class="fr-header" id="header">
+  <div class="fr-header__body">
+    <div class="fr-container">
+      <div class="fr-header__body-row">
+        <div class="fr-header__brand fr-enlarge-link">
+          <div class="fr-header__brand-top">
+            <div class="fr-header__logo">
+              {% block brand %}
+                {% translate "Home page" as home_page %}
+                <a href="/" title="{{ home_page }} — {{ SITE_CONFIG.site_title }}">
+                  <p class="fr-logo">
+                    {{ SITE_CONFIG.header_brand_html|default_if_none:"république<br />française" | safe }}
+                  </p>
+                </a>
+              {% endblock brand %}
             </div>
-        </section>
-    {% endwith %}
-    <section class="s-postheader d-none d-xl-block">
-        <div class="s-postheader__container container">
-            <div class="s-postheader__row row">
-                <div class="s-postheader__col col-12 d-flex align-items-center">
-                    <nav role="navigation" aria-label="Navigation secondaire">
-                        {% include 'layouts/_header_nav_secondary_items.html' %}
-                    </nav>
+            {% comment "" %}
+            {% block operator_logo %}
+              {% if SITE_CONFIG.operator_logo_file and SITE_CONFIG.operator_logo_alt %}
+                <div class="fr-header__operator">
+                  <img class="fr-responsive-img"
+                       src="{{ SITE_CONFIG.operator_logo_file.url }}"
+                       alt="{{ SITE_CONFIG.operator_logo_alt }}"
+                       {% if SITE_CONFIG.operator_logo_width >= 1 %}style="max-width:{{ SITE_CONFIG.operator_logo_width }}rem;"{% endif %} />
                 </div>
+              {% endif %}
+              {% endblock operator_logo %}
+              {% endcomment %}
+              <div class="fr-header__operator">
+                <a href="{{ HOME_PAGE_PATH }}"><img class="fr-responsive-img" style="max-width:8rem;" src="{% static_theme_images 'logo-marche-inclusion.svg' %}" alt="Le marché de l'inclusion"></a>
             </div>
+            {% block burger_menu %}
+              {% translate "Menu" as menu_label %}
+              <div class="fr-header__navbar">
+                <button class="fr-btn--menu fr-btn"
+                        data-fr-opened="false"
+                        aria-controls="fr-menu-mobile"
+                        id="fr-btn-menu-mobile"
+                        title="{{ menu_label }}">
+                  {{ menu_label }}
+                </button>
+              </div>
+            {% endblock burger_menu %}
+          </div>
+          <div class="fr-header__service">
+            {% block service_title %}
+              <a href="/" title="Accueil — {{ SITE_CONFIG.site_title }}">
+                <p class="fr-header__service-title">
+                  {{ SITE_CONFIG.site_title }}
+                  {% if SITE_CONFIG.beta_tag %}
+                    <span class="fr-badge fr-badge--sm fr-badge--green-emeraude">BETA</span>
+                  {% endif %}
+                </p>
+              </a>
+            {% endblock service_title %}
+            <p class="fr-header__service-tagline">
+              {% block service_tagline %}
+                {{ SITE_CONFIG.site_tagline }}
+              {% endblock service_tagline %}
+            </p>
+          </div>
         </div>
-    </section>
+        <div class="fr-header__tools">
+          <div class="fr-header__tools-links">
+              {% block header_tools %}
+                {% with tender_siae_unread_count=user.tender_siae_unread_count %}
+                  {% include "layouts/_header_nav_primary_items.html" %}
+                {% endwith %}
+              {% endblock header_tools %}
+          </div>
+          {% block header_search %}
+          {% endblock header_search %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% block main_menu %}
+    <div class="fr-header__menu fr-modal"
+         id="fr-menu-mobile"
+         aria-labelledby="fr-btn-menu-mobile">
+      <div class="fr-container">
+        <button class="fr-btn--close fr-btn" aria-controls="fr-menu-mobile">
+          {% translate "Close" %}
+        </button>
+        <div class="fr-header__menu-links">
+        </div>
+        {% translate "Main menu" as main_menu_label %}
+        <nav role="navigation"
+             class="fr-nav"
+             id="fr-navigation"
+             aria-label="{{ main_menu_label }}">
+             {% include 'layouts/_header_nav_secondary_items.html' %}
+        </nav>
+      </div>
+    </div>
+  {% endblock main_menu %}
 </header>

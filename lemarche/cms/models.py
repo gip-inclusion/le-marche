@@ -1,7 +1,8 @@
 from django import forms
 from django.conf import settings
 from django.db import models
-from django.db.models import Q
+from django.db.models import Count, Q
+from django.shortcuts import get_object_or_404
 from modelcluster.fields import ParentalManyToManyField
 from wagtail import blocks as wagtail_blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
@@ -9,6 +10,7 @@ from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Page
 
+from content_manager.models import ContentPage, Tag
 from lemarche.cms import blocks
 from lemarche.cms.forms import ArticlePageForm
 from lemarche.cms.snippets import ArticleCategory
@@ -20,7 +22,7 @@ class ArticleBase(Page):
     image = models.ForeignKey(
         "wagtailimages.Image", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
     )
-    categories = ParentalManyToManyField("cms.ArticleCategory", blank=True)
+    categories = ParentalManyToManyField(ArticleCategory, blank=True)
 
     content_panels = Page.content_panels + [
         FieldPanel("intro", classname="full"),
@@ -103,16 +105,17 @@ class ArticleList(RoutablePageMixin, Page):
         context["article_list"] = self.posts
         context["search_type"] = getattr(self, "search_type", "")
         context["search_term"] = getattr(self, "search_term", "")
-        context["categories"] = ArticleCategory.objects.all()
+        context["categories"] = (
+            Tag.objects.filter(contentpage__in=ContentPage.objects.descendant_of(self).live())
+            .annotate(usecount=Count("contentpage"))
+            .filter(usecount__gte=1)
+            .order_by("name")
+        )
+
         return context
 
     def get_posts(self):
-        return (
-            ArticlePage.objects.prefetch_related("categories")
-            .descendant_of(self)
-            .live()
-            .order_by("-last_published_at")
-        )
+        return ContentPage.objects.descendant_of(self).live().prefetch_related("tags").order_by("-last_published_at")
 
     @route(r"^$")
     def post_list(self, request, *args, **kwargs):
@@ -127,20 +130,10 @@ class ArticleList(RoutablePageMixin, Page):
         self.posts = self.get_posts()
         context = self.get_context(request)
 
-        try:
-            # Look for the blog category by its slug.
-            category = ArticleCategory.objects.get(slug=cat_slug)
-        except Exception:
-            # Blog category doesnt exist (ie /blog/category/missing-category/)
-            # Redirect to self.url, return a 404.. that's up to you!
-            category = None
-        if category is not None:
-            context["article_list"] = self.posts.filter(categories__in=[category])
-            context["category"] = category
-        return self.render(
-            request,
-            context_overrides=context,
-        )
+        tag = get_object_or_404(Tag, slug=cat_slug)
+        context["article_list"] = self.posts.filter(tags__in=[tag])
+        context["category"] = tag
+        return self.render(request, context_overrides=context)
 
     @route(r"^search/$")
     def post_search(self, request, *args, **kwargs):
@@ -158,7 +151,7 @@ class ArticleList(RoutablePageMixin, Page):
         )
 
     # parent_page_types = ["cms.HomePage"]
-    subpage_types = ["cms.ArticlePage"]
+    subpage_types = ["cms.ArticlePage", "content_manager.ContentPage"]
 
 
 class PaidArticleList(ArticleList):
