@@ -139,7 +139,7 @@ class SignupFormTest(StaticLiveServerTestCase):
 
         user_profile = user_profile.copy()
         user_kind = user_profile.pop("id_kind")
-        self.driver.find_element(By.CSS_SELECTOR, f"input#id_kind_{user_kind}").click()
+        self.driver.find_element(By.CSS_SELECTOR, f"label[for='id_kind_{user_kind}']").click()
         for key in user_profile:
             self.driver.find_element(By.CSS_SELECTOR, f"input#id_{key}").send_keys(user_profile[key])
         accept_rgpd_element = self.driver.find_element(By.CSS_SELECTOR, "input#id_accept_rgpd")
