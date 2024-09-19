@@ -304,7 +304,7 @@ class User(AbstractUser):
             models.UniqueConstraint(
                 Lower("email"),
                 name="user_email_ci_uniqueness",
-                violation_error_message="",  # Mute this message, it duplicates the unique constraint on the field
+                violation_error_message="Cette adresse e-mail est déjà utilisée.",
             ),
         ]
 

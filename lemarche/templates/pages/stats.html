@@ -1,34 +1,22 @@
 {% extends "layouts/base.html" %}
-{% load bootstrap4 %}
+{% load dsfr_tags process_dict %}
 
-{% block title %}Suivi de l'impact{{ block.super }}{% endblock %}
+{% block page_title %}Suivi de l'impact{{ block.super }}{% endblock page_title %}
 {% block meta_description %}
 <meta name="description" content="Utilisez l'API du marché de l'inclusion pour accéder au répertoire qualifié des structures de l'insertion et du handicap. Documentation mise à jour ☑️">
-{% endblock %}
+{% endblock meta_description %}
 
-{% block breadcrumbs %}
-<section>
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Statistiques</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-</section>
-{% endblock %}
+{% block breadcrumb %}
+    {% process_dict root_dir=HOME_PAGE_PATH current="Statistiques" as breadcrumb_data %}
+    {% dsfr_breadcrumb breadcrumb_data %}
+{% endblock breadcrumb %}
 
 {% block content %}
-<section class="s-page-menu-01 s-page-menu-01--marche has-illustration-bg-01">
-    <div class="s-page-menu-01__container container">
-        <div class="s-page-menu-01__row row align-items-center">
-            <div class="s-page-menu-01__col s-page-menu-01__col--title col-12 col-lg-10">
-                <h1 class="h1-hero">
+<section>
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-lg-10">
+                <h1>
                     <strong>Statistiques</strong>
                 </h1>
             </div>
@@ -36,10 +24,10 @@
     </div>
 </section>
 
-<section class="s-section">
-    <div class="s-section__container container">
-        <div class="row">
-            <div class="col-12">
+<section>
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
                 <script src="https://stats.inclusion.beta.gouv.fr/app/iframeResizer.js"></script>
                 <iframe
                     src="{{ METABASE_PUBLIC_DASHBOARD_URL }}"
@@ -51,4 +39,4 @@
         </div>
     </div>
 </section>
-{% endblock %}
+{% endblock content %}

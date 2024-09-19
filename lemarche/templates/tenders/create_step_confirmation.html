@@ -1,51 +1,39 @@
 {% extends "tenders/create_base.html" %}
-{% load static bootstrap4 %}
+{% load static %}
 
-{% block step_title %}Aperçu du besoin{% endblock %}
-{% block step_title_again %}Aperçu du besoin{% endblock %}
-{% block step_subtitle %}Vous y êtes presque ! Vérifiez quand même que toutes les informations soient exactes avant de publier.{% endblock %}
+{% block step_title %}Aperçu du besoin{% endblock step_title %}
+{% block step_subtitle %}Vous y êtes presque ! Vérifiez quand même que toutes les informations soient exactes avant de publier.{% endblock step_subtitle %}
 {% block content_form %}
     {% csrf_token %}
 {% endblock %}
 {% block recap_section %}
-<div class="row">
-    <div class="col-12 col-lg-7 order-2 order-lg-1">
+<div class="fr-grid-row">
+    <div class="fr-col-12 fr-col-lg-7">
         {% include "tenders/_detail_card.html" with tender=tender source_form="true" %}
     </div>
-    <div class="col-12 col-lg-5 order-1 order-lg-2">
-        <button type="submit" id="tender-create-form-submit-above-btn" class="btn btn-primary btn-ico">
-            <i class="ri-mail-send-line ri-lg"></i>
+    <div class="fr-col-12 fr-col-lg-5 fr-pl-md-4w">
+        <button type="submit" id="tender-create-form-submit-above-btn" class="fr-btn fr-icon-send-plane-line fr-btn--icon-left">
             <span>Publier ce besoin</span>
         </button>
-        <div class="c-form-conseil">
-            <div>
-                <p>
-                    Dès que votre besoin sera publié et diffusé, vous aurez accès à un tableau de bord pour suivre les prestataires ciblés et intéressés.
-                </p>
-            </div>
+        <div class="fr-callout fr-icon-information-line fr-mt-4w">
+            <p class="fr-callout__text">
+                Dès que votre besoin sera publié et diffusé, vous aurez accès à un tableau de bord pour suivre les prestataires ciblés et intéressés.
+            </p>
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock recap_section %}
 {% block submit_btn %}
-    <div class="form-group col-6 col-lg-auto order-1 order-lg-2">
-        <button type="submit"
-                id="tender-create-draft-form-btn"
-                class="btn btn-block btn-ico btn-outline-primary"
-                name="is_draft"
-                value="1">
-            <i class="ri-save-line ri-lg"></i>
-            <span>Enregistrer le brouillon</span>
+    <li>
+        <button id="tender-create-form-submit-btn" class="fr-btn fr-icon-send-plane-line fr-btn--icon-left" type="submit" aria-label="Publier et diffuser">
+            Publier et diffuser
         </button>
-    </div>
-    <div class="form-group col-6 col-lg-auto order-2 order-lg-3">
-        <button type="submit"
-                id="tender-create-form-submit-btn"
-                class="btn btn-primary btn-ico btn-block">
-            <i class="ri-mail-send-line ri-lg"></i>
-            <span>Publier et diffuser</span>
+    </li>
+    <li>
+        <button id="tender-create-draft-form-btn" class="fr-btn fr-icon-save-line fr-btn--icon-left fr-btn--secondary" type="submit" name="is_draft" value="1" aria-label="Enregistrer le brouillon">
+            Enregistrer le brouillon
         </button>
-    </div>
+    </li>
 {% endblock submit_btn %}
 {% block extra_js %}
 <script>

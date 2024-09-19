@@ -1,24 +1,170 @@
-// Base
-@import "base/mixins";
-@import "base/variables";
-@import "base/custom";
+$yellow-super-badge--bg-color: #fff7e0;
+$yellow-super-badge--borders-color: #fcc63a;
 
-// Components
-@import "components/forms";
-@import "components/multiselect";
-@import "components/autocomplete";
-@import "components/maparea";
-@import "components/collapse";
+.lemarche {
+    &--align-right {
+        float: right;
+    }
 
-// Sections
-@import "sections/home";
-@import "sections/inclusion";
-@import "sections/siae";
-@import "sections/filiere";
-@import "sections/partenaires";
-@import "sections/valoriser";
-@import "sections/tender";
+    &-super-badge {
+        background-color: $yellow-super-badge--bg-color;
+    }
+}
 
-// Pages
-@import "layouts/pages";
-@import "utils";
+.multiselect {
+    .fr-input-wrap {
+        display: flex;
+        align-items: center;
+        position: relative;
+        flex-direction: column;
+    }
+    .fr-input {
+        width: 100%;
+    }
+    .fr-btn {
+        margin-left: 8px;
+    }
+    .fr-checkbox-list {
+        position: relative;
+        top: 100%;
+        z-index: 1000;
+        background: white;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 8px;
+        display: none;
+    }
+    .fr-checkbox-list.show {
+        display: block;
+    }
+    .fr-tags-group {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 8px;
+    }
+    .fr-tag {
+        margin: 4px;
+        background-color: #e5e5e5;
+        padding: 5px 10px;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+    }
+    .fr-tag .fr-tag__close {
+        margin-left: 8px;
+        cursor: pointer;
+    }
+}
+
+.list-unstyled {
+    padding-left: 0;
+    list-style: none;
+}
+
+.ellipsis {
+    display: inline-block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+ul.summary-grid-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-column-gap: 0;
+    grid-row-gap: 1rem;
+}
+
+@media (min-width: 992px) {
+    ul.summary-grid-list {
+        grid-template-columns: repeat(2, 1fr);
+        grid-column-gap: 2rem;
+        grid-row-gap: 1rem;
+    }
+}
+
+.s-inclusion-03 {
+    &__stats {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        div {
+            z-index: 2;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0.5rem;
+            margin: 1rem;
+            background-color: #fff;
+            min-height: 60px;
+            min-width: 240px;
+            border-bottom: 4px solid #fe5455;
+            text-align: center;
+
+            &.has-relation-between {
+                z-index: 1;
+
+                &::before {
+                    content: "";
+                    position: absolute;
+                    bottom: -58px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background-image: url("/static/images/inclusion-06-illu-01.svg");
+                    width: 164px;
+                    height: 58px;
+                }
+            }
+        }
+    }
+}
+
+/* Prefix the classes defined here with cmsfr- */
+
+.cmsfr-hero {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.cmsfr-hero-large {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    .fr-btns-group {
+        justify-content: center;
+    }
+}
+
+.cmsfr-background-dark {
+    & h1, p {
+        color: white;
+    }
+}
+
+.fr-header__service-title em {
+    font-weight: lighter
+}
+
+.cmsfr-author_card__header {
+    flex: 0 0 6rem !important;
+    width: 6rem !important;
+}
+
+.cmsfr-author-img {
+    border-radius: 50%;
+    height: 4.5rem !important;
+    margin: 1.5rem;
+    width: 4.5rem;
+}
+
+.fr-content-media {
+    margin: 0;    
+}

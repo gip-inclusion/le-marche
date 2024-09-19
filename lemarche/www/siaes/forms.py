@@ -12,6 +12,7 @@ from lemarche.siaes.models import Siae, SiaeClientReference, SiaeGroup
 from lemarche.tenders.models import Tender
 from lemarche.utils.apis import api_elasticsearch
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
+from lemarche.utils.widgets import CustomSelectMultiple
 from lemarche.www.siaes.widgets import CustomLocationWidget
 
 
@@ -81,6 +82,7 @@ class SiaeFilterForm(forms.Form):
         choices_groupby="group",
         to_field_name="slug",
         required=False,
+        widget=CustomSelectMultiple(),
     )
     perimeters = forms.ModelMultipleChoiceField(
         label=Perimeter._meta.verbose_name_plural,
@@ -93,22 +95,26 @@ class SiaeFilterForm(forms.Form):
         label=Siae._meta.get_field("kind").verbose_name,
         choices=FORM_KIND_CHOICES_GROUPED,
         required=False,
+        widget=CustomSelectMultiple(),
     )
     presta_type = forms.MultipleChoiceField(
         label=Siae._meta.get_field("presta_type").verbose_name,
         choices=siae_constants.PRESTA_CHOICES,
         required=False,
+        widget=CustomSelectMultiple(),
     )
     territory = forms.MultipleChoiceField(
         label="Territoire spécifique",
         choices=FORM_TERRITORY_CHOICES,
         required=False,
+        widget=CustomSelectMultiple(),
     )
     networks = forms.ModelMultipleChoiceField(
         label="Réseau",
         queryset=Network.objects.all().order_by("name"),
         to_field_name="slug",
         required=False,
+        widget=CustomSelectMultiple(),
     )
 
     locations = forms.ModelMultipleChoiceField(
@@ -139,6 +145,7 @@ class SiaeFilterForm(forms.Form):
         label=Siae._meta.get_field("legal_form").verbose_name,
         choices=siae_constants.LEGAL_FORM_CHOICES,
         required=False,
+        widget=CustomSelectMultiple(),
     )
 
     ca = forms.ChoiceField(
@@ -158,6 +165,7 @@ class SiaeFilterForm(forms.Form):
         queryset=Label.objects.all().order_by("name"),
         to_field_name="slug",
         required=False,
+        widget=CustomSelectMultiple(),
     )
 
     company_client_reference = forms.CharField(
@@ -199,6 +207,8 @@ class SiaeFilterForm(forms.Form):
 
     def __init__(self, advanced_search=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["has_groups"].help_text = None
+        self.fields["has_client_references"].help_text = None
         # these fields are autocompletes
         self.fields["perimeters"].choices = []
         self.fields["locations"].choices = []
@@ -510,6 +520,12 @@ class NetworkSiaeFilterForm(forms.Form):
         queryset=Perimeter.objects.regions().order_by("name"),
         to_field_name="slug",
         required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "fr-select",
+                "onchange": "this.form.submit()",
+            }
+        ),
     )
 
     def filter_queryset(self, qs=None):

@@ -1,68 +1,72 @@
 {% load static humanize %}
 
-<div class="card c-card c-card--marche siae-card">
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-8 with-data-url" style="border-right:1px solid;cursor:pointer;" data-url="{% url 'tenders:detail' tender.slug %}">
-                <p class="mb-1">
-                    {% include "tenders/_closed_badge.html" with tender=tender %}
-                    {% if tender.is_draft %}
-                        <span class="badge badge-sm badge-base badge-pill badge-outline-warning float-right">
-                            <i class="ri-draft-fill"></i>Brouillon
-                        </span>
-                    {% elif tender.is_pending_validation_or_validated %}
-                        <span class="badge badge-sm badge-base badge-pill badge-outline-info float-right">
-                            <i class="ri-loader-fill"></i>En cours de validation
-                        </span>
-                    {% elif tender.is_sent %}
-                        <span class="badge badge-sm badge-base badge-pill badge-outline-success float-right">
-                            <i class="ri-mail-send-line"></i>Envoyé
-                        </span>
-                    {% endif %}
-                </p>
-
-                <h2 class="py-2">{{ tender.title }}</h2>
-
-                <div class="row">
-                    <div class="col-md-4">
-                        <i class="ri-time-line"></i>
-                        Créé le {{ tender.created_at|date }}
+<div class="fr-card fr-card--horizontal">
+    <div class="fr-card__body">
+        <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+            <div class="fr-col-12 fr-col-md-8 with-data-url" style="cursor:pointer;" data-url="{% url 'tenders:detail' tender.slug %}">
+                <div class="fr-card__content">
+                    <div class="fr-card__start">
+                        <ul class="fr-badges-group">
+                            <li>
+                                {% include "tenders/_closed_badge.html" with tender=tender %}
+                            </li>
+                            <li>
+                                {% include "tenders/_status_badge.html" with tender=tender %}
+                            </li>
+                        </ul>
                     </div>
-                    {% if tender.is_sent %}
-                        <div class="col-md-4">
-                            <i class="ri-time-line"></i>
-                            Publié le {{ tender.first_sent_at|date }}
-                        </div>
-                    {% endif %}
+
+                    <h2 class="fr-card__title">{{ tender.title }}</h2>
+
+                    <div class="fr-card__end">
+                        <ul class="fr-tags-group">
+                            <li>
+                                <span class="fr-tag fr-icon-time-line fr-tag--icon-left">Créé le {{ tender.created_at|date }}</span>
+                            </li>
+                            {% if tender.is_sent %}
+                                <li>
+                                    <span class="fr-tag fr-icon-time-line fr-tag--icon-left">Publié le {{ tender.first_sent_at|date }}</span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4 text-center my-auto">
-                <hr class="d-md-none" />
+            <div class="fr-col-12 fr-col-md-4">
+                <hr class="fr-hidden-md" />
                 {% if tender.is_sent %}
-                    {% if tender.siae_detail_contact_click_since_last_seen_date_count_annotated %}
-                        <span class="badge badge-base badge-pill badge-pilotage">
-                            <i class="ri-thumb-up-line ri-xl"></i>&nbsp;{{ tender.siae_detail_contact_click_since_last_seen_date_count_annotated }} nouveau{{ tender.siae_detail_contact_click_since_last_seen_date_count_annotated|pluralize:"x" }} prestataire{{ tender.siae_detail_contact_click_since_last_seen_date_count_annotated|pluralize }} intéressé{{ tender.siae_detail_contact_click_since_last_seen_date_count_annotated|pluralize }}
-                        </span>
+                    {% if not tender.siae_detail_contact_click_since_last_seen_date_count_annotated %}
+                        <p class="fr-badge fr-badge--sm fr-badge--green-emeraude">
+                            <span class="fr-icon-thumb-up-line"></span>&nbsp;{{ tender.siae_detail_contact_click_since_last_seen_date_count_annotated }} nouveau{{ tender.siae_detail_contact_click_since_last_seen_date_count_annotated|pluralize:"x" }} prestataire{{ tender.siae_detail_contact_click_since_last_seen_date_count_annotated|pluralize }} intéressé{{ tender.siae_detail_contact_click_since_last_seen_date_count_annotated|pluralize }}
+                        </p>
                     {% endif %}
-                    <div class="row">
-                        <div class="col-6" style="border-right:1px solid;">
-                            <p class="font-weight-bold mt-2">
-                                <i class="ri-focus-2-line font-weight-light"></i>&nbsp;{{ tender.siae_email_send_count_annotated|default:0 }} prestataire{{ tender.siae_email_send_count_annotated|pluralize }} ciblé{{ tender.siae_email_send_count_annotated|pluralize }}
+                    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-grid-row--middle">
+                        <div class="fr-col-6">
+                            <p class="fr-text--sm fr-text--bold fr-mb-2v fr-mt-4v">
+                                <span class="fr-icon-signal-tower-line"></span>&nbsp;{{ tender.siae_email_send_count_annotated|default:0 }} prestataire{{ tender.siae_email_send_count_annotated|pluralize }} ciblé{{ tender.siae_email_send_count_annotated|pluralize }}
                             </p>
                             {% if tender.siae_email_send_count_annotated %}
-                                <a href="{% url 'tenders:detail-siae-list' tender.slug %}" id="show-tender-siae-list-btn" class="btn btn-sm btn-primary">
-                                    Voir
-                                </a>
+                                <ul class="fr-btns-group fr-btns-group--center">
+                                    <li>
+                                        <a href="{% url 'tenders:detail-siae-list' tender.slug %}" id="show-tender-siae-list-btn" class="fr-btn fr-btn--sm">
+                                            Voir
+                                        </a>
+                                    </li>
+                                </ul>
                             {% endif %}
                         </div>
-                        <div class="col-6">
-                            <p class="font-weight-bold mt-2">
-                                <i class="ri-thumb-up-line font-weight-light"></i>&nbsp;{{ tender.siae_detail_contact_click_count_annotated|default:0 }} prestataire{{ tender.siae_detail_contact_click_count_annotated|pluralize }} intéressé{{ tender.siae_detail_contact_click_count_annotated|pluralize }}
+                        <div class="fr-col-6">
+                            <p class="fr-text--sm fr-text--bold fr-mb-2v fr-mt-4v">
+                                <span class="fr-icon-thumb-up-line"></span>&nbsp;{{ tender.siae_detail_contact_click_count_annotated|default:0 }} prestataire{{ tender.siae_detail_contact_click_count_annotated|pluralize }} intéressé{{ tender.siae_detail_contact_click_count_annotated|pluralize }}
                             </p>
                             {% if tender.siae_detail_contact_click_count_annotated %}
-                                <a href="{% url 'tenders:detail-siae-list' tender.slug "INTERESTED" %}" id="show-tender-siae-list-btn" class="btn btn-sm btn-primary">
-                                    Voir
-                                </a>
+                                <ul class="fr-btns-group fr-btns-group--center">
+                                    <li>
+                                        <a href="{% url 'tenders:detail-siae-list' tender.slug "INTERESTED" %}" id="show-tender-siae-list-btn" class="fr-btn fr-btn--sm">
+                                            Voir
+                                        </a>
+                                    </li>
+                                </ul>
                             {% endif %}
                         </div>
                     </div>

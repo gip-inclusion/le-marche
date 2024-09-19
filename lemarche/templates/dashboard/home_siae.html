@@ -1,90 +1,67 @@
 {% extends "layouts/base.html" %}
-{% load static get_verbose_name %}
-{% load theme_inclusion %}
+{% load dsfr_tags static get_verbose_name process_dict %}
 
-{% block title %}Tableau de bord{{ block.super }}{% endblock %}
+{% block page_title %}{{ page_title }}{{ block.super }}{% endblock page_title %}
 
-{% block breadcrumbs %}
-<section>
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <nav class="c-breadcrumb c-breadcrumb--marche" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ HOME_PAGE_PATH }}">Accueil</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Tableau de bord</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-</section>
-{% endblock %}
+{% block breadcrumb %}
+    {% process_dict root_dir=HOME_PAGE_PATH current=page_title as breadcrumb_data %}
+    {% dsfr_breadcrumb breadcrumb_data %}
+{% endblock breadcrumb %}
 
 {% block content %}
-<section class="s-title-01">
-    <div class="s-title-01__container container">
-        <div class="s-title-01__row row">
-            <div class="s-title-01__col col-12">
-                <h1 class="s-title-01__title h1"><strong>Tableau de bord</strong></h1>
+<section>
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
+                <h1>{{ page_title }}</h1>
             </div>
         </div>
     </div>
 </section>
 
 {% if user.siaeuser_set.count %}
-    <section class="s-tabs-01 mb-3 mb-lg-5">
-        <div class="s-tabs-01__container container">
-            <div id="siaes_tabs" class="s-tabs-01__row row">
-                <div class="s-tabs-01__col col-12">
-                    <ul class="s-tabs-01__nav nav nav-tabs" role="tablist">
-                        {% for siaeuser in user.siaeuser_set.all %}
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link {% if forloop.first %}active{% endif %} {% if siaeuser.siae.super_badge %}super-badge-tab{% endif %}" id="id-{{ siaeuser.siae.slug }}-tab" data-toggle="tab" href="#id-{{ siaeuser.siae.slug }}" role="tab" aria-controls="{{ siaeuser.siae.slug }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
-                                    <span class="mr-2">
-                                        {% if siaeuser.siae.logo_url %}
-                                            <img class="img-fluid" style="width:20px" src="{{ siaeuser.siae.logo_url }}" alt="Logo de la structure {{ siaeuser.siae.name }}" loading="lazy" />
-                                        {% else %}
-                                            <img class="img-fluid" style="width:20px" src="{% static 'img/default-listing.png' %}" alt="{{ siaeuser.siae.name }}" loading="lazy" />
-                                        {% endif %}
-                                    </span>
-                                    <span>{{ siaeuser.siae.name_display }}</span>
+    <section class="fr-mb-4v">
+        <div class="fr-container">
+            <div id="siaes_tabs" class="fr-grid-row">
+                <div class="fr-col-12">
+                    <div class="fr-tabs">
+                        <ul class="fr-tabs__list" role="tablist" aria-label="Mes structures">
+                            {% for siaeuser in user.siaeuser_set.all %}
+                                <li role="presentation">
+                                    <button class="fr-tabs__tab{% if siaeuser.siae.super_badge %} super-badge-tab{% endif %}" id="id-{{ siaeuser.siae.slug }}-tab" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}" data-toggle="tab"  role="tab" aria-controls="id-{{ siaeuser.siae.slug }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                                        <span class="fr-mr-2v">
+                                            {% if siaeuser.siae.logo_url %}
+                                                <img class="fr-responsive-img" style="width:20px" src="{{ siaeuser.siae.logo_url }}" alt="Logo de la structure {{ siaeuser.siae.name }}" loading="lazy" />
+                                            {% else %}
+                                                <img class="fr-responsive-img" style="width:20px" src="{% static 'img/default-listing.png' %}" alt="{{ siaeuser.siae.name }}" loading="lazy" />
+                                            {% endif %}
+                                        </span>
+                                        <span>{{ siaeuser.siae.name_display }}</span>
+                                    </button>
+                                </li>
+                            {% endfor %}
+                            <li role="presentation">
+                                <a class="fr-tabs__tab" id="add-siae-btn" href="{% url 'dashboard_siaes:siae_search_by_siret' %}" aria-selected="false" tabindex="-1">
+                                    <span class="fr-icon-add-circle-line fr-mr-2v" aria-hidden="true"></span>
+                                    <span>Ajouter une structure</span>
                                 </a>
                             </li>
-                        {% endfor %}
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link nav-link-external" id="add-siae-btn" href="{% url 'dashboard_siaes:siae_search_by_siret' %}" aria-selected="false">
-                                <i class="ri-add-line"></i>
-                                <span>Ajouter une structure</span>
-                            </a>
-                        </li>
-                        <li class="nav-item-dropdown dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" id="sTabs01DropdownMoreLink" data-toggle="dropdown" aria-expanded="false">...</a>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sTabs01DropdownMoreLink"></div>
-                        </li>
-                    </ul>
-                    {% if user.siaeuser_set.count %}
+                        </ul>
                         {% for siaeuser in user.siaeuser_set.all %}
-                            {% if forloop.first %}
-                                <div class="tab-content {% if siaeuser.siae.super_badge %}super-badge-tab{% endif %}">
-                            {% endif %}
-                            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="id-{{ siaeuser.siae.slug }}" role="tabpanel" aria-labelledby="id-{{ siaeuser.siae.slug }}-tab">
+                            <div class="fr-tabs__panel{% if forloop.first %} fr-tabs__panel--selected{% endif %}" id="id-{{ siaeuser.siae.slug }}" role="tabpanel" aria-labelledby="id-{{ siaeuser.siae.slug }}-tab" tabindex="0">
                                 {% include "dashboard/_siae_tab_content.html" with siae=siaeuser.siae %}
                             </div>
-                            {% if forloop.last %}
-                                </div>
-                            {% endif %}
                         {% endfor %}
-                    {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 {% else %}
-    <section class="s-section mb-0">
-        <div class="s-section__container container">
-            <div class="s-section__row row">
-                <div class="s-section__col col-12 pb-5">
+    <section>
+        <div class="fr-container">
+            <div class="fr-grid-row">
+                <div class="fr-col-12 fr-mb-6v">
                     {% include "dashboard/_add_siae_card.html" %}
                 </div>
             </div>
@@ -92,34 +69,43 @@
     </section>
 {% endif %}
 
-<section class="s-section mt-0 mb-0">
-    <div class="s-section__container container">
-        <div class="s-section__row row">
-            <div class="s-section__col col-12 col-lg-6 pb-5">
-                <div class="card h-100 w-100">
-                    <div class="card-body">
-                        <p class="h4 lh-sm mb-lg-4">Vos opportunités commerciales</p>
-                        <p>
-                            Vous trouverez ici les demandes de devis, appels d'offre ou projets d'achat qui ont été déposés sur le Marché de l'inclusion
-                            et qui correspondent à vos secteurs d'activité et zone d'intervention.
-                        </p>
-                        {% for tender in last_3_tenders %}
-                            <ul class="list-group list-group-flush list-group-link">
-                                <li class="list-group-item list-group-item-action">
-                                    {% include "tenders/_card_list_item.html" with tender=tender %}
+<section>
+    <div class="fr-container">
+        <div class="fr-grid-row fr-grid-row--gutters">
+            <div class="fr-col-12 fr-col-lg-6">
+                <div class="fr-card">
+                    <div class="fr-card__body">
+                        <div class="fr-card__content">
+                            <h3 class="fr-card__title">
+                                Vos opportunités commerciales
+                            </h3>
+                            <div class="fr-card__desc">
+                                <p>
+                                    Vous trouverez ici les demandes de devis, appels d'offre ou projets d'achat qui ont été déposés sur le Marché de l'inclusion
+                                    et qui correspondent à vos secteurs d'activité et zone d'intervention.
+                                </p>
+                                {% for tender in last_3_tenders %}
+                                    <div class="fr-grid-row{% if not forloop.last %} fr-mb-6v{% endif %}">
+                                        <div class="fr-col-12">
+                                                {% include "tenders/_card_list_item.html" with tender=tender %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="fr-card__footer">
+                            <ul class="fr-btns-group--right fr-btns-group fr-btns-group--inline">
+                                <li>
+                                    <a class="fr-btn" href="{% url 'tenders:list' %}">
+                                        Voir toutes les opportunités
+                                    </a>
                                 </li>
                             </ul>
-                        {% endfor %}
-                    </div>
-                    <div class="card-footer pt-0 bg-white text-right">
-                        <a href="{% url 'tenders:list' %}" class="btn btn-link btn-ico">
-                            <span>Voir toutes les opportunités</span>
-                            <i class="ri-arrow-right-s-line ri-xl"></i>
-                        </a>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="s-section__col col-12 col-lg-6 pb-5">
+            <div class="fr-col-12 fr-col-lg-6">
                 {% include "dashboard/_ressource_card.html" with user_kind="SIAE" ressources=last_3_ressources category_slug=category_slug_cat %}
             </div>
         </div>
@@ -127,10 +113,10 @@
 </section>
 
 {% if user.api_key %}
-<section class="s-section mt-0 mb-5">
-    <div class="s-section__container container">
-        <div class="s-section__row row">
-            <div class="col-12 col-lg-6">
+<section class="fr-pt-6v">
+    <div class="fr-container">
+        <div class="fr-grid-row fr-grid-row--gutters">
+            <div class="fr-col-12 fr-col-lg-6">
                 {% include "dashboard/_api_key_card.html" with user_kind="SIAE" api_key=user.api_key %}
             </div>
         </div>
@@ -138,7 +124,14 @@
 </section>
 {% endif %}
 
-{% include "dashboard/_aides_territoires_section.html" with extra_class="pt-3" %}
+{% include "dashboard/_aides_territoires_section.html" with extra_class="fr-pt-6v" %}
 {% include "includes/_super_siae_arguments_badge.html" %}
 
-{% endblock %}
+{% endblock content %}
+
+{% block extra_css %}
+<style>
+    .progress{display:flex;height:.5rem;overflow:hidden;line-height:0;font-size:.75rem;background-color:#e6e6eb;border-radius:.25rem;box-shadow:none}
+    .progress-bar{display:flex;flex-direction:column;justify-content:center;overflow:hidden;color:#fff;text-align:center;white-space:nowrap;background-color:#000091;transition:width .6s ease}
+</style>
+{% endblock extra_css %}

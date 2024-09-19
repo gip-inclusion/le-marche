@@ -1,25 +1,32 @@
 {% load static %}
-{% load theme_inclusion %}
-
-<section class="s-banniere-01 s-banniere-01--marche {{ extra_class }}">
-    <div class="s-banniere-01__container container">
-        <div class="s-banniere-01__row row">
-            <div class="s-banniere-01__col col-12">
-                <div class="d-flex flex-column flex-md-row">
-                    <div class="text-center text-md-left">
-                        <a href="https://aides-territoires.beta.gouv.fr/" target="_blank" rel="noopener">
-                            <img src="{% static_theme_images 'logo-aides-territoires.svg' %}" alt="Aides-territoires | Aides publiques pour les collectivités" height="120" />
-                        </a>
+<section class="{{ extra_class }}">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
+                <div class="fr-card fr-card--horizontal fr-card--horizontal-tier">
+                    <div class="fr-card__body">
+                        <div class="fr-card__content">
+                            <h3 class="fr-card__title">
+                                Trouver des aides financières sur votre territoire pour faciliter votre développement.
+                            </h3>
+                            <div class="fr-card__desc">
+                                <p>Venez découvrir plus de 2900 aides répertoriées sur tout le territoire.</p>
+                            </div>
+                        </div>
+                        <div class="fr-card__footer">
+                            <ul class="fr-btns-group--right fr-btns-group fr-btns-group--inline">
+                                <li>
+                                    <a class="fr-btn" href="https://aides-territoires.beta.gouv.fr/" target="_blank" rel="noopener" title="Aides-territoires | Aides publiques pour les collectivités">
+                                        Aides-territoires
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="w-100 mt-3 pl-0 pl-md-3">
-                        <p class="h3 mb-2">Trouver des aides financières sur votre territoire pour faciliter votre développement.</p>
-                        <p>Venez découvrir plus de 2900 aides répertoriées sur tout le territoire.</p>
-                        <p class="mb-0 text-right">
-                            <a href="https://aides-territoires.beta.gouv.fr/" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary btn-ico" title="Aides-territoires | Aides publiques pour les collectivités">
-                                <span>Aides-territoires</span>
-                                <i class="ri-arrow-right-up-line ri-lg"></i>
-                            </a>
-                        </p>
+                    <div class="fr-card__header">
+                        <div class="fr-card__img">
+                            <img class="fr-responsive-img" src="{% static 'images/logo-aides-territoires.svg' %}" alt="Aides-territoires | Aides publiques pour les collectivités" height="120" />
+                        </div>
                     </div>
                 </div>
             </div>

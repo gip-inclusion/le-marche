@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -10,6 +11,7 @@ from django.views.generic.edit import CreateView
 
 from lemarche.favorites.models import FavoriteItem, FavoriteList
 from lemarche.siaes.models import Siae
+from lemarche.utils import settings_context_processors
 from lemarche.utils.mixins import FavoriteListOwnerRequiredMixin
 from lemarche.www.dashboard_favorites.forms import FavoriteListEditForm
 
@@ -28,6 +30,13 @@ class DashboardFavoriteListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = FavoriteListEditForm()
+        context["breadcrumb_data"] = {
+            "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
+            "links": [
+                {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
+            ],
+            "current": settings.FAVORITE_LIST_TITLE,
+        }
         return context
 
 
@@ -50,13 +59,25 @@ class DashboardFavoriteListCreateView(LoginRequiredMixin, SuccessMessageMixin, C
         return HttpResponseRedirect(self.success_url)
 
     def get_success_message(self, cleaned_data):
-        return mark_safe(f"Votre liste d'achat <strong>{cleaned_data['name']}</strong> a été crée avec succès.")
+        return mark_safe(f"Votre liste d'achat <strong>{cleaned_data['name']}</strong> a été créée avec succès.")
 
 
 class DashboardFavoriteListDetailView(FavoriteListOwnerRequiredMixin, DetailView):
     template_name = "favorites/dashboard_favorite_list_detail.html"
     queryset = FavoriteList.objects.prefetch_related("siaes").all()
     context_object_name = "favorite_list"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumb_data"] = {
+            "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
+            "links": [
+                {"title": settings.DASHBOARD_TITLE, "url": reverse_lazy("dashboard:home")},
+                {"title": settings.FAVORITE_LIST_TITLE, "url": reverse_lazy("dashboard_favorites:list")},
+            ],
+            "current": self.object.name,
+        }
+        return context
 
 
 class DashboardFavoriteListEditView(FavoriteListOwnerRequiredMixin, SuccessMessageMixin, UpdateView):

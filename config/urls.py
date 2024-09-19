@@ -4,6 +4,7 @@ from django.urls import include, path
 from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
+from wagtail_transfer import urls as wagtailtransfer_urls
 
 from lemarche.utils.admin.admin_site import admin_site
 
@@ -21,8 +22,10 @@ urlpatterns = [
     path("select2/", include("django_select2.urls")),
     # admin blog
     path("cms/", include(wagtailadmin_urls)),
+    path("blog/", include("blog.urls")),
     # url docuemnts of glog
     path("documents/", include(wagtaildocs_urls)),
+    path("wagtail-transfer/", include(wagtailtransfer_urls)),
     # urls pages blog
     path("", include("lemarche.www.pages.urls")),
     path("", include(wagtail_urls)),

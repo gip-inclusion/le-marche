@@ -1,3 +1,5 @@
+import secrets
+import string
 import time
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -11,6 +13,8 @@ from lemarche.users.factories import DEFAULT_PASSWORD, UserFactory
 from lemarche.users.models import User
 
 
+EXAMPLE_PASSWORD = "".join(secrets.choice(string.ascii_letters + string.digits + string.punctuation) for i in range(9))
+
 SIAE = {
     "id_kind": 0,  # required
     "first_name": "Prenom",
@@ -18,8 +22,8 @@ SIAE = {
     "phone": "+33123456789",  # not required
     # "company_name": "",  # not asked here
     "email": "siae@example.com",
-    "password1": "Erls92#32",
-    "password2": "Erls92#32",
+    "password1": EXAMPLE_PASSWORD,
+    "password2": EXAMPLE_PASSWORD,
     # "id_accept_rgpd"  # required
 }
 
@@ -32,8 +36,8 @@ BUYER = {
     "company_name": "Ma boite",
     "position": "Role important",
     "email": "buyer@example.com",
-    "password1": "Erls92#32",
-    "password2": "Erls92#32",
+    "password1": EXAMPLE_PASSWORD,
+    "password2": EXAMPLE_PASSWORD,
     # "nb_of_handicap_provider_last_year": "3",
     # "nb_of_inclusive_provider_last_year": "4",
     # "id_accept_rgpd"  # required
@@ -48,8 +52,8 @@ PARTNER = {
     # "partner_kind": "RESEAU_IAE",
     "company_name": "Ma boite",
     "email": "partner@example.com",
-    "password1": "Erls92#32",
-    "password2": "Erls92#32",
+    "password1": EXAMPLE_PASSWORD,
+    "password2": EXAMPLE_PASSWORD,
     # "id_accept_rgpd"  # required
     # "id_accept_survey"  # not required
 }
@@ -62,8 +66,8 @@ PARTNER_2 = {
     # "partner_kind": "RESEAU_IAE",
     "company_name": "Ma boite",
     "email": "partner2@example.com",
-    "password1": "Erls92#32",
-    "password2": "Erls92#32",
+    "password1": EXAMPLE_PASSWORD,
+    "password2": EXAMPLE_PASSWORD,
     # "id_accept_rgpd"  # required
     # "id_accept_survey"  # not required
 }
@@ -74,8 +78,8 @@ INDIVIDUAL = {
     "last_name": "Nom",
     # "phone": "012345678",  # not required
     "email": "individual@example.com",
-    "password1": "Erls92#32",
-    "password2": "Erls92#32",
+    "password1": EXAMPLE_PASSWORD,
+    "password2": EXAMPLE_PASSWORD,
     # "id_accept_rgpd"  # required
     # "id_accept_survey"  # not required
 }
@@ -135,7 +139,7 @@ class SignupFormTest(StaticLiveServerTestCase):
 
         user_profile = user_profile.copy()
         user_kind = user_profile.pop("id_kind")
-        self.driver.find_element(By.CSS_SELECTOR, f"input#id_kind_{user_kind}").click()
+        self.driver.find_element(By.CSS_SELECTOR, f"label[for='id_kind_{user_kind}']").click()
         for key in user_profile:
             self.driver.find_element(By.CSS_SELECTOR, f"input#id_{key}").send_keys(user_profile[key])
         accept_rgpd_element = self.driver.find_element(By.CSS_SELECTOR, "input#id_accept_rgpd")
@@ -158,12 +162,12 @@ class SignupFormTest(StaticLiveServerTestCase):
         self.assertEqual(User.objects.count(), self.user_count + 1)
         # user should be automatically logged in
         header = self.driver.find_element(By.CSS_SELECTOR, "header#header")
-        self.assertTrue("Mon espace" in header.text)
+        self.assertTrue("Tableau de bord" in header.text)
         self.assertTrue("Connexion" not in header.text)
         # should redirect to redirect_url
         self.assertEqual(self.driver.current_url, f"{self.live_server_url}{redirect_url}")
         # message should be displayed
-        messages = self.driver.find_element(By.CSS_SELECTOR, "div.messages")
+        messages = self.driver.find_element(By.CSS_SELECTOR, "div.fr-alert--success")
         self.assertTrue("Inscription validée" in messages.text)
         return messages
 
@@ -303,6 +307,12 @@ class LoginFormTest(StaticLiveServerTestCase):
         super().setUpClass()
         options = Options()
         options.add_argument("-headless")
+
+        # Create a Firefox profile to set the locale to French (needed for the login form)
+        profile = webdriver.FirefoxProfile()
+        profile.set_preference("intl.accept_languages", "fr")
+        options.profile = profile
+
         cls.driver = webdriver.Firefox(options=options)
         cls.driver.implicitly_wait(1)
 
@@ -355,8 +365,8 @@ class LoginFormTest(StaticLiveServerTestCase):
         # should not submit form
         self.assertEqual(driver.current_url, f"{self.live_server_url}{reverse('auth:login')}")
         # error message should be displayed
-        messages = driver.find_element(By.CSS_SELECTOR, "div.alert-danger")
-        self.assertTrue("aisissez un Adresse e-mail et un mot de passe valides" in messages.text)
+        messages = driver.find_element(By.CSS_SELECTOR, "section.fr-input-group--error")
+        self.assertTrue("Saisissez un Adresse e-mail et un mot de passe valides" in messages.text)
 
     def test_user_empty_credentials_should_see_password_reset_message(self):
         existing_user = UserFactory(email="existing-user@example.com", password="")

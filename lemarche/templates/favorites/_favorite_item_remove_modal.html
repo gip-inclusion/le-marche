@@ -1,24 +1,34 @@
-<div class="modal fade modal-siae" id="favorite_item_remove_modal" tabindex="-1" role="dialog" aria-modal="true" data-backdrop="static" data-keyboard="false" aria-labelledby="modalTitle">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">Supprimer</h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-                    <i class="ri-close-line"></i>
-                </button>
+<dialog class="fr-modal" id="favorite_item_remove_modal" role="dialog" aria-modal="true" aria-labelledby="favorite_item_remove_modal_title">
+    <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                    <div class="fr-modal__header">
+                        <button class="fr-btn--close fr-btn" aria-controls="favorite_item_remove_modal">Fermer</button>
+                    </div>
+                    <div class="fr-modal__content">
+                        <h3 id="favorite_item_remove_modal_title" class="fr-modal__title">
+                            Supprimer
+                        </h3>
+                        <p>
+                            Supprimer la structure <strong>{% if siae %}{{ siae.name_display }}{% else %}<span id="siae-name-display"></span>{% endif %}</strong> de votre liste d'achat ?
+                        </p>
+                    </div>
+                    <div class="fr-modal__footer">
+                        <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg">
+                            <form method="post" data-action="{% url 'dashboard_favorites:item_delete' favorite_list.slug|default:'favorite-list-slug' siae.slug|default:'siae-slug-to-replace' %}">
+                                {% csrf_token %} 
+                                <button class="fr-btn fr-btn--icon-left" type="submit">
+                                    Confirmer
+                                </button>
+                            </form>
+                            <button class="fr-btn fr-btn--icon-left fr-btn--secondary" aria-controls="favorite_item_remove_modal" aria-label="Fermer">
+                                Annuler
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <form method="POST" action="{% url 'dashboard_favorites:item_delete' favorite_list.slug|default:'favorite-list-slug' siae.slug|default:'siae-slug-to-replace' %}">
-                {% csrf_token %}
-                <div class="modal-body home-content-body">
-                    <p class="font-weight-bold">
-                        Supprimer la structure <strong>{% if siae %}{{ siae.name_display }}{% else %}<span id="siae-name-display"></span>{% endif %}</strong> de votre liste d'achat ?
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-sm btn-outline-primary" type="button" data-dismiss="modal" aria-label="Fermer">Annuler</button>
-                    <button class="btn btn-sm btn-primary" type="submit">Confirmer</button>
-                </div>
-            </form>
         </div>
     </div>
-</div>
+</dialog>
