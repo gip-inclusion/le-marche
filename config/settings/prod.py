@@ -21,7 +21,24 @@ CSRF_TRUSTED_ORIGINS = [
 SECURE_SSL_REDIRECT = env.str("SECURE_SSL_REDIRECT", True)
 
 MEDIA_URL = f"https://{S3_STORAGE_ENDPOINT_DOMAIN}/"  # noqa
-DEFAULT_FILE_STORAGE = "lemarche.utils.s3boto.S3BotoStorage"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "bucket_name": S3_STORAGE_BUCKET_NAME,  # noqa
+            "access_key": S3_STORAGE_ACCESS_KEY_ID,  # noqa
+            "secret_key": S3_STORAGE_SECRET_ACCESS_KEY,  # noqa
+            "endpoint_url": f"https://{S3_STORAGE_ENDPOINT_DOMAIN}",  # noqa
+            "region_name": S3_STORAGE_BUCKET_REGION,  # noqa
+            "file_overwrite": False,
+            "location": env.str("S3_LOCATION", ""),
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 
 
 # Sentry
