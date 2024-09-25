@@ -1,133 +1,137 @@
 {% extends BASE_TEMPLATE %}
 {% load dsfr_tags process_dict static humanize wagtailcore_tags advert_cms %}
-
-{% block page_title %}Calibrer votre achat socialement responsable{{ block.super }}{% endblock page_title %}
+{% block page_title %}
+    Calibrer votre achat socialement responsable{{ block.super }}
+{% endblock page_title %}
 {% block meta_description %}
-<meta name="description" content="Identifier rapidement le nombre total de prestataires inclusifs pouvant répondre à votre besoin et mesurer leur capacité globale de production.">
+    <meta name="description"
+          content="Identifier rapidement le nombre total de prestataires inclusifs pouvant répondre à votre besoin et mesurer leur capacité globale de production.">
 {% endblock meta_description %}
-
 {% block breadcrumb %}
     {% process_dict root_dir=HOME_PAGE_PATH current="Calibrer votre achat socialement responsable" as breadcrumb_data %}
     {% dsfr_breadcrumb breadcrumb_data %}
 {% endblock breadcrumb %}
-
 {% block content %}
-<section>
-    <div class="fr-container">
-        <div class="fr-grid-row">
-            <div class="fr-col-12 fr-col-lg-10">
-                <h1>
-                    Calibrer votre achat socialement responsable
-                </h1>
-                <h2>
-                    Identifier rapidement le nombre total de prestataires inclusifs pouvant répondre à votre besoin,
-                    et mesurer leur capacité globale de production.
-                </h2>
+    <section>
+        <div class="fr-container">
+            <div class="fr-grid-row">
+                <div class="fr-col-12 fr-col-lg-10">
+                    <h1>Calibrer votre achat socialement responsable</h1>
+                    <h2>
+                        Identifier rapidement le nombre total de prestataires inclusifs pouvant répondre à votre besoin,
+                        et mesurer leur capacité globale de production.
+                    </h2>
+                </div>
             </div>
         </div>
-    </div>
-</section>
-
-<section>
-    <div class="fr-container">
-        {% block htmx %}
-        <div class="fr-grid-row fr-grid-row--gutters" id="calculatorImpact">
-            <div class="fr-col-12 fr-col-lg-7">
-                <form hx-get="{{ request.path }}" hx-push-url="true" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-target="#calculatorImpact" hx-swap="outerHTML">
-                    {% if form.non_field_errors %}
-                        <section class="fr-my-4v fr-input-group fr-input-group--error">
-                            {{ form.non_field_errors }}
-                        </section>
-                    {% endif %}
-                    <fieldset class="fr-fieldset">
-                        <div class="fr-fieldset__element">
-                            {% dsfr_form_field form.sectors %}
-                        </div>
-                        <div class="fr-fieldset__element">
-                            <div class="fr-input-group{% if form.perimeters.errors %} fr-input-group--error{% endif %}">
-                                <label for="id_perimeters" class="fr-label fr-mb-2v">{{ form.perimeters.label }}</label>
-                                <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
-                                <small class="form-text text-muted">{{ form.perimeters.help_text }}</small>
-                                <div id="perimeters-selected" class="fr-mt-2v"></div>
-                                {{ current_perimeters|json_script:"current-perimeters" }}
-                                {% if form.perimeters.errors %}
-                                    <div id="id_perimeters-description-desc-error">
-                                        <ul class="errorlist">
-                                            <li class="fr-error-text">
-                                                Ce champ est obligatoire.
-                                            </li>
-                                        </ul>
+    </section>
+    <section>
+        <div class="fr-container fr-pb-8v">
+            {% block htmx %}
+                <div class="fr-grid-row fr-grid-row--gutters" id="calculatorImpact">
+                    <div class="fr-col-12 fr-col-lg-7">
+                        <form hx-get="{{ request.path }}"
+                              hx-push-url="true"
+                              hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                              hx-target="#calculatorImpact"
+                              hx-swap="outerHTML">
+                            {% if form.non_field_errors %}
+                                <section class="fr-my-4v fr-input-group fr-input-group--error">
+                                    {{ form.non_field_errors }}
+                                </section>
+                            {% endif %}
+                            <fieldset class="fr-fieldset">
+                                <div class="fr-fieldset__element">{% dsfr_form_field form.sectors %}</div>
+                                <div class="fr-fieldset__element">
+                                    <div class="fr-input-group{% if form.perimeters.errors %} fr-input-group--error{% endif %}">
+                                        <label for="id_perimeters" class="fr-label fr-mb-2v">{{ form.perimeters.label }}</label>
+                                        <div id="dir_form_perimeters" data-input-name="{{ form.perimeters.name }}"></div>
+                                        <small class="form-text text-muted">{{ form.perimeters.help_text }}</small>
+                                        <div id="perimeters-selected" class="fr-mt-2v"></div>
+                                        {{ current_perimeters|json_script:"current-perimeters" }}
+                                        {% if form.perimeters.errors %}
+                                            <div id="id_perimeters-description-desc-error">
+                                                <ul class="errorlist">
+                                                    <li class="fr-error-text">Ce champ est obligatoire.</li>
+                                                </ul>
+                                            </div>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                                {% endif %}
+                                <div class="fr-fieldset__element">{% dsfr_form_field form.presta_type %}</div>
+                            </fieldset>
+                            <div class="fr-grid-row fr-mt-8v">
+                                <div class="fr-col-12">
+                                    <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--right fr-btns-group--icon-right">
+                                        {% if show_results %}
+                                            <li>
+                                                <button hx-get="{{ request.path }}"
+                                                        hx-target="#calculatorImpact"
+                                                        hx-swap="outerHTML"
+                                                        class="fr-btn fr-btn--secondary fr-icon-close-circle-line">
+                                                    <span>Annuler</span>
+                                                </button>
+                                            </li>
+                                        {% endif %}
+                                        <li>
+                                            <button type="submit"
+                                                    id="calibrate-calculator-submit-btn"
+                                                    class="fr-btn fr-icon-search-line">
+                                                <span>Lancer la recherche</span>
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
-                        <div class="fr-fieldset__element">
-                            {% dsfr_form_field form.presta_type %}
-                        </div>
-                    </fieldset>
-
-                    <div class="fr-grid-row fr-mt-8v">
-                        <div class="fr-col-12">
-                            <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--right fr-btns-group--icon-right">
-                                {% if show_results %}
-                                    <li>    
-                                        <button hx-get="{{ request.path }}" hx-target="#calculatorImpact" hx-swap="outerHTML" class="fr-btn fr-btn--secondary fr-icon-close-circle-line">
-                                            <span>Annuler</span>
-                                        </button>
-                                    </li>
-                                {% endif %}
+                        </form>
+                    </div>
+                    {% if show_results %}
+                        <div class="fr-col-12 fr-col-lg-5">
+                            <h3>Résultats</h3>
+                            <p>
+                                Il y a <b>{{ results.count }}</b> prestataires inclusifs positionnés sur les secteurs d'activités <i>{{ current_sectors_pretty|join:", " }}</i>
+                                pouvant intervenir sur <i>{{ current_perimeters_pretty|join:", " }}</i>.
+                            </p>
+                            {% if results.count > 0 %}
+                                <p>
+                                    Ces <b>{{ results.count }}</b> prestataires inclusifs représentent plus de <b>{{ results_aggregated.ca_declared__sum|intcomma }}</b> € de chiffres d'affaires cumulé
+                                    et plus de <b>{{ results_aggregated.employees_insertion__sum|intcomma }}</b> salariés en insertion.
+                                </p>
+                                <p>
+                                    <a href="{% url 'siae:search_results' %}?{{ current_search_query }}#searchResults"
+                                       id="calibrate-calculator-siae-list-btn"
+                                       class="fr-btn fr-btn--secondary"
+                                       target="_blank">Découvrir ces prestataires</a>
+                                </p>
+                            {% endif %}
+                            <p class="fr-mb-0 fr-text--xs">Ces données sont issues de plusieurs sources :</p>
+                            <ul class="fr-text--xs">
+                                <li>les informations déclarées par les prestataires inclusifs eux-mêmes</li>
                                 <li>
-                                    <button type="submit" id="calibrate-calculator-submit-btn" class="fr-btn fr-icon-search-line">
-                                        <span>Lancer la recherche</span>
-                                    </button>
+                                    <a href="https://pilotage.inclusion.beta.gouv.fr/"
+                                       target="_blank"
+                                       rel="noopener noreferrer">la plateforme Le Pilotage de l'inclusion</a>
+                                </li>
+                                <li>
+                                    <a href="https://api.gouv.fr/" target="_blank" rel="noopener noreferrer">api.gouv.fr</a>
                                 </li>
                             </ul>
                         </div>
-                    </div>
-                </form>
-            </div>
-            {% if show_results %}
-                <div class="fr-col-12 fr-col-lg-5">
-                    <h3>Résultats</h3>
-                    <p>
-                        Il y a <b>{{ results.count }}</b> prestataires inclusifs positionnés sur les secteurs d'activités <i>{{ current_sectors_pretty|join:", " }}</i>
-                        pouvant intervenir sur <i>{{ current_perimeters_pretty|join:", " }}</i>.
-                    </p>
-                    {% if results.count > 0 %}
-                        <p>
-                            Ces <b>{{ results.count }}</b> prestataires inclusifs représentent plus de <b>{{ results_aggregated.ca_declared__sum|intcomma }}</b> € de chiffres d'affaires cumulé
-                            et plus de <b>{{ results_aggregated.employees_insertion__sum|intcomma }}</b> salariés en insertion.
-                        </p>
-                        <p>
-                            <a href="{% url 'siae:search_results' %}?{{ current_search_query }}#searchResults" id="calibrate-calculator-siae-list-btn" class="fr-btn fr-btn--secondary" target="_blank">
-                                Découvrir ces prestataires
-                            </a>
-                        </p>
                     {% endif %}
-                    <p class="fr-mb-0 fr-text--xs">
-                        Ces données sont issues de plusieurs sources :
-                    </p>
-                    <ul class="fr-text--xs">
-                        <li>les informations déclarées par les prestataires inclusifs eux-mêmes</li>
-                        <li><a href="https://pilotage.inclusion.beta.gouv.fr/" target="_blank" rel="noopener noreferrer">la plateforme Le Pilotage de l'inclusion</a></li>
-                        <li><a href="https://api.gouv.fr/" target="_blank" rel="noopener noreferrer">api.gouv.fr</a></li>
-                    </ul>
                 </div>
-            {% endif %}
+            {% endblock htmx %}
         </div>
-        {% endblock htmx %}
-    </div>
-</section>
-
-{% cms_advert %}
-
+    </section>
+    {% cms_advert %}
 {% endblock content %}
-
 {% block extra_js %}
-<script type="text/javascript" src="{% static 'vendor/alpinejs@3.11.1.min.js'%}" defer></script>
-<script type="text/javascript" src="{% static 'js/multiselect.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
-<script type="text/javascript">
+    <script type="text/javascript"
+            src="{% static 'vendor/alpinejs@3.11.1.min.js'%}"
+            defer></script>
+    <script type="text/javascript" src="{% static 'js/multiselect.js' %}"></script>
+    <script type="text/javascript"
+            src="{% static 'js/perimeter_autocomplete_field.js' %}"></script>
+    <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function() {
     const perimetersAutoComplete = new PerimetersMultiAutocomplete();
     perimetersAutoComplete.init();
@@ -136,5 +140,5 @@ document.addEventListener("htmx:afterSwap", function() {
     const perimetersAutoComplete = new PerimetersMultiAutocomplete();
     perimetersAutoComplete.init();
 });
-</script>
+    </script>
 {% endblock extra_js %}
