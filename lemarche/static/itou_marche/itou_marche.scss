@@ -18,12 +18,15 @@ $yellow-super-badge--borders-color: #fcc63a;
         position: relative;
         flex-direction: column;
     }
+
     .fr-input {
         width: 100%;
     }
+
     .fr-btn {
         margin-left: 8px;
     }
+
     .fr-checkbox-list {
         position: relative;
         top: 100%;
@@ -36,14 +39,17 @@ $yellow-super-badge--borders-color: #fcc63a;
         padding: 8px;
         display: none;
     }
+
     .fr-checkbox-list.show {
         display: block;
     }
+
     .fr-tags-group {
         display: flex;
         flex-wrap: wrap;
         margin-top: 8px;
     }
+
     .fr-tag {
         margin: 4px;
         background-color: #e5e5e5;
@@ -52,6 +58,7 @@ $yellow-super-badge--borders-color: #fcc63a;
         display: flex;
         align-items: center;
     }
+
     .fr-tag .fr-tag__close {
         margin-left: 8px;
         cursor: pointer;
@@ -144,7 +151,14 @@ ul.summary-grid-list {
 }
 
 .cmsfr-background-dark {
-    & h1, p {
+
+    & h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p {
         color: white;
     }
 }
@@ -166,5 +180,5 @@ ul.summary-grid-list {
 }
 
 .fr-content-media {
-    margin: 0;    
+    margin: 0;
 }
