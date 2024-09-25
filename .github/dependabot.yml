@@ -18,6 +18,7 @@ updates:
       # Prefix all commit messages with "npm"
       prefix: "poetry bot"
     reviewers:
+      - "chloend"
       - "madjid-asa"
       - "SebastienReuiller"
     # allow:
