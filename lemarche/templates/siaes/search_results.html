@@ -213,7 +213,7 @@
             </div>
         </div>
     </div>
-    <div class="fr-container">
+    <div class="fr-container fr-pb-6w">
         <div id="searchResults" class="fr-grid-row fr-grid-row--gutters">
             <div class="fr-col-12 fr-col-lg-8 fr-mt-6v">
                 <div class="fr-grid-row">
@@ -235,8 +235,12 @@
                 <div class="fr-grid-row fr-grid-row--gutters">
                     {% if siaes %}
                         <!-- buttons needed for modal to be triggered -->
-                        <button data-fr-opened="false" aria-controls="favorite_item_add_modal" class="fr-hidden"></button>
-                        <button data-fr-opened="false" aria-controls="favorite_item_remove_modal" class="fr-hidden"></button>
+                        <button data-fr-opened="false"
+                                aria-controls="favorite_item_add_modal"
+                                class="fr-hidden"></button>
+                        <button data-fr-opened="false"
+                                aria-controls="favorite_item_remove_modal"
+                                class="fr-hidden"></button>
                         {% for siae in siaes %}
                             <div class="fr-col-12">{% include "siaes/_card_search_result.html" with siae=siae %}</div>
                             <!-- insert to nudge tender creation -->
