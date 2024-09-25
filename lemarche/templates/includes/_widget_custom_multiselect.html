@@ -1,65 +1,71 @@
 {% load static %}
-<div x-data="multiselect('{{ widget.attrs.id }}')" x-init="initOptions('{{ widget.groups_json|escapejs }}', '{{ widget.options_json|escapejs }}'{% if widget.value != None %}, '{{ widget.value_json|escapejs }}'{% endif %})" class="multiselect fr-checkbox-group" {{ widget.attrs }}  @reset-all-filter.document="reset()">
-    <template x-for="value in selectedValues" :key="value">
-        <input type="hidden" :name="name" :value="value">
-    </template>
-    <div class="fr-input-group"
-         style="display: flex;
-                align-items: center;
-                margin-bottom: 0">
-        <input type="text"
-               id="{{ widget.attrs.id }}"
-               class="fr-input fr-mt-1w"
-               x-model="searchQuery"
-               placeholder="Sélectionner des options"
-               @click="openDropdown()"
-               @input="filterOptions()"
-               style="flex-grow: 1">
-    </div>
-    <div class="fr-tags-group">
-        <template x-for="(label, index) in selected" :key="index">
-            <div class="fr-tag">
-                <span x-text="label"></span>
-                <button type="button" class="fr-tag__close" @click="removeSelection(index)">&times;</button>
-            </div>
+{% if widget.attrs.disabled %}
+    <select class="fr-select" id="{{ self.id }}" name="{{ self.id }}" disabled="">
+        <option value=""></option>
+    </select>
+{% else %}
+    <div x-data="multiselect('{{ widget.attrs.id }}')" x-init="initOptions('{{ widget.groups_json|escapejs }}', '{{ widget.options_json|escapejs }}'{% if widget.value != None %}, '{{ widget.value_json|escapejs }}'{% endif %})" class="multiselect fr-checkbox-group" {{ widget.attrs }}  @reset-all-filter.document="reset()">
+        <template x-for="value in selectedValues" :key="value">
+            <input type="hidden" :name="name" :value="value">
         </template>
-    </div>
-    <div x-show="open"
-         class="fr-checkbox-list"
-         @click.outside="Alpine.store('dropdown').close()"
-         :class="{ show: open }">
-        <template x-if="groups.length > 0">
-            <template x-for="group in filteredGroups" :key="group.name">
-                <div>
-                    <template x-if="group.name">
-                        <div class="fr-checkbox-group-title">
-                            <b x-text="group.name"></b>
-                        </div>
-                    </template>
-                    <template x-for="option in group.options" :key="option.value">
-                        <div class="fr-checkbox fr-py-1w">
-                            <input type="checkbox"
-                                   :id="option.id"
-                                   :value="option.value"
-                                   :checked="selectedValues.includes(option.value)"
-                                   @change="updateSelection(option.label, option.value)">
-                            <label :for="option.id" x-text="option.label"></label>
-                        </div>
-                    </template>
+        <div class="fr-input-group"
+             style="display: flex;
+                    align-items: center;
+                    margin-bottom: 0">
+            <input type="text"
+                   id="{{ widget.attrs.id }}"
+                   class="fr-input fr-mt-1w"
+                   x-model="searchQuery"
+                   placeholder="Sélectionner des options"
+                   @click="openDropdown()"
+                   @input="filterOptions()"
+                   style="flex-grow: 1">
+        </div>
+        <div class="fr-tags-group">
+            <template x-for="(label, index) in selected" :key="index">
+                <div class="fr-tag">
+                    <span x-text="label"></span>
+                    <button type="button" class="fr-tag__close" @click="removeSelection(index)">&times;</button>
                 </div>
             </template>
-        </template>
-        <template x-if="groups.length === 0">
-            <template x-for="option in filteredOptions" :key="option.value">
-                <div class="fr-checkbox fr-py-1w">
-                    <input type="checkbox"
-                           :id="option.id"
-                           :value="option.value"
-                           :checked="selectedValues.includes(option.value)"
-                           @change="updateSelection(option.label, option.value)">
-                    <label :for="option.id" x-text="option.label"></label>
-                </div>
+        </div>
+        <div x-show="open"
+             class="fr-checkbox-list"
+             @click.outside="Alpine.store('dropdown').close()"
+             :class="{ show: open }">
+            <template x-if="groups.length > 0">
+                <template x-for="group in filteredGroups" :key="group.name">
+                    <div>
+                        <template x-if="group.name">
+                            <div class="fr-checkbox-group-title">
+                                <b x-text="group.name"></b>
+                            </div>
+                        </template>
+                        <template x-for="option in group.options" :key="option.value">
+                            <div class="fr-checkbox fr-py-1w">
+                                <input type="checkbox"
+                                       :id="option.id"
+                                       :value="option.value"
+                                       :checked="selectedValues.includes(option.value)"
+                                       @change="updateSelection(option.label, option.value)">
+                                <label :for="option.id" x-text="option.label"></label>
+                            </div>
+                        </template>
+                    </div>
+                </template>
             </template>
-        </template>
+            <template x-if="groups.length === 0">
+                <template x-for="option in filteredOptions" :key="option.value">
+                    <div class="fr-checkbox fr-py-1w">
+                        <input type="checkbox"
+                               :id="option.id"
+                               :value="option.value"
+                               :checked="selectedValues.includes(option.value)"
+                               @change="updateSelection(option.label, option.value)">
+                        <label :for="option.id" x-text="option.label"></label>
+                    </div>
+                </template>
+            </template>
+        </div>
     </div>
-</div>
+{% endif %}
