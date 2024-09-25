@@ -14,10 +14,6 @@ shell_on_django_container:
 shell_on_postgres_container:
 	docker compose exec -ti db /bin/bash
 
-# Itou theme
-update_itou_theme: scripts/upload_itou_theme.sh
-	docker compose exec app /bin/sh -c "./scripts/upload_itou_theme.sh"
-
 # After migrate
 populate_db:
 	pg_restore -d marche --if-exists --clean --no-owner --no-privileges lemarche/perimeters/management/commands/data/perimeters_20220104.sql
