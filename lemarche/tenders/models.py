@@ -632,6 +632,9 @@ class Tender(models.Model):
     )  # could become foreign key
     # Admin specific for tenders
     is_reserved_tender = models.BooleanField("Appel d'offre reservé", null=True)
+    send_to_commercial_partners_only = models.BooleanField(
+        "Envoyer uniquement aux partenaires externes", default=False
+    )
 
     # partner data
     partner_approch_id = models.IntegerField("Partenaire APProch : ID", blank=True, null=True)
