@@ -1097,6 +1097,24 @@ class TenderAdminTest(TestCase):
         self.assertEqual(tender_response.siae_count_annotated, 1)
         self.assertEqual(tender_response.siae_count_annotated, self.tender.tendersiae_set.count())
 
+    def test_edit_form_validate_submission_to_commercial_partners(self):
+        self.client.force_login(self.user)
+        tender_update_post_url = get_admin_change_view_url(self.tender)
+
+        response = self.client.post(
+            tender_update_post_url,
+            self.form_data
+            | {
+                "title": "New title",
+                "_validate_send_to_commercial_partners": "Valider (sauvegarder) et envoyer aux partenaires.",
+            },
+            follow=True,
+        )
+        tender_response = response.context_data["adminform"].form.instance
+        self.assertEqual(tender_response.id, self.tender.id)
+        self.assertContains(response, "Validé le ")
+        self.assertTrue(tender_response.send_to_commercial_partners_only)
+
 
 class TenderUtilsTest(TestCase):
     @classmethod
