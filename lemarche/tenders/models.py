@@ -87,6 +87,7 @@ class TenderQuerySet(models.QuerySet):
                 & Q(siae_detail_contact_click_count_annotated__lte=F("limit_nb_siae_interested"))
                 & ~Q(siae_count_annotated=F("siae_email_send_count_annotated"))
                 & Q(last_sent_at__lt=yesterday)
+                & Q(send_to_commercial_partners_only=False)
             )
         )
 
