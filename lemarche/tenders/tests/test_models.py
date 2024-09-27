@@ -1092,6 +1092,7 @@ class TenderAdminTest(TestCase):
         tender_response = response.context_data["adminform"].form.instance
         self.assertEqual(tender_response.id, self.tender.id)
         self.assertContains(response, "Validé le ")
+        self.assertFalse(tender_response.send_to_commercial_partners_only)
         self.assertTrue(hasattr(tender_response, "siae_count_annotated"))
         self.assertEqual(tender_response.siae_count_annotated, 1)
         self.assertEqual(tender_response.siae_count_annotated, self.tender.tendersiae_set.count())
