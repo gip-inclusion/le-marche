@@ -341,6 +341,7 @@ class TenderModelQuerysetTest(TestCase):
             validated_at=None,
             first_sent_at=None,
             last_sent_at=None,
+            send_to_commercial_partners_only=False,
         )
         TenderFactory(
             siaes=[siae],
@@ -349,6 +350,7 @@ class TenderModelQuerysetTest(TestCase):
             validated_at=timezone.now(),
             first_sent_at=None,
             last_sent_at=None,
+            send_to_commercial_partners_only=False,
         )
         TenderFactory(
             siaes=[siae],
@@ -357,6 +359,7 @@ class TenderModelQuerysetTest(TestCase):
             validated_at=timezone.now(),
             first_sent_at=timezone.now(),
             last_sent_at=timezone.now(),
+            send_to_commercial_partners_only=False,
         )
         TenderFactory(
             siaes=[siae],
@@ -365,7 +368,9 @@ class TenderModelQuerysetTest(TestCase):
             validated_at=one_hour_ago,
             first_sent_at=one_hour_ago,
             last_sent_at=one_hour_ago,
+            send_to_commercial_partners_only=False,
         )
+        # This tender would be sent if send_to_commercial_partners_only was False
         TenderFactory(
             siaes=[siae],
             version=1,
@@ -373,8 +378,9 @@ class TenderModelQuerysetTest(TestCase):
             validated_at=two_days_ago,
             first_sent_at=two_days_ago,
             last_sent_at=two_days_ago,
+            send_to_commercial_partners_only=True,
         )
-        self.assertEqual(Tender.objects.validated_sent_batch().count(), 1)
+        self.assertEqual(Tender.objects.validated_sent_batch().count(), 0)
 
     def test_is_not_outdated(self):
         TenderFactory(deadline_date=None)
