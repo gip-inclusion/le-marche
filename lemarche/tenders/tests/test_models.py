@@ -1091,7 +1091,7 @@ class TenderAdminTest(TestCase):
             self.form_data
             | {
                 "title": "New title",
-                "_validate_tender": "Valider (sauvegarder) et envoyer aux structures",
+                "_validate_send_to_siaes": "Valider (sauvegarder) et envoyer aux structures",
             },
             follow=True,
         )
