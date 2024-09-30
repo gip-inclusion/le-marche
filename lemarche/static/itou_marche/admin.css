@@ -23,3 +23,48 @@
 div.custom-checkbox-select-multiple > div > label {
     width: 100%;  /* 160px default ; to avoid line breaks */
 }
+
+/* Modal style for tender change admin */
+.tender-send-modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.tender-send-modal-content {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #212121;
+    margin: auto;
+    max-width: 500px;
+    width: 90%;
+    padding: 20px;
+    border-radius: 4px;
+}
+
+#submit-tender {
+    margin-bottom: 0;
+}
+
+#submit-button.submit-button {
+    background-color: #ba2121;
+}
+
+#submit-button.submit-button:hover {
+    background-color: #a41515;
+}
+
+#cancel-button {
+    margin-left: auto;
+    padding: 10px 15px;
+}
+
+#cancel-button:hover {
+    padding: 10px 15px;
+}
