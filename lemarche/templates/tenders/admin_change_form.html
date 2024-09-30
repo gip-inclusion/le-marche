@@ -56,10 +56,21 @@ No need to repeat them under fieldsets!
                 {% endif %}
             {% else %}
                 <p><i>L'envoi des besoins 'validés' se fait toutes les 5 minutes, du Lundi au Vendredi, entre 9h et 17h</i></p>
-                <input type="submit" name="_validate_tender" value="Valider (sauvegarder) et envoyer aux structures 🚀" />
-
-                <input type="submit" name="_validate_send_to_commercial_partners" value="Valider (sauvegarder) et envoyer aux partenaires 🚀" />
+                <input type="submit" value="Valider (sauvegarder) et envoyer aux structures 🚀" data-recipient="siaes" data-title="{{ original.title }}" style="margin-right: 5px"/>
+                <input type="submit" value="Valider (sauvegarder) et envoyer aux partenaires 🚀" data-recipient="partners" data-title="{{ original.title }}"/>
             {% endif %}
         </div>
     {% endif %}
+
+    <!-- Modale de confirmation pour l'envoi d'un besoin d'achat -->
+    <div id="tender-send-confirmation-modal" class="tender-send-modal-container" style="display:none">
+        <div id="tender-send-modal-content" class="tender-send-modal-content">
+            <h1>Êtes-vous sûr ?</h1>
+            <p id="tender-send-message"></p>
+            <div id="submit-tender" class="submit-row">
+                <input type="submit" id="submit-button" class="submit-button" value="Confirmer"/>
+                <a id="cancel-button" class="button" href="#">Annuler</a>
+            </div>
+        </div>
+    </div>
 {% endblock %}
