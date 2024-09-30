@@ -526,6 +526,9 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
 
     change_form_template = "tenders/admin_change_form.html"
 
+    class Media:
+        js = ["/static/js/admin_tender_confirmation.js"]
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.select_related("author")
@@ -783,7 +786,7 @@ class TenderAdmin(FieldsetsInlineMixin, admin.ModelAdmin):
             obj.set_siae_found_list()
             self.message_user(request, "Les structures concernées ont été mises à jour.")
             return HttpResponseRedirect("./#structures")  # redirect to structures sections
-        if request.POST.get("_validate_tender"):
+        if request.POST.get("_validate_send_to_siaes"):
             obj.set_validated()
             if obj.amount_int > settings.BREVO_TENDERS_MIN_AMOUNT_TO_SEND:
                 api_brevo.create_deal(tender=obj, owner_email=request.user.email)
