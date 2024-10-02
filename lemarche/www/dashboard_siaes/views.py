@@ -189,7 +189,7 @@ class SiaeEditActivitiesCreateView(SiaeMemberRequiredMixin, CreateView):
 
     def post(self, request, *args, **kwargs):
         self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
-        return super().get(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
         siae_activity = form.save(commit=False)
@@ -240,7 +240,7 @@ class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, SuccessMessageMixin, U
 
     def post(self, request, *args, **kwargs):
         self.siae = Siae.objects.get(slug=self.kwargs.get("slug"))
-        return super().get(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
     def get_object(self):
         return get_object_or_404(SiaeActivity, siae__slug=self.kwargs.get("slug"), id=self.kwargs.get("activity_id"))
