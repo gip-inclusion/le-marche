@@ -20,13 +20,8 @@ document.addEventListener('alpine:init', function () {
             if (modal.querySelector('#siae-activity-name-display')) {
                 modal.querySelector('#siae-activity-name-display').textContent = this.siaeActivityNameDisplay;
             }
-
-            let formActionUrl = new URL(modalForm.getAttribute('data-action'));
-            formActionUrl.pathname = formActionUrl.pathname
-                .replace('siae-slug-to-replace', encodeURIComponent(this.siaeSlug))
-                .replace('siae-activity-id-to-replace', encodeURIComponent(this.siaeActivityId));
-
-            modalForm.setAttribute('action', formActionUrl.toString());
+            let formActionUrl = modalForm.getAttribute('data-action');
+            modalForm.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', this.siaeSlug).replace('siae-activity-id-to-replace', this.siaeActivityId));
 
             const modalDialog = document.getElementById(modalID);
             dsfr(modalDialog).modal.disclose();
