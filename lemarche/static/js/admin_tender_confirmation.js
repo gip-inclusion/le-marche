@@ -8,22 +8,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Set an attribute 'name' depending on the recipient
         if (recipient === 'siaes') {
-            messageElement.textContent = "Le besoin « " + title + " » sera envoyé aux structures.";
+            messageElement.textContent = `Le besoin « ${title} » sera envoyé aux structures.`;
             confirmBtn.setAttribute('name', '_validate_send_to_siaes');
         } else if (recipient === 'partners') {
-            messageElement.textContent = "Le besoin « " + title + " » sera envoyé aux partenaires.";
+            const message = `Le besoin « ${title} » sera envoyé uniquement aux partenaires commerciaux.`;
+            messageElement.textContent = message;
             confirmBtn.setAttribute('name', '_validate_send_to_commercial_partners');
         }
         modal.style.display = 'block';
     }
-
     // data-recipent attribute determines the recipient of the tender
     const buttons = document.querySelectorAll('input[data-recipient]');
     buttons.forEach(function(button) {
         button.addEventListener('click', function(e) {
             e.preventDefault(); // Prevent instant form submission
-            const recipient = button.getAttribute('data-recipient');
-            const title = button.getAttribute('data-title');
+            const recipient = button.dataset.recipient;
+            const title = button.dataset.title;
             openModal(recipient, title);
         });
     });
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
     cancelBtn.addEventListener('click', function(e) {
         e.preventDefault(); // Prevent page from scrolling up
         closeModal();
-    });    
+    });
 
     // click outside the modal
     window.addEventListener('click', function (e) {
