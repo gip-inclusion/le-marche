@@ -634,7 +634,7 @@ class Tender(models.Model):
     # Admin specific for tenders
     is_reserved_tender = models.BooleanField("Appel d'offre reservé", null=True)
     send_to_commercial_partners_only = models.BooleanField(
-        "Envoyer uniquement aux partenaires externes", default=False
+        "Envoyer uniquement aux partenaires commerciaux", default=False
     )
 
     # partner data
