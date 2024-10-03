@@ -203,7 +203,7 @@ class SitemapTest(TestCase):
     def test_wagtail_page_contains_lastmod_tag(self):
         """Test the sitemap contains the lastmod tag for the wagtail page."""
         response = self.client.get(reverse("sitemap"))
-        lastmod = self.wagtail_page.last_published_at.strftime('%Y-%m-%d')
+        lastmod = self.wagtail_page.last_published_at.strftime("%Y-%m-%d")
 
         self.assertContains(response, f"<lastmod>{lastmod}</lastmod>")
 
@@ -218,6 +218,6 @@ class SitemapTest(TestCase):
     def test_flatpage_contains_lastmod_tag(self):
         """Test the sitemap contains the lastmod tag for the flatpage."""
         response = self.client.get(reverse("sitemap"))
-        lastmod = self.flat_page.updated_at.strftime('%Y-%m-%d')
+        lastmod = self.flat_page.updated_at.strftime("%Y-%m-%d")
 
         self.assertContains(response, f"<lastmod>{lastmod}</lastmod>")

@@ -14,9 +14,9 @@ from lemarche.www.pages.sitemaps import FlatPageSitemap, StaticPageSitemap
 
 
 sitemaps = {
-    'flatpages': FlatPageSitemap,
-    'staticpages': StaticPageSitemap,
-    'wagtail': WagtailSitemap,
+    "flatpages": FlatPageSitemap,
+    "staticpages": StaticPageSitemap,
+    "wagtail": WagtailSitemap,
 }
 
 
@@ -41,7 +41,7 @@ urlpatterns = [
     path("", include("lemarche.www.pages.urls")),
     path("", include(wagtail_urls)),
     # sitemap
-    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
+    path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
 ]
 
 if settings.DEBUG and "debug_toolbar" in settings.INSTALLED_APPS:

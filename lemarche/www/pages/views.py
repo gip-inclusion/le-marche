@@ -402,24 +402,24 @@ def trigger_error(request):
 class SitemapView(View):
     def get(self, request):
         # Get sitemap.xml content
-        sitemap_url = request.build_absolute_uri('/sitemap.xml')
+        sitemap_url = request.build_absolute_uri("/sitemap.xml")
         response = requests.get(sitemap_url)
-        
+
         urls = []
 
         if response.status_code == 200:
             try:
                 # Read XML and extract URLs
                 root = ElementTree.fromstring(response.content)
-                
-                # Define namespace to find URLs
-                namespace = {'ns': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
 
-                for url in root.findall('ns:url', namespaces=namespace):
-                    loc = url.find('ns:loc', namespaces=namespace)
+                # Define namespace to find URLs
+                namespace = {"ns": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+
+                for url in root.findall("ns:url", namespaces=namespace):
+                    loc = url.find("ns:loc", namespaces=namespace)
                     if loc is not None:
                         urls.append(loc.text.strip())
             except ElementTree.ParseError as e:
                 print("Erreur d'analyse XML:", e)
 
-        return render(request, 'pages/plan_du_site.html', {'sitemap_urls': urls})
+        return render(request, "pages/plan_du_site.html", {"sitemap_urls": urls})
