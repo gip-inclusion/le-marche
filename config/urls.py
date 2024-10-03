@@ -1,12 +1,23 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
+
 from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
+from wagtail.contrib.sitemaps.sitemap_generator import Sitemap as WagtailSitemap
+from wagtail.contrib.sitemaps.views import sitemap
 from wagtail.documents import urls as wagtaildocs_urls
 from wagtail_transfer import urls as wagtailtransfer_urls
 
 from lemarche.utils.admin.admin_site import admin_site
+from lemarche.www.pages.sitemaps import FlatPageSitemap, StaticPageSitemap
+
+
+sitemaps = {
+    "flatpages": FlatPageSitemap,
+    "staticpages": StaticPageSitemap,
+    "wagtail": WagtailSitemap,
+}
 
 
 urlpatterns = [
@@ -29,6 +40,8 @@ urlpatterns = [
     # urls pages blog
     path("", include("lemarche.www.pages.urls")),
     path("", include(wagtail_urls)),
+    # sitemap
+    path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
 ]
 
 if settings.DEBUG and "debug_toolbar" in settings.INSTALLED_APPS:
