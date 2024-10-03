@@ -29,6 +29,8 @@ services:
       - env.docker.local
     ports:
       - "8880:8880"
+    stdin_open: true
+    tty: true
     depends_on:
       - db
 
