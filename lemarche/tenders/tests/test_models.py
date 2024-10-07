@@ -341,6 +341,7 @@ class TenderModelQuerysetTest(TestCase):
             validated_at=None,
             first_sent_at=None,
             last_sent_at=None,
+            send_to_commercial_partners_only=False,
         )
         TenderFactory(
             siaes=[siae],
@@ -349,6 +350,7 @@ class TenderModelQuerysetTest(TestCase):
             validated_at=timezone.now(),
             first_sent_at=None,
             last_sent_at=None,
+            send_to_commercial_partners_only=False,
         )
         TenderFactory(
             siaes=[siae],
@@ -357,6 +359,7 @@ class TenderModelQuerysetTest(TestCase):
             validated_at=timezone.now(),
             first_sent_at=timezone.now(),
             last_sent_at=timezone.now(),
+            send_to_commercial_partners_only=False,
         )
         TenderFactory(
             siaes=[siae],
@@ -365,7 +368,9 @@ class TenderModelQuerysetTest(TestCase):
             validated_at=one_hour_ago,
             first_sent_at=one_hour_ago,
             last_sent_at=one_hour_ago,
+            send_to_commercial_partners_only=False,
         )
+        # This tender would be sent if send_to_commercial_partners_only was False
         TenderFactory(
             siaes=[siae],
             version=1,
@@ -373,8 +378,9 @@ class TenderModelQuerysetTest(TestCase):
             validated_at=two_days_ago,
             first_sent_at=two_days_ago,
             last_sent_at=two_days_ago,
+            send_to_commercial_partners_only=True,
         )
-        self.assertEqual(Tender.objects.validated_sent_batch().count(), 1)
+        self.assertEqual(Tender.objects.validated_sent_batch().count(), 0)
 
     def test_is_not_outdated(self):
         TenderFactory(deadline_date=None)
@@ -1085,16 +1091,35 @@ class TenderAdminTest(TestCase):
             self.form_data
             | {
                 "title": "New title",
-                "_validate_tender": "Valider (sauvegarder) et envoyer aux structures",
+                "_validate_send_to_siaes": "Valider (sauvegarder) et envoyer aux structures",
             },
             follow=True,
         )
         tender_response = response.context_data["adminform"].form.instance
         self.assertEqual(tender_response.id, self.tender.id)
         self.assertContains(response, "Validé le ")
+        self.assertFalse(tender_response.send_to_commercial_partners_only)
         self.assertTrue(hasattr(tender_response, "siae_count_annotated"))
         self.assertEqual(tender_response.siae_count_annotated, 1)
         self.assertEqual(tender_response.siae_count_annotated, self.tender.tendersiae_set.count())
+
+    def test_edit_form_validate_submission_to_commercial_partners(self):
+        self.client.force_login(self.user)
+        tender_update_post_url = get_admin_change_view_url(self.tender)
+
+        response = self.client.post(
+            tender_update_post_url,
+            self.form_data
+            | {
+                "title": "New title",
+                "_validate_send_to_commercial_partners": "Valider (sauvegarder) et envoyer aux partenaires.",
+            },
+            follow=True,
+        )
+        tender_response = response.context_data["adminform"].form.instance
+        self.assertEqual(tender_response.id, self.tender.id)
+        self.assertContains(response, "Validé le ")
+        self.assertTrue(tender_response.send_to_commercial_partners_only)
 
 
 class TenderUtilsTest(TestCase):
