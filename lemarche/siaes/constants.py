@@ -80,12 +80,19 @@ GEO_RANGE_DEPARTMENT = "DEPARTMENT"
 GEO_RANGE_REGION = "REGION"
 GEO_RANGE_CUSTOM = "CUSTOM"
 GEO_RANGE_COUNTRY = "COUNTRY"
+GEO_RANGE_ZONES = "ZONES"
 
 GEO_RANGE_CHOICES = (
     (GEO_RANGE_COUNTRY, "France entière"),
     (GEO_RANGE_REGION, "Région"),
     (GEO_RANGE_DEPARTMENT, "Département"),
     (GEO_RANGE_CUSTOM, "Distance en kilomètres"),
+)
+
+ACTIVITIES_GEO_RANGE_CHOICES = (
+    (GEO_RANGE_COUNTRY, "France entière"),
+    (GEO_RANGE_CUSTOM, "Distance en kilomètres"),
+    (GEO_RANGE_ZONES, "Zone(s) d'intervention personnalisée(s)"),
 )
 
 SOURCE_ASP = "ASP"
