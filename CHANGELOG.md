@@ -6,6 +6,24 @@ Ressources :
 - [release-please](https://github.com/google-github-actions/release-please-action) (automated releases)
 - [Semantic Versioning](https://semver.org/) & [Calendar Versioning](https://calver.org/)
 
+## [2024.6.0](https://github.com/gip-inclusion/le-marche/compare/v2024.5.0...v2024.6.0) (2024-10-07)
+
+
+### Features
+
+* Ajout d'un attribut pour filtrer l'envoi des besoins d'achat ([#1446](https://github.com/gip-inclusion/le-marche/issues/1446)) ([d074709](https://github.com/gip-inclusion/le-marche/commit/d07470904981fc4fdfaddcd811130a9faf1ece94))
+
+
+### Bug Fixes
+
+* **Admin:** autoriser la suppression des SiaeUserRequest & TemplateTransactionalSendLog ([#1424](https://github.com/gip-inclusion/le-marche/issues/1424)) ([c64e984](https://github.com/gip-inclusion/le-marche/commit/c64e9848f2f4b47199178589dfc6b5ef181345bb))
+* ajout des marges manquante en bas de page ([#1439](https://github.com/gip-inclusion/le-marche/issues/1439)) ([e2c4783](https://github.com/gip-inclusion/le-marche/commit/e2c478377315001d70a1f124023cc9a57780228f))
+* **Emails:** Template Transactional: remove result() call ([#1379](https://github.com/gip-inclusion/le-marche/issues/1379)) ([1809f5c](https://github.com/gip-inclusion/le-marche/commit/1809f5cb102042d13eb8284aa0493f6e3a29b6ee))
+* **Entreprises:** ajuste le script de rattachement des utilisateurs en fonction de leur email (ajoute un @) ([#1406](https://github.com/gip-inclusion/le-marche/issues/1406)) ([daebacf](https://github.com/gip-inclusion/le-marche/commit/daebacf126a644b99cd2247677002f388fc78a17))
+* mini fixs SEO de la page faq  ([#1351](https://github.com/gip-inclusion/le-marche/issues/1351)) ([f527985](https://github.com/gip-inclusion/le-marche/commit/f52798508fa2a15c1eddedc09afc0374090b9c3c))
+* **Recherche:** Les champs multiselect ne doivent pas s'activer lorsqu'ils sont désactivés ([#1440](https://github.com/gip-inclusion/le-marche/issues/1440)) ([ba0b379](https://github.com/gip-inclusion/le-marche/commit/ba0b379dcdf87a981db9dc7ef466bdfa5c656538))
+* s3 storage fix in prod ([5a258a3](https://github.com/gip-inclusion/le-marche/commit/5a258a30f013fd1ebd96799a57525139558661fe))
+
 ## [2024.5.0](https://github.com/gip-inclusion/le-marche/compare/v2024.4.0...v2024.5.0) (2024-07-18)
 
 
