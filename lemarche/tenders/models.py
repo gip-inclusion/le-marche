@@ -87,6 +87,7 @@ class TenderQuerySet(models.QuerySet):
                 & Q(siae_detail_contact_click_count_annotated__lte=F("limit_nb_siae_interested"))
                 & ~Q(siae_count_annotated=F("siae_email_send_count_annotated"))
                 & Q(last_sent_at__lt=yesterday)
+                & Q(send_to_commercial_partners_only=False)
             )
         )
 
@@ -632,6 +633,9 @@ class Tender(models.Model):
     )  # could become foreign key
     # Admin specific for tenders
     is_reserved_tender = models.BooleanField("Appel d'offre reservé", null=True)
+    send_to_commercial_partners_only = models.BooleanField(
+        "Envoyer uniquement aux partenaires commerciaux", default=False
+    )
 
     # partner data
     partner_approch_id = models.IntegerField("Partenaire APProch : ID", blank=True, null=True)
