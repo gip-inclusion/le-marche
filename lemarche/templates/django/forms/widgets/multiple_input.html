@@ -1,0 +1,12 @@
+{% with id=widget.attrs.id %}
+    {% for group, options, index in widget.optgroups %}
+        {% if group %}
+            <div>
+                <label class="form-check-label">{{ group }}</label>
+            {% endif %}
+            {% for option in options %}
+                {% include option.template_name with widget=option %}
+            {% endfor %}
+            {% if group %}</div>{% endif %}
+    {% endfor %}
+{% endwith %}

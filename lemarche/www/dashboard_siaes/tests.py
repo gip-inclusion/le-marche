@@ -2,7 +2,11 @@ from django.test import TestCase
 from django.urls import reverse
 
 from lemarche.conversations.factories import TemplateTransactionalFactory
-from lemarche.siaes.factories import SiaeFactory
+from lemarche.perimeters.factories import PerimeterFactory
+from lemarche.perimeters.models import Perimeter
+from lemarche.sectors.factories import SectorFactory, SectorGroupFactory
+from lemarche.siaes import constants as siae_constants
+from lemarche.siaes.factories import SiaeActivityFactory, SiaeFactory
 from lemarche.siaes.models import SiaeUser
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
@@ -198,3 +202,358 @@ class DashboardSiaeUserViewTest(TestCase):
         self.assertEqual(response.url, reverse("dashboard_siaes:siae_users", args=[self.siae_with_users.slug]))
         self.assertEqual(self.siae_with_users.users.count(), 1)
         # TODO: user should not be able to delete itself
+
+
+class DashboardSiaeEditActivitiesViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_siae = UserFactory(kind=User.KIND_SIAE)
+        cls.siae_with_user = SiaeFactory()
+        cls.siae_with_user.users.add(cls.user_siae)
+
+    def test_only_siae_user_can_access_siae_activities(self):
+        self.client.force_login(self.user_siae)
+        url = reverse("dashboard_siaes:siae_edit_activities", args=[self.siae_with_user.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ajouter un secteur d'activité")
+
+        self.client.force_login(UserFactory(kind=User.KIND_SIAE))
+        url = reverse("dashboard_siaes:siae_edit_activities", args=[self.siae_with_user.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/profil/")
+
+    def test_siae_user_can_see_siae_activity_in_list(self):
+        siae_activity = SiaeActivityFactory(siae=self.siae_with_user)
+        sector = SectorFactory(group=siae_activity.sector_group)
+        siae_activity.sectors.add(sector)
+
+        self.client.force_login(self.user_siae)
+        url = reverse("dashboard_siaes:siae_edit_activities", args=[self.siae_with_user.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ajouter un secteur d'activité")
+        self.assertContains(
+            response, reverse("dashboard_siaes:siae_edit_activities_create", args=[self.siae_with_user.slug])
+        )
+
+        self.assertContains(response, sector.name)
+        self.assertContains(response, siae_activity.presta_type_display)
+        self.assertContains(response, siae_activity.geo_range_pretty_display)
+
+        self.assertContains(
+            response,
+            reverse("dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.id]),
+        )
+
+
+class DashboardSiaeEditActivitiesCreateViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_siae = UserFactory(kind=User.KIND_SIAE)
+        cls.siae_with_user = SiaeFactory()
+        cls.siae_with_user.users.add(cls.user_siae)
+
+        cls.sector_group = SectorGroupFactory()
+        cls.sector1 = SectorFactory(group=cls.sector_group)
+        cls.sector2 = SectorFactory(group=cls.sector_group)
+
+    def test_only_siae_user_can_create_siae_activity(self):
+        self.client.force_login(self.user_siae)
+        url = reverse("dashboard_siaes:siae_edit_activities_create", args=[self.siae_with_user.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        self.client.force_login(UserFactory(kind=User.KIND_SIAE))
+        url = reverse("dashboard_siaes:siae_edit_activities_create", args=[self.siae_with_user.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("dashboard:home"))
+
+    def test_siae_user_can_create_siae_activity_with_country_range(self):
+        self.assertEqual(self.siae_with_user.activities.count(), 0)
+        self.client.force_login(self.user_siae)
+        url = reverse("dashboard_siaes:siae_edit_activities_create", args=[self.siae_with_user.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        data = {
+            "sector_group": self.sector_group.id,
+            "sectors": [self.sector1.id, self.sector2.id],
+            "presta_type": [siae_constants.PRESTA_PREST],
+            "geo_range": siae_constants.GEO_RANGE_COUNTRY,
+        }
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url, reverse("dashboard_siaes:siae_edit_activities", args=[self.siae_with_user.slug])
+        )
+        self.assertEqual(self.siae_with_user.activities.count(), 1)
+        created_activity = self.siae_with_user.activities.first()
+        self.assertEqual(created_activity.sector_group, self.sector_group)
+        self.assertEqual(created_activity.sectors.count(), 2)
+        self.assertIn(self.sector1, created_activity.sectors.all())
+        self.assertIn(self.sector2, created_activity.sectors.all())
+        self.assertEqual(created_activity.presta_type, [siae_constants.PRESTA_PREST])
+        self.assertEqual(created_activity.geo_range, siae_constants.GEO_RANGE_COUNTRY)
+
+    def test_siae_user_can_create_siae_activity_with_custom_range(self):
+        self.assertEqual(self.siae_with_user.activities.count(), 0)
+        self.client.force_login(self.user_siae)
+        url = reverse("dashboard_siaes:siae_edit_activities_create", args=[self.siae_with_user.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        data = {
+            "sector_group": self.sector_group.id,
+            "sectors": [self.sector1.id],
+            "presta_type": [siae_constants.PRESTA_DISP],
+            "geo_range": siae_constants.GEO_RANGE_CUSTOM,
+        }
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Une distance en kilomètres est requise pour cette option.")
+
+        self.assertEqual(self.siae_with_user.activities.count(), 0)
+
+        data["geo_range_custom_distance"] = 10
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url, reverse("dashboard_siaes:siae_edit_activities", args=[self.siae_with_user.slug])
+        )
+
+        self.assertEqual(self.siae_with_user.activities.count(), 1)
+        created_activity = self.siae_with_user.activities.first()
+        self.assertEqual(created_activity.sector_group, self.sector_group)
+        self.assertEqual(created_activity.sectors.count(), 1)
+        self.assertEqual(created_activity.sectors.first(), self.sector1)
+        self.assertEqual(created_activity.presta_type, [siae_constants.PRESTA_DISP])
+        self.assertEqual(created_activity.geo_range, siae_constants.GEO_RANGE_CUSTOM)
+        self.assertEqual(created_activity.geo_range_custom_distance, 10)
+
+    def test_siae_user_can_create_siae_activity_with_zones_range(self):
+        self.assertEqual(self.siae_with_user.activities.count(), 0)
+        self.client.force_login(self.user_siae)
+        url = reverse("dashboard_siaes:siae_edit_activities_create", args=[self.siae_with_user.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        data = {
+            "sector_group": self.sector_group.id,
+            "sectors": [self.sector2.id],
+            "presta_type": [siae_constants.PRESTA_BUILD],
+            "geo_range": siae_constants.GEO_RANGE_ZONES,
+        }
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Vous devez choisir au moins une zone")
+        self.assertEqual(self.siae_with_user.activities.count(), 0)
+
+        perimeter_city = PerimeterFactory(name="Azay-le-rideau", kind=Perimeter.KIND_CITY, insee_code="37190")
+        perimeter_department = PerimeterFactory(
+            name="Vienne", kind=Perimeter.KIND_DEPARTMENT, insee_code="86", region_code="75"
+        )
+        perimeter_region = PerimeterFactory(name="Nouvelle-Aquitaine", kind=Perimeter.KIND_REGION, insee_code="R75")
+
+        data["locations"] = [perimeter_city.slug, perimeter_department.slug, perimeter_region.slug]
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url, reverse("dashboard_siaes:siae_edit_activities", args=[self.siae_with_user.slug])
+        )
+
+        self.assertEqual(self.siae_with_user.activities.count(), 1)
+        created_activity = self.siae_with_user.activities.first()
+        self.assertEqual(created_activity.sector_group, self.sector_group)
+        self.assertEqual(created_activity.sectors.count(), 1)
+        self.assertEqual(created_activity.sectors.first(), self.sector2)
+        self.assertEqual(created_activity.presta_type, [siae_constants.PRESTA_BUILD])
+        self.assertEqual(created_activity.geo_range, siae_constants.GEO_RANGE_ZONES)
+        self.assertEqual(created_activity.locations.count(), 3)
+        self.assertIn(perimeter_city, created_activity.locations.all())
+        self.assertIn(perimeter_department, created_activity.locations.all())
+        self.assertIn(perimeter_region, created_activity.locations.all())
+
+
+class DashboardSiaeEditActivitiesEditViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_siae = UserFactory(kind=User.KIND_SIAE)
+        cls.siae_with_user = SiaeFactory()
+        cls.siae_with_user.users.add(cls.user_siae)
+
+    def test_only_siae_user_can_edit_siae_activity(self):
+        siae_activity = SiaeActivityFactory(siae=self.siae_with_user)
+        self.assertEqual(self.siae_with_user.activities.count(), 1)
+
+        self.client.force_login(UserFactory(kind=User.KIND_SIAE))
+        url = reverse("dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("dashboard:home"))
+
+        self.client.force_login(self.user_siae)
+        url = reverse("dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_siae_user_can_edit_siae_activity_to_custom_range(self):
+        siae_activity = SiaeActivityFactory(
+            siae=self.siae_with_user, with_country_perimeter=True, presta_type=[siae_constants.PRESTA_DISP]
+        )
+        sector_before = SectorFactory(group=siae_activity.sector_group)
+        siae_activity.sectors.add(sector_before)
+        self.assertEqual(self.siae_with_user.activities.count(), 1)
+        self.assertEqual(siae_activity.geo_range, siae_constants.GEO_RANGE_COUNTRY)
+        self.assertEqual(siae_activity.sectors.count(), 1)
+        self.assertEqual(siae_activity.sectors.first(), sector_before)
+
+        self.client.force_login(self.user_siae)
+        url = reverse("dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        sector_after = SectorFactory()
+        data = {
+            "sector_group": sector_after.group.id,
+            "sectors": [sector_after.id],
+            "presta_type": [siae_constants.PRESTA_BUILD],
+            "geo_range": siae_constants.GEO_RANGE_CUSTOM,
+            "geo_range_custom_distance": 42,
+        }
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url, reverse("dashboard_siaes:siae_edit_activities", args=[self.siae_with_user.slug])
+        )
+        self.assertEqual(self.siae_with_user.activities.count(), 1)
+        updated_activity = self.siae_with_user.activities.first()
+        self.assertEqual(updated_activity.sector_group, sector_after.group)
+        self.assertEqual(updated_activity.sectors.count(), 1)
+        self.assertEqual(updated_activity.sectors.first(), sector_after)
+        self.assertEqual(updated_activity.presta_type, [siae_constants.PRESTA_BUILD])
+        self.assertEqual(updated_activity.geo_range, siae_constants.GEO_RANGE_CUSTOM)
+
+    def test_siae_user_can_edit_siae_activity_to_zones(self):
+        siae_activity = SiaeActivityFactory(
+            siae=self.siae_with_user, with_custom_distance_perimeter=True, presta_type=[siae_constants.PRESTA_DISP]
+        )
+        sector_before = SectorFactory(group=siae_activity.sector_group)
+        siae_activity.sectors.add(sector_before)
+        self.assertEqual(self.siae_with_user.activities.count(), 1)
+        self.assertEqual(siae_activity.geo_range, siae_constants.GEO_RANGE_CUSTOM)
+        self.assertIsNotNone(siae_activity.geo_range_custom_distance)
+        self.assertEqual(siae_activity.sectors.count(), 1)
+        self.assertEqual(siae_activity.sectors.first(), sector_before)
+        self.assertEqual(siae_activity.locations.count(), 0)
+
+        self.client.force_login(self.user_siae)
+        url = reverse("dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        sector_after = SectorFactory()
+        perimeter_city = PerimeterFactory(name="Azay-le-rideau", kind=Perimeter.KIND_CITY, insee_code="37190")
+        perimeter_department = PerimeterFactory(
+            name="Vienne", kind=Perimeter.KIND_DEPARTMENT, insee_code="86", region_code="75"
+        )
+        data = {
+            "sector_group": sector_after.group.id,
+            "sectors": [sector_after.id],
+            "presta_type": [siae_constants.PRESTA_BUILD],
+            "geo_range": siae_constants.GEO_RANGE_ZONES,
+            "locations": [perimeter_city.slug, perimeter_department.slug],
+        }
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url, reverse("dashboard_siaes:siae_edit_activities", args=[self.siae_with_user.slug])
+        )
+        self.assertEqual(self.siae_with_user.activities.count(), 1)
+        updated_activity = self.siae_with_user.activities.first()
+        self.assertEqual(updated_activity.sector_group, sector_after.group)
+        self.assertEqual(updated_activity.sectors.count(), 1)
+        self.assertEqual(updated_activity.sectors.first(), sector_after)
+        self.assertEqual(updated_activity.presta_type, [siae_constants.PRESTA_BUILD])
+        self.assertEqual(updated_activity.geo_range, siae_constants.GEO_RANGE_ZONES)
+        self.assertEqual(updated_activity.locations.count(), 2)
+        self.assertIn(perimeter_city, updated_activity.locations.all())
+        self.assertIn(perimeter_department, updated_activity.locations.all())
+        self.assertIsNone(updated_activity.geo_range_custom_distance)
+
+    def test_siae_user_can_edit_siae_activity_to_country(self):
+        siae_activity = SiaeActivityFactory(
+            siae=self.siae_with_user, with_zones_perimeter=True, presta_type=[siae_constants.PRESTA_DISP]
+        )
+        sector_before = SectorFactory(group=siae_activity.sector_group)
+        siae_activity.sectors.add(sector_before)
+        self.assertEqual(self.siae_with_user.activities.count(), 1)
+        self.assertEqual(siae_activity.geo_range, siae_constants.GEO_RANGE_ZONES)
+        self.assertEqual(siae_activity.sectors.count(), 1)
+        self.assertEqual(siae_activity.sectors.first(), sector_before)
+
+        perimeter_city = PerimeterFactory(name="Azay-le-rideau", kind=Perimeter.KIND_CITY, insee_code="37190")
+        perimeter_department = PerimeterFactory(
+            name="Vienne", kind=Perimeter.KIND_DEPARTMENT, insee_code="86", region_code="75"
+        )
+        siae_activity.locations.add(perimeter_city, perimeter_department)
+        siae_activity.refresh_from_db()
+        self.assertEqual(siae_activity.locations.count(), 2)
+
+        self.client.force_login(self.user_siae)
+        url = reverse("dashboard_siaes:siae_edit_activities_edit", args=[self.siae_with_user.slug, siae_activity.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        sector_after = SectorFactory()
+        data = {
+            "sector_group": sector_after.group.id,
+            "sectors": [sector_after.id],
+            "presta_type": [siae_constants.PRESTA_BUILD],
+            "geo_range": siae_constants.GEO_RANGE_COUNTRY,
+        }
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url, reverse("dashboard_siaes:siae_edit_activities", args=[self.siae_with_user.slug])
+        )
+        self.assertEqual(self.siae_with_user.activities.count(), 1)
+        updated_activity = self.siae_with_user.activities.first()
+        self.assertEqual(updated_activity.sector_group, sector_after.group)
+        self.assertEqual(updated_activity.sectors.count(), 1)
+        self.assertEqual(updated_activity.sectors.first(), sector_after)
+        self.assertEqual(updated_activity.presta_type, [siae_constants.PRESTA_BUILD])
+        self.assertEqual(updated_activity.geo_range, siae_constants.GEO_RANGE_COUNTRY)
+        self.assertEqual(updated_activity.locations.count(), 0)
+        self.assertIsNone(updated_activity.geo_range_custom_distance)
+
+
+class DashboardSiaeEditActivitiesDeleteViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_siae = UserFactory(kind=User.KIND_SIAE)
+        cls.siae_with_user = SiaeFactory()
+        cls.siae_with_user.users.add(cls.user_siae)
+
+    def test_only_siae_user_can_delete_siae_activity(self):
+        siae_activity = SiaeActivityFactory(siae=self.siae_with_user)
+        self.assertEqual(self.siae_with_user.activities.count(), 1)
+
+        self.client.force_login(UserFactory(kind=User.KIND_SIAE))
+        url = reverse("dashboard_siaes:siae_edit_activities_delete", args=[self.siae_with_user.slug, siae_activity.id])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("dashboard:home"))
+        self.assertEqual(self.siae_with_user.activities.count(), 1)
+
+        self.client.force_login(self.user_siae)
+        url = reverse("dashboard_siaes:siae_edit_activities_delete", args=[self.siae_with_user.slug, siae_activity.id])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url, reverse("dashboard_siaes:siae_edit_activities", args=[self.siae_with_user.slug])
+        )
+        self.assertEqual(self.siae_with_user.activities.count(), 0)
