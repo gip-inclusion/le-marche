@@ -314,11 +314,6 @@ class SiaeActivitiesCreateForm(forms.ModelForm):
             cleaned_data["locations"] = []
         return cleaned_data
 
-    def save(self, *args, **kwargs):
-        if self.instance.pk and self.cleaned_data.get("geo_range") is not siae_constants.GEO_RANGE_ZONES:
-            self.instance.locations.clear()
-        return super().save(*args, **kwargs)
-
     class Meta:
         model = SiaeActivity
         fields = [
