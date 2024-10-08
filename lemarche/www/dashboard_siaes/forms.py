@@ -307,13 +307,12 @@ class SiaeActivitiesCreateForm(forms.ModelForm):
         if geo_range == siae_constants.GEO_RANGE_CUSTOM and not geo_range_custom_distance:
             self.add_error("geo_range_custom_distance", "Une distance en kilomètres est requise pour cette option.")
 
-        # TODO: check if locations are set if geo_range is set to ZONES
+        if geo_range == siae_constants.GEO_RANGE_ZONES:
+            if not cleaned_data.get("locations"):
+                self.add_error(None, "Vous devez choisir au moins une zone d'intervention personnalisée.")
+        else:
+            cleaned_data["locations"] = []
         return cleaned_data
-
-    def save(self, *args, **kwargs):
-        if self.instance.pk and self.cleaned_data.get("geo_range") is not siae_constants.GEO_RANGE_ZONES:
-            self.instance.locations.clear()
-        return super().save(*args, **kwargs)
 
     class Meta:
         model = SiaeActivity
