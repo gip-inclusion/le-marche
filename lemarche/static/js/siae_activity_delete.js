@@ -21,11 +21,12 @@ document.addEventListener('alpine:init', function () {
                 modal.querySelector('#siae-activity-name-display').textContent = this.siaeActivityNameDisplay;
             }
 
-            let formActionUrl = modalForm.getAttribute('data-action')
-                .replace('siae-slug-to-replace', this.siaeSlug)
-                .replace('siae-activity-id-to-replace', this.siaeActivityId);
+            let formActionUrl = new URL(modalForm.getAttribute('data-action'));
+            formActionUrl.pathname = formActionUrl.pathname
+                .replace('siae-slug-to-replace', encodeURIComponent(this.siaeSlug))
+                .replace('siae-activity-id-to-replace', encodeURIComponent(this.siaeActivityId));
 
-            modalForm.setAttribute('action', formActionUrl);
+            modalForm.setAttribute('action', formActionUrl.toString());
 
             const modalDialog = document.getElementById(modalID);
             dsfr(modalDialog).modal.disclose();
