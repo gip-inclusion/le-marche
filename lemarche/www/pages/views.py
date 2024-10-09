@@ -18,6 +18,7 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderStepsData
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
+from lemarche.utils.emails import add_to_contact_list
 from lemarche.utils.tracker import track
 from lemarche.www.pages.forms import (
     CompanyReferenceCalculatorForm,
@@ -356,6 +357,8 @@ def csrf_failure(request, reason=""):  # noqa C901
                 else:
                     setattr(tender, attribute, tender_dict.get(attribute))
             tender.save()
+
+        add_to_contact_list(user=user, type="signup", source=tender_constants.SOURCE_FORM_CSRF, tender_id=tender.id)
 
         # remove steps data
         uuid = request.session.get("tender_steps_data_uuid", None)
