@@ -1,6 +1,7 @@
 import json
 from datetime import timedelta
 from unittest import mock
+from unittest.mock import patch
 
 from django.conf import settings
 from django.contrib.gis.geos import Point
@@ -21,10 +22,12 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.enums import SurveyDoesNotExistQuestionChoices, SurveyScaleQuestionChoices
 from lemarche.tenders.factories import TenderFactory, TenderQuestionFactory
 from lemarche.tenders.models import Tender, TenderSiae, TenderStepsData
+from lemarche.users import constants as user_constants
 from lemarche.users.factories import UserFactory
 from lemarche.users.models import User
 from lemarche.utils import constants
 from lemarche.www.tenders.views import TenderCreateMultiStepView
+from lemarche.www.tenders.utils import get_or_create_user
 
 
 class TenderCreateViewTest(TestCase):
@@ -248,6 +251,17 @@ class TenderCreateViewTest(TestCase):
         self.assertIsInstance(tender, Tender)
         self.assertEqual(tender.questions.count(), len(initial_data_questions_list))  # count is 2
         self.assertEqual(tender.questions_list()[0].get("text"), initial_data_questions_list[0].get("text"))
+
+    @patch('lemarche.www.tenders.views.add_to_contact_list')
+    def test_add_contact_attributes_when_tender_is_created(self, mock_add_to_contact_list):
+        """Contact attributes should be added when tender is created"""
+        self.client.force_login(self.user_buyer)
+        tenders_step_data = self._generate_fake_data_form()
+        self._check_every_step(tenders_step_data, final_redirect_page=reverse("siae:search_results"))
+        tender = Tender.objects.get(title=tenders_step_data[0].get("general-title"))
+        #user = get_or_create_user(self.user_buyer, tender_dict=tenders_step_data, source=user_constants.SOURCE_TENDER_FORM)
+        print("Appels à add_to_contact_list:", mock_add_to_contact_list.call_args_list)
+        mock_add_to_contact_list.assert_called_once_with(user=self.user_buyer, type="signup", tender_id=tender.id, source=user_constants.SOURCE_TENDER_FORM)
 
 
 class TenderMatchingTest(TestCase):
