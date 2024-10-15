@@ -271,6 +271,20 @@ class SiaeActivitiesCreateForm(forms.ModelForm):
         required=True,
         widget=forms.RadioSelect,
     )
+    geo_range_custom_distance = forms.IntegerField(
+        label="",
+        required=False,
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        geo_range = cleaned_data.get("geo_range")
+        geo_range_custom_distance = cleaned_data.get("geo_range_custom_distance")
+
+        if geo_range == siae_constants.GEO_RANGE_CUSTOM and not geo_range_custom_distance:
+            self.add_error("geo_range_custom_distance", "Une distance en kilomètres est requise pour cette option.")
+
+        return cleaned_data
 
     class Meta:
         model = SiaeActivity
