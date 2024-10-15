@@ -1,23 +1,35 @@
-document.addEventListener("DOMContentLoaded", function() {
-    $('#siae_activity_delete_modal').on('show.bs.modal', function (event) {
-        // Button that triggered the modal
-        var button = $(event.relatedTarget);
+document.addEventListener('alpine:init', function () {
+    Alpine.data('activityItem', () => ({
+        siaeSlug: null,
+        siaeActivityId: null,
+        siaeActivityNameDisplay: null,
 
-        // Extract info from data-* attributes
-        var siaeId = button.data('siae-id');
-        var siaeSlug = button.data('siae-slug');
-        var siaeActivityId = button.data('siae-activity-id');
-        var siaeActivityNameDisplay = button.data('siae-activity-name-display');
+        initOptions(siaeSlug, siaeActivityId, siaeActivityNameDisplay) {
+            this.siaeSlug = siaeSlug;
+            this.siaeActivityId = siaeActivityId;
+            this.siaeActivityNameDisplay = siaeActivityNameDisplay;
+        },
+        remove() {
+            // Update the modal's content
+            // - siae activity name display
+            // - edit the form action url
+            // - open the modal
+            let modalID = 'siae_activity_delete_modal';
+            let modal = document.querySelector(`#${modalID}`);
+            let modalForm = modal.querySelector('form');
+            if (modal.querySelector('#siae-activity-name-display')) {
+                modal.querySelector('#siae-activity-name-display').textContent = this.siaeActivityNameDisplay;
+            }
 
-        // Update the modal's content
-        // - siae name display
-        // - edit the form action url
-        var modal = document.querySelector('#siae_activity_delete_modal');
-        var modalForm = modal.querySelector('form');
-        if (modal.querySelector('#siae-activity-name-display')) {
-            modal.querySelector('#siae-activity-name-display').textContent = siaeActivityNameDisplay;
+            let formActionUrl = new URL(modalForm.getAttribute('data-action'));
+            formActionUrl.pathname = formActionUrl.pathname
+                .replace('siae-slug-to-replace', encodeURIComponent(this.siaeSlug))
+                .replace('siae-activity-id-to-replace', encodeURIComponent(this.siaeActivityId));
+
+            modalForm.setAttribute('action', formActionUrl.toString());
+
+            const modalDialog = document.getElementById(modalID);
+            dsfr(modalDialog).modal.disclose();
         }
-        var formActionUrl = modalForm.getAttribute('action');
-        modalForm.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', siaeSlug).replace('siae-activity-id-to-replace', siaeActivityId));
-    });
+    }));
 });
