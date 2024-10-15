@@ -1,11 +1,9 @@
 document.addEventListener('alpine:init', function () {
     Alpine.data('activityItem', () => ({
-        siaeSlug: null,
         siaeActivityId: null,
         siaeActivityNameDisplay: null,
 
-        initOptions(siaeSlug, siaeActivityId, siaeActivityNameDisplay) {
-            this.siaeSlug = siaeSlug;
+        initOptions(siaeActivityId, siaeActivityNameDisplay) {
             this.siaeActivityId = siaeActivityId;
             this.siaeActivityNameDisplay = siaeActivityNameDisplay;
         },
@@ -21,7 +19,7 @@ document.addEventListener('alpine:init', function () {
                 modal.querySelector('#siae-activity-name-display').textContent = this.siaeActivityNameDisplay;
             }
             let formActionUrl = escapeHtml(modalForm.getAttribute('data-action'));
-            modalForm.setAttribute('action', formActionUrl.replace('siae-slug-to-replace', this.siaeSlug).replace('siae-activity-id-to-replace', this.siaeActivityId));
+            modalForm.setAttribute('action', formActionUrl.replace('siae-activity-id-to-replace', this.siaeActivityId.replace(/\D/g, '')));
 
             const modalDialog = document.getElementById(modalID);
             dsfr(modalDialog).modal.disclose();
