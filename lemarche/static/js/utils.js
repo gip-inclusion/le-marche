@@ -29,7 +29,7 @@ window.addEventListener('DOMContentLoaded', function () {
     initSuperBadges();
 
     // some elements have their url in data-url attribute
-    $(document).on("click", ".with-data-url", function(e) {
+    $(document).on("click", ".with-data-url", function (e) {
         window.location.href = $(this).data("url");
     });
 });
@@ -54,13 +54,6 @@ let toggleInputElement = (toggle, element, required = undefined) => {
     }
     if (required != undefined) {
         toggleRequiredClasses(required, element);
-    }
-}
-
-const initModalMessages = () => {
-    var elements = document.getElementsByClassName('modal-message-alert');
-    for (var i = 0; i < elements.length; i++) {
-        OpenBootstrapModal(elements[i]);
     }
 }
 
@@ -103,8 +96,11 @@ const initSuperBadges = () => {
     })
 }
 
-function OpenBootstrapModal(elmt) {
-    setTimeout(function () {
-        $(elmt).modal('show');
-    }, 1000);
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
