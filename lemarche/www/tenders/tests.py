@@ -33,7 +33,7 @@ class TenderCreateViewTest(TestCase):
         cls.user_siae = UserFactory(kind=User.KIND_SIAE)
         cls.user_buyer = UserFactory(kind=User.KIND_BUYER, company_name="Entreprise Buyer")
         cls.sectors = [SectorFactory().slug for _ in range(3)]
-        cls.location_slug = PerimeterFactory().slug
+        cls.location_slug = PerimeterFactory(insee_code="06195").slug
 
     @classmethod
     def _generate_fake_data_form(
@@ -255,8 +255,10 @@ class TenderMatchingTest(TestCase):
     def setUpTestData(cls):
         cls.sectors = [SectorFactory() for i in range(10)]
         cls.perimeter_paris = PerimeterFactory(department_code="75", post_codes=["75019", "75018"])
-        cls.perimeter_marseille = PerimeterFactory(coords=Point(43.35101634452076, 5.379616625955892))
-        cls.perimeters = [cls.perimeter_paris, PerimeterFactory()]
+        cls.perimeter_marseille = PerimeterFactory(
+            coords=Point(43.35101634452076, 5.379616625955892), insee_code="13055"
+        )
+        cls.perimeters = [cls.perimeter_paris, PerimeterFactory(insee_code="18001")]
         # by default is Paris
         coords_paris = Point(48.86385199985207, 2.337071483848432)
 
@@ -339,7 +341,7 @@ class TenderMatchingTest(TestCase):
         siae_marseille.sectors.add(self.sectors[0])
 
         # create tender in Azay-le-rideau (near Tours ~25km)
-        perimeter_azaylerideau = PerimeterFactory(coords=Point(47.262352, 0.466372))
+        perimeter_azaylerideau = PerimeterFactory(coords=Point(47.262352, 0.466372), insee_code="37017")
         tender = TenderFactory(
             location=perimeter_azaylerideau,
             distance_location=30,
