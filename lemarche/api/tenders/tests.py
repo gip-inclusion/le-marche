@@ -88,7 +88,7 @@ class TenderCreateApiTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertIn("slug", response.data.keys())
         tender = Tender.objects.get(title="Test author 1")
-        self.assertEqual(User.objects.count(), 2 + 1)  # created a new user
+        self.assertEqual(User.objects.count(), 3 + 1)  # created a new user
         self.assertEqual(tender.author.email, USER_CONTACT_EMAIL)
         self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
         self.assertEqual(tender.source, tender_constants.SOURCE_API)
@@ -102,7 +102,7 @@ class TenderCreateApiTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertIn("slug", response.data.keys())
         tender = Tender.objects.get(title="Test author 2")
-        self.assertEqual(User.objects.count(), 3)  # did not create a new user
+        self.assertEqual(User.objects.count(), 4)  # did not create a new user
         self.assertEqual(tender.author, self.user_with_token)
         self.assertEqual(tender.status, tender_constants.STATUS_PUBLISHED)
         self.assertEqual(tender.source, tender_constants.SOURCE_API)
