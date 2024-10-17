@@ -4,7 +4,6 @@ from lemarche.tenders import constants as tender_constants
 from lemarche.tenders.models import Tender, TenderQuestion
 from lemarche.users import constants as user_constants
 from lemarche.users.models import User
-from lemarche.utils.emails import add_to_contact_list
 from lemarche.www.auth.tasks import send_new_user_password_reset_link
 
 
@@ -79,7 +78,6 @@ def get_or_create_user_from_anonymous_content(
     )
     if created and settings.BITOUBI_ENV == "prod":
         send_new_user_password_reset_link(user)
-        add_to_contact_list(user=user, type="signup", source=source)
     return user
 
 
