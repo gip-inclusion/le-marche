@@ -13,15 +13,27 @@
 
 @media (max-width: 767px) {
     div.flex-container {
-        flex-flow: wrap;  /* changes to 'column' on small screens, but breaks stuff like checkboxes */
+        flex-flow: wrap;
+        /* changes to 'column' on small screens, but breaks stuff like checkboxes */
     }
 }
 
 .custom-checkbox-select-multiple {
     display: table-cell;
 }
-div.custom-checkbox-select-multiple > div > label {
-    width: 100%;  /* 160px default ; to avoid line breaks */
+
+div.custom-checkbox-select-multiple>div>label {
+    width: 100%;
+    /* 160px default ; to avoid line breaks */
+}
+
+#content-main .aligned label {
+    width: auto;
+}
+
+#content-main .aligned .help {
+    margin-left: 0;
+    padding-left: 0;
 }
 
 /* Modal style for tender change admin */
