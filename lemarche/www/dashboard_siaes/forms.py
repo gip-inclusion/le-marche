@@ -5,6 +5,7 @@ from django_select2.forms import ModelSelect2MultipleWidget
 from dsfr.forms import DsfrBaseForm
 
 from lemarche.networks.models import Network
+from lemarche.perimeters.models import Perimeter
 from lemarche.sectors.models import Sector
 from lemarche.siaes import constants as siae_constants
 from lemarche.siaes.models import (
@@ -18,6 +19,7 @@ from lemarche.siaes.models import (
     SiaeUserRequest,
 )
 from lemarche.utils.fields import GroupedModelMultipleChoiceField
+from lemarche.www.siaes.widgets import CustomLocationWidget
 
 
 class SiaeSearchBySiretForm(forms.Form):
@@ -266,15 +268,36 @@ class SiaeActivitiesCreateForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple,
     )
     geo_range = forms.ChoiceField(
-        label=Siae._meta.get_field("geo_range").verbose_name,
-        choices=siae_constants.GEO_RANGE_CHOICES,
+        label=SiaeActivity._meta.get_field("geo_range").verbose_name,
+        choices=siae_constants.ACTIVITIES_GEO_RANGE_CHOICES,
+        initial=siae_constants.GEO_RANGE_COUNTRY,
         required=True,
         widget=forms.RadioSelect,
     )
     geo_range_custom_distance = forms.IntegerField(
         label="",
         required=False,
+        help_text="Distance mesurée depuis le point central de la ville où se situe votre structure.",
     )
+    locations = forms.ModelMultipleChoiceField(
+        label="Localisation",
+        queryset=Perimeter.objects.all(),
+        to_field_name="slug",
+        required=False,
+        widget=CustomLocationWidget(  # displayed with a JS autocomplete library (see `perimeter_autocomplete_field.js`)  # noqa
+            attrs={
+                "placeholder": "Région, département, ville",
+            }
+        ),
+        help_text="Vous pouvez ajouter autant de régions, de départements ou de villes que vous le souhaitez.",
+        # FIXME: help_text not displayed
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # these fields are autocompletes
+        self.fields["locations"].choices = []
 
     def clean(self):
         cleaned_data = super().clean()
@@ -284,8 +307,20 @@ class SiaeActivitiesCreateForm(forms.ModelForm):
         if geo_range == siae_constants.GEO_RANGE_CUSTOM and not geo_range_custom_distance:
             self.add_error("geo_range_custom_distance", "Une distance en kilomètres est requise pour cette option.")
 
+        if geo_range == siae_constants.GEO_RANGE_ZONES:
+            if not cleaned_data.get("locations"):
+                self.add_error(None, "Vous devez choisir au moins une zone d'intervention personnalisée.")
+        else:
+            cleaned_data["locations"] = []
         return cleaned_data
 
     class Meta:
         model = SiaeActivity
-        fields = ["sector_group", "sectors", "presta_type", "geo_range", "geo_range_custom_distance"]  # location
+        fields = [
+            "sector_group",
+            "sectors",
+            "presta_type",
+            "geo_range",
+            "geo_range_custom_distance",
+            "locations",
+        ]

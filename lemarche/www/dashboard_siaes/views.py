@@ -250,6 +250,7 @@ class SiaeEditActivitiesEditView(SiaeMemberRequiredMixin, SuccessMessageMixin, U
         context["page_title"] = "Modifier une activité"
         context["siae"] = self.siae
         context["activity"] = self.object
+        context["current_locations"] = list(self.object.locations.values("id", "slug", "name"))
         context["breadcrumb_data"] = {
             "root_dir": settings_context_processors.expose_settings(self.request)["HOME_PAGE_PATH"],
             "links": [
