@@ -62,9 +62,6 @@ class Command(BaseCommand):
             ]
             self.stdout_messages_success(msg_success)
 
-        self.stdout_warning(f"No location found for {siae} (post_code empty)")
-        return None
-
     def create_siae_activities(self, siae: Siae):
         """
         - sector_group / sectors: we look at the existing siae sectors, and create an activity per sector group
@@ -101,7 +98,7 @@ class Command(BaseCommand):
                         presta_type=siae.presta_type,
                         geo_range=siae_constants.GEO_RANGE_ZONES,
                     )
-                    region = Perimeter.objects.get(kind=Perimeter.KIND_REGION, insee_code=siae.region)
+                    region = Perimeter.objects.get(kind=Perimeter.KIND_REGION, name=siae.region)
                     siae_activity.locations.add(region)
                 case siae_constants.GEO_RANGE_DEPARTMENT:
                     siae_activity = SiaeActivity.objects.create(
