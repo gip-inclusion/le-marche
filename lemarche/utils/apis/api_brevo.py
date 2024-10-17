@@ -31,6 +31,7 @@ def get_api_client():
 
 def create_contact(user, list_id: int, tender_id: int = None):
     from lemarche.tenders.models import Tender
+
     """
     Brevo docs
     - Python library: https://github.com/sendinblue/APIv3-python-library/blob/master/docs/CreateContact.md
@@ -39,17 +40,17 @@ def create_contact(user, list_id: int, tender_id: int = None):
     api_client = get_api_client()
     api_instance = sib_api_v3_sdk.ContactsApi(api_client)
 
-    attributes={
-            "NOM": sanitize_to_send_by_email(user.last_name.capitalize()),
-            "PRENOM": sanitize_to_send_by_email(user.first_name.capitalize()),
-            "DATE_INSCRIPTION": user.created_at,
-            "TYPE_ORGANISATION": user.buyer_kind_detail,
-            "NOM_ENTREPRISE": sanitize_to_send_by_email(user.company_name.capitalize()),
-            "SMS": sanitize_to_send_by_email(user.phone_display),
-            "MONTANT_BESOIN_ACHETEUR": None,
-            "TYPE_BESOIN_ACHETEUR": None,
-            "TYPE_VERTICALE_ACHETEUR": [],
-            # WHATSAPP, TYPE_ORGANISATION, LIEN_FICHE_COMMERCIALE, TAUX_DE_COMPLETION
+    attributes = {
+        "NOM": sanitize_to_send_by_email(user.last_name.capitalize()),
+        "PRENOM": sanitize_to_send_by_email(user.first_name.capitalize()),
+        "DATE_INSCRIPTION": user.created_at,
+        "TYPE_ORGANISATION": user.buyer_kind_detail,
+        "NOM_ENTREPRISE": sanitize_to_send_by_email(user.company_name.capitalize()),
+        "SMS": sanitize_to_send_by_email(user.phone_display),
+        "MONTANT_BESOIN_ACHETEUR": None,
+        "TYPE_BESOIN_ACHETEUR": None,
+        "TYPE_VERTICALE_ACHETEUR": [],
+        # WHATSAPP, TYPE_ORGANISATION, LIEN_FICHE_COMMERCIALE, TAUX_DE_COMPLETION
     }
 
     if tender_id:
